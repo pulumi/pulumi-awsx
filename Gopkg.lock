@@ -2,27 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/Azure/go-ansiterm"
-  packages = [
-    ".",
-    "winterm"
-  ]
-  revision = "d6e3b3328b783f23731bc4d058875b0371ff8109"
-
-[[projects]]
-  name = "github.com/Nvveen/Gotty"
-  packages = ["."]
-  revision = "a8b993ba6abdb0e0c12b0125c603323a71c7790c"
-  source = "https://github.com/ijc25/Gotty"
-
-[[projects]]
-  name = "github.com/Sirupsen/logrus"
-  packages = ["."]
-  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
-  version = "v1.0.5"
-
-[[projects]]
   name = "github.com/agext/levenshtein"
   packages = ["."]
   revision = "5f10fee965225ac1eecdc234c09daf5cd9e7f7b6"
@@ -189,15 +168,6 @@
   packages = ["."]
   revision = "95292e44976d1217cf3611dc7c8d9466877d3ed5"
   version = "v1.0.1"
-
-[[projects]]
-  name = "github.com/docker/docker"
-  packages = [
-    "pkg/term",
-    "pkg/term/windows"
-  ]
-  revision = "092cba3727bb9b4a2f0e922cd6c0f93ea270e363"
-  version = "v1.13.1"
 
 [[projects]]
   name = "github.com/go-ini/ini"
@@ -481,12 +451,6 @@
   version = "v0.8.0"
 
 [[projects]]
-  name = "github.com/pmezard/go-difflib"
-  packages = ["difflib"]
-  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
-  version = "v1.0.0"
-
-[[projects]]
   name = "github.com/posener/complete"
   packages = [
     ".",
@@ -500,24 +464,14 @@
 [[projects]]
   name = "github.com/pulumi/pulumi"
   packages = [
-    "pkg/apitype",
-    "pkg/backend",
-    "pkg/backend/local",
     "pkg/diag",
     "pkg/diag/colors",
     "pkg/encoding",
-    "pkg/engine",
-    "pkg/operations",
     "pkg/resource",
     "pkg/resource/config",
-    "pkg/resource/deploy",
     "pkg/resource/plugin",
     "pkg/resource/provider",
-    "pkg/resource/stack",
-    "pkg/testing",
-    "pkg/testing/integration",
     "pkg/tokens",
-    "pkg/util/cancel",
     "pkg/util/cmdutil",
     "pkg/util/contract",
     "pkg/util/fsutil",
@@ -526,7 +480,6 @@
     "pkg/util/retry",
     "pkg/util/rpcutil",
     "pkg/util/rpcutil/rpcerror",
-    "pkg/version",
     "pkg/workspace",
     "sdk/proto/go"
   ]
@@ -556,12 +509,6 @@
   version = "v1.2.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/sergi/go-diff"
-  packages = ["diffmatchpatch"]
-  revision = "1744e2970ca51c86172c8190fadad617561ed6e7"
-
-[[projects]]
   name = "github.com/spf13/cobra"
   packages = ["."]
   revision = "7b2c5ac9fc04fc5efafb60700713d4fa609b777b"
@@ -572,12 +519,6 @@
   packages = ["."]
   revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
   version = "v1.0.0"
-
-[[projects]]
-  name = "github.com/stretchr/testify"
-  packages = ["assert"]
-  revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
-  version = "v1.1.4"
 
 [[projects]]
   name = "github.com/terraform-providers/terraform-provider-aws"
@@ -738,6 +679,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "083392bda88c16badd131d08283a1e277a06904aa91e8d480fe179dbf6bc46c6"
+  inputs-digest = "de124b5ce208c7621a1e8b55d2e6fcf3a3135010196592207910501cdd22e02d"
   solver-name = "gps-cdcl"
   solver-version = 1
