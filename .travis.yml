@@ -1,0 +1,42 @@
+# It may be tempting to add parens around each individual clause in this expression, but Travis then builds pushes anyway
+if: branch = master OR branch =~ ^release/ OR tag IS present
+language: go
+go: 1.9
+sudo: true # give us 7.5GB and >2 bursted cores.
+before_install:
+    - export PULUMI_ROOT=/opt/pulumi
+    - git clone git@github.com:pulumi/home ${GOPATH}/src/github.com/pulumi/home
+    # Install Docker 17.09.
+    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    - sudo apt-get update
+    - sudo apt-get -y install docker-ce=17.09.0~ce-0~ubuntu
+    - docker version
+    # Travis only fetches 50 commits by default, and we want them all so we can do git describe --tags
+    - git fetch --unshallow
+    # Dep for Go dependency management.
+    - go get -v github.com/golang/dep/cmd/dep
+    # Node.js 6.10.2 for Pulumi Fabric's Node.js runtime.
+    - nvm install v6.10.2
+    # Ensure that we can access Pulumi's private NPM org.
+    - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
+    # Install the AWS CLI so that we can publish the resulting release (if applicable) at the end.
+    - pip install --upgrade --user awscli
+    # Install Yarn as per https://yarnpkg.com/lang/en/docs/install-ci/#travis-tab.
+    - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.2.1
+    - export PATH=$HOME/.yarn/bin:$PATH
+    # Install Pulumi
+    - ${GOPATH}/src/github.com/pulumi/home/scripts/install-pulumi.sh v0.12.1-dev-1525381649-g4f3d2366
+    - export PATH=/usr/local/pulumi/bin:$PATH
+    - . ${GOPATH}/src/github.com/pulumi/home/scripts/keep-failed-tests.sh
+install:
+    - make ensure
+before_script:
+    # Ensure the working tree is clean (make ensure may have updated lock files)
+    - ${GOPATH}/src/github.com/pulumi/home/scripts/check-worktree-is-clean.sh
+script:
+    - make travis_${TRAVIS_EVENT_TYPE}
+after_failure:
+    - ${GOPATH}/src/github.com/pulumi/home/scripts/upload-failed-tests
+notifications:
+    webhooks: https://ufci1w66n3.execute-api.us-west-2.amazonaws.com/stage/travis

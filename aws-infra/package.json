@@ -1,0 +1,28 @@
+{
+    "name": "@pulumi/aws-infra",
+    "version": "${VERSION}",
+    "description": "Pulumi Amazon Web Services (AWS) infrastructure components.",
+    "keywords": [
+        "pulumi",
+        "aws",
+        "aws-infra"
+    ],
+    "homepage": "https://pulumi.io/pulumi-aws-infra",
+    "repository": "https://github.com/pulumi/pulumi-aws-infra",
+    "dependencies": {
+        "@pulumi/aws": "^0.12.0",
+        "@pulumi/pulumi": "^0.12.0",
+        "mime": "^2.0.3",
+        "semver": "^5.4.0"
+    },
+    "devDependencies": {
+        "@types/aws-sdk": "^2.7.0",
+        "@types/node": "^8.0.26",
+        "@types/mime": "^2.0.0",
+        "@types/semver": "^5.4.0",
+        "tslint": "^5.7.0",
+        "typescript": "^2.6.2"
+    },
+    "peerDependencies": {
+    }
+}
