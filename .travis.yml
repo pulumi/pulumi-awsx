@@ -3,6 +3,8 @@ if: branch = master OR branch =~ ^release/ OR tag IS present
 language: go
 go: 1.9
 sudo: true # give us 7.5GB and >2 bursted cores.
+git:
+  depth: false
 before_install:
     - export PULUMI_ROOT=/opt/pulumi
     - git clone git@github.com:pulumi/home ${GOPATH}/src/github.com/pulumi/home
@@ -12,8 +14,6 @@ before_install:
     - sudo apt-get update
     - sudo apt-get -y install docker-ce=17.09.0~ce-0~ubuntu
     - docker version
-    # Travis only fetches 50 commits by default, and we want them all so we can do git describe --tags
-    - git fetch --unshallow
     # Dep for Go dependency management.
     - go get -v github.com/golang/dep/cmd/dep
     # Node.js 6.10.2 for Pulumi Fabric's Node.js runtime.
@@ -39,4 +39,3 @@ script:
 after_failure:
     - ${GOPATH}/src/github.com/pulumi/home/scripts/upload-failed-tests
 notifications:
-    webhooks: https://ufci1w66n3.execute-api.us-west-2.amazonaws.com/stage/travis
