@@ -39,3 +39,4 @@ script:
 after_failure:
     - ${GOPATH}/src/github.com/pulumi/home/scripts/upload-failed-tests
 notifications:
+    webhooks: https://ufci1w66n3.execute-api.us-west-2.amazonaws.com/stage/travis
