@@ -35,4 +35,4 @@ publish() {
     popd
 }
 
-publish @pulumi/aws-infra
+publish aws-infra
