@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@pulumi/pulumi@^0.12.0":
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.12.0.tgz#16a7e2cbb8440a1957a54b9f314b82d731ee9886"
+"@pulumi/pulumi@^0.12.1-rc3":
+  version "0.12.1-rc3"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.12.1-rc3.tgz#4be4754aba24275169f8fbc5094551a42c90fb09"
   dependencies:
     google-protobuf "^3.5.0"
     grpc "^1.6.0"
