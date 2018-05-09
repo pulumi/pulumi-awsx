@@ -23,6 +23,10 @@ export class Network extends pulumi.ComponentResource {
      */
     public readonly vpcId: pulumi.Output<string>;
     /**
+     * Whether the network includes private subnets.
+     */
+    public readonly usePrivateSubnets: boolean;
+    /**
      * The security group IDs for the network.
      */
     public readonly securityGroupIds: pulumi.Output<string>[];
@@ -36,9 +40,6 @@ export class Network extends pulumi.ComponentResource {
      */
     public readonly publicSubnetIds: pulumi.Output<string>[];
 
-    public readonly numberOfAvailabilityZones: pulumi.Output<number>;
-    public readonly usePrivateSubnets: pulumi.Output<boolean>;
-
     constructor(name: string, args?: NetworkArgs, opts?: pulumi.ResourceOptions) {
         // IDEA: default to the number of availability zones in this region, rather than 2.  To do this requires
         // invoking the provider, which requires that we "go async" at a very inopportune time here.  When
@@ -47,17 +48,14 @@ export class Network extends pulumi.ComponentResource {
             args = {};
         }
 
+        super("aws-infra:network:Network", name, {}, opts);
+
         const numberOfAvailabilityZones = args.numberOfAvailabilityZones || 2;
         if (numberOfAvailabilityZones < 1 || numberOfAvailabilityZones > 4) {
             throw new RunError(
                 `Unsupported number of availability zones for network: ${numberOfAvailabilityZones}`);
         }
-        const usePrivateSubnets = args.usePrivateSubnets || false;
-
-        super("aws-infra:network:Network", name, {
-            numberOfAvailabilityZones: numberOfAvailabilityZones,
-            usePrivateSubnets: usePrivateSubnets,
-        }, opts);
+        this.usePrivateSubnets = args.usePrivateSubnets || false;
 
         const vpc = new aws.ec2.Vpc(name, {
             cidrBlock: "10.10.0.0/16",
@@ -100,7 +98,8 @@ export class Network extends pulumi.ComponentResource {
                 vpcId: vpc.id,
                 availabilityZone: getAwsAz(i),
                 cidrBlock: `10.10.${i}.0/24`,         // IDEA: Consider larger default CIDR block sizing
-                mapPublicIpOnLaunch: !usePrivateSubnets, // Only assign public IP if we are exposing public subnets
+                 // Only assign public IP if we are exposing public subnets
+                mapPublicIpOnLaunch: !this.usePrivateSubnets,
                 tags: {
                     Name: subnetName,
                 },
@@ -110,7 +109,7 @@ export class Network extends pulumi.ComponentResource {
             // whether we are in a public or private subnet
             let subnetRouteTable: aws.ec2.RouteTable;
 
-            if (usePrivateSubnets) {
+            if (this.usePrivateSubnets) {
                 // We need a public subnet for the NAT Gateway
                 const natName = `${name}-nat-${i}`;
                 const natGatewayPublicSubnet = new aws.ec2.Subnet(natName, {
