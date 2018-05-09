@@ -14,8 +14,9 @@ let network = new awsinfra.Network(`${prefix}-net`, {
 });
 
 const cluster = new awsinfra.Cluster(prefix, {
+    networkVpcId: network.vpcId,
+    networkSubnetIds: network.subnetIds,
     minSize: numAvailabilityZones, // Ensure we keep at least one VM per AZ
-    network: network,              // The network to provision this cluster inside
     addEFS: false,                 // Don't provision an EFS file system for this cluster
     instanceType: instanceType,    // Use a configured value for cluster VM sizes
 });
