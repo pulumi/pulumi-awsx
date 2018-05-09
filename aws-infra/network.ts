@@ -36,6 +36,9 @@ export class Network extends pulumi.ComponentResource {
      */
     public readonly publicSubnetIds: pulumi.Output<string>[];
 
+    public readonly numberOfAvailabilityZones: pulumi.Output<number>;
+    public readonly usePrivateSubnets: pulumi.Output<boolean>;
+
     constructor(name: string, args?: NetworkArgs, opts?: pulumi.ResourceOptions) {
         // IDEA: default to the number of availability zones in this region, rather than 2.  To do this requires
         // invoking the provider, which requires that we "go async" at a very inopportune time here.  When
