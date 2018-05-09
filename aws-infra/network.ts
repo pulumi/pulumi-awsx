@@ -178,24 +178,4 @@ export class Network extends pulumi.ComponentResource {
     }
 }
 
-    // /**
-    //  * Gets the default VPC for the AWS account as a Network
-    //  */
-    // static getDefault(): Network {
-    //     const vpc = aws.ec2.getVpc({default: true});
-    //     const vpcId = vpc.then(v => v.id);
-    //     const subnetIds = aws.ec2.getSubnetIds({ vpcId: vpcId }).then(subnets => subnets.ids);
-    //     const defaultSecurityGroup = aws.ec2.getSecurityGroup({ name: "default", vpcId: vpcId }).then(sg => sg.id);
-    //     const subnet0 = subnetIds.then(ids => ids[0]);
-    //     const subnet1 = subnetIds.then(ids => ids[1]);
-
-    //     return {
-    //         vpcId: pulumi.output(vpcId),
-    //         subnetIds: [ pulumi.output(subnet0), pulumi.output(subnet1) ],
-    //         usePrivateSubnets: false,
-    //         securityGroupIds: [ pulumi.output(defaultSecurityGroup) ],
-    //         publicSubnetIds: [ pulumi.output(subnet0), pulumi.output(subnet1) ],
-    //     };
-    // }
-
 (<any>Network).doNotCapture = true;
