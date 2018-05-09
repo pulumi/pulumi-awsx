@@ -98,8 +98,7 @@ export class Network extends pulumi.ComponentResource {
                 vpcId: vpc.id,
                 availabilityZone: getAwsAz(i),
                 cidrBlock: `10.10.${i}.0/24`,         // IDEA: Consider larger default CIDR block sizing
-                 // Only assign public IP if we are exposing public subnets
-                mapPublicIpOnLaunch: !this.usePrivateSubnets,
+                mapPublicIpOnLaunch: !this.usePrivateSubnets, // Only assign public IP if we are exposing public subnets
                 tags: {
                     Name: subnetName,
                 },
