@@ -111,7 +111,7 @@ export class Cluster extends pulumi.ComponentResource {
 
     constructor(name: string, args: ClusterArgs, opts?: pulumi.ResourceOptions) {
         if (!args.network) {
-            throw new pulumi.RunError("Expected a value Network to use for creating Cluster");
+            throw new pulumi.RunError("Expected a valid Network to use for creating Cluster");
         }
 
         super("aws-infra:cluster:Cluster", name, {
