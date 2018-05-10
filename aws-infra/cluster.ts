@@ -10,18 +10,25 @@ import { sha1hash } from "./utils";
 // The default path to use for mounting EFS inside ECS container instances.
 const defaultEfsMountPath = "/mnt/efs";
 
+export interface ClusterNetworkArgs {
+    /**
+     * The VPC id of the network for the cluster
+     */
+    vpcId: pulumi.Input<string>;
+    /**
+     * The network subnets for the clusters
+     */
+    subnetIds: pulumi.Input<string>[];
+}
+
 /**
  * Arguments bag for creating infrastrcture for a new Cluster.
  */
 export interface ClusterArgs {
     /**
-     * The VPC id of the network for the cluster
+     * The network in which to create this cluster.
      */
-    networkVpcId: pulumi.Input<string>;
-    /**
-     * The network subnets for the clusters
-     */
-    networkSubnetIds: pulumi.Input<string>[];
+    network: ClusterNetworkArgs;
     /**
      * Whether to create an EFS File System to manage volumes across the cluster.
      */
@@ -103,13 +110,12 @@ export class Cluster extends pulumi.ComponentResource {
     public readonly efsMountPath?: string;
 
     constructor(name: string, args: ClusterArgs, opts?: pulumi.ResourceOptions) {
-        if (!args.networkVpcId) {
-            throw new pulumi.RunError("Expected a network vpc id to use for creating Cluster");
+        if (!args.network) {
+            throw new pulumi.RunError("Expected a value Network to use for creating Cluster");
         }
 
         super("aws-infra:cluster:Cluster", name, {
-            networkVpcId: args.networkVpcId,
-            networkSubnetIds: args.networkSubnetIds,
+            network: args.network,
             addEFS: args.addEFS,
             instanceType: args.instanceType,
             instanceRolePolicyARNs: args.instanceRolePolicyARNs,
@@ -137,7 +143,7 @@ export class Cluster extends pulumi.ComponentResource {
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
         const instanceSecurityGroup = new aws.ec2.SecurityGroup(name, {
-            vpcId: args.networkVpcId,
+            vpcId: args.network.vpcId,
             ingress: [
                 // Expose SSH
                 {
@@ -168,7 +174,7 @@ export class Cluster extends pulumi.ComponentResource {
             filesystem = new aws.efs.FileSystem(name, {}, { parent: this });
             const efsSecurityGroupName = `${name}-fs`;
             const efsSecurityGroup = new aws.ec2.SecurityGroup(efsSecurityGroupName, {
-                vpcId: args.networkVpcId,
+                vpcId: args.network.vpcId,
                 ingress: [
                     // Allow NFS traffic from the instance security group
                     {
@@ -182,8 +188,8 @@ export class Cluster extends pulumi.ComponentResource {
                     Name: efsSecurityGroupName,
                 },
             }, { parent: this });
-            for (let i = 0; i <  args.networkSubnetIds.length; i++) {
-                const subnetId = args.networkSubnetIds[i];
+            for (let i = 0; i <  args.network.subnetIds.length; i++) {
+                const subnetId = args.network.subnetIds[i];
                 const mountTarget = new aws.efs.MountTarget(`${name}-${i}`, {
                     fileSystemId: filesystem.id,
                     subnetId: subnetId,
@@ -299,7 +305,7 @@ function createAutoScalingGroup(
                 args.minSize || 2,
                 args.maxSize || 100,
                 instanceLaunchConfiguration.id,
-                args.networkSubnetIds,
+                args.network.subnetIds,
             ),
         }, { parent: parent });
 }

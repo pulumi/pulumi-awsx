@@ -3,6 +3,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { RunError } from "@pulumi/pulumi/errors";
+import { ClusterNetworkArgs } from "./cluster";
 
 import { getAwsAz } from "./aws";
 
@@ -17,7 +18,7 @@ export interface NetworkArgs {
  * Subnets (NAT)](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Scenario2.html) configurations are
  * supported.
  */
-export class Network extends pulumi.ComponentResource {
+export class Network extends pulumi.ComponentResource implements ClusterNetworkArgs {
     /**
      * The VPC id of the network.
      */
