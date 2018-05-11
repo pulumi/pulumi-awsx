@@ -3,13 +3,41 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { RunError } from "@pulumi/pulumi/errors";
+import { getAwsAz } from "./aws";
 import { ClusterNetworkArgs } from "./cluster";
 
-import { getAwsAz } from "./aws";
-
+/**
+ * Optional arguments that can be provided when creating a network.
+ */
 export interface NetworkArgs {
-    numberOfAvailabilityZones?: number;
-    usePrivateSubnets?: boolean;
+    readonly numberOfAvailabilityZones?: number;
+    readonly usePrivateSubnets?: boolean;
+}
+
+/**
+ * Arguments necessary when creating a network using Network.fromVpc.
+ */
+export interface NetworkVpcArgs {
+    /**
+     * The VPC id of the network for the cluster
+     */
+    readonly vpcId: pulumi.Input<string>;
+    /**
+     * The network subnets for the clusters
+     */
+    readonly subnetIds: pulumi.Input<string>[];
+    /**
+     * Whether the network includes private subnets.
+     */
+    readonly usePrivateSubnets: boolean;
+    /**
+     * The security group IDs for the network.
+     */
+    readonly securityGroupIds: pulumi.Input<string>[];
+    /**
+     * The public subnets for the VPC.  In case [usePrivateSubnets] == false, these are the same as [subnets].
+     */
+    readonly publicSubnetIds: pulumi.Input<string>[];
 }
 
 /**
@@ -41,21 +69,78 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      */
     public readonly publicSubnetIds: pulumi.Output<string>[];
 
-    constructor(name: string, args?: NetworkArgs, opts?: pulumi.ResourceOptions) {
+    // tslint:disable-next-line:member-ordering
+    private static defaultNetwork: Network;
+
+    /**
+     * Gets the default VPC for the AWS account as a Network
+     */
+    public static getDefault(): Network {
+        if (!this.defaultNetwork) {
+            const vpc = aws.ec2.getVpc({default: true});
+            const vpcId = vpc.then(v => v.id);
+            const subnetIds = aws.ec2.getSubnetIds({ vpcId: vpcId }).then(subnets => subnets.ids);
+            const defaultSecurityGroup = aws.ec2.getSecurityGroup({ name: "default", vpcId: vpcId }).then(sg => sg.id);
+            const subnet0 = subnetIds.then(ids => ids[0]);
+            const subnet1 = subnetIds.then(ids => ids[1]);
+
+            this.defaultNetwork = this.fromVpc("default-network", {
+                vpcId: vpcId,
+                subnetIds: [ subnet0, subnet1 ],
+                usePrivateSubnets: false,
+                securityGroupIds: [ defaultSecurityGroup ],
+                publicSubnetIds: [ subnet0, subnet1 ],
+            });
+        }
+
+        return this.defaultNetwork;
+    }
+
+    public static fromVpc(name: string, vpcArgs: NetworkVpcArgs, opts?: pulumi.ResourceOptions): Network {
+        if (!vpcArgs.vpcId) {
+            throw new RunError("vpcArgs.vpcId must be provided.");
+        }
+        if (!vpcArgs.subnetIds) {
+            throw new RunError("vpcArgs.subnetIds must be provided.");
+        }
+        if (!vpcArgs.securityGroupIds) {
+            throw new RunError("vpcArgs.securityGroupIds must be provided.");
+        }
+        if (!vpcArgs.publicSubnetIds) {
+            throw new RunError("vpcArgs.publicSubnetIds must be provided.");
+        }
+
+        return new Network(name, vpcArgs, opts);
+    }
+
+    constructor(name: string, args?: NetworkArgs, opts?: pulumi.ResourceOptions);
+    constructor(name: string, mergedArgs?: NetworkArgs | NetworkVpcArgs, opts?: pulumi.ResourceOptions) {
         // IDEA: default to the number of availability zones in this region, rather than 2.  To do this requires
         // invoking the provider, which requires that we "go async" at a very inopportune time here.  When
         // pulumi/pulumi#331 lands, this will be much easier to do, and we can improve this situation.
-        if (!args) {
-            args = {};
+        if (!mergedArgs) {
+            mergedArgs = {};
         }
 
         super("aws-infra:network:Network", name, {}, opts);
 
+        const vpcArgs = <NetworkVpcArgs>mergedArgs;
+        if (vpcArgs.vpcId) {
+            this.vpcId = pulumi.output(vpcArgs.vpcId);
+            this.subnetIds = vpcArgs.subnetIds.map(id => pulumi.output(id));
+            this.usePrivateSubnets = vpcArgs.usePrivateSubnets;
+            this.securityGroupIds = vpcArgs.securityGroupIds.map(id => pulumi.output(id));
+            this.publicSubnetIds = vpcArgs.publicSubnetIds.map(id => pulumi.output(id));
+            return;
+        }
+
+        const args = <NetworkArgs>mergedArgs;
         const numberOfAvailabilityZones = args.numberOfAvailabilityZones || 2;
         if (numberOfAvailabilityZones < 1 || numberOfAvailabilityZones > 4) {
             throw new RunError(
                 `Unsupported number of availability zones for network: ${numberOfAvailabilityZones}`);
         }
+
         this.usePrivateSubnets = args.usePrivateSubnets || false;
 
         const vpc = new aws.ec2.Vpc(name, {
@@ -66,6 +151,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
                 Name: name,
             },
         }, { parent: this });
+
         this.vpcId = vpc.id;
         this.securityGroupIds = [ vpc.defaultSecurityGroupId ];
 
