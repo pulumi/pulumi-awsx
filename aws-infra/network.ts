@@ -98,6 +98,9 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         return this.defaultNetwork;
     }
 
+    /**
+     * Creates a new network using the configuration values of an existing VPC.
+     */
     public static fromVpc(name: string, vpcArgs: NetworkVpcArgs, opts?: pulumi.ResourceOptions): Network {
         if (!vpcArgs.vpcId) {
             throw new RunError("vpcArgs.vpcId must be provided.");
