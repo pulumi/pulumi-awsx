@@ -73,9 +73,11 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
     private static defaultNetwork: Network;
 
     /**
-     * Gets the default VPC for the AWS account as a Network
+     * Gets the default VPC for the AWS account as a Network.  This first time this is called,
+     * the default network will be lazily created, using whatever options are provided in opts.
+     * All subsequent calls will return that same network even if different opts are provided.
      */
-    public static getDefault(): Network {
+    public static getDefault(opts?: pulumi.ResourceOptions): Network {
         if (!this.defaultNetwork) {
             const vpc = aws.ec2.getVpc({default: true});
             const vpcId = vpc.then(v => v.id);
@@ -90,7 +92,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
                 usePrivateSubnets: false,
                 securityGroupIds: [ defaultSecurityGroup ],
                 publicSubnetIds: [ subnet0, subnet1 ],
-            });
+            }, opts);
         }
 
         return this.defaultNetwork;
