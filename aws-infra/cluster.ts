@@ -10,6 +10,17 @@ import { sha1hash } from "./utils";
 // The default path to use for mounting EFS inside ECS container instances.
 const defaultEfsMountPath = "/mnt/efs";
 
+export interface ClusterNetworkArgs {
+    /**
+     * The VPC id of the network for the cluster
+     */
+    vpcId: pulumi.Input<string>;
+    /**
+     * The network subnets for the clusters
+     */
+    subnetIds: pulumi.Input<string>[];
+}
+
 /**
  * Arguments bag for creating infrastrcture for a new Cluster.
  */
@@ -17,7 +28,7 @@ export interface ClusterArgs {
     /**
      * The network in which to create this cluster.
      */
-    network: Network;
+    network: ClusterNetworkArgs;
     /**
      * Whether to create an EFS File System to manage volumes across the cluster.
      */
@@ -79,7 +90,7 @@ export interface ClusterArgs {
  * A Cluster is a general purpose ECS cluster configured to run in a provided
  * Network.
  */
-export class Cluster {
+export class Cluster extends pulumi.ComponentResource {
     /**
      * The ECS Cluster ARN.
      */
@@ -98,13 +109,27 @@ export class Cluster {
      */
     public readonly efsMountPath?: string;
 
-    constructor(name: string, args: ClusterArgs) {
+    constructor(name: string, args: ClusterArgs, opts?: pulumi.ResourceOptions) {
         if (!args.network) {
             throw new pulumi.RunError("Expected a valid Network to use for creating Cluster");
         }
 
+        super("aws-infra:cluster:Cluster", name, {
+            network: args.network,
+            addEFS: args.addEFS,
+            instanceType: args.instanceType,
+            instanceRolePolicyARNs: args.instanceRolePolicyARNs,
+            instanceRootVolumeSize: args.instanceRootVolumeSize,
+            instanceDockerImageVolumeSize: args.instanceDockerImageVolumeSize,
+            instanceSwapVolumeSize: args.instanceSwapVolumeSize,
+            minSize: args.minSize,
+            maxSize: args.maxSize,
+            publicKey: args.publicKey,
+            ecsOptimizedAMIName: args.ecsOptimizedAMIName,
+        }, opts);
+
         // First create an ECS cluster.
-        const cluster = new aws.ecs.Cluster(name);
+        const cluster = new aws.ecs.Cluster(name, {}, { parent: this });
         this.ecsClusterARN = cluster.id;
 
         // Create the EC2 instance security group
@@ -140,13 +165,13 @@ export class Cluster {
             tags: {
                 Name: name,
             },
-        });
+        }, { parent: this });
         this.securityGroupId = instanceSecurityGroup.id;
 
         // If requested, add EFS file system and mount targets in each subnet.
         let filesystem: aws.efs.FileSystem | undefined;
         if (args.addEFS) {
-            filesystem = new aws.efs.FileSystem(name);
+            filesystem = new aws.efs.FileSystem(name, {}, { parent: this });
             const efsSecurityGroupName = `${name}-fs`;
             const efsSecurityGroup = new aws.ec2.SecurityGroup(efsSecurityGroupName, {
                 vpcId: args.network.vpcId,
@@ -162,14 +187,14 @@ export class Cluster {
                 tags: {
                     Name: efsSecurityGroupName,
                 },
-            });
+            }, { parent: this });
             for (let i = 0; i <  args.network.subnetIds.length; i++) {
                 const subnetId = args.network.subnetIds[i];
                 const mountTarget = new aws.efs.MountTarget(`${name}-${i}`, {
                     fileSystemId: filesystem.id,
                     subnetId: subnetId,
                     securityGroups: [ efsSecurityGroup.id ],
-                });
+                }, { parent: this });
             }
             this.efsMountPath = defaultEfsMountPath;
         }
@@ -177,21 +202,22 @@ export class Cluster {
         // If we were asked to not create any EC2 instances, then we are done, else create an AutoScalingGroup.
         if (args.maxSize !== 0) {
             this.autoScalingGroupStack = createAutoScalingGroup(
-                name, args, instanceSecurityGroup, cluster, filesystem, this.efsMountPath);
+                this, name, args, instanceSecurityGroup, cluster, filesystem);
         }
-
     }
 }
 
 // Create an AutoScalingGroup for the EC2 container instances specified by the cluster arguments, registered with the
 // provided cluster and mounting the provided filesystem
 function createAutoScalingGroup(
+        parent: Cluster,
         name: string,
         args: ClusterArgs,
         securityGroup: aws.ec2.SecurityGroup,
         cluster: aws.ecs.Cluster,
-        filesystem?: aws.efs.FileSystem,
-        efsMountPath?: string): aws.cloudformation.Stack {
+        filesystem: aws.efs.FileSystem | undefined): aws.cloudformation.Stack {
+
+    const efsMountPath = parent.efsMountPath;
 
     // Next create all of the IAM/security resources.
     const assumeInstanceRolePolicyDoc: aws.iam.PolicyDocument = {
@@ -208,7 +234,7 @@ function createAutoScalingGroup(
     };
     const instanceRole = new aws.iam.Role(name, {
         assumeRolePolicy: JSON.stringify(assumeInstanceRolePolicyDoc),
-    });
+    }, { parent: parent });
     const policyARNs = args.instanceRolePolicyARNs
         || [aws.iam.AmazonEC2ContainerServiceforEC2Role, aws.iam.AmazonEC2ReadOnlyAccess];
     const instanceRolePolicies: aws.iam.RolePolicyAttachment[] = [];
@@ -217,19 +243,19 @@ function createAutoScalingGroup(
         const instanceRolePolicy = new aws.iam.RolePolicyAttachment(`${name}-${sha1hash(policyARN)}`, {
             role: instanceRole,
             policyArn: policyARN,
-        });
+        }, { parent: parent });
         instanceRolePolicies.push(instanceRolePolicy);
     }
     const instanceProfile = new aws.iam.InstanceProfile(name, {
         role: instanceRole,
-    }, { dependsOn: instanceRolePolicies });
+    }, { dependsOn: instanceRolePolicies, parent: parent });
 
     // If requested, add a new EC2 KeyPair for SSH access to the instances.
     let keyName: pulumi.Output<string> | undefined;
     if (args.publicKey) {
         const key = new aws.ec2.KeyPair(name, {
             publicKey: args.publicKey,
-        });
+        }, { parent: parent });
         keyName = key.keyName;
     }
 
@@ -269,12 +295,10 @@ function createAutoScalingGroup(
         ],
         securityGroups: [ securityGroup.id ],
         userData: getInstanceUserData(cluster, filesystem, efsMountPath, cloudFormationStackName),
-    });
+    }, { parent: parent });
 
     // Finally, create the AutoScaling Group.
-    return new aws.cloudformation.Stack(
-        name,
-        {
+    return new aws.cloudformation.Stack(name, {
             name: cloudFormationStackName,
             templateBody: getCloudFormationAsgTemplate(
                 name,
@@ -283,8 +307,7 @@ function createAutoScalingGroup(
                 instanceLaunchConfiguration.id,
                 args.network.subnetIds,
             ),
-        },
-    );
+        }, { parent: parent });
 }
 
 (<any>Cluster).doNotCapture = true;
@@ -389,7 +412,7 @@ function getCloudFormationAsgTemplate(
     minSize: number,
     maxSize: number,
     instanceLaunchConfigurationId: pulumi.Output<string>,
-    subnetIds: pulumi.Output<string>[]): pulumi.Output<string> {
+    subnetIds: pulumi.Input<string>[]): pulumi.Output<string> {
 
     const subnetsIdsArray = pulumi.all(subnetIds);
     return pulumi.all([subnetsIdsArray, instanceLaunchConfigurationId])
