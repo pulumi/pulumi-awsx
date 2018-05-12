@@ -86,7 +86,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             const subnet0 = subnetIds.then(ids => ids[0]);
             const subnet1 = subnetIds.then(ids => ids[1]);
 
-            this.defaultNetwork = this.fromVpc("default-network", {
+            this.defaultNetwork = this.fromVpc("default-vpc", {
                 vpcId: vpcId,
                 subnetIds: [ subnet0, subnet1 ],
                 usePrivateSubnets: false,
