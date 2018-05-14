@@ -1,5 +1,5 @@
 PROJECT_NAME := Pulumi Infrastructure Components for AWS
-SUB_PROJECTS := aws-infra
+SUB_PROJECTS := nodejs/aws-infra
 include build/common.mk
 
 
