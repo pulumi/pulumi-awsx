@@ -517,6 +517,7 @@
     "pkg/testing",
     "pkg/testing/integration",
     "pkg/tokens",
+    "pkg/util/buildutil",
     "pkg/util/cancel",
     "pkg/util/cmdutil",
     "pkg/util/contract",
@@ -530,7 +531,7 @@
     "pkg/workspace",
     "sdk/proto/go"
   ]
-  revision = "4f3d2366064de9a0098b959a05ba1aa1d95c7e0b"
+  revision = "782a8697657d743320d4af3732941a627ed10ed7"
 
 [[projects]]
   name = "github.com/pulumi/pulumi-aws"
@@ -738,6 +739,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3ef66a4ab7ae7e50d7b19ed767f12ed57b733137c147838602bd777da3c29d4f"
+  inputs-digest = "faa8f4f07c686c2c8252c2b59b0babf6148fb26f888542e266bf56edf2c88b1f"
   solver-name = "gps-cdcl"
   solver-version = 1
