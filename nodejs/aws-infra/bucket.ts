@@ -30,10 +30,10 @@ export type BucketDeleteArgs = utils.Omit<BucketSubscriptionArgs, "events">;
 
 // See https://docs.aws.amazon.com/AmazonS3/latest/dev/notification-content-structure.html.
 export interface S3BucketNotificationEvent {
-    Records?: S3BucketNotificationEvent[];
+    Records?: S3BucketNotificationEventRecord[];
 }
 
-export interface S3BucketNotificationEvent {
+export interface S3BucketNotificationEventRecord {
     eventVersion: string;
     eventSource: string;
     awsRegion: string;
