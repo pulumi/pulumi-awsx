@@ -5,6 +5,9 @@ import { lambda, s3, serverless } from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as utils from "./utils";
 
+/**
+ * Arguments to help customize a notification subscription for a bucket.
+ */
 export interface BucketSubscriptionArgs {
     /**
      * An optional permission to provide for the subscription.  If not provided a default permission
@@ -25,7 +28,18 @@ export interface BucketSubscriptionArgs {
     filterSuffix?: string;
 }
 
+/**
+ * Arguments to specifically control a subscription to 'put' notifications on a bucket.
+ * Specifically, 'events' should not be provided as they will be assumed to be "s3:ObjectCreated:*".
+ * If different events are desired, the 'subscribe' function should be used instead.
+ */
 export type BucketPutArgs = utils.Omit<BucketSubscriptionArgs, "events">;
+
+/**
+ * Arguments to specifically control a subscription to 'delete' notifications on a bucket.
+ * Specifically, 'events' should not be provided as they will be assumed to be "s3:ObjectRemoved:*".
+ * If different events are desired, the 'subscribe' function should be used instead.
+ */
 export type BucketDeleteArgs = utils.Omit<BucketSubscriptionArgs, "events">;
 
 // See https://docs.aws.amazon.com/AmazonS3/latest/dev/notification-content-structure.html.
@@ -68,6 +82,7 @@ export interface S3BucketNotificationEventRecord {
         };
     };
 }
+
 // tslint:disable:max-line-length
 export type BucketSubscriptionHandler =
     (event: S3BucketNotificationEvent, context: aws.lambda.Context, callback: (error: any, result: any) => void) => void;
@@ -101,8 +116,10 @@ export function onDelete(
 }
 
 /**
- * Creates a new subscription to the given bucket using the lambda provided, along with
- * optional options to control the behavior of the subscription.
+ * Creates a new subscription to the given bucket using the lambda provided, along with optional
+ * options to control the behavior of the subscription.  This function should be used when full
+ * control over the subscription is wanted, and other helpers (like onPut/onDelete) are not
+ * sufficient.
  */
 export function subscribe(name: string, bucket: s3.Bucket, func: lambda.Function, args: BucketSubscriptionArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
 export function subscribe(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketSubscriptionArgs & lambda.CallbackFunctionArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
@@ -130,6 +147,12 @@ interface Subscription {
 
 let bucketSubscriptions = new Map<s3.Bucket, Subscription[]>();
 
+/**
+ * A component corresponding to a single underlying aws.s3.BucketNotification created for a bucket.
+ * Note: due to the AWS requirement that all notifications for a bucket be defined at once, the
+ * actual aws.s3.BucketNotification instances will only be created once the pulumi program runs to
+ * completion and all subscriptions have been heard about.
+ */
 export class BucketSubscription extends pulumi.ComponentResource {
     public readonly permission: lambda.Permission;
 
