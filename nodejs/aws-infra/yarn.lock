@@ -2,11 +2,22 @@
 # yarn lockfile v1
 
 
-"@pulumi/aws@^0.12.0":
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.12.0.tgz#930645102a5132584a1231b719d5b2e1abe5e010"
+"@pulumi/aws@=0.12.2-dev-1526506667-g8247e04":
+  version "0.12.2-dev-1526506667-g8247e04"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.12.2-dev-1526506667-g8247e04.tgz#34d3930b1baf06aca5f057891c1242f5312dafea"
   dependencies:
-    "@pulumi/pulumi" "^0.12.0"
+    "@pulumi/pulumi" "^0.11.0"
+
+"@pulumi/pulumi@^0.11.0":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.11.3.tgz#d2179d3e88ead6a4e5bf6aadce2fc8ba4d1afd69"
+  dependencies:
+    google-protobuf "^3.5.0"
+    grpc "^1.6.0"
+    minimist "^1.2.0"
+    require-from-string "^2.0.1"
+    source-map-support "^0.4.16"
+    typescript "^2.5.2"
 
 "@pulumi/pulumi@^0.12.0":
   version "0.12.0"
