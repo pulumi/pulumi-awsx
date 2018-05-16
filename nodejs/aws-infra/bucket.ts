@@ -88,10 +88,10 @@ export type BucketSubscriptionHandler =
     (event: S3BucketNotificationEvent, context: aws.lambda.Context, callback: (error: any, result: any) => void) => void;
 
 export function onPut(name: string, bucket: s3.Bucket, func: lambda.Function, args: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
-export function onPut(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketPutArgs & lambda.CallbackFunctionArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
+export function onPut(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
 export function onPut(
     name: string, bucket: s3.Bucket, funcOrHandler: lambda.Function | BucketSubscriptionHandler,
-    args: BucketPutArgs & lambda.CallbackFunctionArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
+    args: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
 
     const argsCopy = {
         ...args,
@@ -102,10 +102,10 @@ export function onPut(
 }
 
 export function onDelete(name: string, bucket: s3.Bucket, func: lambda.Function, args: BucketDeleteArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
-export function onDelete(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketDeleteArgs & lambda.CallbackFunctionArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
+export function onDelete(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketDeleteArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
 export function onDelete(
     name: string, bucket: s3.Bucket, funcOrHandler: lambda.Function | BucketSubscriptionHandler,
-    args: BucketDeleteArgs & lambda.CallbackFunctionArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
+    args: BucketDeleteArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
 
     const argsCopy = {
         ...args,
@@ -122,16 +122,16 @@ export function onDelete(
  * sufficient.
  */
 export function subscribe(name: string, bucket: s3.Bucket, func: lambda.Function, args: BucketSubscriptionArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
-export function subscribe(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketSubscriptionArgs & lambda.CallbackFunctionArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
+export function subscribe(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketSubscriptionArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
 export function subscribe(
     name: string, bucket: s3.Bucket, funcOrHandler: lambda.Function | BucketSubscriptionHandler,
-    args: BucketSubscriptionArgs & lambda.CallbackFunctionArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
+    args: BucketSubscriptionArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
 
     let func: lambda.Function;
     if (funcOrHandler instanceof lambda.Function) {
         func = funcOrHandler;
     } else {
-        func = aws.lambda.createFunction(name + "-subscription", funcOrHandler, args, opts);
+        func = aws.lambda.createFunction(name + "-subscription", funcOrHandler, {}, opts);
     }
 
     return new BucketSubscription(name, bucket, func, args, opts);
