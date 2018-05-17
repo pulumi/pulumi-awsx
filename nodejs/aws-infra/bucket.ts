@@ -3,6 +3,7 @@
 import * as aws from "@pulumi/aws";
 import { lambda, s3, serverless } from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { Handler } from "./function";
 import * as utils from "./utils";
 
 /**
@@ -77,8 +78,9 @@ export interface S3BucketNotificationEventRecord {
     };
 }
 
+
 // tslint:disable:max-line-length
-export type BucketSubscriptionHandler = aws.lambda.Handler<S3BucketNotificationEvent, void>;
+export type BucketSubscriptionHandler = Handler<S3BucketNotificationEvent, void>;
 
 export function onPut(
     name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler,
@@ -108,6 +110,11 @@ export function onDelete(
     return subscribe(name + "-delete", bucket, handler, argsCopy, opts);
 }
 
+const defaultComputePolicies = [
+    aws.iam.AWSLambdaFullAccess,                 // Provides wide access to "serverless" services (Dynamo, S3, etc.)
+    aws.iam.AmazonEC2ContainerServiceFullAccess, // Required for lambda compute to be able to run Tasks
+];
+
 /**
  * Creates a new subscription to the given bucket using the lambda provided, along with optional
  * options to control the behavior of the subscription.  This function should be used when full
@@ -122,7 +129,15 @@ export function subscribe(
     if (handler instanceof lambda.Function) {
         func = handler;
     } else {
-        func = aws.lambda.createFunction(name + "-subscription", handler, /*args:*/undefined, opts);
+        const funcOpts: aws.serverless.FunctionOptions = {
+            policies: defaultComputePolicies,
+        };
+        const serverlessFunction = new aws.serverless.Function(
+            name + "-subscription",
+            funcOpts,
+            handler, opts);
+
+        func = serverlessFunction.lambda;
     }
 
     return new BucketSubscription(name, bucket, func, args, opts);

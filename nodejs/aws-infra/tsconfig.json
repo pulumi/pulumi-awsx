@@ -15,10 +15,13 @@
         "strictNullChecks": true
     },
     "files": [
-        "index.ts",
         "aws.ts",
+        "bucket.ts",
         "cluster.ts",
+        "function.ts",
+        "index.ts",
         "network.ts",
+        "serverless",
         "utils.ts",
     ]
 }
