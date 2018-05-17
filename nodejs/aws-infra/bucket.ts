@@ -10,12 +10,6 @@ import * as utils from "./utils";
  */
 export interface BucketSubscriptionArgs {
     /**
-     * An optional permission to provide for the subscription.  If not provided a default permission
-     * will be created.
-     */
-    permission?: aws.lambda.Permission;
-
-    /**
      * Events to subscribe to. For example: "s3:ObjectCreated:*".  Cannot be empty.
      */
     events: string[];
@@ -88,7 +82,7 @@ export type BucketSubscriptionHandler = aws.lambda.Handler<S3BucketNotificationE
 
 export function onPut(
     name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler,
-    args: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
+    args?: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
 
     args = args || {};
 
@@ -102,7 +96,7 @@ export function onPut(
 
 export function onDelete(
     name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler,
-    args: BucketDeleteArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
+    args?: BucketDeleteArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
 
     args = args || {};
 
@@ -159,15 +153,12 @@ export class BucketSubscription extends pulumi.ComponentResource {
 
         super("aws-infra:bucket:BucketSubscription", name, { bucket: bucket, function: func }, opts);
 
-        let permission = args.permission;
-        if (!permission) {
-            permission = new aws.lambda.Permission(name, {
-                function: func,
-                action: "lambda:InvokeFunction",
-                principal: "s3.amazonaws.com",
-                sourceArn: bucket.id.apply(bucketName => `arn:aws:s3:::${bucketName}`),
-            }, { parent: this });
-        }
+        const permission = new aws.lambda.Permission(name, {
+            function: func,
+            action: "lambda:InvokeFunction",
+            principal: "s3.amazonaws.com",
+            sourceArn: bucket.id.apply(bucketName => `arn:aws:s3:::${bucketName}`),
+        }, { parent: this });
 
         this.permission = permission;
 
