@@ -9,12 +9,7 @@ import * as utils from "./utils";
 /**
  * Arguments to help customize a notification subscription for a bucket.
  */
-export interface BucketSubscriptionArgs {
-    /**
-     * Events to subscribe to. For example: "s3:ObjectCreated:*".  Cannot be empty.
-     */
-    events: string[];
-
+export interface SimpleBucketSubscriptionArgs {
     /**
      * An optional prefix or suffix to filter down notifications.  See
      * aws.s3.BucketNotification.lambdaFunctions for more details.
@@ -23,19 +18,26 @@ export interface BucketSubscriptionArgs {
     filterSuffix?: string;
 }
 
+export interface BucketSubscriptionArgs extends SimpleBucketSubscriptionArgs {
+    /**
+     * Events to subscribe to. For example: "s3:ObjectCreated:*".  Cannot be empty.
+     */
+    events: string[];
+}
+
 /**
  * Arguments to specifically control a subscription to 'put' notifications on a bucket.
  * Specifically, 'events' should not be provided as they will be assumed to be "s3:ObjectCreated:*".
  * If different events are desired, the 'subscribe' function should be used instead.
  */
-export type BucketPutArgs = utils.Omit<BucketSubscriptionArgs, "events">;
+export type BucketPutArgs = SimpleBucketSubscriptionArgs;
 
 /**
  * Arguments to specifically control a subscription to 'delete' notifications on a bucket.
  * Specifically, 'events' should not be provided as they will be assumed to be "s3:ObjectRemoved:*".
  * If different events are desired, the 'subscribe' function should be used instead.
  */
-export type BucketDeleteArgs = utils.Omit<BucketSubscriptionArgs, "events">;
+export type BucketDeleteArgs = SimpleBucketSubscriptionArgs;
 
 // See https://docs.aws.amazon.com/AmazonS3/latest/dev/notification-content-structure.html.
 export interface S3BucketNotificationEvent {
