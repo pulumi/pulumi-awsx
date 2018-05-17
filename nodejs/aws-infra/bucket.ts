@@ -87,11 +87,13 @@ export interface S3BucketNotificationEventRecord {
 export type BucketSubscriptionHandler =
     (event: S3BucketNotificationEvent, context: aws.lambda.Context, callback: (error: any, result: any) => void) => void;
 
-export function onPut(name: string, bucket: s3.Bucket, func: lambda.Function, args: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
-export function onPut(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
+export function onPut(name: string, bucket: s3.Bucket, func: lambda.Function, args?: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
+export function onPut(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args?: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
 export function onPut(
     name: string, bucket: s3.Bucket, funcOrHandler: lambda.Function | BucketSubscriptionHandler,
     args: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
+
+    args = args || {};
 
     const argsCopy = {
         ...args,
@@ -106,6 +108,8 @@ export function onDelete(name: string, bucket: s3.Bucket, handler: BucketSubscri
 export function onDelete(
     name: string, bucket: s3.Bucket, funcOrHandler: lambda.Function | BucketSubscriptionHandler,
     args: BucketDeleteArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
+
+    args = args || {};
 
     const argsCopy = {
         ...args,
