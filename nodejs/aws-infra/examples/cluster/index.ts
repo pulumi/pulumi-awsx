@@ -27,4 +27,4 @@ export let publicSubnetIds = pulumi.all(network.publicSubnetIds).apply(ids => id
 export let securityGroupIds = pulumi.all(network.securityGroupIds).apply(ids => ids.join(","));
 
 export let ecsClusterARN: Output<string> = cluster.ecsClusterARN;
-export let ecsClusterSecurityGroup: Output<string> = cluster.securityGroupId;
+export let ecsClusterSecurityGroup: Output<string> | undefined = cluster.securityGroupId;
