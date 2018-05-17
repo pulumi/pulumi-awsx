@@ -84,13 +84,10 @@ export interface S3BucketNotificationEventRecord {
 }
 
 // tslint:disable:max-line-length
-export type BucketSubscriptionHandler =
-    (event: S3BucketNotificationEvent, context: aws.lambda.Context, callback: (error: any, result: any) => void) => void;
+export type BucketSubscriptionHandler = aws.lambda.Handler<S3BucketNotificationEvent, void>;
 
-export function onPut(name: string, bucket: s3.Bucket, func: lambda.Function, args?: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
-export function onPut(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args?: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
 export function onPut(
-    name: string, bucket: s3.Bucket, funcOrHandler: lambda.Function | BucketSubscriptionHandler,
+    name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler,
     args: BucketPutArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
 
     args = args || {};
@@ -100,13 +97,11 @@ export function onPut(
         events: ["s3:ObjectCreated:*"],
     };
 
-    return subscribe(name + "-put", bucket, <lambda.Function>funcOrHandler, argsCopy, opts);
+    return subscribe(name + "-put", bucket, handler, argsCopy, opts);
 }
 
-export function onDelete(name: string, bucket: s3.Bucket, func: lambda.Function, args: BucketDeleteArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
-export function onDelete(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketDeleteArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
 export function onDelete(
-    name: string, bucket: s3.Bucket, funcOrHandler: lambda.Function | BucketSubscriptionHandler,
+    name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler,
     args: BucketDeleteArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
 
     args = args || {};
@@ -116,7 +111,7 @@ export function onDelete(
         events: ["s3:ObjectRemoved:*"],
     };
 
-    return subscribe(name + "-delete", bucket, <lambda.Function>funcOrHandler, argsCopy, opts);
+    return subscribe(name + "-delete", bucket, handler, argsCopy, opts);
 }
 
 /**
@@ -125,17 +120,15 @@ export function onDelete(
  * control over the subscription is wanted, and other helpers (like onPut/onDelete) are not
  * sufficient.
  */
-export function subscribe(name: string, bucket: s3.Bucket, func: lambda.Function, args: BucketSubscriptionArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
-export function subscribe(name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler, args: BucketSubscriptionArgs, opts?: pulumi.ResourceOptions): BucketSubscription;
 export function subscribe(
-    name: string, bucket: s3.Bucket, funcOrHandler: lambda.Function | BucketSubscriptionHandler,
+    name: string, bucket: s3.Bucket, handler: BucketSubscriptionHandler,
     args: BucketSubscriptionArgs, opts?: pulumi.ResourceOptions): BucketSubscription {
 
     let func: lambda.Function;
-    if (funcOrHandler instanceof lambda.Function) {
-        func = funcOrHandler;
+    if (handler instanceof lambda.Function) {
+        func = handler;
     } else {
-        func = aws.lambda.createFunction(name + "-subscription", funcOrHandler, {}, opts);
+        func = aws.lambda.createFunction(name + "-subscription", handler, /*args:*/undefined, opts);
     }
 
     return new BucketSubscription(name, bucket, func, args, opts);
