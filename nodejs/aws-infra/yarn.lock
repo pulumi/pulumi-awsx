@@ -72,8 +72,8 @@ ascli@~1:
     optjs "~3.2.2"
 
 aws-sdk@*:
-  version "2.241.1"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.241.1.tgz#ae4e1ba772cc17284df00c03b58dcf914d5c72f9"
+  version "2.242.1"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.242.1.tgz#cb2a5d81b70b8dfd6416b686ae38f9c0611f087d"
   dependencies:
     buffer "4.9.1"
     events "1.1.1"
