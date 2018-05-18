@@ -41,4 +41,4 @@ awsinfra.serverless.bucket.onPut("test", bucket, async (event) => {
             }).promise();
         }
     }
-}, {});
+});
