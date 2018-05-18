@@ -14,7 +14,7 @@ const bucket = new aws.s3.Bucket("testbucket", {
         },
     },
     forceDestroy: true,
-}, { parent: this  });
+});
 
 awsinfra.serverless.bucket.onPut("test", bucket, async (event) => {
     const awssdk = await import("aws-sdk");
