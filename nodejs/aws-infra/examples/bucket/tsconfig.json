@@ -2,12 +2,16 @@
     "compilerOptions": {
         "outDir": "bin",
         "target": "es6",
+        "lib": [
+            "es6"
+        ],        
         "module": "commonjs",
         "moduleResolution": "node",
         "declaration": true,
         "sourceMap": true,
         "stripInternal": true,
         "experimentalDecorators": true,
+        "pretty": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
@@ -15,14 +19,6 @@
         "strictNullChecks": true
     },
     "files": [
-        "aws.ts",
-        "bucket.ts",
-        "cluster.ts",
-        "function.ts",
-        "index.ts",
-        "network.ts",
-        "serverless",
-        "utils.ts",
+        "index.ts"
     ]
 }
-

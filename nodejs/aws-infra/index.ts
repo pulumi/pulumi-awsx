@@ -2,3 +2,6 @@
 
 export * from "./cluster";
 export * from "./network";
+
+import * as serverless from "./serverless";
+export { serverless };

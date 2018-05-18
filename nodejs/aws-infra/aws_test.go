@@ -36,6 +36,16 @@ func Test_Examples(t *testing.T) {
 				"@pulumi/aws-infra",
 			},
 		},
+		{
+			Dir: path.Join(cwd, "./examples/bucket"),
+			Config: map[string]string{
+				"aws:region":     region,
+				"cloud:provider": "aws",
+			},
+			Dependencies: []string{
+				"@pulumi/aws-infra",
+			},
+		},
 	}
 	for _, ex := range examples {
 		example := ex.With(integration.ProgramTestOptions{
