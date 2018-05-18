@@ -20,7 +20,7 @@ awsinfra.serverless.bucket.onPut("test", bucket, async (event) => {
     const awssdk = await import("aws-sdk");
     const s3 = new awssdk.S3();
 
-    const recordFile = "file.json";
+    const recordFile = "lastPutFile.json";
 
     const records = event.Records || [];
     for (const record of records) {
