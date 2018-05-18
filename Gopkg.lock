@@ -531,8 +531,8 @@
     "pkg/workspace",
     "sdk/proto/go"
   ]
-  revision = "94bd88ffa26a74dbb2cc694636ec87486a79e21d"
-  version = "v0.12.2-rc1"
+  revision = "550a8c02742a8630041818a6e24590333145bb4e"
+  version = "v0.12.2"
 
 [[projects]]
   name = "github.com/pulumi/pulumi-aws"
