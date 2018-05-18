@@ -146,7 +146,7 @@ export function subscribe(
 }
 
 interface Subscription {
-    name: string,
+    name: string;
     events: string[];
     filterPrefix?: string;
     filterSuffix?: string;
