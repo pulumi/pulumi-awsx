@@ -146,6 +146,7 @@ export function subscribe(
 }
 
 interface Subscription {
+    name: string,
     events: string[];
     filterPrefix?: string;
     filterSuffix?: string;
@@ -190,6 +191,7 @@ export class BucketSubscription extends pulumi.ComponentResource {
         }
 
         subscriptions.push({
+            name: name,
             events: args.events,
             filterPrefix: args.filterPrefix,
             filterSuffix: args.filterSuffix,
@@ -209,7 +211,7 @@ process.on("beforeExit", () => {
 
     for (const [bucket, subscriptions] of copy) {
         const permissions = subscriptions.map(s => s.permission);
-        const _ = new aws.s3.BucketNotification(name, {
+        const _ = new aws.s3.BucketNotification(subscriptions[0].name, {
             bucket: bucket.id,
             lambdaFunctions: subscriptions.map(subscription => ({
                 events: subscription.events,
