@@ -20,19 +20,25 @@ awsinfra.serverless.bucket.onPut("test", bucket, async (event) => {
     const awssdk = await import("aws-sdk");
     const s3 = new awssdk.S3();
 
+    const recordFile = "file.json";
+
     const records = event.Records || [];
     for (const record of records) {
-        // Construct an event arguments object.
-        const args = {
-            key: record.s3.object.key,
-            size: record.s3.object.size,
-            eventTime: record.eventTime,
-        };
+        const key = record.s3.object.key;
 
-        const res = await s3.putObject({
-            Bucket: bucket.id.get(),
-            Key: "file.json",
-            Body: JSON.stringify(args),
-        }).promise();
+        if (key !== recordFile) {
+            // Construct an event arguments object.
+            const args = {
+                key: record.s3.object.key,
+                size: record.s3.object.size,
+                eventTime: record.eventTime,
+            };
+
+            const res = await s3.putObject({
+                Bucket: bucket.id.get(),
+                Key: recordFile,
+                Body: JSON.stringify(args),
+            }).promise();
+        }
     }
 }, {});
