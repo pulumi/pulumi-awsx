@@ -25,7 +25,7 @@ copy_package() {
 }
 
 # Copy the three packages
-copy_package "${ROOT}/aws-infra/bin/." "@pulumi/aws-infra"
+copy_package "${ROOT}/nodejs/aws-infra/bin/." "@pulumi/aws-infra"
 
 # Tar up the file and then print it out for use by the caller or script.
 tar -czf ${PUBFILE} -C ${PUBDIR} .

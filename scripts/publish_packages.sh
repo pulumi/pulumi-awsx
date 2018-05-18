@@ -10,9 +10,9 @@ echo "Publishing NPM packages to NPMjs.com:"
 # dependencies from peerDependencies that are resolved via those links, to real installable dependencies.
 publish() {
     node $(dirname $0)/promote.js ${@:2} < \
-        ${ROOT}/$1/bin/package.json > \
-        ${ROOT}/$1/bin/package.json.publish
-    pushd ${ROOT}/$1/bin
+        ${ROOT}/nodejs/$1/bin/package.json > \
+        ${ROOT}/nodejs/$1/bin/package.json.publish
+    pushd ${ROOT}/nodejs/$1/bin
     mv package.json package.json.dev
     mv package.json.publish package.json
 
