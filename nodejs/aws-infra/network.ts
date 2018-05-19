@@ -40,6 +40,9 @@ export interface NetworkVpcArgs {
     readonly publicSubnetIds: pulumi.Input<string>[];
 }
 
+// The lazily initialized default network instance.
+let defaultNetwork: Network;
+
 /**
  * Network encapsulates the configuration of an Amazon VPC.  Both [VPC with Public
  * Subnet](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Scenario1.html) and [VPC with Public and Private
@@ -68,9 +71,14 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      * The public subnets for the VPC.  In case [usePrivateSubnets] == false, these are the same as [subnets].
      */
     public readonly publicSubnetIds: pulumi.Output<string>[];
-
-    // tslint:disable-next-line:member-ordering
-    private static defaultNetwork: Network;
+    /**
+     * The public subnet route table for the VPC.
+     */
+    public readonly publicRouteTableId: pulumi.Output<string>;
+    /**
+     * The private subnet route tables for the VPC.  In case [usePrivateSubnets] == false, this will be empty.
+     */
+    public readonly privateRouteTableIds: pulumi.Output<string>[];
 
     /**
      * Gets the default VPC for the AWS account as a Network.  This first time this is called,
@@ -78,7 +86,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      * All subsequent calls will return that same network even if different opts are provided.
      */
     public static getDefault(opts?: pulumi.ResourceOptions): Network {
-        if (!this.defaultNetwork) {
+        if (!defaultNetwork) {
             const vpc = aws.ec2.getVpc({default: true});
             const vpcId = vpc.then(v => v.id);
             const subnetIds = aws.ec2.getSubnetIds({ vpcId: vpcId }).then(subnets => subnets.ids);
@@ -86,7 +94,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             const subnet0 = subnetIds.then(ids => ids[0]);
             const subnet1 = subnetIds.then(ids => ids[1]);
 
-            this.defaultNetwork = this.fromVpc("default-vpc", {
+            defaultNetwork = this.fromVpc("default-vpc", {
                 vpcId: vpcId,
                 subnetIds: [ subnet0, subnet1 ],
                 usePrivateSubnets: false,
@@ -95,7 +103,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             }, opts);
         }
 
-        return this.defaultNetwork;
+        return defaultNetwork;
     }
 
     /**
@@ -159,6 +167,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
 
         this.vpcId = vpc.id;
         this.securityGroupIds = [ vpc.defaultSecurityGroupId ];
+        this.privateRouteTableIds = [];
 
         const internetGateway = new aws.ec2.InternetGateway(name, {
             vpcId: vpc.id,
@@ -179,6 +188,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
                 Name: name,
             },
         }, { parent: this });
+        this.publicRouteTableId = publicRouteTable.id;
 
         this.subnetIds = [];
         this.publicSubnetIds = [];
@@ -246,6 +256,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
                         Name: natName,
                     },
                 }, { parent: this });
+                this.privateRouteTableIds.push(natRouteTable.id);
 
                 // Route through the NAT gateway for the private subnet
                 subnetRouteTable = natRouteTable;
