@@ -10,7 +10,7 @@
     "homepage": "https://pulumi.io/pulumi-aws-infra",
     "repository": "https://github.com/pulumi/pulumi-aws-infra",
     "dependencies": {
-        "@pulumi/aws": "=0.13.1-dev-1528352004-g1fa40a8",
+        "@pulumi/aws": "^0.13.1-rc1",
         "@pulumi/pulumi": "^0.12.3"
     },
     "devDependencies": {
