@@ -45,9 +45,9 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
 
-"@pulumi/aws@^0.13.1-rc1":
-  version "0.13.1-rc1"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.13.1-rc1.tgz#40812784d97273942b19ad59439164923657a44a"
+"@pulumi/aws@^0.13.1-rc3":
+  version "0.13.1-rc3"
+  resolved "https://npmjs.pulumi.com/@pulumi%2faws/-/aws-0.13.1-rc3.tgz#405787eb8a4c4c236abfaa91f6c1ceb045c3ae3f"
   dependencies:
     "@pulumi/pulumi" "^0.12.3"
     builtin-modules "3.0.0"
