@@ -4,3 +4,4 @@
 vendor/
 **/Pulumi.*.yaml
 **/yarn-error.log
+**/.idea
