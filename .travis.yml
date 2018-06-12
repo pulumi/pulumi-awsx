@@ -7,7 +7,8 @@ git:
   depth: false
 before_install:
     - export PULUMI_ROOT=/opt/pulumi
-    - git clone git@github.com:pulumi/home ${GOPATH}/src/github.com/pulumi/home
+    - if [ "${TRAVIS_SECURE_ENV_VARS:-}" = "true" ]; then git clone git@github.com:pulumi/home ${GOPATH}/src/github.com/pulumi/home; fi
+    - git clone git@github.com:pulumi/scripts ${GOPATH}/src/github.com/pulumi/scripts
     # Install Docker 17.09.
     - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
@@ -26,17 +27,17 @@ before_install:
     - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.2.1
     - export PATH=$HOME/.yarn/bin:$PATH
     # Install Pulumi
-    - ${GOPATH}/src/github.com/pulumi/home/scripts/install-pulumi.sh v0.12.3
+    - ${GOPATH}/src/github.com/pulumi/scripts/ci/install-pulumi.sh v0.12.3
     - export PATH=/usr/local/pulumi/bin:$PATH
-    - . ${GOPATH}/src/github.com/pulumi/home/scripts/keep-failed-tests.sh
+    - if [ "${TRAVIS_SECURE_ENV_VARS:-}" = "true" ]; then source ${GOPATH}/src/github.com/pulumi/home/scripts/keep-failed-tests.sh; fi
 install:
     - make ensure
 before_script:
     # Ensure the working tree is clean (make ensure may have updated lock files)
-    - ${GOPATH}/src/github.com/pulumi/home/scripts/check-worktree-is-clean.sh
+    - ${GOPATH}/src/github.com/pulumi/scripts/ci/check-worktree-is-clean.sh
 script:
     - make travis_${TRAVIS_EVENT_TYPE}
 after_failure:
-    - ${GOPATH}/src/github.com/pulumi/home/scripts/upload-failed-tests
+    - if [ "${TRAVIS_SECURE_ENV_VARS:-}" = "true" ]; then ${GOPATH}/src/github.com/pulumi/home/scripts/upload-failed-tests; fi
 notifications:
     webhooks: https://ufci1w66n3.execute-api.us-west-2.amazonaws.com/stage/travis
