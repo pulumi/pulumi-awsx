@@ -25,7 +25,7 @@ class Network(ComponentResource):
     Networks can consist of public and private subnets across a number of availability
     zones.
     """
-    default_network = None
+    _default_network = None
 
     def __init__(self,
                  name,                               # type: str
@@ -65,7 +65,16 @@ class Network(ComponentResource):
         self.security_group_ids = security_group_ids
         self.public_subnet_ids = public_subnet_ids
 
-        if vpc_id is not None:
+        if self.vpc_id is not None:
+            if self.subnet_ids is None:
+                raise TypeError("subnet_ids argument must not be None")
+
+            if self.security_group_ids is None:
+                raise TypeError("security_group_ids must not be None")
+
+            if self.public_subnet_ids is None:
+                raise TypeError("public_subnet_ids argument must not be None")
+
             self.register_outputs({
                 "vpc_id": self.vpc_id,
                 "subnet_ids": self.subnet_ids,
@@ -115,13 +124,13 @@ class Network(ComponentResource):
         self.subnet_ids = []
         self.public_subnet_ids = []
         for i in range(number_of_availability_zones):
-            subnet_name = "%s-%s" % (name, i)
+            subnet_name = "%s-%d" % (name, i)
 
-            # Create the subnet for this AZ - either - either public or private
+            # Create the subnet for this AZ - either public or private
             subnet = ec2.Subnet(subnet_name,
                                 vpc_id=vpc.id,
                                 availability_zone=get_aws_az(i),
-                                cidr_block="10.10.%s.0/24" % i,
+                                cidr_block="10.10.%d.0/24" % i,
                                 map_public_ip_on_launch=not self.use_private_subnets,
                                 # Only assign public IP if we are exposing public subnets
                                 tags={
@@ -133,14 +142,14 @@ class Network(ComponentResource):
             # whether we are in a public or private subnet
             if self.use_private_subnets:
                 # We need a public subnet for the NAT Gateway
-                nat_name = "%s-nat-%s" % (name, i)
+                nat_name = "%s-nat-%d" % (name, i)
                 nat_gateway_public_subnet = ec2.Subnet(nat_name,
                                                        vpc_id=vpc.id,
                                                        availability_zone=get_aws_az(i),
-                                                       cidr_block="10.10.%s.0/24" % (i + 64),
                                                        # Use top half of the subnet space
-                                                       map_public_ip_on_launch=True,
+                                                       cidr_block="10.10.%d.0/24" % (i + 64),
                                                        # Always assign a public IP in NAT subnet
+                                                       map_public_ip_on_launch=True,
                                                        tags={
                                                            "Name": nat_name
                                                        },
@@ -188,7 +197,7 @@ class Network(ComponentResource):
                 # The subnet is public, so register it as our public subnet
                 self.public_subnet_ids.append(subnet.id)
 
-            route_table_association = ec2.RouteTableAssociation("%s-%s" % (name, i),
+            route_table_association = ec2.RouteTableAssociation("%s-%d" % (name, i),
                                                                 subnet_id=subnet.id,
                                                                 route_table_id=subnet_route_table.id,
                                                                 __opts__=ResourceOptions(parent=self))
@@ -210,7 +219,7 @@ class Network(ComponentResource):
         the default network will be lazily created, using whatever options are provided in opts.
         All subsequent calls will return that same network even if different opts are provided.
         """
-        if Network.default_network is None:
+        if Network._default_network is None:
             vpc = ec2.get_vpc(default=True)
             subnets = ec2.get_subnet_ids(vpc_id=vpc.id)
             default_security_group = ec2.get_security_group(name="default", vpc_id=vpc.id)
@@ -222,18 +231,18 @@ class Network(ComponentResource):
                                    public_subnet_ids=subnets.ids,
                                    opts=resource_options)
 
-            Network.default_network = net
+            Network._default_network = net
             return net
 
-        return Network.default_network
+        return Network._default_network
 
     @staticmethod
     def from_vpc(name,
-                 vpc_id=None,               # type: str
-                 subnet_ids=None,           # type: List[str]
+                 vpc_id,                    # type: str
+                 subnet_ids,                # type: List[str]
+                 security_group_ids,        # type: List[str]
+                 public_subnet_ids,         # type: List[str]
                  use_private_subnets=None,  # type: bool
-                 security_group_ids=None,   # type: List[str]
-                 public_subnet_ids=None,    # type: List[str]
                  opts=None                  # type: ResourceOptions
                  ):
         # type: (...) -> Network
