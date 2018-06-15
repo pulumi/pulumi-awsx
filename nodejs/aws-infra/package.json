@@ -2,12 +2,13 @@
     "name": "@pulumi/aws-infra",
     "version": "${VERSION}",
     "description": "Pulumi Amazon Web Services (AWS) infrastructure components.",
+    "license": "Apache 2.0",
     "keywords": [
         "pulumi",
         "aws",
         "aws-infra"
     ],
-    "homepage": "https://pulumi.io/pulumi-aws-infra",
+    "homepage": "https://pulumi.io",
     "repository": "https://github.com/pulumi/pulumi-aws-infra",
     "dependencies": {
         "@pulumi/aws": "^0.14.0-rc1",
