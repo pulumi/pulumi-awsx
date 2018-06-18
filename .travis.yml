@@ -7,8 +7,7 @@ git:
   depth: false
 before_install:
     - export PULUMI_ROOT=/opt/pulumi
-    - if [ "${TRAVIS_SECURE_ENV_VARS:-}" = "true" ]; then git clone git@github.com:pulumi/home ${GOPATH}/src/github.com/pulumi/home; fi
-    - git clone git@github.com:pulumi/scripts ${GOPATH}/src/github.com/pulumi/scripts
+    - git clone https://github.com/pulumi/scripts ${GOPATH}/src/github.com/pulumi/scripts
     # Install Docker 17.09.
     - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
     - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
@@ -29,7 +28,7 @@ before_install:
     # Install Pulumi
     - curl -L https://get.pulumi.com/ | bash -s -- --version 0.14.0-rc1
     - export PATH=$HOME/.pulumi/bin:$PATH
-    - if [ "${TRAVIS_SECURE_ENV_VARS:-}" = "true" ]; then source ${GOPATH}/src/github.com/pulumi/home/scripts/keep-failed-tests.sh; fi
+    - if [ "${TRAVIS_SECURE_ENV_VARS:-}" = "true" ]; then source ${GOPATH}/src/github.com/pulumi/scripts/ci/keep-failed-tests.sh; fi
 install:
     - make ensure
 before_script:
@@ -38,6 +37,6 @@ before_script:
 script:
     - make travis_${TRAVIS_EVENT_TYPE}
 after_failure:
-    - if [ "${TRAVIS_SECURE_ENV_VARS:-}" = "true" ]; then ${GOPATH}/src/github.com/pulumi/home/scripts/upload-failed-tests; fi
+    - if [ "${TRAVIS_SECURE_ENV_VARS:-}" = "true" ]; then ${GOPATH}/src/github.com/pulumi/scripts/ci/upload-failed-tests; fi
 notifications:
     webhooks: https://ufci1w66n3.execute-api.us-west-2.amazonaws.com/stage/travis
