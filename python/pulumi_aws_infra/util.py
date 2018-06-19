@@ -14,6 +14,7 @@
 
 import pulumi_aws
 
+
 def get_aws_az(index):
     # type: (int) -> str
     zones = pulumi_aws.get_availability_zones()
