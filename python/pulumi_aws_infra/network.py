@@ -66,29 +66,38 @@ class Network(ComponentResource):
         self.public_subnet_ids = public_subnet_ids
 
         if self.vpc_id is not None:
-            if self.subnet_ids is None:
-                raise TypeError("subnet_ids argument must not be None")
+            self._create_from_vpc()
+        else:
+            self._create_from_arguments(name, number_of_availability_zones)
 
-            if self.security_group_ids is None:
-                raise TypeError("security_group_ids must not be None")
+        self._register_outputs()
 
-            if self.public_subnet_ids is None:
-                raise TypeError("public_subnet_ids argument must not be None")
 
-            self.register_outputs({
+    def _register_outputs(self):
+        self.register_outputs({
                 "vpc_id": self.vpc_id,
                 "subnet_ids": self.subnet_ids,
                 "use_private_subnets": self.use_private_subnets,
                 "security_group_ids": self.security_group_ids,
                 "public_subnet_ids": self.public_subnet_ids
             })
-            return
 
+    def _create_from_vpc(self):
+        if self.subnet_ids is None:
+            raise TypeError("subnet_ids argument must not be None")
+
+        if self.security_group_ids is None:
+            raise TypeError("security_group_ids must not be None")
+
+        if self.public_subnet_ids is None:
+            raise TypeError("public_subnet_ids argument must not be None")
+
+    def _create_from_arguments(self, name, number_of_availability_zones):
         number_of_availability_zones = number_of_availability_zones or 2
         if number_of_availability_zones < 1 or number_of_availability_zones > 4:
             raise RunError("Unsupported number of available zones for Network: " + str(number_of_availability_zones))
 
-        self.use_private_subnets = use_private_subnets or False
+        self.use_private_subnets = self.use_private_subnets or False
         vpc = ec2.Vpc(name,
                       cidr_block="10.10.0.0/16",
                       enable_dns_hostnames=True,
@@ -124,92 +133,84 @@ class Network(ComponentResource):
         self.subnet_ids = []
         self.public_subnet_ids = []
         for i in range(number_of_availability_zones):
-            subnet_name = "%s-%d" % (name, i)
-
-            # Create the subnet for this AZ - either public or private
-            subnet = ec2.Subnet(subnet_name,
-                                vpc_id=vpc.id,
-                                availability_zone=get_aws_az(i),
-                                cidr_block="10.10.%d.0/24" % i,
-                                map_public_ip_on_launch=not self.use_private_subnets,
-                                # Only assign public IP if we are exposing public subnets
-                                tags={
-                                    "Name": subnet_name,
-                                },
-                                __opts__=ResourceOptions(parent=self))
-
-            # We will use a different route table for this subnet depending on
-            # whether we are in a public or private subnet
-            if self.use_private_subnets:
-                # We need a public subnet for the NAT Gateway
-                nat_name = "%s-nat-%d" % (name, i)
-                nat_gateway_public_subnet = ec2.Subnet(nat_name,
-                                                       vpc_id=vpc.id,
-                                                       availability_zone=get_aws_az(i),
-                                                       # Use top half of the subnet space
-                                                       cidr_block="10.10.%d.0/24" % (i + 64),
-                                                       # Always assign a public IP in NAT subnet
-                                                       map_public_ip_on_launch=True,
-                                                       tags={
-                                                           "Name": nat_name
-                                                       },
-                                                       __opts__=ResourceOptions(parent=self))
-
-                # And we need to route traffic from that public subnet to the Internet Gateway
-                nat_gateway_routes = ec2.RouteTableAssociation(nat_name,
-                                                               subnet_id=nat_gateway_public_subnet.id,
-                                                               route_table_id=public_route_table.id,
-                                                               __opts__=ResourceOptions(parent=self))
-
-                self.public_subnet_ids.append(nat_gateway_public_subnet.id)
-
-                # We need an Elastic IP for the NAT Gateway
-                eip = ec2.Eip(nat_name, __opts__=ResourceOptions(parent=self))
-
-                # And we need a NAT Gateway to be able to access the Internet
-                nat_gateway = ec2.NatGateway(nat_name,
-                                             subnet_id=nat_gateway_public_subnet.id,
-                                             allocation_id=eip.id,
-                                             tags={
-                                                 "Name": nat_name
-                                             },
-                                             __opts__=ResourceOptions(parent=self, depends_on=[nat_gateway_routes]))
-
-                nat_route_table = ec2.RouteTable(nat_name,
-                                                 vpc_id=vpc.id,
-                                                 routes=[
-                                                     {
-                                                         "cidrBlock": "0.0.0.0/0",
-                                                         "natGatewayId": nat_gateway.id
-                                                     }
-                                                 ],
-                                                 tags={
-                                                     "Name": name
-                                                 },
-                                                 __opts__=ResourceOptions(parent=self))
-
-                # Route through the NAT gateway for the private subnet
-                subnet_route_table = nat_route_table
-            else:  # not self.private_subnets
-                # Route directly to the Internet Gateway for the public subnet
-                subnet_route_table = public_route_table
-
-                # The subnet is public, so register it as our public subnet
-                self.public_subnet_ids.append(subnet.id)
-
+            route_table, subnet = self._create_subnet(name, public_route_table, i)
             route_table_association = ec2.RouteTableAssociation("%s-%d" % (name, i),
                                                                 subnet_id=subnet.id,
-                                                                route_table_id=subnet_route_table.id,
+                                                                route_table_id=route_table.id,
                                                                 __opts__=ResourceOptions(parent=self))
 
             self.subnet_ids.append(subnet.id)
-        self.register_outputs({
-            "vpc_id": self.vpc_id,
-            "subnet_ids": self.subnet_ids,
-            "use_private_subnets": self.use_private_subnets,
-            "security_group_ids": self.security_group_ids,
-            "public_subnet_ids": self.public_subnet_ids
-        })
+
+    def _create_subnet(self, network_name, public_route_table, az_id):
+        # type: (str, ec2.RouteTable, int) -> (ec2.RouteTable, ec2.Subnet)
+        subnet_name = "%s-%d" % (network_name, az_id)
+        # Create the subnet for this AZ - either public or private
+        subnet = ec2.Subnet(subnet_name,
+                            vpc_id=self.vpc_id,
+                            availability_zone=get_aws_az(az_id),
+                            cidr_block="10.10.%d.0/24" % az_id,
+                            map_public_ip_on_launch=not self.use_private_subnets,
+                            # Only assign public IP if we are exposing public subnets
+                            tags={
+                                "Name": subnet_name,
+                            },
+                            __opts__=ResourceOptions(parent=self))
+
+        # We will use a different route table for this subnet depending on
+        # whether we are in a public or private subnet
+        if self.use_private_subnets:
+            # We need a public subnet for the NAT Gateway
+            nat_name = "%s-nat-%d" % (network_name, az_id)
+            nat_gateway_public_subnet = ec2.Subnet(nat_name,
+                                                   vpc_id=self.vpc_id,
+                                                   availability_zone=get_aws_az(az_id),
+                                                   # Use top half of the subnet space
+                                                   cidr_block="10.10.%d.0/24" % (az_id + 64),
+                                                   # Always assign a public IP in NAT subnet
+                                                   map_public_ip_on_launch=True,
+                                                   tags={
+                                                       "Name": nat_name
+                                                   },
+                                                   __opts__=ResourceOptions(parent=self))
+
+            # And we need to route traffic from that public subnet to the Internet Gateway
+            nat_gateway_routes = ec2.RouteTableAssociation(nat_name,
+                                                           subnet_id=nat_gateway_public_subnet.id,
+                                                           route_table_id=public_route_table.id,
+                                                           __opts__=ResourceOptions(parent=self))
+
+            self.public_subnet_ids.append(nat_gateway_public_subnet.id)
+
+            # We need an Elastic IP for the NAT Gateway
+            eip = ec2.Eip(nat_name, __opts__=ResourceOptions(parent=self))
+
+            # And we need a NAT Gateway to be able to access the Internet
+            nat_gateway = ec2.NatGateway(nat_name,
+                                         subnet_id=nat_gateway_public_subnet.id,
+                                         allocation_id=eip.id,
+                                         tags={
+                                             "Name": nat_name
+                                         },
+                                         __opts__=ResourceOptions(parent=self, depends_on=[nat_gateway_routes]))
+
+            nat_route_table = ec2.RouteTable(nat_name,
+                                             vpc_id=self.vpc_id,
+                                             routes=[
+                                                 {
+                                                     "cidrBlock": "0.0.0.0/0",
+                                                     "natGatewayId": nat_gateway.id
+                                                 }
+                                             ],
+                                             tags={
+                                                 "Name": network_name
+                                             },
+                                             __opts__=ResourceOptions(parent=self))
+
+            # Route through the NAT gateway for the private subnet
+            return nat_route_table, subnet
+        else:
+            self.public_subnet_ids.append(subnet.id)
+            return public_route_table, subnet
 
     @staticmethod
     def get_default(resource_options=None):
@@ -235,36 +236,3 @@ class Network(ComponentResource):
             return net
 
         return Network._default_network
-
-    @staticmethod
-    def from_vpc(name,
-                 vpc_id,                    # type: str
-                 subnet_ids,                # type: List[str]
-                 security_group_ids,        # type: List[str]
-                 public_subnet_ids,         # type: List[str]
-                 use_private_subnets=None,  # type: bool
-                 opts=None                  # type: ResourceOptions
-                 ):
-        # type: (...) -> Network
-        """
-        Constructs a Network from a VPC that already exists.
-        """
-        if vpc_id is None:
-            raise TypeError("vpc_id argument must be provided")
-
-        if subnet_ids is None:
-            raise TypeError("subnet_ids argument must be provided")
-
-        if security_group_ids is None:
-            raise TypeError("security_group_ids must be provided")
-
-        if public_subnet_ids is None:
-            raise TypeError("public_subnet_ids argument must be provided")
-
-        return Network(name,
-                       vpc_id=vpc_id,
-                       subnet_ids=subnet_ids,
-                       use_private_subnets=use_private_subnets,
-                       security_group_ids=security_group_ids,
-                       public_subnet_ids=public_subnet_ids,
-                       opts=opts)
