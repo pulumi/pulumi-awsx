@@ -25,6 +25,6 @@ setup(name='pulumi_aws_infra',
       packages=find_packages(),
       install_requires=[
           'typing>=3.6',
-          'pulumi>=0.13.0,<0.15.0',
-          'pulumi_aws>=0.13'
+          'pulumi>=0.14.0,<0.15.0',
+          'pulumi_aws>=0.14'
       ])

@@ -17,4 +17,3 @@ This package provides primitives for building Networks on AWS in a simple
 and composable way.
 """
 
-from .network import Network

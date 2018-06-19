@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import List
 from pulumi.resource import ComponentResource, ResourceOptions
 from pulumi.errors import RunError
 from pulumi_aws import ec2
-from typing import List
 from .util import get_aws_az
 
 
