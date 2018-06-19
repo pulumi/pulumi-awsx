@@ -23,5 +23,5 @@ setup(
     project_urls={'Repository': 'https://github.com/pulumi/pulumi-aws-infra'},
     packages=find_packages(),
     install_requires=[
-        'typing>=3.6', 'pulumi>=0.14.0,<0.15.0', 'pulumi_aws>=0.14'
+        'pulumi>=0.14.0,<0.15.0', 'pulumi_aws>=0.14'
     ])

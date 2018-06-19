@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List
+"""
+The network module provides the Network class, which is a Python component that creates
+a VPC-based network that conforms with AWS best practices.
+"""
+
 from pulumi.resource import ComponentResource, ResourceOptions
 from pulumi.errors import RunError
 from pulumi_aws import ec2
 from .util import get_aws_az
-
 
 class Network(ComponentResource):
     """
@@ -67,14 +70,15 @@ class Network(ComponentResource):
         self.security_group_ids = security_group_ids
         self.public_subnet_ids = public_subnet_ids
 
+        # If we've been given a VPC ID, use that VPC to populate this resource. No
+        # further resource creation is needed.
         if self.vpc_id is not None:
             self._create_from_vpc()
         else:
+            # If not, create one from the arguments we've been given.
             self._create_from_arguments(name, number_of_availability_zones)
 
-        self._register_outputs()
-
-    def _register_outputs(self):
+        # Register our outputs with the Pulumi engine.
         self.register_outputs({
             "vpc_id": self.vpc_id,
             "subnet_ids": self.subnet_ids,
@@ -84,6 +88,13 @@ class Network(ComponentResource):
         })
 
     def _create_from_vpc(self):
+        """
+        Creates a new Network from an existing VPC. Does not actually create any
+        resources.
+        """
+        # type: () -> None
+        # note that this method does not actually do anything other than argument
+        # validation, since all required resources must already exist
         if self.subnet_ids is None:
             raise TypeError("subnet_ids argument must not be None")
 
@@ -94,6 +105,14 @@ class Network(ComponentResource):
             raise TypeError("public_subnet_ids argument must not be None")
 
     def _create_from_arguments(self, name, number_of_availability_zones):
+        # type: (str, int) -> None
+        """
+        Creates a new Network from the constructor arguments (i.e. not from a
+        VPC that already exists).
+        :param name: The name of the new network
+        :param number_of_availability_zones: The number of AZs to create subnets in
+        :return: None
+        """
         number_of_availability_zones = number_of_availability_zones or 2
         if number_of_availability_zones < 1 or number_of_availability_zones > 4:
             raise RunError(
@@ -137,6 +156,8 @@ class Network(ComponentResource):
         for i in range(number_of_availability_zones):
             route_table, subnet = self._create_subnet(name, public_route_table,
                                                       i)
+
+            # pylint: disable=unused-variable
             route_table_association = ec2.RouteTableAssociation(
                 "%s-%d" % (name, i),
                 subnet_id=subnet.id,
@@ -146,6 +167,17 @@ class Network(ComponentResource):
             self.subnet_ids.append(subnet.id)
 
     def _create_subnet(self, network_name, public_route_table, az_id):
+        """
+        Creates a subnet in the network with the given name and using the
+        given public route table to access the internet. The new subnet
+        is created in the AZ with the given AZ index.
+        :param network_name: The name of the network being created
+        :param public_route_table: The route table to connect this subnet to the internet
+        :param az_id: The AZ ID for this new subnet
+        :return: A tuple of a public route table that this subnet will use to connect to the
+        internet and the new subnet itself. If this subnet is private, the route table will
+        point to a public NAT gateway that is connected to the new private subnet.
+        """
         # type: (str, ec2.RouteTable, int) -> (ec2.RouteTable, ec2.Subnet)
         subnet_name = "%s-%d" % (network_name, az_id)
         # Create the subnet for this AZ - either public or private
@@ -210,9 +242,9 @@ class Network(ComponentResource):
 
             # Route through the NAT gateway for the private subnet
             return nat_route_table, subnet
-        else:
-            self.public_subnet_ids.append(subnet.id)
-            return public_route_table, subnet
+
+        self.public_subnet_ids.append(subnet.id)
+        return public_route_table, subnet
 
     @staticmethod
     def get_default(resource_options=None):
