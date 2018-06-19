@@ -114,7 +114,7 @@ class Network(ComponentResource):
         :return: None
         """
         number_of_availability_zones = number_of_availability_zones or 2
-        if number_of_availability_zones < 1 or number_of_availability_zones > 4:
+        if number_of_availability_zones < 1 or number_of_availability_zones >= 4:
             raise RunError(
                 "Unsupported number of available zones for Network: " +
                 str(number_of_availability_zones))
