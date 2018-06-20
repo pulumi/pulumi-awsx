@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 The network module provides the Network class, which is a Python component that creates
 a VPC-based network that conforms with AWS best practices.
@@ -21,6 +20,7 @@ from pulumi.resource import ComponentResource, ResourceOptions
 from pulumi.errors import RunError
 from pulumi_aws import ec2
 from .util import get_aws_az
+
 
 class Network(ComponentResource):
     """
@@ -259,7 +259,7 @@ class Network(ComponentResource):
             subnets = ec2.get_subnet_ids(vpc_id=vpc.id)
             default_security_group = ec2.get_security_group(
                 name="default", vpc_id=vpc.id)
-            net = Network.from_vpc(
+            net = Network(
                 "default-vpc",
                 vpc_id=vpc.id,
                 subnet_ids=subnets.ids,
@@ -269,6 +269,5 @@ class Network(ComponentResource):
                 opts=resource_options)
 
             Network._default_network = net
-            return net
 
         return Network._default_network
