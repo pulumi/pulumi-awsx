@@ -19,7 +19,7 @@ before_install:
     # Node.js 6.10.2 for Pulumi Fabric's Node.js runtime.
     - nvm install v6.10.2
     # Ensure that we can access Pulumi's private NPM org.
-    - echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc
+    - if [ ! -z "${NPM_TOKEN}" ]; then echo "//registry.npmjs.org/:_authToken=\${NPM_TOKEN}" > ~/.npmrc; fi
     # Install the AWS CLI so that we can publish the resulting release (if applicable) at the end.
     - pip install --upgrade --user awscli
     # Install Yarn as per https://yarnpkg.com/lang/en/docs/install-ci/#travis-tab.
