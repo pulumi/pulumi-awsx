@@ -15,7 +15,7 @@ before_install:
     - sudo apt-get -y install docker-ce=17.09.0~ce-0~ubuntu
     - docker version
     # Dep for Go dependency management.
-    - go get -v github.com/golang/dep/cmd/dep
+    - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
     # Node.js 6.10.2 for Pulumi Fabric's Node.js runtime.
     - nvm install v6.10.2
     # Ensure that we can access Pulumi's private NPM org.
