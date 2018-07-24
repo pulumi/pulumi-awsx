@@ -2,7 +2,7 @@
     "name": "@pulumi/aws-infra",
     "version": "${VERSION}",
     "description": "Pulumi Amazon Web Services (AWS) infrastructure components.",
-    "license": "Apache 2.0",
+    "license": "Apache-2.0",
     "keywords": [
         "pulumi",
         "aws",
