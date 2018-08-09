@@ -1,6 +1,6 @@
 {
     "name": "cluster",
-    "version": "0.1",
+    "version": "0.0.1",
     "license": "Apache-2.0",
     "main": "bin/index.js",
     "typings": "bin/index.d.ts",
