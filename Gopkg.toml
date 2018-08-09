@@ -1,8 +1,6 @@
-required = ["github.com/pulumi/pulumi-aws"]
-
-[[override]]
+[[constraint]]
   name = "github.com/pulumi/pulumi"
-  version = "v0.14.0-rc1"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/stretchr/testify"
