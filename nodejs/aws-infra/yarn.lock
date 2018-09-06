@@ -45,18 +45,18 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
 
-"@pulumi/aws@^0.14.6-dev":
-  version "0.14.6-dev-1533786302-g0daa086"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.14.6-dev-1533786302-g0daa086.tgz#b58298b6446252b2883d9b53b479ac7a8bd9b7b5"
+"@pulumi/aws@^0.15.1-rc":
+  version "0.15.1-rc1"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.15.1-rc1.tgz#918d56c17c36ffc9913b2e0203bc066b7197a5b9"
   dependencies:
-    "@pulumi/pulumi" "^0.14.4-dev"
+    "@pulumi/pulumi" "^0.15.1-rc"
     builtin-modules "3.0.0"
     read-package-tree "^5.2.1"
     resolve "^1.7.1"
 
-"@pulumi/pulumi@^0.14.4-dev":
-  version "0.14.4-dev-1533786685-g80569fb5"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.14.4-dev-1533786685-g80569fb5.tgz#078a2e81e932bbc032a89d6668dce4670f6cc149"
+"@pulumi/pulumi@^0.15.1-rc":
+  version "0.15.1-rc1"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.15.1-rc1.tgz#69a92fa2a65becdf481348f9ef154f7a1fdd6b4f"
   dependencies:
     google-protobuf "^3.5.0"
     grpc "^1.12.2"
