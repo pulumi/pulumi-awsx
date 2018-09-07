@@ -55,6 +55,9 @@ func Test_Examples(t *testing.T) {
 		example := ex.With(integration.ProgramTestOptions{
 			ReportStats: integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
 			Tracing:     "https://tracing.pulumi-engineering.com/collector/api/v1/spans",
+			// TODO[pulumi/pulumi#1900]: This should be the default value, every test we have causes some sort of
+			// change during a `pulumi refresh` for reasons outside our control.
+			ExpectRefreshChanges: true,
 		})
 		t.Run(example.Dir, func(t *testing.T) {
 			integration.ProgramTest(t, &example)
