@@ -1,6 +1,6 @@
 [[constraint]]
   name = "github.com/pulumi/pulumi"
-  branch = "release/0.15"
+  branch = "master"
 
 [[constraint]]
   name = "github.com/stretchr/testify"
