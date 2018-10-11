@@ -45,18 +45,19 @@
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
 
-"@pulumi/aws@^0.15.1-rc":
-  version "0.15.1-rc1"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.15.1-rc1.tgz#918d56c17c36ffc9913b2e0203bc066b7197a5b9"
+"@pulumi/aws@^0.16.0-rc":
+  version "0.16.0-rc1"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.16.0-rc1.tgz#8886c5b7f0e2a6c7746dfac35fc0fcfd62f08124"
   dependencies:
-    "@pulumi/pulumi" "^0.15.1-rc"
+    "@pulumi/pulumi" "^0.16.0-rc1"
     builtin-modules "3.0.0"
+    mime "^2.0.0"
     read-package-tree "^5.2.1"
     resolve "^1.7.1"
 
-"@pulumi/pulumi@^0.15.1":
-  version "0.15.1"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.15.1.tgz#1b94077ec0bfb8fef868d6aa66643d7f726c0678"
+"@pulumi/pulumi@^0.16.0-rc", "@pulumi/pulumi@^0.16.0-rc1":
+  version "0.16.0-rc1"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.16.0-rc1.tgz#8e53c1b5b4d914738544a9ca164e4a38bedb6f2f"
   dependencies:
     google-protobuf "^3.5.0"
     grpc "^1.12.2"
@@ -68,20 +69,7 @@
     source-map-support "^0.4.16"
     ts-node "^7.0.0"
     typescript "^3.0.0"
-
-"@pulumi/pulumi@^0.15.1-rc":
-  version "0.15.1-rc1"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.15.1-rc1.tgz#69a92fa2a65becdf481348f9ef154f7a1fdd6b4f"
-  dependencies:
-    google-protobuf "^3.5.0"
-    grpc "^1.12.2"
-    minimist "^1.2.0"
-    protobufjs "^6.8.6"
-    read-package-tree "^5.2.1"
-    require-from-string "^2.0.1"
-    source-map-support "^0.4.16"
-    ts-node "^7.0.0"
-    typescript "^3.0.0"
+    upath "^1.1.0"
 
 "@types/long@^3.0.32":
   version "3.0.32"
@@ -362,6 +350,10 @@ long@~3:
 make-error@^1.1.1:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/make-error/-/make-error-1.3.4.tgz#19978ed575f9e9545d2ff8c13e33b5d18a67d535"
+
+mime@^2.0.0:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.3.1.tgz#b1621c54d63b97c47d3cfe7f7215f7d64517c369"
 
 minimatch@^3.0.4:
   version "3.0.4"
@@ -735,6 +727,10 @@ typescript@^2.1.4:
 typescript@^3.0.0:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.0.1.tgz#43738f29585d3a87575520a4b93ab6026ef11fdb"
+
+upath@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/upath/-/upath-1.1.0.tgz#35256597e46a581db4793d0ce47fa9aebfc9fabd"
 
 util-deprecate@~1.0.1:
   version "1.0.2"
