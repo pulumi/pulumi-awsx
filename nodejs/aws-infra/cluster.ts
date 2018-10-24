@@ -106,6 +106,10 @@ export interface ClusterArgs {
  */
 export class Cluster extends pulumi.ComponentResource {
     /**
+     * The network in which to create this cluster.
+     */
+    public readonly network: ClusterNetworkArgs;
+    /**
      * The ECS Cluster ARN.
      */
     public readonly ecsClusterARN: pulumi.Output<string>;
@@ -129,7 +133,6 @@ export class Cluster extends pulumi.ComponentResource {
         }
 
         super("aws-infra:cluster:Cluster", name, {
-            network: args.network,
             addEFS: args.addEFS,
             instanceType: args.instanceType,
             instanceRolePolicyARNs: args.instanceRolePolicyARNs,
@@ -141,6 +144,8 @@ export class Cluster extends pulumi.ComponentResource {
             publicKey: args.publicKey,
             ecsOptimizedAMIName: args.ecsOptimizedAMIName,
         }, opts);
+
+        this.network = args.network;
 
         // First create an ECS cluster.
         const cluster = new aws.ecs.Cluster(name, {}, { parent: this });
@@ -218,6 +223,14 @@ export class Cluster extends pulumi.ComponentResource {
             this.autoScalingGroupStack = createAutoScalingGroup(
                 this, name, args, instanceSecurityGroup, cluster, filesystem);
         }
+
+        this.registerOutputs({
+            network: this.network,
+            ecsClusterARN: this.ecsClusterARN,
+            securityGroupId: this.securityGroupId,
+            autoScalingGroupStack: this.autoScalingGroupStack,
+            efsMountPath: this.efsMountPath,
+        });
     }
 }
 
