@@ -46,8 +46,8 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
 
 "@pulumi/aws@dev":
-  version "0.16.2-dev-1541570323-g439eb2a1"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.16.2-dev-1541570323-g439eb2a1.tgz#917d50eed069d3cde4db97edc63d06e924242c7d"
+  version "0.16.2-dev-1541660738-ge4c5468c"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-0.16.2-dev-1541660738-ge4c5468c.tgz#5427545448eacd08dfd05d7b83c45d2ce41a8772"
   dependencies:
     "@pulumi/pulumi" dev
     aws-sdk "^2.0.0"
@@ -57,8 +57,8 @@
     resolve "^1.7.1"
 
 "@pulumi/pulumi@dev":
-  version "0.16.4-dev-1541651056-g08fc305b"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.16.4-dev-1541651056-g08fc305b.tgz#f9d7fa0363b29b8709ce1c7962cc1c95603f4b23"
+  version "0.16.4-dev-1541702590-g4defd64e"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-0.16.4-dev-1541702590-g4defd64e.tgz#86717419858af8f187151ccd9304ae7adecc89e6"
   dependencies:
     google-protobuf "^3.5.0"
     grpc "^1.12.2"
@@ -723,7 +723,7 @@ optjs@~3.2.2:
 
 os-homedir@^1.0.0:
   version "1.0.2"
-  resolved "https://registry.yarnpkg.com/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
+  resolved "http://registry.npmjs.org/os-homedir/-/os-homedir-1.0.2.tgz#ffbc4988336e0e833de0c168c7ef152121aa7fb3"
 
 os-locale@^1.4.0:
   version "1.4.0"
@@ -733,7 +733,7 @@ os-locale@^1.4.0:
 
 os-tmpdir@^1.0.0:
   version "1.0.2"
-  resolved "https://registry.yarnpkg.com/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
+  resolved "http://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz#bbe67406c79aa85c5cfec766fe5734555dfa1274"
 
 osenv@^0.1.4:
   version "0.1.5"
@@ -744,7 +744,7 @@ osenv@^0.1.4:
 
 path-is-absolute@^1.0.0:
   version "1.0.1"
-  resolved "https://registry.yarnpkg.com/path-is-absolute/-/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
+  resolved "http://registry.npmjs.org/path-is-absolute/-/path-is-absolute-1.0.1.tgz#174b9268735534ffbc7ace6bf53a5a9e1b5c5f5f"
 
 path-parse@^1.0.5:
   version "1.0.6"
