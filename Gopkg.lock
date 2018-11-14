@@ -257,6 +257,7 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/pulumi/pulumi"
   packages = [
     "pkg/apitype",
@@ -296,8 +297,7 @@
     "pkg/workspace",
     "sdk/proto/go"
   ]
-  revision = "ae87c469c5bfde32ed95ea3b6d7fa7bf076c93ab"
-  version = "v0.16.0-rc1"
+  revision = "aa7f26a3b50c468fbce81c2297c41da968b0e053"
 
 [[projects]]
   branch = "master"
