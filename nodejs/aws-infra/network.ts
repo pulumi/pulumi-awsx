@@ -15,21 +15,45 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { RunError } from "@pulumi/pulumi/errors";
-import { getAwsAz } from "./aws";
+import { getAvailabilityZone } from "./aws";
 import { ClusterNetworkArgs } from "./cluster";
 
 /**
  * Optional arguments that can be provided when creating a network.
  */
 export interface NetworkArgs {
+    /**
+     * The maximum number of availability zones to use in the current region.  Defaults to '2' if
+     * unspecified.
+     */
     readonly numberOfAvailabilityZones?: number;
     readonly usePrivateSubnets?: boolean;
+
+    /**
+     * The CIDR block for the VPC.  Defaults to "10.10.0.0/16" if unspecified.
+     */
+    cidrBlock?: pulumi.Input<string>;
+
+    /**
+     * Whether or not to have DNS hostnames in the VPC. Defaults to 'true' if unspecified.
+     */
+    enableDnsHostnames?: pulumi.Input<boolean>;
+
+    /**
+     * Whether or not to have DNS support in the VPC.  Defaults to 'true' if unspecified.
+     */
+    enableDnsSupport?: pulumi.Input<boolean>;
+
+    /**
+     * A tenancy option for instances launched into the VPC.  Defaults to 'default' if unspecified.
+     */
+    instanceTenancy?: pulumi.Input<"default" | "dedicated">;
 }
 
 /**
  * Arguments necessary when creating a network using Network.fromVpc.
  */
-export interface NetworkVpcArgs {
+export interface NetworkDefinition {
     /**
      * The VPC id of the network for the cluster
      */
@@ -37,7 +61,7 @@ export interface NetworkVpcArgs {
     /**
      * The network subnets for the clusters
      */
-    readonly subnetIds: pulumi.Input<string>[];
+    readonly subnetIds: pulumi.Input<pulumi.Input<string>>[];
     /**
      * Whether the network includes private subnets.
      */
@@ -45,11 +69,11 @@ export interface NetworkVpcArgs {
     /**
      * The security group IDs for the network.
      */
-    readonly securityGroupIds: pulumi.Input<string>[];
+    readonly securityGroupIds: pulumi.Input<pulumi.Input<string>>[];
     /**
      * The public subnets for the VPC.  In case [usePrivateSubnets] == false, these are the same as [subnets].
      */
-    readonly publicSubnetIds: pulumi.Input<string>[];
+    readonly publicSubnetIds: pulumi.Input<pulumi.Input<string>>[];
 }
 
 // The lazily initialized default network instance.
@@ -83,14 +107,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      * The public subnets for the VPC.  In case [usePrivateSubnets] == false, these are the same as [subnets].
      */
     public readonly publicSubnetIds: pulumi.Output<string>[];
-    /**
-     * The public subnet route table for the VPC.
-     */
-    public readonly publicRouteTableId: pulumi.Output<string>;
-    /**
-     * The private subnet route tables for the VPC.  In case [usePrivateSubnets] == false, this will be empty.
-     */
-    public readonly privateRouteTableIds: pulumi.Output<string>[];
 
     /**
      * Gets the default VPC for the AWS account as a Network.  This first time this is called,
@@ -108,7 +124,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             const subnet0 = subnetIds.then(ids => ids[0]);
             const subnet1 = subnetIds.then(ids => ids[1]);
 
-            defaultNetwork = this.fromVpc("default-vpc", {
+            defaultNetwork = this.fromDefinition("default-vpc", {
                 vpcId: vpcId,
                 subnetIds: [ subnet0, subnet1 ],
                 usePrivateSubnets: false,
@@ -123,25 +139,25 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
     /**
      * Creates a new network using the configuration values of an existing VPC.
      */
-    public static fromVpc(name: string, vpcArgs: NetworkVpcArgs, opts?: pulumi.ResourceOptions): Network {
-        if (!vpcArgs.vpcId) {
-            throw new RunError("vpcArgs.vpcId must be provided.");
+    public static fromDefinition(name: string, definition: NetworkDefinition, opts?: pulumi.ResourceOptions): Network {
+        if (!definition.vpcId) {
+            throw new RunError("definition.vpcId must be provided.");
         }
-        if (!vpcArgs.subnetIds) {
-            throw new RunError("vpcArgs.subnetIds must be provided.");
+        if (!definition.subnetIds) {
+            throw new RunError("definition.subnetIds must be provided.");
         }
-        if (!vpcArgs.securityGroupIds) {
-            throw new RunError("vpcArgs.securityGroupIds must be provided.");
+        if (!definition.securityGroupIds) {
+            throw new RunError("definition.securityGroupIds must be provided.");
         }
-        if (!vpcArgs.publicSubnetIds) {
-            throw new RunError("vpcArgs.publicSubnetIds must be provided.");
+        if (!definition.publicSubnetIds) {
+            throw new RunError("definition.publicSubnetIds must be provided.");
         }
 
-        return new Network(name, vpcArgs, opts);
+        return new Network(name, definition, opts);
     }
 
     constructor(name: string, args?: NetworkArgs, opts?: pulumi.ResourceOptions);
-    constructor(name: string, mergedArgs?: NetworkArgs | NetworkVpcArgs, opts?: pulumi.ResourceOptions) {
+    constructor(name: string, mergedArgs?: NetworkArgs | NetworkDefinition, opts?: pulumi.ResourceOptions) {
         // IDEA: default to the number of availability zones in this region, rather than 2.  To do this requires
         // invoking the provider, which requires that we "go async" at a very inopportune time here.  When
         // pulumi/pulumi#331 lands, this will be much easier to do, and we can improve this situation.
@@ -151,13 +167,13 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
 
         super("aws-infra:network:Network", name, {}, opts);
 
-        const vpcArgs = <NetworkVpcArgs>mergedArgs;
-        if (vpcArgs.vpcId) {
-            this.vpcId = pulumi.output(vpcArgs.vpcId);
-            this.subnetIds = vpcArgs.subnetIds.map(id => pulumi.output(id));
-            this.usePrivateSubnets = vpcArgs.usePrivateSubnets;
-            this.securityGroupIds = vpcArgs.securityGroupIds.map(id => pulumi.output(id));
-            this.publicSubnetIds = vpcArgs.publicSubnetIds.map(id => pulumi.output(id));
+        const definition = <NetworkDefinition>mergedArgs;
+        if (definition.vpcId) {
+            this.vpcId = pulumi.output(definition.vpcId);
+            this.subnetIds = definition.subnetIds.map(id => pulumi.output(id));
+            this.usePrivateSubnets = definition.usePrivateSubnets;
+            this.securityGroupIds = definition.securityGroupIds.map(id => pulumi.output(id));
+            this.publicSubnetIds = definition.publicSubnetIds.map(id => pulumi.output(id));
             return;
         }
 
@@ -168,128 +184,119 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
                 `Unsupported number of availability zones for network: ${numberOfAvailabilityZones}`);
         }
 
+        const parentOpts = { parent: this };
+        const tags = { Name: name };
+
         this.usePrivateSubnets = args.usePrivateSubnets || false;
 
         const vpc = new aws.ec2.Vpc(name, {
-            cidrBlock: "10.10.0.0/16",
-            enableDnsHostnames: true,
-            enableDnsSupport: true,
-            tags: {
-                Name: name,
-            },
-        }, { parent: this });
+            cidrBlock: pulumi.output(args.cidrBlock).apply(b => b || "10.10.0.0/16"),
+            enableDnsHostnames: pulumi.output(args.enableDnsHostnames).apply(e => e !== undefined ? e : true),
+            enableDnsSupport: pulumi.output(args.enableDnsSupport).apply(e => e !== undefined ? e : true),
+            tags,
+        }, parentOpts);
 
         this.vpcId = vpc.id;
         this.securityGroupIds = [ vpc.defaultSecurityGroupId ];
-        this.privateRouteTableIds = [];
+        this.subnetIds = [];
+        this.publicSubnetIds = [];
 
         const internetGateway = new aws.ec2.InternetGateway(name, {
             vpcId: vpc.id,
-            tags: {
-                Name: name,
-            },
-        }, { parent: this });
+            tags,
+        }, parentOpts);
 
         const publicRouteTable = new aws.ec2.RouteTable(name, {
             vpcId: vpc.id,
-            routes: [
-                {
+            routes: [{
                     cidrBlock: "0.0.0.0/0",
                     gatewayId: internetGateway.id,
-                },
-            ],
-            tags: {
-                Name: name,
-            },
-        }, { parent: this });
-        this.publicRouteTableId = publicRouteTable.id;
-
-        this.subnetIds = [];
-        this.publicSubnetIds = [];
+                }],
+            tags,
+        }, parentOpts);
 
         for (let i = 0; i < numberOfAvailabilityZones; i++) {
             const subnetName = `${name}-${i}`;
             // Create the subnet for this AZ - either - either public or private
             const subnet = new aws.ec2.Subnet(subnetName, {
                 vpcId: vpc.id,
-                availabilityZone: getAwsAz(i),
+                availabilityZone: getAvailabilityZone(i),
                 cidrBlock: `10.10.${i}.0/24`,         // IDEA: Consider larger default CIDR block sizing
                 mapPublicIpOnLaunch: !this.usePrivateSubnets, // Only assign public IP if we are exposing public subnets
-                tags: {
-                    Name: subnetName,
-                },
-            }, { parent: this });
+                tags: { Name: subnetName },
+            }, parentOpts);
 
             // We will use a different route table for this subnet depending on
             // whether we are in a public or private subnet
-            let subnetRouteTable: aws.ec2.RouteTable;
-
-            if (this.usePrivateSubnets) {
-                // We need a public subnet for the NAT Gateway
-                const natName = `${name}-nat-${i}`;
-                const natGatewayPublicSubnet = new aws.ec2.Subnet(natName, {
-                    vpcId: vpc.id,
-                    availabilityZone: getAwsAz(i),
-                    cidrBlock: `10.10.${i+64}.0/24`, // Use top half of the subnet space
-                    mapPublicIpOnLaunch: true,        // Always assign a public IP in NAT subnet
-                    tags: {
-                        Name: natName,
-                    },
-                }, { parent: this });
-
-                // And we need to route traffic from that public subnet to the Internet Gateway
-                const natGatewayRoutes = new aws.ec2.RouteTableAssociation(natName, {
-                    subnetId: natGatewayPublicSubnet.id,
-                    routeTableId: publicRouteTable.id,
-                }, { parent: this });
-
-                // Record the subnet id, but depend on the RouteTableAssociation
-                const natGatewayPublicSubnetId =
-                    pulumi.all([natGatewayPublicSubnet.id, natGatewayRoutes.id]).apply(([id, _]) => id);
-                this.publicSubnetIds.push(natGatewayPublicSubnetId);
-
-                // We need an Elastic IP for the NAT Gateway
-                const eip = new aws.ec2.Eip(natName, {}, { parent: this });
-
-                // And we need a NAT Gateway to be able to access the Internet
-                const natGateway = new aws.ec2.NatGateway(natName, {
-                    subnetId: natGatewayPublicSubnet.id,
-                    allocationId: eip.id,
-                    tags: {
-                        Name: natName,
-                    },
-                }, { parent: this });
-
-                const natRouteTable = new aws.ec2.RouteTable(natName, {
-                    vpcId: vpc.id,
-                    routes: [{
-                        cidrBlock: "0.0.0.0/0",
-                        natGatewayId: natGateway.id,
-                    }],
-                    tags: {
-                        Name: natName,
-                    },
-                }, { parent: this });
-                this.privateRouteTableIds.push(natRouteTable.id);
-
-                // Route through the NAT gateway for the private subnet
-                subnetRouteTable = natRouteTable;
-            } else /* !privateSubnets */{
-                // Route directly to the Internet Gateway for the public subnet
-                subnetRouteTable = publicRouteTable;
-                // The subnet is public, so register it as our public subnet
-                this.publicSubnetIds.push(subnet.id);
-            }
+            const subnetRouteTable = this.createSubnetRouteTable(
+                publicRouteTable, subnet, name, i);
 
             const routeTableAssociation = new aws.ec2.RouteTableAssociation(`${name}-${i}`, {
                 subnetId: subnet.id,
                 routeTableId: subnetRouteTable.id,
-            }, { parent: this });
+            }, parentOpts);
 
             // Record the subnet id, but depend on the RouteTableAssociation
-            const subnetId = pulumi.all([subnet.id, routeTableAssociation.id]).apply(([id, _]) => id);
+            const subnetId = pulumi.all([subnet.id, routeTableAssociation.id]).apply(([id]) => id);
             this.subnetIds.push(subnetId);
         }
+    }
+
+    private createSubnetRouteTable(
+            publicRouteTable: aws.ec2.RouteTable, subnet: aws.ec2.Subnet,
+            name: string, index: number) {
+        const parentOpts = { parent: this };
+
+        if (!this.usePrivateSubnets) {
+            // The subnet is public, so register it as our public subnet
+            this.publicSubnetIds.push(subnet.id);
+            return publicRouteTable;
+        }
+
+        // We need a public subnet for the NAT Gateway
+        const natName = `${name}-nat-${index}`;
+        const tags = { Name: natName };
+
+        const natGatewayPublicSubnet = new aws.ec2.Subnet(natName, {
+            vpcId: this.vpcId,
+            availabilityZone: getAvailabilityZone(index),
+            cidrBlock: `10.10.${index+64}.0/24`, // Use top half of the subnet space
+            mapPublicIpOnLaunch: true,        // Always assign a public IP in NAT subnet
+            tags,
+        }, parentOpts);
+
+        // And we need to route traffic from that public subnet to the Internet Gateway
+        const natGatewayRoutes = new aws.ec2.RouteTableAssociation(natName, {
+            subnetId: natGatewayPublicSubnet.id,
+            routeTableId: publicRouteTable.id,
+        }, parentOpts);
+
+        // Record the subnet id, but depend on the RouteTableAssociation
+        const natGatewayPublicSubnetId =
+            pulumi.all([natGatewayPublicSubnet.id, natGatewayRoutes.id]).apply(([id]) => id);
+        this.publicSubnetIds.push(natGatewayPublicSubnetId);
+
+        // We need an Elastic IP for the NAT Gateway
+        const eip = new aws.ec2.Eip(natName, {}, parentOpts);
+
+        // And we need a NAT Gateway to be able to access the Internet
+        const natGateway = new aws.ec2.NatGateway(natName, {
+            subnetId: natGatewayPublicSubnet.id,
+            allocationId: eip.id,
+            tags,
+        }, parentOpts);
+
+        const natRouteTable = new aws.ec2.RouteTable(natName, {
+            vpcId: this.vpcId,
+            routes: [{
+                cidrBlock: "0.0.0.0/0",
+                natGatewayId: natGateway.id,
+            }],
+            tags,
+        }, parentOpts);
+
+        // Route through the NAT gateway for the private subnet
+        return natRouteTable;
     }
 }
 
