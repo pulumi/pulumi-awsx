@@ -13,5 +13,6 @@
 // limitations under the License.
 
 export * from "./cluster2";
+export * from "./clusterAutoScaling";
 export * from "./clusterFileSystem";
 export * from "./clusterLoadBalancer";

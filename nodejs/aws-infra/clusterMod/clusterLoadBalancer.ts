@@ -17,8 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import { Cluster2 } from "./cluster2";
 
-import { Network } from "./../network";
-import { Overwrite, sha1hash } from "./../utils";
+import { sha1hash } from "./../utils";
 
 /**
  * Arguments to create an ALB or NLB for a cluster.
@@ -55,22 +54,21 @@ export interface ClusterLoadBalancerArgs {
     certificateArn?: string;
 }
 
-export class ClusterLoadBalancer extends pulumi.ComponentResource {
+export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer {
     public readonly cluster: Cluster2;
-    public readonly loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly listener: aws.elasticloadbalancingv2.Listener;
 
-    constructor(name: string, cluster: Cluster2, args: ClusterLoadBalancerArgs) {
-        super("aws.infra.ClusterLoadBalancer", name, args);
-        this.cluster = cluster;
+    constructor(
+            name: string, cluster: Cluster2,
+            args: ClusterLoadBalancerArgs,
+            opts?: pulumi.ComponentResourceOptions) {
 
         // Load balancers need *very* short names, so we unfortunately have to hash here.
         //
         // Note: Technically, we can only support one LB per service, so only the service name is needed here, but we
         // anticipate this will not always be the case, so we include a set of values which must be unique.
         const longName = `${name}-${args.port}`;
-        const shortName = sha1hash(`${longName}`);
 
         // Create an internal load balancer if requested.
         const internal = cluster.network.usePrivateSubnets && !args.external;
@@ -80,8 +78,7 @@ export class ClusterLoadBalancer extends pulumi.ComponentResource {
         const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
             computeLoadBalancerInfo(args);
 
-        const parentOpts = { parent: this };
-        this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
+        const loadBalancerArgs: aws.elasticloadbalancingv2.LoadBalancerArgs = {
             loadBalancerType: useAppLoadBalancer ? "application" : "network",
             subnets: cluster.network.publicSubnetIds,
             internal: internal,
@@ -90,7 +87,14 @@ export class ClusterLoadBalancer extends pulumi.ComponentResource {
             // default to the VPC's group.
             securityGroups: useAppLoadBalancer ? [ cluster.instanceSecurityGroup.id ] : undefined,
             tags: { Name: longName },
-        }, parentOpts);
+        };
+
+        super(name, loadBalancerArgs, opts);
+
+        this.cluster = cluster;
+
+        const shortName = sha1hash(`${longName}`);
+        const parentOpts = { parent: this };
 
         // Create the target group for the new container/port pair.
         this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
@@ -104,7 +108,7 @@ export class ClusterLoadBalancer extends pulumi.ComponentResource {
 
         // Listen on the requested port on the LB and forward to the target.
         this.listener = new aws.elasticloadbalancingv2.Listener(longName, {
-            loadBalancerArn: this.loadBalancer.arn,
+            loadBalancerArn: this.arn,
             protocol: listenerProtocol,
             certificateArn: certificateArn,
             port: args.port,
@@ -116,12 +120,6 @@ export class ClusterLoadBalancer extends pulumi.ComponentResource {
             // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
             sslPolicy: certificateArn ? "ELBSecurityPolicy-2016-08" : undefined,
         }, parentOpts);
-
-        this.registerOutputs({
-            loadBalancer: this.loadBalancer,
-            targetGroup: this.targetGroup,
-            listener: this.listener,
-        });
     }
 }
 
