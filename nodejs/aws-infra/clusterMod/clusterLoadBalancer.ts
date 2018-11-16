@@ -17,12 +17,12 @@ import * as pulumi from "@pulumi/pulumi";
 
 import { Cluster2 } from "./cluster2";
 
-import { sha1hash } from "./../utils";
+import * as utils from "./../utils";
 
 /**
  * Arguments to create an ALB or NLB for a cluster.
  */
-export interface ClusterLoadBalancerArgs {
+export type ClusterLoadBalancerArgs = utils.Overwrite<aws.elasticloadbalancingv2.LoadBalancerArgs, {
     /**
      * The incoming port where the service exposes the endpoint.
     */
@@ -52,17 +52,16 @@ export interface ClusterLoadBalancerArgs {
      * resource](https://www.terraform.io/docs/providers/aws/r/lb_listener_certificate.html).
      */
     certificateArn?: string;
-}
+}>;
 
 export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer {
     public readonly cluster: Cluster2;
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly listener: aws.elasticloadbalancingv2.Listener;
 
-    constructor(
-            name: string, cluster: Cluster2,
-            args: ClusterLoadBalancerArgs,
-            opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, cluster: Cluster2,
+                args: ClusterLoadBalancerArgs,
+                opts?: pulumi.ComponentResourceOptions) {
 
         // Load balancers need *very* short names, so we unfortunately have to hash here.
         //
@@ -79,6 +78,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
             computeLoadBalancerInfo(args);
 
         const loadBalancerArgs: aws.elasticloadbalancingv2.LoadBalancerArgs = {
+            ...args,
             loadBalancerType: useAppLoadBalancer ? "application" : "network",
             subnets: cluster.network.publicSubnetIds,
             internal: internal,
@@ -93,7 +93,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
 
         this.cluster = cluster;
 
-        const shortName = sha1hash(`${longName}`);
+        const shortName = utils.sha1hash(`${longName}`);
         const parentOpts = { parent: this };
 
         // Create the target group for the new container/port pair.

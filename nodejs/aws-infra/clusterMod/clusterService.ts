@@ -17,7 +17,29 @@ import * as pulumi from "@pulumi/pulumi";
 import { Cluster2 } from "./cluster2";
 
 import * as docker from "@pulumi/docker";
-import * as utils from "./utils";
+import * as utils from "./../utils";
+
+export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
+
+}>;
+
+export class ClusterService extends aws.ecs.Service {
+    public readonly clusterInstance: Cluster2;
+
+    constructor(name: string, cluster: Cluster2,
+                args: ClusterServiceArgs,
+                opts?: pulumi.ResourceOptions) {
+
+        const serviceArgs: aws.ecs.ServiceArgs = {
+            ...args,
+        };
+
+        super(name, serviceArgs, opts);
+
+        this.clusterInstance = cluster;
+    }
+}
+
 
 // import * as config from "./config";
 

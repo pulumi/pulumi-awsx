@@ -17,13 +17,14 @@ import * as pulumi from "@pulumi/pulumi";
 import { RunError } from "@pulumi/pulumi/errors";
 import { getAvailabilityZone } from "./aws";
 import { ClusterNetworkArgs } from "./cluster";
-import * as utils from "./utils";
+
+import * as utils from "../utils";
 
 export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
     /** Not provided.  Use [imageDefinition] instead. */
     image?: never;
 
-
+    imageDefinition: ImageDefinition;
 }>;
 
 // export class ContainerDefinition extends pulumi.ComponentResource {

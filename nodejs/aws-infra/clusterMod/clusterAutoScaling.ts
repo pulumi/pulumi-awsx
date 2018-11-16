@@ -162,10 +162,9 @@ export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfigu
      */
     public readonly stackName: pulumi.Output<string>;
 
-    constructor(
-            name: string, cluster: Cluster2,
-            args: ClusterAutoScalingLaunchConfigurationArgs = {},
-            opts?: pulumi.CustomResourceOptions) {
+    constructor(name: string, cluster: Cluster2,
+                args: ClusterAutoScalingLaunchConfigurationArgs = {},
+                opts?: pulumi.CustomResourceOptions) {
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.
@@ -177,6 +176,7 @@ export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfigu
         const instanceProfile = getInstanceProfile(cluster, args);
 
         const launchConfigArgs: aws.ec2.LaunchConfigurationArgs = {
+            ...args,
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: pulumi.output(args.instanceType).apply(t => t || "t2.micro"),
             keyName: args.keyName,
@@ -186,7 +186,7 @@ export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfigu
             rootBlockDevice: pulumi.output(args.rootBlockDevice).apply(d => d || defaultRootBlockDevice),
             ebsBlockDevices: pulumi.output(args.ebsBlockDevices).apply(d => d || defaultEbsBlockDevices),
             securityGroups: pulumi.output(args.securityGroups).apply(g => g || [ cluster.instanceSecurityGroup.id ]),
-            userData: getInstanceUserData(cluster.resource, args, stackName),
+            userData: getInstanceUserData(cluster, args, stackName),
         };
 
         super(name, launchConfigArgs, opts);
@@ -290,7 +290,7 @@ async function getEcsAmiId(name?: string): Promise<string> {
 // https://github.com/convox/rack/blob/023831d8/provider/aws/dist/rack.json#L1669
 // https://github.com/awslabs/amazon-ecs-amazon-efs/blob/d92791f3/amazon-efs-ecs.json#L655
 function getInstanceUserData(
-    cluster: aws.ecs.Cluster,
+    cluster: Cluster2,
     args: ClusterAutoScalingLaunchConfigurationArgs,
     cloudFormationStackName: pulumi.Output<string>) {
 

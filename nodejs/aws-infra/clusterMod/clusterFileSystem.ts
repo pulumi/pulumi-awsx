@@ -17,10 +17,12 @@ import * as pulumi from "@pulumi/pulumi";
 
 import { Cluster2 } from "./cluster2";
 
+import * as utils from "../utils";
+
 /**
  * Arguments for creating a file system for a cluster.
  */
-export interface ClusterFileSystemArgs {
+export type ClusterFileSystemArgs = utils.Overwrite<aws.efs.FileSystemArgs, {
     /**
      * The security group to use for the file system.  If not provided, a default one that allows
      * ingress for the cluster's VPC from port 2049 will be created.
@@ -38,18 +40,23 @@ export interface ClusterFileSystemArgs {
      * provided, the default mountPath will be "/mnt/efs"
      */
     mountPath?: pulumi.Input<string>;
-}
+}>;
 
 export class ClusterFileSystem extends aws.efs.FileSystem {
     public readonly cluster: Cluster2;
     public readonly securityGroup: aws.ec2.SecurityGroup;
-    public readonly mountTargets: aws.efs.MountTarget[] = [];
+    public readonly mountTargets: aws.efs.MountTarget[];
 
     constructor(name: string, cluster: Cluster2,
                 args: ClusterFileSystemArgs = {}, opts?: pulumi.CustomResourceOptions) {
-        super(name, {}, opts);
+        const fileSystemArgs: aws.efs.FileSystemArgs = {
+            ...args,
+        };
+
+        super(name, fileSystemArgs, opts);
 
         this.cluster = cluster;
+        this.mountTargets = [];
 
         // If requested, add EFS file system and mount targets in each subnet.
         const parentOpts = { parent: this };

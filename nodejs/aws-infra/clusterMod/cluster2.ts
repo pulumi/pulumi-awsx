@@ -19,13 +19,17 @@ import { ClusterAutoScalingGroup, ClusterAutoScalingGroupArgs,
          ClusterAutoScalingLaunchConfiguration, ClusterAutoScalingLaunchConfigurationArgs } from "./clusterAutoScaling";
 import { ClusterFileSystem, ClusterFileSystemArgs } from "./clusterFileSystem";
 import { ClusterLoadBalancer, ClusterLoadBalancerArgs } from "./clusterLoadBalancer";
+import { ClusterService, ClusterServiceArgs } from "./clusterService";
+import { ClusterTaskDefinition, ClusterTaskDefinitionArgs } from "./clusterTaskDefinition";
 
 import { Network } from "./../network";
+
+import * as utils from "../utils";
 
 /**
  * Arguments bag for creating infrastructure for a new Cluster.
  */
-export interface ClusterArgs2 {
+export type ClusterArgs2 = utils.Overwrite<aws.ecs.ClusterArgs, {
     /**
      * The network in which to create this cluster.
      */
@@ -36,20 +40,16 @@ export interface ClusterArgs2 {
      * created.
      */
     instanceSecurityGroup?: aws.ec2.SecurityGroup;
-}
+}>;
 
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
  */
-export class Cluster2 extends pulumi.ComponentResource {
+export class Cluster2 extends aws.ecs.Cluster {
     /**
      * The network in which to create this cluster.
      */
     public readonly network: Network;
-    /**
-     * The Underlying ECS Cluster.
-     */
-    public readonly resource: aws.ecs.Cluster;
     /**
      * The ECS Cluster's Security Group.
      */
@@ -60,14 +60,16 @@ export class Cluster2 extends pulumi.ComponentResource {
             throw new pulumi.RunError("Expected a valid Network to use for creating Cluster");
         }
 
-        super("aws-infra:cluster:Cluster", name, args, opts);
+        const clusterArgs: aws.ecs.ClusterArgs = {
+            ...args,
+        };
+
+        super(name, clusterArgs, opts);
 
         this.network = args.network;
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
-        const cluster = new aws.ecs.Cluster(name, {}, parentOpts);
-        this.resource = cluster;
 
         // Create the EC2 instance security group
         const ALL = {
@@ -102,12 +104,6 @@ export class Cluster2 extends pulumi.ComponentResource {
             egress: [ ALL ],  // See TerraformEgressNote
             tags: { Name: name },
         }, parentOpts);
-
-        this.registerOutputs({
-            network: this.network,
-            resource: this.resource,
-            instanceSecurityGroup: this.instanceSecurityGroup,
-        });
     }
 
     public createFileSystem(name: string, args?: ClusterFileSystemArgs) {
@@ -131,8 +127,16 @@ export class Cluster2 extends pulumi.ComponentResource {
     /**
      * Creates an ALB or NLB for this cluster
      */
-    public createLoadBalancer(name: string, args: ClusterLoadBalancerArgs): ClusterLoadBalancer {
+    public createLoadBalancer(name: string, args: ClusterLoadBalancerArgs) {
         return new ClusterLoadBalancer(name, this, args, { parent: this });
+    }
+
+    public createTaskDefinition(name: string, args: ClusterTaskDefinitionArgs) {
+        return new ClusterTaskDefinition(name, this, args, { parent: this });
+    }
+
+    public createService(name: string, args: ClusterServiceArgs) {
+        return new ClusterService(name, this, args, { parent: this });
     }
 }
 

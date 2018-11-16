@@ -16,3 +16,5 @@ export * from "./cluster2";
 export * from "./clusterAutoScaling";
 export * from "./clusterFileSystem";
 export * from "./clusterLoadBalancer";
+export * from "./clusterService";
+export * from "./clusterTaskDefinition";
