@@ -12,7 +12,8 @@
     "repository": "https://github.com/pulumi/pulumi-aws-infra",
     "dependencies": {
         "@pulumi/pulumi": "^0.16.4",
-        "@pulumi/aws": "^0.16.2"
+        "@pulumi/aws": "^0.16.2",
+        "@pulumi/docker": "^0.16.1"
     },
     "devDependencies": {
         "@types/aws-sdk": "^2.7.0",
