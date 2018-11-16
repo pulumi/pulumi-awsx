@@ -6,3 +6,4 @@ vendor/
 **/yarn-error.log
 **/.idea
 *.pyc
+yarn.lock
