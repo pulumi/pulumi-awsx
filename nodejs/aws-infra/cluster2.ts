@@ -195,7 +195,7 @@ export type LaunchConfigurationArgs = Overwrite<aws.ec2.LaunchConfigurationArgs,
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
  */
-export class Cluster extends pulumi.ComponentResource {
+export class Cluster2 extends pulumi.ComponentResource {
     /**
      * The network in which to create this cluster.
      */
@@ -326,7 +326,7 @@ export class Cluster extends pulumi.ComponentResource {
         // references the launch configuration and vice-versa, we use this to break the cycle.
         // TODO[pulumi/pulumi#381]: Creating an S3 bucket is an inelegant way to get a durable,
         // unique name.
-        const stackName = pulumi.output(args.stackName) || new aws.s3.Bucket(name).id;
+        const stackName = pulumi.output(args.stackName!) || new aws.s3.Bucket(name).id;
 
         const launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
@@ -378,7 +378,7 @@ const defaultEbsBlockDevices = [{
         deleteOnTermination: true,
     }];
 
-function getInstanceProfile(parent: Cluster, args: LaunchConfigurationArgs) {
+function getInstanceProfile(parent: Cluster2, args: LaunchConfigurationArgs) {
     if (args.instanceProfile) {
         return args.instanceProfile;
     }
@@ -404,7 +404,7 @@ function getInstanceProfile(parent: Cluster, args: LaunchConfigurationArgs) {
     }, { dependsOn: instanceRolePolicies, parent: parent });
 }
 
-(<any>Cluster).doNotCapture = true;
+(<any>Cluster2).doNotCapture = true;
 
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
 async function getEcsAmiId(name?: string): Promise<string> {
