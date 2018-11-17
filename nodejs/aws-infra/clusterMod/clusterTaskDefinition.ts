@@ -187,6 +187,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         const taskRole = args.taskRole || createTaskRole(opts);
         const executionRole = args.executionRole || createExecutionRole(opts);
 
+        const containers = args.containers;
         const loadBalancer = createLoadBalancer(
             cluster, singleContainerWithLoadBalancerPort(containers));
 
@@ -542,7 +543,7 @@ export class EC2TaskDefinition extends ClusterTaskDefinition {
     protected isFargate: () => false;
 
     constructor(name: string, cluster: Cluster2,
-                args: FargateTaskDefinitionArgs,
+                args: EC2TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
@@ -554,11 +555,11 @@ export class EC2TaskDefinition extends ClusterTaskDefinition {
             ...args,
             containers,
             requiresCompatibilities: ["EC2"],
+            networkMode: pulumi.output(args.networkMode).apply(m => m || "awsvpc"),
         };
 
         // baseArgs.requiresCompatibilities = ["EC2"];
         // baseArgs.networkMode = "awsvpc";
-        throw new Error("Should we set the networking mode?");
 
         super(name, cluster, baseArgs, opts);
     }
