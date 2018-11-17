@@ -19,12 +19,14 @@ import { Cluster2 } from "./cluster2";
 import * as docker from "@pulumi/docker";
 import * as utils from "./../utils";
 import { ClusterTaskDefinition,
-         ClusterTaskDefinitionArgs,
          EC2TaskDefinition,
          EC2TaskDefinitionArgs,
          FargateTaskDefinition,
          FargateTaskDefinitionArgs,
-         singleContainerWithLoadBalancerPort} from "./clusterTaskDefinition";
+         placementConstraintsForHost,
+         singleContainerWithLoadBalancerPort } from "./clusterTaskDefinition";
+
+import { ClusterAutoScalingGroup } from "./clusterAutoScaling";
 
 export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
     /**
@@ -44,12 +46,20 @@ export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
      */
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
 
+    os?: pulumi.Input<"linux" | "windows">;
+
     /**
      * Wait for the service to reach a steady state (like [`aws ecs wait
      * services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html))
      * before continuing. Defaults to `true`.
      */
     waitForSteadyState?: pulumi.Input<boolean>;
+
+    /**
+     * Optional auto-scaling group for the cluster.  Can be created with
+     * [cluster.createAutoScalingGroup]
+     */
+    autoScalingGroup?: ClusterAutoScalingGroup;
 }>;
 
 export type FargateServiceArgs = utils.Overwrite<ClusterServiceArgs, {
@@ -89,7 +99,7 @@ export class ClusterService extends aws.ecs.Service {
 
     constructor(name: string, cluster: Cluster2,
                 args: ClusterServiceArgs,
-                opts?: pulumi.ResourceOptions) {
+                opts: pulumi.ResourceOptions = {}) {
 
         const loadBalancers = createLoadBalancers(args.taskDefinition);
 
@@ -101,11 +111,18 @@ export class ClusterService extends aws.ecs.Service {
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
             launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
             waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
+            placementConstraints: pulumi.output(args.os).apply(os => placementConstraintsForHost(os)),
         };
 
-        throw new Error("implement placementConstraints");
+        // If the cluster has an autoscaling group, ensure the service depends on it being created.
+        if (args.autoScalingGroup) {
+            const dependsOn = opts.dependsOn
+                ? Array.isArray(opts.dependsOn) ? opts.dependsOn : [opts.dependsOn]
+                : [];
 
-//             placementConstraints: placementConstraintsForHost(args.host),
+            dependsOn.push(args.autoScalingGroup);
+            opts.dependsOn = dependsOn;
+        }
 
         super(name, serviceArgs, opts);
 
@@ -183,119 +200,6 @@ export class EC2Service extends ClusterService {
     }
 }
 
-
-// import * as config from "./config";
-
-// import { createNameWithStackInfo, getCluster, getComputeIAMRolePolicies,
-//     getGlobalInfrastructureResource, getOrCreateNetwork } from "./shared";
-
-
-// interface ContainerPortLoadBalancer {
-//     loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
-//     targetGroup: aws.elasticloadbalancingv2.TargetGroup;
-//     protocol: cloud.ContainerProtocol;
-// }
-
-// // createLoadBalancer allocates a new Load Balancer and TargetGroup that can be attached to a Service container and port
-// // pair.
-// function createLoadBalancer(
-//         parent: pulumi.Resource,
-//         cluster: CloudCluster,
-//         serviceName: string,
-//         containerName: string,
-//         portMapping: cloud.ContainerPort,
-//         network: CloudNetwork): ContainerPortLoadBalancer {
-
-//     // Load balancers need *very* short names, so we unfortunately have to hash here.
-//     //
-//     // Note: Technically, we can only support one LB per service, so only the service name is needed here, but we
-//     // anticipate this will not always be the case, so we include a set of values which must be unique.
-//     const longName = `${serviceName}-${containerName}-${portMapping.port}`;
-//     const shortName = utils.sha1hash(`${longName}`);
-
-//     // Create an internal load balancer if requested.
-//     const internal = network.usePrivateSubnets && !portMapping.external;
-//     const portMappingProtocol: cloud.ContainerProtocol = portMapping.protocol || "tcp";
-
-//     // See what kind of load balancer to create (application L7 for HTTP(S) traffic, or network L4 otherwise).
-//     // Also ensure that we have an SSL certificate for termination at the LB, if that was requested.
-//     let protocol: string;
-//     let targetProtocol: string;
-//     let useAppLoadBalancer: boolean;
-//     let useCertificateARN: string | undefined;
-//     switch (portMappingProtocol) {
-//         case "https":
-//             protocol = "HTTPS";
-//             // Set the target protocol to HTTP, so that the ELB terminates the SSL traffic.
-//             // IDEA: eventually we should let users choose where the SSL termination occurs.
-//             targetProtocol = "HTTP";
-//             useAppLoadBalancer = true;
-//             useCertificateARN = config.acmCertificateARN;
-//             if (!useCertificateARN) {
-//                 throw new Error("Cannot create Service for HTTPS trafic. No ACM certificate ARN configured.");
-//             }
-//             break;
-//         case "http":
-//             protocol = "HTTP";
-//             targetProtocol = "HTTP";
-//             useAppLoadBalancer = true;
-//             break;
-//         case "udp":
-//             throw new Error("UDP protocol unsupported for Services");
-//         case "tcp":
-//             protocol = "TCP";
-//             targetProtocol = "TCP";
-//             useAppLoadBalancer = false;
-//             break;
-//         default:
-//             throw new Error(`Unrecognized Service protocol: ${portMapping.protocol}`);
-//     }
-
-//     const loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
-//         loadBalancerType: useAppLoadBalancer ? "application" : "network",
-//         subnets: network.publicSubnetIds,
-//         internal: internal,
-//         // If this is an application LB, we need to associate it with the ECS cluster's security group, so
-//         // that traffic on any ports can reach it.  Otherwise, leave blank, and default to the VPC's group.
-//         securityGroups: (useAppLoadBalancer && cluster.securityGroupId) ? [ cluster.securityGroupId ] : undefined,
-//         tags: {
-//             Name: longName,
-//         },
-//     }, {parent: parent});
-
-//     // Create the target group for the new container/port pair.
-//     const target = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
-//         port: portMapping.targetPort || portMapping.port,
-//         protocol: targetProtocol,
-//         vpcId: network.vpcId,
-//         deregistrationDelay: 180, // 3 minutes
-//         tags: {
-//             Name: longName,
-//         },
-//         targetType: "ip",
-//     }, { parent: parent });
-
-//     // Listen on the requested port on the LB and forward to the target.
-//     const listener = new aws.elasticloadbalancingv2.Listener(longName, {
-//         loadBalancerArn: loadBalancer!.arn,
-//         protocol: protocol,
-//         certificateArn: useCertificateARN,
-//         port: portMapping.port,
-//         defaultAction: {
-//             type: "forward",
-//             targetGroupArn: target.arn,
-//         },
-//         // If SSL is used, we automatically insert the recommended ELB security policy from
-//         // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
-//         sslPolicy: useCertificateARN ? "ELBSecurityPolicy-2016-08" : undefined,
-//     }, { parent: parent });
-
-//     return {
-//         loadBalancer: loadBalancer,
-//         targetGroup: target,
-//         protocol: portMappingProtocol,
-//     };
-// }
 
 // // getImageName generates an image name from a container definition.  It uses a combination of the container's name and
 // // container specification to normalize the names of resulting repositories.  Notably, this leads to better caching in

@@ -23,7 +23,7 @@ import * as utils from "../utils";
 import { Cluster2 } from "./../clusterMod";
 import { ClusterLoadBalancer, ClusterLoadBalancerPort } from "./clusterLoadBalancer";
 
-export type TaskHost = "linux" | "windows";
+export declare type HostOperatingSystem = "linux" | "windows";
 
 export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
     /**
@@ -158,6 +158,11 @@ export interface TaskRunOptions {
     containerName?: string;
 
     /**
+     * The OS to run.  Defaults to 'linux' if unspecified.
+     */
+    os?: HostOperatingSystem;
+
+    /**
      * Optional environment variables to override those set in the container definition.
      */
     environment?: Record<string, string>;
@@ -288,7 +293,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
             const res = await ecs.runTask({
                 cluster: cluster.arn.get(),
                 taskDefinition: this.arn.get(),
-                // placementConstraints: placementConstraintsForHost(options && options.host),
+                placementConstraints: placementConstraintsForHost(options && options.os),
                 launchType: isFargate ? "FARGATE" : "EC2",
                 networkConfiguration: {
                     awsvpcConfiguration: {
@@ -326,6 +331,15 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
             }
         };
     }
+}
+
+export function placementConstraintsForHost(os: HostOperatingSystem | undefined) {
+    os = os || "linux";
+
+    return [{
+        type: "memberOf",
+        expression: `attribute:ecs.os-type == ${os}`,
+    }];
 }
 
 function createLoadBalancer(

@@ -363,25 +363,24 @@ function getInstanceUserData(
     });
 }
 
-export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
+export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
     public readonly cluster: Cluster2;
-    public readonly stack: any;
 
     constructor(name: string, cluster: Cluster2, args: ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
-        super("aws.infra.ClusterAutoScalingGroup", name, args, opts);
-
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
         const launchConfiguration = args.launchConfiguration || cluster.createAutoScalingLaunchConfig(name);
 
-        // Finally, create the AutoScaling Group.
-        const stack = new aws.cloudformation.Stack(name, {
+        const stackArgs: aws.cloudformation.StackArgs = {
+            ...args,
             name: launchConfiguration.stackName,
             templateBody: getCloudFormationTemplate(
                 name,
                 launchConfiguration.id,
                 cluster.network.subnetIds,
                 args.templateParameters || {}),
-        }, { parent: this });
+        };
+
+        super(name, stackArgs, opts);
     }
 }
 
