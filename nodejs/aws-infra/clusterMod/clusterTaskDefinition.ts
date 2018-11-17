@@ -38,7 +38,7 @@ export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
      */
     loadBalancerPort?: ClusterLoadBalancerPort;
 
-    environment?: pulumi.Input<Record<string, pulumi.Input<string>>;
+    environment?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }>;
 
 export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
@@ -49,23 +49,14 @@ export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionAr
     //  */
     // createLoadBalancer: boolean;
 
-    /** Not used.  Provide [container] or [containers] instead. */
+    /** Not used.  Provide  [containers] instead. */
     containerDefinitions?: never;
-
-    /**
-     * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
-     * aren't multiple containers, especially when creating a ClusterTaskDefinition to call [run]
-     * on.
-     *
-     * Either [container] or [containers] must be provided.
-     */
-    container?: ContainerDefinition;
 
     /**
      * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
      * ClusterService that will contain many containers within.
      */
-    containers?: Record<string, ContainerDefinition>;
+    containers: Record<string, ContainerDefinition>;
 
     /**
      * Log group for logging information related to the service.  If not provided a default instance
@@ -125,6 +116,15 @@ export type FargateTaskDefinitionArgs = utils.Overwrite<ClusterTaskDefinitionArg
 
     /** Not provided.  Defaults automatically to "awsvpc" */
     networkMode?: never;
+
+    /**
+     * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
+     * aren't multiple containers, especially when creating a ClusterTaskDefinition to call [run]
+     * on.
+     *
+     * Either [container] or [containers] must be provided.
+     */
+    container?: ContainerDefinition;
 }>;
 
 export type EC2TaskDefinitionArgs = utils.Overwrite<ClusterTaskDefinitionArgs, {
@@ -139,6 +139,15 @@ export type EC2TaskDefinitionArgs = utils.Overwrite<ClusterTaskDefinitionArgs, {
      * Not provided for ec2 task definitions.
      */
     memory?: never;
+
+    /**
+     * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
+     * aren't multiple containers, especially when creating a ClusterTaskDefinition to call [run]
+     * on.
+     *
+     * Either [container] or [containers] must be provided.
+     */
+    container?: ContainerDefinition;
 }>;
 
 export interface TaskRunOptions {
@@ -154,7 +163,7 @@ export interface TaskRunOptions {
     environment?: Record<string, string>;
 }
 
-export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
+export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     public readonly cluster: Cluster2;
     public readonly logGroup: aws.cloudwatch.LogGroup;
     public readonly loadBalancer?: ClusterLoadBalancer;
@@ -165,14 +174,11 @@ export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
      */
     public readonly run: (options?: TaskRunOptions) => Promise<void>;
 
+    protected abstract isFargate(): boolean;
+
     constructor(name: string, cluster: Cluster2,
                 args: ClusterTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
-        if (!args.container && !args.containers) {
-            throw new Error("Either [container] or [containers] must be provided");
-        }
-
-        const containers = args.containers || { container: args.container! };
 
         const logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
@@ -180,19 +186,6 @@ export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
 
         const taskRole = args.taskRole || createTaskRole(opts);
         const executionRole = args.executionRole || createExecutionRole(opts);
-
-            // const taskDefinition = new aws.ecs.TaskDefinition(name, {
-    //     family: name,
-    //     containerDefinitions: containerDefinitions.apply(JSON.stringify),
-    //     volumes: volumes,
-    //     taskRoleArn: getTaskRole().arn,
-    //     requiresCompatibilities: config.useFargate ? ["FARGATE"] : undefined,
-    //     memory: config.useFargate ? taskMemoryAndCPU.apply(t => t.memory) : undefined,
-    //     cpu: config.useFargate ? taskMemoryAndCPU.apply(t => t.cpu) : undefined,
-    //     networkMode: "awsvpc",
-    //     executionRoleArn: getExecutionRole().arn,
-    // }, { parent: parent });
-
 
         const loadBalancer = createLoadBalancer(
             cluster, singleContainerWithLoadBalancerPort(containers));
@@ -270,6 +263,7 @@ export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         const securityGroupId =  cluster.instanceSecurityGroup.id;
 
         const containersOutput = pulumi.output(containers);
+        const isFargate = this.isFargate();
 
         this.run = async function (options: TaskRunOptions = {}) {
             const ecs = new aws.sdk.ECS();
@@ -277,7 +271,7 @@ export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
             const innerContainers = containersOutput.get();
             const containerName = options.containerName || Object.keys(innerContainers)[0];
             if (!containerName) {
-                throw new Error("No valid container name found to run task for.")
+                throw new Error("No valid container name found to run task for.");
             }
 
             const container = innerContainers[containerName];
@@ -287,15 +281,14 @@ export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
             addEnvironmentVariables(container.environment);
             addEnvironmentVariables(options && options.environment);
 
-            const useFargate = this.requiresCompatibilities.get()[0] === "FARGATE";
-            const assignPublicIp = useFargate && !cluster.network.usePrivateSubnets;
+            const assignPublicIp = isFargate && !cluster.network.usePrivateSubnets;
 
             // Run the task
             const res = await ecs.runTask({
                 cluster: cluster.arn.get(),
                 taskDefinition: this.arn.get(),
                 // placementConstraints: placementConstraintsForHost(options && options.host),
-                launchType: useFargate ? "FARGATE" : "EC2",
+                launchType: isFargate ? "FARGATE" : "EC2",
                 networkConfiguration: {
                     awsvpcConfiguration: {
                         assignPublicIp: assignPublicIp ? "ENABLED" : "DISABLED",
@@ -466,27 +459,100 @@ function createExecutionRole(opts?: pulumi.ResourceOptions): aws.iam.Role {
 }
 
 export class FargateTaskDefinition extends ClusterTaskDefinition {
+    protected isFargate: () => true;
+
     constructor(name: string, cluster: Cluster2,
                 args: FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
+
+        if (!args.container && !args.containers) {
+            throw new Error("Either [container] or [containers] must be provided");
+        }
+
+        const containers = args.containers || { container: args.container! };
+        const { memory, cpu } = computeFargateMemoryAndCPU(containers);
+
         const baseArgs: ClusterTaskDefinitionArgs = {
             ...args,
+            containers,
             requiresCompatibilities: ["FARGATE"],
             networkMode: "awsvpc",
+            memory: args.memory || memory,
+            cpu: args.cpu || cpu,
         };
-
-        throw new Error("Set memory and cpu");
 
         super(name, cluster, baseArgs, opts);
     }
 }
 
+function computeFargateMemoryAndCPU(containers: Record<string, ContainerDefinition>) {
+    // Sum the requested memory and CPU for each container in the task.
+    let minTaskMemory = 0;
+    let minTaskCPU = 0;
+    for (const containerName of Object.keys(containers)) {
+        const containerDef = containers[containerName];
+
+        if (containerDef.memoryReservation) {
+            minTaskMemory += containerDef.memoryReservation;
+        } else if (containerDef.memory) {
+            minTaskMemory += containerDef.memory;
+        }
+
+        if (containerDef.cpu) {
+            minTaskCPU += containerDef.cpu;
+        }
+    }
+
+    // Compute the smallest allowed Fargate memory value compatible with the requested minimum memory.
+    let taskMemory: number;
+    let taskMemoryString: string;
+    if (minTaskMemory <= 512) {
+        taskMemory = 512;
+        taskMemoryString = "0.5GB";
+    } else {
+        const taskMemGB = minTaskMemory / 1024;
+        const taskMemWholeGB = Math.ceil(taskMemGB);
+        taskMemory = taskMemWholeGB * 1024;
+        taskMemoryString = `${taskMemWholeGB}GB`;
+    }
+
+    // Allowed CPU values are powers of 2 between 256 and 4096.  We just ensure it's a power of 2 that is at least
+    // 256. We leave the error case for requiring more CPU than is supported to ECS.
+    let taskCPU = Math.pow(2, Math.ceil(Math.log2(Math.max(minTaskCPU, 256))));
+
+    // Make sure we select an allowed CPU value for the specified memory.
+    if (taskMemory > 16384) {
+        taskCPU = Math.max(taskCPU, 4096);
+    } else if (taskMemory > 8192) {
+        taskCPU = Math.max(taskCPU, 2048);
+    } else if (taskMemory > 4096) {
+        taskCPU = Math.max(taskCPU, 1024);
+    } else if (taskMemory > 2048) {
+        taskCPU = Math.max(taskCPU, 512);
+    }
+
+    // Return the computed task memory and CPU values
+    return {
+        memory: taskMemoryString,
+        cpu: `${taskCPU}`,
+    };
+}
+
 export class EC2TaskDefinition extends ClusterTaskDefinition {
+    protected isFargate: () => false;
+
     constructor(name: string, cluster: Cluster2,
                 args: FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
+        if (!args.container && !args.containers) {
+            throw new Error("Either [container] or [containers] must be provided");
+        }
+
+        const containers = args.containers || { container: args.container! };
+
         const baseArgs: ClusterTaskDefinitionArgs = {
             ...args,
+            containers,
             requiresCompatibilities: ["EC2"],
         };
 
