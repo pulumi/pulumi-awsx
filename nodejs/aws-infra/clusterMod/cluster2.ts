@@ -19,8 +19,11 @@ import { ClusterAutoScalingGroup, ClusterAutoScalingGroupArgs,
          ClusterAutoScalingLaunchConfiguration, ClusterAutoScalingLaunchConfigurationArgs } from "./clusterAutoScaling";
 import { ClusterFileSystem, ClusterFileSystemArgs } from "./clusterFileSystem";
 import { ClusterLoadBalancer, ClusterLoadBalancerArgs } from "./clusterLoadBalancer";
-import { ClusterService, ClusterServiceArgs, FargateServiceArgs, FargateService, EC2Service, EC2ServiceArgs } from "./clusterService";
-import { ClusterTaskDefinition, ClusterTaskDefinitionArgs, FargateTaskDefinition, FargateTaskDefinitionArgs, EC2TaskDefinitionArgs, EC2TaskDefinition } from "./clusterTaskDefinition";
+import { EC2Service, EC2ServiceArgs, FargateService, FargateServiceArgs } from "./clusterService";
+import { EC2TaskDefinition,
+         EC2TaskDefinitionArgs,
+         FargateTaskDefinition,
+         FargateTaskDefinitionArgs } from "./clusterTaskDefinition";
 
 import { Network } from "./../network";
 
@@ -131,9 +134,9 @@ export class Cluster2 extends aws.ecs.Cluster {
         return new ClusterLoadBalancer(name, this, args, { parent: this });
     }
 
-    public createTaskDefinition(name: string, args: ClusterTaskDefinitionArgs) {
-        return new ClusterTaskDefinition(name, this, args, { parent: this });
-    }
+    // public createTaskDefinition(name: string, args: ClusterTaskDefinitionArgs) {
+    //     return new ClusterTaskDefinition(name, this, args, { parent: this });
+    // }
 
     public createFargateTaskDefinition(name: string, args: FargateTaskDefinitionArgs) {
         return new FargateTaskDefinition(name, this, args, { parent: this });
@@ -143,9 +146,9 @@ export class Cluster2 extends aws.ecs.Cluster {
         return new EC2TaskDefinition(name, this, args, { parent: this });
     }
 
-    public createService(name: string, args: ClusterServiceArgs) {
-        return new ClusterService(name, this, args, { parent: this });
-    }
+    // public createService(name: string, args: ClusterServiceArgs) {
+    //     return new ClusterService(name, this, args, { parent: this });
+    // }
 
     public createFargateService(name: string, args: FargateServiceArgs) {
         return new FargateService(name, this, args, { parent: this });

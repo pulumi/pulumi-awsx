@@ -18,10 +18,20 @@ import { Cluster2 } from "./cluster2";
 
 import * as docker from "@pulumi/docker";
 import * as utils from "./../utils";
-import { ClusterTaskDefinitionArgs, ClusterTaskDefinition, singleContainerWithLoadBalancerPort } from "./clusterTaskDefinition";
+import { ClusterTaskDefinition,
+         ClusterTaskDefinitionArgs,
+         EC2TaskDefinition,
+         EC2TaskDefinitionArgs,
+         FargateTaskDefinition,
+         FargateTaskDefinitionArgs,
+         singleContainerWithLoadBalancerPort} from "./clusterTaskDefinition";
 
 export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
+    /**
+     * The task definition to create the service from.
+     */
     taskDefinition: ClusterTaskDefinition;
+
     /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do
      * not specify if using the `DAEMON` scheduling strategy.
@@ -43,10 +53,34 @@ export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
 }>;
 
 export type FargateServiceArgs = utils.Overwrite<ClusterServiceArgs, {
+    /**
+     * The task definition to create the service from.  Either [taskDefinition] or
+     * [taskDefinitionArgs] must be provided.
+     */
+    taskDefinition?: FargateTaskDefinition;
+
+    /**
+     * The task definition to create the service from.  Either [taskDefinition] or
+     * [taskDefinitionArgs] must be provided.
+     */
+    taskDefinitionArgs?: FargateTaskDefinitionArgs;
+
     launchType: never;
 }>;
 
 export type EC2ServiceArgs = utils.Overwrite<ClusterServiceArgs, {
+    /**
+     * The task definition to create the service from.  Either [taskDefinition] or
+     * [taskDefinitionArgs] must be provided.
+     */
+    taskDefinition?: EC2TaskDefinition;
+
+    /**
+     * The task definition to create the service from.  Either [taskDefinition] or
+     * [taskDefinitionArgs] must be provided.
+     */
+    taskDefinitionArgs?: EC2TaskDefinitionArgs;
+
     launchType: never;
 }>;
 
@@ -57,12 +91,7 @@ export class ClusterService extends aws.ecs.Service {
                 args: ClusterServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
-        const loadBalancer = args.taskDefinition.loadBalancer;
-        const loadBalancers = !loadBalancer
-            ? []
-            : [{
-                containerName: loadBalancer.containerName,
-            }];
+        const loadBalancers = createLoadBalancers(args.taskDefinition);
 
         const serviceArgs: aws.ecs.ServiceArgs = {
             ...args,
@@ -74,18 +103,9 @@ export class ClusterService extends aws.ecs.Service {
             waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
         };
 
-        //             desiredCount: replicas,
-//             taskDefinition: taskDefinition.task.arn,
-//             cluster: cluster.ecsClusterARN,
-//             loadBalancers: loadBalancers,
+        throw new Error("implement placementConstraints");
+
 //             placementConstraints: placementConstraintsForHost(args.host),
-//             healthCheckGracePeriodSeconds: args.healthCheckGracePeriodSeconds,
-//             launchType: config.useFargate ? "FARGATE" : "EC2",
-//             networkConfiguration: {
-//                 assignPublicIp: config.useFargate && !network.usePrivateSubnets,
-//                 securityGroups: securityGroups,
-//                 subnets: network.subnetIds,
-//             },
 
         super(name, serviceArgs, opts);
 
@@ -93,13 +113,37 @@ export class ClusterService extends aws.ecs.Service {
     }
 }
 
+export function createLoadBalancers(taskDefinition: ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {
+    if (!taskDefinition.loadBalancer) {
+        return [];
+    }
+
+    const { containerName, container } = singleContainerWithLoadBalancerPort(taskDefinition.containers)!;
+    const loadBalancerPort = container.loadBalancerPort!;
+    const loadBalancer = {
+        containerName,
+        containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
+        targetGroupArn: taskDefinition.loadBalancer.targetGroup.arn,
+    };
+
+    return [loadBalancer];
+}
+
 export class FargateService extends ClusterService {
     constructor(name: string, cluster: Cluster2,
                 args: FargateServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
+        if (!args.taskDefinition && !args.taskDefinitionArgs) {
+            throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
+        }
+
+        const taskDefinition = args.taskDefinition ||
+            new FargateTaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
+
         const serviceArgs: ClusterServiceArgs = {
             ...args,
+            taskDefinition,
             launchType: "FARGATE",
             networkConfiguration: {
                 assignPublicIp: !cluster.network.usePrivateSubnets,
@@ -117,8 +161,16 @@ export class EC2Service extends ClusterService {
                 args: EC2ServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
+        if (!args.taskDefinition && !args.taskDefinitionArgs) {
+            throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
+        }
+
+        const taskDefinition = args.taskDefinition ||
+            new EC2TaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
+
         const serviceArgs: ClusterServiceArgs = {
             ...args,
+            taskDefinition,
             launchType: "EC2",
             networkConfiguration: {
                 assignPublicIp: false,

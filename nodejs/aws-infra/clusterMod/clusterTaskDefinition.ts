@@ -14,14 +14,16 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import { RunError } from "@pulumi/pulumi/errors";
-import { getAvailabilityZone } from "./aws";
-import { ClusterNetworkArgs } from "./cluster";
+// import { RunError } from "@pulumi/pulumi/errors";
+// import { getAvailabilityZone } from "./aws";
+// import { ClusterNetworkArgs } from "./cluster";
 
 import * as utils from "../utils";
 
 import { Cluster2 } from "./../clusterMod";
 import { ClusterLoadBalancer, ClusterLoadBalancerPort } from "./clusterLoadBalancer";
+
+export type TaskHost = "linux" | "windows";
 
 export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
     /**
@@ -35,6 +37,8 @@ export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
      * just be run, and will not be part of an aws.ecs.Service.
      */
     loadBalancerPort?: ClusterLoadBalancerPort;
+
+    environment?: pulumi.Input<Record<string, pulumi.Input<string>>;
 }>;
 
 export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
@@ -45,10 +49,23 @@ export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionAr
     //  */
     // createLoadBalancer: boolean;
 
-    /** Not used.  Provide [containers] instead. */
+    /** Not used.  Provide [container] or [containers] instead. */
     containerDefinitions?: never;
 
-    containers: Record<string, ContainerDefinition>;
+    /**
+     * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
+     * aren't multiple containers, especially when creating a ClusterTaskDefinition to call [run]
+     * on.
+     *
+     * Either [container] or [containers] must be provided.
+     */
+    container?: ContainerDefinition;
+
+    /**
+     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
+     * ClusterService that will contain many containers within.
+     */
+    containers?: Record<string, ContainerDefinition>;
 
     /**
      * Log group for logging information related to the service.  If not provided a default instance
@@ -93,7 +110,7 @@ export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionAr
     /**
      * A set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
      */
-    requiresCompatibilities?: pulumi.Input<["FARGATE"] | ["EC2"]>;
+    requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
 
     /**
      * The Docker networking mode to use for the containers in the task. The valid values are
@@ -124,14 +141,39 @@ export type EC2TaskDefinitionArgs = utils.Overwrite<ClusterTaskDefinitionArgs, {
     memory?: never;
 }>;
 
+export interface TaskRunOptions {
+    /**
+     * The name of the container to run as a task.  If not provided, the first container in the list
+     * of containers in the ClusterTaskDefinition will be the one that is run.
+     */
+    containerName?: string;
+
+    /**
+     * Optional environment variables to override those set in the container definition.
+     */
+    environment?: Record<string, string>;
+}
+
 export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     public readonly cluster: Cluster2;
     public readonly logGroup: aws.cloudwatch.LogGroup;
-    public readonly loadBalancer?: { containerName: string, loadBalancer: ClusterLoadBalancer };
+    public readonly loadBalancer?: ClusterLoadBalancer;
+    public readonly containers: Record<string, ContainerDefinition>;
+
+    /**
+     * Runs this task definition in this cluster once.
+     */
+    public readonly run: (options?: TaskRunOptions) => Promise<void>;
 
     constructor(name: string, cluster: Cluster2,
                 args: ClusterTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
+        if (!args.container && !args.containers) {
+            throw new Error("Either [container] or [containers] must be provided");
+        }
+
+        const containers = args.containers || { container: args.container! };
+
         const logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
         }, opts);
@@ -152,14 +194,8 @@ export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     // }, { parent: parent });
 
 
-        const containers = args.containers;
-        const containerWithLoadBalancerPort = singleContainerWithLoadBalancerPort(containers);
-
-        const loadBalancer = !containerWithLoadBalancerPort
-            ? undefined
-            : cluster.createLoadBalancer(
-                name + "-" + containerWithLoadBalancerPort.containerName,
-                { loadBalancerPort: containerWithLoadBalancerPort.loadBalancerPort });
+        const loadBalancer = createLoadBalancer(
+            cluster, singleContainerWithLoadBalancerPort(containers));
 
         // for (const containerName of Object.keys(containers)) {
         //     const container = containers[containerName];
@@ -225,18 +261,95 @@ export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     // const taskMemoryAndCPU = containerDefinitions.apply(taskMemoryAndCPUForContainers);
         super(name, taskDefArgs, opts);
 
+        this.containers = containers;
         this.cluster = cluster;
         this.logGroup = logGroup;
-        this.loadBalancer = loadBalancer
-            ? { containerName: containerWithLoadBalancerPort!.containerName, loadBalancer }
-            : undefined;
+        this.loadBalancer = loadBalancer;
+
+        const subnetIds = pulumi.all(cluster.network.subnetIds);
+        const securityGroupId =  cluster.instanceSecurityGroup.id;
+
+        const containersOutput = pulumi.output(containers);
+
+        this.run = async function (options: TaskRunOptions = {}) {
+            const ecs = new aws.sdk.ECS();
+
+            const innerContainers = containersOutput.get();
+            const containerName = options.containerName || Object.keys(innerContainers)[0];
+            if (!containerName) {
+                throw new Error("No valid container name found to run task for.")
+            }
+
+            const container = innerContainers[containerName];
+
+            // Extract the environment values from the options
+            const env: { name: string, value: string }[] = [];
+            addEnvironmentVariables(container.environment);
+            addEnvironmentVariables(options && options.environment);
+
+            const useFargate = this.requiresCompatibilities.get()[0] === "FARGATE";
+            const assignPublicIp = useFargate && !cluster.network.usePrivateSubnets;
+
+            // Run the task
+            const res = await ecs.runTask({
+                cluster: cluster.arn.get(),
+                taskDefinition: this.arn.get(),
+                // placementConstraints: placementConstraintsForHost(options && options.host),
+                launchType: useFargate ? "FARGATE" : "EC2",
+                networkConfiguration: {
+                    awsvpcConfiguration: {
+                        assignPublicIp: assignPublicIp ? "ENABLED" : "DISABLED",
+                        securityGroups: [ securityGroupId.get() ],
+                        subnets: subnetIds.get(),
+                    },
+                },
+                overrides: {
+                    containerOverrides: [
+                        {
+                            name: "container",
+                            environment: env,
+                        },
+                    ],
+                },
+            }).promise();
+
+            if (res.failures && res.failures.length > 0) {
+                throw new Error("Failed to start task:" + JSON.stringify(res.failures));
+            }
+
+            return;
+
+            // Local functions
+            function addEnvironmentVariables(e: Record<string, string> | undefined) {
+                if (e) {
+                    for (const key of Object.keys(e)) {
+                        const envVal = e[key];
+                        if (envVal) {
+                            env.push({ name: key, value: envVal });
+                        }
+                    }
+                }
+            }
+        };
     }
 }
 
-function singleContainerWithLoadBalancerPort(
+function createLoadBalancer(
+        cluster: Cluster2,
+        info: { containerName: string, container: ContainerDefinition } | undefined) {
+    if (!info) {
+        return;
+    }
+
+    const { containerName, container } = info;
+    return  cluster.createLoadBalancer(
+        name + "-" + containerName, { loadBalancerPort: container.loadBalancerPort! });
+}
+
+export function singleContainerWithLoadBalancerPort(
     containers: Record<string, ContainerDefinition>) {
 
-    let match: { containerName: string, loadBalancerPort: ClusterLoadBalancerPort } | undefined;
+    let match: { containerName: string, container: ContainerDefinition } | undefined;
     for (const containerName of Object.keys(containers)) {
         const container = containers[containerName];
         const loadBalancerPort = container.loadBalancerPort;
@@ -245,7 +358,7 @@ function singleContainerWithLoadBalancerPort(
                 throw new Error("Only a single container can specify a [loadBalancerPort].");
             }
 
-            match = { containerName, loadBalancerPort };
+            match = { containerName, container };
         }
     }
 
@@ -358,10 +471,9 @@ export class FargateTaskDefinition extends ClusterTaskDefinition {
                 opts?: pulumi.ComponentResourceOptions) {
         const baseArgs: ClusterTaskDefinitionArgs = {
             ...args,
+            requiresCompatibilities: ["FARGATE"],
+            networkMode: "awsvpc",
         };
-
-        baseArgs.requiresCompatibilities = ["FARGATE"];
-        baseArgs.networkMode = "awsvpc";
 
         throw new Error("Set memory and cpu");
 
@@ -375,26 +487,13 @@ export class EC2TaskDefinition extends ClusterTaskDefinition {
                 opts?: pulumi.ComponentResourceOptions) {
         const baseArgs: ClusterTaskDefinitionArgs = {
             ...args,
+            requiresCompatibilities: ["EC2"],
         };
 
-        baseArgs.requiresCompatibilities = ["EC2"];
-        baseArgs.networkMode = "awsvpc";
+        // baseArgs.requiresCompatibilities = ["EC2"];
+        // baseArgs.networkMode = "awsvpc";
+        throw new Error("Should we set the networking mode?");
 
         super(name, cluster, baseArgs, opts);
     }
-}
-
-function createTaskDefinition(parent: pulumi.Resource, name: string,
-                              containers: cloud.Containers, ports?: ExposedPorts): TaskDefinition {
-    // Create a single log group for all logging associated with the Service
-    const logGroup = new aws.cloudwatch.LogGroup(name, {
-        retentionInDays: 1,
-    }, { parent: parent });
-
-
-
-    return {
-        task: taskDefinition,
-        logGroup: logGroup,
-    };
 }
