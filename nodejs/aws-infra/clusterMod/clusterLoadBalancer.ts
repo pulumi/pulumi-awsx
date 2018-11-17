@@ -19,10 +19,7 @@ import { Cluster2 } from "./cluster2";
 
 import * as utils from "./../utils";
 
-/**
- * Arguments to create an ALB or NLB for a cluster.
- */
-export type ClusterLoadBalancerArgs = utils.Overwrite<aws.elasticloadbalancingv2.LoadBalancerArgs, {
+export interface ClusterLoadBalancerPort {
     /**
      * The incoming port where the service exposes the endpoint.
     */
@@ -52,6 +49,16 @@ export type ClusterLoadBalancerArgs = utils.Overwrite<aws.elasticloadbalancingv2
      * resource](https://www.terraform.io/docs/providers/aws/r/lb_listener_certificate.html).
      */
     certificateArn?: string;
+}
+
+/**
+ * Arguments to create an ALB or NLB for a cluster.
+ */
+export type ClusterLoadBalancerArgs = utils.Overwrite<aws.elasticloadbalancingv2.LoadBalancerArgs, {
+    /**
+     * The incoming port where the service exposes the endpoint.
+    */
+    loadBalancerPort: ClusterLoadBalancerPort;
 }>;
 
 export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer {
@@ -67,10 +74,10 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
         //
         // Note: Technically, we can only support one LB per service, so only the service name is needed here, but we
         // anticipate this will not always be the case, so we include a set of values which must be unique.
-        const longName = `${name}-${args.port}`;
+        const longName = `${name}-${args.loadBalancerPort.port}`;
 
         // Create an internal load balancer if requested.
-        const internal = cluster.network.usePrivateSubnets && !args.external;
+        const internal = cluster.network.usePrivateSubnets && !args.loadBalancerPort.external;
 
         // See what kind of load balancer to create (application L7 for HTTP(S) traffic, or network L4 otherwise).
         // Also ensure that we have an SSL certificate for termination at the LB, if that was requested.
@@ -98,7 +105,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
 
         // Create the target group for the new container/port pair.
         this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
-            port: args.targetPort || args.port,
+            port: args.loadBalancerPort.targetPort || args.loadBalancerPort.port,
             protocol: targetProtocol,
             vpcId: cluster.network.vpcId,
             deregistrationDelay: 180, // 3 minutes
@@ -111,7 +118,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
             loadBalancerArn: this.arn,
             protocol: listenerProtocol,
             certificateArn: certificateArn,
-            port: args.port,
+            port: args.loadBalancerPort.port,
             defaultAction: {
                 type: "forward",
                 targetGroupArn: this.targetGroup.arn,
@@ -124,9 +131,9 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
 }
 
 function computeLoadBalancerInfo(args: ClusterLoadBalancerArgs) {
-    switch (args.protocol || "tcp") {
+    switch (args.loadBalancerPort.protocol || "tcp") {
         case "https":
-            if (!args.certificateArn) {
+            if (!args.loadBalancerPort.certificateArn) {
                 throw new Error("Cannot create Service for HTTPS trafic. No ACM certificate ARN configured.");
             }
 
@@ -136,7 +143,7 @@ function computeLoadBalancerInfo(args: ClusterLoadBalancerArgs) {
                 // IDEA: eventually we should let users choose where the SSL termination occurs.
                 targetProtocol: "HTTP",
                 useAppLoadBalancer: true,
-                certificateArn: args.certificateArn,
+                certificateArn: args.loadBalancerPort.certificateArn,
             };
         case "http":
             return {
@@ -153,6 +160,6 @@ function computeLoadBalancerInfo(args: ClusterLoadBalancerArgs) {
                 certificateArn: undefined,
             };
         default:
-            throw new Error(`Unrecognized Service protocol: ${args.protocol}`);
+            throw new Error(`Unrecognized Service protocol: ${args.loadBalancerPort.protocol}`);
     }
 }

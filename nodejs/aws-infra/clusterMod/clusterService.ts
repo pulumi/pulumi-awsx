@@ -18,9 +18,36 @@ import { Cluster2 } from "./cluster2";
 
 import * as docker from "@pulumi/docker";
 import * as utils from "./../utils";
+import { ClusterTaskDefinitionArgs, ClusterTaskDefinition, singleContainerWithLoadBalancerPort } from "./clusterTaskDefinition";
 
 export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
+    taskDefinition: ClusterTaskDefinition;
+    /**
+     * The number of instances of the task definition to place and keep running. Defaults to 1. Do
+     * not specify if using the `DAEMON` scheduling strategy.
+     */
+    desiredCount?: pulumi.Input<number>;
 
+    /**
+     * The launch type on which to run your service. The valid values are `EC2` and `FARGATE`.
+     * Defaults to `EC2`.
+     */
+    launchType?: pulumi.Input<"EC2" | "FARGATE">;
+
+    /**
+     * Wait for the service to reach a steady state (like [`aws ecs wait
+     * services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html))
+     * before continuing. Defaults to `true`.
+     */
+    waitForSteadyState?: pulumi.Input<boolean>;
+}>;
+
+export type FargateServiceArgs = utils.Overwrite<ClusterServiceArgs, {
+    launchType: never;
+}>;
+
+export type EC2ServiceArgs = utils.Overwrite<ClusterServiceArgs, {
+    launchType: never;
 }>;
 
 export class ClusterService extends aws.ecs.Service {
@@ -30,13 +57,77 @@ export class ClusterService extends aws.ecs.Service {
                 args: ClusterServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
+        const loadBalancer = args.taskDefinition.loadBalancer;
+        const loadBalancers = !loadBalancer
+            ? []
+            : [{
+                containerName: loadBalancer.containerName,
+            }];
+
         const serviceArgs: aws.ecs.ServiceArgs = {
             ...args,
+            cluster: cluster.arn,
+            taskDefinition: args.taskDefinition.arn,
+            loadBalancers: loadBalancers,
+            desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
+            launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
+            waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
         };
+
+        //             desiredCount: replicas,
+//             taskDefinition: taskDefinition.task.arn,
+//             cluster: cluster.ecsClusterARN,
+//             loadBalancers: loadBalancers,
+//             placementConstraints: placementConstraintsForHost(args.host),
+//             healthCheckGracePeriodSeconds: args.healthCheckGracePeriodSeconds,
+//             launchType: config.useFargate ? "FARGATE" : "EC2",
+//             networkConfiguration: {
+//                 assignPublicIp: config.useFargate && !network.usePrivateSubnets,
+//                 securityGroups: securityGroups,
+//                 subnets: network.subnetIds,
+//             },
 
         super(name, serviceArgs, opts);
 
         this.clusterInstance = cluster;
+    }
+}
+
+export class FargateService extends ClusterService {
+    constructor(name: string, cluster: Cluster2,
+                args: FargateServiceArgs,
+                opts?: pulumi.ResourceOptions) {
+
+        const serviceArgs: ClusterServiceArgs = {
+            ...args,
+            launchType: "FARGATE",
+            networkConfiguration: {
+                assignPublicIp: !cluster.network.usePrivateSubnets,
+                securityGroups: [cluster.instanceSecurityGroup.id],
+                subnets: cluster.network.subnetIds,
+            },
+        };
+
+        super(name, cluster, serviceArgs, opts);
+    }
+}
+
+export class EC2Service extends ClusterService {
+    constructor(name: string, cluster: Cluster2,
+                args: EC2ServiceArgs,
+                opts?: pulumi.ResourceOptions) {
+
+        const serviceArgs: ClusterServiceArgs = {
+            ...args,
+            launchType: "EC2",
+            networkConfiguration: {
+                assignPublicIp: false,
+                securityGroups: [cluster.instanceSecurityGroup.id],
+                subnets: cluster.network.subnetIds,
+            },
+        };
+
+        super(name, cluster, serviceArgs, opts);
     }
 }
 
@@ -697,12 +788,12 @@ export type ServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
     launchType?: pulumi.Input<"FARGATE" | "EC2">;
 }>;
 
-export class Service extends pulumi.ComponentResource {
+// export class Service extends pulumi.ComponentResource {
 //     public readonly name: string;
 //     public readonly containers: cloud.Containers;
 //     public readonly replicas: number;
 //     public readonly cluster: CloudCluster;
-     public readonly resource: aws.ecs.Service;
+ //    public readonly resource: aws.ecs.Service;
 
 //     public readonly endpoints: pulumi.Output<Endpoints>;
 //     public readonly defaultEndpoint: pulumi.Output<Endpoint>;
@@ -1016,3 +1107,4 @@ export class Service extends pulumi.ComponentResource {
 //         };
 //     }
 // }
+

@@ -17,12 +17,38 @@ import * as pulumi from "@pulumi/pulumi";
 import { RunError } from "@pulumi/pulumi/errors";
 import { getAvailabilityZone } from "./aws";
 import { ClusterNetworkArgs } from "./cluster";
+
 import * as utils from "../utils";
 
 import { Cluster2 } from "./../clusterMod";
+import { ClusterLoadBalancer, ClusterLoadBalancerPort } from "./clusterLoadBalancer";
+
+export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
+    /**
+     * Not provided.  Use [port] instead.
+     */
+    portMappings?: never;
+
+    /**
+     * The port information to create a load balancer for.  At most one container in a service
+     * can have this set.  Should not be set for containers intended for TaskDeinitions that will
+     * just be run, and will not be part of an aws.ecs.Service.
+     */
+    loadBalancerPort?: ClusterLoadBalancerPort;
+}>;
 
 export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
-    containerDefinitions?: pulumi.Input<pulumi.Input<ContainerDefinition>[]>;
+    // /**
+    //  * Whether or not a load balancer should be created.  A load balancer is required for
+    //  * a Service but should not be created for a Task.  If true, a load balancer will be
+    //  * created for the first container in [containers] that specifies a loadBalancerPort
+    //  */
+    // createLoadBalancer: boolean;
+
+    /** Not used.  Provide [containers] instead. */
+    containerDefinitions?: never;
+
+    containers: Record<string, ContainerDefinition>;
 
     /**
      * Log group for logging information related to the service.  If not provided a default instance
@@ -87,11 +113,21 @@ export type FargateTaskDefinitionArgs = utils.Overwrite<ClusterTaskDefinitionArg
 export type EC2TaskDefinitionArgs = utils.Overwrite<ClusterTaskDefinitionArgs, {
     /** Not provided.  Defaults automatically to ["EC2"] */
     requiresCompatibilities?: never;
+
+    /**
+     * Not provided for ec2 task definitions.
+     */
+    cpu?: never;
+    /**
+     * Not provided for ec2 task definitions.
+     */
+    memory?: never;
 }>;
 
 export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     public readonly cluster: Cluster2;
     public readonly logGroup: aws.cloudwatch.LogGroup;
+    public readonly loadBalancer?: { containerName: string, loadBalancer: ClusterLoadBalancer };
 
     constructor(name: string, cluster: Cluster2,
                 args: ClusterTaskDefinitionArgs,
@@ -115,11 +151,54 @@ export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     //     executionRoleArn: getExecutionRole().arn,
     // }, { parent: parent });
 
+
+        const containers = args.containers;
+        const containerWithLoadBalancerPort = singleContainerWithLoadBalancerPort(containers);
+
+        const loadBalancer = !containerWithLoadBalancerPort
+            ? undefined
+            : cluster.createLoadBalancer(
+                name + "-" + containerWithLoadBalancerPort.containerName,
+                { loadBalancerPort: containerWithLoadBalancerPort.loadBalancerPort });
+
+        // for (const containerName of Object.keys(containers)) {
+        //     const container = containers[containerName];
+        //     // if (firstContainerName === undefined) {
+        //     //     firstContainerName = containerName;
+        //     //     if (container.ports && container.ports.length > 0) {
+        //     //         firstContainerPort = container.ports[0].port;
+        //     //     }
+        //     // }
+
+        //     // ports[containerName] = {};
+        //     if (container.loadBalancerPort) {
+        //         if (loadBalancer) {
+        //             throw new Error("Only one port can currently be exposed per Service.");
+        //         }
+        //         const loadBalancerPort = container.loadBalancerPort;
+        //         loadBalancer = cluster.createLoadBalancer(
+        //             name + "-" + containerName, { loadBalancerPort });
+        //         ports[containerName][portMapping.port] = {
+        //             host: info.loadBalancer,
+        //             hostPort: portMapping.port,
+        //             hostProtocol: info.protocol,
+        //         };
+        //         loadBalancers.push({
+        //             containerName: containerName,
+        //             containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
+        //             targetGroupArn: loadBalancer.targetGroup.arn,
+        //         });
+        //     }
+        // }
+
+        const containerDefinitions = computeContainerDefinitions(name, cluster, args);
+
         const taskDefArgs: aws.ecs.TaskDefinitionArgs = {
             ...args,
             family: name,
             taskRoleArn: taskRole.arn,
             executionRoleArn: executionRole.arn,
+            containerDefinitions: containerDefinitions.apply(JSON.stringify),
         };
 
     // // Find all referenced Volumes.
@@ -144,23 +223,80 @@ export class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
 
     // // Compute the memory and CPU requirements of the task for Fargate
     // const taskMemoryAndCPU = containerDefinitions.apply(taskMemoryAndCPUForContainers);
-
-    // const taskDefinition = new aws.ecs.TaskDefinition(name, {
-    //     family: name,
-    //     containerDefinitions: containerDefinitions.apply(JSON.stringify),
-    //     volumes: volumes,
-    //     taskRoleArn: getTaskRole().arn,
-    //     requiresCompatibilities: config.useFargate ? ["FARGATE"] : undefined,
-    //     memory: config.useFargate ? taskMemoryAndCPU.apply(t => t.memory) : undefined,
-    //     cpu: config.useFargate ? taskMemoryAndCPU.apply(t => t.cpu) : undefined,
-    //     networkMode: "awsvpc",
-    //     executionRoleArn: getExecutionRole().arn,
-    // }, { parent: parent });
-
         super(name, taskDefArgs, opts);
 
         this.cluster = cluster;
         this.logGroup = logGroup;
+        this.loadBalancer = loadBalancer
+            ? { containerName: containerWithLoadBalancerPort!.containerName, loadBalancer }
+            : undefined;
+    }
+}
+
+function singleContainerWithLoadBalancerPort(
+    containers: Record<string, ContainerDefinition>) {
+
+    let match: { containerName: string, loadBalancerPort: ClusterLoadBalancerPort } | undefined;
+    for (const containerName of Object.keys(containers)) {
+        const container = containers[containerName];
+        const loadBalancerPort = container.loadBalancerPort;
+        if (loadBalancerPort) {
+            if (match) {
+                throw new Error("Only a single container can specify a [loadBalancerPort].");
+            }
+
+            match = { containerName, loadBalancerPort };
+        }
+    }
+
+    return match;
+}
+
+function computeContainerDefinitions(
+    name: string,
+    cluster: Cluster2,
+    args: ClusterTaskDefinitionArgs): pulumi.Output<aws.ecs.ContainerDefinition[]> {
+
+    const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
+
+    for (const containerName of Object.keys(args.containers)) {
+        const container = args.containers[containerName];
+
+        result.push(computeContainerDefinition(name, cluster, containerName, container));
+    }
+
+    return pulumi.all(result);
+
+    let loadBalancer: ClusterLoadBalancer | undefined = undefined;
+    const containers = args.containers;
+    for (const containerName of Object.keys(containers)) {
+        const container = containers[containerName];
+        // if (firstContainerName === undefined) {
+        //     firstContainerName = containerName;
+        //     if (container.ports && container.ports.length > 0) {
+        //         firstContainerPort = container.ports[0].port;
+        //     }
+        // }
+
+        // ports[containerName] = {};
+        if (container.loadBalancerPort) {
+            if (loadBalancer) {
+                throw new Error("Only one port can currently be exposed per Service.");
+            }
+            const loadBalancerPort = container.loadBalancerPort;
+            loadBalancer = cluster.createLoadBalancer(
+                name + "-" + containerName, container.loadBalancerPort);
+            ports[containerName][portMapping.port] = {
+                host: info.loadBalancer,
+                hostPort: portMapping.port,
+                hostProtocol: info.protocol,
+            };
+            loadBalancers.push({
+                containerName: containerName,
+                containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
+                targetGroupArn: loadBalancer.targetGroup.arn,
+            });
+        }
     }
 }
 
@@ -216,23 +352,35 @@ function createExecutionRole(opts?: pulumi.ResourceOptions): aws.iam.Role {
     return executionRole;
 }
 
-export class FargateTaskDefinition extends BaseTaskDefinition {
-    constructor(name: string, args: FargateTaskDefinitionArgs, opts?: pulumi.ComponentResourceOptions) {
-        const baseArgs = <BaseTaskDefinitionArgs>args;
+export class FargateTaskDefinition extends ClusterTaskDefinition {
+    constructor(name: string, cluster: Cluster2,
+                args: FargateTaskDefinitionArgs,
+                opts?: pulumi.ComponentResourceOptions) {
+        const baseArgs: ClusterTaskDefinitionArgs = {
+            ...args,
+        };
+
         baseArgs.requiresCompatibilities = ["FARGATE"];
         baseArgs.networkMode = "awsvpc";
 
-        super(name, baseArgs, opts);
+        throw new Error("Set memory and cpu");
+
+        super(name, cluster, baseArgs, opts);
     }
 }
 
-export class EC2Taskdefinition extends BaseTaskDefinition {
-    constructor(name: string, args: FargateTaskDefinitionArgs, opts?: pulumi.ComponentResourceOptions) {
-        const baseArgs = <BaseTaskDefinitionArgs>args;
+export class EC2TaskDefinition extends ClusterTaskDefinition {
+    constructor(name: string, cluster: Cluster2,
+                args: FargateTaskDefinitionArgs,
+                opts?: pulumi.ComponentResourceOptions) {
+        const baseArgs: ClusterTaskDefinitionArgs = {
+            ...args,
+        };
+
         baseArgs.requiresCompatibilities = ["EC2"];
         baseArgs.networkMode = "awsvpc";
 
-        super(name, baseArgs, opts);
+        super(name, cluster, baseArgs, opts);
     }
 }
 

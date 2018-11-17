@@ -19,8 +19,8 @@ import { ClusterAutoScalingGroup, ClusterAutoScalingGroupArgs,
          ClusterAutoScalingLaunchConfiguration, ClusterAutoScalingLaunchConfigurationArgs } from "./clusterAutoScaling";
 import { ClusterFileSystem, ClusterFileSystemArgs } from "./clusterFileSystem";
 import { ClusterLoadBalancer, ClusterLoadBalancerArgs } from "./clusterLoadBalancer";
-import { ClusterService, ClusterServiceArgs } from "./clusterService";
-import { ClusterTaskDefinition, ClusterTaskDefinitionArgs } from "./clusterTaskDefinition";
+import { ClusterService, ClusterServiceArgs, FargateServiceArgs, FargateService, EC2Service, EC2ServiceArgs } from "./clusterService";
+import { ClusterTaskDefinition, ClusterTaskDefinitionArgs, FargateTaskDefinition, FargateTaskDefinitionArgs, EC2TaskDefinitionArgs, EC2TaskDefinition } from "./clusterTaskDefinition";
 
 import { Network } from "./../network";
 
@@ -135,8 +135,24 @@ export class Cluster2 extends aws.ecs.Cluster {
         return new ClusterTaskDefinition(name, this, args, { parent: this });
     }
 
+    public createFargateTaskDefinition(name: string, args: FargateTaskDefinitionArgs) {
+        return new FargateTaskDefinition(name, this, args, { parent: this });
+    }
+
+    public createEC2TaskDefinition(name: string, args: EC2TaskDefinitionArgs) {
+        return new EC2TaskDefinition(name, this, args, { parent: this });
+    }
+
     public createService(name: string, args: ClusterServiceArgs) {
         return new ClusterService(name, this, args, { parent: this });
+    }
+
+    public createFargateService(name: string, args: FargateServiceArgs) {
+        return new FargateService(name, this, args, { parent: this });
+    }
+
+    public createEC2Service(name: string, args: EC2ServiceArgs) {
+        return new EC2Service(name, this, args, { parent: this });
     }
 }
 
