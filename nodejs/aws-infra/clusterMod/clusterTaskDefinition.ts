@@ -344,38 +344,48 @@ function computeContainerDefinitions(
 
     return pulumi.all(result);
 
-    let loadBalancer: module.ClusterLoadBalancer | undefined = undefined;
-    const containers = args.containers;
-    for (const containerName of Object.keys(containers)) {
-        const container = containers[containerName];
-        // if (firstContainerName === undefined) {
-        //     firstContainerName = containerName;
-        //     if (container.ports && container.ports.length > 0) {
-        //         firstContainerPort = container.ports[0].port;
-        //     }
-        // }
+    // let loadBalancer: module.ClusterLoadBalancer | undefined = undefined;
+    // const containers = args.containers;
+    // for (const containerName of Object.keys(containers)) {
+    //     const container = containers[containerName];
+    //     // if (firstContainerName === undefined) {
+    //     //     firstContainerName = containerName;
+    //     //     if (container.ports && container.ports.length > 0) {
+    //     //         firstContainerPort = container.ports[0].port;
+    //     //     }
+    //     // }
 
-        // ports[containerName] = {};
-        if (container.loadBalancerPort) {
-            if (loadBalancer) {
-                throw new Error("Only one port can currently be exposed per Service.");
-            }
-            const loadBalancerPort = container.loadBalancerPort;
-            loadBalancer = cluster.createLoadBalancer(
-                name + "-" + containerName, container.loadBalancerPort);
-            ports[containerName][portMapping.port] = {
-                host: info.loadBalancer,
-                hostPort: portMapping.port,
-                hostProtocol: info.protocol,
-            };
-            loadBalancers.push({
-                containerName: containerName,
-                containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
-                targetGroupArn: loadBalancer.targetGroup.arn,
-            });
-        }
-    }
+    //     // ports[containerName] = {};
+    //     if (container.loadBalancerPort) {
+    //         if (loadBalancer) {
+    //             throw new Error("Only one port can currently be exposed per Service.");
+    //         }
+    //         const loadBalancerPort = container.loadBalancerPort;
+    //         loadBalancer = cluster.createLoadBalancer(
+    //             name + "-" + containerName, container.loadBalancerPort);
+    //         ports[containerName][portMapping.port] = {
+    //             host: info.loadBalancer,
+    //             hostPort: portMapping.port,
+    //             hostProtocol: info.protocol,
+    //         };
+    //         loadBalancers.push({
+    //             containerName: containerName,
+    //             containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
+    //             targetGroupArn: loadBalancer.targetGroup.arn,
+    //         });
+    //     }
+    // }
 }
+
+function computeContainerDefinition(
+    name: string,
+    cluster: module.Cluster2,
+    containerName: string,
+    container: ContainerDefinition): pulumi.Output<aws.ecs.ContainerDefinition> {
+
+    throw new Error("nyi");
+}
+
 
 const defaultComputePolicies = [
     aws.iam.AWSLambdaFullAccess,                 // Provides wide access to "serverless" services (Dynamo, S3, etc.)

@@ -126,10 +126,6 @@ export class Cluster2 extends aws.ecs.Cluster {
         return new module.ClusterLoadBalancer(name, this, args, { parent: this });
     }
 
-    // public createTaskDefinition(name: string, args: ClusterTaskDefinitionArgs) {
-    //     return new ClusterTaskDefinition(name, this, args, { parent: this });
-    // }
-
     public createFargateTaskDefinition(name: string, args: module.FargateTaskDefinitionArgs) {
         return new module.FargateTaskDefinition(name, this, args, { parent: this });
     }
@@ -137,10 +133,6 @@ export class Cluster2 extends aws.ecs.Cluster {
     public createEC2TaskDefinition(name: string, args: module.EC2TaskDefinitionArgs) {
         return new module.EC2TaskDefinition(name, this, args, { parent: this });
     }
-
-    // public createService(name: string, args: ClusterServiceArgs) {
-    //     return new ClusterService(name, this, args, { parent: this });
-    // }
 
     public createFargateService(name: string, args: module.FargateServiceArgs) {
         return new module.FargateService(name, this, args, { parent: this });

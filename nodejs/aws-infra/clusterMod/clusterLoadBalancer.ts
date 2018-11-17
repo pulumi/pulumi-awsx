@@ -59,6 +59,27 @@ export type ClusterLoadBalancerArgs = utils.Overwrite<aws.elasticloadbalancingv2
      * The incoming port where the service exposes the endpoint.
     */
     loadBalancerPort: ClusterLoadBalancerPort;
+
+    /**
+     * Not provided.  Will be determined accordingly based on the data on [loadBalancerPort]
+     */
+    loadBalancerType?: never;
+
+    /**
+     * Not provided.  Will be set to the public subnets of the cluster.
+     */
+    subnets?: never;
+
+    /**
+     * Not provided.  Will be set based on the cluster and loadBalancerPort settings.
+     */
+    internal?: never;
+
+    /**
+     * Not provided.  Will be set to the instanceSecurityGroup of the cluster if this is an
+     * "application" load balancer, otherwise it will be unset.
+     */
+    securityGroups?: never;
 }>;
 
 export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer {
@@ -82,7 +103,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
         // See what kind of load balancer to create (application L7 for HTTP(S) traffic, or network L4 otherwise).
         // Also ensure that we have an SSL certificate for termination at the LB, if that was requested.
         const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
-            computeLoadBalancerInfo(args);
+            computeLoadBalancerInfo(args.loadBalancerPort);
 
         const loadBalancerArgs: aws.elasticloadbalancingv2.LoadBalancerArgs = {
             ...args,
@@ -130,10 +151,10 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
     }
 }
 
-function computeLoadBalancerInfo(args: ClusterLoadBalancerArgs) {
-    switch (args.loadBalancerPort.protocol || "tcp") {
+function computeLoadBalancerInfo(loadBalancerPort: ClusterLoadBalancerPort) {
+    switch (loadBalancerPort.protocol || "tcp") {
         case "https":
-            if (!args.loadBalancerPort.certificateArn) {
+            if (!loadBalancerPort.certificateArn) {
                 throw new Error("Cannot create Service for HTTPS trafic. No ACM certificate ARN configured.");
             }
 
@@ -143,7 +164,7 @@ function computeLoadBalancerInfo(args: ClusterLoadBalancerArgs) {
                 // IDEA: eventually we should let users choose where the SSL termination occurs.
                 targetProtocol: "HTTP",
                 useAppLoadBalancer: true,
-                certificateArn: args.loadBalancerPort.certificateArn,
+                certificateArn: loadBalancerPort.certificateArn,
             };
         case "http":
             return {
@@ -160,6 +181,6 @@ function computeLoadBalancerInfo(args: ClusterLoadBalancerArgs) {
                 certificateArn: undefined,
             };
         default:
-            throw new Error(`Unrecognized Service protocol: ${args.loadBalancerPort.protocol}`);
+            throw new Error(`Unrecognized Service protocol: ${loadBalancerPort.protocol}`);
     }
 }

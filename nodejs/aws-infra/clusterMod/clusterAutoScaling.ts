@@ -21,7 +21,7 @@ import { Overwrite, sha1hash } from "./../utils";
 
 export interface ClusterAutoScalingGroupArgs {
     /**
-     * The config to use when creatin the auto scaling group.  If not provided, a default
+     * The config to use when creating the auto scaling group.  If not provided, a default
      * instance will be create by calling [cluster.createAutoScalingConfig()].
      */
     launchConfiguration?: ClusterAutoScalingLaunchConfiguration;
