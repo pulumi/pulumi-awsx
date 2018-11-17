@@ -463,35 +463,6 @@ export function createLoadBalancers(
 
 // export type Endpoints = { [containerName: string]: { [port: number]: Endpoint } };
 
-export type ServiceArgs1 = utils.Overwrite<aws.ecs.ServiceArgs, {
-    cluster: module.Cluster2;
-
-    /**
-     * Log group for logging information related to the service.  If not provided a default
-     * instance with a one-day retention policy will be created.
-     */
-    logGroup?: aws.cloudwatch.LogGroup
-
-    /**
-     * The number of instances of the task definition to place and keep running. Defaults to 1 if
-     * not specified. Do not specify if using the `DAEMON` scheduling strategy.
-     */
-    desiredCount?: pulumi.Input<number>;
-
-    /**
-     * Wait for the service to reach a steady state (like [`aws ecs wait
-     * services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html))
-     * before continuing. Defaults to 'true' if unspecified.
-     */
-    waitForSteadyState?: pulumi.Input<boolean>;
-
-    /**
-     * The launch type on which to run your service. The valid values are `EC2` and `FARGATE`.
-     * Defaults to `EC2`.
-     */
-    launchType?: pulumi.Input<"FARGATE" | "EC2">;
-}>;
-
 // export class Service extends pulumi.ComponentResource {
 //     public readonly name: string;
 //     public readonly containers: cloud.Containers;
@@ -721,94 +692,6 @@ export type ServiceArgs1 = utils.Overwrite<aws.ecs.ServiceArgs, {
 
 //     getHostPath() {
 //         return this.path;
-//     }
-// }
-
-// /**
-//  * A Task represents a container which can be [run] dynamically whenever (and as many times as) needed.
-//  */
-// export class Task extends pulumi.ComponentResource implements cloud.Task {
-//     public readonly cluster: CloudCluster;
-//     public readonly taskDefinition: aws.ecs.TaskDefinition;
-
-//     public readonly run: (options?: cloud.TaskRunOptions) => Promise<void>;
-
-//     // See comment for Service.getTaskRole.
-//     public static getTaskRole(): aws.iam.Role {
-//         return getTaskRole();
-//     }
-
-//     constructor(name: string, container: cloud.Container, opts?: pulumi.ResourceOptions) {
-//         super("cloud:task:Task", name, { container: container }, opts);
-
-//         const network = getOrCreateNetwork();
-//         const cluster = getCluster();
-//         if (!cluster) {
-//             throw new Error("Cannot create 'Task'.  Missing cluster config 'cloud-aws:ecsClusterARN'" +
-//                 " or 'cloud-aws:ecsAutoCluster' or 'cloud-aws:useFargate'");
-//         }
-//         this.cluster = cluster;
-//         this.taskDefinition = createTaskDefinition(this, name, { container: container }).task;
-
-//         const clusterARN = this.cluster.ecsClusterARN;
-//         const taskDefinitionArn = this.taskDefinition.arn;
-//         const containerEnv = pulumi.all(container.environment || {});
-//         const subnetIds = pulumi.all(network.subnetIds);
-//         const securityGroups =  cluster.securityGroupId!;
-//         const useFargate = config.useFargate;
-//         const assignPublicIp = useFargate && !network.usePrivateSubnets;
-
-//         // tslint:disable-next-line:no-empty
-//         this.run = async function (options?: cloud.TaskRunOptions) {
-//             const awssdk = await import("aws-sdk");
-//             const ecs = new awssdk.ECS();
-
-//             // Extract the envrionment values from the options
-//             const env: { name: string, value: string }[] = [];
-//             await addEnvironmentVariables(containerEnv.get());
-//             await addEnvironmentVariables(options && options.environment);
-
-//             // Run the task
-//             const res = await ecs.runTask({
-//                 cluster: clusterARN.get(),
-//                 taskDefinition: taskDefinitionArn.get(),
-//                 placementConstraints: placementConstraintsForHost(options && options.host),
-//                 launchType: useFargate ? "FARGATE" : "EC2",
-//                 networkConfiguration: {
-//                     awsvpcConfiguration: {
-//                         assignPublicIp: assignPublicIp ? "ENABLED" : "DISABLED",
-//                         securityGroups: [ securityGroups.get() ],
-//                         subnets: subnetIds.get(),
-//                     },
-//                 },
-//                 overrides: {
-//                     containerOverrides: [
-//                         {
-//                             name: "container",
-//                             environment: env,
-//                         },
-//                     ],
-//                 },
-//             }).promise();
-
-//             if (res.failures && res.failures.length > 0) {
-//                 throw new Error("Failed to start task:" + JSON.stringify(res.failures, null, ""));
-//             }
-
-//             return;
-
-//             // Local functions
-//             async function addEnvironmentVariables(e: Record<string, string> | undefined) {
-//                 if (e) {
-//                     for (const key of Object.keys(e)) {
-//                         const envVal = e[key];
-//                         if (envVal) {
-//                             env.push({ name: key, value: envVal });
-//                         }
-//                     }
-//                 }
-//             }
-//         };
 //     }
 // }
 
