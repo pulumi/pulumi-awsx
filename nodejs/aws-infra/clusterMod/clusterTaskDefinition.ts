@@ -128,11 +128,18 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     public readonly cluster: module.Cluster2;
     public readonly logGroup: aws.cloudwatch.LogGroup;
     public readonly containers: Record<string, ContainerDefinition>;
+    public readonly taskRole: aws.iam.Role;
+    public readonly executionRole: aws.iam.Role;
 
     /**
      * Load balancer if any of the containers specified exposed any ports.
      */
     public readonly loadBalancer?: module.ClusterLoadBalancer;
+
+    public readonly endpoints: pulumi.Output<module.Endpoints>;
+    public readonly defaultEndpoint: pulumi.Output<module.Endpoint | undefined>;
+
+    public readonly getEndpoint: (containerName?: string, containerPort?: number) => Promise<module.Endpoint>;
 
     /**
      * Runs this task definition in this cluster once.
@@ -155,36 +162,6 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         const containers = args.containers;
         const loadBalancer = createLoadBalancer(
             cluster, singleContainerWithLoadBalancerPort(containers));
-
-        // for (const containerName of Object.keys(containers)) {
-        //     const container = containers[containerName];
-        //     // if (firstContainerName === undefined) {
-        //     //     firstContainerName = containerName;
-        //     //     if (container.ports && container.ports.length > 0) {
-        //     //         firstContainerPort = container.ports[0].port;
-        //     //     }
-        //     // }
-
-        //     // ports[containerName] = {};
-        //     if (container.loadBalancerPort) {
-        //         if (loadBalancer) {
-        //             throw new Error("Only one port can currently be exposed per Service.");
-        //         }
-        //         const loadBalancerPort = container.loadBalancerPort;
-        //         loadBalancer = cluster.createLoadBalancer(
-        //             name + "-" + containerName, { loadBalancerPort });
-        //         ports[containerName][portMapping.port] = {
-        //             host: info.loadBalancer,
-        //             hostPort: portMapping.port,
-        //             hostProtocol: info.protocol,
-        //         };
-        //         loadBalancers.push({
-        //             containerName: containerName,
-        //             containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
-        //             targetGroupArn: loadBalancer.targetGroup.arn,
-        //         });
-        //     }
-        // }
 
         // todo(cyrusn): volumes.
         //     // Find all referenced Volumes.
@@ -235,14 +212,26 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     // // Create the task definition for the group of containers associated with this Service.
     // const containerDefinitions = computeContainerDefinitions(parent, containers, ports, logGroup);
 
-    // // Compute the memory and CPU requirements of the task for Fargate
-    // const taskMemoryAndCPU = containerDefinitions.apply(taskMemoryAndCPUForContainers);
         super(name, taskDefArgs, opts);
 
         this.containers = containers;
         this.cluster = cluster;
         this.logGroup = logGroup;
+        this.taskRole = taskRole;
+        this.executionRole = executionRole;
         this.loadBalancer = loadBalancer;
+
+        const { firstContainerName, firstContainerPort, endpoints } = getEndpointInfo(containers, loadBalancer!);
+        this.endpoints = endpoints;
+
+        this.defaultEndpoint = firstContainerName === undefined || firstContainerPort === undefined
+            ? pulumi.output(undefined)
+            : this.endpoints.apply(
+                ep => getEndpointHelper(ep, /*containerName:*/ undefined, /*containerPort:*/ undefined));
+
+        this.getEndpoint = async (containerName, containerPort) => {
+            return getEndpointHelper(endpoints.get(), containerName, containerPort);
+        };
 
         const subnetIds = pulumi.all(cluster.network.subnetIds);
         const securityGroupId =  cluster.instanceSecurityGroup.id;
@@ -310,6 +299,58 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
             }
         };
     }
+}
+
+function getEndpointHelper(
+    endpoints: module.Endpoints, containerName: string | undefined, containerPort: number | undefined) {
+
+    containerName = containerName || Object.keys(endpoints)[0];
+    if (containerName === undefined)  {
+        throw new Error(`No containers available in this service`);
+    }
+
+    const containerPorts = endpoints[containerName] || {};
+    containerPort = containerPort || +Object.keys(containerPorts)[0];
+    if (containerPort === undefined) {
+        throw new Error(`No ports available in service container ${containerName}`);
+    }
+
+    const endpoint = containerPorts[containerPort];
+    if (endpoint === undefined) {
+        throw new Error(`No exposed port for ${containerName} port ${containerPort}`);
+    }
+
+    return endpoint;
+}
+
+function getEndpointInfo(containers: Record<string, ContainerDefinition>,
+                         loadBalancer: module.ClusterLoadBalancer) {
+    let firstContainerName: string | undefined;
+    let firstContainerPort: number | undefined;
+
+    const endpoints: Record<string, Record<number, pulumi.Output<module.Endpoint>>> = {};
+
+    for (const containerName of Object.keys(containers)) {
+        const container = containers[containerName];
+        if (firstContainerName === undefined) {
+            firstContainerName = containerName;
+            if (container.loadBalancerPort) {
+                firstContainerPort = container.loadBalancerPort.port;
+            }
+        }
+
+        endpoints[containerName] = {};
+        if (container.loadBalancerPort) {
+            const loadBalancerPort = container.loadBalancerPort;
+            endpoints[containerName][loadBalancerPort.port] =
+                loadBalancer!.dnsName.apply(n => ({
+                    hostname: n,
+                    port: loadBalancerPort.port,
+                }));
+        }
+    }
+
+    return { firstContainerName, firstContainerPort, endpoints: pulumi.output(endpoints) };
 }
 
 export function placementConstraintsForHost(os: HostOperatingSystem | undefined) {

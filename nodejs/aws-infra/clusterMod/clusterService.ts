@@ -54,8 +54,26 @@ export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
     autoScalingGroup?: module.ClusterAutoScalingGroup;
 }>;
 
+export interface Endpoint {
+    hostname: string;
+    port: number;
+}
+
+/**
+ * A mapping from a container name and it's exposed port, to the hostname/port it can be reached at.
+ */
+export interface Endpoints {
+    [containerName: string]: { [port: number]: Endpoint; };
+}
+
 export class ClusterService extends aws.ecs.Service {
     public readonly clusterInstance: module.Cluster2;
+    public readonly taskDefinitionInstance: module.ClusterTaskDefinition;
+
+    public readonly endpoints: pulumi.Output<Endpoints>;
+    public readonly defaultEndpoint: pulumi.Output<Endpoint>;
+
+    public readonly getEndpoint: (containerName?: string, containerPort?: number) => Promise<Endpoint>;
 
     constructor(name: string, cluster: module.Cluster2,
                 args: ClusterServiceArgs,
@@ -89,6 +107,7 @@ export class ClusterService extends aws.ecs.Service {
         super(name, serviceArgs, opts);
 
         this.clusterInstance = cluster;
+        this.taskDefinitionInstance = args.taskDefinition;
     }
 }
 
