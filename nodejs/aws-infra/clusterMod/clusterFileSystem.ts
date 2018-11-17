@@ -15,7 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import { Cluster2 } from "./cluster2";
+import * as module from ".";
 
 import * as utils from "../utils";
 
@@ -43,11 +43,11 @@ export type ClusterFileSystemArgs = utils.Overwrite<aws.efs.FileSystemArgs, {
 }>;
 
 export class ClusterFileSystem extends aws.efs.FileSystem {
-    public readonly cluster: Cluster2;
+    public readonly cluster: module.Cluster2;
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly mountTargets: aws.efs.MountTarget[];
 
-    constructor(name: string, cluster: Cluster2,
+    constructor(name: string, cluster: module.Cluster2,
                 args: ClusterFileSystemArgs = {}, opts?: pulumi.CustomResourceOptions) {
         const fileSystemArgs: aws.efs.FileSystemArgs = {
             ...args,

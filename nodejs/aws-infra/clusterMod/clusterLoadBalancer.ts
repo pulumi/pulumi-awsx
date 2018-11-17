@@ -15,7 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import { Cluster2 } from "./cluster2";
+import * as module from ".";
 
 import * as utils from "./../utils";
 
@@ -34,7 +34,7 @@ export interface ClusterLoadBalancerPort {
     external?: boolean;
     /**
      * The protocol to use for exposing the service:
-     *  `tcp`: Expose TCP externaly and to the container.  Will create a network load balancer.
+     *  `tcp`: Expose TCP externally and to the container.  Will create a network load balancer.
      *  `http`: Expose HTTP externally and to the container.  Will create application load balancer.
      *  `https`: Expose HTTPS externally and HTTP to the container.   Will create application load balancer.
      *
@@ -62,11 +62,11 @@ export type ClusterLoadBalancerArgs = utils.Overwrite<aws.elasticloadbalancingv2
 }>;
 
 export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer {
-    public readonly cluster: Cluster2;
+    public readonly cluster: module.Cluster2;
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly listener: aws.elasticloadbalancingv2.Listener;
 
-    constructor(name: string, cluster: Cluster2,
+    constructor(name: string, cluster: module.Cluster2,
                 args: ClusterLoadBalancerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 

@@ -15,8 +15,8 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { RunError } from "@pulumi/pulumi/errors";
-import { getAvailabilityZone } from "./aws";
-import { ClusterNetworkArgs } from "./cluster";
+
+import * as module from ".";
 
 import * as utils from "../utils";
 
@@ -24,7 +24,7 @@ export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
     /** Not provided.  Use [imageDefinition] instead. */
     image?: never;
 
-    imageDefinition: ImageDefinition;
+    imageDefinition: module.ImageDefinition;
 }>;
 
 // export class ContainerDefinition extends pulumi.ComponentResource {

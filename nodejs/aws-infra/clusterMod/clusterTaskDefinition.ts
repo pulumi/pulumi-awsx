@@ -14,14 +14,10 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-// import { RunError } from "@pulumi/pulumi/errors";
-// import { getAvailabilityZone } from "./aws";
-// import { ClusterNetworkArgs } from "./cluster";
 
 import * as utils from "../utils";
 
-import { Cluster2 } from "./../clusterMod";
-import { ClusterLoadBalancer, ClusterLoadBalancerPort } from "./clusterLoadBalancer";
+import * as module from ".";
 
 export declare type HostOperatingSystem = "linux" | "windows";
 
@@ -36,7 +32,7 @@ export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
      * can have this set.  Should not be set for containers intended for TaskDeinitions that will
      * just be run, and will not be part of an aws.ecs.Service.
      */
-    loadBalancerPort?: ClusterLoadBalancerPort;
+    loadBalancerPort?: module.ClusterLoadBalancerPort;
 
     environment?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }>;
@@ -110,46 +106,6 @@ export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionAr
     networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
 }>;
 
-export type FargateTaskDefinitionArgs = utils.Overwrite<ClusterTaskDefinitionArgs, {
-    /** Not provided.  Defaults automatically to ["FARGATE"] */
-    requiresCompatibilities?: never;
-
-    /** Not provided.  Defaults automatically to "awsvpc" */
-    networkMode?: never;
-
-    /**
-     * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
-     * aren't multiple containers, especially when creating a ClusterTaskDefinition to call [run]
-     * on.
-     *
-     * Either [container] or [containers] must be provided.
-     */
-    container?: ContainerDefinition;
-}>;
-
-export type EC2TaskDefinitionArgs = utils.Overwrite<ClusterTaskDefinitionArgs, {
-    /** Not provided.  Defaults automatically to ["EC2"] */
-    requiresCompatibilities?: never;
-
-    /**
-     * Not provided for ec2 task definitions.
-     */
-    cpu?: never;
-    /**
-     * Not provided for ec2 task definitions.
-     */
-    memory?: never;
-
-    /**
-     * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
-     * aren't multiple containers, especially when creating a ClusterTaskDefinition to call [run]
-     * on.
-     *
-     * Either [container] or [containers] must be provided.
-     */
-    container?: ContainerDefinition;
-}>;
-
 export interface TaskRunOptions {
     /**
      * The name of the container to run as a task.  If not provided, the first container in the list
@@ -169,9 +125,9 @@ export interface TaskRunOptions {
 }
 
 export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
-    public readonly cluster: Cluster2;
+    public readonly cluster: module.Cluster2;
     public readonly logGroup: aws.cloudwatch.LogGroup;
-    public readonly loadBalancer?: ClusterLoadBalancer;
+    public readonly loadBalancer?: module.ClusterLoadBalancer;
     public readonly containers: Record<string, ContainerDefinition>;
 
     /**
@@ -181,7 +137,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
 
     protected abstract isFargate(): boolean;
 
-    constructor(name: string, cluster: Cluster2,
+    constructor(name: string, cluster: module.Cluster2,
                 args: ClusterTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
@@ -343,7 +299,7 @@ export function placementConstraintsForHost(os: HostOperatingSystem | undefined)
 }
 
 function createLoadBalancer(
-        cluster: Cluster2,
+        cluster: module.Cluster2,
         info: { containerName: string, container: ContainerDefinition } | undefined) {
     if (!info) {
         return;
@@ -375,7 +331,7 @@ export function singleContainerWithLoadBalancerPort(
 
 function computeContainerDefinitions(
     name: string,
-    cluster: Cluster2,
+    cluster: module.Cluster2,
     args: ClusterTaskDefinitionArgs): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
@@ -388,7 +344,7 @@ function computeContainerDefinitions(
 
     return pulumi.all(result);
 
-    let loadBalancer: ClusterLoadBalancer | undefined = undefined;
+    let loadBalancer: module.ClusterLoadBalancer | undefined = undefined;
     const containers = args.containers;
     for (const containerName of Object.keys(containers)) {
         const container = containers[containerName];
@@ -476,8 +432,8 @@ function createExecutionRole(opts?: pulumi.ResourceOptions): aws.iam.Role {
 export class FargateTaskDefinition extends ClusterTaskDefinition {
     protected isFargate: () => true;
 
-    constructor(name: string, cluster: Cluster2,
-                args: FargateTaskDefinitionArgs,
+    constructor(name: string, cluster: module.Cluster2,
+                args: module.FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
         if (!args.container && !args.containers) {
@@ -551,30 +507,4 @@ function computeFargateMemoryAndCPU(containers: Record<string, ContainerDefiniti
         memory: taskMemoryString,
         cpu: `${taskCPU}`,
     };
-}
-
-export class EC2TaskDefinition extends ClusterTaskDefinition {
-    protected isFargate: () => false;
-
-    constructor(name: string, cluster: Cluster2,
-                args: EC2TaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
-        if (!args.container && !args.containers) {
-            throw new Error("Either [container] or [containers] must be provided");
-        }
-
-        const containers = args.containers || { container: args.container! };
-
-        const baseArgs: ClusterTaskDefinitionArgs = {
-            ...args,
-            containers,
-            requiresCompatibilities: ["EC2"],
-            networkMode: pulumi.output(args.networkMode).apply(m => m || "awsvpc"),
-        };
-
-        // baseArgs.requiresCompatibilities = ["EC2"];
-        // baseArgs.networkMode = "awsvpc";
-
-        super(name, cluster, baseArgs, opts);
-    }
 }

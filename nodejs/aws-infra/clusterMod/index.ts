@@ -18,3 +18,6 @@ export * from "./clusterFileSystem";
 export * from "./clusterLoadBalancer";
 export * from "./clusterService";
 export * from "./clusterTaskDefinition";
+
+export * from "./ec2";
+export * from "./fargate";

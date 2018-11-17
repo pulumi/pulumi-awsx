@@ -14,25 +14,17 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import { Cluster2 } from "./cluster2";
+
+import * as module from ".";
 
 import * as docker from "@pulumi/docker";
 import * as utils from "./../utils";
-import { ClusterTaskDefinition,
-         EC2TaskDefinition,
-         EC2TaskDefinitionArgs,
-         FargateTaskDefinition,
-         FargateTaskDefinitionArgs,
-         placementConstraintsForHost,
-         singleContainerWithLoadBalancerPort } from "./clusterTaskDefinition";
-
-import { ClusterAutoScalingGroup } from "./clusterAutoScaling";
 
 export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
     /**
      * The task definition to create the service from.
      */
-    taskDefinition: ClusterTaskDefinition;
+    taskDefinition: module.ClusterTaskDefinition;
 
     /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do
@@ -59,45 +51,13 @@ export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
      * Optional auto-scaling group for the cluster.  Can be created with
      * [cluster.createAutoScalingGroup]
      */
-    autoScalingGroup?: ClusterAutoScalingGroup;
-}>;
-
-export type FargateServiceArgs = utils.Overwrite<ClusterServiceArgs, {
-    /**
-     * The task definition to create the service from.  Either [taskDefinition] or
-     * [taskDefinitionArgs] must be provided.
-     */
-    taskDefinition?: FargateTaskDefinition;
-
-    /**
-     * The task definition to create the service from.  Either [taskDefinition] or
-     * [taskDefinitionArgs] must be provided.
-     */
-    taskDefinitionArgs?: FargateTaskDefinitionArgs;
-
-    launchType: never;
-}>;
-
-export type EC2ServiceArgs = utils.Overwrite<ClusterServiceArgs, {
-    /**
-     * The task definition to create the service from.  Either [taskDefinition] or
-     * [taskDefinitionArgs] must be provided.
-     */
-    taskDefinition?: EC2TaskDefinition;
-
-    /**
-     * The task definition to create the service from.  Either [taskDefinition] or
-     * [taskDefinitionArgs] must be provided.
-     */
-    taskDefinitionArgs?: EC2TaskDefinitionArgs;
-
-    launchType: never;
+    autoScalingGroup?: module.ClusterAutoScalingGroup;
 }>;
 
 export class ClusterService extends aws.ecs.Service {
-    public readonly clusterInstance: Cluster2;
+    public readonly clusterInstance: module.Cluster2;
 
-    constructor(name: string, cluster: Cluster2,
+    constructor(name: string, cluster: module.Cluster2,
                 args: ClusterServiceArgs,
                 opts: pulumi.ResourceOptions = {}) {
 
@@ -111,7 +71,7 @@ export class ClusterService extends aws.ecs.Service {
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
             launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
             waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
-            placementConstraints: pulumi.output(args.os).apply(os => placementConstraintsForHost(os)),
+            placementConstraints: pulumi.output(args.os).apply(os => module.placementConstraintsForHost(os)),
         };
 
         // If the cluster has an autoscaling group, ensure the service depends on it being created.
@@ -130,12 +90,13 @@ export class ClusterService extends aws.ecs.Service {
     }
 }
 
-export function createLoadBalancers(taskDefinition: ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {
+export function createLoadBalancers(
+        taskDefinition: module.ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {
     if (!taskDefinition.loadBalancer) {
         return [];
     }
 
-    const { containerName, container } = singleContainerWithLoadBalancerPort(taskDefinition.containers)!;
+    const { containerName, container } = module.singleContainerWithLoadBalancerPort(taskDefinition.containers)!;
     const loadBalancerPort = container.loadBalancerPort!;
     const loadBalancer = {
         containerName,
@@ -146,36 +107,9 @@ export function createLoadBalancers(taskDefinition: ClusterTaskDefinition): aws.
     return [loadBalancer];
 }
 
-export class FargateService extends ClusterService {
-    constructor(name: string, cluster: Cluster2,
-                args: FargateServiceArgs,
-                opts?: pulumi.ResourceOptions) {
-
-        if (!args.taskDefinition && !args.taskDefinitionArgs) {
-            throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
-        }
-
-        const taskDefinition = args.taskDefinition ||
-            new FargateTaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
-
-        const serviceArgs: ClusterServiceArgs = {
-            ...args,
-            taskDefinition,
-            launchType: "FARGATE",
-            networkConfiguration: {
-                assignPublicIp: !cluster.network.usePrivateSubnets,
-                securityGroups: [cluster.instanceSecurityGroup.id],
-                subnets: cluster.network.subnetIds,
-            },
-        };
-
-        super(name, cluster, serviceArgs, opts);
-    }
-}
-
 export class EC2Service extends ClusterService {
-    constructor(name: string, cluster: Cluster2,
-                args: EC2ServiceArgs,
+    constructor(name: string, cluster: module.Cluster2,
+                args: module.EC2ServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
@@ -183,7 +117,7 @@ export class EC2Service extends ClusterService {
         }
 
         const taskDefinition = args.taskDefinition ||
-            new EC2TaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
+            new module.EC2TaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
 
         const serviceArgs: ClusterServiceArgs = {
             ...args,
@@ -716,7 +650,7 @@ export class EC2Service extends ClusterService {
 // }
 
 export type ServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
-    cluster: Cluster2;
+    cluster: module.Cluster2;
 
     /**
      * Log group for logging information related to the service.  If not provided a default
