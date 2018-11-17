@@ -75,6 +75,8 @@ export class ClusterService extends aws.ecs.Service {
         };
 
         // If the cluster has an autoscaling group, ensure the service depends on it being created.
+        // TODO(cyrusn): this isn't necessary if resource creation automatically makes 'deps' for
+        // the opts passed in. Investigate.
         if (args.autoScalingGroup) {
             const dependsOn = opts.dependsOn
                 ? Array.isArray(opts.dependsOn) ? opts.dependsOn : [opts.dependsOn]
@@ -105,33 +107,6 @@ export function createLoadBalancers(
     };
 
     return [loadBalancer];
-}
-
-export class EC2Service extends ClusterService {
-    constructor(name: string, cluster: module.Cluster2,
-                args: module.EC2ServiceArgs,
-                opts?: pulumi.ResourceOptions) {
-
-        if (!args.taskDefinition && !args.taskDefinitionArgs) {
-            throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
-        }
-
-        const taskDefinition = args.taskDefinition ||
-            new module.EC2TaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
-
-        const serviceArgs: ClusterServiceArgs = {
-            ...args,
-            taskDefinition,
-            launchType: "EC2",
-            networkConfiguration: {
-                assignPublicIp: false,
-                securityGroups: [cluster.instanceSecurityGroup.id],
-                subnets: cluster.network.subnetIds,
-            },
-        };
-
-        super(name, cluster, serviceArgs, opts);
-    }
 }
 
 
@@ -469,159 +444,6 @@ export class EC2Service extends ClusterService {
 //     ],
 // };
 
-// // Lazily initialize the role to use for ECS Tasks
-// let taskRole: aws.iam.Role | undefined;
-// function getTaskRole(): aws.iam.Role {
-//     if (!taskRole) {
-//         taskRole = new aws.iam.Role(createNameWithStackInfo("task"), {
-//             assumeRolePolicy: JSON.stringify(taskRolePolicy),
-//         }, { parent: getGlobalInfrastructureResource() });
-//         // TODO[pulumi/pulumi-cloud#145]: These permissions are used for both Lambda and ECS compute.
-//         // We need to audit these permissions and potentially provide ways for users to directly configure these.
-//         const policies = getComputeIAMRolePolicies();
-//         for (let i = 0; i < policies.length; i++) {
-//             const policyArn = policies[i];
-//             const _ = new aws.iam.RolePolicyAttachment(
-//                 createNameWithStackInfo(`task-${utils.sha1hash(policyArn)}`), {
-//                     role: taskRole,
-//                     policyArn: policyArn,
-//                 }, { parent: getGlobalInfrastructureResource() });
-//         }
-//     }
-//     return taskRole;
-// }
-
-// // Lazily initialize the role to use for ECS Task Execution
-// let executionRole: aws.iam.Role | undefined;
-// function getExecutionRole(): aws.iam.Role {
-//     if (!executionRole) {
-//         executionRole = new aws.iam.Role(createNameWithStackInfo("execution"), {
-//             assumeRolePolicy: JSON.stringify(taskRolePolicy),
-//         }, { parent: getGlobalInfrastructureResource() });
-//         const _ = new aws.iam.RolePolicyAttachment(createNameWithStackInfo("execution"), {
-//             role: executionRole,
-//             policyArn: "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-//         }, { parent: getGlobalInfrastructureResource() });
-//     }
-//     return executionRole;
-// }
-
-// interface TaskDefinition {
-//     task: aws.ecs.TaskDefinition;
-//     logGroup: aws.cloudwatch.LogGroup;
-// }
-
-// // createTaskDefinition builds an ECS TaskDefinition object from a collection of `cloud.Containers`.
-// function createTaskDefinition(parent: pulumi.Resource, name: string,
-//                               containers: cloud.Containers, ports?: ExposedPorts): TaskDefinition {
-//     // Create a single log group for all logging associated with the Service
-//     const logGroup = new aws.cloudwatch.LogGroup(name, {
-//         retentionInDays: 1,
-//     }, { parent: parent });
-
-//     // Find all referenced Volumes.
-//     const volumes: { hostPath?: string; name: string }[] = [];
-//     for (const containerName of Object.keys(containers)) {
-//         const container = containers[containerName];
-
-//         // Collect referenced Volumes.
-//         if (container.volumes) {
-//             for (const volumeMount of container.volumes) {
-//                 const volume = volumeMount.sourceVolume;
-//                 volumes.push({
-//                     hostPath: (volume as Volume).getHostPath(),
-//                     name: (volume as Volume).getVolumeName(),
-//                 });
-//             }
-//         }
-//     }
-
-//     // Create the task definition for the group of containers associated with this Service.
-//     const containerDefinitions = computeContainerDefinitions(parent, containers, ports, logGroup);
-
-//     // Compute the memory and CPU requirements of the task for Fargate
-//     const taskMemoryAndCPU = containerDefinitions.apply(taskMemoryAndCPUForContainers);
-
-//     const taskDefinition = new aws.ecs.TaskDefinition(name, {
-//         family: name,
-//         containerDefinitions: containerDefinitions.apply(JSON.stringify),
-//         volumes: volumes,
-//         taskRoleArn: getTaskRole().arn,
-//         requiresCompatibilities: config.useFargate ? ["FARGATE"] : undefined,
-//         memory: config.useFargate ? taskMemoryAndCPU.apply(t => t.memory) : undefined,
-//         cpu: config.useFargate ? taskMemoryAndCPU.apply(t => t.cpu) : undefined,
-//         networkMode: "awsvpc",
-//         executionRoleArn: getExecutionRole().arn,
-//     }, { parent: parent });
-
-//     return {
-//         task: taskDefinition,
-//         logGroup: logGroup,
-//     };
-// }
-
-// // Compute the memory and CPU requirements of the task for Fargate. See
-// // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_size.
-// function taskMemoryAndCPUForContainers(defs: aws.ecs.ContainerDefinition[]) {
-//     // Sum the requested memory and CPU for each container in the task.
-//     let minTaskMemory = 0;
-//     let minTaskCPU = 0;
-//     for (const containerDef of defs) {
-//         if (containerDef.memoryReservation) {
-//             minTaskMemory += containerDef.memoryReservation;
-//         } else if (containerDef.memory) {
-//             minTaskMemory += containerDef.memory;
-//         }
-//         if (containerDef.cpu) {
-//             minTaskCPU += containerDef.cpu;
-//         }
-//     }
-
-//     // Compute the smallest allowed Fargate memory value compatible with the requested minimum memory.
-//     let taskMemory: number;
-//     let taskMemoryString: string;
-//     if (minTaskMemory <= 512) {
-//         taskMemory = 512;
-//         taskMemoryString = "0.5GB";
-//     } else {
-//         const taskMemGB = minTaskMemory / 1024;
-//         const taskMemWholeGB = Math.ceil(taskMemGB);
-//         taskMemory = taskMemWholeGB * 1024;
-//         taskMemoryString = `${taskMemWholeGB}GB`;
-//     }
-
-//     // Allowed CPU values are powers of 2 between 256 and 4096.  We just ensure it's a power of 2 that is at least
-//     // 256. We leave the error case for requiring more CPU than is supported to ECS.
-//     let taskCPU = Math.pow(2, Math.ceil(Math.log2(Math.max(minTaskCPU, 256))));
-
-//     // Make sure we select an allowed CPU value for the specified memory.
-//     if (taskMemory > 16384) {
-//         taskCPU = Math.max(taskCPU, 4096);
-//     } else if (taskMemory > 8192) {
-//         taskCPU = Math.max(taskCPU, 2048);
-//     } else if (taskMemory > 4096) {
-//         taskCPU = Math.max(taskCPU, 1024);
-//     } else if (taskMemory > 2048) {
-//         taskCPU = Math.max(taskCPU, 512);
-//     }
-
-//     // Return the computed task memory and CPU values
-//     return {
-//         memory: taskMemoryString,
-//         cpu: `${taskCPU}`,
-//     };
-// }
-
-// function placementConstraintsForHost(host: cloud.HostProperties | undefined) {
-//     if (host && host.os) {
-//         return [{
-//             type: "memberOf",
-//             expression: `attribute:ecs.os-type == ${host.os}`,
-//         }];
-//     }
-//     return undefined;
-// }
-
 // interface ExposedPorts {
 //     [name: string]: {
 //         [port: string]: ExposedPort;
@@ -641,15 +463,7 @@ export class EC2Service extends ClusterService {
 
 // export type Endpoints = { [containerName: string]: { [port: number]: Endpoint } };
 
-// export interface ServiceArguments extends cloud.ServiceArguments {
-//     /**
-//      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
-//      * premature shutdown, up to 7200. Only valid for services configured to use load balancers.
-//      */
-//     healthCheckGracePeriodSeconds?: pulumi.Input<number>;
-// }
-
-export type ServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
+export type ServiceArgs1 = utils.Overwrite<aws.ecs.ServiceArgs, {
     cluster: module.Cluster2;
 
     /**

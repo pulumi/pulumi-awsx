@@ -127,8 +127,12 @@ export interface TaskRunOptions {
 export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     public readonly cluster: module.Cluster2;
     public readonly logGroup: aws.cloudwatch.LogGroup;
-    public readonly loadBalancer?: module.ClusterLoadBalancer;
     public readonly containers: Record<string, ContainerDefinition>;
+
+    /**
+     * Load balancer if any of the containers specified exposed any ports.
+     */
+    public readonly loadBalancer?: module.ClusterLoadBalancer;
 
     /**
      * Runs this task definition in this cluster once.
@@ -181,6 +185,25 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         //         });
         //     }
         // }
+
+        // todo(cyrusn): volumes.
+        //     // Find all referenced Volumes.
+//     const volumes: { hostPath?: string; name: string }[] = [];
+//     for (const containerName of Object.keys(containers)) {
+//         const container = containers[containerName];
+
+//         // Collect referenced Volumes.
+//         if (container.volumes) {
+//             for (const volumeMount of container.volumes) {
+//                 const volume = volumeMount.sourceVolume;
+//                 volumes.push({
+//                     hostPath: (volume as Volume).getHostPath(),
+//                     name: (volume as Volume).getVolumeName(),
+//                 });
+//             }
+//         }
+//     }
+
 
         const containerDefinitions = computeContainerDefinitions(name, cluster, args);
 

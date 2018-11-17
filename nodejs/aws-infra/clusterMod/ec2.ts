@@ -61,9 +61,6 @@ export class EC2TaskDefinition extends module.ClusterTaskDefinition {
             networkMode: pulumi.output(args.networkMode).apply(m => m || "awsvpc"),
         };
 
-        // baseArgs.requiresCompatibilities = ["EC2"];
-        // baseArgs.networkMode = "awsvpc";
-
         super(name, cluster, baseArgs, opts);
     }
 }
@@ -83,3 +80,31 @@ export type EC2ServiceArgs = utils.Overwrite<module.ClusterServiceArgs, {
 
     launchType: never;
 }>;
+
+
+export class EC2Service extends module.ClusterService {
+    constructor(name: string, cluster: module.Cluster2,
+                args: EC2ServiceArgs,
+                opts?: pulumi.ResourceOptions) {
+
+        if (!args.taskDefinition && !args.taskDefinitionArgs) {
+            throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
+        }
+
+        const taskDefinition = args.taskDefinition ||
+            new module.EC2TaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
+
+        const serviceArgs: module.ClusterServiceArgs = {
+            ...args,
+            taskDefinition,
+            launchType: "EC2",
+            networkConfiguration: {
+                assignPublicIp: false,
+                securityGroups: [cluster.instanceSecurityGroup.id],
+                subnets: cluster.network.subnetIds,
+            },
+        };
+
+        super(name, cluster, serviceArgs, opts);
+    }
+}
