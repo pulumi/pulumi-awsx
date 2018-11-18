@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as pulumi from "@pulumi/pulumi";
+
 import * as crypto from "crypto";
 
 type Diff<T extends string | number | symbol, U extends string | number | symbol> =
@@ -20,6 +22,10 @@ type Diff<T extends string | number | symbol, U extends string | number | symbol
 // Overwrite allows you to take an existing type, and then overwrite existing properties in it
 // with properties of the same name, but with entirely different types.
 export type Overwrite<T, U> = Pick<T, Diff<keyof T, keyof U>> & U;
+
+export type MakeInputs<T> = {
+    [P in keyof T]?: pulumi.Input<T[P]>;
+};
 
 // sha1hash returns a partial SHA1 hash of the input string.
 export function sha1hash(s: string): string {
