@@ -144,14 +144,14 @@ export type ClusterAutoScalingLaunchConfigurationArgs = Overwrite<aws.ec2.Launch
 }>;
 
 export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfiguration {
-    public readonly cluster: module.Cluster2;
+    public readonly cluster: module.Cluster;
 
     /**
      * Name to give the auto-scaling-group's cloudformation stack name.
      */
     public readonly stackName: pulumi.Output<string>;
 
-    constructor(name: string, cluster: module.Cluster2,
+    constructor(name: string, cluster: module.Cluster,
                 args: ClusterAutoScalingLaunchConfigurationArgs = {},
                 opts?: pulumi.CustomResourceOptions) {
 
@@ -218,7 +218,7 @@ const defaultEbsBlockDevices = [{
         deleteOnTermination: true,
     }];
 
-function getInstanceProfile(parent: module.Cluster2, args: ClusterAutoScalingLaunchConfigurationArgs) {
+function getInstanceProfile(parent: module.Cluster, args: ClusterAutoScalingLaunchConfigurationArgs) {
     if (args.instanceProfile) {
         return args.instanceProfile;
     }
@@ -279,7 +279,7 @@ async function getEcsAmiId(name?: string): Promise<string> {
 // https://github.com/convox/rack/blob/023831d8/provider/aws/dist/rack.json#L1669
 // https://github.com/awslabs/amazon-ecs-amazon-efs/blob/d92791f3/amazon-efs-ecs.json#L655
 function getInstanceUserData(
-    cluster: module.Cluster2,
+    cluster: module.Cluster,
     args: ClusterAutoScalingLaunchConfigurationArgs,
     cloudFormationStackName: pulumi.Output<string>) {
 
@@ -353,9 +353,9 @@ function getInstanceUserData(
 }
 
 export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
-    public readonly cluster: module.Cluster2;
+    public readonly cluster: module.Cluster;
 
-    constructor(name: string, cluster: module.Cluster2, args: ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, cluster: module.Cluster, args: ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
         const launchConfiguration = args.launchConfiguration || cluster.createAutoScalingLaunchConfig(name);
 

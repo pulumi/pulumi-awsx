@@ -39,7 +39,7 @@ export type FargateTaskDefinitionArgs = utils.Overwrite<module.ClusterTaskDefini
 export class FargateTaskDefinition extends module.ClusterTaskDefinition {
     protected isFargate: () => true;
 
-    constructor(name: string, cluster: module.Cluster2,
+    constructor(name: string, cluster: module.Cluster,
                 args: module.FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
@@ -148,7 +148,7 @@ export type FargateServiceArgs = utils.Overwrite<module.ClusterServiceArgs, {
 }>;
 
 export class FargateService extends module.ClusterService {
-    constructor(name: string, cluster: module.Cluster2,
+    constructor(name: string, cluster: module.Cluster,
                 args: FargateServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 

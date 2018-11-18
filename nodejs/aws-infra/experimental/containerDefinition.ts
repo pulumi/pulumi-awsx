@@ -118,7 +118,7 @@ export type WrappedEndpoints = Record<string, Record<number, pulumi.Output<modul
 
 export function computeContainerDefinition(
     name: string,
-    cluster: module.Cluster2,
+    cluster: module.Cluster,
     containerName: string,
     container: ContainerDefinition,
     exposedPortOpt: module.ExposedPort | undefined,
@@ -181,7 +181,7 @@ function getPortMappings(loadBalancerPort: ClusterLoadBalancerPort | undefined) 
 }
 
 function computeImage(name: string,
-                      cluster: module.Cluster2,
+                      cluster: module.Cluster,
                       container: ContainerDefinition,
                       exposedPortOpt: module.ExposedPort | undefined) {
 

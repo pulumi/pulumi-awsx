@@ -83,11 +83,11 @@ export type ClusterLoadBalancerArgs = utils.Overwrite<aws.elasticloadbalancingv2
 }>;
 
 export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer {
-    public readonly cluster: module.Cluster2;
+    public readonly cluster: module.Cluster;
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly listener: aws.elasticloadbalancingv2.Listener;
 
-    constructor(name: string, cluster: module.Cluster2,
+    constructor(name: string, cluster: module.Cluster,
                 args: ClusterLoadBalancerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 

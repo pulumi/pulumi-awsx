@@ -67,7 +67,7 @@ export interface Endpoints {
 }
 
 export class ClusterService extends aws.ecs.Service {
-    public readonly clusterInstance: module.Cluster2;
+    public readonly clusterInstance: module.Cluster;
     public readonly taskDefinitionInstance: module.ClusterTaskDefinition;
 
     public readonly endpoints: pulumi.Output<Endpoints>;
@@ -75,7 +75,7 @@ export class ClusterService extends aws.ecs.Service {
 
     public readonly getEndpoint: (containerName?: string, containerPort?: number) => Promise<Endpoint>;
 
-    constructor(name: string, cluster: module.Cluster2,
+    constructor(name: string, cluster: module.Cluster,
                 args: ClusterServiceArgs,
                 opts: pulumi.ResourceOptions = {}) {
 

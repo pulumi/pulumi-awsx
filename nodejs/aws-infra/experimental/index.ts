@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./cluster2";
+export * from "./cluster";
 export * from "./clusterAutoScaling";
 export * from "./clusterFileSystem";
 export * from "./clusterLoadBalancer";

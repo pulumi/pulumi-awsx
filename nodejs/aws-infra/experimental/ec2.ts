@@ -45,7 +45,7 @@ export type EC2TaskDefinitionArgs = utils.Overwrite<module.ClusterTaskDefinition
 export class EC2TaskDefinition extends module.ClusterTaskDefinition {
     protected isFargate: () => false;
 
-    constructor(name: string, cluster: module.Cluster2,
+    constructor(name: string, cluster: module.Cluster,
                 args: EC2TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
         if (!args.container && !args.containers) {
@@ -93,7 +93,7 @@ export type EC2ServiceArgs = utils.Overwrite<module.ClusterServiceArgs, {
 
 
 export class EC2Service extends module.ClusterService {
-    constructor(name: string, cluster: module.Cluster2,
+    constructor(name: string, cluster: module.Cluster,
                 args: EC2ServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 

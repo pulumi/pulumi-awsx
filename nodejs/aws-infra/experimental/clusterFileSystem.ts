@@ -43,12 +43,12 @@ export type ClusterFileSystemArgs = utils.Overwrite<aws.efs.FileSystemArgs, {
 }>;
 
 export class ClusterFileSystem extends aws.efs.FileSystem {
-    public readonly cluster: module.Cluster2;
+    public readonly cluster: module.Cluster;
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly mountTargets: aws.efs.MountTarget[];
     public readonly mountPath: pulumi.Output<string>;
 
-    constructor(name: string, cluster: module.Cluster2,
+    constructor(name: string, cluster: module.Cluster,
                 args: ClusterFileSystemArgs = {}, opts?: pulumi.CustomResourceOptions) {
         const fileSystemArgs: aws.efs.FileSystemArgs = {
             ...args,

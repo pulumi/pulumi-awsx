@@ -24,7 +24,7 @@ import * as utils from "../utils";
 /**
  * Arguments bag for creating infrastructure for a new Cluster.
  */
-export type ClusterArgs2 = utils.Overwrite<aws.ecs.ClusterArgs, {
+export type ClusterArgs = utils.Overwrite<aws.ecs.ClusterArgs, {
     /**
      * The network in which to create this cluster.
      */
@@ -40,7 +40,7 @@ export type ClusterArgs2 = utils.Overwrite<aws.ecs.ClusterArgs, {
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
  */
-export class Cluster2 extends aws.ecs.Cluster {
+export class Cluster extends aws.ecs.Cluster {
     /**
      * The network in which to create this cluster.
      */
@@ -50,7 +50,7 @@ export class Cluster2 extends aws.ecs.Cluster {
      */
     public readonly instanceSecurityGroup: aws.ec2.SecurityGroup;
 
-    constructor(name: string, args: ClusterArgs2, opts?: pulumi.ResourceOptions) {
+    constructor(name: string, args: ClusterArgs, opts?: pulumi.ResourceOptions) {
         if (!args.network) {
             throw new pulumi.RunError("Expected a valid Network to use for creating Cluster");
         }
@@ -143,4 +143,4 @@ export class Cluster2 extends aws.ecs.Cluster {
     }
 }
 
-(<any>Cluster2).doNotCapture = true;
+(<any>Cluster).doNotCapture = true;

@@ -109,7 +109,7 @@ export interface TaskRunOptions {
 }
 
 export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
-    public readonly cluster: module.Cluster2;
+    public readonly cluster: module.Cluster;
     public readonly logGroup: aws.cloudwatch.LogGroup;
     public readonly containers: Record<string, module.ContainerDefinition>;
     public readonly taskRole: aws.iam.Role;
@@ -132,7 +132,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
 
     protected abstract isFargate(): boolean;
 
-    constructor(name: string, cluster: module.Cluster2,
+    constructor(name: string, cluster: module.Cluster,
                 args: ClusterTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
@@ -324,7 +324,7 @@ export interface ExposedPort {
 }
 
 export function getExposedPort(
-    name: string, cluster: module.Cluster2,
+    name: string, cluster: module.Cluster,
     containers: Record<string, module.ContainerDefinition>) {
 
     let exposedPort: ExposedPort | undefined;
@@ -347,7 +347,7 @@ export function getExposedPort(
 
 function computeContainerDefinitions(
     name: string,
-    cluster: module.Cluster2,
+    cluster: module.Cluster,
     args: ClusterTaskDefinitionArgs,
     exposedPortOpt: ExposedPort | undefined,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
