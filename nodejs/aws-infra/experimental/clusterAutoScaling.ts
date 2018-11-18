@@ -393,6 +393,20 @@ export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
         this.cluster = cluster;
         this.launchConfiguration = launchConfiguration;
     }
+
+    public createFargateService(name: string, args: module.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
+        return new module.FargateService(name, this.cluster, {
+            ...args,
+            autoScalingGroup: this,
+        }, opts || { parent: this });
+    }
+
+    public createEC2Service(name: string, args: module.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
+        return new module.EC2Service(name, this.cluster, {
+            ...args,
+            autoScalingGroup: this,
+        }, opts || { parent: this });
+    }
 }
 
 // TODO[pulumi/pulumi-aws/issues#43]: We'd prefer not to use CloudFormation, but it's the best way to implement
