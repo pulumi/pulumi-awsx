@@ -52,11 +52,9 @@ export class Cluster extends aws.ecs.Cluster {
     public readonly instanceSecurityGroup: aws.ec2.SecurityGroup;
 
     constructor(name: string, args: ClusterArgs, opts?: pulumi.ResourceOptions) {
-        const clusterArgs: aws.ecs.ClusterArgs = {
+        super(name, {
             ...args,
-        };
-
-        super(name, clusterArgs, opts);
+        }, opts);
 
         this.network = args.network || Network.getDefault();
 

@@ -170,15 +170,13 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         const containerDefinitions = computeContainerDefinitions(
             name, cluster, args, exposedPortOpt, logGroup);
 
-        const taskDefArgs: aws.ecs.TaskDefinitionArgs = {
+        super(name, {
             ...args,
             family: name,
             taskRoleArn: taskRole.arn,
             executionRoleArn: executionRole.arn,
             containerDefinitions: containerDefinitions.apply(JSON.stringify),
-        };
-
-        super(name, taskDefArgs, opts);
+        }, opts);
 
         this.containers = containers;
         this.cluster = cluster;
@@ -323,7 +321,7 @@ export interface ExposedPort {
     loadBalancer: module.ClusterLoadBalancer;
 }
 
-export function getExposedPort(
+function getExposedPort(
     name: string, cluster: module.Cluster,
     containers: Record<string, module.ContainerDefinition>) {
 

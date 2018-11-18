@@ -53,26 +53,24 @@ export class FargateTaskDefinition extends module.ClusterTaskDefinition {
         const computedMemory = computedMemoryAndCPU.apply(x => x.memory);
         const computedCPU = computedMemoryAndCPU.apply(x => x.cpu);
 
-        const baseArgs: module.ClusterTaskDefinitionArgs = {
+        super(name, cluster, {
             ...args,
             containers,
             requiresCompatibilities: ["FARGATE"],
             networkMode: "awsvpc",
             memory: pulumi.output(args.memory).apply(memory => memory || computedMemory),
             cpu: pulumi.output(args.cpu).apply(cpu => cpu || computedCPU),
-        };
-
-        super(name, cluster, baseArgs, opts);
+        }, opts);
     }
 
     /**
      * Creates a service with this as its task definition.
      */
-    public createService(name: string, args: module.FargateServiceArgs) {
+    public createService(name: string, args: module.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
         return new module.FargateService(name, this.cluster, {
             ...args,
             taskDefinition: this,
-        }, { parent: this });
+        }, opts || { parent: this });
     }
 }
 
@@ -159,7 +157,7 @@ export class FargateService extends module.ClusterService {
         const taskDefinition = args.taskDefinition ||
             new module.FargateTaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
 
-        const serviceArgs: module.ClusterServiceArgs = {
+        super(name, cluster, {
             ...args,
             taskDefinition,
             launchType: "FARGATE",
@@ -168,8 +166,6 @@ export class FargateService extends module.ClusterService {
                 securityGroups: [cluster.instanceSecurityGroup.id],
                 subnets: cluster.network.subnetIds,
             },
-        };
-
-        super(name, cluster, serviceArgs, opts);
+        }, opts);
     }
 }

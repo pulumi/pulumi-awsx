@@ -70,6 +70,12 @@ export class ClusterService extends aws.ecs.Service {
     public readonly clusterInstance: module.Cluster;
     public readonly taskDefinitionInstance: module.ClusterTaskDefinition;
 
+    /**
+     * Optional auto-scaling group for the cluster.  Can be created with
+     * [cluster.createAutoScalingGroup]
+     */
+    public readonly autoScalingGroup?: module.ClusterAutoScalingGroup;
+
     public readonly endpoints: pulumi.Output<Endpoints>;
     public readonly defaultEndpoint: pulumi.Output<Endpoint>;
 
@@ -80,17 +86,6 @@ export class ClusterService extends aws.ecs.Service {
                 opts: pulumi.ResourceOptions = {}) {
 
         const loadBalancers = createLoadBalancers(args.taskDefinition);
-
-        const serviceArgs: aws.ecs.ServiceArgs = {
-            ...args,
-            cluster: cluster.arn,
-            taskDefinition: args.taskDefinition.arn,
-            loadBalancers: loadBalancers,
-            desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
-            launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
-            waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
-            placementConstraints: pulumi.output(args.os).apply(os => module.placementConstraintsForHost(os)),
-        };
 
         // If the cluster has an autoscaling group, ensure the service depends on it being created.
         // TODO(cyrusn): this isn't necessary if resource creation automatically makes 'deps' for
@@ -104,10 +99,20 @@ export class ClusterService extends aws.ecs.Service {
             opts.dependsOn = dependsOn;
         }
 
-        super(name, serviceArgs, opts);
+        super(name, {
+            ...args,
+            cluster: cluster.arn,
+            taskDefinition: args.taskDefinition.arn,
+            loadBalancers: loadBalancers,
+            desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
+            launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
+            waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
+            placementConstraints: pulumi.output(args.os).apply(os => module.placementConstraintsForHost(os)),
+        }, opts);
 
         this.clusterInstance = cluster;
         this.taskDefinitionInstance = args.taskDefinition;
+        this.autoScalingGroup = args.autoScalingGroup;
     }
 }
 

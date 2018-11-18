@@ -54,14 +54,12 @@ export class EC2TaskDefinition extends module.ClusterTaskDefinition {
 
         const containers = args.containers || { container: args.container! };
 
-        const baseArgs: module.ClusterTaskDefinitionArgs = {
+        super(name, cluster, {
             ...args,
             containers,
             requiresCompatibilities: ["EC2"],
             networkMode: pulumi.output(args.networkMode).apply(m => m || "awsvpc"),
-        };
-
-        super(name, cluster, baseArgs, opts);
+        }, opts);
     }
 
     /**

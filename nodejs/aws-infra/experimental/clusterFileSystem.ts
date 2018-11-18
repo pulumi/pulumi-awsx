@@ -50,11 +50,9 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
 
     constructor(name: string, cluster: module.Cluster,
                 args: ClusterFileSystemArgs = {}, opts?: pulumi.CustomResourceOptions) {
-        const fileSystemArgs: aws.efs.FileSystemArgs = {
+        super(name, {
             ...args,
-        };
-
-        super(name, fileSystemArgs, opts);
+        }, opts);
 
         this.cluster = cluster;
         this.mountTargets = [];

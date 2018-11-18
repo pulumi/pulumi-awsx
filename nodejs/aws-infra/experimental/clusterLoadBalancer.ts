@@ -87,7 +87,8 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly listener: aws.elasticloadbalancingv2.Listener;
 
-    constructor(name: string, cluster: module.Cluster,
+    constructor(name: string,
+                cluster: module.Cluster,
                 args: ClusterLoadBalancerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
@@ -105,7 +106,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
         const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
             computeLoadBalancerInfo(args.loadBalancerPort);
 
-        const loadBalancerArgs: aws.elasticloadbalancingv2.LoadBalancerArgs = {
+        super(name, {
             ...args,
             loadBalancerType: useAppLoadBalancer ? "application" : "network",
             subnets: cluster.network.publicSubnetIds,
@@ -115,9 +116,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
             // default to the VPC's group.
             securityGroups: useAppLoadBalancer ? [ cluster.instanceSecurityGroup.id ] : undefined,
             tags: { Name: longName },
-        };
-
-        super(name, loadBalancerArgs, opts);
+        }, opts);
 
         this.cluster = cluster;
 

@@ -21,13 +21,6 @@ import * as module from ".";
 import { MakeInputs, Overwrite, sha1hash } from "../utils";
 import { ClusterLoadBalancerPort } from "./clusterLoadBalancer";
 
-// export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
-//     /** Not provided.  Use [imageDefinition] instead. */
-//     image?: never;
-
-//     imageDefinition: module.ImageDefinition;
-// }>;
-
 export type ContainerEnvironment = Record<string, pulumi.Input<string>>;
 
 /**
