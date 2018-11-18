@@ -93,18 +93,7 @@ export type ClusterAutoScalingLaunchConfigurationArgs = Overwrite<aws.ec2.Launch
     /**
      * Optional file system to mount.  Use [cluster.createFileSystem] to create an instance of this.
      */
-    fileSystem?: {
-        /**
-         * Actual underlying file system.
-         */
-        fileSystem?: aws.efs.FileSystem;
-
-        /**
-         * The path to mount this file system at within the autoscaling group.  If not provided
-         * will be mounted to "/mnt/efs"
-         */
-        mountPath?: pulumi.Output<string>;
-    };
+    fileSystem?: module.ClusterFileSystem;
 
     /**
     * A list of associated security group IDS.  If not provided, the instanceSecurityGroup from the
@@ -294,14 +283,14 @@ function getInstanceUserData(
     args: ClusterAutoScalingLaunchConfigurationArgs,
     cloudFormationStackName: pulumi.Output<string>) {
 
-    const fileSystem = args.fileSystem || {};
-    const fileSystemId = fileSystem.fileSystem ? fileSystem.fileSystem.id : undefined;
+    const fileSystemId = args.fileSystem ? args.fileSystem.id : undefined;
+    const mountPath = args.fileSystem ? args.fileSystem.mountPath : undefined;
 
-    return pulumi.all([cluster.id, cloudFormationStackName, fileSystemId, fileSystem.mountPath])
-                 .apply(([clusterId, stackName, fsId, mountPath]) => {
+    return pulumi.all([cluster.id, cloudFormationStackName, fileSystemId, mountPath])
+                 .apply(([clusterId, cloudFormationStackName, fileSystemId, mountPath]) => {
         let fileSystemRuncmdBlock = "";
 
-        if (fsId) {
+        if (fileSystemId) {
             // This string must be indented exactly as much as the block of commands it's inserted
             // into below!
             mountPath = mountPath || "/mnt/efs";
@@ -312,7 +301,7 @@ function getInstanceUserData(
                 mkdir ${mountPath}
                 chown ec2-user:ec2-user ${mountPath}
                 # Create environment variables
-                EFS_FILE_SYSTEM_ID=${fsId}
+                EFS_FILE_SYSTEM_ID=${fileSystemId}
                 DIR_SRC=$AWS_AVAILABILITY_ZONE.$EFS_FILE_SYSTEM_ID.efs.$AWS_REGION.amazonaws.com
                 DIR_TGT=${mountPath}
                 # Update /etc/fstab with the new NFS mount
@@ -357,7 +346,7 @@ function getInstanceUserData(
 
                 /opt/aws/bin/cfn-signal \
                     --region "\${AWS_REGION}" \
-                    --stack "${stackName}" \
+                    --stack "${cloudFormationStackName}" \
                     --resource Instances
         `;
     });

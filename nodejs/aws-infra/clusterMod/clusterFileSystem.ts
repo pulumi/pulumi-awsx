@@ -46,6 +46,7 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
     public readonly cluster: module.Cluster2;
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly mountTargets: aws.efs.MountTarget[];
+    public readonly mountPath: pulumi.Output<string>;
 
     constructor(name: string, cluster: module.Cluster2,
                 args: ClusterFileSystemArgs = {}, opts?: pulumi.CustomResourceOptions) {
@@ -57,6 +58,7 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
 
         this.cluster = cluster;
         this.mountTargets = [];
+        this.mountPath = pulumi.output(args.mountPath).apply(p => p || "/mnt/efs");
 
         // If requested, add EFS file system and mount targets in each subnet.
         const parentOpts = { parent: this };
