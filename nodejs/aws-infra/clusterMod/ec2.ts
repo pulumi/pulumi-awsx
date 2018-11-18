@@ -64,6 +64,9 @@ export class EC2TaskDefinition extends module.ClusterTaskDefinition {
         super(name, cluster, baseArgs, opts);
     }
 
+    /**
+     * Creates a service with this as its task definition.
+     */
     public createService(name: string, args: module.EC2ServiceArgs) {
         return new module.EC2Service(name, this.cluster, {
             ...args,

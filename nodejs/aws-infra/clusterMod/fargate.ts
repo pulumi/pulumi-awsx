@@ -48,20 +48,26 @@ export class FargateTaskDefinition extends module.ClusterTaskDefinition {
         }
 
         const containers = args.containers || { container: args.container! };
-        const { memory, cpu } = computeFargateMemoryAndCPU(containers);
+
+        const computedMemoryAndCPU = computeFargateMemoryAndCPU(containers);
+        const computedMemory = computedMemoryAndCPU.apply(x => x.memory);
+        const computedCPU = computedMemoryAndCPU.apply(x => x.cpu);
 
         const baseArgs: module.ClusterTaskDefinitionArgs = {
             ...args,
             containers,
             requiresCompatibilities: ["FARGATE"],
             networkMode: "awsvpc",
-            memory: args.memory || memory,
-            cpu: args.cpu || cpu,
+            memory: pulumi.output(args.memory).apply(memory => memory || computedMemory),
+            cpu: pulumi.output(args.cpu).apply(cpu => cpu || computedCPU),
         };
 
         super(name, cluster, baseArgs, opts);
     }
 
+    /**
+     * Creates a service with this as its task definition.
+     */
     public createService(name: string, args: module.FargateServiceArgs) {
         return new module.FargateService(name, this.cluster, {
             ...args,
@@ -71,56 +77,58 @@ export class FargateTaskDefinition extends module.ClusterTaskDefinition {
 }
 
 function computeFargateMemoryAndCPU(containers: Record<string, module.ContainerDefinition>) {
-    // Sum the requested memory and CPU for each container in the task.
-    let minTaskMemory = 0;
-    let minTaskCPU = 0;
-    for (const containerName of Object.keys(containers)) {
-        const containerDef = containers[containerName];
+    return pulumi.output(containers).apply(containers => {
+        // Sum the requested memory and CPU for each container in the task.
+        let minTaskMemory = 0;
+        let minTaskCPU = 0;
+        for (const containerName of Object.keys(containers)) {
+            const containerDef = containers[containerName];
 
-        if (containerDef.memoryReservation) {
-            minTaskMemory += containerDef.memoryReservation;
-        } else if (containerDef.memory) {
-            minTaskMemory += containerDef.memory;
+            if (containerDef.memoryReservation) {
+                minTaskMemory += containerDef.memoryReservation;
+            } else if (containerDef.memory) {
+                minTaskMemory += containerDef.memory;
+            }
+
+            if (containerDef.cpu) {
+                minTaskCPU += containerDef.cpu;
+            }
         }
 
-        if (containerDef.cpu) {
-            minTaskCPU += containerDef.cpu;
+        // Compute the smallest allowed Fargate memory value compatible with the requested minimum memory.
+        let taskMemory: number;
+        let taskMemoryString: string;
+        if (minTaskMemory <= 512) {
+            taskMemory = 512;
+            taskMemoryString = "0.5GB";
+        } else {
+            const taskMemGB = minTaskMemory / 1024;
+            const taskMemWholeGB = Math.ceil(taskMemGB);
+            taskMemory = taskMemWholeGB * 1024;
+            taskMemoryString = `${taskMemWholeGB}GB`;
         }
-    }
 
-    // Compute the smallest allowed Fargate memory value compatible with the requested minimum memory.
-    let taskMemory: number;
-    let taskMemoryString: string;
-    if (minTaskMemory <= 512) {
-        taskMemory = 512;
-        taskMemoryString = "0.5GB";
-    } else {
-        const taskMemGB = minTaskMemory / 1024;
-        const taskMemWholeGB = Math.ceil(taskMemGB);
-        taskMemory = taskMemWholeGB * 1024;
-        taskMemoryString = `${taskMemWholeGB}GB`;
-    }
+        // Allowed CPU values are powers of 2 between 256 and 4096.  We just ensure it's a power of 2 that is at least
+        // 256. We leave the error case for requiring more CPU than is supported to ECS.
+        let taskCPU = Math.pow(2, Math.ceil(Math.log2(Math.max(minTaskCPU, 256))));
 
-    // Allowed CPU values are powers of 2 between 256 and 4096.  We just ensure it's a power of 2 that is at least
-    // 256. We leave the error case for requiring more CPU than is supported to ECS.
-    let taskCPU = Math.pow(2, Math.ceil(Math.log2(Math.max(minTaskCPU, 256))));
+        // Make sure we select an allowed CPU value for the specified memory.
+        if (taskMemory > 16384) {
+            taskCPU = Math.max(taskCPU, 4096);
+        } else if (taskMemory > 8192) {
+            taskCPU = Math.max(taskCPU, 2048);
+        } else if (taskMemory > 4096) {
+            taskCPU = Math.max(taskCPU, 1024);
+        } else if (taskMemory > 2048) {
+            taskCPU = Math.max(taskCPU, 512);
+        }
 
-    // Make sure we select an allowed CPU value for the specified memory.
-    if (taskMemory > 16384) {
-        taskCPU = Math.max(taskCPU, 4096);
-    } else if (taskMemory > 8192) {
-        taskCPU = Math.max(taskCPU, 2048);
-    } else if (taskMemory > 4096) {
-        taskCPU = Math.max(taskCPU, 1024);
-    } else if (taskMemory > 2048) {
-        taskCPU = Math.max(taskCPU, 512);
-    }
-
-    // Return the computed task memory and CPU values
-    return {
-        memory: taskMemoryString,
-        cpu: `${taskCPU}`,
-    };
+        // Return the computed task memory and CPU values
+        return {
+            memory: taskMemoryString,
+            cpu: `${taskCPU}`,
+        };
+    });
 }
 
 export type FargateServiceArgs = utils.Overwrite<module.ClusterServiceArgs, {
