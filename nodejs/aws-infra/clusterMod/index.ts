@@ -19,5 +19,6 @@ export * from "./clusterLoadBalancer";
 export * from "./clusterService";
 export * from "./clusterTaskDefinition";
 
+export * from "./containerDefinition";
 export * from "./ec2";
 export * from "./fargate";

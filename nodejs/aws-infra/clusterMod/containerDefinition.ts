@@ -20,13 +20,46 @@ import * as module from ".";
 
 import * as utils from "../utils";
 
+// export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
+//     /** Not provided.  Use [imageDefinition] instead. */
+//     image?: never;
+
+//     imageDefinition: module.ImageDefinition;
+// }>;
+
 export type ContainerDefinition = utils.Overwrite<aws.ecs.ContainerDefinition, {
     /** Not provided.  Use [imageDefinition] instead. */
     image?: never;
 
-    imageDefinition: module.ImageDefinition;
+    /**
+     * Not provided.  Use [loadBalancerPort] instead.
+     */
+    portMappings?: never;
+
+    /**
+     * The port information to create a load balancer for.  At most one container in a service
+     * can have this set.  Should not be set for containers intended for TaskDeinitions that will
+     * just be run, and will not be part of an aws.ecs.Service.
+     */
+    loadBalancerPort?: module.ClusterLoadBalancerPort;
+
+    environment?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }>;
 
 // export class ContainerDefinition extends pulumi.ComponentResource {
 
 // }
+
+export type WrappedEndpoints = Record<string, Record<number, pulumi.Output<module.Endpoint>>>;
+
+export function computeContainerDefinition(
+    name: string,
+    cluster: module.Cluster2,
+    containerName: string,
+    container: ContainerDefinition,
+    exposedPortOpt: module.ExposedPort | undefined,
+    logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
+
+
+    throw new Error("nyi");
+}
