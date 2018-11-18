@@ -383,10 +383,10 @@ function getCloudFormationTemplate(
 
     const subnetIdsArray = pulumi.all(subnetIds);
     return pulumi.all([subnetIdsArray, instanceLaunchConfigurationId, parameters])
-                 .apply(([array, configId, params]) => {
+                 .apply(([subnetIdsArray, instanceLaunchConfigurationId, parameters]) => {
 
-    const minSize = params.minSize !== undefined ? params.minSize : 2;
-    const maxSize = params.maxSize !== undefined ? params.maxSize : 100;
+    const minSize = parameters.minSize !== undefined ? parameters.minSize : 2;
+    const maxSize = parameters.maxSize !== undefined ? parameters.maxSize : 100;
 
     return `
     AWSTemplateFormatVersion: '2010-09-09'
@@ -401,12 +401,12 @@ function getCloudFormationTemplate(
                 DesiredCapacity: ${minSize}
                 HealthCheckGracePeriod: 120
                 HealthCheckType: EC2
-                LaunchConfigurationName: "${configId}"
+                LaunchConfigurationName: "${instanceLaunchConfigurationId}"
                 MaxSize: ${maxSize}
                 MetricsCollection:
                 -   Granularity: 1Minute
                 MinSize: ${minSize}
-                VPCZoneIdentifier: ${JSON.stringify(array)}
+                VPCZoneIdentifier: ${JSON.stringify(subnetIdsArray)}
                 Tags:
                 -   Key: Name
                     Value: ${instanceName}

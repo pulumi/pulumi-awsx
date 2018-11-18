@@ -64,8 +64,8 @@ export class EC2TaskDefinition extends module.ClusterTaskDefinition {
         super(name, cluster, baseArgs, opts);
     }
 
-    public createService(name: string, args: module.FargateServiceArgs) {
-        return new module.FargateService(name, this.cluster, {
+    public createService(name: string, args: module.EC2ServiceArgs) {
+        return new module.EC2Service(name, this.cluster, {
             ...args,
             taskDefinition: this,
         }, { parent: this });
