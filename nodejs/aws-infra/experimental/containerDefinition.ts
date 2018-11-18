@@ -380,5 +380,6 @@ function getOrCreateRepository(imageName: string): aws.ecr.Repository {
             repository: repository.name,
         });
     }
+
     return repository;
 }

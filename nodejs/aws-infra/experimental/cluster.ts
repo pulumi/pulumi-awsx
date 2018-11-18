@@ -26,9 +26,10 @@ import * as utils from "../utils";
  */
 export type ClusterArgs = utils.Overwrite<aws.ecs.ClusterArgs, {
     /**
-     * The network in which to create this cluster.
+     * The network in which to create this cluster.  If not provided, Network.getDefault() will be
+     * used.
      */
-    network: Network;
+    network?: Network;
 
     /**
      * The security group to place new instances into.  If not provided, a default will be
@@ -51,17 +52,13 @@ export class Cluster extends aws.ecs.Cluster {
     public readonly instanceSecurityGroup: aws.ec2.SecurityGroup;
 
     constructor(name: string, args: ClusterArgs, opts?: pulumi.ResourceOptions) {
-        if (!args.network) {
-            throw new pulumi.RunError("Expected a valid Network to use for creating Cluster");
-        }
-
         const clusterArgs: aws.ecs.ClusterArgs = {
             ...args,
         };
 
         super(name, clusterArgs, opts);
 
-        this.network = args.network;
+        this.network = args.network || Network.getDefault();
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
@@ -78,7 +75,7 @@ export class Cluster extends aws.ecs.Cluster {
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
         this.instanceSecurityGroup = args.instanceSecurityGroup || new aws.ec2.SecurityGroup(name, {
-            vpcId: args.network.vpcId,
+            vpcId: this.network.vpcId,
             ingress: [
                 // Expose SSH
                 {
@@ -101,45 +98,48 @@ export class Cluster extends aws.ecs.Cluster {
         }, parentOpts);
     }
 
-    public createFileSystem(name: string, args?: module.ClusterFileSystemArgs) {
-        return new module.ClusterFileSystem(name, this, args, { parent: this });
+    public createFileSystem(name: string, args?: module.ClusterFileSystemArgs, opts?: pulumi.ResourceOptions) {
+        return new module.ClusterFileSystem(name, this, args, opts || { parent: this });
     }
 
     /**
      * Create an auto-scaling group for this cluster.
      */
-    public createAutoScalingGroup(name: string, args?: module.ClusterAutoScalingGroupArgs) {
-        return new module.ClusterAutoScalingGroup(name, this, args, { parent: this });
+    public createAutoScalingGroup(
+            name: string, args?: module.ClusterAutoScalingGroupArgs, opts?: pulumi.ResourceOptions) {
+        return new module.ClusterAutoScalingGroup(name, this, args, opts || { parent: this });
     }
 
     /**
      * Creates a launch configuration that can be used to easily create an auto-scaling group.
      */
-    public createAutoScalingLaunchConfig(name: string, args?: module.ClusterAutoScalingLaunchConfigurationArgs) {
-        return new module.ClusterAutoScalingLaunchConfiguration(name, this, args, { parent: this });
+    public createAutoScalingLaunchConfig(
+            name: string, args?: module.ClusterAutoScalingLaunchConfigurationArgs, opts?: pulumi.ResourceOptions) {
+        return new module.ClusterAutoScalingLaunchConfiguration(name, this, args, opts || { parent: this });
     }
 
     /**
      * Creates an ALB or NLB for this cluster
      */
-    public createLoadBalancer(name: string, args: module.ClusterLoadBalancerArgs) {
-        return new module.ClusterLoadBalancer(name, this, args, { parent: this });
+    public createLoadBalancer(name: string, args: module.ClusterLoadBalancerArgs, opts?: pulumi.ResourceOptions) {
+        return new module.ClusterLoadBalancer(name, this, args, opts || { parent: this });
     }
 
-    public createFargateTaskDefinition(name: string, args: module.FargateTaskDefinitionArgs) {
-        return new module.FargateTaskDefinition(name, this, args, { parent: this });
+    public createFargateTaskDefinition(
+            name: string, args: module.FargateTaskDefinitionArgs, opts?: pulumi.ResourceOptions) {
+        return new module.FargateTaskDefinition(name, this, args, opts || { parent: this });
     }
 
-    public createEC2TaskDefinition(name: string, args: module.EC2TaskDefinitionArgs) {
-        return new module.EC2TaskDefinition(name, this, args, { parent: this });
+    public createEC2TaskDefinition(name: string, args: module.EC2TaskDefinitionArgs, opts?: pulumi.ResourceOptions) {
+        return new module.EC2TaskDefinition(name, this, args, opts || { parent: this });
     }
 
-    public createFargateService(name: string, args: module.FargateServiceArgs) {
-        return new module.FargateService(name, this, args, { parent: this });
+    public createFargateService(name: string, args: module.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
+        return new module.FargateService(name, this, args, opts || { parent: this });
     }
 
-    public createEC2Service(name: string, args: module.EC2ServiceArgs) {
-        return new module.EC2Service(name, this, args, { parent: this });
+    public createEC2Service(name: string, args: module.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
+        return new module.EC2Service(name, this, args, opts || { parent: this });
     }
 }
 

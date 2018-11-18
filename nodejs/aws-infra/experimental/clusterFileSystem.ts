@@ -93,10 +93,11 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
      * Creates a launch configuration that can be used to easily create an auto-scaling group.
      * The launch configuration will be set to use this file system.
      */
-    public createAutoScalingLaunchConfig(name: string, args?: module.ClusterAutoScalingLaunchConfigurationArgs) {
+    public createAutoScalingLaunchConfig(
+            name: string, args?: module.ClusterAutoScalingLaunchConfigurationArgs, opts?: pulumi.ResourceOptions) {
         return new module.ClusterAutoScalingLaunchConfiguration(name, this.cluster, {
             ...args,
             fileSystem: this,
-        }, { parent: this });
+        }, opts || { parent: this });
     }
 }

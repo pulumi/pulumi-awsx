@@ -18,6 +18,8 @@ import { RunError } from "@pulumi/pulumi/errors";
 import { getAvailabilityZone } from "./aws";
 import { ClusterNetworkArgs } from "./cluster";
 
+import { x } from ".";
+
 /**
  * Optional arguments that can be provided when creating a network.
  */
@@ -297,6 +299,16 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
 
         // Route through the NAT gateway for the private subnet
         return natRouteTable;
+    }
+
+    /**
+     * Creates a new cluster, using this as the network is belongs to.
+     */
+    public createCluster(name: string, args: x.ClusterArgs, opts?: pulumi.ResourceOptions) {
+        return new x.Cluster(name, {
+            ...args,
+            network: this,
+        }, opts || { parent: this });
     }
 }
 

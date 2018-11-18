@@ -183,6 +183,16 @@ export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfigu
         this.cluster = cluster;
         this.stackName = stackName;
     }
+
+    /**
+     * Creates a new auto scaling group with this as its launch configuration.
+     */
+    public createAutoScalingGroup(name: string, args: ClusterAutoScalingGroupArgs, opts?: pulumi.ResourceOptions) {
+        return new ClusterAutoScalingGroup(name, this.cluster, {
+            ...args,
+            launchConfiguration: this,
+        }, opts || { parent: this });
+    }
 }
 
 const defaultAssumeInstanceRolePolicyDoc: aws.iam.PolicyDocument = {

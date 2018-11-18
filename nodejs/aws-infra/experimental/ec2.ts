@@ -67,11 +67,11 @@ export class EC2TaskDefinition extends module.ClusterTaskDefinition {
     /**
      * Creates a service with this as its task definition.
      */
-    public createService(name: string, args: module.EC2ServiceArgs) {
+    public createService(name: string, args: module.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
         return new module.EC2Service(name, this.cluster, {
             ...args,
             taskDefinition: this,
-        }, { parent: this });
+        }, opts || { parent: this });
     }
 }
 
@@ -93,6 +93,8 @@ export type EC2ServiceArgs = utils.Overwrite<module.ClusterServiceArgs, {
 
 
 export class EC2Service extends module.ClusterService {
+    public taskDefinitionInstance: EC2TaskDefinition;
+
     constructor(name: string, cluster: module.Cluster,
                 args: EC2ServiceArgs,
                 opts?: pulumi.ResourceOptions) {
@@ -104,7 +106,7 @@ export class EC2Service extends module.ClusterService {
         const taskDefinition = args.taskDefinition ||
             new module.EC2TaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
 
-        const serviceArgs: module.ClusterServiceArgs = {
+        super(name, cluster, {
             ...args,
             taskDefinition,
             launchType: "EC2",
@@ -113,8 +115,8 @@ export class EC2Service extends module.ClusterService {
                 securityGroups: [cluster.instanceSecurityGroup.id],
                 subnets: cluster.network.subnetIds,
             },
-        };
+        }, opts);
 
-        super(name, cluster, serviceArgs, opts);
+        this.taskDefinitionInstance = taskDefinition;
     }
 }
