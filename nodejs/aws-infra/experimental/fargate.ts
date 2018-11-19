@@ -45,8 +45,6 @@ export type FargateTaskDefinitionArgs = utils.Overwrite<module.ClusterTaskDefini
 }>;
 
 export class FargateTaskDefinition extends module.ClusterTaskDefinition {
-    protected isFargate: () => true;
-
     constructor(name: string, cluster: module.Cluster,
                 args: module.FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
@@ -68,7 +66,7 @@ export class FargateTaskDefinition extends module.ClusterTaskDefinition {
             networkMode: "awsvpc",
             memory: pulumi.output(args.memory).apply(memory => memory || computedMemory),
             cpu: pulumi.output(args.cpu).apply(cpu => cpu || computedCPU),
-        }, opts);
+        }, /*isFargate:*/ false, opts);
     }
 
     /**

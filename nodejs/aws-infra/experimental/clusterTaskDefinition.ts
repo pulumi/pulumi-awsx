@@ -128,10 +128,8 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
      */
     public readonly run: (options?: TaskRunOptions) => Promise<void>;
 
-    protected abstract isFargate(): boolean;
-
     constructor(name: string, cluster: module.Cluster,
-                args: ClusterTaskDefinitionArgs,
+                args: ClusterTaskDefinitionArgs, isFargate: boolean,
                 opts?: pulumi.ComponentResourceOptions) {
 
         const logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
@@ -207,7 +205,6 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         const securityGroupId =  cluster.instanceSecurityGroup.id;
 
         const containersOutput = pulumi.output(containers);
-        const isFargate = this.isFargate();
 
         this.run = async function (options: TaskRunOptions = {}) {
             const ecs = new aws.sdk.ECS();

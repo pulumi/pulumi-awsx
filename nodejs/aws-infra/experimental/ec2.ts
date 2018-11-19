@@ -51,8 +51,6 @@ export type EC2TaskDefinitionArgs = utils.Overwrite<module.ClusterTaskDefinition
 }>;
 
 export class EC2TaskDefinition extends module.ClusterTaskDefinition {
-    protected isFargate: () => false;
-
     constructor(name: string, cluster: module.Cluster,
                 args: EC2TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
@@ -67,7 +65,7 @@ export class EC2TaskDefinition extends module.ClusterTaskDefinition {
             containers,
             requiresCompatibilities: ["EC2"],
             networkMode: pulumi.output(args.networkMode).apply(m => m || "awsvpc"),
-        }, opts);
+        }, /*isFargate:*/ false, opts);
     }
 
     /**
