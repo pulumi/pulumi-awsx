@@ -1,0 +1,24 @@
+{
+    "name": "containers",
+    "version": "0.0.1",
+    "license": "Apache-2.0",
+    "main": "bin/index.js",
+    "typings": "bin/index.d.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@pulumi/pulumi": "dev",
+        "@pulumi/aws": "dev",
+        "node-fetch": "^1.7.3",
+        "redis": "^2.8.0"
+    },
+    "devDependencies": {
+        "@types/node": "^8.0.27",
+        "@types/node-fetch": "^1.6.7",
+        "typescript": "^3.0.3"
+    },
+    "peerDependencies": {
+        "@pulumi/aws-infra": "latest"
+    }
+}
