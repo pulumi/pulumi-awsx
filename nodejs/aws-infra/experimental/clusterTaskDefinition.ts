@@ -38,7 +38,7 @@ export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionAr
 
     /**
      * Log group for logging information related to the service.  If not provided a default instance
-     * with a one-day retention policy will be created.for no log group.
+     * with a one-day retention policy will be created.
      */
     logGroup?: aws.cloudwatch.LogGroup
 
