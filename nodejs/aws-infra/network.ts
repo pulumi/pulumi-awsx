@@ -302,7 +302,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
     }
 
     /**
-     * Creates a new cluster, using this as the network is belongs to.
+     * Creates a new cluster, using this instance as the network it belongs to.
      */
     public createCluster(name: string, args: x.ClusterArgs = {}, opts?: pulumi.ResourceOptions) {
         if (args.network) {
