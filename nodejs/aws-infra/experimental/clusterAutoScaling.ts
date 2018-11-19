@@ -21,10 +21,26 @@ import { Overwrite, sha1hash } from "./../utils";
 
 export interface ClusterAutoScalingGroupArgs {
     /**
-     * The config to use when creating the auto scaling group.  If not provided, a default
-     * instance will be create by calling [cluster.createAutoScalingConfig()].
+     * The config to use when creating the auto scaling group.
+     *
+     * [launchConfiguration] or [launchConfigurationArgs] can be provided.  And, if either are
+     * provided will be used as the launch configuration for the auto scaling group.
+     *
+     * If neither are provided, a default instance will be create by calling
+     * [cluster.createAutoScalingConfig()].
      */
     launchConfiguration?: ClusterAutoScalingLaunchConfiguration;
+
+    /**
+     * The config to use when creating the auto scaling group.
+     *
+     * [launchConfiguration] or [launchConfigurationArgs] can be provided.  And, if either are
+     * provided will be used as the launch configuration for the auto scaling group.
+     *
+     * If neither are provided, a default instance will be create by calling
+     * [cluster.createAutoScalingConfig()].
+     */
+    launchConfigurationArgs?: ClusterAutoScalingLaunchConfigurationArgs;
 
     /**
      * Parameters to control the cloud formation stack template that is created.  If not provided
@@ -46,23 +62,6 @@ export interface TemplateParameters {
      * created. Defaults to 100.
      */
     maxSize?: number;
-}
-
-/**
- * Configuration options to create an auto scaling group for a cluster.  It is recommended that ths
- * be created using [cluster.createAutoScalingConfig] so that it can be populated with appropriate
- * values from the cluster.
- */
-export interface AutoScalingConfig {
-    /**
-     * Name of the final aws.cloudformation.Stack that will be created for the autoscaling group.
-     */
-    stackName: pulumi.Input<string>;
-
-    /**
-     * Launch configuration for the auto scaling group.
-     */
-    launchConfiguration: aws.ec2.LaunchConfiguration;
 }
 
 /**
@@ -193,7 +192,7 @@ export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfigu
     /**
      * Creates a new auto scaling group with this as its launch configuration.
      */
-    public createAutoScalingGroup(name: string, args: ClusterAutoScalingGroupArgs, opts?: pulumi.ResourceOptions) {
+    public createAutoScalingGroup(name: string, args: ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ResourceOptions) {
         return new ClusterAutoScalingGroup(name, this.cluster, {
             ...args,
             launchConfiguration: this,
@@ -377,8 +376,18 @@ export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
     public readonly launchConfiguration: ClusterAutoScalingLaunchConfiguration;
 
     constructor(name: string, cluster: module.Cluster, args: ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+        let launchConfiguration: ClusterAutoScalingLaunchConfiguration;
+
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
-        const launchConfiguration = args.launchConfiguration || cluster.createAutoScalingLaunchConfig(name);
+        if (args.launchConfiguration) {
+            launchConfiguration = args.launchConfiguration;
+        }
+        else if (args.launchConfigurationArgs) {
+            launchConfiguration = new ClusterAutoScalingLaunchConfiguration(name, cluster, args.launchConfigurationArgs, opts);
+        }
+        else {
+            launchConfiguration = cluster.createAutoScalingLaunchConfig(name);
+        }
 
         super(name, {
             ...args,
@@ -394,14 +403,22 @@ export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
         this.launchConfiguration = launchConfiguration;
     }
 
-    public createFargateService(name: string, args: module.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
+    public createFargateService(name: string, args: module.FargateServiceArgs = {}, opts?: pulumi.ResourceOptions) {
+        if (args.autoScalingGroup) {
+            throw new Error("[args.autoScalingGroup] should not be provided.");
+        }
+
         return new module.FargateService(name, this.cluster, {
             ...args,
             autoScalingGroup: this,
         }, opts || { parent: this });
     }
 
-    public createEC2Service(name: string, args: module.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
+    public createEC2Service(name: string, args: module.EC2ServiceArgs = {}, opts?: pulumi.ResourceOptions) {
+        if (args.autoScalingGroup) {
+            throw new Error("[args.autoScalingGroup] should not be provided.");
+        }
+
         return new module.EC2Service(name, this.cluster, {
             ...args,
             autoScalingGroup: this,

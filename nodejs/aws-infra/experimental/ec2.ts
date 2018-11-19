@@ -40,6 +40,14 @@ export type EC2TaskDefinitionArgs = utils.Overwrite<module.ClusterTaskDefinition
      * Either [container] or [containers] must be provided.
      */
     container?: module.ContainerDefinition;
+
+    /**
+     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
+     * ClusterService that will contain many containers within.
+     *
+     * Either [container] or [containers] must be provided.
+     */
+    containers?: Record<string, module.ContainerDefinition>;
 }>;
 
 export class EC2TaskDefinition extends module.ClusterTaskDefinition {
@@ -66,6 +74,14 @@ export class EC2TaskDefinition extends module.ClusterTaskDefinition {
      * Creates a service with this as its task definition.
      */
     public createService(name: string, args: module.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
+        if (args.taskDefinition) {
+            throw new Error("[args.taskDefinition] should not be provided.");
+        }
+
+        if (args.taskDefinitionArgs) {
+            throw new Error("[args.taskDefinitionArgs] should not be provided.");
+        }
+
         return new module.EC2Service(name, this.cluster, {
             ...args,
             taskDefinition: this,
@@ -86,7 +102,10 @@ export type EC2ServiceArgs = utils.Overwrite<module.ClusterServiceArgs, {
      */
     taskDefinitionArgs?: EC2TaskDefinitionArgs;
 
-    launchType: never;
+    /**
+     * Not provided.  Will automatically be "EC2".
+     */
+    launchType?: never;
 }>;
 
 

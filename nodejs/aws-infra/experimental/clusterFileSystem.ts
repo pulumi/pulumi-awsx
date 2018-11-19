@@ -92,10 +92,38 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
      * The launch configuration will be set to use this file system.
      */
     public createAutoScalingLaunchConfig(
-            name: string, args?: module.ClusterAutoScalingLaunchConfigurationArgs, opts?: pulumi.ResourceOptions) {
+            name: string, args: module.ClusterAutoScalingLaunchConfigurationArgs = {}, opts?: pulumi.ResourceOptions) {
+        if (args.fileSystem) {
+            throw new Error("[args.fileSystem] should not be provided.");
+        }
+
         return new module.ClusterAutoScalingLaunchConfiguration(name, this.cluster, {
             ...args,
             fileSystem: this,
+        }, opts || { parent: this });
+    }
+
+    /**
+     * Creates a auto-scaling group, using this file system within its launch configuration
+     * The launch configuration will be set to use this file system.
+     */
+    public createAutoScalingGroup(
+            name: string, args: module.ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ResourceOptions) {
+
+        if (args.launchConfiguration) {
+            throw new Error("[args.launchConfiguration] must not be set.");
+        }
+
+        const launchConfigurationArgs = args.launchConfigurationArgs || {};
+        if (launchConfigurationArgs.fileSystem) {
+            throw new Error("[args.launchConfigurationArgs.fileSystem] should not be provided.");
+        }
+
+        launchConfigurationArgs.fileSystem = this;
+
+        return new module.ClusterAutoScalingGroup(name, this.cluster, {
+            ...args,
+            launchConfigurationArgs,
         }, opts || { parent: this });
     }
 }

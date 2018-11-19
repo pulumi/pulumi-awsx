@@ -34,6 +34,14 @@ export type FargateTaskDefinitionArgs = utils.Overwrite<module.ClusterTaskDefini
      * Either [container] or [containers] must be provided.
      */
     container?: module.ContainerDefinition;
+
+    /**
+     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
+     * ClusterService that will contain many containers within.
+     *
+     * Either [container] or [containers] must be provided.
+     */
+    containers?: Record<string, module.ContainerDefinition>;
 }>;
 
 export class FargateTaskDefinition extends module.ClusterTaskDefinition {
@@ -67,6 +75,14 @@ export class FargateTaskDefinition extends module.ClusterTaskDefinition {
      * Creates a service with this as its task definition.
      */
     public createService(name: string, args: module.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
+        if (args.taskDefinition) {
+            throw new Error("[args.taskDefinition] should not be provided.");
+        }
+
+        if (args.taskDefinitionArgs) {
+            throw new Error("[args.taskDefinitionArgs] should not be provided.");
+        }
+
         return new module.FargateService(name, this.cluster, {
             ...args,
             taskDefinition: this,
@@ -142,7 +158,10 @@ export type FargateServiceArgs = utils.Overwrite<module.ClusterServiceArgs, {
      */
     taskDefinitionArgs?: FargateTaskDefinitionArgs;
 
-    launchType: never;
+    /**
+     * Not provided.  Will automatically be "FARGATE".
+     */
+    launchType?: never;
 }>;
 
 export class FargateService extends module.ClusterService {

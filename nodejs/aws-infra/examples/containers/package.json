@@ -10,6 +10,7 @@
     "dependencies": {
         "@pulumi/pulumi": "dev",
         "@pulumi/aws": "dev",
+        "@pulumi/cloud": "dev",
         "node-fetch": "^1.7.3",
         "redis": "^2.8.0"
     },

@@ -22,12 +22,10 @@ import * as module from ".";
 export declare type HostOperatingSystem = "linux" | "windows";
 
 export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
-    // /**
-    //  * Whether or not a load balancer should be created.  A load balancer is required for
-    //  * a Service but should not be created for a Task.  If true, a load balancer will be
-    //  * created for the first container in [containers] that specifies a loadBalancerPort
-    //  */
-    // createLoadBalancer: boolean;
+    /**
+     * Not used.  The pulumi resource name will be used for this.
+     */
+    family?: never;
 
     /** Not used.  Provide  [containers] instead. */
     containerDefinitions?: never;
@@ -172,7 +170,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
 
         super(name, {
             ...args,
-            family: name,
+            family:  name,
             taskRoleArn: taskRole.arn,
             executionRoleArn: executionRole.arn,
             containerDefinitions: containerDefinitions.apply(JSON.stringify),

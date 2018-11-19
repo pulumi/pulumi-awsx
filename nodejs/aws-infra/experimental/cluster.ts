@@ -51,7 +51,7 @@ export class Cluster extends aws.ecs.Cluster {
      */
     public readonly instanceSecurityGroup: aws.ec2.SecurityGroup;
 
-    constructor(name: string, args: ClusterArgs, opts?: pulumi.ResourceOptions) {
+    constructor(name: string, args: ClusterArgs = {}, opts: pulumi.ResourceOptions = {}) {
         super(name, {
             ...args,
         }, opts);
