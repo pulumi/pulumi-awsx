@@ -101,7 +101,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
             mountPath,
             mountTargets,
             securityGroup,
-        })
+        });
     }
 
     /**
