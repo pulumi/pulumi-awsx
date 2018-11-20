@@ -146,5 +146,3 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
 }
 
 (<any>ClusterFileSystem).doNotCapture = true;
-(<any>ClusterFileSystem.prototype.createAutoScalingGroup).doNotCapture = true;
-(<any>ClusterFileSystem.prototype.createAutoScalingLaunchConfig).doNotCapture = true;
