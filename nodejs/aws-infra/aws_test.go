@@ -72,8 +72,7 @@ func Test_Examples(t *testing.T) {
 				"containers:redisPassword": "SECRETPASSWORD",
 			},
 			Dependencies: []string{
-				"@pulumi/cloud",
-				"@pulumi/cloud-aws",
+				"@pulumi/aws-infra",
 			},
 			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargates*/),
 		},
