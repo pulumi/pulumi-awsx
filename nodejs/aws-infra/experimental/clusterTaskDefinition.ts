@@ -119,9 +119,9 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     public readonly exposedPort?: ExposedPort;
 
     public readonly endpoints: pulumi.Output<module.Endpoints>;
-    public readonly defaultEndpoint: pulumi.Output<module.Endpoint | undefined>;
+    public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
-    public readonly getEndpoint: (containerName?: string, containerPort?: number) => Promise<module.Endpoint>;
+    public readonly getEndpoint: (containerName?: string, containerPort?: number) => Promise<aws.apigateway.x.Endpoint>;
 
     /**
      * Runs this task definition in this cluster once.
@@ -189,12 +189,13 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
                     [exposedPortOpt.loadBalancerPort.port]: {
                         hostname: exposedPortOpt.loadBalancer.dnsName,
                         port: exposedPortOpt.loadBalancerPort.port,
+                        loadBalancer: exposedPortOpt.loadBalancer,
                     } } });
 
         this.endpoints = endpoints;
 
         this.defaultEndpoint = exposedPortOpt === undefined
-            ? pulumi.output(undefined)
+            ? pulumi.output(<aws.apigateway.x.Endpoint>undefined!)
             : endpoints.apply(
                 ep => getEndpointHelper(ep, /*containerName:*/ undefined, /*containerPort:*/ undefined));
 
