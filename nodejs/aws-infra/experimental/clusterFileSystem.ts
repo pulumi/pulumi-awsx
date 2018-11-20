@@ -127,3 +127,7 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
         }, opts || { parent: this });
     }
 }
+
+(<any>ClusterFileSystem).doNotCapture = true;
+(<any>ClusterFileSystem.prototype.createAutoScalingGroup).doNotCapture = true;
+(<any>ClusterFileSystem.prototype.createAutoScalingLaunchConfig).doNotCapture = true;

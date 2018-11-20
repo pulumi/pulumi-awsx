@@ -317,3 +317,4 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
 }
 
 (<any>Network).doNotCapture = true;
+(<any>Network.prototype).doNotCapture = true;

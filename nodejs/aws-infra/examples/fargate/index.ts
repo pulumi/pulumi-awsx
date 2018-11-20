@@ -126,42 +126,40 @@ class Cache {
         });
 
         this.get = (key: string) => {
-            return redis.getEndpoint("redis", 6379).then(endpoint => {
-                console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
-                const client = require("redis").createClient(
-                    endpoint.port,
-                    endpoint.hostname,
-                    { password: redisPassword },
-                );
-                console.log(client);
-                return new Promise<string>((resolve, reject) => {
-                    client.get(key, (err: any, v: any) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve(v);
-                        }
-                    });
+            const endpoint = redis.defaultEndpoint.get();
+            console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
+            const client = require("redis").createClient(
+                endpoint.port,
+                endpoint.hostname,
+                { password: redisPassword },
+            );
+            console.log(client);
+            return new Promise<string>((resolve, reject) => {
+                client.get(key, (err: any, v: any) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(v);
+                    }
                 });
             });
         };
         this.set = (key: string, value: string) => {
-            return redis.getEndpoint("redis", 6379).then(endpoint => {
-                console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
-                const client = require("redis").createClient(
-                    endpoint.port,
-                    endpoint.hostname,
-                    { password: redisPassword },
-                );
-                console.log(client);
-                return new Promise<void>((resolve, reject) => {
-                    client.set(key, value, (err: any, v: any) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            resolve();
-                        }
-                    });
+            const endpoint = redis.defaultEndpoint.get();
+            console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
+            const client = require("redis").createClient(
+                endpoint.port,
+                endpoint.hostname,
+                { password: redisPassword },
+            );
+            console.log(client);
+            return new Promise<void>((resolve, reject) => {
+                client.set(key, value, (err: any, v: any) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
                 });
             });
         };
@@ -216,8 +214,8 @@ const api = new aws.apigateway.x.API("examples-containers", {
                 return {
                     statusCode: 200,
                     body: JSON.stringify({
-                        nginx: await nginx.getEndpoint(),
-                        nginx2: await builtService.getEndpoint(),
+                        nginx: nginx.defaultEndpoint.get(),
+                        nginx2: builtService.defaultEndpoint.get(),
                     }),
                 };
             } catch (err) {
@@ -241,7 +239,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
                     };
                 }
 
-                const endpoint = await nginx.getEndpoint("nginx", 80);
+                const endpoint = nginx.defaultEndpoint.get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();
@@ -277,7 +275,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
         eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
             try {
                 const fetch = (await import("node-fetch")).default;
-                const endpoint = await customWebServer.getEndpoint();
+                const endpoint = customWebServer.defaultEndpoint.get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();

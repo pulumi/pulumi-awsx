@@ -16,4 +16,5 @@ export * from "./cluster";
 export * from "./network";
 
 import * as x from "./experimental";
+(<any>x).doNotCapture = true;
 export { x };

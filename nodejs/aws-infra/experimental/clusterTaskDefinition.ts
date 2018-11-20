@@ -202,74 +202,98 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         this.getEndpoint = async (containerName, containerPort) =>
             getEndpointHelper(endpoints.get(), containerName, containerPort);
 
-        const subnetIds = pulumi.all(cluster.network.subnetIds);
-        const securityGroupId =  cluster.instanceSecurityGroup.id;
-
-        const containersOutput = pulumi.output(containers);
-
-        this.run = async function (options: TaskRunOptions = {}) {
-            const ecs = new aws.sdk.ECS();
-
-            const innerContainers = containersOutput.get();
-            const containerName = options.containerName || Object.keys(innerContainers)[0];
-            if (!containerName) {
-                throw new Error("No valid container name found to run task for.");
-            }
-
-            const container = innerContainers[containerName];
-
-            // Extract the environment values from the options
-            const env: { name: string, value: string }[] = [];
-            addEnvironmentVariables(container.environment);
-            addEnvironmentVariables(options && options.environment);
-
-            const assignPublicIp = isFargate && !cluster.network.usePrivateSubnets;
-
-            // Run the task
-            const res = await ecs.runTask({
-                cluster: cluster.arn.get(),
-                taskDefinition: this.arn.get(),
-                placementConstraints: placementConstraintsForHost(isFargate, options.os),
-                launchType: isFargate ? "FARGATE" : "EC2",
-                networkConfiguration: {
-                    awsvpcConfiguration: {
-                        assignPublicIp: assignPublicIp ? "ENABLED" : "DISABLED",
-                        securityGroups: [ securityGroupId.get() ],
-                        subnets: subnetIds.get(),
-                    },
-                },
-                overrides: {
-                    containerOverrides: [
-                        {
-                            name: "container",
-                            environment: env,
-                        },
-                    ],
-                },
-            }).promise();
-
-            if (res.failures && res.failures.length > 0) {
-                throw new Error("Failed to start task:" + JSON.stringify(res.failures));
-            }
-
-            return;
-
-            // Local functions
-            function addEnvironmentVariables(e: Record<string, string> | undefined) {
-                if (e) {
-                    for (const key of Object.keys(e)) {
-                        const envVal = e[key];
-                        if (envVal) {
-                            env.push({ name: key, value: envVal });
+        const containerToEnvironment =
+            pulumi.output(containers)
+                  .apply(c => {
+                        const result: Record<string, Record<string, string> | undefined> = {};
+                        for (const key of Object.keys(c)) {
+                            result[key] = c[key].environment;
                         }
-                    }
-                }
-            }
-        };
+                        return result;
+                  });
+
+        this.run = createRunFunction(
+            isFargate,
+            cluster.network.usePrivateSubnets,
+            cluster.arn,
+            this.arn,
+            cluster.instanceSecurityGroup.id,
+            pulumi.all(cluster.network.subnetIds),
+            containerToEnvironment);
     }
 }
 
 (<any>ClusterTaskDefinition).doNotCapture = true;
+
+function createRunFunction(
+        isFargate: boolean,
+        usePrivateSubnets: boolean,
+        clusterArn: pulumi.Output<string>,
+        taskDefArn: pulumi.Output<string>,
+        securityGroupId: pulumi.Output<string>,
+        subnetIds: pulumi.Output<string[]>,
+        containerToEnvironment: pulumi.Output<Record<string, Record<string, string> | undefined>>) {
+
+    return async function runTask(options: TaskRunOptions = {}) {
+        const ecs = new aws.sdk.ECS();
+
+        const innerContainers = containerToEnvironment.get();
+        const containerName = options.containerName || Object.keys(innerContainers)[0];
+        if (!containerName) {
+            throw new Error("No valid container name found to run task for.");
+        }
+
+        const environment = innerContainers[containerName];
+
+        // Extract the environment values from the options
+        const env: { name: string, value: string }[] = [];
+        addEnvironmentVariables(environment);
+        addEnvironmentVariables(options && options.environment);
+
+        const assignPublicIp = isFargate && !usePrivateSubnets;
+
+        // Run the task
+        const res = await ecs.runTask({
+            cluster: clusterArn.get(),
+            taskDefinition: taskDefArn.get(),
+            placementConstraints: placementConstraints(isFargate, options.os),
+            launchType: isFargate ? "FARGATE" : "EC2",
+            networkConfiguration: {
+                awsvpcConfiguration: {
+                    assignPublicIp: assignPublicIp ? "ENABLED" : "DISABLED",
+                    securityGroups: [ securityGroupId.get() ],
+                    subnets: subnetIds.get(),
+                },
+            },
+            overrides: {
+                containerOverrides: [
+                    {
+                        name: "container",
+                        environment: env,
+                    },
+                ],
+            },
+        }).promise();
+
+        if (res.failures && res.failures.length > 0) {
+            throw new Error("Failed to start task:" + JSON.stringify(res.failures));
+        }
+
+        return;
+
+        // Local functions
+        function addEnvironmentVariables(e: Record<string, string> | undefined) {
+            if (e) {
+                for (const key of Object.keys(e)) {
+                    const envVal = e[key];
+                    if (envVal) {
+                        env.push({ name: key, value: envVal });
+                    }
+                }
+            }
+        }
+    };
+}
 
 function getEndpointHelper(
     endpoints: mod.Endpoints, containerName: string | undefined, containerPort: number | undefined) {
@@ -293,7 +317,7 @@ function getEndpointHelper(
     return endpoint;
 }
 
-export function placementConstraintsForHost(isFargate: boolean, os: HostOperatingSystem | undefined) {
+function placementConstraints(isFargate: boolean, os: HostOperatingSystem | undefined) {
     if (isFargate) {
         return [];
     }

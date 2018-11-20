@@ -89,6 +89,7 @@ export class FargateTaskDefinition extends mod.ClusterTaskDefinition {
 }
 
 (<any>FargateTaskDefinition).doNotCapture = true;
+(<any>FargateTaskDefinition.prototype.createService).doNotCapture = true;
 
 function computeFargateMemoryAndCPU(containers: Record<string, mod.ContainerDefinition>) {
     return pulumi.output(containers).apply(containers => {

@@ -71,10 +71,8 @@ export abstract class ClusterService extends aws.ecs.Service {
      */
     public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
-    public readonly endpoints: pulumi.Output<Endpoints>;
+    public readonly endpoints: pulumi.Output<mod.Endpoints>;
     public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
-
-    public readonly getEndpoint: (containerName?: string, containerPort?: number) => Promise<aws.apigateway.x.Endpoint>;
 
     constructor(name: string, cluster: mod.Cluster,
                 args: ClusterServiceArgs, isFargate: boolean,
@@ -102,20 +100,32 @@ export abstract class ClusterService extends aws.ecs.Service {
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
             launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
             waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
-            placementConstraints: pulumi.output(args.os).apply(os => mod.placementConstraintsForHost(isFargate, os)),
+            placementConstraints: pulumi.output(args.os).apply(os => placementConstraints(isFargate, os)),
         }, opts);
 
         this.clusterInstance = cluster;
         this.taskDefinitionInstance = args.taskDefinition;
         this.autoScalingGroup = args.autoScalingGroup;
 
-        this.endpoints = args.taskDefinition.endpoints;
         this.defaultEndpoint = args.taskDefinition.defaultEndpoint;
-        this.getEndpoint = (name, port) => args.taskDefinition.getEndpoint(name, port);
+        this.endpoints = args.taskDefinition.endpoints;
     }
 }
 
 (<any>ClusterService).doNotCapture = true;
+
+function placementConstraints(isFargate: boolean, os: mod.HostOperatingSystem | undefined) {
+    if (isFargate) {
+        return [];
+    }
+
+    os = os || "linux";
+
+    return [{
+        type: "memberOf",
+        expression: `attribute:ecs.os-type == ${os}`,
+    }];
+}
 
 function createLoadBalancers(
         taskDefinition: mod.ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {

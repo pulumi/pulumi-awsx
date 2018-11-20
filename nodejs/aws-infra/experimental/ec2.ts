@@ -88,6 +88,7 @@ export class EC2TaskDefinition extends mod.ClusterTaskDefinition {
 }
 
 (<any>EC2TaskDefinition).doNotCapture = true;
+(<any>EC2TaskDefinition.prototype.createService).doNotCapture = true;
 
 export type EC2ServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
     /**
