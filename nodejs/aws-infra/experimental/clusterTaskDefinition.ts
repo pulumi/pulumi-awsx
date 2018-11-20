@@ -106,7 +106,8 @@ export interface TaskRunOptions {
     environment?: Record<string, string>;
 }
 
-export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
+export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
+    public readonly instance: aws.ecs.TaskDefinition;
     public readonly cluster: mod.Cluster;
     public readonly logGroup: aws.cloudwatch.LogGroup;
     public readonly containers: Record<string, mod.ContainerDefinition>;
@@ -128,19 +129,21 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
      */
     public readonly run: (options?: TaskRunOptions) => Promise<void>;
 
-    constructor(name: string, cluster: mod.Cluster,
+    constructor(type: string, name: string, cluster: mod.Cluster,
                 args: ClusterTaskDefinitionArgs, isFargate: boolean,
                 opts?: pulumi.ComponentResourceOptions) {
+        super(type, name, args, opts);
 
+        const parentOpts = { parent: this };
         const logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
-        }, opts);
+        }, parentOpts);
 
-        const taskRole = args.taskRole || createTaskRole(name, opts);
-        const executionRole = args.executionRole || createExecutionRole(name, opts);
+        const taskRole = args.taskRole || createTaskRole(name, parentOpts);
+        const executionRole = args.executionRole || createExecutionRole(name, parentOpts);
 
         const containers = args.containers;
-        const exposedPortOpt = getExposedPort(name, cluster, containers);
+        const exposedPortOpt = getExposedPort(name, cluster, containers, parentOpts);
 
         // todo(cyrusn): volumes.
         //     // Find all referenced Volumes.
@@ -166,13 +169,13 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         const containerDefinitions = computeContainerDefinitions(
             name, cluster, args, exposedPortOpt, logGroup);
 
-        super(name, {
+        this.instance = new aws.ecs.TaskDefinition(name, {
             ...args,
             family:  name,
             taskRoleArn: taskRole.arn,
             executionRoleArn: executionRole.arn,
             containerDefinitions: containerDefinitions.apply(JSON.stringify),
-        }, opts);
+        }, parentOpts);
 
         this.containers = containers;
         this.cluster = cluster;
@@ -187,9 +190,9 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
             : pulumi.output({
                 [exposedPortOpt.containerName]: {
                     [exposedPortOpt.loadBalancerPort.port]: {
-                        hostname: exposedPortOpt.loadBalancer.dnsName,
+                        hostname: exposedPortOpt.loadBalancer.instance.dnsName,
                         port: exposedPortOpt.loadBalancerPort.port,
-                        loadBalancer: exposedPortOpt.loadBalancer,
+                        loadBalancer: exposedPortOpt.loadBalancer.instance,
                     } } });
 
         this.endpoints = endpoints;
@@ -215,8 +218,8 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         this.run = createRunFunction(
             isFargate,
             cluster.network.usePrivateSubnets,
-            cluster.arn,
-            this.arn,
+            cluster.instance.arn,
+            this.instance.arn,
             cluster.instanceSecurityGroup.id,
             pulumi.all(cluster.network.subnetIds),
             containerToEnvironment);
@@ -349,7 +352,8 @@ export interface ExposedPort {
 
 function getExposedPort(
     name: string, cluster: mod.Cluster,
-    containers: Record<string, mod.ContainerDefinition>) {
+    containers: Record<string, mod.ContainerDefinition>,
+    opts: pulumi.ResourceOptions) {
 
     let exposedPort: ExposedPort | undefined;
     for (const containerName of Object.keys(containers)) {
@@ -361,7 +365,7 @@ function getExposedPort(
             }
 
             const loadBalancer = cluster.createLoadBalancer(
-                name + "-" + containerName, { loadBalancerPort });
+                name + "-" + containerName, { loadBalancerPort }, opts);
             exposedPort = { containerName, loadBalancer, loadBalancerPort };
         }
     }
@@ -408,7 +412,7 @@ const defaultTaskRolePolicy = {
     ],
 };
 
-function createTaskRole(name: string, opts?: pulumi.ResourceOptions): aws.iam.Role {
+function createTaskRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Role {
     const taskRole = new aws.iam.Role(`${name}-task`, {
         assumeRolePolicy: JSON.stringify(defaultTaskRolePolicy),
     }, opts);
@@ -428,7 +432,7 @@ function createTaskRole(name: string, opts?: pulumi.ResourceOptions): aws.iam.Ro
     return taskRole;
 }
 
-function createExecutionRole(name: string, opts?: pulumi.ResourceOptions): aws.iam.Role {
+function createExecutionRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Role {
     const executionRole = new aws.iam.Role(`${name}-execution`, {
         assumeRolePolicy: JSON.stringify(defaultTaskRolePolicy),
     }, opts);

@@ -82,7 +82,8 @@ export type ClusterLoadBalancerArgs = utils.Overwrite<aws.elasticloadbalancingv2
     securityGroups?: never;
 }>;
 
-export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer {
+export class ClusterLoadBalancer extends pulumi.ComponentResource {
+    public readonly instance: aws.elasticloadbalancingv2.LoadBalancer;
     public readonly cluster: mod.Cluster;
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly listener: aws.elasticloadbalancingv2.Listener;
@@ -90,7 +91,10 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
     constructor(name: string,
                 cluster: mod.Cluster,
                 args: ClusterLoadBalancerArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
+        super("aws-infra:x:ClusterLoadBalancer", name, args, opts);
+
+        const parentOpts = { parent: this };
 
         // Load balancers need *very* short names, so we unfortunately have to hash here.
         //
@@ -107,7 +111,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
         const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
             computeLoadBalancerInfo(args.loadBalancerPort);
 
-        super(shortName, {
+        this.instance = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
             ...args,
             loadBalancerType: useAppLoadBalancer ? "application" : "network",
             subnets: cluster.network.publicSubnetIds,
@@ -117,11 +121,9 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
             // default to the VPC's group.
             securityGroups: useAppLoadBalancer ? [ cluster.instanceSecurityGroup.id ] : undefined,
             tags: { Name: longName },
-        }, opts);
+        }, parentOpts);
 
         this.cluster = cluster;
-
-        const parentOpts = { parent: this };
 
         // Create the target group for the new container/port pair.
         this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
@@ -135,7 +137,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
 
         // Listen on the requested port on the LB and forward to the target.
         this.listener = new aws.elasticloadbalancingv2.Listener(longName, {
-            loadBalancerArn: this.arn,
+            loadBalancerArn: this.instance.arn,
             protocol: listenerProtocol,
             certificateArn: certificateArn,
             port: args.loadBalancerPort.port,

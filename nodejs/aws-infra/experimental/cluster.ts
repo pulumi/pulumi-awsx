@@ -41,7 +41,9 @@ export type ClusterArgs = utils.Overwrite<aws.ecs.ClusterArgs, {
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
  */
-export class Cluster extends aws.ecs.Cluster {
+export class Cluster extends pulumi.ComponentResource {
+    public readonly instance: aws.ecs.Cluster;
+
     /**
      * The network in which to create this cluster.
      */
@@ -51,15 +53,16 @@ export class Cluster extends aws.ecs.Cluster {
      */
     public readonly instanceSecurityGroup: aws.ec2.SecurityGroup;
 
-    constructor(name: string, args: ClusterArgs = {}, opts: pulumi.ResourceOptions = {}) {
-        super(name, {
+    constructor(name: string, args: ClusterArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        super("aws-infra:x:Cluster", name, {
             ...args,
         }, opts);
 
-        this.network = args.network || Network.getDefault();
-
         // First create an ECS cluster.
         const parentOpts = { parent: this };
+        this.instance = new aws.ecs.Cluster(name, args, parentOpts);
+
+        this.network = args.network || Network.getDefault();
 
         // Create the EC2 instance security group
         const ALL = {

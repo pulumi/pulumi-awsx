@@ -59,7 +59,7 @@ export class FargateTaskDefinition extends mod.ClusterTaskDefinition {
         const computedMemory = computedMemoryAndCPU.apply(x => x.memory);
         const computedCPU = computedMemoryAndCPU.apply(x => x.cpu);
 
-        super(name, cluster, {
+        super("aws-infra:x:FargateTaskDefinition", name, cluster, {
             ...args,
             containers,
             requiresCompatibilities: ["FARGATE"],
@@ -177,7 +177,7 @@ export class FargateService extends mod.ClusterService {
         const taskDefinition = args.taskDefinition ||
             new mod.FargateTaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
 
-        super(name, cluster, {
+        super("aws-infra:x:FargateService", name, cluster, {
             ...args,
             taskDefinition,
             launchType: "FARGATE",

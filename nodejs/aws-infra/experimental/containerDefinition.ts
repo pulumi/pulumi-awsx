@@ -181,7 +181,7 @@ function computeImage(name: string,
         // Now add entries for service discovery amongst containers exposing endpoints.
     if (exposedPortOpt) {
         const loadBalancer = exposedPortOpt.loadBalancer;
-        const hostname = loadBalancer.dnsName;
+        const hostname = loadBalancer.instance.dnsName;
         const hostproto = exposedPortOpt.loadBalancerPort.protocol || "tcp";
         const hostport = exposedPortOpt.loadBalancerPort.port.toString();
         const port = hostport;

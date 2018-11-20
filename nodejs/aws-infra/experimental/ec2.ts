@@ -60,7 +60,7 @@ export class EC2TaskDefinition extends mod.ClusterTaskDefinition {
 
         const containers = args.containers || { container: args.container! };
 
-        super(name, cluster, {
+        super("aws-infra:x:EC2TaskDefinition", name, cluster, {
             ...args,
             containers,
             requiresCompatibilities: ["EC2"],
@@ -124,7 +124,7 @@ export class EC2Service extends mod.ClusterService {
         const taskDefinition = args.taskDefinition ||
             new mod.EC2TaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
 
-        super(name, cluster, {
+        super("aws-infra:x:EC2Service", name, cluster, {
             ...args,
             taskDefinition,
             launchType: "EC2",

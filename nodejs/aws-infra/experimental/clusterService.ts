@@ -61,7 +61,8 @@ export interface Endpoints {
     [containerName: string]: { [port: number]: aws.apigateway.x.Endpoint; };
 }
 
-export abstract class ClusterService extends aws.ecs.Service {
+export abstract class ClusterService extends pulumi.ComponentResource {
+    public readonly instance: aws.ecs.Service;
     public readonly clusterInstance: mod.Cluster;
     public readonly taskDefinitionInstance: mod.ClusterTaskDefinition;
 
@@ -74,10 +75,12 @@ export abstract class ClusterService extends aws.ecs.Service {
     public readonly endpoints: pulumi.Output<mod.Endpoints>;
     public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
-    constructor(name: string, cluster: mod.Cluster,
+    constructor(type: string, name: string, cluster: mod.Cluster,
                 args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
+        super(type, name, args, opts);
 
+        const parentOpts = { parent: this };
         const loadBalancers = createLoadBalancers(args.taskDefinition);
 
         // If the cluster has an autoscaling group, ensure the service depends on it being created.
@@ -92,16 +95,16 @@ export abstract class ClusterService extends aws.ecs.Service {
             opts.dependsOn = dependsOn;
         }
 
-        super(name, {
+        this.instance = new aws.ecs.Service(name, {
             ...args,
-            cluster: cluster.arn,
-            taskDefinition: args.taskDefinition.arn,
+            cluster: cluster.instance.arn,
+            taskDefinition: args.taskDefinition.instance.arn,
             loadBalancers: loadBalancers,
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
             launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
             waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
             placementConstraints: pulumi.output(args.os).apply(os => placementConstraints(isFargate, os)),
-        }, opts);
+        }, parentOpts);
 
         this.clusterInstance = cluster;
         this.taskDefinitionInstance = args.taskDefinition;

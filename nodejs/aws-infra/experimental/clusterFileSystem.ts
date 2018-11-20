@@ -42,24 +42,28 @@ export type ClusterFileSystemArgs = utils.Overwrite<aws.efs.FileSystemArgs, {
     mountPath?: pulumi.Input<string>;
 }>;
 
-export class ClusterFileSystem extends aws.efs.FileSystem {
+export class ClusterFileSystem extends pulumi.ComponentResource {
+    public readonly instance: aws.efs.FileSystem;
     public readonly cluster: mod.Cluster;
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly mountTargets: aws.efs.MountTarget[];
     public readonly mountPath: pulumi.Output<string>;
 
     constructor(name: string, cluster: mod.Cluster,
-                args: ClusterFileSystemArgs = {}, opts?: pulumi.CustomResourceOptions) {
-        super(name, {
+                args: ClusterFileSystemArgs = {}, opts: pulumi.CustomResourceOptions = {}) {
+        super("aws-infra:x:ClusterFileSystem", name, {
             ...args,
         }, opts);
+
+        const parentOpts = { parent: this };
+
+        this.instance = new aws.efs.FileSystem(name, args, parentOpts);
 
         this.cluster = cluster;
         this.mountTargets = [];
         this.mountPath = pulumi.output(args.mountPath).apply(p => p || "/mnt/efs");
 
         // If requested, add EFS file system and mount targets in each subnet.
-        const parentOpts = { parent: this };
 
         const efsSecurityGroupName = `${name}-fs`;
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(efsSecurityGroupName, {
@@ -80,7 +84,7 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
         for (let i = 0; i < subnetIds.length; i++) {
             const subnetId = subnetIds[i];
             this.mountTargets.push(new aws.efs.MountTarget(`${name}-${i}`, {
-                fileSystemId: this.id,
+                fileSystemId: this.instance.id,
                 subnetId: subnetId,
                 securityGroups: [ this.securityGroup.id ],
             }, parentOpts));

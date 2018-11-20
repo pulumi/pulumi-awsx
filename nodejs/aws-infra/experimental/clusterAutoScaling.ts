@@ -142,7 +142,9 @@ export type ClusterAutoScalingLaunchConfigurationArgs = Overwrite<aws.ec2.Launch
     ebsBlockDevices?: aws.ec2.LaunchConfigurationArgs["ebsBlockDevices"];
 }>;
 
-export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfiguration {
+export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResource {
+    public readonly instance: aws.ec2.LaunchConfiguration;
+
     public readonly cluster: mod.Cluster;
     /**
      * Optional file system to mount.  Use [cluster.createFileSystem] to create an instance of this.
@@ -158,18 +160,22 @@ export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfigu
 
     constructor(name: string, cluster: mod.Cluster,
                 args: ClusterAutoScalingLaunchConfigurationArgs = {},
-                opts?: pulumi.CustomResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
+        super("aws-infra.x.ClusterAutoScalingLaunchConfiguration", name, args, opts);
+
+        const parentOpts = { parent: this };
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.
         // TODO[pulumi/pulumi#381]: Creating an S3 bucket is an inelegant way to get a durable,
         // unique name.
-        const stackName = pulumi.output(args.stackName!) || new aws.s3.Bucket(name).id;
+        const stackName = pulumi.output(args.stackName!) || new aws.s3.Bucket(name, {}, parentOpts).id;
 
         // Use the instance provided, or create a new one.
         const instanceProfile = getInstanceProfile(cluster, args);
 
-        super(name, {
+        this.instance = new aws.ec2.LaunchConfiguration(
+            name, {
             ...args,
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: pulumi.output(args.instanceType).apply(t => t || "t2.micro"),
@@ -181,7 +187,7 @@ export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfigu
             ebsBlockDevices: pulumi.output(args.ebsBlockDevices).apply(d => d || defaultEbsBlockDevices),
             securityGroups: pulumi.output(args.securityGroups).apply(g => g || [ cluster.instanceSecurityGroup.id ]),
             userData: getInstanceUserData(cluster, args, stackName),
-        }, opts);
+        }, parentOpts);
 
         this.cluster = cluster;
         this.stackName = stackName;
@@ -301,10 +307,10 @@ function getInstanceUserData(
     args: ClusterAutoScalingLaunchConfigurationArgs,
     cloudFormationStackName: pulumi.Output<string>) {
 
-    const fileSystemId = args.fileSystem ? args.fileSystem.id : undefined;
+    const fileSystemId = args.fileSystem ? args.fileSystem.instance.id : undefined;
     const mountPath = args.fileSystem ? args.fileSystem.mountPath : undefined;
 
-    return pulumi.all([cluster.id, cloudFormationStackName, fileSystemId, mountPath])
+    return pulumi.all([cluster.instance.id, cloudFormationStackName, fileSystemId, mountPath])
                  .apply(([clusterId, cloudFormationStackName, fileSystemId, mountPath]) => {
         let fileSystemRuncmdBlock = "";
 
@@ -370,7 +376,9 @@ function getInstanceUserData(
     });
 }
 
-export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
+export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
+    public readonly instance: aws.cloudformation.Stack;
+
     public readonly cluster: mod.Cluster;
 
     /**
@@ -378,7 +386,12 @@ export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
      */
     public readonly launchConfiguration: ClusterAutoScalingLaunchConfiguration;
 
-    constructor(name: string, cluster: mod.Cluster, args: ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, cluster: mod.Cluster,
+                args: ClusterAutoScalingGroupArgs = {},
+                opts: pulumi.ComponentResourceOptions = {}) {
+        super("aws-infra:x:ClusterAutoScalingGroup", name, args, opts);
+
+        const parentOpts = { parent: this };
         let launchConfiguration: ClusterAutoScalingLaunchConfiguration;
 
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
@@ -386,21 +399,22 @@ export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
             launchConfiguration = args.launchConfiguration;
         }
         else if (args.launchConfigurationArgs) {
-            launchConfiguration = new ClusterAutoScalingLaunchConfiguration(name, cluster, args.launchConfigurationArgs, opts);
+            launchConfiguration = new ClusterAutoScalingLaunchConfiguration(
+                name, cluster, args.launchConfigurationArgs, parentOpts);
         }
         else {
-            launchConfiguration = cluster.createAutoScalingLaunchConfig(name);
+            launchConfiguration = cluster.createAutoScalingLaunchConfig(name, {}, parentOpts);
         }
 
-        super(name, {
+        this.instance = new aws.cloudformation.Stack(name, {
             ...args,
             name: launchConfiguration.stackName,
             templateBody: getCloudFormationTemplate(
                 name,
-                launchConfiguration.id,
+                launchConfiguration.instance.id,
                 cluster.network.subnetIds,
                 args.templateParameters || {}),
-        }, opts);
+        }, parentOpts);
 
         this.cluster = cluster;
         this.launchConfiguration = launchConfiguration;
