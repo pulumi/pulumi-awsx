@@ -39,7 +39,7 @@ import (
 )
 
 // Fargate is only supported in `us-east-1`, so force Fargate-based tests to run there.
-const fargateRegion = "us-east-2"
+const fargateRegion = "us-east-1"
 
 func Test_Examples(t *testing.T) {
 	region := os.Getenv("AWS_REGION")
@@ -53,16 +53,16 @@ func Test_Examples(t *testing.T) {
 		return
 	}
 	examples := []integration.ProgramTestOptions{
-		{
-			Dir: path.Join(cwd, "./examples/cluster"),
-			Config: map[string]string{
-				"aws:region":     region,
-				"cloud:provider": "aws",
-			},
-			Dependencies: []string{
-				"@pulumi/aws-infra",
-			},
-		},
+		// {
+		// 	Dir: path.Join(cwd, "./examples/cluster"),
+		// 	Config: map[string]string{
+		// 		"aws:region":     region,
+		// 		"cloud:provider": "aws",
+		// 	},
+		// 	Dependencies: []string{
+		// 		"@pulumi/aws-infra",
+		// 	},
+		// },
 		{
 			Dir:       path.Join(cwd, "./examples/fargate"),
 			StackName: addRandomSuffix("containers-fargate"),
