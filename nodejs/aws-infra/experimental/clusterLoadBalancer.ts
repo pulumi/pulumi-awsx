@@ -150,6 +150,8 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
     }
 }
 
+(<any>ClusterLoadBalancer).doNotCapture = true;
+
 function computeLoadBalancerInfo(loadBalancerPort: ClusterLoadBalancerPort) {
     switch (loadBalancerPort.protocol || "tcp") {
         case "https":

@@ -103,10 +103,6 @@ export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefiniti
     environment?: ContainerEnvironment;
 }>;
 
-// export class ContainerDefinition extends pulumi.ComponentResource {
-
-// }
-
 export type WrappedEndpoints = Record<string, Record<number, pulumi.Output<aws.apigateway.x.Endpoint>>>;
 
 export function computeContainerDefinition(

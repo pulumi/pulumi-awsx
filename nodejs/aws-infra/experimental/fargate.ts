@@ -88,6 +88,8 @@ export class FargateTaskDefinition extends mod.ClusterTaskDefinition {
     }
 }
 
+(<any>FargateTaskDefinition).doNotCapture = true;
+
 function computeFargateMemoryAndCPU(containers: Record<string, mod.ContainerDefinition>) {
     return pulumi.output(containers).apply(containers => {
         // Sum the requested memory and CPU for each container in the task.
@@ -186,3 +188,5 @@ export class FargateService extends mod.ClusterService {
         },  /*isFargate:*/ true, opts);
     }
 }
+
+(<any>FargateService).doNotCapture = true;

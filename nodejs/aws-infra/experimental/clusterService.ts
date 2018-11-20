@@ -115,6 +115,8 @@ export abstract class ClusterService extends aws.ecs.Service {
     }
 }
 
+(<any>ClusterService).doNotCapture = true;
+
 function createLoadBalancers(
         taskDefinition: mod.ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {
     const exposedPort = taskDefinition.exposedPort;

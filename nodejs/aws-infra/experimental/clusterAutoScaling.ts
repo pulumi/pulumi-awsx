@@ -200,6 +200,8 @@ export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfigu
     }
 }
 
+(<any>ClusterAutoScalingLaunchConfiguration).doNotCapture = true;
+
 const defaultAssumeInstanceRolePolicyDoc: aws.iam.PolicyDocument = {
     Version: "2012-10-17",
     Statement: [{
@@ -425,6 +427,8 @@ export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
         }, opts || { parent: this });
     }
 }
+
+(<any>ClusterAutoScalingGroup).doNotCapture = true;
 
 // TODO[pulumi/pulumi-aws/issues#43]: We'd prefer not to use CloudFormation, but it's the best way to implement
 // rolling updates in an autoscaling group.

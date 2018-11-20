@@ -269,6 +269,8 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
     }
 }
 
+(<any>ClusterTaskDefinition).doNotCapture = true;
+
 function getEndpointHelper(
     endpoints: mod.Endpoints, containerName: string | undefined, containerPort: number | undefined) {
 
