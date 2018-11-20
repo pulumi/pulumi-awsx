@@ -238,6 +238,7 @@ function createRunFunction(
         containerToEnvironment: pulumi.Output<Record<string, Record<string, string> | undefined>>) {
 
     return async function runTask(options: TaskRunOptions = {}) {
+        console.log("runTask called");
         const ecs = new aws.sdk.ECS();
 
         const innerContainers = containerToEnvironment.get();
@@ -256,6 +257,7 @@ function createRunFunction(
         const assignPublicIp = isFargate && !usePrivateSubnets;
 
         // Run the task
+        console.log("calling out to ecs");
         const res = await ecs.runTask({
             cluster: clusterArn.get(),
             taskDefinition: taskDefArn.get(),
@@ -277,6 +279,7 @@ function createRunFunction(
                 ],
             },
         }).promise();
+        console.log("Done with call");
 
         if (res.failures && res.failures.length > 0) {
             throw new Error("Failed to start task:" + JSON.stringify(res.failures));
@@ -397,6 +400,10 @@ const defaultComputePolicies = [
     aws.iam.AWSLambdaFullAccess,                 // Provides wide access to "serverless" services (Dynamo, S3, etc.)
     aws.iam.AmazonEC2ContainerServiceFullAccess, // Required for lambda compute to be able to run Tasks
 ];
+
+export function defaultTaskDefinitionTaskRolePolicies() {
+    return defaultComputePolicies.slice();
+}
 
 // The ECS Task assume role policy for Task Roles
 const defaultTaskRolePolicy = {

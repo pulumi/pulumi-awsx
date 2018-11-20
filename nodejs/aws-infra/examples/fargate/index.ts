@@ -21,6 +21,12 @@ import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
 const cluster = network.createCluster("testing");
+const group = cluster.createAutoScalingGroup("asg", {
+    templateParameters: {
+        minSize: 2,
+        maxSize: 100,
+    },
+});
 
 // A simple NGINX service, scaled out over two containers.
 const nginx = cluster.createFargateService("examples-nginx", {
@@ -204,6 +210,28 @@ function handleError(err: Error) {
     };
 }
 
+export function createCallbackFunction(
+        name: string,
+        handler: (req: aws.apigateway.x.Request) => Promise<aws.apigateway.x.Response>) {
+
+    const policies = [...awsinfra.x.defaultTaskDefinitionTaskRolePolicies()];
+    policies.push(aws.iam.AWSLambdaVPCAccessExecutionRole);
+
+    let vpcConfig = {
+        securityGroupIds: pulumi.all(network.securityGroupIds),
+        subnetIds: pulumi.all(network.subnetIds),
+    };
+
+    // First allocate a function.
+    return new aws.lambda.CallbackFunction<aws.apigateway.x.Request, aws.apigateway.x.Response>(name, {
+        policies,
+        vpcConfig,
+        callback: (req, context, cb) => {
+            handler(req).then(val => cb(null, val), err => cb(err));
+        },
+    });
+}
+
 // expose some APIs meant for testing purposes.
 const api = new aws.apigateway.x.API("examples-containers", {
     routes: [{
@@ -258,8 +286,9 @@ const api = new aws.apigateway.x.API("examples-containers", {
     }, {
         path: "/run",
         method: "GET",
-        eventHandler: async (req) => {
+        eventHandler: createCallbackFunction("runRoute", async (req) => {
             try {
+                console.log("/run called");
                 await helloTask.run();
                 return {
                     statusCode: 200,
@@ -268,7 +297,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
             } catch (err) {
                 return handleError(err);
             }
-        },
+        }),
     }, {
         path: "/custom",
         method: "GET",
@@ -298,3 +327,6 @@ const api = new aws.apigateway.x.API("examples-containers", {
 });
 
 export let frontendURL = api.url;
+export let vpcId = network.vpcId;
+export let subnets = network.subnetIds;
+export let instanceSecurityGroup = cluster.instanceSecurityGroup;

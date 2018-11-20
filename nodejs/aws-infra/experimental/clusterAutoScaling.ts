@@ -172,7 +172,7 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
         const stackName = pulumi.output(args.stackName!) || new aws.s3.Bucket(name, {}, parentOpts).id;
 
         // Use the instance provided, or create a new one.
-        const instanceProfile = getInstanceProfile(cluster, args);
+        const instanceProfile = getInstanceProfile(name, args, parentOpts);
 
         this.instance = new aws.ec2.LaunchConfiguration(
             name, {
@@ -242,15 +242,16 @@ const defaultEbsBlockDevices = [{
         deleteOnTermination: true,
     }];
 
-function getInstanceProfile(parent: mod.Cluster, args: ClusterAutoScalingLaunchConfigurationArgs) {
+function getInstanceProfile(
+        name: string, args: ClusterAutoScalingLaunchConfigurationArgs, opts: pulumi.ResourceOptions) {
+
     if (args.instanceProfile) {
         return args.instanceProfile;
     }
 
-    const parentOpts = { parent };
     const instanceRole = new aws.iam.Role(name, {
         assumeRolePolicy: JSON.stringify(defaultAssumeInstanceRolePolicyDoc),
-    }, parentOpts);
+    }, opts);
 
     const policyARNs = [aws.iam.AmazonEC2ContainerServiceforEC2Role, aws.iam.AmazonEC2ReadOnlyAccess];
     const instanceRolePolicies: aws.iam.RolePolicyAttachment[] = [];
@@ -260,12 +261,12 @@ function getInstanceProfile(parent: mod.Cluster, args: ClusterAutoScalingLaunchC
         instanceRolePolicies.push(new aws.iam.RolePolicyAttachment(`${name}-${sha1hash(policyARN)}`, {
             role: instanceRole,
             policyArn: policyARN,
-        }, parentOpts));
+        }, opts));
     }
 
     return new aws.iam.InstanceProfile(name, {
         role: instanceRole,
-    }, { dependsOn: instanceRolePolicies, parent: parent });
+    }, {...opts, dependsOn: instanceRolePolicies});
 }
 
 
