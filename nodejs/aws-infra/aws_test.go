@@ -39,7 +39,7 @@ import (
 )
 
 // Fargate is only supported in `us-east-1`, so force Fargate-based tests to run there.
-const fargateRegion = "us-east-1"
+const fargateRegion = "us-east-2"
 
 func Test_Examples(t *testing.T) {
 	region := os.Getenv("AWS_REGION")
