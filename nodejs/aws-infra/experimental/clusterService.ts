@@ -61,7 +61,7 @@ export interface Endpoints {
     [containerName: string]: { [port: number]: aws.apigateway.x.Endpoint; };
 }
 
-export class ClusterService extends aws.ecs.Service {
+export abstract class ClusterService extends aws.ecs.Service {
     public readonly clusterInstance: mod.Cluster;
     public readonly taskDefinitionInstance: mod.ClusterTaskDefinition;
 
@@ -77,7 +77,7 @@ export class ClusterService extends aws.ecs.Service {
     public readonly getEndpoint: (containerName?: string, containerPort?: number) => Promise<aws.apigateway.x.Endpoint>;
 
     constructor(name: string, cluster: mod.Cluster,
-                args: ClusterServiceArgs,
+                args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
 
         const loadBalancers = createLoadBalancers(args.taskDefinition);
@@ -102,7 +102,7 @@ export class ClusterService extends aws.ecs.Service {
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
             launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
             waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
-            placementConstraints: pulumi.output(args.os).apply(os => mod.placementConstraintsForHost(os)),
+            placementConstraints: pulumi.output(args.os).apply(os => mod.placementConstraintsForHost(isFargate, os)),
         }, opts);
 
         this.clusterInstance = cluster;

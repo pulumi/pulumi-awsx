@@ -229,7 +229,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
             const res = await ecs.runTask({
                 cluster: cluster.arn.get(),
                 taskDefinition: this.arn.get(),
-                placementConstraints: placementConstraintsForHost(options && options.os),
+                placementConstraints: placementConstraintsForHost(isFargate, options.os),
                 launchType: isFargate ? "FARGATE" : "EC2",
                 networkConfiguration: {
                     awsvpcConfiguration: {
@@ -291,7 +291,11 @@ function getEndpointHelper(
     return endpoint;
 }
 
-export function placementConstraintsForHost(os: HostOperatingSystem | undefined) {
+export function placementConstraintsForHost(isFargate: boolean, os: HostOperatingSystem | undefined) {
+    if (isFargate) {
+        return [];
+    }
+
     os = os || "linux";
 
     return [{
@@ -379,7 +383,7 @@ const defaultTaskRolePolicy = {
 };
 
 function createTaskRole(name: string, opts?: pulumi.ResourceOptions): aws.iam.Role {
-    const taskRole = new aws.iam.Role(name + "-task", {
+    const taskRole = new aws.iam.Role(`${name}-task`, {
         assumeRolePolicy: JSON.stringify(defaultTaskRolePolicy),
     }, opts);
 
@@ -389,7 +393,7 @@ function createTaskRole(name: string, opts?: pulumi.ResourceOptions): aws.iam.Ro
     for (let i = 0; i < policies.length; i++) {
         const policyArn = policies[i];
         const _ = new aws.iam.RolePolicyAttachment(
-            `task-${utils.sha1hash(policyArn)}`, {
+            `${name}-task-${utils.sha1hash(policyArn)}`, {
                 role: taskRole,
                 policyArn: policyArn,
             }, opts);
@@ -399,10 +403,10 @@ function createTaskRole(name: string, opts?: pulumi.ResourceOptions): aws.iam.Ro
 }
 
 function createExecutionRole(name: string, opts?: pulumi.ResourceOptions): aws.iam.Role {
-    const executionRole = new aws.iam.Role(name + "-execution", {
+    const executionRole = new aws.iam.Role(`${name}-execution`, {
         assumeRolePolicy: JSON.stringify(defaultTaskRolePolicy),
     }, opts);
-    const _ = new aws.iam.RolePolicyAttachment("execution", {
+    const _ = new aws.iam.RolePolicyAttachment(`${name}-execution`, {
         role: executionRole,
         policyArn: "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
     }, opts);

@@ -183,6 +183,6 @@ export class FargateService extends mod.ClusterService {
                 securityGroups: [cluster.instanceSecurityGroup.id],
                 subnets: cluster.network.subnetIds,
             },
-        }, opts);
+        },  /*isFargate:*/ true, opts);
     }
 }

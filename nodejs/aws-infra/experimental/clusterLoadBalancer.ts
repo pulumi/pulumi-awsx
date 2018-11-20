@@ -97,6 +97,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
         // Note: Technically, we can only support one LB per service, so only the service name is needed here, but we
         // anticipate this will not always be the case, so we include a set of values which must be unique.
         const longName = `${name}-${args.loadBalancerPort.port}`;
+        const shortName = utils.sha1hash(`${longName}`);
 
         // Create an internal load balancer if requested.
         const internal = cluster.network.usePrivateSubnets && !args.loadBalancerPort.external;
@@ -106,7 +107,7 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
         const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
             computeLoadBalancerInfo(args.loadBalancerPort);
 
-        super(name, {
+        super(shortName, {
             ...args,
             loadBalancerType: useAppLoadBalancer ? "application" : "network",
             subnets: cluster.network.publicSubnetIds,
@@ -120,7 +121,6 @@ export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer
 
         this.cluster = cluster;
 
-        const shortName = utils.sha1hash(`${longName}`);
         const parentOpts = { parent: this };
 
         // Create the target group for the new container/port pair.

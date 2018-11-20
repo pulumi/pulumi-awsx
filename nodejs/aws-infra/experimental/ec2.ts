@@ -130,7 +130,7 @@ export class EC2Service extends mod.ClusterService {
                 securityGroups: [cluster.instanceSecurityGroup.id],
                 subnets: cluster.network.subnetIds,
             },
-        }, opts);
+        }, /*isFargate:*/ false, opts);
 
         this.taskDefinitionInstance = taskDefinition;
     }
