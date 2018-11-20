@@ -300,6 +300,12 @@
   revision = "aa7f26a3b50c468fbce81c2297c41da968b0e053"
 
 [[projects]]
+  name = "github.com/pulumi/pulumi-cloud"
+  packages = ["examples"]
+  revision = "94d6de16344b8e52032e4b610385e90a15600af4"
+  version = "v0.16.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/reconquest/loreley"
   packages = ["."]
@@ -563,6 +569,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "735cdbef95cb717a15b549aab1259407396ab60f9a397a404788f027ee627677"
+  inputs-digest = "be4ca972dbe20860dbedfa7fde59ec08ed67f5dc520fc1f21209d3cc52407d1b"
   solver-name = "gps-cdcl"
   solver-version = 1
