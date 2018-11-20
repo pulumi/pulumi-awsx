@@ -210,29 +210,6 @@ function handleError(err: Error) {
     };
 }
 
-export function createCallbackFunction(
-        name: string,
-        handler: (req: aws.apigateway.x.Request) => Promise<aws.apigateway.x.Response>) {
-
-    const policies = [...awsinfra.x.defaultTaskDefinitionTaskRolePolicies()];
-    // aws.iam.AmazonEC2ContainerServiceFullAccess
-    // policies.push(aws.iam.AWSLambdaVPCAccessExecutionRole);
-
-    // let vpcConfig = {
-    //     securityGroupIds: pulumi.all(network.securityGroupIds),
-    //     subnetIds: pulumi.all(network.subnetIds),
-    // };
-
-    // First allocate a function.
-    return new aws.lambda.CallbackFunction<aws.apigateway.x.Request, aws.apigateway.x.Response>(name, {
-        policies,
-        // vpcConfig,
-        callback: (req, context, cb) => {
-            handler(req).then(val => cb(null, val), err => cb(err));
-        },
-    });
-}
-
 // expose some APIs meant for testing purposes.
 const api = new aws.apigateway.x.API("examples-containers", {
     routes: [{
@@ -287,18 +264,18 @@ const api = new aws.apigateway.x.API("examples-containers", {
     }, {
         path: "/run",
         method: "GET",
-        eventHandler: createCallbackFunction("runRoute", async (req) => {
-            try {
-                console.log("/run called");
-                await helloTask.run();
-                console.log("/run completed");
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({ success: true }),
-                };
-            } catch (err) {
-                console.log("error!");
-                return handleError(err);
+        eventHandler: new aws.lambda.CallbackFunction("runRoute", {
+            policies: [...awsinfra.x.defaultTaskDefinitionTaskRolePolicies()],
+            callback: async (req) => {
+                try {
+                    await helloTask.run();
+                    return {
+                        statusCode: 200,
+                        body: JSON.stringify({ success: true }),
+                    };
+                } catch (err) {
+                    return handleError(err);
+                }
             }
         }),
     }, {

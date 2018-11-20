@@ -75,7 +75,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
     public readonly endpoints: pulumi.Output<mod.Endpoints>;
     public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
-    constructor(type: string, name: string, cluster: mod.Cluster,
+    constructor(type: string, name: string, clusterInstance: mod.Cluster,
                 args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
         super(type, name, args, opts);
@@ -95,9 +95,9 @@ export abstract class ClusterService extends pulumi.ComponentResource {
             opts.dependsOn = dependsOn;
         }
 
-        this.instance = new aws.ecs.Service(name, {
+        const instance = new aws.ecs.Service(name, {
             ...args,
-            cluster: cluster.instance.arn,
+            cluster: clusterInstance.instance.arn,
             taskDefinition: args.taskDefinition.instance.arn,
             loadBalancers: loadBalancers,
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
@@ -106,12 +106,27 @@ export abstract class ClusterService extends pulumi.ComponentResource {
             placementConstraints: pulumi.output(args.os).apply(os => placementConstraints(isFargate, os)),
         }, parentOpts);
 
-        this.clusterInstance = cluster;
+        const taskDefinitionInstance = args.taskDefinition;
+        const autoScalingGroup = args.autoScalingGroup;
+        const defaultEndpoint = args.taskDefinition.defaultEndpoint;
+        const endpoints = args.taskDefinition.endpoints;
+
+        this.instance = instance;
+        this.clusterInstance = clusterInstance;
         this.taskDefinitionInstance = args.taskDefinition;
         this.autoScalingGroup = args.autoScalingGroup;
 
-        this.defaultEndpoint = args.taskDefinition.defaultEndpoint;
-        this.endpoints = args.taskDefinition.endpoints;
+        this.defaultEndpoint = defaultEndpoint;
+        this.endpoints = endpoints;
+
+        this.registerOutputs({
+            instance,
+            clusterInstance,
+            taskDefinitionInstance,
+            autoScalingGroup,
+            defaultEndpoint,
+            endpoints,
+        });
     }
 }
 

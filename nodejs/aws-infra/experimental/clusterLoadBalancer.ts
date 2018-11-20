@@ -111,7 +111,7 @@ export class ClusterLoadBalancer extends pulumi.ComponentResource {
         const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
             computeLoadBalancerInfo(args.loadBalancerPort);
 
-        this.instance = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
+        const instance = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
             ...args,
             loadBalancerType: useAppLoadBalancer ? "application" : "network",
             subnets: cluster.network.publicSubnetIds,
@@ -123,10 +123,8 @@ export class ClusterLoadBalancer extends pulumi.ComponentResource {
             tags: { Name: longName },
         }, parentOpts);
 
-        this.cluster = cluster;
-
         // Create the target group for the new container/port pair.
-        this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
+        const targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
             port: args.loadBalancerPort.targetPort || args.loadBalancerPort.port,
             protocol: targetProtocol,
             vpcId: cluster.network.vpcId,
@@ -136,19 +134,31 @@ export class ClusterLoadBalancer extends pulumi.ComponentResource {
         }, parentOpts);
 
         // Listen on the requested port on the LB and forward to the target.
-        this.listener = new aws.elasticloadbalancingv2.Listener(longName, {
-            loadBalancerArn: this.instance.arn,
+        const listener = new aws.elasticloadbalancingv2.Listener(longName, {
+            loadBalancerArn: instance.arn,
             protocol: listenerProtocol,
             certificateArn: certificateArn,
             port: args.loadBalancerPort.port,
             defaultAction: {
                 type: "forward",
-                targetGroupArn: this.targetGroup.arn,
+                targetGroupArn: targetGroup.arn,
             },
             // If SSL is used, we automatically insert the recommended ELB security policy from
             // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
             sslPolicy: certificateArn ? "ELBSecurityPolicy-2016-08" : undefined,
         }, parentOpts);
+
+        this.instance = instance;
+        this.cluster = cluster;
+        this.targetGroup = targetGroup;
+        this.listener = listener;
+
+        this.registerOutputs({
+            instance,
+            cluster,
+            targetGroup,
+            listener,
+        });
     }
 }
 

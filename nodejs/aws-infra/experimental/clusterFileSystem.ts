@@ -57,16 +57,15 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
-        this.instance = new aws.efs.FileSystem(name, args, parentOpts);
+        const instance = new aws.efs.FileSystem(name, args, parentOpts);
 
-        this.cluster = cluster;
-        this.mountTargets = [];
-        this.mountPath = pulumi.output(args.mountPath).apply(p => p || "/mnt/efs");
+        const mountTargets: aws.efs.MountTarget[] = [];
+        const mountPath = pulumi.output(args.mountPath).apply(p => p || "/mnt/efs");
 
         // If requested, add EFS file system and mount targets in each subnet.
 
         const efsSecurityGroupName = `${name}-fs`;
-        this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(efsSecurityGroupName, {
+        const securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(efsSecurityGroupName, {
             vpcId: cluster.network.vpcId,
             ingress: [
                 // Allow NFS traffic from the instance security group
@@ -83,12 +82,26 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
         const subnetIds = args.subnetIds || cluster.network.subnetIds;
         for (let i = 0; i < subnetIds.length; i++) {
             const subnetId = subnetIds[i];
-            this.mountTargets.push(new aws.efs.MountTarget(`${name}-${i}`, {
-                fileSystemId: this.instance.id,
+            mountTargets.push(new aws.efs.MountTarget(`${name}-${i}`, {
+                fileSystemId: instance.id,
                 subnetId: subnetId,
-                securityGroups: [ this.securityGroup.id ],
+                securityGroups: [ securityGroup.id ],
             }, parentOpts));
         }
+
+        this.instance = instance;
+        this.cluster = cluster;
+        this.mountPath = mountPath;
+        this.mountTargets = mountTargets;
+        this.securityGroup = securityGroup;
+
+        this.registerOutputs({
+            instance,
+            cluster,
+            mountPath,
+            mountTargets,
+            securityGroup,
+        })
     }
 
     /**

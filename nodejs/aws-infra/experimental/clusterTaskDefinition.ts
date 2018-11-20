@@ -143,7 +143,7 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         const executionRole = args.executionRole || createExecutionRole(name, parentOpts);
 
         const containers = args.containers;
-        const exposedPortOpt = getExposedPort(name, cluster, containers, parentOpts);
+        const exposedPort = getExposedPort(name, cluster, containers, parentOpts);
 
         // todo(cyrusn): volumes.
         //     // Find all referenced Volumes.
@@ -167,9 +167,9 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         //     getEndpointInfo(containers, loadBalancer!);
 
         const containerDefinitions = computeContainerDefinitions(
-            name, cluster, args, exposedPortOpt, logGroup, parentOpts);
+            name, cluster, args, exposedPort, logGroup, parentOpts);
 
-        this.instance = new aws.ecs.TaskDefinition(name, {
+        const instance = new aws.ecs.TaskDefinition(name, {
             ...args,
             family:  name,
             taskRoleArn: taskRole.arn,
@@ -177,27 +177,17 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerDefinitions.apply(JSON.stringify),
         }, parentOpts);
 
-        this.containers = containers;
-        this.cluster = cluster;
-        this.logGroup = logGroup;
-        this.taskRole = taskRole;
-        this.executionRole = executionRole;
-
-        this.exposedPort = exposedPortOpt;
-
-        const endpoints = exposedPortOpt === undefined
+        const endpoints = exposedPort === undefined
             ? pulumi.output<mod.Endpoints>({})
             : pulumi.output({
-                [exposedPortOpt.containerName]: {
-                    [exposedPortOpt.loadBalancerPort.port]: {
-                        hostname: exposedPortOpt.loadBalancer.instance.dnsName,
-                        port: exposedPortOpt.loadBalancerPort.port,
-                        loadBalancer: exposedPortOpt.loadBalancer.instance,
+                [exposedPort.containerName]: {
+                    [exposedPort.loadBalancerPort.port]: {
+                        hostname: exposedPort.loadBalancer.instance.dnsName,
+                        port: exposedPort.loadBalancerPort.port,
+                        loadBalancer: exposedPort.loadBalancer.instance,
                     } } });
 
-        this.endpoints = endpoints;
-
-        this.defaultEndpoint = exposedPortOpt === undefined
+        const defaultEndpoint = exposedPort === undefined
             ? pulumi.output(<aws.apigateway.x.Endpoint>undefined!)
             : endpoints.apply(
                 ep => getEndpointHelper(ep, /*containerName:*/ undefined, /*containerPort:*/ undefined));
@@ -219,10 +209,32 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
             isFargate,
             cluster.network.usePrivateSubnets,
             cluster.instance.id,
-            this.instance.arn,
+            instance.arn,
             cluster.instanceSecurityGroup.id,
             pulumi.all(cluster.network.subnetIds),
             containerToEnvironment);
+
+        this.instance = instance;
+        this.cluster = cluster;
+        this.containers = containers;
+        this.logGroup = logGroup;
+        this.taskRole = taskRole;
+        this.executionRole = executionRole;
+        this.exposedPort = exposedPort;
+        this.defaultEndpoint = defaultEndpoint;
+        this.endpoints = endpoints;
+
+        this.registerOutputs({
+            instance,
+            cluster,
+            containers,
+            logGroup,
+            taskRole,
+            executionRole,
+            exposedPort,
+            defaultEndpoint,
+            endpoints,
+        });
     }
 }
 
@@ -238,7 +250,6 @@ function createRunFunction(
         containerToEnvironment: pulumi.Output<Record<string, Record<string, string> | undefined>>) {
 
     return async function runTask(options: TaskRunOptions = {}) {
-        console.log("runTask called");
         const ecs = new aws.sdk.ECS();
 
         const innerContainers = containerToEnvironment.get();
@@ -257,8 +268,7 @@ function createRunFunction(
         const assignPublicIp = isFargate && !usePrivateSubnets;
 
         // Run the task
-        console.log("calling out to ecs: container name: " + containerName  + " - " + assignPublicIp);
-        const args = {
+        const res = await ecs.runTask({
             cluster: clusterArn.get(),
             taskDefinition: taskDefArn.get(),
             placementConstraints: placementConstraints(isFargate, options.os),
@@ -278,28 +288,14 @@ function createRunFunction(
                     },
                 ],
             },
-        };
-        console.log("args: " + JSON.stringify(args, null, 2));
-        try {
-            const res = await ecs.runTask(args).promise();
-            console.log("Done with call");
+        }).promise();
 
-            if (res.failures && res.failures.length > 0) {
-                console.log("Failed to start task:" + JSON.stringify(res.failures));
-                throw new Error("Failed to start task:" + JSON.stringify(res.failures));
-            }
-        }
-        catch (err) {
-            console.log("error1: " + JSON.stringify(errorJSON(err)));
+        if (res.failures && res.failures.length > 0) {
+            console.log("Failed to start task:" + JSON.stringify(res.failures));
+            throw new Error("Failed to start task:" + JSON.stringify(res.failures));
         }
 
         return;
-
-        function errorJSON(err: any) {
-            const result: any = Object.create(null);
-            Object.getOwnPropertyNames(err).forEach(key => result[key] = err[key]);
-            return result;
-        }
 
         // Local functions
         function addEnvironmentVariables(e: Record<string, string> | undefined) {

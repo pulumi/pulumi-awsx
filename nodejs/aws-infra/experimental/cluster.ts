@@ -60,9 +60,9 @@ export class Cluster extends pulumi.ComponentResource {
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
-        this.instance = new aws.ecs.Cluster(name, args, parentOpts);
+        const instance = new aws.ecs.Cluster(name, args, parentOpts);
 
-        this.network = args.network || Network.getDefault();
+        const network = args.network || Network.getDefault();
 
         // Create the EC2 instance security group
         const ALL = {
@@ -75,8 +75,8 @@ export class Cluster extends pulumi.ComponentResource {
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        this.instanceSecurityGroup = args.instanceSecurityGroup || new aws.ec2.SecurityGroup(name, {
-            vpcId: this.network.vpcId,
+        const instanceSecurityGroup = args.instanceSecurityGroup || new aws.ec2.SecurityGroup(name, {
+            vpcId: network.vpcId,
             ingress: [
                 // Expose SSH
                 {
@@ -97,6 +97,16 @@ export class Cluster extends pulumi.ComponentResource {
             egress: [ ALL ],  // See TerraformEgressNote
             tags: { Name: name },
         }, parentOpts);
+
+        this.instance = instance;
+        this.network = network;
+        this.instanceSecurityGroup = instanceSecurityGroup;
+
+        this.registerOutputs({
+            instance,
+            network,
+            instanceSecurityGroup,
+        });
     }
 
     public createFileSystem(name: string, args?: mod.ClusterFileSystemArgs, opts?: pulumi.ResourceOptions) {

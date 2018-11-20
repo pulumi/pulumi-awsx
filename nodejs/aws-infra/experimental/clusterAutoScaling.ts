@@ -173,8 +173,9 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
 
         // Use the instance provided, or create a new one.
         const instanceProfile = getInstanceProfile(name, args, parentOpts);
+        const fileSystem = args.fileSystem;
 
-        this.instance = new aws.ec2.LaunchConfiguration(
+        const instance = new aws.ec2.LaunchConfiguration(
             name, {
             ...args,
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
@@ -189,10 +190,19 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
             userData: getInstanceUserData(cluster, args, stackName),
         }, parentOpts);
 
+        this.instance = instance;
         this.cluster = cluster;
         this.stackName = stackName;
         this.instanceProfile = instanceProfile;
-        this.fileSystem = args.fileSystem;
+        this.fileSystem = fileSystem;
+
+        this.registerOutputs({
+            instance,
+            cluster,
+            stackName,
+            instanceProfile,
+            fileSystem,
+        });
     }
 
     /**
