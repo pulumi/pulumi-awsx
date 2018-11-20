@@ -17,7 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as utils from "../utils";
 
-import * as module from ".";
+import * as mod from ".";
 
 export declare type HostOperatingSystem = "linux" | "windows";
 
@@ -34,7 +34,7 @@ export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionAr
      * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
      * ClusterService that will contain many containers within.
      */
-    containers: Record<string, module.ContainerDefinition>;
+    containers: Record<string, mod.ContainerDefinition>;
 
     /**
      * Log group for logging information related to the service.  If not provided a default instance
@@ -107,9 +107,9 @@ export interface TaskRunOptions {
 }
 
 export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
-    public readonly cluster: module.Cluster;
+    public readonly cluster: mod.Cluster;
     public readonly logGroup: aws.cloudwatch.LogGroup;
-    public readonly containers: Record<string, module.ContainerDefinition>;
+    public readonly containers: Record<string, mod.ContainerDefinition>;
     public readonly taskRole: aws.iam.Role;
     public readonly executionRole: aws.iam.Role;
 
@@ -118,7 +118,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
      */
     public readonly exposedPort?: ExposedPort;
 
-    public readonly endpoints: pulumi.Output<module.Endpoints>;
+    public readonly endpoints: pulumi.Output<mod.Endpoints>;
     public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
     public readonly getEndpoint: (containerName?: string, containerPort?: number) => Promise<aws.apigateway.x.Endpoint>;
@@ -128,7 +128,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
      */
     public readonly run: (options?: TaskRunOptions) => Promise<void>;
 
-    constructor(name: string, cluster: module.Cluster,
+    constructor(name: string, cluster: mod.Cluster,
                 args: ClusterTaskDefinitionArgs, isFargate: boolean,
                 opts?: pulumi.ComponentResourceOptions) {
 
@@ -183,7 +183,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
         this.exposedPort = exposedPortOpt;
 
         const endpoints = exposedPortOpt === undefined
-            ? pulumi.output<module.Endpoints>({})
+            ? pulumi.output<mod.Endpoints>({})
             : pulumi.output({
                 [exposedPortOpt.containerName]: {
                     [exposedPortOpt.loadBalancerPort.port]: {
@@ -270,7 +270,7 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
 }
 
 function getEndpointHelper(
-    endpoints: module.Endpoints, containerName: string | undefined, containerPort: number | undefined) {
+    endpoints: mod.Endpoints, containerName: string | undefined, containerPort: number | undefined) {
 
     containerName = containerName || Object.keys(endpoints)[0];
     if (containerName === undefined)  {
@@ -309,17 +309,17 @@ export interface ExposedPort {
     /**
      * Information about the type of port this is.
      */
-    loadBalancerPort: module.ClusterLoadBalancerPort;
+    loadBalancerPort: mod.ClusterLoadBalancerPort;
 
     /**
      * The load balancer that was created to map to the specified container port.
      */
-    loadBalancer: module.ClusterLoadBalancer;
+    loadBalancer: mod.ClusterLoadBalancer;
 }
 
 function getExposedPort(
-    name: string, cluster: module.Cluster,
-    containers: Record<string, module.ContainerDefinition>) {
+    name: string, cluster: mod.Cluster,
+    containers: Record<string, mod.ContainerDefinition>) {
 
     let exposedPort: ExposedPort | undefined;
     for (const containerName of Object.keys(containers)) {
@@ -341,7 +341,7 @@ function getExposedPort(
 
 function computeContainerDefinitions(
     name: string,
-    cluster: module.Cluster,
+    cluster: mod.Cluster,
     args: ClusterTaskDefinitionArgs,
     exposedPortOpt: ExposedPort | undefined,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
@@ -351,7 +351,7 @@ function computeContainerDefinitions(
     for (const containerName of Object.keys(args.containers)) {
         const container = args.containers[containerName];
 
-        result.push(module.computeContainerDefinition(
+        result.push(mod.computeContainerDefinition(
             name, cluster, containerName, container, exposedPortOpt, logGroup));
     }
 

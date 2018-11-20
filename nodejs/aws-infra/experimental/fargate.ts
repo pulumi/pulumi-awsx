@@ -17,9 +17,9 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as utils from "../utils";
 
-import * as module from ".";
+import * as mod from ".";
 
-export type FargateTaskDefinitionArgs = utils.Overwrite<module.ClusterTaskDefinitionArgs, {
+export type FargateTaskDefinitionArgs = utils.Overwrite<mod.ClusterTaskDefinitionArgs, {
     /** Not provided.  Defaults automatically to ["FARGATE"] */
     requiresCompatibilities?: never;
 
@@ -33,7 +33,7 @@ export type FargateTaskDefinitionArgs = utils.Overwrite<module.ClusterTaskDefini
      *
      * Either [container] or [containers] must be provided.
      */
-    container?: module.ContainerDefinition;
+    container?: mod.ContainerDefinition;
 
     /**
      * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
@@ -41,12 +41,12 @@ export type FargateTaskDefinitionArgs = utils.Overwrite<module.ClusterTaskDefini
      *
      * Either [container] or [containers] must be provided.
      */
-    containers?: Record<string, module.ContainerDefinition>;
+    containers?: Record<string, mod.ContainerDefinition>;
 }>;
 
-export class FargateTaskDefinition extends module.ClusterTaskDefinition {
-    constructor(name: string, cluster: module.Cluster,
-                args: module.FargateTaskDefinitionArgs,
+export class FargateTaskDefinition extends mod.ClusterTaskDefinition {
+    constructor(name: string, cluster: mod.Cluster,
+                args: mod.FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
         if (!args.container && !args.containers) {
@@ -72,7 +72,7 @@ export class FargateTaskDefinition extends module.ClusterTaskDefinition {
     /**
      * Creates a service with this as its task definition.
      */
-    public createService(name: string, args: module.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
+    public createService(name: string, args: mod.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -81,14 +81,14 @@ export class FargateTaskDefinition extends module.ClusterTaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new module.FargateService(name, this.cluster, {
+        return new mod.FargateService(name, this.cluster, {
             ...args,
             taskDefinition: this,
         }, opts || { parent: this });
     }
 }
 
-function computeFargateMemoryAndCPU(containers: Record<string, module.ContainerDefinition>) {
+function computeFargateMemoryAndCPU(containers: Record<string, mod.ContainerDefinition>) {
     return pulumi.output(containers).apply(containers => {
         // Sum the requested memory and CPU for each container in the task.
         let minTaskMemory = 0;
@@ -143,12 +143,12 @@ function computeFargateMemoryAndCPU(containers: Record<string, module.ContainerD
     });
 }
 
-export type FargateServiceArgs = utils.Overwrite<module.ClusterServiceArgs, {
+export type FargateServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
     /**
      * The task definition to create the service from.  Either [taskDefinition] or
      * [taskDefinitionArgs] must be provided.
      */
-    taskDefinition?: module.FargateTaskDefinition;
+    taskDefinition?: mod.FargateTaskDefinition;
 
     /**
      * The task definition to create the service from.  Either [taskDefinition] or
@@ -162,8 +162,8 @@ export type FargateServiceArgs = utils.Overwrite<module.ClusterServiceArgs, {
     launchType?: never;
 }>;
 
-export class FargateService extends module.ClusterService {
-    constructor(name: string, cluster: module.Cluster,
+export class FargateService extends mod.ClusterService {
+    constructor(name: string, cluster: mod.Cluster,
                 args: FargateServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
@@ -172,7 +172,7 @@ export class FargateService extends module.ClusterService {
         }
 
         const taskDefinition = args.taskDefinition ||
-            new module.FargateTaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
+            new mod.FargateTaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
 
         super(name, cluster, {
             ...args,

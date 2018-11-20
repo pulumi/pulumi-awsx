@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as module from ".";
+import * as mod from ".";
 
 import { MakeInputs, Overwrite, sha1hash } from "../utils";
 import { ClusterLoadBalancerPort } from "./clusterLoadBalancer";
@@ -98,7 +98,7 @@ export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefiniti
      * can have this set.  Should not be set for containers intended for TaskDeinitions that will
      * just be run, and will not be part of an aws.ecs.Service.
      */
-    loadBalancerPort?: module.ClusterLoadBalancerPort;
+    loadBalancerPort?: mod.ClusterLoadBalancerPort;
 
     environment?: ContainerEnvironment;
 }>;
@@ -111,10 +111,10 @@ export type WrappedEndpoints = Record<string, Record<number, pulumi.Output<aws.a
 
 export function computeContainerDefinition(
     name: string,
-    cluster: module.Cluster,
+    cluster: mod.Cluster,
     containerName: string,
     container: ContainerDefinition,
-    exposedPortOpt: module.ExposedPort | undefined,
+    exposedPortOpt: mod.ExposedPort | undefined,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
     const imageOptions = computeImage(name, cluster, container, exposedPortOpt);
@@ -174,9 +174,9 @@ function getPortMappings(loadBalancerPort: ClusterLoadBalancerPort | undefined) 
 }
 
 function computeImage(name: string,
-                      cluster: module.Cluster,
+                      cluster: mod.Cluster,
                       container: ContainerDefinition,
-                      exposedPortOpt: module.ExposedPort | undefined) {
+                      exposedPortOpt: mod.ExposedPort | undefined) {
 
     // Start with a copy from the container specification.
     const preEnv: ContainerEnvironment =

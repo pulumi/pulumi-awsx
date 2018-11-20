@@ -15,7 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as module from ".";
+import * as mod from ".";
 
 import { Overwrite, sha1hash } from "./../utils";
 
@@ -92,7 +92,7 @@ export type ClusterAutoScalingLaunchConfigurationArgs = Overwrite<aws.ec2.Launch
     /**
      * Optional file system to mount.  Use [cluster.createFileSystem] to create an instance of this.
      */
-    fileSystem?: module.ClusterFileSystem;
+    fileSystem?: mod.ClusterFileSystem;
 
     /**
     * A list of associated security group IDS.  If not provided, the instanceSecurityGroup from the
@@ -143,11 +143,11 @@ export type ClusterAutoScalingLaunchConfigurationArgs = Overwrite<aws.ec2.Launch
 }>;
 
 export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfiguration {
-    public readonly cluster: module.Cluster;
+    public readonly cluster: mod.Cluster;
     /**
      * Optional file system to mount.  Use [cluster.createFileSystem] to create an instance of this.
      */
-    public readonly fileSystem?: module.ClusterFileSystem;
+    public readonly fileSystem?: mod.ClusterFileSystem;
 
     public readonly instanceProfile: aws.iam.InstanceProfile;
 
@@ -156,7 +156,7 @@ export class ClusterAutoScalingLaunchConfiguration extends aws.ec2.LaunchConfigu
      */
     public readonly stackName: pulumi.Output<string>;
 
-    constructor(name: string, cluster: module.Cluster,
+    constructor(name: string, cluster: mod.Cluster,
                 args: ClusterAutoScalingLaunchConfigurationArgs = {},
                 opts?: pulumi.CustomResourceOptions) {
 
@@ -233,7 +233,7 @@ const defaultEbsBlockDevices = [{
         deleteOnTermination: true,
     }];
 
-function getInstanceProfile(parent: module.Cluster, args: ClusterAutoScalingLaunchConfigurationArgs) {
+function getInstanceProfile(parent: mod.Cluster, args: ClusterAutoScalingLaunchConfigurationArgs) {
     if (args.instanceProfile) {
         return args.instanceProfile;
     }
@@ -294,7 +294,7 @@ async function getEcsAmiId(name?: string): Promise<string> {
 // https://github.com/convox/rack/blob/023831d8/provider/aws/dist/rack.json#L1669
 // https://github.com/awslabs/amazon-ecs-amazon-efs/blob/d92791f3/amazon-efs-ecs.json#L655
 function getInstanceUserData(
-    cluster: module.Cluster,
+    cluster: mod.Cluster,
     args: ClusterAutoScalingLaunchConfigurationArgs,
     cloudFormationStackName: pulumi.Output<string>) {
 
@@ -368,14 +368,14 @@ function getInstanceUserData(
 }
 
 export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
-    public readonly cluster: module.Cluster;
+    public readonly cluster: mod.Cluster;
 
     /**
      * The launch configuration for this auto scaling group.
      */
     public readonly launchConfiguration: ClusterAutoScalingLaunchConfiguration;
 
-    constructor(name: string, cluster: module.Cluster, args: ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, cluster: mod.Cluster, args: ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         let launchConfiguration: ClusterAutoScalingLaunchConfiguration;
 
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
@@ -403,23 +403,23 @@ export class ClusterAutoScalingGroup extends aws.cloudformation.Stack {
         this.launchConfiguration = launchConfiguration;
     }
 
-    public createFargateService(name: string, args: module.FargateServiceArgs = {}, opts?: pulumi.ResourceOptions) {
+    public createFargateService(name: string, args: mod.FargateServiceArgs = {}, opts?: pulumi.ResourceOptions) {
         if (args.autoScalingGroup) {
             throw new Error("[args.autoScalingGroup] should not be provided.");
         }
 
-        return new module.FargateService(name, this.cluster, {
+        return new mod.FargateService(name, this.cluster, {
             ...args,
             autoScalingGroup: this,
         }, opts || { parent: this });
     }
 
-    public createEC2Service(name: string, args: module.EC2ServiceArgs = {}, opts?: pulumi.ResourceOptions) {
+    public createEC2Service(name: string, args: mod.EC2ServiceArgs = {}, opts?: pulumi.ResourceOptions) {
         if (args.autoScalingGroup) {
             throw new Error("[args.autoScalingGroup] should not be provided.");
         }
 
-        return new module.EC2Service(name, this.cluster, {
+        return new mod.EC2Service(name, this.cluster, {
             ...args,
             autoScalingGroup: this,
         }, opts || { parent: this });

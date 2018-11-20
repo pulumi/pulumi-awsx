@@ -15,7 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as module from ".";
+import * as mod from ".";
 
 import * as utils from "./../utils";
 
@@ -83,12 +83,12 @@ export type ClusterLoadBalancerArgs = utils.Overwrite<aws.elasticloadbalancingv2
 }>;
 
 export class ClusterLoadBalancer extends aws.elasticloadbalancingv2.LoadBalancer {
-    public readonly cluster: module.Cluster;
+    public readonly cluster: mod.Cluster;
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly listener: aws.elasticloadbalancingv2.Listener;
 
     constructor(name: string,
-                cluster: module.Cluster,
+                cluster: mod.Cluster,
                 args: ClusterLoadBalancerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 

@@ -15,7 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as module from ".";
+import * as mod from ".";
 
 import * as docker from "@pulumi/docker";
 import * as utils from "./../utils";
@@ -24,7 +24,7 @@ export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
     /**
      * The task definition to create the service from.
      */
-    taskDefinition: module.ClusterTaskDefinition;
+    taskDefinition: mod.ClusterTaskDefinition;
 
     /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do
@@ -51,7 +51,7 @@ export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
      * Optional auto-scaling group for the cluster.  Can be created with
      * [cluster.createAutoScalingGroup]
      */
-    autoScalingGroup?: module.ClusterAutoScalingGroup;
+    autoScalingGroup?: mod.ClusterAutoScalingGroup;
 }>;
 
 /**
@@ -62,21 +62,21 @@ export interface Endpoints {
 }
 
 export class ClusterService extends aws.ecs.Service {
-    public readonly clusterInstance: module.Cluster;
-    public readonly taskDefinitionInstance: module.ClusterTaskDefinition;
+    public readonly clusterInstance: mod.Cluster;
+    public readonly taskDefinitionInstance: mod.ClusterTaskDefinition;
 
     /**
      * Optional auto-scaling group for the cluster.  Can be created with
      * [cluster.createAutoScalingGroup]
      */
-    public readonly autoScalingGroup?: module.ClusterAutoScalingGroup;
+    public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
     public readonly endpoints: pulumi.Output<Endpoints>;
     public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
     public readonly getEndpoint: (containerName?: string, containerPort?: number) => Promise<aws.apigateway.x.Endpoint>;
 
-    constructor(name: string, cluster: module.Cluster,
+    constructor(name: string, cluster: mod.Cluster,
                 args: ClusterServiceArgs,
                 opts: pulumi.ResourceOptions = {}) {
 
@@ -102,7 +102,7 @@ export class ClusterService extends aws.ecs.Service {
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
             launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
             waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
-            placementConstraints: pulumi.output(args.os).apply(os => module.placementConstraintsForHost(os)),
+            placementConstraints: pulumi.output(args.os).apply(os => mod.placementConstraintsForHost(os)),
         }, opts);
 
         this.clusterInstance = cluster;
@@ -116,7 +116,7 @@ export class ClusterService extends aws.ecs.Service {
 }
 
 function createLoadBalancers(
-        taskDefinition: module.ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {
+        taskDefinition: mod.ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {
     const exposedPort = taskDefinition.exposedPort;
     if (!exposedPort) {
         return [];

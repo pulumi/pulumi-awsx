@@ -15,7 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as module from ".";
+import * as mod from ".";
 
 import * as utils from "../utils";
 
@@ -43,12 +43,12 @@ export type ClusterFileSystemArgs = utils.Overwrite<aws.efs.FileSystemArgs, {
 }>;
 
 export class ClusterFileSystem extends aws.efs.FileSystem {
-    public readonly cluster: module.Cluster;
+    public readonly cluster: mod.Cluster;
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly mountTargets: aws.efs.MountTarget[];
     public readonly mountPath: pulumi.Output<string>;
 
-    constructor(name: string, cluster: module.Cluster,
+    constructor(name: string, cluster: mod.Cluster,
                 args: ClusterFileSystemArgs = {}, opts?: pulumi.CustomResourceOptions) {
         super(name, {
             ...args,
@@ -92,12 +92,12 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
      * The launch configuration will be set to use this file system.
      */
     public createAutoScalingLaunchConfig(
-            name: string, args: module.ClusterAutoScalingLaunchConfigurationArgs = {}, opts?: pulumi.ResourceOptions) {
+            name: string, args: mod.ClusterAutoScalingLaunchConfigurationArgs = {}, opts?: pulumi.ResourceOptions) {
         if (args.fileSystem) {
             throw new Error("[args.fileSystem] should not be provided.");
         }
 
-        return new module.ClusterAutoScalingLaunchConfiguration(name, this.cluster, {
+        return new mod.ClusterAutoScalingLaunchConfiguration(name, this.cluster, {
             ...args,
             fileSystem: this,
         }, opts || { parent: this });
@@ -108,7 +108,7 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
      * The launch configuration will be set to use this file system.
      */
     public createAutoScalingGroup(
-            name: string, args: module.ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ResourceOptions) {
+            name: string, args: mod.ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ResourceOptions) {
 
         if (args.launchConfiguration) {
             throw new Error("[args.launchConfiguration] must not be set.");
@@ -121,7 +121,7 @@ export class ClusterFileSystem extends aws.efs.FileSystem {
 
         launchConfigurationArgs.fileSystem = this;
 
-        return new module.ClusterAutoScalingGroup(name, this.cluster, {
+        return new mod.ClusterAutoScalingGroup(name, this.cluster, {
             ...args,
             launchConfigurationArgs,
         }, opts || { parent: this });

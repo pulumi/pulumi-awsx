@@ -15,7 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as module from ".";
+import * as mod from ".";
 
 import { Network } from "./../network";
 
@@ -96,48 +96,48 @@ export class Cluster extends aws.ecs.Cluster {
         }, parentOpts);
     }
 
-    public createFileSystem(name: string, args?: module.ClusterFileSystemArgs, opts?: pulumi.ResourceOptions) {
-        return new module.ClusterFileSystem(name, this, args, opts || { parent: this });
+    public createFileSystem(name: string, args?: mod.ClusterFileSystemArgs, opts?: pulumi.ResourceOptions) {
+        return new mod.ClusterFileSystem(name, this, args, opts || { parent: this });
     }
 
     /**
      * Create an auto-scaling group for this cluster.
      */
     public createAutoScalingGroup(
-            name: string, args?: module.ClusterAutoScalingGroupArgs, opts?: pulumi.ResourceOptions) {
-        return new module.ClusterAutoScalingGroup(name, this, args, opts || { parent: this });
+            name: string, args?: mod.ClusterAutoScalingGroupArgs, opts?: pulumi.ResourceOptions) {
+        return new mod.ClusterAutoScalingGroup(name, this, args, opts || { parent: this });
     }
 
     /**
      * Creates a launch configuration that can be used to easily create an auto-scaling group.
      */
     public createAutoScalingLaunchConfig(
-            name: string, args?: module.ClusterAutoScalingLaunchConfigurationArgs, opts?: pulumi.ResourceOptions) {
-        return new module.ClusterAutoScalingLaunchConfiguration(name, this, args, opts || { parent: this });
+            name: string, args?: mod.ClusterAutoScalingLaunchConfigurationArgs, opts?: pulumi.ResourceOptions) {
+        return new mod.ClusterAutoScalingLaunchConfiguration(name, this, args, opts || { parent: this });
     }
 
     /**
      * Creates an ALB or NLB for this cluster
      */
-    public createLoadBalancer(name: string, args: module.ClusterLoadBalancerArgs, opts?: pulumi.ResourceOptions) {
-        return new module.ClusterLoadBalancer(name, this, args, opts || { parent: this });
+    public createLoadBalancer(name: string, args: mod.ClusterLoadBalancerArgs, opts?: pulumi.ResourceOptions) {
+        return new mod.ClusterLoadBalancer(name, this, args, opts || { parent: this });
     }
 
     public createFargateTaskDefinition(
-            name: string, args: module.FargateTaskDefinitionArgs, opts?: pulumi.ResourceOptions) {
-        return new module.FargateTaskDefinition(name, this, args, opts || { parent: this });
+            name: string, args: mod.FargateTaskDefinitionArgs, opts?: pulumi.ResourceOptions) {
+        return new mod.FargateTaskDefinition(name, this, args, opts || { parent: this });
     }
 
-    public createEC2TaskDefinition(name: string, args: module.EC2TaskDefinitionArgs, opts?: pulumi.ResourceOptions) {
-        return new module.EC2TaskDefinition(name, this, args, opts || { parent: this });
+    public createEC2TaskDefinition(name: string, args: mod.EC2TaskDefinitionArgs, opts?: pulumi.ResourceOptions) {
+        return new mod.EC2TaskDefinition(name, this, args, opts || { parent: this });
     }
 
-    public createFargateService(name: string, args: module.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
-        return new module.FargateService(name, this, args, opts || { parent: this });
+    public createFargateService(name: string, args: mod.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
+        return new mod.FargateService(name, this, args, opts || { parent: this });
     }
 
-    public createEC2Service(name: string, args: module.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
-        return new module.EC2Service(name, this, args, opts || { parent: this });
+    public createEC2Service(name: string, args: mod.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
+        return new mod.EC2Service(name, this, args, opts || { parent: this });
     }
 }
 
