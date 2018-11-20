@@ -64,7 +64,7 @@ func Test_Examples(t *testing.T) {
 			},
 		},
 		{
-			Dir:       path.Join(cwd, "../examples/fargate"),
+			Dir:       path.Join(cwd, "./examples/fargate"),
 			StackName: addRandomSuffix("containers-fargate"),
 			Config: map[string]string{
 				"aws:region":               fargateRegion,
