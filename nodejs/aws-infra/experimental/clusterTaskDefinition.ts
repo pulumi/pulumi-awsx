@@ -218,7 +218,7 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         this.run = createRunFunction(
             isFargate,
             cluster.network.usePrivateSubnets,
-            cluster.instance.arn,
+            cluster.instance.id,
             this.instance.arn,
             cluster.instanceSecurityGroup.id,
             pulumi.all(cluster.network.subnetIds),
@@ -257,8 +257,8 @@ function createRunFunction(
         const assignPublicIp = isFargate && !usePrivateSubnets;
 
         // Run the task
-        console.log("calling out to ecs");
-        const res = await ecs.runTask({
+        console.log("calling out to ecs: container name: " + containerName  + " - " + assignPublicIp);
+        const args = {
             cluster: clusterArn.get(),
             taskDefinition: taskDefArn.get(),
             placementConstraints: placementConstraints(isFargate, options.os),
@@ -278,14 +278,28 @@ function createRunFunction(
                     },
                 ],
             },
-        }).promise();
-        console.log("Done with call");
+        };
+        console.log("args: " + JSON.stringify(args, null, 2));
+        try {
+            const res = await ecs.runTask(args).promise();
+            console.log("Done with call");
 
-        if (res.failures && res.failures.length > 0) {
-            throw new Error("Failed to start task:" + JSON.stringify(res.failures));
+            if (res.failures && res.failures.length > 0) {
+                console.log("Failed to start task:" + JSON.stringify(res.failures));
+                throw new Error("Failed to start task:" + JSON.stringify(res.failures));
+            }
+        }
+        catch (err) {
+            console.log("error1: " + JSON.stringify(errorJSON(err)));
         }
 
         return;
+
+        function errorJSON(err: any) {
+            const result: any = Object.create(null);
+            Object.getOwnPropertyNames(err).forEach(key => result[key] = err[key]);
+            return result;
+        }
 
         // Local functions
         function addEnvironmentVariables(e: Record<string, string> | undefined) {
@@ -325,7 +339,7 @@ function getEndpointHelper(
 
 function placementConstraints(isFargate: boolean, os: HostOperatingSystem | undefined) {
     if (isFargate) {
-        return [];
+        return undefined;
     }
 
     os = os || "linux";

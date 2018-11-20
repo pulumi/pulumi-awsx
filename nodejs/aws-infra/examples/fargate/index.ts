@@ -21,12 +21,12 @@ import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
 const cluster = network.createCluster("testing");
-const group = cluster.createAutoScalingGroup("asg", {
-    templateParameters: {
-        minSize: 2,
-        maxSize: 100,
-    },
-});
+// const group = cluster.createAutoScalingGroup("asg", {
+//     templateParameters: {
+//         minSize: 2,
+//         maxSize: 100,
+//     },
+// });
 
 // A simple NGINX service, scaled out over two containers.
 const nginx = cluster.createFargateService("examples-nginx", {
@@ -215,17 +215,18 @@ export function createCallbackFunction(
         handler: (req: aws.apigateway.x.Request) => Promise<aws.apigateway.x.Response>) {
 
     const policies = [...awsinfra.x.defaultTaskDefinitionTaskRolePolicies()];
-    policies.push(aws.iam.AWSLambdaVPCAccessExecutionRole);
+    // aws.iam.AmazonEC2ContainerServiceFullAccess
+    // policies.push(aws.iam.AWSLambdaVPCAccessExecutionRole);
 
-    let vpcConfig = {
-        securityGroupIds: pulumi.all(network.securityGroupIds),
-        subnetIds: pulumi.all(network.subnetIds),
-    };
+    // let vpcConfig = {
+    //     securityGroupIds: pulumi.all(network.securityGroupIds),
+    //     subnetIds: pulumi.all(network.subnetIds),
+    // };
 
     // First allocate a function.
     return new aws.lambda.CallbackFunction<aws.apigateway.x.Request, aws.apigateway.x.Response>(name, {
         policies,
-        vpcConfig,
+        // vpcConfig,
         callback: (req, context, cb) => {
             handler(req).then(val => cb(null, val), err => cb(err));
         },
@@ -290,11 +291,13 @@ const api = new aws.apigateway.x.API("examples-containers", {
             try {
                 console.log("/run called");
                 await helloTask.run();
+                console.log("/run completed");
                 return {
                     statusCode: 200,
                     body: JSON.stringify({ success: true }),
                 };
             } catch (err) {
+                console.log("error!");
                 return handleError(err);
             }
         }),

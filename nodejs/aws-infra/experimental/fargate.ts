@@ -66,7 +66,7 @@ export class FargateTaskDefinition extends mod.ClusterTaskDefinition {
             networkMode: "awsvpc",
             memory: pulumi.output(args.memory).apply(memory => memory || computedMemory),
             cpu: pulumi.output(args.cpu).apply(cpu => cpu || computedCPU),
-        }, /*isFargate:*/ false, opts);
+        }, /*isFargate:*/ true, opts);
     }
 
     /**
