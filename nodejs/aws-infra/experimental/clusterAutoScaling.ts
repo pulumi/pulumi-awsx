@@ -217,7 +217,6 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
 }
 
 (<any>ClusterAutoScalingLaunchConfiguration).doNotCapture = true;
-(<any>ClusterAutoScalingLaunchConfiguration.prototype.createAutoScalingGroup).doNotCapture = true;
 
 const defaultAssumeInstanceRolePolicyDoc: aws.iam.PolicyDocument = {
     Version: "2012-10-17",
@@ -455,8 +454,6 @@ export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
 }
 
 (<any>ClusterAutoScalingGroup).doNotCapture = true;
-(<any>ClusterAutoScalingGroup.prototype.createEC2Service).doNotCapture = true;
-(<any>ClusterAutoScalingGroup.prototype.createFargateService).doNotCapture = true;
 
 // TODO[pulumi/pulumi-aws/issues#43]: We'd prefer not to use CloudFormation, but it's the best way to implement
 // rolling updates in an autoscaling group.
