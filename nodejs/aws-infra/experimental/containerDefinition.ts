@@ -111,9 +111,10 @@ export function computeContainerDefinition(
     containerName: string,
     container: ContainerDefinition,
     exposedPortOpt: mod.ExposedPort | undefined,
-    logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
+    logGroup: aws.cloudwatch.LogGroup,
+    opts: pulumi.ResourceOptions): pulumi.Output<aws.ecs.ContainerDefinition> {
 
-    const imageOptions = computeImage(name, cluster, container, exposedPortOpt);
+    const imageOptions = computeImage(name, cluster, container, exposedPortOpt, opts);
     const portMappings = getPortMappings(container.loadBalancerPort);
 
     return pulumi.all([imageOptions, container, logGroup.id])
@@ -172,7 +173,8 @@ function getPortMappings(loadBalancerPort: ClusterLoadBalancerPort | undefined) 
 function computeImage(name: string,
                       cluster: mod.Cluster,
                       container: ContainerDefinition,
-                      exposedPortOpt: mod.ExposedPort | undefined) {
+                      exposedPortOpt: mod.ExposedPort | undefined,
+                      opts: pulumi.ResourceOptions) {
 
     // Start with a copy from the container specification.
     const preEnv: ContainerEnvironment =
@@ -213,7 +215,7 @@ function computeImage(name: string,
     }
 
     if (container.build) {
-        return computeImageFromBuild(name, cluster, preEnv, container.build);
+        return computeImageFromBuild(name, cluster, preEnv, container.build, opts);
     }
     else if (container.image) {
         return createImageOptions(container.image, preEnv);
@@ -253,10 +255,11 @@ function computeImageFromBuild(
         name: string,
         parent: pulumi.Resource,
         preEnv: Record<string, pulumi.Input<string>>,
-        build: string | ContainerBuild) {
+        build: string | ContainerBuild,
+        opts: pulumi.ResourceOptions) {
 
     const imageName = getBuildImageName(name, build);
-    const repository = getOrCreateRepository(imageName);
+    const repository = getOrCreateRepository(imageName, opts);
 
     // This is a container to build; produce a name, either user-specified or auto-computed.
     pulumi.log.debug(`Building container image at '${build}'`, repository);
@@ -342,10 +345,10 @@ function getBuildImageName(name: string, build: string | ContainerBuild) {
 const repositories = new Map<string, aws.ecr.Repository>();
 
 // getOrCreateRepository returns the ECR repository for this image, lazily allocating if necessary.
-function getOrCreateRepository(imageName: string): aws.ecr.Repository {
+function getOrCreateRepository(imageName: string, opts: pulumi.ResourceOptions): aws.ecr.Repository {
     let repository: aws.ecr.Repository | undefined = repositories.get(imageName);
     if (!repository) {
-        repository = new aws.ecr.Repository(imageName.toLowerCase());
+        repository = new aws.ecr.Repository(imageName.toLowerCase(), {}, opts);
         repositories.set(imageName, repository);
 
         // Set a default lifecycle policy such that at most a single untagged image is retained.
@@ -367,7 +370,7 @@ function getOrCreateRepository(imageName: string): aws.ecr.Repository {
         const lifecyclePolicy = new aws.ecr.LifecyclePolicy(imageName.toLowerCase(), {
             policy: JSON.stringify(lifecyclePolicyDocument),
             repository: repository.name,
-        });
+        }, opts);
     }
 
     return repository;
