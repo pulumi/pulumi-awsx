@@ -136,8 +136,8 @@ export abstract class ClusterTaskDefinition extends aws.ecs.TaskDefinition {
             retentionInDays: 1,
         }, opts);
 
-        const taskRole = args.taskRole || createTaskRole(opts);
-        const executionRole = args.executionRole || createExecutionRole(opts);
+        const taskRole = args.taskRole || createTaskRole(name, opts);
+        const executionRole = args.executionRole || createExecutionRole(name, opts);
 
         const containers = args.containers;
         const exposedPortOpt = getExposedPort(name, cluster, containers);
@@ -378,8 +378,8 @@ const defaultTaskRolePolicy = {
     ],
 };
 
-function createTaskRole(opts?: pulumi.ResourceOptions): aws.iam.Role {
-    const taskRole = new aws.iam.Role("task", {
+function createTaskRole(name: string, opts?: pulumi.ResourceOptions): aws.iam.Role {
+    const taskRole = new aws.iam.Role(name + "-task", {
         assumeRolePolicy: JSON.stringify(defaultTaskRolePolicy),
     }, opts);
 
@@ -398,8 +398,8 @@ function createTaskRole(opts?: pulumi.ResourceOptions): aws.iam.Role {
     return taskRole;
 }
 
-function createExecutionRole(opts?: pulumi.ResourceOptions): aws.iam.Role {
-    const executionRole = new aws.iam.Role("execution", {
+function createExecutionRole(name: string, opts?: pulumi.ResourceOptions): aws.iam.Role {
+    const executionRole = new aws.iam.Role(name + "-execution", {
         assumeRolePolicy: JSON.stringify(defaultTaskRolePolicy),
     }, opts);
     const _ = new aws.iam.RolePolicyAttachment("execution", {
