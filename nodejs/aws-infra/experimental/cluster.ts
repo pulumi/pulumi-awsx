@@ -155,11 +155,3 @@ export class Cluster extends pulumi.ComponentResource {
 }
 
 (<any>Cluster).doNotCapture = true;
-(<any>Cluster.prototype.createAutoScalingGroup).doNotCapture = true;
-(<any>Cluster.prototype.createAutoScalingLaunchConfig).doNotCapture = true;
-(<any>Cluster.prototype.createEC2Service).doNotCapture = true;
-(<any>Cluster.prototype.createEC2TaskDefinition).doNotCapture = true;
-(<any>Cluster.prototype.createFargateService).doNotCapture = true;
-(<any>Cluster.prototype.createFargateTaskDefinition).doNotCapture = true;
-(<any>Cluster.prototype.createFileSystem).doNotCapture = true;
-(<any>Cluster.prototype.createLoadBalancer).doNotCapture = true;
