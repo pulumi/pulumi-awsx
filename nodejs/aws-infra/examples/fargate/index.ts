@@ -12,21 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
-
 import * as aws from "@pulumi/aws";
 import * as awsinfra from "@pulumi/aws-infra";
 
-import { Config, Output } from "@pulumi/pulumi";
+import { Config } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
 const cluster = network.createCluster("testing");
-// const group = cluster.createAutoScalingGroup("asg", {
-//     templateParameters: {
-//         minSize: 2,
-//         maxSize: 100,
-//     },
-// });
 
 // A simple NGINX service, scaled out over two containers.
 const nginx = cluster.createFargateService("examples-nginx", {
@@ -51,7 +43,7 @@ const simpleNginx = cluster.createFargateTaskDefinition("examples-simple-nginx",
         memory: 128,
         loadBalancerPort: { port: 80 },
     },
-}).createService("examples-simple-nginx", { desiredCount: 2});
+}).createService("examples-simple-nginx", { desiredCount: 2 });
 
 export let simpleNginxEndpoint = simpleNginx.defaultEndpoint;
 
@@ -111,7 +103,7 @@ const config = new Config("containers");
 const redisPassword = config.require("redisPassword");
 
 /**
- * A simple Cache abstration, built on top of a Redis container Service.
+ * A simple Cache abstraction, built on top of a Redis container Service.
  */
 class Cache {
     get: (key: string) => Promise<string>;
@@ -276,7 +268,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
                 } catch (err) {
                     return handleError(err);
                 }
-            }
+            },
         }),
     }, {
         path: "/custom",

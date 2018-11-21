@@ -106,15 +106,14 @@ export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefiniti
 export type WrappedEndpoints = Record<string, Record<number, pulumi.Output<aws.apigateway.x.Endpoint>>>;
 
 export function computeContainerDefinition(
+    parent: pulumi.Resource,
     name: string,
-    cluster: mod.Cluster,
     containerName: string,
     container: ContainerDefinition,
     exposedPortOpt: mod.ExposedPort | undefined,
-    logGroup: aws.cloudwatch.LogGroup,
-    opts: pulumi.ResourceOptions): pulumi.Output<aws.ecs.ContainerDefinition> {
+    logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
-    const imageOptions = computeImage(name, cluster, container, exposedPortOpt, opts);
+    const imageOptions = computeImage(parent, name, container, exposedPortOpt);
     const portMappings = getPortMappings(container.loadBalancerPort);
 
     return pulumi.all([imageOptions, container, logGroup.id])
@@ -170,11 +169,10 @@ function getPortMappings(loadBalancerPort: ClusterLoadBalancerPort | undefined) 
     }];
 }
 
-function computeImage(name: string,
-                      cluster: mod.Cluster,
+function computeImage(parent: pulumi.Resource,
+                      name: string,
                       container: ContainerDefinition,
-                      exposedPortOpt: mod.ExposedPort | undefined,
-                      opts: pulumi.ResourceOptions) {
+                      exposedPortOpt: mod.ExposedPort | undefined) {
 
     // Start with a copy from the container specification.
     const preEnv: ContainerEnvironment =
@@ -215,7 +213,7 @@ function computeImage(name: string,
     }
 
     if (container.build) {
-        return computeImageFromBuild(name, cluster, preEnv, container.build, opts);
+        return computeImageFromBuild(parent, name, preEnv, container.build);
     }
     else if (container.image) {
         return createImageOptions(container.image, preEnv);
@@ -252,45 +250,44 @@ function computeImageFromFunction(
 
 
 function computeImageFromBuild(
-        name: string,
         parent: pulumi.Resource,
+        name: string,
         preEnv: Record<string, pulumi.Input<string>>,
-        build: string | ContainerBuild,
-        opts: pulumi.ResourceOptions) {
+        build: string | ContainerBuild) {
 
     const imageName = getBuildImageName(name, build);
-    const repository = getOrCreateRepository(imageName, opts);
+    const repository = getOrCreateRepository(parent, imageName);
 
     // This is a container to build; produce a name, either user-specified or auto-computed.
     pulumi.log.debug(`Building container image at '${build}'`, repository);
     const { repositoryUrl, registryId } = repository;
 
     return pulumi.all([repositoryUrl, registryId]).apply(([repositoryUrl, registryId]) =>
-        computeImageFromBuildWorker(preEnv, build, imageName, repositoryUrl, registryId, parent));
+        computeImageFromBuildWorker(parent, preEnv, build, imageName, repositoryUrl, registryId));
 }
 
 // buildImageCache remembers the digests for all past built images, keyed by image name.
 const buildImageCache = new Map<string, pulumi.Output<string>>();
 
 function computeImageFromBuildWorker(
+        parent: pulumi.Resource,
         preEnv: Record<string, pulumi.Input<string>>,
         build: string | ContainerBuild,
         imageName: string,
         repositoryUrl: string,
-        registryId: string,
-        logResource: pulumi.Resource) {
+        registryId: string) {
 
     // See if we've already built this.
     let uniqueImageName = buildImageCache.get(imageName);
     if (uniqueImageName) {
         uniqueImageName.apply(d =>
-            pulumi.log.debug(`    already built: ${imageName} (${d})`, logResource));
+            pulumi.log.debug(`    already built: ${imageName} (${d})`, parent));
     }
     else {
         // If we haven't, build and push the local build context to the ECR repository.  Then return
         // the unique image name we pushed to.  The name will change if the image changes ensuring
         // the TaskDefinition get's replaced IFF the built image changes.
-        uniqueImageName = docker.buildAndPushImage(imageName, build, repositoryUrl, logResource, async () => {
+        uniqueImageName = docker.buildAndPushImage(imageName, build, repositoryUrl, parent, async () => {
             // Construct Docker registry auth data by getting the short-lived authorizationToken from ECR, and
             // extracting the username/password pair after base64-decoding the token.
             //
@@ -314,7 +311,7 @@ function computeImageFromBuildWorker(
         buildImageCache.set(imageName, uniqueImageName);
 
         uniqueImageName.apply(d =>
-            pulumi.log.debug(`    build complete: ${imageName} (${d})`, logResource));
+            pulumi.log.debug(`    build complete: ${imageName} (${d})`, parent));
     }
 
     return createImageOptions(uniqueImageName, preEnv);
@@ -345,10 +342,10 @@ function getBuildImageName(name: string, build: string | ContainerBuild) {
 const repositories = new Map<string, aws.ecr.Repository>();
 
 // getOrCreateRepository returns the ECR repository for this image, lazily allocating if necessary.
-function getOrCreateRepository(imageName: string, opts: pulumi.ResourceOptions): aws.ecr.Repository {
+function getOrCreateRepository(parent: pulumi.Resource, imageName: string): aws.ecr.Repository {
     let repository: aws.ecr.Repository | undefined = repositories.get(imageName);
     if (!repository) {
-        repository = new aws.ecr.Repository(imageName.toLowerCase(), {}, opts);
+        repository = new aws.ecr.Repository(imageName.toLowerCase(), {}, { parent });
         repositories.set(imageName, repository);
 
         // Set a default lifecycle policy such that at most a single untagged image is retained.
@@ -370,7 +367,7 @@ function getOrCreateRepository(imageName: string, opts: pulumi.ResourceOptions):
         const lifecyclePolicy = new aws.ecr.LifecyclePolicy(imageName.toLowerCase(), {
             policy: JSON.stringify(lifecyclePolicyDocument),
             repository: repository.name,
-        }, opts);
+        }, { parent });
     }
 
     return repository;

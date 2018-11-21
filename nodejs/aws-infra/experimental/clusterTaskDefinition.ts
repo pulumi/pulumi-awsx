@@ -167,7 +167,7 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         //     getEndpointInfo(containers, loadBalancer!);
 
         const containerDefinitions = computeContainerDefinitions(
-            name, cluster, args, exposedPort, logGroup, parentOpts);
+            this, name, args, exposedPort, logGroup);
 
         const instance = new aws.ecs.TaskDefinition(name, {
             ...args,
@@ -387,12 +387,11 @@ function getExposedPort(
 }
 
 function computeContainerDefinitions(
+    parent: pulumi.Resource,
     name: string,
-    cluster: mod.Cluster,
     args: ClusterTaskDefinitionArgs,
     exposedPortOpt: ExposedPort | undefined,
-    logGroup: aws.cloudwatch.LogGroup,
-    opts: pulumi.ResourceOptions): pulumi.Output<aws.ecs.ContainerDefinition[]> {
+    logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
 
@@ -400,7 +399,7 @@ function computeContainerDefinitions(
         const container = args.containers[containerName];
 
         result.push(mod.computeContainerDefinition(
-            name, cluster, containerName, container, exposedPortOpt, logGroup, opts));
+            parent, name, containerName, container, exposedPortOpt, logGroup));
     }
 
     return pulumi.all(result);
