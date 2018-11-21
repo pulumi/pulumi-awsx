@@ -53,16 +53,16 @@ func Test_Examples(t *testing.T) {
 		return
 	}
 	examples := []integration.ProgramTestOptions{
-		// {
-		// 	Dir: path.Join(cwd, "./examples/cluster"),
-		// 	Config: map[string]string{
-		// 		"aws:region":     region,
-		// 		"cloud:provider": "aws",
-		// 	},
-		// 	Dependencies: []string{
-		// 		"@pulumi/aws-infra",
-		// 	},
-		// },
+		{
+			Dir: path.Join(cwd, "./examples/cluster"),
+			Config: map[string]string{
+				"aws:region":     region,
+				"cloud:provider": "aws",
+			},
+			Dependencies: []string{
+				"@pulumi/aws-infra",
+			},
+		},
 		{
 			Dir:       path.Join(cwd, "./examples/fargate"),
 			StackName: addRandomSuffix("containers-fargate"),

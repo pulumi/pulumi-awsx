@@ -101,20 +101,21 @@ export function computeContainerDefinition(
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
     const imageOptions = computeImage(parent, name, container);
-    const portMappings = getPortMappings(container.loadBalancerPort);
+    // const portMappings = getPortMappings(container.loadBalancerPort);
 
-    return pulumi.all([imageOptions, container, logGroup.id])
-                 .apply(([imageOptions, container, logGroupId]) => {
+    return pulumi.all([imageOptions, container, logGroup.id, container.portMappings])
+                 .apply(([imageOptions, container, logGroupId, portMappings]) => {
         const keyValuePairs: { name: string, value: string }[] = [];
         for (const key of Object.keys(imageOptions.environment)) {
             keyValuePairs.push({ name: key, value: imageOptions.environment[key] });
         }
 
+        portMappings = portMappings || [];
         const containerDefinition = {
             ...container,
             name: containerName,
             image: imageOptions.image,
-            portMappings: portMappings,
+            portMappings: portMappings.map(initializePortMapping),
             environment: keyValuePairs,
             // todo(cyrusn): mount points.
             // mountPoints: (container.volumes || []).map(v => ({
@@ -135,26 +136,44 @@ export function computeContainerDefinition(
     });
 }
 
-function getPortMappings(loadBalancerPort: ClusterLoadBalancerPort | undefined) {
-    if (loadBalancerPort === undefined) {
-        return [];
-    }
-
-    const port = loadBalancerPort.targetPort || loadBalancerPort.port;
-    return [{
-        containerPort: port,
+function initializePortMapping(portMapping: aws.ecs.PortMapping) {
+    if (portMapping.hostPort === undefined) {
         // From https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html:
-        // > For task definitions that use the awsvpc network mode, you should only specify the containerPort.
-        // > The hostPort can be left blank or it must be the same value as the containerPort.
+        // > For task definitions that use the awsvpc network mode, you should only specify the
+        // > containerPort. The hostPort can be left blank or it must be the same value as the
+        // > containerPort.
         //
-        // However, if left blank, it will be automatically populated by AWS, potentially leading to dirty
-        // diffs even when no changes have been made. Since we are currently always using `awsvpc` mode, we
-        // go ahead and populate it with the same value as `containerPort`.
+        // However, if left blank, it will be automatically populated by AWS, potentially leading to
+        // dirty diffs even when no changes have been made. Since we are currently always using
+        // `awsvpc` mode, we go ahead and populate it with the same value as `containerPort`.
         //
         // See https://github.com/terraform-providers/terraform-provider-aws/issues/3401.
-        hostPort: port,
-    }];
+        portMapping.hostPort = portMapping.containerPort;
+    }
+
+    return portMapping;
 }
+
+// function getPortMappings(loadBalancerPort: ClusterLoadBalancerPort | undefined) {
+//     if (loadBalancerPort === undefined) {
+//         return [];
+//     }
+
+//     const port = loadBalancerPort.targetPort || loadBalancerPort.port;
+//     return [{
+//         containerPort: port,
+//         // From https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html:
+//         // > For task definitions that use the awsvpc network mode, you should only specify the containerPort.
+//         // > The hostPort can be left blank or it must be the same value as the containerPort.
+//         //
+//         // However, if left blank, it will be automatically populated by AWS, potentially leading to dirty
+//         // diffs even when no changes have been made. Since we are currently always using `awsvpc` mode, we
+//         // go ahead and populate it with the same value as `containerPort`.
+//         //
+//         // See https://github.com/terraform-providers/terraform-provider-aws/issues/3401.
+//         hostPort: port,
+//     }];
+// }
 
 function computeImage(parent: pulumi.Resource,
                       name: string,

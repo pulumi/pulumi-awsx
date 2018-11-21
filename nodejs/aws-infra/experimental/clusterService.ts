@@ -29,6 +29,12 @@ export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
     taskDefinition: mod.ClusterTaskDefinition;
 
     /**
+     * Load balancing target group.  Necessary if [taskDefinition] has containers with any port
+     * mappings.
+     */
+    targetGroup?: aws.elasticloadbalancingv2.TargetGroup;
+
+    /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do
      * not specify if using the `DAEMON` scheduling strategy.
      */
@@ -86,7 +92,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
         super(type, name, args, opts);
 
         const parentOpts = { parent: this };
-        const loadBalancers = createLoadBalancers(args.taskDefinition);
+        const loadBalancers = createLoadBalancers(args.taskDefinition, args.targetGroup);
 
         // If the cluster has an autoscaling group, ensure the service depends on it being created.
         // TODO(cyrusn): this isn't necessary if resource creation automatically makes 'deps' for
@@ -152,19 +158,41 @@ function placementConstraints(isFargate: boolean, os: mod.HostOperatingSystem | 
 }
 
 function createLoadBalancers(
-        taskDefinition: mod.ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {
-    const exposedPort = taskDefinition.exposedPort;
-    if (!exposedPort) {
-        return [];
-    }
+        taskDefinition: mod.ClusterTaskDefinition,
+        targetGroup: aws.elasticloadbalancingv2.TargetGroup | undefined) {
 
-    const loadBalancerPort = exposedPort.loadBalancerPort;
-    return [{
-        containerName: exposedPort.containerName,
-        containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
-        targetGroupArn: exposedPort.loadBalancer.targetGroup.arn,
-    }];
+    return taskDefinition.defaultPortMapping.apply(cpm => {
+        if (!cpm) {
+            return [];
+        }
+
+        if (!targetGroup) {
+            throw new Error("[targetGroup] must be provided if containers have portMappings.");
+        }
+
+        const { containerName, portMapping } = cpm;
+        return [{
+            containerName: containerName,
+            containerPort: portMapping.containerPort!,
+            targetGroupArn: targetGroup.arn,
+        }];
+    });
 }
+
+// function createLoadBalancers(
+//         taskDefinition: mod.ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {
+//     const exposedPort = taskDefinition.exposedPort;
+//     if (!exposedPort) {
+//         return [];
+//     }
+
+//     const loadBalancerPort = exposedPort.loadBalancerPort;
+//     return [{
+//         containerName: exposedPort.containerName,
+//         containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
+//         targetGroupArn: exposedPort.loadBalancer.targetGroup.arn,
+//     }];
+// }
 
 
 // const volumeNames = new Set<string>();

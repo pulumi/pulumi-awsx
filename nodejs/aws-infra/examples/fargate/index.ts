@@ -21,7 +21,8 @@ const network = awsinfra.Network.getDefault();
 const cluster = network.createCluster("testing");
 
 // A simple NGINX service, scaled out over two containers.
-const nginx = cluster.createFargateService("examples-nginx", {
+const nginx = new awsinfra.x.FargateService("examples-nginx", {
+    cluster: cluster,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -34,18 +35,23 @@ const nginx = cluster.createFargateService("examples-nginx", {
     desiredCount: 2,
 });
 
-export let nginxEndpoint = nginx.defaultEndpoint;
+export let nginxEndpoint = nginx.defaultPortMapping;
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginx = cluster.createFargateTaskDefinition("examples-simple-nginx", {
+const simpleNginxTask = new awsinfra.x.FargateTaskDefinition("examples-simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
-        loadBalancerPort: { port: 80 },
+        portMappings: [{ containerPort: 80 }],
     },
-}).createService("examples-simple-nginx", { desiredCount: 2 });
+});
+const simpleNginx = new awsinfra.x.FargateService("examples-simple-nginx", {
+    cluster,
+    taskDefinition: simpleNginxTask,
+    desiredCount: 2,
+});
 
-export let simpleNginxEndpoint = simpleNginx.defaultEndpoint;
+export let simpleNginxEndpoint = simpleNginx.defaultPortMapping;
 
 const cachedNginx = cluster.createFargateService("examples-cached-nginx", {
     taskDefinitionArgs: {
