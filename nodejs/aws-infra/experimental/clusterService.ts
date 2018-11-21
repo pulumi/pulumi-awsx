@@ -21,6 +21,8 @@ import * as docker from "@pulumi/docker";
 import * as utils from "./../utils";
 
 export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
+    cluster: mod.Cluster;
+
     /**
      * The task definition to create the service from.
      */
@@ -72,10 +74,13 @@ export abstract class ClusterService extends pulumi.ComponentResource {
      */
     public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
-    public readonly endpoints: pulumi.Output<mod.Endpoints>;
-    public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
+    // public readonly endpoints: pulumi.Output<mod.Endpoints>;
+    // public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
-    constructor(type: string, name: string, clusterInstance: mod.Cluster,
+    public readonly portMappings: pulumi.Output<mod.TaskPortMappings>;
+    public readonly defaultPortMapping: pulumi.Output<mod.TaskPortMapping | undefined>;
+
+    constructor(type: string, name: string,
                 args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
         super(type, name, args, opts);
@@ -97,7 +102,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
 
         const instance = new aws.ecs.Service(name, {
             ...args,
-            cluster: clusterInstance.instance.arn,
+            cluster: args.cluster.instance.arn,
             taskDefinition: args.taskDefinition.instance.arn,
             loadBalancers: loadBalancers,
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
@@ -106,26 +111,27 @@ export abstract class ClusterService extends pulumi.ComponentResource {
             placementConstraints: pulumi.output(args.os).apply(os => placementConstraints(isFargate, os)),
         }, parentOpts);
 
+        const clusterInstance = args.cluster;
         const taskDefinitionInstance = args.taskDefinition;
         const autoScalingGroup = args.autoScalingGroup;
-        const defaultEndpoint = args.taskDefinition.defaultEndpoint;
-        const endpoints = args.taskDefinition.endpoints;
+        const defaultPortMapping = args.taskDefinition.defaultPortMapping;
+        const portMappings = args.taskDefinition.portMappings;
 
         this.instance = instance;
         this.clusterInstance = clusterInstance;
         this.taskDefinitionInstance = args.taskDefinition;
         this.autoScalingGroup = args.autoScalingGroup;
 
-        this.defaultEndpoint = defaultEndpoint;
-        this.endpoints = endpoints;
+        this.defaultPortMapping = defaultPortMapping;
+        this.portMappings = portMappings;
 
         this.registerOutputs({
             instance,
             clusterInstance,
             taskDefinitionInstance,
             autoScalingGroup,
-            defaultEndpoint,
-            endpoints,
+            defaultPortMapping,
+            portMappings,
         });
     }
 }

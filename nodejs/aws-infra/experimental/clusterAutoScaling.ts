@@ -413,7 +413,8 @@ export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
                 name, cluster, args.launchConfigurationArgs, parentOpts);
         }
         else {
-            launchConfiguration = cluster.createAutoScalingLaunchConfig(name, {}, parentOpts);
+            launchConfiguration = new mod.ClusterAutoScalingLaunchConfiguration(
+                name, this.cluster, {}, parentOpts);
         }
 
         this.instance = new aws.cloudformation.Stack(name, {
@@ -430,27 +431,27 @@ export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
         this.launchConfiguration = launchConfiguration;
     }
 
-    public createFargateService(name: string, args: mod.FargateServiceArgs = {}, opts?: pulumi.ResourceOptions) {
-        if (args.autoScalingGroup) {
-            throw new Error("[args.autoScalingGroup] should not be provided.");
-        }
+    // public createFargateService(name: string, args: mod.FargateServiceArgs = {}, opts?: pulumi.ResourceOptions) {
+    //     if (args.autoScalingGroup) {
+    //         throw new Error("[args.autoScalingGroup] should not be provided.");
+    //     }
 
-        return new mod.FargateService(name, this.cluster, {
-            ...args,
-            autoScalingGroup: this,
-        }, opts || { parent: this });
-    }
+    //     return new mod.FargateService(name, this.cluster, {
+    //         ...args,
+    //         autoScalingGroup: this,
+    //     }, opts || { parent: this });
+    // }
 
-    public createEC2Service(name: string, args: mod.EC2ServiceArgs = {}, opts?: pulumi.ResourceOptions) {
-        if (args.autoScalingGroup) {
-            throw new Error("[args.autoScalingGroup] should not be provided.");
-        }
+    // public createEC2Service(name: string, args: mod.EC2ServiceArgs = {}, opts?: pulumi.ResourceOptions) {
+    //     if (args.autoScalingGroup) {
+    //         throw new Error("[args.autoScalingGroup] should not be provided.");
+    //     }
 
-        return new mod.EC2Service(name, this.cluster, {
-            ...args,
-            autoScalingGroup: this,
-        }, opts || { parent: this });
-    }
+    //     return new mod.EC2Service(name, this.cluster, {
+    //         ...args,
+    //         autoScalingGroup: this,
+    //     }, opts || { parent: this });
+    // }
 }
 
 (<any>ClusterAutoScalingGroup).doNotCapture = true;

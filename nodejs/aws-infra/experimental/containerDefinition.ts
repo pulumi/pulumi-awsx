@@ -88,18 +88,6 @@ export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefiniti
      */
     function?: () => void;
 
-    /**
-     * Not provided.  Use [loadBalancerPort] instead.
-     */
-    portMappings?: never;
-
-    /**
-     * The port information to create a load balancer for.  At most one container in a service
-     * can have this set.  Should not be set for containers intended for TaskDeinitions that will
-     * just be run, and will not be part of an aws.ecs.Service.
-     */
-    loadBalancerPort?: mod.ClusterLoadBalancerPort;
-
     environment?: ContainerEnvironment;
 }>;
 
@@ -110,10 +98,9 @@ export function computeContainerDefinition(
     name: string,
     containerName: string,
     container: ContainerDefinition,
-    exposedPortOpt: mod.ExposedPort | undefined,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
-    const imageOptions = computeImage(parent, name, container, exposedPortOpt);
+    const imageOptions = computeImage(parent, name, container);
     const portMappings = getPortMappings(container.loadBalancerPort);
 
     return pulumi.all([imageOptions, container, logGroup.id])
@@ -171,46 +158,45 @@ function getPortMappings(loadBalancerPort: ClusterLoadBalancerPort | undefined) 
 
 function computeImage(parent: pulumi.Resource,
                       name: string,
-                      container: ContainerDefinition,
-                      exposedPortOpt: mod.ExposedPort | undefined) {
+                      container: ContainerDefinition) {
 
     // Start with a copy from the container specification.
     const preEnv: ContainerEnvironment =
         Object.assign({}, container.environment || {});
 
-        // Now add entries for service discovery amongst containers exposing endpoints.
-    if (exposedPortOpt) {
-        const loadBalancer = exposedPortOpt.loadBalancer;
-        const hostname = loadBalancer.instance.dnsName;
-        const hostproto = exposedPortOpt.loadBalancerPort.protocol || "tcp";
-        const hostport = exposedPortOpt.loadBalancerPort.port.toString();
-        const port = hostport;
+    // // Now add entries for service discovery amongst containers exposing endpoints.
+    // if (exposedPortOpt) {
+    //     const loadBalancer = exposedPortOpt.loadBalancer;
+    //     const hostname = loadBalancer.instance.dnsName;
+    //     const hostproto = exposedPortOpt.loadBalancerPort.protocol || "tcp";
+    //     const hostport = exposedPortOpt.loadBalancerPort.port.toString();
+    //     const port = hostport;
 
-        const serviceEnv = makeServiceEnvName(exposedPortOpt.containerName);
-        // Populate Kubernetes and Docker links compatible environment variables.  These take the form:
-        //
-        //     Kubernetes:
-        //         {SVCNAME}_SERVICE_HOST=10.0.0.11 (or DNS name)
-        //         {SVCNAME}_SERVICE_PORT=6379
-        //     Docker links:
-        //         {SVCNAME}_PORT=tcp://10.0.0.11:6379 (or DNS address)
-        //         {SVCNAME}_PORT_6379_TCP=tcp://10.0.0.11:6379 (or DNS address)
-        //         {SVCNAME}_PORT_6379_TCP_PROTO=tcp
-        //         {SVCNAME}_PORT_6379_TCP_PORT=6379
-        //         {SVCNAME}_PORT_6379_TCP_ADDR=10.0.0.11 (or DNS name)
-        //
-        // See https://kubernetes.io/docs/concepts/services-networking/service/#discovering-services and
-        // https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/ for more info.
-        preEnv[`${serviceEnv}_SERVICE_HOST`] = hostname;
-        preEnv[`${serviceEnv}_SERVICE_PORT`] = hostport;
+    //     const serviceEnv = makeServiceEnvName(exposedPortOpt.containerName);
+    //     // Populate Kubernetes and Docker links compatible environment variables.  These take the form:
+    //     //
+    //     //     Kubernetes:
+    //     //         {SVCNAME}_SERVICE_HOST=10.0.0.11 (or DNS name)
+    //     //         {SVCNAME}_SERVICE_PORT=6379
+    //     //     Docker links:
+    //     //         {SVCNAME}_PORT=tcp://10.0.0.11:6379 (or DNS address)
+    //     //         {SVCNAME}_PORT_6379_TCP=tcp://10.0.0.11:6379 (or DNS address)
+    //     //         {SVCNAME}_PORT_6379_TCP_PROTO=tcp
+    //     //         {SVCNAME}_PORT_6379_TCP_PORT=6379
+    //     //         {SVCNAME}_PORT_6379_TCP_ADDR=10.0.0.11 (or DNS name)
+    //     //
+    //     // See https://kubernetes.io/docs/concepts/services-networking/service/#discovering-services and
+    //     // https://docs.docker.com/engine/userguide/networking/default_network/dockerlinks/ for more info.
+    //     preEnv[`${serviceEnv}_SERVICE_HOST`] = hostname;
+    //     preEnv[`${serviceEnv}_SERVICE_PORT`] = hostport;
 
-        const fullHost = hostname.apply(h => `${hostproto}://${h}:${hostport}`);
-        preEnv[`${serviceEnv}_PORT`] = fullHost;
-        preEnv[`${serviceEnv}_PORT_${port}_TCP`] = fullHost;
-        preEnv[`${serviceEnv}_PORT_${port}_TCP_PROTO`]= hostproto;
-        preEnv[`${serviceEnv}_PORT_${port}_TCP_PORT`] = hostport;
-        preEnv[`${serviceEnv}_PORT_${port}_TCP_ADDR`] = hostname;
-    }
+    //     const fullHost = hostname.apply(h => `${hostproto}://${h}:${hostport}`);
+    //     preEnv[`${serviceEnv}_PORT`] = fullHost;
+    //     preEnv[`${serviceEnv}_PORT_${port}_TCP`] = fullHost;
+    //     preEnv[`${serviceEnv}_PORT_${port}_TCP_PROTO`]= hostproto;
+    //     preEnv[`${serviceEnv}_PORT_${port}_TCP_PORT`] = hostport;
+    //     preEnv[`${serviceEnv}_PORT_${port}_TCP_ADDR`] = hostname;
+    // }
 
     if (container.build) {
         return computeImageFromBuild(parent, name, preEnv, container.build);

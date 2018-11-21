@@ -104,45 +104,45 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
         });
     }
 
-    /**
-     * Creates a launch configuration that can be used to easily create an auto-scaling group.
-     * The launch configuration will be set to use this file system.
-     */
-    public createAutoScalingLaunchConfig(
-            name: string, args: mod.ClusterAutoScalingLaunchConfigurationArgs = {}, opts?: pulumi.ResourceOptions) {
-        if (args.fileSystem) {
-            throw new Error("[args.fileSystem] should not be provided.");
-        }
+    // /**
+    //  * Creates a launch configuration that can be used to easily create an auto-scaling group.
+    //  * The launch configuration will be set to use this file system.
+    //  */
+    // public createAutoScalingLaunchConfig(
+    //         name: string, args: mod.ClusterAutoScalingLaunchConfigurationArgs = {}, opts?: pulumi.ResourceOptions) {
+    //     if (args.fileSystem) {
+    //         throw new Error("[args.fileSystem] should not be provided.");
+    //     }
 
-        return new mod.ClusterAutoScalingLaunchConfiguration(name, this.cluster, {
-            ...args,
-            fileSystem: this,
-        }, opts || { parent: this });
-    }
+    //     return new mod.ClusterAutoScalingLaunchConfiguration(name, this.cluster, {
+    //         ...args,
+    //         fileSystem: this,
+    //     }, opts || { parent: this });
+    // }
 
-    /**
-     * Creates a auto-scaling group, using this file system within its launch configuration
-     * The launch configuration will be set to use this file system.
-     */
-    public createAutoScalingGroup(
-            name: string, args: mod.ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ResourceOptions) {
+    // /**
+    //  * Creates a auto-scaling group, using this file system within its launch configuration
+    //  * The launch configuration will be set to use this file system.
+    //  */
+    // public createAutoScalingGroup(
+    //         name: string, args: mod.ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ResourceOptions) {
 
-        if (args.launchConfiguration) {
-            throw new Error("[args.launchConfiguration] must not be set.");
-        }
+    //     if (args.launchConfiguration) {
+    //         throw new Error("[args.launchConfiguration] must not be set.");
+    //     }
 
-        const launchConfigurationArgs = args.launchConfigurationArgs || {};
-        if (launchConfigurationArgs.fileSystem) {
-            throw new Error("[args.launchConfigurationArgs.fileSystem] should not be provided.");
-        }
+    //     const launchConfigurationArgs = args.launchConfigurationArgs || {};
+    //     if (launchConfigurationArgs.fileSystem) {
+    //         throw new Error("[args.launchConfigurationArgs.fileSystem] should not be provided.");
+    //     }
 
-        launchConfigurationArgs.fileSystem = this;
+    //     launchConfigurationArgs.fileSystem = this;
 
-        return new mod.ClusterAutoScalingGroup(name, this.cluster, {
-            ...args,
-            launchConfigurationArgs,
-        }, opts || { parent: this });
-    }
+    //     return new mod.ClusterAutoScalingGroup(name, this.cluster, {
+    //         ...args,
+    //         launchConfigurationArgs,
+    //     }, opts || { parent: this });
+    // }
 }
 
 (<any>ClusterFileSystem).doNotCapture = true;
