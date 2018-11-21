@@ -59,10 +59,10 @@ const cachedNginx = cluster.createFargateService("examples-cached-nginx", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                build: {
+                image: awsinfra.x.ImageOptionsProvider.fromDockerBuild({
                     context: "./app",
                     cacheFrom: true,
-                },
+                }),
                 memory: 128,
                 loadBalancerPort: { port: 80 },
             },
@@ -75,11 +75,11 @@ const multistageCachedNginx = cluster.createFargateService("examples-multistage-
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                build: {
+                image: awsinfra.x.ImageOptionsProvider.fromDockerBuild({
                     context: "./app",
                     dockerfile: "./app/Dockerfile-multistage",
                     cacheFrom: {stages: ["build"]},
-                },
+                }),
                 memory: 128,
                 loadBalancerPort: { port: 80 },
             },
@@ -94,13 +94,13 @@ const customWebServer = cluster.createFargateService("mycustomservice", {
             webserver: {
                 memory: 128,
                 loadBalancerPort: { port: 80, targetPort: 8080 },
-                function: () => {
+                image: awsinfra.x.ImageOptionsProvider.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
                     http.createServer((req: any, res: any) => {
                         res.end(`Hello, world! (from ${rand})`);
                     }).listen(8080);
-                },
+                }),
             },
         },
     },
@@ -186,7 +186,7 @@ const builtService = cluster.createFargateService("examples-nginx2", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                build: "./app",
+                image: awsinfra.x.ImageOptionsProvider.fromPath("./app"),
                 memory: 128,
                 loadBalancerPort: { port: 80 },
             },
@@ -276,7 +276,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
                 } catch (err) {
                     return handleError(err);
                 }
-            }
+            },
         }),
     }, {
         path: "/custom",
