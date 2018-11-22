@@ -23,11 +23,14 @@ import { ClusterLoadBalancerPort } from "./clusterLoadBalancer";
 export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     /**
      * The image to use for the container.  If this is just a string, then the image will be pulled
-     * from the Docker Hub.  To provide customized image retrieval, implement the
-     * [IImageOptionsProvider] interface or use [ImageOptionsProvider] for common ways to create
-     * an image from a local docker build.
+     * from the Docker Hub.  To provide customized image retrieval, provide [imageProvider] which
+     * can do whatever custom work is necessary and which should then update this
+     * ContainerDefinition appropriately.  See [ImageProvider] for common ways to create an image
+     * from a local docker build.
      */
-    image: pulumi.Input<string> | mod.IImageOptionsProvider;
+    image?: pulumi.Input<string>
+
+    imageProvider?: mod.IImageProvider;
 
     environment?: mod.ImageEnvironment;
 
@@ -53,20 +56,20 @@ export function computeContainerDefinition(
     container: ContainerDefinition,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
-    const imageOptions = computeImage(parent, name, container);
+    computeImage(parent, name, container);
     const portMappings = getPortMappings(container.loadBalancerPort);
 
-    return pulumi.all([imageOptions, container, logGroup.id])
-                 .apply(([imageOptions, container, logGroupId]) => {
+    return pulumi.all([container.image, container.environment, container, logGroup.id])
+                 .apply(([image, environment, container, logGroupId]) => {
         const keyValuePairs: { name: string, value: string }[] = [];
-        for (const key of Object.keys(imageOptions.environment)) {
-            keyValuePairs.push({ name: key, value: imageOptions.environment[key] });
+        for (const key of Object.keys(environment)) {
+            keyValuePairs.push({ name: key, value: environment[key] });
         }
 
         const containerDefinition = {
             ...container,
             name: containerName,
-            image: imageOptions.image,
+            image: image,
             portMappings: portMappings,
             environment: keyValuePairs,
             // todo(cyrusn): mount points.
@@ -113,14 +116,14 @@ function computeImage(parent: pulumi.Resource,
                       name: string,
                       container: ContainerDefinition) {
 
-    if (!container.image) {
-        throw new Error("container missing required [image] property.");
+    if (container.image === undefined && container.imageProvider === undefined) {
+        throw new Error("container requires either [image] or [imageProvider] to be set.");
     }
 
-    const provider = <mod.IImageOptionsProvider>container.image;
-    if (!provider.getImageOptions) {
-        return { image: <pulumi.Input<string>>container.image, environment: { } };
+    if (container.imageProvider) {
+        container.imageProvider.updateContainer(container, name, parent);
+        if (container.image === undefined) {
+            throw new Error("[imageProvider] did not compute a value [image] for the container.");
+        }
     }
-
-    return provider.getImageOptions(name, parent);
 }

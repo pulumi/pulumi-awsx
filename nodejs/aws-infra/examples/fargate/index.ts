@@ -59,7 +59,7 @@ const cachedNginx = cluster.createFargateService("examples-cached-nginx", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsinfra.x.ImageOptionsProvider.fromDockerBuild({
+                imageProvider: awsinfra.x.ImageProvider.fromDockerBuild({
                     context: "./app",
                     cacheFrom: true,
                 }),
@@ -75,7 +75,7 @@ const multistageCachedNginx = cluster.createFargateService("examples-multistage-
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsinfra.x.ImageOptionsProvider.fromDockerBuild({
+                imageProvider: awsinfra.x.ImageProvider.fromDockerBuild({
                     context: "./app",
                     dockerfile: "./app/Dockerfile-multistage",
                     cacheFrom: {stages: ["build"]},
@@ -94,7 +94,7 @@ const customWebServer = cluster.createFargateService("mycustomservice", {
             webserver: {
                 memory: 128,
                 loadBalancerPort: { port: 80, targetPort: 8080 },
-                image: awsinfra.x.ImageOptionsProvider.fromFunction(() => {
+                imageProvider: awsinfra.x.ImageProvider.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
                     http.createServer((req: any, res: any) => {
@@ -186,7 +186,7 @@ const builtService = cluster.createFargateService("examples-nginx2", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsinfra.x.ImageOptionsProvider.fromPath("./app"),
+                imageProvider: awsinfra.x.ImageProvider.fromPath("./app"),
                 memory: 128,
                 loadBalancerPort: { port: 80 },
             },

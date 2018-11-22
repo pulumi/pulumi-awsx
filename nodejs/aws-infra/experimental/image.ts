@@ -18,61 +18,57 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as utils from "../utils";
 
+import * as mod from "."
+
 export type ImageEnvironment = Record<string, pulumi.Input<string>>;
 
-export interface IImageOptions {
-    image: pulumi.Input<string>;
-    environment: pulumi.Input<ImageEnvironment>;
+export interface IImageProvider {
+    updateContainer(container: mod.ContainerDefinition, name: string, parent: pulumi.Resource): void;
 }
 
-export interface IImageOptionsProvider {
-    getImageOptions(name: string, parent: pulumi.Resource): IImageOptions;
-}
-
-export abstract class ImageOptionsProvider implements IImageOptionsProvider {
-    public abstract getImageOptions(name: string, parent: pulumi.Resource): IImageOptions;
+export abstract class ImageProvider implements IImageProvider {
+    public abstract updateContainer(container: mod.ContainerDefinition, name: string, parent: pulumi.Resource): void;
 
     /**
      * Creates a [ContainerImage] given a path to a folder in which a Docker build should be run.
      */
-    public static fromPath(path: string): IImageOptionsProvider {
-        return new AssetImageOptionsProvider(path);
+    public static fromPath(path: string): IImageProvider {
+        return new AssetImageProvider(path);
     }
 
     /**
      *Creates a [ContainerImage] using the detailed build instructions provided in [build].
      */
 
-    public static fromDockerBuild(build: docker.DockerBuild): IImageOptionsProvider {
-        return new AssetImageOptionsProvider(build);
+    public static fromDockerBuild(build: docker.DockerBuild): IImageProvider {
+        return new AssetImageProvider(build);
     }
 
     /**
      * Creates a [ContainerImage] given function code to use as the implementation of the container.
      */
-    public static fromFunction(func: () => void): IImageOptionsProvider {
-        return new FunctionImageOptionsProvider(func);
+    public static fromFunction(func: () => void): IImageProvider {
+        return new FunctionImageProvider(func);
     }
 }
 
-class FunctionImageOptionsProvider extends ImageOptionsProvider {
+class FunctionImageProvider extends ImageProvider {
     constructor(private readonly func: () => void) {
         super();
     }
 
-    public getImageOptions(): IImageOptions {
-        const environment: ImageEnvironment = {};
+    public updateContainer(container: mod.ContainerDefinition): void {
+        // TODO[pulumi/pulumi-cloud#85]: move this to a Pulumi Docker Hub account.
+        container.image = "lukehoban/nodejsrunner";
+        container.environment = container.environment || {};
 
         // TODO[pulumi/pulumi-cloud#85]: Put this in a real Pulumi-owned Docker image.
         // TODO[pulumi/pulumi-cloud#86]: Pass the full local zipped folder through to the container (via S3?)
-        environment.PULUMI_SRC = pulumi.runtime.serializeFunctionAsync(this.func);
-
-        // TODO[pulumi/pulumi-cloud#85]: move this to a Pulumi Docker Hub account.
-        return { image: "lukehoban/nodejsrunner", environment };
+        container.environment.PULUMI_SRC = pulumi.runtime.serializeFunctionAsync(this.func);
     }
 }
 
-class AssetImageOptionsProvider extends ImageOptionsProvider {
+class AssetImageProvider extends ImageProvider {
     // repositories contains a cache of already created ECR repositories.
     private static readonly repositories = new Map<string, aws.ecr.Repository>();
 
@@ -83,7 +79,7 @@ class AssetImageOptionsProvider extends ImageOptionsProvider {
         super();
     }
 
-    public getImageOptions(name: string, parent: pulumi.Resource): IImageOptions {
+    public updateContainer(container: mod.ContainerDefinition, name: string, parent: pulumi.Resource): void {
         const imageName = this.getImageName(name);
         const repository = this.getOrCreateRepository(imageName, { parent });
 
@@ -94,7 +90,7 @@ class AssetImageOptionsProvider extends ImageOptionsProvider {
         const image = pulumi.all([repositoryUrl, registryId]).apply(([repositoryUrl, registryId]) =>
             this.computeImageFromAsset(imageName, repositoryUrl, registryId, parent));
 
-        return { image, environment: { } };
+        container.image = image;
     }
 
     private getImageName(name: string) {
@@ -120,10 +116,10 @@ class AssetImageOptionsProvider extends ImageOptionsProvider {
 
     // getOrCreateRepository returns the ECR repository for this image, lazily allocating if necessary.
     private getOrCreateRepository(imageName: string, opts: pulumi.ResourceOptions): aws.ecr.Repository {
-        let repository: aws.ecr.Repository | undefined = AssetImageOptionsProvider.repositories.get(imageName);
+        let repository: aws.ecr.Repository | undefined = AssetImageProvider.repositories.get(imageName);
         if (!repository) {
             repository = new aws.ecr.Repository(imageName.toLowerCase(), {}, opts);
-            AssetImageOptionsProvider.repositories.set(imageName, repository);
+            AssetImageProvider.repositories.set(imageName, repository);
 
             // Set a default lifecycle policy such that at most a single untagged image is retained.
             // We tag all cached build layers as well as the final image, so those images will never expire.
@@ -157,7 +153,7 @@ class AssetImageOptionsProvider extends ImageOptionsProvider {
             logResource: pulumi.Resource) {
 
         // See if we've already built this.
-        let uniqueImageName = AssetImageOptionsProvider.buildImageCache.get(imageName);
+        let uniqueImageName = AssetImageProvider.buildImageCache.get(imageName);
         if (uniqueImageName) {
             uniqueImageName.apply(d =>
                 pulumi.log.debug(`    already built: ${imageName} (${d})`, logResource));
@@ -188,7 +184,7 @@ class AssetImageOptionsProvider extends ImageOptionsProvider {
                 };
             });
 
-            AssetImageOptionsProvider.buildImageCache.set(imageName, uniqueImageName);
+            AssetImageProvider.buildImageCache.set(imageName, uniqueImageName);
 
             uniqueImageName.apply(d =>
                 pulumi.log.debug(`    build complete: ${imageName} (${d})`, logResource));
