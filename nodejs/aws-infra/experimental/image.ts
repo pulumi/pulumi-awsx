@@ -18,7 +18,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as utils from "../utils";
 
-import * as mod from "."
+import * as mod from ".";
 
 export type ImageEnvironment = Record<string, pulumi.Input<string>>;
 

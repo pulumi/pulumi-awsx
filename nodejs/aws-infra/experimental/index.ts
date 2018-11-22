@@ -23,3 +23,4 @@ export * from "./containerDefinition";
 export * from "./image";
 export * from "./ec2";
 export * from "./fargate";
+export * from "./port";

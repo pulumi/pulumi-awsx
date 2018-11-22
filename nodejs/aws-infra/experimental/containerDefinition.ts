@@ -32,12 +32,9 @@ export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefiniti
 
     imageProvider?: mod.IImageProvider;
 
-    environment?: mod.ImageEnvironment;
+    loadBalancerProvider?: mod.LoadBalancerProvider;
 
-    /**
-     * Not provided.  Use [loadBalancerPort] instead.
-     */
-    portMappings?: never;
+    environment?: mod.ImageEnvironment;
 
     /**
      * The port information to create a load balancer for.  At most one container in a service
