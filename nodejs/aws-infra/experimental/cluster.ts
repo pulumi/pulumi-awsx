@@ -108,50 +108,6 @@ export class Cluster extends pulumi.ComponentResource {
             instanceSecurityGroup,
         });
     }
-
-    public createFileSystem(name: string, args?: mod.ClusterFileSystemArgs, opts?: pulumi.ResourceOptions) {
-        return new mod.ClusterFileSystem(name, this, args, opts || { parent: this });
-    }
-
-    /**
-     * Create an auto-scaling group for this cluster.
-     */
-    public createAutoScalingGroup(
-            name: string, args?: mod.ClusterAutoScalingGroupArgs, opts?: pulumi.ResourceOptions) {
-        return new mod.ClusterAutoScalingGroup(name, this, args, opts || { parent: this });
-    }
-
-    /**
-     * Creates a launch configuration that can be used to easily create an auto-scaling group.
-     */
-    public createAutoScalingLaunchConfig(
-            name: string, args?: mod.ClusterAutoScalingLaunchConfigurationArgs, opts?: pulumi.ResourceOptions) {
-        return new mod.ClusterAutoScalingLaunchConfiguration(name, this, args, opts || { parent: this });
-    }
-
-    /**
-     * Creates an ALB or NLB for this cluster
-     */
-    public createLoadBalancer(name: string, args: mod.ClusterLoadBalancerArgs, opts?: pulumi.ResourceOptions) {
-        return new mod.ClusterLoadBalancer(name, this, args, opts || { parent: this });
-    }
-
-    public createFargateTaskDefinition(
-            name: string, args: mod.FargateTaskDefinitionArgs, opts?: pulumi.ResourceOptions) {
-        return new mod.FargateTaskDefinition(name, this, args, opts || { parent: this });
-    }
-
-    public createEC2TaskDefinition(name: string, args: mod.EC2TaskDefinitionArgs, opts?: pulumi.ResourceOptions) {
-        return new mod.EC2TaskDefinition(name, this, args, opts || { parent: this });
-    }
-
-    public createFargateService(name: string, args: mod.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
-        return new mod.FargateService(name, this, args, opts || { parent: this });
-    }
-
-    public createEC2Service(name: string, args: mod.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
-        return new mod.EC2Service(name, this, args, opts || { parent: this });
-    }
 }
 
 (<any>Cluster).doNotCapture = true;

@@ -204,16 +204,6 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
             fileSystem,
         });
     }
-
-    /**
-     * Creates a new auto scaling group with this as its launch configuration.
-     */
-    public createAutoScalingGroup(name: string, args: ClusterAutoScalingGroupArgs = {}, opts?: pulumi.ResourceOptions) {
-        return new ClusterAutoScalingGroup(name, this.cluster, {
-            ...args,
-            launchConfiguration: this,
-        }, opts || { parent: this });
-    }
 }
 
 (<any>ClusterAutoScalingLaunchConfiguration).doNotCapture = true;
@@ -408,12 +398,9 @@ export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
         if (args.launchConfiguration) {
             launchConfiguration = args.launchConfiguration;
         }
-        else if (args.launchConfigurationArgs) {
-            launchConfiguration = new ClusterAutoScalingLaunchConfiguration(
-                name, cluster, args.launchConfigurationArgs, parentOpts);
-        }
         else {
-            launchConfiguration = cluster.createAutoScalingLaunchConfig(name, {}, parentOpts);
+            launchConfiguration = new ClusterAutoScalingLaunchConfiguration(
+                name, cluster, args.launchConfigurationArgs || {}, parentOpts);
         }
 
         this.instance = new aws.cloudformation.Stack(name, {

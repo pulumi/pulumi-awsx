@@ -276,46 +276,6 @@ function createRunFunction(
     };
 }
 
-function getEndpointHelper(
-    endpoints: mod.Endpoints,
-    containerName: string | undefined,
-    containerPort: number | undefined,
-    throwOnError: boolean): aws.apigateway.x.Endpoint | undefined {
-
-    containerName = containerName !== undefined ? containerName : Object.keys(endpoints)[0];
-    if (containerName === undefined)  {
-        if (throwOnError) {
-            throw new Error(`No containers available in this service`);
-        }
-
-        return undefined;
-    }
-
-    const containerPorts = endpoints[containerName] || [];
-    if (containerPorts.length === 0) {
-        if (throwOnError) {
-            throw new Error(`No endpoints available in service container ${containerName}`);
-        }
-
-        return undefined;
-    }
-
-    if (containerPort === undefined) {
-        return containerPorts[0];
-    }
-
-    const endpoint = containerPorts.find(cp => cp.port === containerPort);
-    if (endpoint === undefined) {
-        if (throwOnError) {
-            throw new Error(`No exposed port for ${containerName} port ${containerPort}`);
-        }
-
-        return undefined;
-    }
-
-    return endpoint;
-}
-
 function placementConstraints(isFargate: boolean, os: HostOperatingSystem | undefined) {
     if (isFargate) {
         return undefined;

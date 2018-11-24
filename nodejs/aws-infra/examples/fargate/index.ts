@@ -30,7 +30,7 @@ const cluster = network.createCluster("testing");
 
 // A simple NGINX service, scaled out over two containers.
 const nginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const nginx = cluster.createFargateService("examples-nginx", {
+const nginx = new awsinfra.x.FargateService("examples-nginx", cluster, {
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -47,7 +47,7 @@ export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
 const simpleNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const simpleNginx = cluster.createFargateTaskDefinition("examples-simple-nginx", {
+const simpleNginx = new awsinfra.x.FargateTaskDefinition("examples-simple-nginx", cluster, {
     container: {
         image: "nginx",
         memory: 128,
@@ -58,7 +58,7 @@ const simpleNginx = cluster.createFargateTaskDefinition("examples-simple-nginx",
 export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
 const cachedNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const cachedNginx = cluster.createFargateService("examples-cached-nginx", {
+const cachedNginx = new awsinfra.x.FargateService("examples-cached-nginx", cluster, {
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -75,7 +75,7 @@ const cachedNginx = cluster.createFargateService("examples-cached-nginx", {
 });
 
 const multistageCachedNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const multistageCachedNginx = cluster.createFargateService("examples-multistage-cached-nginx", {
+const multistageCachedNginx = new awsinfra.x.FargateService("examples-multistage-cached-nginx", cluster, {
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -94,7 +94,7 @@ const multistageCachedNginx = cluster.createFargateService("examples-multistage-
 
 const customWebServerLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo(
     { port: 80, targetPort: 8080 }, cluster);
-const customWebServer = cluster.createFargateService("mycustomservice", {
+const customWebServer = new awsinfra.x.FargateService("mycustomservice", cluster, {
     taskDefinitionArgs: {
         containers: {
             webserver: {
@@ -125,7 +125,7 @@ class Cache {
 
     constructor(name: string, memory: number = 128) {
         const redisLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 6379 }, cluster);
-        const redis = cluster.createFargateService(name, {
+        const redis = new awsinfra.x.FargateService(name, cluster, {
             taskDefinitionArgs: {
                 containers: {
                     redis: {
@@ -181,7 +181,7 @@ class Cache {
 
 const cache = new Cache("examples-mycache");
 
-const helloTask = cluster.createFargateTaskDefinition("examples-hello-world", {
+const helloTask = new awsinfra.x.FargateTaskDefinition("examples-hello-world", cluster, {
     container: {
         image: "hello-world",
         memory: 20,
@@ -190,7 +190,7 @@ const helloTask = cluster.createFargateTaskDefinition("examples-hello-world", {
 
 // build an anonymous image:
 const builtServiceLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const builtService = cluster.createFargateService("examples-nginx2", {
+const builtService = new awsinfra.x.FargateService("examples-nginx2", cluster, {
     taskDefinitionArgs: {
         containers: {
             nginx: {
