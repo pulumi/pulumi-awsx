@@ -23,11 +23,13 @@ import * as mod from ".";
 export type ImageEnvironment = Record<string, pulumi.Input<string>>;
 
 export interface IImageProvider {
-    updateContainer(container: mod.ContainerDefinition, name: string, parent: pulumi.Resource): void;
+    image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
+    environment(name: string, parent: pulumi.Resource): pulumi.Input<ImageEnvironment>;
 }
 
 export abstract class ImageProvider implements IImageProvider {
-    public abstract updateContainer(container: mod.ContainerDefinition, name: string, parent: pulumi.Resource): void;
+    public abstract image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
+    public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<ImageEnvironment>;
 
     /**
      * Creates a [ContainerImage] given a path to a folder in which a Docker build should be run.
@@ -57,14 +59,19 @@ class FunctionImageProvider extends ImageProvider {
         super();
     }
 
-    public updateContainer(container: mod.ContainerDefinition): void {
+    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
         // TODO[pulumi/pulumi-cloud#85]: move this to a Pulumi Docker Hub account.
-        container.image = "lukehoban/nodejsrunner";
-        container.environment = container.environment || {};
+        return "lukehoban/nodejsrunner";
+    }
+
+    public environment(name: string, parent: pulumi.Resource): pulumi.Input<ImageEnvironment> {
+        const environment: ImageEnvironment = {};
 
         // TODO[pulumi/pulumi-cloud#85]: Put this in a real Pulumi-owned Docker image.
         // TODO[pulumi/pulumi-cloud#86]: Pass the full local zipped folder through to the container (via S3?)
-        container.environment.PULUMI_SRC = pulumi.runtime.serializeFunctionAsync(this.func);
+        environment.PULUMI_SRC = pulumi.runtime.serializeFunctionAsync(this.func);
+
+        return environment;
     }
 }
 
@@ -79,7 +86,11 @@ class AssetImageProvider extends ImageProvider {
         super();
     }
 
-    public updateContainer(container: mod.ContainerDefinition, name: string, parent: pulumi.Resource): void {
+    public environment(name: string, parent: pulumi.Resource): pulumi.Input<ImageEnvironment> {
+        return {};
+    }
+
+    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
         const imageName = this.getImageName(name);
         const repository = this.getOrCreateRepository(imageName, { parent });
 
@@ -90,7 +101,7 @@ class AssetImageProvider extends ImageProvider {
         const image = pulumi.all([repositoryUrl, registryId]).apply(([repositoryUrl, registryId]) =>
             this.computeImageFromAsset(imageName, repositoryUrl, registryId, parent));
 
-        container.image = image;
+        return image;
     }
 
     private getImageName(name: string) {

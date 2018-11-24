@@ -29,12 +29,11 @@ export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefiniti
      * from a local docker build.
      */
     image?: pulumi.Input<string>
+    environment?: pulumi.Input<mod.ImageEnvironment>;
 
     imageProvider?: mod.IImageProvider;
 
-    loadBalancerProvider?: mod.LoadBalancerProvider;
-
-    environment?: mod.ImageEnvironment;
+    // loadBalancerProvider?: mod.LoadBalancerProvider;
 
     /**
      * The port information to create a load balancer for.  At most one container in a service
@@ -117,10 +116,21 @@ function computeImage(parent: pulumi.Resource,
         throw new Error("container requires either [image] or [imageProvider] to be set.");
     }
 
-    if (container.imageProvider) {
-        container.imageProvider.updateContainer(container, name, parent);
-        if (container.image === undefined) {
-            throw new Error("[imageProvider] did not compute a value [image] for the container.");
-        }
+    const provider = container.imageProvider;
+    if (provider) {
+        container.image = provider.image(name, parent);
+        container.environment = combine(
+            container.environment, provider.environment(name, parent));
     }
+}
+
+function combine(e1: pulumi.Input<mod.ImageEnvironment> | undefined,
+                 e2: pulumi.Input<mod.ImageEnvironment> | undefined) {
+    const result = pulumi.all([e1, e2]).apply(([e1, e2]) => {
+        e1 = e1 || {};
+        e2 = e2 || {};
+        return { ...e1, ...e2 };
+    });
+
+    return result;
 }
