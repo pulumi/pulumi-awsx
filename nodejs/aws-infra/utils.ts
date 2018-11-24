@@ -23,10 +23,6 @@ type Diff<T extends string | number | symbol, U extends string | number | symbol
 // with properties of the same name, but with entirely different types.
 export type Overwrite<T, U> = Pick<T, Diff<keyof T, keyof U>> & U;
 
-export type MakeInputs<T> = {
-    [P in keyof T]?: pulumi.Input<T[P]>;
-};
-
 export type Mutable<T> = {
     -readonly [P in keyof T]: T[P];
 };

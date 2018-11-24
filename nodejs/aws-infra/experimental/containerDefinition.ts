@@ -83,7 +83,6 @@ type MakeInputs<T> = {
 // pleasant to work with. However, they internally allow us to succinctly express the shape we're
 // trying to provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
-    name: pulumi.Input<string>;
     image?: pulumi.Input<string>
     imageProvider?: mod.IImageProvider;
     loadBalancerProvider?: mod.LoadBalancerProvider;
@@ -120,8 +119,6 @@ export interface ContainerDefinition {
     workingDirectory?: pulumi.Input<string>;
 
     // Changes made to core args type
-
-    name: pulumi.Input<string>;
 
     /**
      * The image to use for the container.  If this is just a string, then the image will be pulled

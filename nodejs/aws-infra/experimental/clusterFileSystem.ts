@@ -86,7 +86,6 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
 
 (<any>ClusterFileSystem).doNotCapture = true;
 
-
 // The shape we want for ClusterFileSystemArgs.  We don't export this as 'Overwrite' types are not pleasant to
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.

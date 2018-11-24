@@ -186,7 +186,7 @@ function combineLoadBalancers(
 // The shape we want for ClusterFileSystemArgs.  We don't export this as 'Overwrite' types are not pleasant to
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
-export type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
+type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     cluster: mod.Cluster;
     taskDefinition: mod.ClusterTaskDefinition;
     desiredCount?: pulumi.Input<number>;

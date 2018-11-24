@@ -23,8 +23,6 @@ import * as mod from ".";
 export type LoadBalancers = aws.ecs.ServiceArgs["loadBalancers"];
 
 export interface ILoadBalancerProvider {
-    // loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
-
     portMappings(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     loadBalancers(containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
 

@@ -21,73 +21,6 @@ import * as mod from ".";
 
 export declare type HostOperatingSystem = "linux" | "windows";
 
-export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
-    /**
-     * Not used.  The pulumi resource name will be used for this.
-     */
-    family?: never;
-
-    /** Not used.  Provide  [containers] instead. */
-    containerDefinitions?: never;
-
-    /**
-     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
-     * ClusterService that will contain many containers within.
-     */
-    containers: Record<string, mod.ContainerDefinition>;
-
-    /**
-     * Log group for logging information related to the service.  If not provided a default instance
-     * with a one-day retention policy will be created.
-     */
-    logGroup?: aws.cloudwatch.LogGroup
-
-    /**
-     * Not used.  Provide [taskRole] instead.
-     */
-    taskRoleArn?: never;
-    /**
-     * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
-     * If not provided, a default will be created for the task.
-     */
-    taskRole?: aws.iam.Role;
-
-    /**
-     * Not used.  Provide [executionRole] instead.
-     */
-    executionRoleArn?: never;
-
-    /**
-     * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
-     *
-     * If not provided, a default will be created for the task.
-     */
-    executionRole?: aws.iam.Role;
-
-    /**
-     * The number of cpu units used by the task.  If not provided, a default will be computed
-     * based on the cumulative needs specified by [containerDefinitions]
-     */
-    cpu?: pulumi.Input<string>;
-
-    /**
-     * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
-     * based on the cumulative needs specified by [containerDefinitions]
-     */
-    memory?: pulumi.Input<string>;
-
-    /**
-     * A set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
-     */
-    requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
-
-    /**
-     * The Docker networking mode to use for the containers in the task. The valid values are
-     * `none`, `bridge`, `awsvpc`, and `host`.
-     */
-    networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
-}>;
-
 export interface TaskRunOptions {
     /**
      * The cluster to run this task in.
@@ -353,3 +286,113 @@ function createExecutionRole(name: string, opts: pulumi.ResourceOptions): aws.ia
 
     return executionRole;
 }
+
+// The shape we want for ClusterTaskDefinitionArgsOverwriteShap.  We don't export this as
+// 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
+// express the shape we're trying to provide. Code later on will ensure these types are compatible.
+type ClusterTaskDefinitionArgsOverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
+    family?: never;
+    containerDefinitions?: never;
+    containers: Record<string, mod.ContainerDefinition>;
+    logGroup?: aws.cloudwatch.LogGroup
+    taskRoleArn?: never;
+    taskRole?: aws.iam.Role;
+    executionRoleArn?: never;
+    executionRole?: aws.iam.Role;
+    cpu?: pulumi.Input<string>;
+    memory?: pulumi.Input<string>;
+    requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
+    networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
+}>;
+
+export interface ClusterTaskDefinitionArgs {
+    // Properties copied from aws.ecs.TaskDefinitionArgs
+
+    placementConstraints?: pulumi.Input<pulumi.Input<{
+        expression?: pulumi.Input<string>;
+        type: pulumi.Input<string>;
+    }>[]>;
+    /**
+     * A set of volume blocks that containers in your task may use.
+     */
+    readonly volumes?: pulumi.Input<pulumi.Input<{
+        dockerVolumeConfiguration?: pulumi.Input<{
+            autoprovision?: pulumi.Input<boolean>;
+            driver?: pulumi.Input<string>;
+            driverOpts?: pulumi.Input<{
+                [key: string]: pulumi.Input<string>;
+            }>;
+            labels?: pulumi.Input<{
+                [key: string]: pulumi.Input<string>;
+            }>;
+            scope?: pulumi.Input<string>;
+        }>;
+        hostPath?: pulumi.Input<string>;
+        name: pulumi.Input<string>;
+    }>[]>;
+
+    // Properties we've added/changed.
+
+    /**
+     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
+     * ClusterService that will contain many containers within.
+     */
+    containers: Record<string, mod.ContainerDefinition>;
+
+    /**
+     * Log group for logging information related to the service.  If not provided a default instance
+     * with a one-day retention policy will be created.
+     */
+    logGroup?: aws.cloudwatch.LogGroup;
+
+    /**
+     * Not used.  Provide [taskRole] instead.
+     */
+    taskRoleArn?: never;
+    /**
+     * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+     * If not provided, a default will be created for the task.
+     */
+    taskRole?: aws.iam.Role;
+
+    /**
+     * Not used.  Provide [executionRole] instead.
+     */
+    executionRoleArn?: never;
+
+    /**
+     * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+     *
+     * If not provided, a default will be created for the task.
+     */
+    executionRole?: aws.iam.Role;
+
+    /**
+     * The number of cpu units used by the task.  If not provided, a default will be computed
+     * based on the cumulative needs specified by [containerDefinitions]
+     */
+    cpu?: pulumi.Input<string>;
+
+    /**
+     * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+     * based on the cumulative needs specified by [containerDefinitions]
+     */
+    memory?: pulumi.Input<string>;
+
+    /**
+     * A set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
+     */
+    requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
+
+    /**
+     * The Docker networking mode to use for the containers in the task. The valid values are
+     * `none`, `bridge`, `awsvpc`, and `host`.
+     */
+    networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
+}
+
+// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
+let overwriteShape: ClusterTaskDefinitionArgsOverwriteShape = undefined!;
+let argsShape: ClusterTaskDefinitionArgs = undefined!;
+argsShape = overwriteShape;
+overwriteShape = argsShape;
