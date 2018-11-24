@@ -33,35 +33,39 @@ export interface ILoadBalancerProvider {
 }
 
 export interface PortInfo {
-        /**
+    /**
+     * The cluster this port will be exposed from.
+     */
+    cluster: mod.Cluster;
+    /**
      * The incoming port where the service exposes the endpoint.
-    */
-   port: number;
-   /**
-    * The target port on the backing container.  Defaults to the value of [port].
-   */
-   targetPort?: number;
-   /**
-    * Whether the port should be exposed externally.  Defaults to `false`.
-   */
-   external?: boolean;
-   /**
-    * The protocol to use for exposing the service:
-    *  `tcp`: Expose TCP externally and to the container.  Will create a network load balancer.
-    *  `http`: Expose HTTP externally and to the container.  Will create application load balancer.
-    *  `https`: Expose HTTPS externally and HTTP to the container.   Will create application load balancer.
-    *
-    * Defaults to 'tcp' if unspecified.
-    */
-   protocol?: "tcp" | "http" | "https";
+     */
+    port: number;
+    /**
+     * The target port on the backing container.  Defaults to the value of [port].
+     */
+    targetPort?: number;
+    /**
+     * Whether the port should be exposed externally.  Defaults to `false`.
+     */
+    external?: boolean;
+    /**
+     * The protocol to use for exposing the service:
+     *  `tcp`: Expose TCP externally and to the container.  Will create a network load balancer.
+     *  `http`: Expose HTTP externally and to the container.  Will create application load balancer.
+     *  `https`: Expose HTTPS externally and HTTP to the container.   Will create application load balancer.
+     *
+     * Defaults to 'tcp' if unspecified.
+     */
+    protocol?: "tcp" | "http" | "https";
 
-   /**
-    * The ARN of the default SSL server certificate. Exactly one certificate is required if the
-    * protocol is [https]. For adding additional SSL certificates, see the
-    * [`aws_lb_listener_certificate`
-    * resource](https://www.terraform.io/docs/providers/aws/r/lb_listener_certificate.html).
-    */
-   certificateArn?: string;
+    /**
+     * The ARN of the default SSL server certificate. Exactly one certificate is required if the
+     * protocol is [https]. For adding additional SSL certificates, see the
+     * [`aws_lb_listener_certificate`
+     * resource](https://www.terraform.io/docs/providers/aws/r/lb_listener_certificate.html).
+     */
+    certificateArn?: string;
 }
 
 export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
@@ -75,9 +79,8 @@ export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
 
     public static fromPortInfo(
             portInfo: PortInfo,
-            cluster: mod.Cluster,
             args: aws.elasticloadbalancingv2.LoadBalancerArgs = {}): ILoadBalancerProvider {
-        return new PortInfoLoadBalancerProvider(portInfo, cluster, args);
+        return new PortInfoLoadBalancerProvider(portInfo, args);
     }
 }
 
@@ -87,7 +90,6 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
 
     constructor(
         private readonly portInfo: PortInfo,
-        private readonly cluster: mod.Cluster,
         private readonly loadBalancerArgs: aws.elasticloadbalancingv2.LoadBalancerArgs) {
 
         super();
@@ -106,7 +108,8 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         const shortName = utils.sha1hash(`${longName}`);
 
         // Create an internal load balancer if requested.
-        const internal = this.cluster.network.usePrivateSubnets && !this.portInfo.external;
+        const cluster = this.portInfo.cluster;
+        const internal = cluster.network.usePrivateSubnets && !this.portInfo.external;
 
         // See what kind of load balancer to create (application L7 for HTTP(S) traffic, or network L4 otherwise).
         // Also ensure that we have an SSL certificate for termination at the LB, if that was requested.
@@ -118,12 +121,12 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
             ...this.loadBalancerArgs,
             loadBalancerType: useAppLoadBalancer ? "application" : "network",
-            subnets: this.cluster.network.publicSubnetIds,
+            subnets: cluster.network.publicSubnetIds,
             internal: internal,
             // If this is an application LB, we need to associate it with the ECS cluster's security
             // group, so that traffic on any ports can reach it.  Otherwise, leave blank, and
             // default to the VPC's group.
-            securityGroups: useAppLoadBalancer ? [ this.cluster.instanceSecurityGroup.id ] : undefined,
+            securityGroups: useAppLoadBalancer ? [ cluster.instanceSecurityGroup.id ] : undefined,
             tags: { Name: longName },
         }, parentOpts);
 
@@ -131,7 +134,7 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
             port: this.portInfo.targetPort || this.portInfo.port,
             protocol: targetProtocol,
-            vpcId: this.cluster.network.vpcId,
+            vpcId: cluster.network.vpcId,
             deregistrationDelay: 180, // 3 minutes
             tags: { Name: longName },
             targetType: "ip",
