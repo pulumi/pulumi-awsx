@@ -21,6 +21,11 @@ import { Overwrite, sha1hash } from "./../utils";
 
 export interface ClusterAutoScalingGroupArgs {
     /**
+     * Cluster to create the autoscaling group for.
+     */
+    cluster: mod.Cluster;
+
+    /**
      * The config to use when creating the auto scaling group.
      *
      * [launchConfiguration] or [launchConfigurationArgs] can be provided.  And, if either are
@@ -68,6 +73,11 @@ export interface TemplateParameters {
  * The set of arguments when creating the launch configuration for a cluster's autoscaling group.
  */
 export type ClusterAutoScalingLaunchConfigurationArgs = Overwrite<aws.ec2.LaunchConfigurationArgs, {
+    /**
+     * Cluster to create launch configuration for.
+     */
+    cluster: mod.Cluster;
+
     /**
      * Do not provide.  Use [ecsOptimizedAMIName] instead.
      */
@@ -158,12 +168,14 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
      */
     public readonly stackName: pulumi.Output<string>;
 
-    constructor(name: string, cluster: mod.Cluster,
-                args: ClusterAutoScalingLaunchConfigurationArgs = {},
+    constructor(name: string,
+                args: ClusterAutoScalingLaunchConfigurationArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("aws-infra.x.ClusterAutoScalingLaunchConfiguration", name, args, opts);
 
         const parentOpts = { parent: this };
+
+        const cluster = args.cluster;
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.
@@ -386,12 +398,14 @@ export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
      */
     public readonly launchConfiguration: ClusterAutoScalingLaunchConfiguration;
 
-    constructor(name: string, cluster: mod.Cluster,
-                args: ClusterAutoScalingGroupArgs = {},
+    constructor(name: string,
+                args: ClusterAutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("aws-infra:x:ClusterAutoScalingGroup", name, args, opts);
 
         const parentOpts = { parent: this };
+        const cluster = args.cluster;
+
         let launchConfiguration: ClusterAutoScalingLaunchConfiguration;
 
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
@@ -400,7 +414,7 @@ export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
         }
         else {
             launchConfiguration = new ClusterAutoScalingLaunchConfiguration(
-                name, cluster, args.launchConfigurationArgs || {}, parentOpts);
+                name, args.launchConfigurationArgs || { cluster }, parentOpts);
         }
 
         this.instance = new aws.cloudformation.Stack(name, {
@@ -415,28 +429,6 @@ export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
 
         this.cluster = cluster;
         this.launchConfiguration = launchConfiguration;
-    }
-
-    public createFargateService(name: string, args: mod.FargateServiceArgs = {}, opts?: pulumi.ResourceOptions) {
-        if (args.autoScalingGroup) {
-            throw new Error("[args.autoScalingGroup] should not be provided.");
-        }
-
-        return new mod.FargateService(name, this.cluster, {
-            ...args,
-            autoScalingGroup: this,
-        }, opts || { parent: this });
-    }
-
-    public createEC2Service(name: string, args: mod.EC2ServiceArgs = {}, opts?: pulumi.ResourceOptions) {
-        if (args.autoScalingGroup) {
-            throw new Error("[args.autoScalingGroup] should not be provided.");
-        }
-
-        return new mod.EC2Service(name, this.cluster, {
-            ...args,
-            autoScalingGroup: this,
-        }, opts || { parent: this });
     }
 }
 
