@@ -181,22 +181,6 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         }, parentOpts);
 
         const endpoints = getEndpoints(this, name, containers);
-
-        // const endpoints = exposedPort === undefined
-        //     ? pulumi.output<mod.Endpoints>({})
-        //     : pulumi.output({
-        //         [exposedPort.containerName]: {
-        //             [exposedPort.loadBalancerPort.port]: {
-        //                 hostname: exposedPort.loadBalancer.instance.dnsName,
-        //                 port: exposedPort.loadBalancerPort.port,
-        //                 loadBalancer: exposedPort.loadBalancer.instance,
-        //             } } });
-
-        // const defaultEndpoint = exposedPort === undefined
-        //     ? pulumi.output(<aws.apigateway.x.Endpoint>undefined!)
-        //     : endpoints.apply(
-        //         ep => getEndpointHelper(ep, /*containerName:*/ undefined, /*containerPort:*/ undefined));
-
         const defaultEndpoint = endpoints.apply(ep => getEndpointHelper(
             ep, /*containerName:*/ undefined, /*port:*/ undefined, /*throwOnError:*/ false)!);
 
