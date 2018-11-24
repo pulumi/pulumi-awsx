@@ -21,10 +21,23 @@ import { Network } from "./../network";
 
 import * as utils from "../utils";
 
+// The shape we want for ClusterArgs.  We don't export this as 'Overwrite' types are not pleasant to
+// work with. However, they internally allow us to succinctly express the shape we're trying to
+// provide. Code later on will ensure these types are compatible.
+type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
+    network?: Network;
+    instanceSecurityGroup?: aws.ec2.SecurityGroup;
+}>;
+
 /**
  * Arguments bag for creating infrastructure for a new Cluster.
  */
-export type ClusterArgs = utils.Overwrite<aws.ecs.ClusterArgs, {
+export interface ClusterArgs {
+    /**
+     * The name of the cluster (up to 255 letters, numbers, hyphens, and underscores)
+     */
+    name?: pulumi.Input<string>;
+
     /**
      * The network in which to create this cluster.  If not provided, Network.getDefault() will be
      * used.
@@ -36,7 +49,13 @@ export type ClusterArgs = utils.Overwrite<aws.ecs.ClusterArgs, {
      * created.
      */
     instanceSecurityGroup?: aws.ec2.SecurityGroup;
-}>;
+}
+
+// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
+let overwriteShape: OverwriteShape = undefined!;
+let argsShape: ClusterArgs = undefined!;
+argsShape = overwriteShape;
+overwriteShape = argsShape;
 
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
