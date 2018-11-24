@@ -27,7 +27,9 @@ export interface ILoadBalancerProvider {
 
     portMappings(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     loadBalancers(containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
-    endpoints(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.apigateway.x.Endpoint[]>;
+
+    endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
+    defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
 }
 
 export interface PortInfo {
@@ -67,8 +69,9 @@ export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
         containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     public abstract loadBalancers(
         containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
-    public abstract endpoints(
-        containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.apigateway.x.Endpoint[]>;
+
+    public abstract endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
+    public abstract defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
 
     public static fromPortInfo(
             portInfo: PortInfo,
@@ -150,9 +153,7 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         }, parentOpts);
     }
 
-    public portMappings(
-        containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]> {
-
+    public portMappings(containerName: string, name: string, parent: pulumi.Resource) {
         this.initialize(containerName, name, parent);
 
         const port = this.portInfo.targetPort || this.portInfo.port;
@@ -174,9 +175,7 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         return portMappings;
     }
 
-    public loadBalancers(
-        containerName: string, name: string, parent: pulumi.Resource): LoadBalancers {
-
+    public loadBalancers(containerName: string, name: string, parent: pulumi.Resource) {
         this.initialize(containerName, name, parent);
 
         const loadBalancers: LoadBalancers = [{
@@ -188,18 +187,20 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         return loadBalancers;
     }
 
-    public endpoints(
-        containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.apigateway.x.Endpoint[]> {
+    public defaultEndpoint() {
+        if (!this.loadBalancer) {
+            throw new Error("Cannot get endpoints for an uninitialized load balancer provider.");
+        }
 
-        this.initialize(containerName, name, parent);
-
-        const endpoints = [{
+        return pulumi.output({
             hostname: this.loadBalancer.dnsName,
             loadBalancer: this.loadBalancer,
             port: this.portInfo.port,
-        }];
+        });
+    }
 
-        return pulumi.output(endpoints);
+    public endpoints() {
+        return this.defaultEndpoint().apply(e => [e]);
     }
 }
 

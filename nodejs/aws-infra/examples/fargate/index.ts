@@ -29,32 +29,35 @@ const cluster = network.createCluster("testing");
 // });
 
 // A simple NGINX service, scaled out over two containers.
+const nginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
 const nginx = cluster.createFargateService("examples-nginx", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
                 image: "nginx",
                 memory: 128,
-                loadBalancerPort: { port: 80 },
+                loadBalancerProvider: nginxLoadBalancer,
             },
         },
     },
     desiredCount: 2,
 });
 
-export let nginxEndpoint = nginx.defaultEndpoint;
+export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
+const simpleNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
 const simpleNginx = cluster.createFargateTaskDefinition("examples-simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
-        loadBalancerPort: { port: 80 },
+        loadBalancerProvider: simpleNginxLoadBalancer,
     },
 }).createService("examples-simple-nginx", { desiredCount: 2});
 
-export let simpleNginxEndpoint = simpleNginx.defaultEndpoint;
+export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
+const cachedNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
 const cachedNginx = cluster.createFargateService("examples-cached-nginx", {
     taskDefinitionArgs: {
         containers: {
@@ -64,13 +67,14 @@ const cachedNginx = cluster.createFargateService("examples-cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                loadBalancerPort: { port: 80 },
+                loadBalancerProvider: cachedNginxLoadBalancer,
             },
         },
     },
     desiredCount: 2,
 });
 
+const multistageCachedNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
 const multistageCachedNginx = cluster.createFargateService("examples-multistage-cached-nginx", {
     taskDefinitionArgs: {
         containers: {
@@ -81,19 +85,21 @@ const multistageCachedNginx = cluster.createFargateService("examples-multistage-
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                loadBalancerPort: { port: 80 },
+                loadBalancerProvider: multistageCachedNginxLoadBalancer,
             },
         },
     },
     desiredCount: 2,
 });
 
+const customWebServerLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo(
+    { port: 80, targetPort: 8080 }, cluster);
 const customWebServer = cluster.createFargateService("mycustomservice", {
     taskDefinitionArgs: {
         containers: {
             webserver: {
                 memory: 128,
-                loadBalancerPort: { port: 80, targetPort: 8080 },
+                loadBalancerProvider: customWebServerLoadBalancer,
                 imageProvider: awsinfra.x.ImageProvider.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
@@ -118,13 +124,14 @@ class Cache {
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
+        const redisLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 6379 }, cluster);
         const redis = cluster.createFargateService(name, {
             taskDefinitionArgs: {
                 containers: {
                     redis: {
                         image: "redis:alpine",
                         memory: memory,
-                        loadBalancerPort: { port: 6379 },
+                        loadBalancerProvider: redisLoadBalancer,
                         command: ["redis-server", "--requirepass", redisPassword],
                     },
                 },
@@ -132,7 +139,7 @@ class Cache {
         });
 
         this.get = (key: string) => {
-            const endpoint = redis.defaultEndpoint.get();
+            const endpoint = redisLoadBalancer.defaultEndpoint().get();
             console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
             const client = require("redis").createClient(
                 endpoint.port,
@@ -151,7 +158,7 @@ class Cache {
             });
         };
         this.set = (key: string, value: string) => {
-            const endpoint = redis.defaultEndpoint.get();
+            const endpoint = redisLoadBalancer.defaultEndpoint().get();
             console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
             const client = require("redis").createClient(
                 endpoint.port,
@@ -182,13 +189,13 @@ const helloTask = cluster.createFargateTaskDefinition("examples-hello-world", {
 });
 
 // build an anonymous image:
+const builtServiceLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
 const builtService = cluster.createFargateService("examples-nginx2", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
                 imageProvider: awsinfra.x.ImageProvider.fromPath("./app"),
                 memory: 128,
-                loadBalancerPort: { port: 80 },
             },
         },
     },
@@ -220,8 +227,8 @@ const api = new aws.apigateway.x.API("examples-containers", {
                 return {
                     statusCode: 200,
                     body: JSON.stringify({
-                        nginx: nginx.defaultEndpoint.get(),
-                        nginx2: builtService.defaultEndpoint.get(),
+                        nginx: nginxLoadBalancer.defaultEndpoint().get(),
+                        nginx2: builtServiceLoadBalancer.defaultEndpoint().get(),
                     }),
                 };
             } catch (err) {
@@ -245,7 +252,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
                     };
                 }
 
-                const endpoint = nginx.defaultEndpoint.get();
+                const endpoint = nginxLoadBalancer.defaultEndpoint().get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();
@@ -284,7 +291,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
         eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
             try {
                 const fetch = (await import("node-fetch")).default;
-                const endpoint = customWebServer.defaultEndpoint.get();
+                const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();
@@ -302,7 +309,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
         },
     }, {
         path: "/nginx",
-        target: nginx.defaultEndpoint,
+        target: nginxLoadBalancer.defaultEndpoint(),
     }],
 });
 

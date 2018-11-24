@@ -72,9 +72,6 @@ export abstract class ClusterService extends pulumi.ComponentResource {
      */
     public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
-    public readonly endpoints: pulumi.Output<mod.Endpoints>;
-    public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
-
     constructor(type: string, name: string, clusterInstance: mod.Cluster,
                 args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
@@ -109,24 +106,17 @@ export abstract class ClusterService extends pulumi.ComponentResource {
 
         const taskDefinitionInstance = args.taskDefinition;
         const autoScalingGroup = args.autoScalingGroup;
-        const defaultEndpoint = args.taskDefinition.defaultEndpoint;
-        const endpoints = args.taskDefinition.endpoints;
 
         this.instance = instance;
         this.clusterInstance = clusterInstance;
         this.taskDefinitionInstance = args.taskDefinition;
         this.autoScalingGroup = args.autoScalingGroup;
 
-        this.defaultEndpoint = defaultEndpoint;
-        this.endpoints = endpoints;
-
         this.registerOutputs({
             instance,
             clusterInstance,
             taskDefinitionInstance,
             autoScalingGroup,
-            defaultEndpoint,
-            endpoints,
         });
     }
 }

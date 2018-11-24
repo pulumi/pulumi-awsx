@@ -114,19 +114,6 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
     public readonly taskRole: aws.iam.Role;
     public readonly executionRole: aws.iam.Role;
 
-    // public readonly loadBalancerProvider?: mod.LoadBalancerProvider;
-
-    // /**
-    //  * Information about the exposed port for the task definitions if it has one.
-    //  */
-    // public readonly exposedPort?: ExposedPort;
-
-    public readonly endpoints: pulumi.Output<mod.Endpoints>;
-    public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
-
-    public readonly getEndpoint: (
-       containerName?: string, containerPort?: number) => Promise<aws.apigateway.x.Endpoint>;
-
     /**
      * Runs this task definition in this cluster once.
      */
@@ -180,13 +167,6 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerDefinitions.apply(JSON.stringify),
         }, parentOpts);
 
-        const endpoints = getEndpoints(this, name, containers);
-        const defaultEndpoint = endpoints.apply(ep => getEndpointHelper(
-            ep, /*containerName:*/ undefined, /*port:*/ undefined, /*throwOnError:*/ false)!);
-
-        this.getEndpoint = async (containerName, containerPort) =>
-            getEndpointHelper(endpoints.get(), containerName, containerPort, /*throwOnError:*/ true)!;
-
         const containerToEnvironment =
             pulumi.output(containers)
                   .apply(c => {
@@ -212,9 +192,6 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         this.logGroup = logGroup;
         this.taskRole = taskRole;
         this.executionRole = executionRole;
-        // this.exposedPort = exposedPort;
-        this.defaultEndpoint = defaultEndpoint;
-        this.endpoints = endpoints;
 
         this.registerOutputs({
             instance,
@@ -223,44 +200,11 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
             logGroup,
             taskRole,
             executionRole,
-            // exposedPort,
-            defaultEndpoint,
-            endpoints,
         });
     }
 }
 
 (<any>ClusterTaskDefinition).doNotCapture = true;
-
-// function getLoadBalancerProvider(containers: Record<string, mod.ContainerDefinition>) {
-//     for (const key of Object.keys(containers)) {
-//         const container = containers[key];
-//         if (container.loadBalancerProvider) {
-//             return container.loadBalancerProvider;
-//         }
-//     }
-
-//     return undefined;
-// }
-function getEndpoints(
-        parent: pulumi.Resource,
-        name: string,
-        containers: Record<string, mod.ContainerDefinition>):
-            pulumi.Output<Record<string, aws.apigateway.x.Endpoint[]>> {
-
-    const result: Record<string, pulumi.Output<aws.apigateway.x.Endpoint[]>> = {};
-
-    for (const containerName of Object.keys(containers)) {
-        const container = containers[containerName];
-        if (container.loadBalancerProvider) {
-            result[containerName] = utils.combineArrays(
-                result[containerName],
-                container.loadBalancerProvider.endpoints(containerName, name, parent));
-        }
-    }
-
-    return pulumi.output(result);
-}
 
 function createRunFunction(
         isFargate: boolean,
