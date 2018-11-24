@@ -24,12 +24,12 @@ export type ImageEnvironment = Record<string, pulumi.Input<string>>;
 
 export interface IImageProvider {
     image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
-    environment(name: string, parent: pulumi.Resource): pulumi.Input<ImageEnvironment>;
+    environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 }
 
 export abstract class ImageProvider implements IImageProvider {
     public abstract image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
-    public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<ImageEnvironment>;
+    public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 
     /**
      * Creates a [ContainerImage] given a path to a folder in which a Docker build should be run.
@@ -64,14 +64,12 @@ class FunctionImageProvider extends ImageProvider {
         return "lukehoban/nodejsrunner";
     }
 
-    public environment(name: string, parent: pulumi.Resource): pulumi.Input<ImageEnvironment> {
-        const environment: ImageEnvironment = {};
-
-        // TODO[pulumi/pulumi-cloud#85]: Put this in a real Pulumi-owned Docker image.
-        // TODO[pulumi/pulumi-cloud#86]: Pass the full local zipped folder through to the container (via S3?)
-        environment.PULUMI_SRC = pulumi.runtime.serializeFunctionAsync(this.func);
-
-        return environment;
+    public environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]> {
+        const serialized = pulumi.runtime.serializeFunctionAsync(this.func);
+        return serialized.then(value => [{
+            name: "PULUMI_SRC",
+            value: value,
+        }]);
     }
 }
 
@@ -86,8 +84,8 @@ class AssetImageProvider extends ImageProvider {
         super();
     }
 
-    public environment(name: string, parent: pulumi.Resource): pulumi.Input<ImageEnvironment> {
-        return {};
+    public environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]> {
+        return [];
     }
 
     public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {

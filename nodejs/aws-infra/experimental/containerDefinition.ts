@@ -29,7 +29,6 @@ export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefiniti
      * from a local docker build.
      */
     image?: pulumi.Input<string>
-    environment?: pulumi.Input<mod.ImageEnvironment>;
 
     imageProvider?: mod.IImageProvider;
 
@@ -55,19 +54,12 @@ export function computeContainerDefinition(
     computeImage(parent, name, container);
     const portMappings = getPortMappings(container.loadBalancerPort);
 
-    return pulumi.all([container.image, container.environment, container, logGroup.id])
-                 .apply(([image, environment, container, logGroupId]) => {
-        const keyValuePairs: { name: string, value: string }[] = [];
-        for (const key of Object.keys(environment)) {
-            keyValuePairs.push({ name: key, value: environment[key] });
-        }
-
+    return pulumi.all([container, logGroup.id])
+                 .apply(([container, logGroupId]) => {
         const containerDefinition = {
             ...container,
             name: containerName,
-            image: image,
             portMappings: portMappings,
-            environment: keyValuePairs,
             // todo(cyrusn): mount points.
             // mountPoints: (container.volumes || []).map(v => ({
             //     containerPath: v.containerPath,
@@ -124,13 +116,11 @@ function computeImage(parent: pulumi.Resource,
     }
 }
 
-function combine(e1: pulumi.Input<mod.ImageEnvironment> | undefined,
-                 e2: pulumi.Input<mod.ImageEnvironment> | undefined) {
-    const result = pulumi.all([e1, e2]).apply(([e1, e2]) => {
-        e1 = e1 || {};
-        e2 = e2 || {};
-        return { ...e1, ...e2 };
+function combine(e1: pulumi.Input<aws.ecs.KeyValuePair[] | undefined>,
+                 e2: pulumi.Input<aws.ecs.KeyValuePair[] | undefined>): pulumi.Output<aws.ecs.KeyValuePair[]> {
+    return pulumi.all([e1, e2]).apply(([e1, e2]) => {
+        e1 = e1 || [];
+        e2 = e2 || [];
+        return [...e1, ...e2];
     });
-
-    return result;
 }

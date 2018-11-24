@@ -103,7 +103,7 @@ export interface TaskRunOptions {
     /**
      * Optional environment variables to override those set in the container definition.
      */
-    environment?: Record<string, string>;
+    environment?: aws.ecs.KeyValuePair[];
 }
 
 export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
@@ -197,9 +197,9 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         const containerToEnvironment =
             pulumi.output(containers)
                   .apply(c => {
-                        const result: Record<string, Record<string, string> | undefined> = {};
+                        const result: Record<string, aws.ecs.KeyValuePair[]> = {};
                         for (const key of Object.keys(c)) {
-                            result[key] = c[key].environment;
+                            result[key] = c[key].environment || [];
                         }
                         return result;
                   });
@@ -246,7 +246,7 @@ function createRunFunction(
         taskDefArn: pulumi.Output<string>,
         securityGroupId: pulumi.Output<string>,
         subnetIds: pulumi.Output<string[]>,
-        containerToEnvironment: pulumi.Output<Record<string, Record<string, string> | undefined>>) {
+        containerToEnvironment: pulumi.Output<Record<string, aws.ecs.KeyValuePair[]>>) {
 
     return async function runTask(options: TaskRunOptions = {}) {
         const ecs = new aws.sdk.ECS();
@@ -257,12 +257,11 @@ function createRunFunction(
             throw new Error("No valid container name found to run task for.");
         }
 
-        const environment = innerContainers[containerName];
-
         // Extract the environment values from the options
-        const env: { name: string, value: string }[] = [];
-        addEnvironmentVariables(environment);
-        addEnvironmentVariables(options && options.environment);
+        const env1 = innerContainers[containerName] || [];
+        const env2 = options.environment || [];
+
+        const env = [...env1, ...env2];
 
         const assignPublicIp = isFargate && !usePrivateSubnets;
 
