@@ -289,22 +289,22 @@ function placementConstraints(isFargate: boolean, os: HostOperatingSystem | unde
     }];
 }
 
-export interface ExposedPort {
-    /**
-     * The name of the container this port maps to.
-     */
-    containerName: string;
+// export interface ExposedPort {
+//     /**
+//      * The name of the container this port maps to.
+//      */
+//     containerName: string;
 
-    /**
-     * Information about the type of port this is.
-     */
-    loadBalancerPort: mod.ClusterLoadBalancerPort;
+//     /**
+//      * Information about the type of port this is.
+//      */
+//     loadBalancerPort: mod.ClusterLoadBalancerPort;
 
-    /**
-     * The load balancer that was created to map to the specified container port.
-     */
-    loadBalancer: mod.ClusterLoadBalancer;
-}
+//     /**
+//      * The load balancer that was created to map to the specified container port.
+//      */
+//     loadBalancer: mod.ClusterLoadBalancer;
+// }
 
 // function getExposedPort(
 //     name: string, cluster: mod.Cluster,

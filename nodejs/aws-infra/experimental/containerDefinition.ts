@@ -18,7 +18,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as mod from ".";
 
 import * as utils from "../utils";
-import { ClusterLoadBalancerPort } from "./clusterLoadBalancer";
 
 export type ContainerDefinition = utils.Overwrite<utils.MakeInputs<aws.ecs.ContainerDefinition>, {
     /**

@@ -24,6 +24,12 @@ import * as utils from "../utils";
  */
 export type ClusterFileSystemArgs = utils.Overwrite<aws.efs.FileSystemArgs, {
     /**
+     * Cluster this file system is intended to be used with.  Configuration values needed
+     * by this file system will be pulled from this unless overridden below.
+     */
+    cluster: mod.Cluster,
+
+    /**
      * The security group to use for the file system.  If not provided, a default one that allows
      * ingress for the cluster's VPC from port 2049 will be created.
      */
@@ -49,14 +55,16 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
     public readonly mountTargets: aws.efs.MountTarget[];
     public readonly mountPath: pulumi.Output<string>;
 
-    constructor(name: string, cluster: mod.Cluster,
-                args: ClusterFileSystemArgs = {}, opts: pulumi.CustomResourceOptions = {}) {
+    constructor(name: string,
+                args: ClusterFileSystemArgs,
+                opts: pulumi.CustomResourceOptions = {}) {
         super("aws-infra:x:ClusterFileSystem", name, {
             ...args,
         }, opts);
 
         const parentOpts = { parent: this };
 
+        const cluster = args.cluster;
         const instance = new aws.efs.FileSystem(name, args, parentOpts);
 
         const mountTargets: aws.efs.MountTarget[] = [];
