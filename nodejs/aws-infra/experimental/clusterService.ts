@@ -55,10 +55,10 @@ export type ClusterServiceArgs = utils.Overwrite<utils.Mutable<aws.ecs.ServiceAr
 }>;
 
 /**
- * A mapping from a container name and it's exposed port, to the hostname/port it can be reached at.
+ * A mapping from a container name to the hostname/port/loadBalancer it can be reached at.
  */
 export interface Endpoints {
-    [containerName: string]: { [port: number]: aws.apigateway.x.Endpoint; };
+    [containerName: string]: aws.apigateway.x.Endpoint[];
 }
 
 export abstract class ClusterService extends pulumi.ComponentResource {
@@ -72,8 +72,8 @@ export abstract class ClusterService extends pulumi.ComponentResource {
      */
     public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
-    public readonly endpoints: pulumi.Output<mod.Endpoints>;
-    public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
+    // public readonly endpoints: pulumi.Output<mod.Endpoints>;
+    // public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
     constructor(type: string, name: string, clusterInstance: mod.Cluster,
                 args: ClusterServiceArgs, isFargate: boolean,

@@ -17,10 +17,10 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 
-import { MakeInputs, Overwrite, sha1hash } from "../utils";
+import * as utils from "../utils";
 import { ClusterLoadBalancerPort } from "./clusterLoadBalancer";
 
-export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
+export type ContainerDefinition = utils.Overwrite<utils.MakeInputs<aws.ecs.ContainerDefinition>, {
     /**
      * The image to use for the container.  If this is just a string, then the image will be pulled
      * from the Docker Hub.  To provide customized image retrieval, provide [imageProvider] which
@@ -63,13 +63,15 @@ export function computeContainerDefinition(
 
     if (imageProvider) {
         container.image = imageProvider.image(name, parent);
-        container.environment = combineEnvironments(
-            container.environment, imageProvider.environment(name, parent));
+        container.environment = utils.combineArrays(
+            container.environment,
+            imageProvider.environment(name, parent));
     }
 
     if (loadBalancerProvider) {
-        container.portMappings = combinePortMappings(
-            container.portMappings, loadBalancerProvider.portMappings(containerName, name, parent));
+        container.portMappings = utils.combineArrays(
+            container.portMappings,
+            loadBalancerProvider.portMappings(containerName, name, parent));
     }
 
     return pulumi.all([container, logGroup.id])
@@ -115,24 +117,4 @@ function getPortMappings(loadBalancerPort: ClusterLoadBalancerPort | undefined) 
         // See https://github.com/terraform-providers/terraform-provider-aws/issues/3401.
         hostPort: port,
     }];
-}
-
-function combineEnvironments(
-        e1: pulumi.Input<aws.ecs.KeyValuePair[] | undefined>,
-        e2: pulumi.Input<aws.ecs.KeyValuePair[] | undefined>): pulumi.Output<aws.ecs.KeyValuePair[]> {
-    return pulumi.all([e1, e2]).apply(([e1, e2]) => {
-        e1 = e1 || [];
-        e2 = e2 || [];
-        return [...e1, ...e2];
-    });
-}
-
-function combinePortMappings(
-        e1: pulumi.Input<aws.ecs.PortMapping[] | undefined>,
-        e2: pulumi.Input<aws.ecs.PortMapping[] | undefined>): pulumi.Output<aws.ecs.PortMapping[]> {
-    return pulumi.all([e1, e2]).apply(([e1, e2]) => {
-        e1 = e1 || [];
-        e2 = e2 || [];
-        return [...e1, ...e2];
-    });
 }

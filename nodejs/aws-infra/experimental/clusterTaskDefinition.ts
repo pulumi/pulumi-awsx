@@ -121,11 +121,11 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
     //  */
     // public readonly exposedPort?: ExposedPort;
 
-    // public readonly endpoints: pulumi.Output<mod.Endpoints>;
-    // public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
+    public readonly endpoints: pulumi.Output<mod.Endpoints>;
+    public readonly defaultEndpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
-    // public readonly getEndpoint: (
-    //    containerName?: string, containerPort?: number) => Promise<aws.apigateway.x.Endpoint>;
+    public readonly getEndpoint: (
+       containerName?: string, containerPort?: number) => Promise<aws.apigateway.x.Endpoint>;
 
     /**
      * Runs this task definition in this cluster once.
@@ -180,6 +180,8 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerDefinitions.apply(JSON.stringify),
         }, parentOpts);
 
+        const endpoints = getEndpoints(this, name, containers);
+
         // const endpoints = exposedPort === undefined
         //     ? pulumi.output<mod.Endpoints>({})
         //     : pulumi.output({
@@ -195,8 +197,11 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         //     : endpoints.apply(
         //         ep => getEndpointHelper(ep, /*containerName:*/ undefined, /*containerPort:*/ undefined));
 
-        // this.getEndpoint = async (containerName, containerPort) =>
-        //     getEndpointHelper(endpoints.get(), containerName, containerPort);
+        const defaultEndpoint = endpoints.apply(ep => getEndpointHelper(
+            ep, /*containerName:*/ undefined, /*port:*/ undefined, /*throwOnError:*/ false)!);
+
+        this.getEndpoint = async (containerName, containerPort) =>
+            getEndpointHelper(endpoints.get(), containerName, containerPort, /*throwOnError:*/ true)!;
 
         const containerToEnvironment =
             pulumi.output(containers)
@@ -224,8 +229,8 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         this.taskRole = taskRole;
         this.executionRole = executionRole;
         // this.exposedPort = exposedPort;
-        // this.defaultEndpoint = defaultEndpoint;
-        // this.endpoints = endpoints;
+        this.defaultEndpoint = defaultEndpoint;
+        this.endpoints = endpoints;
 
         this.registerOutputs({
             instance,
@@ -235,23 +240,42 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
             taskRole,
             executionRole,
             // exposedPort,
-            // defaultEndpoint,
-            // endpoints,
+            defaultEndpoint,
+            endpoints,
         });
     }
 }
 
 (<any>ClusterTaskDefinition).doNotCapture = true;
 
-function getLoadBalancerProvider(containers: Record<string, mod.ContainerDefinition>) {
-    for (const key of Object.keys(containers)) {
-        const container = containers[key];
+// function getLoadBalancerProvider(containers: Record<string, mod.ContainerDefinition>) {
+//     for (const key of Object.keys(containers)) {
+//         const container = containers[key];
+//         if (container.loadBalancerProvider) {
+//             return container.loadBalancerProvider;
+//         }
+//     }
+
+//     return undefined;
+// }
+function getEndpoints(
+        parent: pulumi.Resource,
+        name: string,
+        containers: Record<string, mod.ContainerDefinition>):
+            pulumi.Output<Record<string, aws.apigateway.x.Endpoint[]>> {
+
+    const result: Record<string, pulumi.Output<aws.apigateway.x.Endpoint[]>> = {};
+
+    for (const containerName of Object.keys(containers)) {
+        const container = containers[containerName];
         if (container.loadBalancerProvider) {
-            return container.loadBalancerProvider;
+            result[containerName] = utils.combineArrays(
+                result[containerName],
+                container.loadBalancerProvider.endpoints(containerName, name, parent));
         }
     }
 
-    return undefined;
+    return pulumi.output(result);
 }
 
 function createRunFunction(
@@ -325,22 +349,37 @@ function createRunFunction(
 }
 
 function getEndpointHelper(
-    endpoints: mod.Endpoints, containerName: string | undefined, containerPort: number | undefined) {
+    endpoints: mod.Endpoints,
+    containerName: string | undefined,
+    containerPort: number | undefined,
+    throwOnError: boolean): aws.apigateway.x.Endpoint | undefined {
 
     containerName = containerName || Object.keys(endpoints)[0];
     if (containerName === undefined)  {
-        throw new Error(`No containers available in this service`);
+        if (throwOnError) {
+            throw new Error(`No containers available in this service`);
+        }
+
+        return undefined;
     }
 
     const containerPorts = endpoints[containerName] || {};
     containerPort = containerPort || +Object.keys(containerPorts)[0];
     if (containerPort === undefined) {
-        throw new Error(`No ports available in service container ${containerName}`);
+        if (throwOnError) {
+            throw new Error(`No ports available in service container ${containerName}`);
+        }
+
+        return undefined;
     }
 
     const endpoint = containerPorts[containerPort];
     if (endpoint === undefined) {
-        throw new Error(`No exposed port for ${containerName} port ${containerPort}`);
+        if (throwOnError) {
+            throw new Error(`No exposed port for ${containerName} port ${containerPort}`);
+        }
+
+        return undefined;
     }
 
     return endpoint;

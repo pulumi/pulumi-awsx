@@ -39,3 +39,16 @@ export function sha1hash(s: string): string {
     //     to collisions.  For now, limit the size of hashes to ensure we generate shorter/ resource names.
     return shasum.digest("hex").substring(0, 8);
 }
+
+export function combineArrays<T>(
+    e1: pulumi.Input<T[] | undefined>,
+    e2: pulumi.Input<T[] | undefined>): pulumi.Output<T[]> {
+
+    const result = pulumi.all([e1, e2]).apply(([e1, e2]) => {
+        e1 = e1 || [];
+        e2 = e2 || [];
+        return [...e1, ...e2];
+    });
+
+    return <pulumi.Output<T[]>>result;
+}

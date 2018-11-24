@@ -23,10 +23,11 @@ import * as mod from ".";
 export type LoadBalancers = aws.ecs.ServiceArgs["loadBalancers"];
 
 export interface ILoadBalancerProvider {
-    loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
+    // loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
 
     portMappings(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     loadBalancers(containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
+    endpoints(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.apigateway.x.Endpoint[]>;
 }
 
 export interface PortInfo {
@@ -62,12 +63,12 @@ export interface PortInfo {
 }
 
 export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
-    public loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
-
     public abstract portMappings(
         containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     public abstract loadBalancers(
         containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
+    public abstract endpoints(
+        containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.apigateway.x.Endpoint[]>;
 
     public static fromPortInfo(
             portInfo: PortInfo,
@@ -78,6 +79,7 @@ export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
 }
 
 export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
+    public loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
     public targetGroup: aws.elasticloadbalancingv2.TargetGroup;
 
     constructor(
@@ -184,6 +186,20 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         }];
 
         return loadBalancers;
+    }
+
+    public endpoints(
+        containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.apigateway.x.Endpoint[]> {
+
+        this.initialize(containerName, name, parent);
+
+        const endpoints = [{
+            hostname: this.loadBalancer.dnsName,
+            loadBalancer: this.loadBalancer,
+            port: this.portInfo.port,
+        }];
+
+        return pulumi.output(endpoints);
     }
 }
 
