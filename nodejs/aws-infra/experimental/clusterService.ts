@@ -20,7 +20,7 @@ import * as mod from ".";
 import * as docker from "@pulumi/docker";
 import * as utils from "./../utils";
 
-export type ClusterServiceArgs = utils.Overwrite<aws.ecs.ServiceArgs, {
+export type ClusterServiceArgs = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     /**
      * The task definition to create the service from.
      */
@@ -81,7 +81,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
         super(type, name, args, opts);
 
         const parentOpts = { parent: this };
-        const loadBalancers = createLoadBalancers(args.taskDefinition);
+        // const loadBalancers = createLoadBalancers(args.taskDefinition);
 
         // If the cluster has an autoscaling group, ensure the service depends on it being created.
         // TODO(cyrusn): this isn't necessary if resource creation automatically makes 'deps' for
@@ -95,11 +95,12 @@ export abstract class ClusterService extends pulumi.ComponentResource {
             opts.dependsOn = dependsOn;
         }
 
+        initializeLoadBalancers(name, args, this);
+
         const instance = new aws.ecs.Service(name, {
             ...args,
             cluster: clusterInstance.instance.arn,
             taskDefinition: args.taskDefinition.instance.arn,
-            loadBalancers: loadBalancers,
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
             launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
             waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
@@ -108,24 +109,24 @@ export abstract class ClusterService extends pulumi.ComponentResource {
 
         const taskDefinitionInstance = args.taskDefinition;
         const autoScalingGroup = args.autoScalingGroup;
-        const defaultEndpoint = args.taskDefinition.defaultEndpoint;
-        const endpoints = args.taskDefinition.endpoints;
+        // const defaultEndpoint = args.taskDefinition.defaultEndpoint;
+        // const endpoints = args.taskDefinition.endpoints;
 
         this.instance = instance;
         this.clusterInstance = clusterInstance;
         this.taskDefinitionInstance = args.taskDefinition;
         this.autoScalingGroup = args.autoScalingGroup;
 
-        this.defaultEndpoint = defaultEndpoint;
-        this.endpoints = endpoints;
+        // this.defaultEndpoint = defaultEndpoint;
+        // this.endpoints = endpoints;
 
         this.registerOutputs({
             instance,
             clusterInstance,
             taskDefinitionInstance,
             autoScalingGroup,
-            defaultEndpoint,
-            endpoints,
+            // defaultEndpoint,
+            // endpoints,
         });
     }
 }
@@ -145,20 +146,42 @@ function placementConstraints(isFargate: boolean, os: mod.HostOperatingSystem | 
     }];
 }
 
-function createLoadBalancers(
-        taskDefinition: mod.ClusterTaskDefinition): aws.ecs.ServiceArgs["loadBalancers"] {
-    const exposedPort = taskDefinition.exposedPort;
-    if (!exposedPort) {
-        return [];
+function initializeLoadBalancers(name: string, args: ClusterServiceArgs, parent: pulumi.Resource) {
+    for (const containerName of Object.keys(args.taskDefinition.containers)) {
+        const container = args.taskDefinition.containers[containerName];
+        if (container.loadBalancerProvider) {
+            args.loadBalancers = combineLoadBalancers(
+                args.loadBalancers,
+                container.loadBalancerProvider.loadBalancers(containerName, name, parent));
+        }
     }
-
-    const loadBalancerPort = exposedPort.loadBalancerPort;
-    return [{
-        containerName: exposedPort.containerName,
-        containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
-        targetGroupArn: exposedPort.loadBalancer.targetGroup.arn,
-    }];
 }
+
+function combineLoadBalancers(
+        e1: pulumi.Input<mod.LoadBalancers | undefined>,
+        e2: pulumi.Input<mod.LoadBalancers | undefined>): mod.LoadBalancers {
+    return pulumi.all([e1, e2]).apply(([e1, e2]) => {
+        e1 = e1 || [];
+        e2 = e2 || [];
+        return [...e1, ...e2];
+    });
+}
+
+
+// function createLoadBalancers(
+//         taskDefinition: mod.ClusterTaskDefinition): mod.LoadBalancers {
+//     const exposedPort = taskDefinition.exposedPort;
+//     if (!exposedPort) {
+//         return [];
+//     }
+
+//     const loadBalancerPort = exposedPort.loadBalancerPort;
+//     return [{
+//         containerName: exposedPort.containerName,
+//         containerPort: loadBalancerPort.targetPort || loadBalancerPort.port,
+//         targetGroupArn: exposedPort.loadBalancer.targetGroup.arn,
+//     }];
+// }
 
 
 // const volumeNames = new Set<string>();

@@ -27,6 +27,10 @@ export type MakeInputs<T> = {
     [P in keyof T]?: pulumi.Input<T[P]>;
 };
 
+export type Mutable<T> = {
+    -readonly [P in keyof T]: T[P];
+};
+
 // sha1hash returns a partial SHA1 hash of the input string.
 export function sha1hash(s: string): string {
     const shasum: crypto.Hash = crypto.createHash("sha1");

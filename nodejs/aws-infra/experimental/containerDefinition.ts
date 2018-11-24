@@ -32,14 +32,17 @@ export type ContainerDefinition = Overwrite<MakeInputs<aws.ecs.ContainerDefiniti
 
     imageProvider?: mod.IImageProvider;
 
-    // loadBalancerProvider?: mod.LoadBalancerProvider;
-
     /**
-     * The port information to create a load balancer for.  At most one container in a service
-     * can have this set.  Should not be set for containers intended for TaskDeinitions that will
-     * just be run, and will not be part of an aws.ecs.Service.
+     * Provider that can produce a load balancer for this container.
      */
-    loadBalancerPort?: mod.ClusterLoadBalancerPort;
+    loadBalancerProvider?: mod.LoadBalancerProvider;
+
+    // /**
+    //  * The port information to create a load balancer for.  At most one container in a service
+    //  * can have this set.  Should not be set for containers intended for TaskDeinitions that will
+    //  * just be run, and will not be part of an aws.ecs.Service.
+    //  */
+    // loadBalancerPort?: mod.ClusterLoadBalancerPort;
 }>;
 
 export type WrappedEndpoints = Record<string, Record<number, pulumi.Output<aws.apigateway.x.Endpoint>>>;
@@ -51,15 +54,29 @@ export function computeContainerDefinition(
     container: ContainerDefinition,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
-    computeImage(parent, name, container);
-    const portMappings = getPortMappings(container.loadBalancerPort);
+    if (container.image === undefined && container.imageProvider === undefined) {
+        throw new Error("container requires either [image] or [imageProvider] to be set.");
+    }
+
+    const imageProvider = container.imageProvider;
+    const loadBalancerProvider = container.loadBalancerProvider;
+
+    if (imageProvider) {
+        container.image = imageProvider.image(name, parent);
+        container.environment = combineEnvironments(
+            container.environment, imageProvider.environment(name, parent));
+    }
+
+    if (loadBalancerProvider) {
+        container.portMappings = combinePortMappings(
+            container.portMappings, loadBalancerProvider.portMappings(containerName, name, parent));
+    }
 
     return pulumi.all([container, logGroup.id])
                  .apply(([container, logGroupId]) => {
         const containerDefinition = {
             ...container,
             name: containerName,
-            portMappings: portMappings,
             // todo(cyrusn): mount points.
             // mountPoints: (container.volumes || []).map(v => ({
             //     containerPath: v.containerPath,
@@ -100,24 +117,19 @@ function getPortMappings(loadBalancerPort: ClusterLoadBalancerPort | undefined) 
     }];
 }
 
-function computeImage(parent: pulumi.Resource,
-                      name: string,
-                      container: ContainerDefinition) {
-
-    if (container.image === undefined && container.imageProvider === undefined) {
-        throw new Error("container requires either [image] or [imageProvider] to be set.");
-    }
-
-    const provider = container.imageProvider;
-    if (provider) {
-        container.image = provider.image(name, parent);
-        container.environment = combine(
-            container.environment, provider.environment(name, parent));
-    }
+function combineEnvironments(
+        e1: pulumi.Input<aws.ecs.KeyValuePair[] | undefined>,
+        e2: pulumi.Input<aws.ecs.KeyValuePair[] | undefined>): pulumi.Output<aws.ecs.KeyValuePair[]> {
+    return pulumi.all([e1, e2]).apply(([e1, e2]) => {
+        e1 = e1 || [];
+        e2 = e2 || [];
+        return [...e1, ...e2];
+    });
 }
 
-function combine(e1: pulumi.Input<aws.ecs.KeyValuePair[] | undefined>,
-                 e2: pulumi.Input<aws.ecs.KeyValuePair[] | undefined>): pulumi.Output<aws.ecs.KeyValuePair[]> {
+function combinePortMappings(
+        e1: pulumi.Input<aws.ecs.PortMapping[] | undefined>,
+        e2: pulumi.Input<aws.ecs.PortMapping[] | undefined>): pulumi.Output<aws.ecs.PortMapping[]> {
     return pulumi.all([e1, e2]).apply(([e1, e2]) => {
         e1 = e1 || [];
         e2 = e2 || [];

@@ -20,12 +20,13 @@ import * as utils from "../utils";
 
 import * as mod from ".";
 
+export type LoadBalancers = aws.ecs.ServiceArgs["loadBalancers"];
+
 export interface ILoadBalancerProvider {
     loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
 
-    initialize(name: string, parent: pulumi.Resource): void;
-    updateContainer(containerName: string, container: mod.ContainerDefinition): void;
-    updateService(containerName: string, service: aws.ecs.ServiceArgs): void;
+    portMappings(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
+    loadBalancers(containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
 }
 
 export interface PortInfo {
@@ -63,9 +64,10 @@ export interface PortInfo {
 export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
     public loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
 
-    public abstract initialize(name: string, parent: pulumi.Resource): void;
-    public abstract updateContainer(containerName: string, container: mod.ContainerDefinition): void;
-    public abstract updateService(containerName: string, service: aws.ecs.ServiceArgs): void;
+    public abstract portMappings(
+        containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
+    public abstract loadBalancers(
+        containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
 
     public static fromPortInfo(
             portInfo: PortInfo,
@@ -86,16 +88,16 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         super();
     }
 
-    public initialize(name: string, parent: pulumi.Resource): void {
+    private initialize(containerName: string, name: string, parent: pulumi.Resource): void {
         if (this.loadBalancer) {
-            throw new Error("Called into updateContainer multiple times.");
+            return;
         }
 
         // Load balancers need *very* short names, so we unfortunately have to hash here.
         //
         // Note: Technically, we can only support one LB per service, so only the service name is needed here, but we
         // anticipate this will not always be the case, so we include a set of values which must be unique.
-        const longName = `${name}-${this.portInfo.port}`;
+        const longName = `${name}-${containerName}-${this.portInfo.port}`;
         const shortName = utils.sha1hash(`${longName}`);
 
         // Create an internal load balancer if requested.
@@ -146,49 +148,43 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         }, parentOpts);
     }
 
-    public updateContainer(containerName: string, container: mod.ContainerDefinition): void {
-        if (!this.loadBalancer) {
-            throw new Error("Must call [initialize] first.");
-        }
+    public portMappings(
+        containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]> {
 
-        container.portMappings = pulumi.output(container.portMappings).apply(
-            portMappings => {
-                portMappings = portMappings || [];
+        this.initialize(containerName, name, parent);
 
-                const port = this.portInfo.targetPort || this.portInfo.port;
-                portMappings.push({
-                    containerPort: port,
-                    // From https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html:
-                    // > For task definitions that use the awsvpc network mode, you should only
-                    // > specify the containerPort. The hostPort can be left blank or it must be the
-                    // > same value as the containerPort.
-                    //
-                    // However, if left blank, it will be automatically populated by AWS, potentially leading to dirty
-                    // diffs even when no changes have been made. Since we are currently always using `awsvpc` mode, we
-                    // go ahead and populate it with the same value as `containerPort`.
-                    //
-                    // See https://github.com/terraform-providers/terraform-provider-aws/issues/3401.
-                    hostPort: port,
-                });
+        const port = this.portInfo.targetPort || this.portInfo.port;
+        const portMappings: aws.ecs.PortMapping[] = [{
+            containerPort: port,
+            // From https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html:
+            // > For task definitions that use the awsvpc network mode, you should only
+            // > specify the containerPort. The hostPort can be left blank or it must be the
+            // > same value as the containerPort.
+            //
+            // However, if left blank, it will be automatically populated by AWS, potentially leading to dirty
+            // diffs even when no changes have been made. Since we are currently always using `awsvpc` mode, we
+            // go ahead and populate it with the same value as `containerPort`.
+            //
+            // See https://github.com/terraform-providers/terraform-provider-aws/issues/3401.
+            hostPort: port,
+        }];
 
-                return portMappings;
-            });
+        return portMappings;
     }
 
-    public updateService(containerName: string, service: aws.ecs.ServiceArgs): void {
-        (<any>service).loadBalancers =
-            pulumi.all([service.loadBalancers, this.targetGroup.arn])
-                  .apply(([loadBalancers, targetGroupArn]) => {
-                loadBalancers = loadBalancers || [];
-                loadBalancers.push({
-                    targetGroupArn,
-                    containerName,
-                    containerPort: this.portInfo.targetPort || this.portInfo.port,
-                });
-                return loadBalancers;
-            });
-    }
+    public loadBalancers(
+        containerName: string, name: string, parent: pulumi.Resource): LoadBalancers {
 
+        this.initialize(containerName, name, parent);
+
+        const loadBalancers: LoadBalancers = [{
+            containerName,
+            targetGroupArn: this.targetGroup.arn,
+            containerPort: this.portInfo.targetPort || this.portInfo.port,
+        }];
+
+        return loadBalancers;
+    }
 }
 
 function computeLoadBalancerInfo(loadBalancerPort: PortInfo) {
@@ -224,4 +220,3 @@ function computeLoadBalancerInfo(loadBalancerPort: PortInfo) {
             throw new Error(`Unrecognized Service protocol: ${loadBalancerPort.protocol}`);
     }
 }
-
