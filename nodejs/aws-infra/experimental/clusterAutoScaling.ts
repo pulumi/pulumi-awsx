@@ -19,216 +19,6 @@ import * as mod from ".";
 
 import { Overwrite, sha1hash } from "./../utils";
 
-export interface ClusterAutoScalingGroupArgs {
-    /**
-     * Cluster to create the autoscaling group for.
-     */
-    cluster: mod.Cluster;
-
-    /**
-     * The config to use when creating the auto scaling group.
-     *
-     * [launchConfiguration] or [launchConfigurationArgs] can be provided.  And, if either are
-     * provided will be used as the launch configuration for the auto scaling group.
-     *
-     * If neither are provided, a default instance will be create by calling
-     * [cluster.createAutoScalingConfig()].
-     */
-    launchConfiguration?: ClusterAutoScalingLaunchConfiguration;
-
-    /**
-     * The config to use when creating the auto scaling group.
-     *
-     * [launchConfiguration] or [launchConfigurationArgs] can be provided.  And, if either are
-     * provided will be used as the launch configuration for the auto scaling group.
-     *
-     * If neither are provided, a default instance will be create by calling
-     * [cluster.createAutoScalingConfig()].
-     */
-    launchConfigurationArgs?: ClusterAutoScalingLaunchConfigurationArgs;
-
-    /**
-     * Parameters to control the cloud formation stack template that is created.  If not provided
-     * the defaults specified in TemplateParameters will be used.
-     */
-    templateParameters?: pulumi.Input<TemplateParameters>;
-}
-
-/**
- * Parameters to control the cloud formation stack template that is created.
- */
-export interface TemplateParameters {
-    /**
-     * The minimum size of the cluster. Defaults to 2.
-     */
-    minSize?: number;
-    /**
-     * The maximum size of the cluster. Setting to 0 will prevent an EC2 AutoScalingGroup from being
-     * created. Defaults to 100.
-     */
-    maxSize?: number;
-}
-
-// The shape we want for ClusterAutoScalingLaunchConfigurationArgs.  We don't export this as
-// 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
-// express the shape we're trying to provide. Code later on will ensure these types are compatible.
-type OverwriteShape = Overwrite<aws.ec2.LaunchConfigurationArgs, {
-    cluster: mod.Cluster;
-    imageId?: never;
-    userData?: never;
-    stackName?: pulumi.Input<string>;
-    instanceProfile?: aws.iam.InstanceProfile;
-    fileSystem?: mod.ClusterFileSystem;
-    securityGroups?: aws.ec2.LaunchConfiguration["securityGroups"];
-    ecsOptimizedAMIName?: string;
-    instanceType?: pulumi.Input<aws.ec2.InstanceType>;
-    placementTenancy?: pulumi.Input<"default" | "dedicated">;
-    rootBlockDevice?: aws.ec2.LaunchConfigurationArgs["rootBlockDevice"];
-    ebsBlockDevices?: aws.ec2.LaunchConfigurationArgs["ebsBlockDevices"];
-}>;
-
-/**
- * The set of arguments when creating the launch configuration for a cluster's autoscaling group.
- */
-export interface ClusterAutoScalingLaunchConfigurationArgs {
-    // Values copied directly from aws.ec2.LaunchConfigurationArgs
-
-    /**
-     * Associate a public ip address with an instance in a VPC.
-     */
-    associatePublicIpAddress?: pulumi.Input<boolean>;
-    /**
-     * If true, the launched EC2 instance will be EBS-optimized.
-     */
-    ebsOptimized?: pulumi.Input<boolean>;
-    /**
-     * Enables/disables detailed monitoring. This is enabled by default.
-     */
-    enableMonitoring?: pulumi.Input<boolean>;
-    /**
-     * Customize Ephemeral (also known as
-     * "Instance Store") volumes on the instance. See Block Devices below for details.
-     */
-    ephemeralBlockDevices?: pulumi.Input<pulumi.Input<{
-        deviceName: pulumi.Input<string>;
-        virtualName: pulumi.Input<string>;
-    }>[]>;
-    /**
-     * The name attribute of the IAM instance profile to associate
-     * with launched instances.
-     */
-    iamInstanceProfile?: pulumi.Input<string | aws.iam.InstanceProfile>;
-    /**
-     * The key name that should be used for the instance.
-     */
-    keyName?: pulumi.Input<string>;
-    /**
-     * The name of the launch configuration. If you leave
-     * this blank, Terraform will auto-generate a unique name.
-     */
-    name?: pulumi.Input<string>;
-    /**
-     * Creates a unique name beginning with the specified
-     * prefix. Conflicts with `name`.
-     */
-    namePrefix?: pulumi.Input<string>;
-    /**
-     * The maximum price to use for reserving spot instances.
-     */
-    spotPrice?: pulumi.Input<string>;
-    /**
-     * Can be used instead of `user_data` to pass base64-encoded binary data directly. Use this
-     * instead of `user_data` whenever the value is not a valid UTF-8 string. For example,
-     * gzip-encoded user data must be base64-encoded and passed via this argument to avoid
-     * corruption.
-     */
-    userDataBase64?: pulumi.Input<string>;
-    /**
-     * The ID of a ClassicLink-enabled VPC. Only applies to EC2-Classic instances. (eg. `vpc-2730681a`)
-     */
-    vpcClassicLinkId?: pulumi.Input<string>;
-    /**
-     * The IDs of one or more security groups for the specified ClassicLink-enabled VPC (eg. `sg-46ae3d11`).
-     */
-    vpcClassicLinkSecurityGroups?: pulumi.Input<pulumi.Input<string>[]>;
-
-    // Changes made to normal args type.
-
-    /**
-     * Cluster to create launch configuration for.
-     */
-    cluster: mod.Cluster;
-
-    /**
-     * The name of the stack the launch configuration will signal.
-     */
-    stackName?: pulumi.Input<string>;
-
-    /**
-     * The instance profile to use for the autoscaling group.  If not provided, a default one will
-     * be created.
-     */
-    instanceProfile?: aws.iam.InstanceProfile;
-
-    /**
-     * Optional file system to mount.  Use [cluster.createFileSystem] to create an instance of this.
-     */
-    fileSystem?: mod.ClusterFileSystem;
-
-    /**
-    * A list of associated security group IDS.  If not provided, the instanceSecurityGroup from the
-    * cluster will be used.
-    */
-    securityGroups?: aws.ec2.LaunchConfiguration["securityGroups"];
-
-    /**
-     * The name of the ECS-optimzed AMI to use for the Container Instances in this cluster, e.g.
-     * "amzn-ami-2017.09.l-amazon-ecs-optimized". Defaults to using the latest recommended ECS Linux
-     * Optimized AMI, which may change over time and cause recreation of EC2 instances when new
-     * versions are release. To control when these changes are adopted, set this parameter
-     * explicitly to the version you would like to use.
-     *
-     * See http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html for
-     * valid values.
-     */
-    ecsOptimizedAMIName?: string;
-
-    /**
-     * The size of instance to launch.  Defaults to t2.micro if unspecified.
-     */
-    instanceType?: pulumi.Input<aws.ec2.InstanceType>;
-
-    /**
-     * The tenancy of the instance. Valid values are `"default"` or `"dedicated"`, see
-     * http://docs.aws.amazon.com/AutoScaling/latest/APIReference/API_CreateLaunchConfiguration.html
-     * for more details.  Default is "default" if unspecified.
-     */
-    placementTenancy?: pulumi.Input<"default" | "dedicated">;
-
-    /**
-     * Customize details about the root block device of the instance. See Block Devices below for
-     * details.
-     *
-     * If not provided, an 8gb 'gp2' root device will be created.  This device will be deleted upon
-     * termination.
-     */
-    rootBlockDevice?: aws.ec2.LaunchConfigurationArgs["rootBlockDevice"];
-
-    /**
-     * Additional EBS block devices to attach to the instance.  See Block Devices below for details.
-     *
-     * If not provided, a 5gb 'gp2' device will be mounted at '/dev/xvdb' and a 50gb 'gp2' device
-     * will be mounted at '/dev/xvdcz'.  Both devices will be deleted upon termination.
-     */
-    ebsBlockDevices?: aws.ec2.LaunchConfigurationArgs["ebsBlockDevices"];
-}
-
-// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape: OverwriteShape = undefined!;
-let argsShape: ClusterAutoScalingLaunchConfigurationArgs = undefined!;
-argsShape = overwriteShape;
-overwriteShape = argsShape;
-
 export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.LaunchConfiguration;
 
@@ -564,3 +354,215 @@ function getCloudFormationTemplate(
     `;
                  });
 }
+
+
+
+export interface ClusterAutoScalingGroupArgs {
+    /**
+     * Cluster to create the autoscaling group for.
+     */
+    cluster: mod.Cluster;
+
+    /**
+     * The config to use when creating the auto scaling group.
+     *
+     * [launchConfiguration] or [launchConfigurationArgs] can be provided.  And, if either are
+     * provided will be used as the launch configuration for the auto scaling group.
+     *
+     * If neither are provided, a default instance will be create by calling
+     * [cluster.createAutoScalingConfig()].
+     */
+    launchConfiguration?: ClusterAutoScalingLaunchConfiguration;
+
+    /**
+     * The config to use when creating the auto scaling group.
+     *
+     * [launchConfiguration] or [launchConfigurationArgs] can be provided.  And, if either are
+     * provided will be used as the launch configuration for the auto scaling group.
+     *
+     * If neither are provided, a default instance will be create by calling
+     * [cluster.createAutoScalingConfig()].
+     */
+    launchConfigurationArgs?: ClusterAutoScalingLaunchConfigurationArgs;
+
+    /**
+     * Parameters to control the cloud formation stack template that is created.  If not provided
+     * the defaults specified in TemplateParameters will be used.
+     */
+    templateParameters?: pulumi.Input<TemplateParameters>;
+}
+
+/**
+ * Parameters to control the cloud formation stack template that is created.
+ */
+export interface TemplateParameters {
+    /**
+     * The minimum size of the cluster. Defaults to 2.
+     */
+    minSize?: number;
+    /**
+     * The maximum size of the cluster. Setting to 0 will prevent an EC2 AutoScalingGroup from being
+     * created. Defaults to 100.
+     */
+    maxSize?: number;
+}
+
+// The shape we want for ClusterAutoScalingLaunchConfigurationArgs.  We don't export this as
+// 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
+// express the shape we're trying to provide. Code later on will ensure these types are compatible.
+type OverwriteShape = Overwrite<aws.ec2.LaunchConfigurationArgs, {
+    cluster: mod.Cluster;
+    imageId?: never;
+    userData?: never;
+    stackName?: pulumi.Input<string>;
+    instanceProfile?: aws.iam.InstanceProfile;
+    fileSystem?: mod.ClusterFileSystem;
+    securityGroups?: aws.ec2.LaunchConfiguration["securityGroups"];
+    ecsOptimizedAMIName?: string;
+    instanceType?: pulumi.Input<aws.ec2.InstanceType>;
+    placementTenancy?: pulumi.Input<"default" | "dedicated">;
+    rootBlockDevice?: aws.ec2.LaunchConfigurationArgs["rootBlockDevice"];
+    ebsBlockDevices?: aws.ec2.LaunchConfigurationArgs["ebsBlockDevices"];
+}>;
+
+/**
+ * The set of arguments when creating the launch configuration for a cluster's autoscaling group.
+ */
+export interface ClusterAutoScalingLaunchConfigurationArgs {
+    // Values copied directly from aws.ec2.LaunchConfigurationArgs
+
+    /**
+     * Associate a public ip address with an instance in a VPC.
+     */
+    associatePublicIpAddress?: pulumi.Input<boolean>;
+    /**
+     * If true, the launched EC2 instance will be EBS-optimized.
+     */
+    ebsOptimized?: pulumi.Input<boolean>;
+    /**
+     * Enables/disables detailed monitoring. This is enabled by default.
+     */
+    enableMonitoring?: pulumi.Input<boolean>;
+    /**
+     * Customize Ephemeral (also known as
+     * "Instance Store") volumes on the instance. See Block Devices below for details.
+     */
+    ephemeralBlockDevices?: pulumi.Input<pulumi.Input<{
+        deviceName: pulumi.Input<string>;
+        virtualName: pulumi.Input<string>;
+    }>[]>;
+    /**
+     * The name attribute of the IAM instance profile to associate
+     * with launched instances.
+     */
+    iamInstanceProfile?: pulumi.Input<string | aws.iam.InstanceProfile>;
+    /**
+     * The key name that should be used for the instance.
+     */
+    keyName?: pulumi.Input<string>;
+    /**
+     * The name of the launch configuration. If you leave
+     * this blank, Terraform will auto-generate a unique name.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * Creates a unique name beginning with the specified
+     * prefix. Conflicts with `name`.
+     */
+    namePrefix?: pulumi.Input<string>;
+    /**
+     * The maximum price to use for reserving spot instances.
+     */
+    spotPrice?: pulumi.Input<string>;
+    /**
+     * Can be used instead of `user_data` to pass base64-encoded binary data directly. Use this
+     * instead of `user_data` whenever the value is not a valid UTF-8 string. For example,
+     * gzip-encoded user data must be base64-encoded and passed via this argument to avoid
+     * corruption.
+     */
+    userDataBase64?: pulumi.Input<string>;
+    /**
+     * The ID of a ClassicLink-enabled VPC. Only applies to EC2-Classic instances. (eg. `vpc-2730681a`)
+     */
+    vpcClassicLinkId?: pulumi.Input<string>;
+    /**
+     * The IDs of one or more security groups for the specified ClassicLink-enabled VPC (eg. `sg-46ae3d11`).
+     */
+    vpcClassicLinkSecurityGroups?: pulumi.Input<pulumi.Input<string>[]>;
+
+    // Changes made to normal args type.
+
+    /**
+     * Cluster to create launch configuration for.
+     */
+    cluster: mod.Cluster;
+
+    /**
+     * The name of the stack the launch configuration will signal.
+     */
+    stackName?: pulumi.Input<string>;
+
+    /**
+     * The instance profile to use for the autoscaling group.  If not provided, a default one will
+     * be created.
+     */
+    instanceProfile?: aws.iam.InstanceProfile;
+
+    /**
+     * Optional file system to mount.  Use [cluster.createFileSystem] to create an instance of this.
+     */
+    fileSystem?: mod.ClusterFileSystem;
+
+    /**
+    * A list of associated security group IDS.  If not provided, the instanceSecurityGroup from the
+    * cluster will be used.
+    */
+    securityGroups?: aws.ec2.LaunchConfiguration["securityGroups"];
+
+    /**
+     * The name of the ECS-optimzed AMI to use for the Container Instances in this cluster, e.g.
+     * "amzn-ami-2017.09.l-amazon-ecs-optimized". Defaults to using the latest recommended ECS Linux
+     * Optimized AMI, which may change over time and cause recreation of EC2 instances when new
+     * versions are release. To control when these changes are adopted, set this parameter
+     * explicitly to the version you would like to use.
+     *
+     * See http://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html for
+     * valid values.
+     */
+    ecsOptimizedAMIName?: string;
+
+    /**
+     * The size of instance to launch.  Defaults to t2.micro if unspecified.
+     */
+    instanceType?: pulumi.Input<aws.ec2.InstanceType>;
+
+    /**
+     * The tenancy of the instance. Valid values are `"default"` or `"dedicated"`, see
+     * http://docs.aws.amazon.com/AutoScaling/latest/APIReference/API_CreateLaunchConfiguration.html
+     * for more details.  Default is "default" if unspecified.
+     */
+    placementTenancy?: pulumi.Input<"default" | "dedicated">;
+
+    /**
+     * Customize details about the root block device of the instance. See Block Devices below for
+     * details.
+     *
+     * If not provided, an 8gb 'gp2' root device will be created.  This device will be deleted upon
+     * termination.
+     */
+    rootBlockDevice?: aws.ec2.LaunchConfigurationArgs["rootBlockDevice"];
+
+    /**
+     * Additional EBS block devices to attach to the instance.  See Block Devices below for details.
+     *
+     * If not provided, a 5gb 'gp2' device will be mounted at '/dev/xvdb' and a 50gb 'gp2' device
+     * will be mounted at '/dev/xvdcz'.  Both devices will be deleted upon termination.
+     */
+    ebsBlockDevices?: aws.ec2.LaunchConfigurationArgs["ebsBlockDevices"];
+}
+
+// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
+let overwriteShape: OverwriteShape = undefined!;
+let argsShape: ClusterAutoScalingLaunchConfigurationArgs = undefined!;
+argsShape = overwriteShape;
+overwriteShape = argsShape;
