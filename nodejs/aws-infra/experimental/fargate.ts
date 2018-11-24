@@ -45,7 +45,7 @@ export type FargateTaskDefinitionArgs = utils.Overwrite<mod.ClusterTaskDefinitio
 }>;
 
 export class FargateTaskDefinition extends mod.ClusterTaskDefinition {
-    constructor(name: string, cluster: mod.Cluster,
+    constructor(name: string,
                 args: mod.FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
@@ -59,7 +59,7 @@ export class FargateTaskDefinition extends mod.ClusterTaskDefinition {
         const computedMemory = computedMemoryAndCPU.apply(x => x.memory);
         const computedCPU = computedMemoryAndCPU.apply(x => x.cpu);
 
-        super("aws-infra:x:FargateTaskDefinition", name, cluster, {
+        super("aws-infra:x:FargateTaskDefinition", name, {
             ...args,
             containers,
             requiresCompatibilities: ["FARGATE"],
@@ -81,7 +81,7 @@ export class FargateTaskDefinition extends mod.ClusterTaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new mod.FargateService(name, this.cluster, {
+        return new mod.FargateService(name, {
             ...args,
             taskDefinition: this,
         }, opts || { parent: this });
@@ -165,7 +165,7 @@ export type FargateServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
 }>;
 
 export class FargateService extends mod.ClusterService {
-    constructor(name: string, cluster: mod.Cluster,
+    constructor(name: string,
                 args: FargateServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
@@ -174,9 +174,10 @@ export class FargateService extends mod.ClusterService {
         }
 
         const taskDefinition = args.taskDefinition ||
-            new mod.FargateTaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
+            new mod.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
 
-        super("aws-infra:x:FargateService", name, cluster, {
+        const cluster = args.cluster;
+        super("aws-infra:x:FargateService", name, {
             ...args,
             taskDefinition,
             launchType: "FARGATE",

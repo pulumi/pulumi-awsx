@@ -17,10 +17,14 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 
-import * as docker from "@pulumi/docker";
 import * as utils from "./../utils";
 
 export type ClusterServiceArgs = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
+    /**
+     * The cluster this service will run in.
+     */
+    cluster: mod.Cluster;
+
     /**
      * The task definition to create the service from.
      */
@@ -72,7 +76,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
      */
     public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
-    constructor(type: string, name: string, clusterInstance: mod.Cluster,
+    constructor(type: string, name: string,
                 args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
         super(type, name, args, opts);
@@ -94,6 +98,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
 
         initializeLoadBalancers(name, args, this);
 
+        const clusterInstance = args.cluster;
         const instance = new aws.ecs.Service(name, {
             ...args,
             cluster: clusterInstance.instance.arn,

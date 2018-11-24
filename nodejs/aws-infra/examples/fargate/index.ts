@@ -30,7 +30,8 @@ const cluster = network.createCluster("testing");
 
 // A simple NGINX service, scaled out over two containers.
 const nginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const nginx = new awsinfra.x.FargateService("examples-nginx", cluster, {
+const nginx = new awsinfra.x.FargateService("examples-nginx", {
+    cluster,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -47,18 +48,19 @@ export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
 const simpleNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const simpleNginx = new awsinfra.x.FargateTaskDefinition("examples-simple-nginx", cluster, {
+const simpleNginx = new awsinfra.x.FargateTaskDefinition("examples-simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
         loadBalancerProvider: simpleNginxLoadBalancer,
     },
-}).createService("examples-simple-nginx", { desiredCount: 2});
+}).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
 export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
 const cachedNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const cachedNginx = new awsinfra.x.FargateService("examples-cached-nginx", cluster, {
+const cachedNginx = new awsinfra.x.FargateService("examples-cached-nginx", {
+    cluster,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -75,7 +77,8 @@ const cachedNginx = new awsinfra.x.FargateService("examples-cached-nginx", clust
 });
 
 const multistageCachedNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const multistageCachedNginx = new awsinfra.x.FargateService("examples-multistage-cached-nginx", cluster, {
+const multistageCachedNginx = new awsinfra.x.FargateService("examples-multistage-cached-nginx", {
+    cluster,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -94,7 +97,8 @@ const multistageCachedNginx = new awsinfra.x.FargateService("examples-multistage
 
 const customWebServerLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo(
     { port: 80, targetPort: 8080 }, cluster);
-const customWebServer = new awsinfra.x.FargateService("mycustomservice", cluster, {
+const customWebServer = new awsinfra.x.FargateService("mycustomservice", {
+    cluster,
     taskDefinitionArgs: {
         containers: {
             webserver: {
@@ -125,7 +129,8 @@ class Cache {
 
     constructor(name: string, memory: number = 128) {
         const redisLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 6379 }, cluster);
-        const redis = new awsinfra.x.FargateService(name, cluster, {
+        const redis = new awsinfra.x.FargateService(name, {
+            cluster,
             taskDefinitionArgs: {
                 containers: {
                     redis: {
@@ -181,7 +186,7 @@ class Cache {
 
 const cache = new Cache("examples-mycache");
 
-const helloTask = new awsinfra.x.FargateTaskDefinition("examples-hello-world", cluster, {
+const helloTask = new awsinfra.x.FargateTaskDefinition("examples-hello-world", {
     container: {
         image: "hello-world",
         memory: 20,
@@ -190,7 +195,8 @@ const helloTask = new awsinfra.x.FargateTaskDefinition("examples-hello-world", c
 
 // build an anonymous image:
 const builtServiceLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ port: 80 }, cluster);
-const builtService = new awsinfra.x.FargateService("examples-nginx2", cluster, {
+const builtService = new awsinfra.x.FargateService("examples-nginx2", {
+    cluster,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -275,7 +281,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
             policies: [...awsinfra.x.defaultTaskDefinitionTaskRolePolicies()],
             callback: async (req) => {
                 try {
-                    await helloTask.run();
+                    await helloTask.run({ cluster });
                     return {
                         statusCode: 200,
                         body: JSON.stringify({ success: true }),

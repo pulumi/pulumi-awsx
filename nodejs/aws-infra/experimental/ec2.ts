@@ -51,7 +51,7 @@ export type EC2TaskDefinitionArgs = utils.Overwrite<mod.ClusterTaskDefinitionArg
 }>;
 
 export class EC2TaskDefinition extends mod.ClusterTaskDefinition {
-    constructor(name: string, cluster: mod.Cluster,
+    constructor(name: string,
                 args: EC2TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
         if (!args.container && !args.containers) {
@@ -60,7 +60,7 @@ export class EC2TaskDefinition extends mod.ClusterTaskDefinition {
 
         const containers = args.containers || { container: args.container! };
 
-        super("aws-infra:x:EC2TaskDefinition", name, cluster, {
+        super("aws-infra:x:EC2TaskDefinition", name, {
             ...args,
             containers,
             requiresCompatibilities: ["EC2"],
@@ -80,7 +80,7 @@ export class EC2TaskDefinition extends mod.ClusterTaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new mod.EC2Service(name, this.cluster, {
+        return new mod.EC2Service(name, {
             ...args,
             taskDefinition: this,
         }, opts || { parent: this });
@@ -112,7 +112,7 @@ export type EC2ServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
 export class EC2Service extends mod.ClusterService {
     public taskDefinitionInstance: EC2TaskDefinition;
 
-    constructor(name: string, cluster: mod.Cluster,
+    constructor(name: string,
                 args: EC2ServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
@@ -121,9 +121,10 @@ export class EC2Service extends mod.ClusterService {
         }
 
         const taskDefinition = args.taskDefinition ||
-            new mod.EC2TaskDefinition(name, cluster, args.taskDefinitionArgs!, opts);
+            new mod.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
 
-        super("aws-infra:x:EC2Service", name, cluster, {
+        const cluster = args.cluster;
+        super("aws-infra:x:EC2Service", name, {
             ...args,
             taskDefinition,
             launchType: "EC2",

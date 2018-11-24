@@ -90,6 +90,11 @@ export type ClusterTaskDefinitionArgs = utils.Overwrite<aws.ecs.TaskDefinitionAr
 
 export interface TaskRunOptions {
     /**
+     * The cluster to run this task in.
+     */
+    cluster: mod.Cluster;
+
+    /**
      * The name of the container to run as a task.  If not provided, the first container in the list
      * of containers in the ClusterTaskDefinition will be the one that is run.
      */
@@ -108,7 +113,6 @@ export interface TaskRunOptions {
 
 export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
     public readonly instance: aws.ecs.TaskDefinition;
-    public readonly cluster: mod.Cluster;
     public readonly logGroup: aws.cloudwatch.LogGroup;
     public readonly containers: Record<string, mod.ContainerDefinition>;
     public readonly taskRole: aws.iam.Role;
@@ -117,9 +121,9 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
     /**
      * Runs this task definition in this cluster once.
      */
-    public readonly run: (options?: TaskRunOptions) => Promise<void>;
+    public readonly run: (options: TaskRunOptions) => Promise<void>;
 
-    constructor(type: string, name: string, cluster: mod.Cluster,
+    constructor(type: string, name: string,
                 args: ClusterTaskDefinitionArgs, isFargate: boolean,
                 opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
@@ -133,7 +137,6 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
         const executionRole = args.executionRole || createExecutionRole(name, parentOpts);
 
         const containers = args.containers;
-        // const exposedPort = getExposedPort(name, cluster, containers, parentOpts);
 
         // todo(cyrusn): volumes.
         //     // Find all referenced Volumes.
@@ -153,11 +156,7 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
 //         }
 //     }
 
-        // const { firstContainerName, firstContainerPort, wrappedEndpoints } =
-        //     getEndpointInfo(containers, loadBalancer!);
-
         const containerDefinitions = computeContainerDefinitions(this, name, args, logGroup);
-        // this.loadBalancerProvider = getLoadBalancerProvider(containers);
 
         const instance = new aws.ecs.TaskDefinition(name, {
             ...args,
@@ -177,17 +176,9 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
                         return result;
                   });
 
-        this.run = createRunFunction(
-            isFargate,
-            cluster.network.usePrivateSubnets,
-            cluster.instance.id,
-            instance.arn,
-            cluster.instanceSecurityGroup.id,
-            pulumi.all(cluster.network.subnetIds),
-            containerToEnvironment);
+        this.run = createRunFunction(isFargate, instance.arn, containerToEnvironment);
 
         this.instance = instance;
-        this.cluster = cluster;
         this.containers = containers;
         this.logGroup = logGroup;
         this.taskRole = taskRole;
@@ -195,7 +186,6 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
 
         this.registerOutputs({
             instance,
-            cluster,
             containers,
             logGroup,
             taskRole,
@@ -208,15 +198,17 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
 
 function createRunFunction(
         isFargate: boolean,
-        usePrivateSubnets: boolean,
-        clusterArn: pulumi.Output<string>,
         taskDefArn: pulumi.Output<string>,
-        securityGroupId: pulumi.Output<string>,
-        subnetIds: pulumi.Output<string[]>,
         containerToEnvironment: pulumi.Output<Record<string, aws.ecs.KeyValuePair[]>>) {
 
-    return async function runTask(options: TaskRunOptions = {}) {
+    return async function runTask(options: TaskRunOptions) {
         const ecs = new aws.sdk.ECS();
+
+        const cluster = options.cluster;
+        const usePrivateSubnets = cluster.network.usePrivateSubnets;
+        const clusterArn = cluster.instance.id.get();
+        const securityGroupId = cluster.instanceSecurityGroup.id.get();
+        const subnetIds = cluster.network.subnetIds.map(i => i.get());
 
         const innerContainers = containerToEnvironment.get();
         const containerName = options.containerName || Object.keys(innerContainers)[0];
@@ -234,15 +226,15 @@ function createRunFunction(
 
         // Run the task
         const res = await ecs.runTask({
-            cluster: clusterArn.get(),
+            cluster: clusterArn,
             taskDefinition: taskDefArn.get(),
             placementConstraints: placementConstraints(isFargate, options.os),
             launchType: isFargate ? "FARGATE" : "EC2",
             networkConfiguration: {
                 awsvpcConfiguration: {
                     assignPublicIp: assignPublicIp ? "ENABLED" : "DISABLED",
-                    securityGroups: [ securityGroupId.get() ],
-                    subnets: subnetIds.get(),
+                    securityGroups: [ securityGroupId ],
+                    subnets: subnetIds,
                 },
             },
             overrides: {
@@ -288,47 +280,6 @@ function placementConstraints(isFargate: boolean, os: HostOperatingSystem | unde
         expression: `attribute:ecs.os-type == ${os}`,
     }];
 }
-
-// export interface ExposedPort {
-//     /**
-//      * The name of the container this port maps to.
-//      */
-//     containerName: string;
-
-//     /**
-//      * Information about the type of port this is.
-//      */
-//     loadBalancerPort: mod.ClusterLoadBalancerPort;
-
-//     /**
-//      * The load balancer that was created to map to the specified container port.
-//      */
-//     loadBalancer: mod.ClusterLoadBalancer;
-// }
-
-// function getExposedPort(
-//     name: string, cluster: mod.Cluster,
-//     containers: Record<string, mod.ContainerDefinition>,
-//     opts: pulumi.ResourceOptions) {
-
-//     let exposedPort: ExposedPort | undefined;
-//     for (const containerName of Object.keys(containers)) {
-//         const container = containers[containerName];
-//         const loadBalancerProvider = container.loadBalancerProvider;
-//         if (loadBalancerProvider) {
-//             if (exposedPort) {
-//                 throw new Error("Only a single container can specify a [loadBalancerPort].");
-//             }
-
-//             const loadBalancer = loadBalancerProvider.loadBalancer;
-//             //  cluster.createLoadBalancer(
-//             //     name + "-" + containerName, { loadBalancerPort }, opts);
-//             exposedPort = { containerName, loadBalancer, loadBalancerPort };
-//         }
-//     }
-
-//     return exposedPort;
-// }
 
 function computeContainerDefinitions(
     parent: pulumi.Resource,
