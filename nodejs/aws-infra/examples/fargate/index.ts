@@ -58,7 +58,6 @@ const simpleNginx = new awsinfra.x.FargateTaskDefinition("examples-simple-nginx"
 
 export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
-const cachedNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 });
 const cachedNginx = new awsinfra.x.FargateService("examples-cached-nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -69,14 +68,13 @@ const cachedNginx = new awsinfra.x.FargateService("examples-cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                loadBalancerProvider: cachedNginxLoadBalancer,
+                loadBalancerProvider: awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 }),
             },
         },
     },
     desiredCount: 2,
 });
 
-const multistageCachedNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 });
 const multistageCachedNginx = new awsinfra.x.FargateService("examples-multistage-cached-nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -88,7 +86,7 @@ const multistageCachedNginx = new awsinfra.x.FargateService("examples-multistage
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                loadBalancerProvider: multistageCachedNginxLoadBalancer,
+                loadBalancerProvider: awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 }),
             },
         },
     },
@@ -202,6 +200,7 @@ const builtService = new awsinfra.x.FargateService("examples-nginx2", {
             nginx: {
                 imageProvider: awsinfra.x.ImageProvider.fromPath("./app"),
                 memory: 128,
+                loadBalancerProvider: builtServiceLoadBalancer,
             },
         },
     },
