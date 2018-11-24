@@ -22,7 +22,7 @@ import * as utils from "./../utils";
 export abstract class ClusterService extends pulumi.ComponentResource {
     public readonly instance: aws.ecs.Service;
     public readonly clusterInstance: mod.Cluster;
-    public readonly taskDefinitionInstance: mod.ClusterTaskDefinition;
+    public readonly taskDefinitionInstance: mod.TaskDefinition;
 
     /**
      * Optional auto-scaling group for the cluster.  Can be created with
@@ -188,7 +188,7 @@ function combineLoadBalancers(
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     cluster: mod.Cluster;
-    taskDefinition: mod.ClusterTaskDefinition;
+    taskDefinition: mod.TaskDefinition;
     desiredCount?: pulumi.Input<number>;
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
     os?: pulumi.Input<"linux" | "windows">;
@@ -297,7 +297,7 @@ export interface ClusterServiceArgs {
     /**
      * The task definition to create the service from.
      */
-    taskDefinition: mod.ClusterTaskDefinition;
+    taskDefinition: mod.TaskDefinition;
 
     /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do

@@ -44,7 +44,7 @@ export interface TaskRunOptions {
     environment?: aws.ecs.KeyValuePair[];
 }
 
-export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
+export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly instance: aws.ecs.TaskDefinition;
     public readonly logGroup: aws.cloudwatch.LogGroup;
     public readonly containers: Record<string, mod.ContainerDefinition>;
@@ -57,7 +57,7 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
     public readonly run: (options: TaskRunOptions) => Promise<void>;
 
     constructor(type: string, name: string,
-                args: ClusterTaskDefinitionArgs, isFargate: boolean,
+                args: TaskDefinitionArgs, isFargate: boolean,
                 opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
 
@@ -127,7 +127,7 @@ export abstract class ClusterTaskDefinition extends pulumi.ComponentResource {
     }
 }
 
-(<any>ClusterTaskDefinition).doNotCapture = true;
+(<any>TaskDefinition).doNotCapture = true;
 
 function createRunFunction(
         isFargate: boolean,
@@ -217,7 +217,7 @@ function placementConstraints(isFargate: boolean, os: HostOperatingSystem | unde
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
-    args: ClusterTaskDefinitionArgs,
+    args: TaskDefinitionArgs,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
@@ -290,7 +290,7 @@ function createExecutionRole(name: string, opts: pulumi.ResourceOptions): aws.ia
 // The shape we want for ClusterTaskDefinitionArgsOverwriteShap.  We don't export this as
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
-type ClusterTaskDefinitionArgsOverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
+type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
     family?: never;
     containerDefinitions?: never;
     containers: Record<string, mod.ContainerDefinition>;
@@ -305,7 +305,7 @@ type ClusterTaskDefinitionArgsOverwriteShape = utils.Overwrite<aws.ecs.TaskDefin
     networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
 }>;
 
-export interface ClusterTaskDefinitionArgs {
+export interface TaskDefinitionArgs {
     // Properties copied from aws.ecs.TaskDefinitionArgs
 
     placementConstraints?: pulumi.Input<pulumi.Input<{
@@ -392,7 +392,7 @@ export interface ClusterTaskDefinitionArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape: ClusterTaskDefinitionArgsOverwriteShape = undefined!;
-let argsShape: ClusterTaskDefinitionArgs = undefined!;
+let overwriteShape: OverwriteShape = undefined!;
+let argsShape: TaskDefinitionArgs = undefined!;
 argsShape = overwriteShape;
 overwriteShape = argsShape;

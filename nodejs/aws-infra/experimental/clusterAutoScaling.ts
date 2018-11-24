@@ -355,8 +355,6 @@ function getCloudFormationTemplate(
                  });
 }
 
-
-
 export interface ClusterAutoScalingGroupArgs {
     /**
      * Cluster to create the autoscaling group for.

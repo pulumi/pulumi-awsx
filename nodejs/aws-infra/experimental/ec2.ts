@@ -19,7 +19,7 @@ import * as utils from "../utils";
 
 import * as mod from ".";
 
-export type EC2TaskDefinitionArgs = utils.Overwrite<mod.ClusterTaskDefinitionArgs, {
+export type EC2TaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
     /** Not provided.  Defaults automatically to ["EC2"] */
     requiresCompatibilities?: never;
 
@@ -50,7 +50,7 @@ export type EC2TaskDefinitionArgs = utils.Overwrite<mod.ClusterTaskDefinitionArg
     containers?: Record<string, mod.ContainerDefinition>;
 }>;
 
-export class EC2TaskDefinition extends mod.ClusterTaskDefinition {
+export class EC2TaskDefinition extends mod.TaskDefinition {
     constructor(name: string,
                 args: EC2TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {

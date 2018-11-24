@@ -19,7 +19,7 @@ import * as utils from "../utils";
 
 import * as mod from ".";
 
-export type FargateTaskDefinitionArgs = utils.Overwrite<mod.ClusterTaskDefinitionArgs, {
+export type FargateTaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
     /** Not provided.  Defaults automatically to ["FARGATE"] */
     requiresCompatibilities?: never;
 
@@ -44,7 +44,7 @@ export type FargateTaskDefinitionArgs = utils.Overwrite<mod.ClusterTaskDefinitio
     containers?: Record<string, mod.ContainerDefinition>;
 }>;
 
-export class FargateTaskDefinition extends mod.ClusterTaskDefinition {
+export class FargateTaskDefinition extends mod.TaskDefinition {
     constructor(name: string,
                 args: mod.FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
