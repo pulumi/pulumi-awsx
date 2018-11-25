@@ -139,7 +139,7 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
                 deregistrationDelay: 180, // 3 minutes
                 tags: { Name: longName },
                 targetType: "ip",
-            }, { ...parentOpts, dependsOn: loadBalancer });
+            }, parentOpts);
 
             // Listen on the requested port on the LB and forward to the target.
             listener = new aws.elasticloadbalancingv2.Listener(longName, {
@@ -154,10 +154,10 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
                 // If SSL is used, we automatically insert the recommended ELB security policy from
                 // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
                 sslPolicy: certificateArn ? "ELBSecurityPolicy-2016-08" : undefined,
-            }, { ...parentOpts, dependsOn: [loadBalancer, targetGroup] });
+            }, parentOpts);
 
-            endpoint = pulumi.all([loadBalancer.dnsName, listener.urn]).apply(([dnsName]) => ({
-                hostname: dnsName,
+            endpoint = listener.urn.apply(_ => pulumi.output({
+                hostname: loadBalancer.dnsName,
                 loadBalancer: loadBalancer,
                 port: portInfo.port,
             }));
@@ -188,10 +188,9 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         const loadBalancers = (containerName: string, name: string, parent: pulumi.Resource) => {
             initialize(containerName, name, parent);
 
-            const loadBalancers: LoadBalancers =
-                pulumi.all([targetGroup.arn, listener.urn]).apply(([targetGroupArn]) => [{
+            const loadBalancers: LoadBalancers = listener.urn.apply(_ => [{
                     containerName,
-                    targetGroupArn,
+                    targetGroupArn: targetGroup.arn,
                     containerPort: portInfo.targetPort || portInfo.port,
                 }]);
 
