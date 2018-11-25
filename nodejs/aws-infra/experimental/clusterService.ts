@@ -30,7 +30,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
      */
     public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
-    constructor(type: string, name: string, clusterInstance: mod.Cluster,
+    constructor(type: string, name: string,
                 args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
         super(type, name, args, opts);
@@ -52,6 +52,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
 
         initializeLoadBalancers(name, args, this);
 
+        const clusterInstance = args.cluster;
         const instance = new aws.ecs.Service(name, {
             ...args,
             cluster: clusterInstance.instance.arn,
@@ -186,6 +187,7 @@ function combineLoadBalancers(
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
+    cluster: mod.Cluster;
     taskDefinition: mod.TaskDefinition;
     desiredCount?: pulumi.Input<number>;
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
@@ -286,6 +288,11 @@ export interface ClusterServiceArgs {
     }>;
 
     // Changes we made to the core args type.
+
+    /**
+     * Cluster this service will run in.
+     */
+    cluster: mod.Cluster;
 
     /**
      * The task definition to create the service from.

@@ -26,8 +26,8 @@ export interface ILoadBalancerProvider {
     portMappings(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     loadBalancers(containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
 
-    // endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
-    // defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
+    endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
+    defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
 }
 
 export interface PortInfo {
@@ -72,8 +72,8 @@ export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
     public abstract loadBalancers(
         containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
 
-    // public abstract endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
-    // public abstract defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
+    public abstract endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
+    public abstract defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
 
     public static fromPortInfo(
             portInfo: PortInfo,
@@ -188,21 +188,21 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         return loadBalancers;
     }
 
-    // public defaultEndpoint() {
-    //     if (!this.loadBalancer) {
-    //         throw new Error("Cannot get endpoints for an uninitialized load balancer provider.");
-    //     }
+    public defaultEndpoint() {
+        if (!this.loadBalancer) {
+            throw new Error("Cannot get endpoints for an uninitialized load balancer provider.");
+        }
 
-    //     return pulumi.output({
-    //         hostname: this.loadBalancer.dnsName,
-    //         loadBalancer: this.loadBalancer,
-    //         port: this.portInfo.port,
-    //     });
-    // }
+        return pulumi.output({
+            hostname: this.loadBalancer.dnsName,
+            loadBalancer: this.loadBalancer,
+            port: this.portInfo.port,
+        });
+    }
 
-    // public endpoints() {
-    //     return this.defaultEndpoint().apply(e => [e]);
-    // }
+    public endpoints() {
+        return this.defaultEndpoint().apply(e => [e]);
+    }
 }
 
 function computeLoadBalancerInfo(loadBalancerPort: PortInfo) {
