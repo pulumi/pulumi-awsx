@@ -74,6 +74,9 @@ func Test_Examples(t *testing.T) {
 			Dependencies: []string{
 				"@pulumi/aws-infra",
 			},
+			UpdateCommandlineFlags: []string{
+				"--diff",
+			},
 			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargates*/),
 		},
 	}
