@@ -114,7 +114,7 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
             computeLoadBalancerInfo(this.portInfo);
 
-        const parentOpts = { };
+        const parentOpts = { parent };
 
         this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
             ...this.loadBalancerArgs,

@@ -60,12 +60,16 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
 
         const containers = args.containers || { container: args.container! };
 
-        super("aws-infra:x:EC2TaskDefinition", name, {
+        const argsCopy: mod.TaskDefinitionArgs = {
             ...args,
-            containers,
             requiresCompatibilities: ["EC2"],
             networkMode: pulumi.output(args.networkMode).apply(m => m || "awsvpc"),
-        }, /*isFargate:*/ false, opts);
+        };
+
+        delete (<any>argsCopy).container;
+        delete (<any>argsCopy).containers;
+
+        super("aws-infra:x:EC2TaskDefinition", name, containers, /*isFargate:*/ false, argsCopy, opts);
     }
 
     /**

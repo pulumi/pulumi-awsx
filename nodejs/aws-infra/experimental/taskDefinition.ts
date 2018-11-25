@@ -57,7 +57,8 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly run: (options: TaskRunOptions) => Promise<void>;
 
     constructor(type: string, name: string,
-                args: TaskDefinitionArgs, isFargate: boolean,
+                containers: Record<string, mod.ContainerDefinition>,
+                isFargate: boolean, args: TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
 
@@ -68,8 +69,6 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
         const taskRole = args.taskRole || createTaskRole(name, parentOpts);
         const executionRole = args.executionRole || createExecutionRole(name, parentOpts);
-
-        const containers = args.containers;
 
 //         // todo(cyrusn): volumes.
 //         //     // Find all referenced Volumes.
@@ -89,7 +88,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 // //         }
 // //     }
 
-        const containerDefinitions = computeContainerDefinitions(this, name, args, logGroup);
+        const containerDefinitions = computeContainerDefinitions(this, name, containers, logGroup);
 
         const instance = new aws.ecs.TaskDefinition(name, {
             ...args,
@@ -112,10 +111,10 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 //         // this.run = createRunFunction(isFargate, instance.arn, containerToEnvironment);
 
         this.instance = instance;
-//         this.containers = containers;
-//         this.logGroup = logGroup;
-//         this.taskRole = taskRole;
-//         this.executionRole = executionRole;
+        this.containers = containers;
+        this.logGroup = logGroup;
+        this.taskRole = taskRole;
+        this.executionRole = executionRole;
 
         // this.registerOutputs({
         //     instance,
@@ -217,13 +216,13 @@ function placementConstraints(isFargate: boolean, os: HostOperatingSystem | unde
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
-    args: TaskDefinitionArgs,
+    containers: Record<string, mod.ContainerDefinition>,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
 
-    for (const containerName of Object.keys(args.containers)) {
-        const container = args.containers[containerName];
+    for (const containerName of Object.keys(containers)) {
+        const container = containers[containerName];
 
         result.push(mod.computeContainerDefinition(parent, name, containerName, container, logGroup));
     }
@@ -293,7 +292,6 @@ function createExecutionRole(name: string, opts: pulumi.ResourceOptions): aws.ia
 type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
     family?: never;
     containerDefinitions?: never;
-    containers: Record<string, mod.ContainerDefinition>;
     logGroup?: aws.cloudwatch.LogGroup
     taskRoleArn?: never;
     taskRole?: aws.iam.Role;
@@ -332,12 +330,6 @@ export interface TaskDefinitionArgs {
     }>[]>;
 
     // Properties we've added/changed.
-
-    /**
-     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
-     * ClusterService that will contain many containers within.
-     */
-    containers: Record<string, mod.ContainerDefinition>;
 
     /**
      * Log group for logging information related to the service.  If not provided a default instance

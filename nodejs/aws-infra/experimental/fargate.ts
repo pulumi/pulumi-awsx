@@ -59,14 +59,18 @@ export class FargateTaskDefinition extends mod.TaskDefinition {
         const computedMemory = computedMemoryAndCPU.apply(x => x.memory);
         const computedCPU = computedMemoryAndCPU.apply(x => x.cpu);
 
-        super("aws-infra:x:FargateTaskDefinition", name, {
+        const argsCopy: mod.TaskDefinitionArgs = {
             ...args,
-            containers,
             requiresCompatibilities: ["FARGATE"],
             networkMode: "awsvpc",
             memory: pulumi.output(args.memory).apply(memory => memory || computedMemory),
             cpu: pulumi.output(args.cpu).apply(cpu => cpu || computedCPU),
-        }, /*isFargate:*/ true, opts);
+        };
+
+        delete (<any>argsCopy).container;
+        delete (<any>argsCopy).containers;
+
+        super("aws-infra:x:FargateTaskDefinition", name, containers, /*isFargate:*/ true, argsCopy, opts);
     }
 
     /**
