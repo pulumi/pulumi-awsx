@@ -58,7 +58,6 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
             ...args,
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: pulumi.output(args.instanceType).apply(t => t || "t2.micro"),
-            keyName: args.keyName,
             iamInstanceProfile: instanceProfile.id,
             enableMonitoring: pulumi.output(args.enableMonitoring).apply(b => b !== undefined ? b : true),
             placementTenancy: pulumi.output(args.placementTenancy).apply(t => t || "default"),

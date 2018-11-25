@@ -19,8 +19,6 @@ import * as mod from ".";
 
 import * as utils from "../utils";
 
-export type WrappedEndpoints = Record<string, Record<number, pulumi.Output<aws.apigateway.x.Endpoint>>>;
-
 /** @internal */
 export function computeContainerDefinition(
     parent: pulumi.Resource,
