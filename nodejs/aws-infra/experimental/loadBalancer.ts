@@ -25,9 +25,6 @@ export type LoadBalancers = aws.ecs.ServiceArgs["loadBalancers"];
 export interface ILoadBalancerProvider {
     portMappings(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     loadBalancers(containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
-
-    // endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
-    // defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
 }
 
 export interface PortInfo {
@@ -71,9 +68,6 @@ export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
         containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     public abstract loadBalancers(
         containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
-
-    // public abstract endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
-    // public abstract defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
 
     public static fromPortInfo(
             portInfo: PortInfo,
@@ -198,25 +192,11 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         };
 
         const defaultEndpoint = () => endpoint;
-        //     if (!loadBalancer) {
-        //         throw new Error("Cannot get endpoints for an uninitialized load balancer provider.");
-        //     }
-
-        //     return pulumi.output({
-        //         hostname: loadBalancer.dnsName,
-        //         loadBalancer: loadBalancer,
-        //         port: portInfo.port,
-        //     });
-        // };
 
         this.portMappings = portMappings;
         this.loadBalancers = loadBalancers;
         this.defaultEndpoint = defaultEndpoint;
     }
-
-    // public endpoints() {
-    //     return this.defaultEndpoint().apply(e => [e]);
-    // }
 }
 
 function computeLoadBalancerInfo(loadBalancerPort: PortInfo) {
