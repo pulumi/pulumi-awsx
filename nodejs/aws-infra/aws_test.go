@@ -77,7 +77,7 @@ func Test_Examples(t *testing.T) {
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
-			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargates*/),
+			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargate*/),
 		},
 	}
 
