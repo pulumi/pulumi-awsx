@@ -230,7 +230,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
 
             // We will use a different route table for this subnet depending on
             // whether we are in a public or private subnet
-            const subnetRouteTable = this.createSubnetRouteTable(
+            const subnetRouteTable = createSubnetRouteTable(
                 publicRouteTable, subnet, name, i);
 
             const routeTableAssociation = new aws.ec2.RouteTableAssociation(`${name}-${i}`, {
@@ -243,78 +243,61 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             this.subnetIds.push(subnetId);
         }
     }
-
-    private createSubnetRouteTable(
-            publicRouteTable: aws.ec2.RouteTable, subnet: aws.ec2.Subnet,
-            name: string, index: number) {
-        const parentOpts = { parent: this };
-
-        if (!this.usePrivateSubnets) {
-            // The subnet is public, so register it as our public subnet
-            this.publicSubnetIds.push(subnet.id);
-            return publicRouteTable;
-        }
-
-        // We need a public subnet for the NAT Gateway
-        const natName = `${name}-nat-${index}`;
-        const tags = { Name: natName };
-
-        const natGatewayPublicSubnet = new aws.ec2.Subnet(natName, {
-            vpcId: this.vpcId,
-            availabilityZone: getAvailabilityZone(index),
-            cidrBlock: `10.10.${index+64}.0/24`, // Use top half of the subnet space
-            mapPublicIpOnLaunch: true,        // Always assign a public IP in NAT subnet
-            tags,
-        }, parentOpts);
-
-        // And we need to route traffic from that public subnet to the Internet Gateway
-        const natGatewayRoutes = new aws.ec2.RouteTableAssociation(natName, {
-            subnetId: natGatewayPublicSubnet.id,
-            routeTableId: publicRouteTable.id,
-        }, parentOpts);
-
-        // Record the subnet id, but depend on the RouteTableAssociation
-        const natGatewayPublicSubnetId =
-            pulumi.all([natGatewayPublicSubnet.id, natGatewayRoutes.id]).apply(([id]) => id);
-        this.publicSubnetIds.push(natGatewayPublicSubnetId);
-
-        // We need an Elastic IP for the NAT Gateway
-        const eip = new aws.ec2.Eip(natName, {}, parentOpts);
-
-        // And we need a NAT Gateway to be able to access the Internet
-        const natGateway = new aws.ec2.NatGateway(natName, {
-            subnetId: natGatewayPublicSubnet.id,
-            allocationId: eip.id,
-            tags,
-        }, parentOpts);
-
-        const natRouteTable = new aws.ec2.RouteTable(natName, {
-            vpcId: this.vpcId,
-            routes: [{
-                cidrBlock: "0.0.0.0/0",
-                natGatewayId: natGateway.id,
-            }],
-            tags,
-        }, parentOpts);
-
-        // Route through the NAT gateway for the private subnet
-        return natRouteTable;
-    }
-
-    /**
-     * Creates a new cluster, using this instance as the network it belongs to.
-     */
-    public createCluster(name: string, args: x.ClusterArgs = {}, opts?: pulumi.ResourceOptions) {
-        if (args.network) {
-            throw new Error("[args.network] should not be provided.");
-        }
-
-        return new x.Cluster(name, {
-            ...args,
-            network: this,
-        }, opts || { parent: this });
-    }
 }
 
-(<any>Network).doNotCapture = true;
-(<any>Network.prototype).doNotCapture = true;
+function createSubnetRouteTable(
+        publicRouteTable: aws.ec2.RouteTable, subnet: aws.ec2.Subnet,
+        name: string, index: number) {
+    const parentOpts = { parent: this };
+
+    if (!this.usePrivateSubnets) {
+        // The subnet is public, so register it as our public subnet
+        this.publicSubnetIds.push(subnet.id);
+        return publicRouteTable;
+    }
+
+    // We need a public subnet for the NAT Gateway
+    const natName = `${name}-nat-${index}`;
+    const tags = { Name: natName };
+
+    const natGatewayPublicSubnet = new aws.ec2.Subnet(natName, {
+        vpcId: this.vpcId,
+        availabilityZone: getAvailabilityZone(index),
+        cidrBlock: `10.10.${index+64}.0/24`, // Use top half of the subnet space
+        mapPublicIpOnLaunch: true,        // Always assign a public IP in NAT subnet
+        tags,
+    }, parentOpts);
+
+    // And we need to route traffic from that public subnet to the Internet Gateway
+    const natGatewayRoutes = new aws.ec2.RouteTableAssociation(natName, {
+        subnetId: natGatewayPublicSubnet.id,
+        routeTableId: publicRouteTable.id,
+    }, parentOpts);
+
+    // Record the subnet id, but depend on the RouteTableAssociation
+    const natGatewayPublicSubnetId =
+        pulumi.all([natGatewayPublicSubnet.id, natGatewayRoutes.id]).apply(([id]) => id);
+    this.publicSubnetIds.push(natGatewayPublicSubnetId);
+
+    // We need an Elastic IP for the NAT Gateway
+    const eip = new aws.ec2.Eip(natName, {}, parentOpts);
+
+    // And we need a NAT Gateway to be able to access the Internet
+    const natGateway = new aws.ec2.NatGateway(natName, {
+        subnetId: natGatewayPublicSubnet.id,
+        allocationId: eip.id,
+        tags,
+    }, parentOpts);
+
+    const natRouteTable = new aws.ec2.RouteTable(natName, {
+        vpcId: this.vpcId,
+        routes: [{
+            cidrBlock: "0.0.0.0/0",
+            natGatewayId: natGateway.id,
+        }],
+        tags,
+    }, parentOpts);
+
+    // Route through the NAT gateway for the private subnet
+    return natRouteTable;
+}

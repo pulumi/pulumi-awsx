@@ -20,7 +20,7 @@ import * as awsinfra from "@pulumi/aws-infra";
 import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
-const cluster = network.createCluster("testing");
+const cluster = new awsinfra.x.Cluster("testing", { network });
 // const group = cluster.createAutoScalingGroup("asg", {
 //     templateParameters: {
 //         minSize: 2,
@@ -280,7 +280,8 @@ const api = new aws.apigateway.x.API("examples-containers", {
             policies: [...awsinfra.x.defaultTaskDefinitionTaskRolePolicies()],
             callback: async (req) => {
                 try {
-                    await helloTask.run({ cluster });
+                    const c = cluster;
+                    await helloTask.run({ cluster: c });
                     return {
                         statusCode: 200,
                         body: JSON.stringify({ success: true }),

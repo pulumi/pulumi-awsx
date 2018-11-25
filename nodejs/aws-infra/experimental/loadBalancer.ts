@@ -26,8 +26,8 @@ export interface ILoadBalancerProvider {
     portMappings(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     loadBalancers(containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
 
-    endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
-    defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
+    // endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
+    // defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
 }
 
 export interface PortInfo {
@@ -72,137 +72,143 @@ export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
     public abstract loadBalancers(
         containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
 
-    public abstract endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
-    public abstract defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
+    // public abstract endpoints(): pulumi.Output<aws.apigateway.x.Endpoint[]>;
+    // public abstract defaultEndpoint(): pulumi.Output<aws.apigateway.x.Endpoint>;
 
     public static fromPortInfo(
             portInfo: PortInfo,
-            args: aws.elasticloadbalancingv2.LoadBalancerArgs = {}): ILoadBalancerProvider {
+            args: aws.elasticloadbalancingv2.LoadBalancerArgs = {}) {
         return new PortInfoLoadBalancerProvider(portInfo, args);
     }
 }
 
 export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
-    public loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
-    public targetGroup: aws.elasticloadbalancingv2.TargetGroup;
+    portMappings: (containerName: string, name: string, parent: pulumi.Resource) => pulumi.Input<aws.ecs.PortMapping[]>;
+    loadBalancers: (containerName: string, name: string, parent: pulumi.Resource) => LoadBalancers;
+    defaultEndpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
 
-    constructor(
-        private readonly portInfo: PortInfo,
-        private readonly loadBalancerArgs: aws.elasticloadbalancingv2.LoadBalancerArgs) {
-
+    constructor(portInfo: PortInfo, loadBalancerArgs: aws.elasticloadbalancingv2.LoadBalancerArgs) {
         super();
-    }
 
-    private initialize(containerName: string, name: string, parent: pulumi.Resource): void {
-        if (this.loadBalancer) {
-            return;
-        }
+        let loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
+        let targetGroup: aws.elasticloadbalancingv2.TargetGroup;
 
-        // Load balancers need *very* short names, so we unfortunately have to hash here.
-        //
-        // Note: Technically, we can only support one LB per service, so only the service name is needed here, but we
-        // anticipate this will not always be the case, so we include a set of values which must be unique.
-        const longName = `${name}-${containerName}-${this.portInfo.port}`;
-        const shortName = utils.sha1hash(`${longName}`);
+        const initialize = (containerName: string, name: string, parent: pulumi.Resource) => {
+            if (loadBalancer) {
+                return;
+            }
 
-        // Create an internal load balancer if requested.
-        const cluster = this.portInfo.cluster;
-        const internal = cluster.network.usePrivateSubnets && !this.portInfo.external;
-
-        // See what kind of load balancer to create (application L7 for HTTP(S) traffic, or network L4 otherwise).
-        // Also ensure that we have an SSL certificate for termination at the LB, if that was requested.
-        const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
-            computeLoadBalancerInfo(this.portInfo);
-
-        const parentOpts = { parent };
-
-        this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
-            ...this.loadBalancerArgs,
-            loadBalancerType: useAppLoadBalancer ? "application" : "network",
-            subnets: cluster.network.publicSubnetIds,
-            internal: internal,
-            // If this is an application LB, we need to associate it with the ECS cluster's security
-            // group, so that traffic on any ports can reach it.  Otherwise, leave blank, and
-            // default to the VPC's group.
-            securityGroups: useAppLoadBalancer ? [ cluster.instanceSecurityGroup.id ] : undefined,
-            tags: { Name: longName },
-        }, parentOpts);
-
-                // Create the target group for the new container/port pair.
-        this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
-            port: this.portInfo.targetPort || this.portInfo.port,
-            protocol: targetProtocol,
-            vpcId: cluster.network.vpcId,
-            deregistrationDelay: 180, // 3 minutes
-            tags: { Name: longName },
-            targetType: "ip",
-        }, parentOpts);
-
-        // Listen on the requested port on the LB and forward to the target.
-        const listener = new aws.elasticloadbalancingv2.Listener(longName, {
-            loadBalancerArn: this.loadBalancer.arn,
-            protocol: listenerProtocol,
-            certificateArn: certificateArn,
-            port: this.portInfo.port,
-            defaultAction: {
-                type: "forward",
-                targetGroupArn: this.targetGroup.arn,
-            },
-            // If SSL is used, we automatically insert the recommended ELB security policy from
-            // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
-            sslPolicy: certificateArn ? "ELBSecurityPolicy-2016-08" : undefined,
-        }, parentOpts);
-    }
-
-    public portMappings(containerName: string, name: string, parent: pulumi.Resource) {
-        this.initialize(containerName, name, parent);
-
-        const port = this.portInfo.targetPort || this.portInfo.port;
-        const portMappings: aws.ecs.PortMapping[] = [{
-            containerPort: port,
-            // From https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html:
-            // > For task definitions that use the awsvpc network mode, you should only
-            // > specify the containerPort. The hostPort can be left blank or it must be the
-            // > same value as the containerPort.
+            // Load balancers need *very* short names, so we unfortunately have to hash here.
             //
-            // However, if left blank, it will be automatically populated by AWS, potentially leading to dirty
-            // diffs even when no changes have been made. Since we are currently always using `awsvpc` mode, we
-            // go ahead and populate it with the same value as `containerPort`.
-            //
-            // See https://github.com/terraform-providers/terraform-provider-aws/issues/3401.
-            hostPort: port,
-        }];
+            // Note: Technically, we can only support one LB per service, so only the service name
+            // is needed here, but we anticipate this will not always be the case, so we include a
+            // set of values which must be unique.
+            const longName = `${name}-${containerName}-${portInfo.port}`;
+            const shortName = utils.sha1hash(`${longName}`);
 
-        return portMappings;
+            // Create an internal load balancer if requested.
+            const cluster = portInfo.cluster;
+            const internal = cluster.network.usePrivateSubnets && !portInfo.external;
+
+            // See what kind of load balancer to create (application L7 for HTTP(S) traffic, or network L4 otherwise).
+            // Also ensure that we have an SSL certificate for termination at the LB, if that was requested.
+            const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
+                computeLoadBalancerInfo(portInfo);
+
+            const parentOpts = { parent };
+
+            loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
+                ...loadBalancerArgs,
+                loadBalancerType: useAppLoadBalancer ? "application" : "network",
+                subnets: cluster.network.publicSubnetIds,
+                internal: internal,
+                // If this is an application LB, we need to associate it with the ECS cluster's security
+                // group, so that traffic on any ports can reach it.  Otherwise, leave blank, and
+                // default to the VPC's group.
+                securityGroups: useAppLoadBalancer ? [ cluster.instanceSecurityGroup.id ] : undefined,
+                tags: { Name: longName },
+            }, parentOpts);
+
+                    // Create the target group for the new container/port pair.
+            targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
+                port: portInfo.targetPort || portInfo.port,
+                protocol: targetProtocol,
+                vpcId: cluster.network.vpcId,
+                deregistrationDelay: 180, // 3 minutes
+                tags: { Name: longName },
+                targetType: "ip",
+            }, parentOpts);
+
+            // Listen on the requested port on the LB and forward to the target.
+            const listener = new aws.elasticloadbalancingv2.Listener(longName, {
+                loadBalancerArn: loadBalancer.arn,
+                protocol: listenerProtocol,
+                certificateArn: certificateArn,
+                port: portInfo.port,
+                defaultAction: {
+                    type: "forward",
+                    targetGroupArn: targetGroup.arn,
+                },
+                // If SSL is used, we automatically insert the recommended ELB security policy from
+                // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
+                sslPolicy: certificateArn ? "ELBSecurityPolicy-2016-08" : undefined,
+            }, parentOpts);
+        };
+
+        const portMappings = (containerName: string, name: string, parent: pulumi.Resource) => {
+            initialize(containerName, name, parent);
+
+            const port = portInfo.targetPort || portInfo.port;
+            const portMappings: aws.ecs.PortMapping[] = [{
+                containerPort: port,
+                // From https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html:
+                // > For task definitions that use the awsvpc network mode, you should only
+                // > specify the containerPort. The hostPort can be left blank or it must be the
+                // > same value as the containerPort.
+                //
+                // However, if left blank, it will be automatically populated by AWS, potentially leading to dirty
+                // diffs even when no changes have been made. Since we are currently always using `awsvpc` mode, we
+                // go ahead and populate it with the same value as `containerPort`.
+                //
+                // See https://github.com/terraform-providers/terraform-provider-aws/issues/3401.
+                hostPort: port,
+            }];
+
+            return portMappings;
+        };
+
+        const loadBalancers = (containerName: string, name: string, parent: pulumi.Resource) => {
+            initialize(containerName, name, parent);
+
+            const loadBalancers: LoadBalancers = [{
+                containerName,
+                targetGroupArn: targetGroup.arn,
+                containerPort: portInfo.targetPort || portInfo.port,
+            }];
+
+            return loadBalancers;
+        };
+
+        const defaultEndpoint = () => {
+            if (!loadBalancer) {
+                throw new Error("Cannot get endpoints for an uninitialized load balancer provider.");
+            }
+
+            return pulumi.output({
+                hostname: loadBalancer.dnsName,
+                loadBalancer: loadBalancer,
+                port: portInfo.port,
+            });
+        };
+
+        this.portMappings = portMappings;
+        this.loadBalancers = loadBalancers;
+        this.defaultEndpoint = defaultEndpoint;
     }
 
-    public loadBalancers(containerName: string, name: string, parent: pulumi.Resource) {
-        this.initialize(containerName, name, parent);
-
-        const loadBalancers: LoadBalancers = [{
-            containerName,
-            targetGroupArn: this.targetGroup.arn,
-            containerPort: this.portInfo.targetPort || this.portInfo.port,
-        }];
-
-        return loadBalancers;
-    }
-
-    public defaultEndpoint() {
-        if (!this.loadBalancer) {
-            throw new Error("Cannot get endpoints for an uninitialized load balancer provider.");
-        }
-
-        return pulumi.output({
-            hostname: this.loadBalancer.dnsName,
-            loadBalancer: this.loadBalancer,
-            port: this.portInfo.port,
-        });
-    }
-
-    public endpoints() {
-        return this.defaultEndpoint().apply(e => [e]);
-    }
+    // public endpoints() {
+    //     return this.defaultEndpoint().apply(e => [e]);
+    // }
 }
 
 function computeLoadBalancerInfo(loadBalancerPort: PortInfo) {

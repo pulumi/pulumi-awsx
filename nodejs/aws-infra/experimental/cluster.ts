@@ -36,7 +36,7 @@ export class Cluster extends pulumi.ComponentResource {
      */
     public readonly instanceSecurityGroup: aws.ec2.SecurityGroup;
 
-    constructor(name: string, args: ClusterArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("aws-infra:x:Cluster", name, {
             ...args,
         }, opts);
@@ -99,7 +99,7 @@ export class Cluster extends pulumi.ComponentResource {
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
-    network?: Network;
+    network: Network;
     instanceSecurityGroup?: aws.ec2.SecurityGroup;
 }>;
 
@@ -108,15 +108,15 @@ type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
  */
 export interface ClusterArgs {
     /**
-     * The name of the cluster (up to 255 letters, numbers, hyphens, and underscores)
-     */
-    name?: pulumi.Input<string>;
-
-    /**
      * The network in which to create this cluster.  If not provided, Network.getDefault() will be
      * used.
      */
-    network?: Network;
+    network: Network;
+
+    /**
+     * The name of the cluster (up to 255 letters, numbers, hyphens, and underscores)
+     */
+    name?: pulumi.Input<string>;
 
     /**
      * The security group to place new instances into.  If not provided, a default will be
