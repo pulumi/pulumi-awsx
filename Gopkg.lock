@@ -299,7 +299,13 @@
     "pkg/workspace",
     "sdk/proto/go"
   ]
-  revision = "a337fd73793c8fba7db7b602fec9cf32aab1c72f"
+  revision = "9a044ff865d495b321ba262a350eac8b125ebd14"
+
+[[projects]]
+  name = "github.com/pulumi/pulumi-cloud"
+  packages = ["examples"]
+  revision = "94d6de16344b8e52032e4b610385e90a15600af4"
+  version = "v0.16.1"
 
 [[projects]]
   branch = "master"
