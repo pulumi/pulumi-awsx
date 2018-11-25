@@ -98,17 +98,17 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerDefinitions.apply(JSON.stringify),
         }, parentOpts);
 
-//         const containerToEnvironment =
-//             pulumi.output(containers)
-//                   .apply(c => {
-//                         const result: Record<string, aws.ecs.KeyValuePair[]> = {};
-//                         for (const key of Object.keys(c)) {
-//                             result[key] = c[key].environment || [];
-//                         }
-//                         return result;
-//                   });
+        const containerToEnvironment =
+            pulumi.output(containers)
+                  .apply(c => {
+                        const result: Record<string, aws.ecs.KeyValuePair[]> = {};
+                        for (const key of Object.keys(c)) {
+                            result[key] = c[key].environment || [];
+                        }
+                        return result;
+                  });
 
-//         // this.run = createRunFunction(isFargate, instance.arn, containerToEnvironment);
+        this.run = createRunFunction(isFargate, instance.arn, containerToEnvironment);
 
         this.instance = instance;
         this.containers = containers;
