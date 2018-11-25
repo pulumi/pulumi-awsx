@@ -182,7 +182,7 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
                 hostPort: port,
             }];
 
-            return portMappings;
+            return listener.urn.apply(_ => portMappings);
         };
 
         const loadBalancers = (containerName: string, name: string, parent: pulumi.Resource) => {
