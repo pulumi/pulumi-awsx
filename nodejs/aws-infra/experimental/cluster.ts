@@ -15,8 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as mod from ".";
-
 import { Network } from "./../network";
 
 import * as utils from "../utils";
@@ -99,7 +97,7 @@ export class Cluster extends pulumi.ComponentResource {
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
-    network: Network;
+    network?: Network;
     instanceSecurityGroup?: aws.ec2.SecurityGroup;
 }>;
 
@@ -111,7 +109,7 @@ export interface ClusterArgs {
      * The network in which to create this cluster.  If not provided, Network.getDefault() will be
      * used.
      */
-    network: Network;
+    network?: Network;
 
     /**
      * The name of the cluster (up to 255 letters, numbers, hyphens, and underscores)
