@@ -92,6 +92,7 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
 
         let loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
         let targetGroup: aws.elasticloadbalancingv2.TargetGroup;
+        let listener: aws.elasticloadbalancingv2.Listener;
         let endpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
         const initialize = (containerName: string, name: string, parent: pulumi.Resource) => {
@@ -138,10 +139,10 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
                 deregistrationDelay: 180, // 3 minutes
                 tags: { Name: longName },
                 targetType: "ip",
-            }, parentOpts);
+            }, { ...parentOpts, dependsOn: loadBalancer });
 
             // Listen on the requested port on the LB and forward to the target.
-            const listener = new aws.elasticloadbalancingv2.Listener(longName, {
+            listener = new aws.elasticloadbalancingv2.Listener(longName, {
                 loadBalancerArn: loadBalancer.arn,
                 protocol: listenerProtocol,
                 certificateArn: certificateArn,
@@ -153,13 +154,13 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
                 // If SSL is used, we automatically insert the recommended ELB security policy from
                 // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
                 sslPolicy: certificateArn ? "ELBSecurityPolicy-2016-08" : undefined,
-            }, parentOpts);
+            }, { ...parentOpts, dependsOn: [loadBalancer, targetGroup] });
 
-            endpoint = pulumi.output({
-                hostname: loadBalancer.dnsName,
+            endpoint = pulumi.all([loadBalancer.dnsName, listener.urn]).apply(([dnsName]) => ({
+                hostname: dnsName,
                 loadBalancer: loadBalancer,
                 port: portInfo.port,
-            });
+            }));
         };
 
         const portMappings = (containerName: string, name: string, parent: pulumi.Resource) => {
@@ -187,11 +188,12 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
         const loadBalancers = (containerName: string, name: string, parent: pulumi.Resource) => {
             initialize(containerName, name, parent);
 
-            const loadBalancers: LoadBalancers = [{
-                containerName,
-                targetGroupArn: targetGroup.arn,
-                containerPort: portInfo.targetPort || portInfo.port,
-            }];
+            const loadBalancers: LoadBalancers =
+                pulumi.all([targetGroup.arn, listener.urn]).apply(([targetGroupArn]) => [{
+                    containerName,
+                    targetGroupArn,
+                    containerPort: portInfo.targetPort || portInfo.port,
+                }]);
 
             return loadBalancers;
         };
