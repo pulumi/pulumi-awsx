@@ -89,7 +89,7 @@ class AssetImageProvider extends ImageProvider {
     }
 
     public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
-        const imageName = this.getImageName(name);
+        const imageName = this.getImageName();
         const repository = this.getOrCreateRepository(imageName, { parent });
 
         // This is a container to build; produce a name, either user-specified or auto-computed.
@@ -102,7 +102,7 @@ class AssetImageProvider extends ImageProvider {
         return image;
     }
 
-    private getImageName(name: string) {
+    private getImageName() {
         // Produce a hash of the build context and use that for the image name.
         let buildSig: string;
         if (typeof this.pathOrBuild === "string") {
@@ -120,7 +120,8 @@ class AssetImageProvider extends ImageProvider {
             }
         }
 
-        return `${utils.sha1hash(buildSig)}-container-${name}`;
+        buildSig += pulumi.getStack();
+        return `${utils.sha1hash(buildSig)}-container`;
     }
 
     // getOrCreateRepository returns the ECR repository for this image, lazily allocating if necessary.
