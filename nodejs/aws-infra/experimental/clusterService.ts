@@ -30,7 +30,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
      */
     public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
-    constructor(type: string, name: string, cluster: mod.Cluster,
+    constructor(type: string, name: string, clusterInstance: mod.Cluster,
                 args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
         super(type, name, args, opts);
@@ -54,7 +54,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
 
         const instance = new aws.ecs.Service(name, {
             ...args,
-            cluster: cluster.instance.arn,
+            cluster: clusterInstance.instance.arn,
             taskDefinition: args.taskDefinition.instance.arn,
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
             launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
@@ -66,16 +66,16 @@ export abstract class ClusterService extends pulumi.ComponentResource {
         const autoScalingGroup = args.autoScalingGroup;
 
         this.instance = instance;
-        this.clusterInstance = cluster;
+        this.clusterInstance = clusterInstance;
         this.taskDefinitionInstance = args.taskDefinition;
         this.autoScalingGroup = args.autoScalingGroup;
 
-        // this.registerOutputs({
-        //     instance,
-        //     clusterInstance,
-        //     taskDefinitionInstance,
-        //     autoScalingGroup,
-        // });
+        this.registerOutputs({
+            instance,
+            clusterInstance,
+            taskDefinitionInstance,
+            autoScalingGroup,
+        });
     }
 }
 

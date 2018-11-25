@@ -116,13 +116,13 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         this.taskRole = taskRole;
         this.executionRole = executionRole;
 
-        // this.registerOutputs({
-        //     instance,
-        //     containers,
-        //     logGroup,
-        //     taskRole,
-        //     executionRole,
-        // });
+        this.registerOutputs({
+            instance,
+            containers,
+            logGroup,
+            taskRole,
+            executionRole,
+        });
     }
 }
 

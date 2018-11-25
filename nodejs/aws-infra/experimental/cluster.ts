@@ -85,11 +85,11 @@ export class Cluster extends pulumi.ComponentResource {
         this.network = network;
         this.instanceSecurityGroup = instanceSecurityGroup;
 
-        // this.registerOutputs({
-        //     instance,
-        //     network,
-        //     instanceSecurityGroup,
-        // });
+        this.registerOutputs({
+            instance,
+            network,
+            instanceSecurityGroup,
+        });
     }
 }
 

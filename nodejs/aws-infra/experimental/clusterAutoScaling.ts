@@ -75,13 +75,13 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
         this.instanceProfile = instanceProfile;
         this.fileSystem = fileSystem;
 
-        // this.registerOutputs({
-        //     instance,
-        //     cluster,
-        //     stackName,
-        //     instanceProfile,
-        //     fileSystem,
-        // });
+        this.registerOutputs({
+            instance,
+            cluster,
+            stackName,
+            instanceProfile,
+            fileSystem,
+        });
     }
 }
 
