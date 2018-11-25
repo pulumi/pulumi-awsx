@@ -92,6 +92,7 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
 
         let loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
         let targetGroup: aws.elasticloadbalancingv2.TargetGroup;
+        let endpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
         const initialize = (containerName: string, name: string, parent: pulumi.Resource) => {
             if (loadBalancer) {
@@ -153,6 +154,12 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
                 // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
                 sslPolicy: certificateArn ? "ELBSecurityPolicy-2016-08" : undefined,
             }, parentOpts);
+
+            endpoint = pulumi.output({
+                hostname: loadBalancer.dnsName,
+                loadBalancer: loadBalancer,
+                port: portInfo.port,
+            });
         };
 
         const portMappings = (containerName: string, name: string, parent: pulumi.Resource) => {
@@ -189,17 +196,17 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
             return loadBalancers;
         };
 
-        const defaultEndpoint = () => {
-            if (!loadBalancer) {
-                throw new Error("Cannot get endpoints for an uninitialized load balancer provider.");
-            }
+        const defaultEndpoint = () => endpoint;
+        //     if (!loadBalancer) {
+        //         throw new Error("Cannot get endpoints for an uninitialized load balancer provider.");
+        //     }
 
-            return pulumi.output({
-                hostname: loadBalancer.dnsName,
-                loadBalancer: loadBalancer,
-                port: portInfo.port,
-            });
-        };
+        //     return pulumi.output({
+        //         hostname: loadBalancer.dnsName,
+        //         loadBalancer: loadBalancer,
+        //         port: portInfo.port,
+        //     });
+        // };
 
         this.portMappings = portMappings;
         this.loadBalancers = loadBalancers;
