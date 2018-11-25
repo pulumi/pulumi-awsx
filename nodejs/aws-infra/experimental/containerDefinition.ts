@@ -36,23 +36,28 @@ export function computeContainerDefinition(
     const imageProvider = container.imageProvider;
     const loadBalancerProvider = container.loadBalancerProvider;
 
+    let image = container.image;
+    let environment = container.environment;
+    let portMappings = container.portMappings;
+
     if (imageProvider) {
-        container.image = imageProvider.image(name, parent);
-        container.environment = utils.combineArrays(
-            container.environment,
-            imageProvider.environment(name, parent));
+        image = imageProvider.image(name, parent);
+        environment = utils.combineArrays(
+            environment, imageProvider.environment(name, parent));
     }
 
     if (loadBalancerProvider) {
-        container.portMappings = utils.combineArrays(
-            container.portMappings,
-            loadBalancerProvider.portMappings(containerName, name, parent));
+        portMappings = utils.combineArrays(
+            portMappings, loadBalancerProvider.portMappings(containerName, name, parent));
     }
 
-    return pulumi.all([container, logGroup.id])
-                 .apply(([container, logGroupId]) => {
+    return pulumi.all([container, logGroup.id, image, environment, portMappings])
+                 .apply(([container, logGroupId, image, environment, portMappings]) => {
         const containerDefinition = {
             ...container,
+            image,
+            environment,
+            portMappings,
             name: containerName,
             // todo(cyrusn): mount points.
             // mountPoints: (container.volumes || []).map(v => ({

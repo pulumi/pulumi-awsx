@@ -50,11 +50,12 @@ export abstract class ClusterService extends pulumi.ComponentResource {
             dependsOn.push(args.autoScalingGroup);
         }
 
-        initializeLoadBalancers(name, args, this);
+        const loadBalancers = getLoadBalancers(this, name, args);
 
         const clusterInstance = args.cluster;
         const instance = new aws.ecs.Service(name, {
             ...args,
+            loadBalancers,
             cluster: clusterInstance.instance.arn,
             taskDefinition: args.taskDefinition.instance.arn,
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
@@ -95,15 +96,17 @@ function placementConstraints(isFargate: boolean, os: mod.HostOperatingSystem | 
     }];
 }
 
-function initializeLoadBalancers(name: string, args: ClusterServiceArgs, parent: pulumi.Resource) {
+function getLoadBalancers(service: mod.ClusterService, name: string, args: ClusterServiceArgs) {
+    let loadBalancers: mod.LoadBalancers;
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
         if (container.loadBalancerProvider) {
-            args.loadBalancers = combineLoadBalancers(
-                args.loadBalancers,
-                container.loadBalancerProvider.loadBalancers(containerName, name, parent));
+            loadBalancers = combineLoadBalancers(
+                loadBalancers, container.loadBalancerProvider.loadBalancers(containerName, name, service));
         }
     }
+
+    return loadBalancers;
 }
 
 function combineLoadBalancers(
