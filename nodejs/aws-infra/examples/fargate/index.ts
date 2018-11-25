@@ -21,12 +21,6 @@ import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
 const cluster = new awsinfra.x.Cluster("testing", { network });
-// const group = cluster.createAutoScalingGroup("asg", {
-//     templateParameters: {
-//         minSize: 2,
-//         maxSize: 100,
-//     },
-// });
 
 // A simple NGINX service, scaled out over two containers.
 const nginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 });

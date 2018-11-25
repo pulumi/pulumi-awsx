@@ -25,8 +25,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
     public readonly taskDefinitionInstance: mod.TaskDefinition;
 
     /**
-     * Optional auto-scaling group for the cluster.  Can be created with
-     * [cluster.createAutoScalingGroup]
+     * Optional auto-scaling group for the cluster.
      */
     public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
@@ -324,8 +323,7 @@ export interface ClusterServiceArgs {
     waitForSteadyState?: pulumi.Input<boolean>;
 
     /**
-     * Optional auto-scaling group for the cluster.  Can be created with
-     * [cluster.createAutoScalingGroup]
+     * Optional auto-scaling group for the cluster.
      */
     autoScalingGroup?: mod.ClusterAutoScalingGroup;
 }
