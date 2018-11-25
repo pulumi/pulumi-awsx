@@ -18,8 +18,6 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as utils from "../utils";
 
-import * as mod from ".";
-
 export type ImageEnvironment = Record<string, pulumi.Input<string>>;
 
 export interface IImageProvider {

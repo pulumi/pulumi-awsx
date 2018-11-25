@@ -54,8 +54,7 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
         const instanceProfile = getInstanceProfile(name, args, parentOpts);
         const fileSystem = args.fileSystem;
 
-        const instance = new aws.ec2.LaunchConfiguration(
-            name, {
+        const instance = new aws.ec2.LaunchConfiguration(name, {
             ...args,
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: pulumi.output(args.instanceType).apply(t => t || "t2.micro"),
