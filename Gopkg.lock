@@ -19,14 +19,8 @@
 [[projects]]
   name = "github.com/Sirupsen/logrus"
   packages = ["."]
-  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
-  version = "v1.0.5"
-
-[[projects]]
-  name = "github.com/apache/thrift"
-  packages = ["lib/go/thrift"]
-  revision = "b2a4d4ae21c789b689dd162deb819665567f481c"
-  version = "0.10.0"
+  revision = "bcd833dfe83d3cebad139e4a29ed79cb2318bf95"
+  version = "v1.2.0"
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
@@ -41,14 +35,22 @@
     "aws/credentials/ec2rolecreds",
     "aws/credentials/endpointcreds",
     "aws/credentials/stscreds",
+    "aws/csm",
     "aws/defaults",
     "aws/ec2metadata",
     "aws/endpoints",
     "aws/request",
     "aws/session",
     "aws/signer/v4",
+    "internal/ini",
+    "internal/s3err",
+    "internal/sdkio",
+    "internal/sdkrand",
+    "internal/sdkuri",
     "internal/shareddefaults",
     "private/protocol",
+    "private/protocol/eventstream",
+    "private/protocol/eventstream/eventstreamapi",
     "private/protocol/json/jsonutil",
     "private/protocol/jsonrpc",
     "private/protocol/query",
@@ -60,8 +62,8 @@
     "service/s3",
     "service/sts"
   ]
-  revision = "107df09c5f137b9dfe53b7a4c25dd4d79f81390f"
-  version = "v1.12.40"
+  revision = "66af558c91f83a793b4a0101f70742062982f611"
+  version = "v1.15.81"
 
 [[projects]]
   name = "github.com/bgentry/speakeasy"
@@ -84,14 +86,14 @@
 [[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
-  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
-  version = "v1.1.0"
+  revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
+  version = "v1.1.1"
 
 [[projects]]
   name = "github.com/djherbis/times"
   packages = ["."]
-  revision = "95292e44976d1217cf3611dc7c8d9466877d3ed5"
-  version = "v1.0.1"
+  revision = "faa5b9ca02e9fe5d12023adddc0afa603d489fa8"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/docker/docker"
@@ -121,14 +123,8 @@
     "trees/binaryheap",
     "utils"
   ]
-  revision = "f6c17b524822278a87e3b3bd809fec33b51f5b46"
-  version = "v1.9.0"
-
-[[projects]]
-  name = "github.com/go-ini/ini"
-  packages = ["."]
-  revision = "32e4c1e6bc4e7d0d8451aa6b75200d19e37a536a"
-  version = "v1.32.0"
+  revision = "1615341f118ae12f353cc8a983f35b584342c9b3"
+  version = "v1.12.0"
 
 [[projects]]
   branch = "master"
@@ -148,26 +144,26 @@
     "ptypes/struct",
     "ptypes/timestamp"
   ]
-  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
-  version = "v1.1.0"
+  revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
+  version = "v1.2.0"
 
 [[projects]]
   branch = "master"
   name = "github.com/grpc-ecosystem/grpc-opentracing"
   packages = ["go/otgrpc"]
-  revision = "01f8541d537215b2867e2745a1eb85c58c7c6b81"
+  revision = "8e809c8a86450a29b90dcc9efbf062d0fe6d9746"
 
 [[projects]]
-  branch = "master"
   name = "github.com/hashicorp/errwrap"
   packages = ["."]
-  revision = "7554cd9344cec97297fa6649b055a8c98c2a1e55"
+  revision = "8a6fb523712970c966eefc6b39ed2c5e74880354"
+  version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/hashicorp/go-multierror"
   packages = ["."]
-  revision = "b7773ae218740a7be65057fc60b366a49b538a44"
+  revision = "886a7fbe3eb1c874d46f623bfa70af45f425b3d1"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/inconshreveable/mousetrap"
@@ -195,8 +191,14 @@
 [[projects]]
   name = "github.com/kevinburke/ssh_config"
   packages = ["."]
-  revision = "9fc7bb800b555d63157c65a904c86a2cc7b4e795"
-  version = "0.4"
+  revision = "81db2a75821ed34e682567d48be488a1c3121088"
+  version = "0.5"
+
+[[projects]]
+  name = "github.com/konsorten/go-windows-terminal-sequences"
+  packages = ["."]
+  revision = "5c8c8bd35d3832f5d134ae1e1e375b69a4d25242"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/mattn/go-colorable"
@@ -217,10 +219,10 @@
   revision = "9520e82c474b0a04dd04f8a40959027271bab992"
 
 [[projects]]
-  branch = "master"
   name = "github.com/mitchellh/go-homedir"
   packages = ["."]
-  revision = "b8bc1bf767474819792c23f32d8286a45736f1c6"
+  revision = "ae18d6b8b3205b561c79e8e5f69bff09736185f4"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -297,7 +299,7 @@
     "pkg/workspace",
     "sdk/proto/go"
   ]
-  revision = "aa7f26a3b50c468fbce81c2297c41da968b0e053"
+  revision = "9a044ff865d495b321ba262a350eac8b125ebd14"
 
 [[projects]]
   name = "github.com/pulumi/pulumi-cloud"
@@ -326,14 +328,14 @@
 [[projects]]
   name = "github.com/spf13/cobra"
   packages = ["."]
-  revision = "7b2c5ac9fc04fc5efafb60700713d4fa609b777b"
-  version = "v0.0.1"
+  revision = "ef82de70bb3f60c65fb8eebacbb2d122ef517385"
+  version = "v0.0.3"
 
 [[projects]]
   name = "github.com/spf13/pflag"
   packages = ["."]
-  revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
-  version = "v1.0.0"
+  revision = "298182f68c66c05229eb03ac171abe6e309ee79a"
+  version = "v1.0.3"
 
 [[projects]]
   name = "github.com/src-d/gcfg"
@@ -343,14 +345,14 @@
     "token",
     "types"
   ]
-  revision = "f187355171c936ac84a82793659ebb4936bc1c23"
-  version = "v1.3.0"
+  revision = "1ac3a1ac202429a54835fe8408a92880156b489d"
+  version = "v1.4.0"
 
 [[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
-  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
-  version = "v1.2.1"
+  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
+  version = "v1.2.2"
 
 [[projects]]
   branch = "master"
@@ -364,7 +366,9 @@
     ".",
     "internal/baggage",
     "internal/spanlog",
+    "internal/throttler",
     "log",
+    "thrift",
     "thrift-gen/agent",
     "thrift-gen/jaeger",
     "thrift-gen/sampling",
@@ -372,20 +376,20 @@
     "transport/zipkin",
     "utils"
   ]
-  revision = "ff3efa227b65e419701a4f48985379ca106a89e7"
-  version = "v2.11.0"
+  revision = "1a782e2da844727691fef1757c72eb190c2909f0"
+  version = "v2.15.0"
 
 [[projects]]
   name = "github.com/uber/jaeger-lib"
   packages = ["metrics"]
-  revision = "c48167d9cae5887393dd5e61efd06a4a48b7fbb3"
-  version = "v1.2.1"
+  revision = "ed3a127ec5fef7ae9ea95b01b542c47fbd999ce5"
+  version = "v1.5.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/xanzy/ssh-agent"
   packages = ["."]
-  revision = "ba9c9e33906f58169366275e3450db66139a31a9"
+  revision = "640f0ab560aeb89d523bb6ac322b1244d5c3796c"
+  version = "v0.2.0"
 
 [[projects]]
   branch = "master"
@@ -395,6 +399,8 @@
     "curve25519",
     "ed25519",
     "ed25519/internal/edwards25519",
+    "internal/chacha20",
+    "internal/subtle",
     "openpgp",
     "openpgp/armor",
     "openpgp/elgamal",
@@ -402,26 +408,27 @@
     "openpgp/packet",
     "openpgp/s2k",
     "pbkdf2",
+    "poly1305",
     "ssh",
     "ssh/agent",
     "ssh/knownhosts",
     "ssh/terminal"
   ]
-  revision = "94eea52f7b742c7cbe0b03b22f0c4c8631ece122"
+  revision = "3d3f9f413869b949e48070b5bc593aa22cc2b8f2"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = [
     "context",
+    "http/httpguts",
     "http2",
     "http2/hpack",
     "idna",
     "internal/timeseries",
-    "lex/httplex",
     "trace"
   ]
-  revision = "a8b9294777976932365dabb6640cf1468d95c70f"
+  revision = "adae6a3d119ae4890b46832a2e88a95adc62b8e7"
 
 [[projects]]
   branch = "master"
@@ -430,10 +437,9 @@
     "unix",
     "windows"
   ]
-  revision = "8b4580aae2a0dd0c231a45d3ccb8434ff533b840"
+  revision = "62eef0e2fa9b2c385f7b2778e763486da6880d37"
 
 [[projects]]
-  branch = "master"
   name = "golang.org/x/text"
   packages = [
     "collate",
@@ -451,25 +457,34 @@
     "unicode/norm",
     "unicode/rangetable"
   ]
-  revision = "57961680700a5336d15015c8c50686ca5ba362a4"
+  revision = "f21a4dfb5e38f5895301dc265a8def02365cc3d0"
+  version = "v0.3.0"
 
 [[projects]]
   branch = "master"
   name = "google.golang.org/genproto"
   packages = ["googleapis/rpc/status"]
-  revision = "7f0da29060c682909f650ad8ed4e515bd74fa12a"
+  revision = "b5d43981345bdb2c233eb4bf3277847b48c6fdc6"
 
 [[projects]]
   name = "google.golang.org/grpc"
   packages = [
     ".",
     "balancer",
+    "balancer/base",
+    "balancer/roundrobin",
     "codes",
     "connectivity",
     "credentials",
-    "grpclb/grpc_lb_v1/messages",
+    "encoding",
+    "encoding/proto",
     "grpclog",
     "internal",
+    "internal/backoff",
+    "internal/channelz",
+    "internal/envconfig",
+    "internal/grpcrand",
+    "internal/transport",
     "keepalive",
     "metadata",
     "naming",
@@ -477,13 +492,14 @@
     "reflection",
     "reflection/grpc_reflection_v1alpha",
     "resolver",
+    "resolver/dns",
+    "resolver/passthrough",
     "stats",
     "status",
-    "tap",
-    "transport"
+    "tap"
   ]
-  revision = "5ffe3083946d5603a0578721101dc8165b1d5b5f"
-  version = "v1.7.2"
+  revision = "2e463a05d100327ca47ac218281906921038fd95"
+  version = "v1.16.0"
 
 [[projects]]
   name = "gopkg.in/AlecAivazis/survey.v1"
@@ -492,8 +508,8 @@
     "core",
     "terminal"
   ]
-  revision = "f30c5d1830c892f533140f29a1de89141dc217f5"
-  version = "v1.6.2"
+  revision = "fb519f89e19299d852ffdd9b734af122d2dcbd30"
+  version = "v1.7.0"
 
 [[projects]]
   name = "gopkg.in/src-d/go-billy.v4"
@@ -504,8 +520,8 @@
     "osfs",
     "util"
   ]
-  revision = "df053870ae7070b0350624ba5a22161ba3796cc0"
-  version = "v4.1.1"
+  revision = "982626487c60a5252e7d0b695ca23fb0fa2fd670"
+  version = "v4.3.0"
 
 [[projects]]
   name = "gopkg.in/src-d/go-git.v4"
@@ -540,7 +556,7 @@
     "plumbing/transport/ssh",
     "storage",
     "storage/filesystem",
-    "storage/filesystem/internal/dotgit",
+    "storage/filesystem/dotgit",
     "storage/memory",
     "utils/binary",
     "utils/diff",
@@ -551,8 +567,8 @@
     "utils/merkletrie/internal/frame",
     "utils/merkletrie/noder"
   ]
-  revision = "57570e84f8c5739f0f4a59387493e590e709dde9"
-  version = "v4.4.0"
+  revision = "f62cd8e3495579a8323455fa0c4e6c44bb0d5e09"
+  version = "v4.8.0"
 
 [[projects]]
   name = "gopkg.in/warnings.v0"
@@ -561,10 +577,10 @@
   version = "v0.1.2"
 
 [[projects]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "287cf08546ab5e7e37d55a84f7ed3fd1db036de5"
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
 
 [solve-meta]
   analyzer-name = "dep"
