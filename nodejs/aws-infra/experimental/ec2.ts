@@ -71,7 +71,7 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
     /**
      * Creates a service with this as its task definition.
      */
-    public createService(name: string, args: mod.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
+    public createService(name: string, cluster: mod.Cluster, args: mod.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -80,7 +80,7 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new mod.EC2Service(name, {
+        return new mod.EC2Service(name, cluster, {
             ...args,
             taskDefinition: this,
         }, opts || { parent: this });
@@ -113,6 +113,7 @@ export class EC2Service extends mod.ClusterService {
     public taskDefinitionInstance: EC2TaskDefinition;
 
     constructor(name: string,
+                cluster: mod.Cluster,
                 args: EC2ServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
@@ -123,8 +124,7 @@ export class EC2Service extends mod.ClusterService {
         const taskDefinition = args.taskDefinition ||
             new mod.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
 
-        const cluster = args.cluster;
-        super("aws-infra:x:EC2Service", name, {
+        super("aws-infra:x:EC2Service", name, cluster, {
             ...args,
             taskDefinition,
             launchType: "EC2",

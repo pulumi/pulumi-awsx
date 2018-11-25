@@ -224,13 +224,13 @@ export class Cluster extends pulumi.ComponentResource {
                 this, name, args, instanceSecurityGroup, cluster, filesystem);
         }
 
-        this.registerOutputs({
-            network: this.network,
-            ecsClusterARN: this.ecsClusterARN,
-            securityGroupId: this.securityGroupId,
-            autoScalingGroupStack: this.autoScalingGroupStack,
-            efsMountPath: this.efsMountPath,
-        });
+        // this.registerOutputs({
+        //     network: this.network,
+        //     ecsClusterARN: this.ecsClusterARN,
+        //     securityGroupId: this.securityGroupId,
+        //     autoScalingGroupStack: this.autoScalingGroupStack,
+        //     efsMountPath: this.efsMountPath,
+        // });
     }
 }
 

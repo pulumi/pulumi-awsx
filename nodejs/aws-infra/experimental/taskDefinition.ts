@@ -71,23 +71,23 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
         const containers = args.containers;
 
-        // todo(cyrusn): volumes.
-        //     // Find all referenced Volumes.
-//     const volumes: { hostPath?: string; name: string }[] = [];
-//     for (const containerName of Object.keys(containers)) {
-//         const container = containers[containerName];
+//         // todo(cyrusn): volumes.
+//         //     // Find all referenced Volumes.
+// //     const volumes: { hostPath?: string; name: string }[] = [];
+// //     for (const containerName of Object.keys(containers)) {
+// //         const container = containers[containerName];
 
-//         // Collect referenced Volumes.
-//         if (container.volumes) {
-//             for (const volumeMount of container.volumes) {
-//                 const volume = volumeMount.sourceVolume;
-//                 volumes.push({
-//                     hostPath: (volume as Volume).getHostPath(),
-//                     name: (volume as Volume).getVolumeName(),
-//                 });
-//             }
-//         }
-//     }
+// //         // Collect referenced Volumes.
+// //         if (container.volumes) {
+// //             for (const volumeMount of container.volumes) {
+// //                 const volume = volumeMount.sourceVolume;
+// //                 volumes.push({
+// //                     hostPath: (volume as Volume).getHostPath(),
+// //                     name: (volume as Volume).getVolumeName(),
+// //                 });
+// //             }
+// //         }
+// //     }
 
         const containerDefinitions = computeContainerDefinitions(this, name, args, logGroup);
 
@@ -99,31 +99,31 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerDefinitions.apply(JSON.stringify),
         }, parentOpts);
 
-        const containerToEnvironment =
-            pulumi.output(containers)
-                  .apply(c => {
-                        const result: Record<string, aws.ecs.KeyValuePair[]> = {};
-                        for (const key of Object.keys(c)) {
-                            result[key] = c[key].environment || [];
-                        }
-                        return result;
-                  });
+//         const containerToEnvironment =
+//             pulumi.output(containers)
+//                   .apply(c => {
+//                         const result: Record<string, aws.ecs.KeyValuePair[]> = {};
+//                         for (const key of Object.keys(c)) {
+//                             result[key] = c[key].environment || [];
+//                         }
+//                         return result;
+//                   });
 
-        this.run = createRunFunction(isFargate, instance.arn, containerToEnvironment);
+//         // this.run = createRunFunction(isFargate, instance.arn, containerToEnvironment);
 
         this.instance = instance;
-        this.containers = containers;
-        this.logGroup = logGroup;
-        this.taskRole = taskRole;
-        this.executionRole = executionRole;
+//         this.containers = containers;
+//         this.logGroup = logGroup;
+//         this.taskRole = taskRole;
+//         this.executionRole = executionRole;
 
-        this.registerOutputs({
-            instance,
-            containers,
-            logGroup,
-            taskRole,
-            executionRole,
-        });
+        // this.registerOutputs({
+        //     instance,
+        //     containers,
+        //     logGroup,
+        //     taskRole,
+        //     executionRole,
+        // });
     }
 }
 
@@ -315,7 +315,7 @@ export interface TaskDefinitionArgs {
     /**
      * A set of volume blocks that containers in your task may use.
      */
-    readonly volumes?: pulumi.Input<pulumi.Input<{
+    volumes?: pulumi.Input<pulumi.Input<{
         dockerVolumeConfiguration?: pulumi.Input<{
             autoprovision?: pulumi.Input<boolean>;
             driver?: pulumi.Input<string>;

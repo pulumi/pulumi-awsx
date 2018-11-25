@@ -72,7 +72,8 @@ export class FargateTaskDefinition extends mod.TaskDefinition {
     /**
      * Creates a service with this as its task definition.
      */
-    public createService(name: string, args: mod.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
+    public createService(
+            name: string, cluster: mod.Cluster, args: mod.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -81,7 +82,7 @@ export class FargateTaskDefinition extends mod.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new mod.FargateService(name, {
+        return new mod.FargateService(name, cluster, {
             ...args,
             taskDefinition: this,
         }, opts || { parent: this });
@@ -166,6 +167,7 @@ export type FargateServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
 
 export class FargateService extends mod.ClusterService {
     constructor(name: string,
+                cluster: mod.Cluster,
                 args: FargateServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
@@ -176,8 +178,7 @@ export class FargateService extends mod.ClusterService {
         const taskDefinition = args.taskDefinition ||
             new mod.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
 
-        const cluster = args.cluster;
-        super("aws-infra:x:FargateService", name, {
+        super("aws-infra:x:FargateService", name, cluster, {
             ...args,
             taskDefinition,
             launchType: "FARGATE",

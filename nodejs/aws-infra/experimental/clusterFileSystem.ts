@@ -74,13 +74,13 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
         this.mountTargets = mountTargets;
         this.securityGroup = securityGroup;
 
-        this.registerOutputs({
-            instance,
-            cluster,
-            mountPath,
-            mountTargets,
-            securityGroup,
-        });
+        // this.registerOutputs({
+        //     instance,
+        //     cluster,
+        //     mountPath,
+        //     mountTargets,
+        //     securityGroup,
+        // });
     }
 }
 

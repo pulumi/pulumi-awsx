@@ -30,7 +30,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
      */
     public readonly autoScalingGroup?: mod.ClusterAutoScalingGroup;
 
-    constructor(type: string, name: string,
+    constructor(type: string, name: string, cluster: mod.Cluster,
                 args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
         super(type, name, args, opts);
@@ -52,10 +52,9 @@ export abstract class ClusterService extends pulumi.ComponentResource {
 
         initializeLoadBalancers(name, args, this);
 
-        const clusterInstance = args.cluster;
         const instance = new aws.ecs.Service(name, {
             ...args,
-            cluster: clusterInstance.instance.arn,
+            cluster: cluster.instance.arn,
             taskDefinition: args.taskDefinition.instance.arn,
             desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
             launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
@@ -67,16 +66,16 @@ export abstract class ClusterService extends pulumi.ComponentResource {
         const autoScalingGroup = args.autoScalingGroup;
 
         this.instance = instance;
-        this.clusterInstance = clusterInstance;
+        this.clusterInstance = cluster;
         this.taskDefinitionInstance = args.taskDefinition;
         this.autoScalingGroup = args.autoScalingGroup;
 
-        this.registerOutputs({
-            instance,
-            clusterInstance,
-            taskDefinitionInstance,
-            autoScalingGroup,
-        });
+        // this.registerOutputs({
+        //     instance,
+        //     clusterInstance,
+        //     taskDefinitionInstance,
+        //     autoScalingGroup,
+        // });
     }
 }
 
@@ -187,7 +186,6 @@ function combineLoadBalancers(
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
-    cluster: mod.Cluster;
     taskDefinition: mod.TaskDefinition;
     desiredCount?: pulumi.Input<number>;
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
@@ -290,11 +288,6 @@ export interface ClusterServiceArgs {
     // Changes we made to the core args type.
 
     /**
-     * The cluster this service will run in.
-     */
-    cluster: mod.Cluster;
-
-    /**
      * The task definition to create the service from.
      */
     taskDefinition: mod.TaskDefinition;
@@ -326,7 +319,6 @@ export interface ClusterServiceArgs {
      */
     autoScalingGroup?: mod.ClusterAutoScalingGroup;
 }
-
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
 let overwriteShape: OverwriteShape = undefined!;
