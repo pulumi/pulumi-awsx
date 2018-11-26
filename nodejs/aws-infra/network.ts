@@ -55,7 +55,7 @@ export interface NetworkArgs {
 /**
  * Arguments necessary when creating a network using Network.fromVpc.
  */
-export interface NetworkDefinition {
+export interface NetworkVpcArgs {
     /**
      * The VPC id of the network for the cluster
      */
@@ -126,7 +126,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             const subnet0 = subnetIds.then(ids => ids[0]);
             const subnet1 = subnetIds.then(ids => ids[1]);
 
-            defaultNetwork = this.fromDefinition("default-vpc", {
+            defaultNetwork = this.fromVpc("default-vpc", {
                 vpcId: vpcId,
                 subnetIds: [ subnet0, subnet1 ],
                 usePrivateSubnets: false,
@@ -141,25 +141,25 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
     /**
      * Creates a new network using the configuration values of an existing VPC.
      */
-    public static fromDefinition(name: string, definition: NetworkDefinition, opts?: pulumi.ResourceOptions): Network {
-        if (!definition.vpcId) {
-            throw new RunError("definition.vpcId must be provided.");
+    public static fromVpc(name: string, vpcArgs: NetworkVpcArgs, opts?: pulumi.ResourceOptions): Network {
+        if (!vpcArgs.vpcId) {
+            throw new RunError("vpcArgs.vpcId must be provided.");
         }
-        if (!definition.subnetIds) {
-            throw new RunError("definition.subnetIds must be provided.");
+        if (!vpcArgs.subnetIds) {
+            throw new RunError("vpcArgs.subnetIds must be provided.");
         }
-        if (!definition.securityGroupIds) {
-            throw new RunError("definition.securityGroupIds must be provided.");
+        if (!vpcArgs.securityGroupIds) {
+            throw new RunError("vpcArgs.securityGroupIds must be provided.");
         }
-        if (!definition.publicSubnetIds) {
-            throw new RunError("definition.publicSubnetIds must be provided.");
+        if (!vpcArgs.publicSubnetIds) {
+            throw new RunError("vpcArgs.publicSubnetIds must be provided.");
         }
 
-        return new Network(name, definition, opts);
+        return new Network(name, vpcArgs, opts);
     }
 
     constructor(name: string, args?: NetworkArgs, opts?: pulumi.ResourceOptions);
-    constructor(name: string, mergedArgs?: NetworkArgs | NetworkDefinition, opts?: pulumi.ResourceOptions) {
+    constructor(name: string, mergedArgs?: NetworkArgs | NetworkVpcArgs, opts?: pulumi.ResourceOptions) {
         // IDEA: default to the number of availability zones in this region, rather than 2.  To do this requires
         // invoking the provider, which requires that we "go async" at a very inopportune time here.  When
         // pulumi/pulumi#331 lands, this will be much easier to do, and we can improve this situation.
@@ -169,13 +169,13 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
 
         super("aws-infra:network:Network", name, {}, opts);
 
-        const definition = <NetworkDefinition>mergedArgs;
-        if (definition.vpcId) {
-            this.vpcId = pulumi.output(definition.vpcId);
-            this.subnetIds = definition.subnetIds.map(id => pulumi.output(id));
-            this.usePrivateSubnets = definition.usePrivateSubnets;
-            this.securityGroupIds = definition.securityGroupIds.map(id => pulumi.output(id));
-            this.publicSubnetIds = definition.publicSubnetIds.map(id => pulumi.output(id));
+        const vpcArgs = <NetworkVpcArgs>mergedArgs;
+        if (vpcArgs.vpcId) {
+            this.vpcId = pulumi.output(vpcArgs.vpcId);
+            this.subnetIds = vpcArgs.subnetIds.map(id => pulumi.output(id));
+            this.usePrivateSubnets = vpcArgs.usePrivateSubnets;
+            this.securityGroupIds = vpcArgs.securityGroupIds.map(id => pulumi.output(id));
+            this.publicSubnetIds = vpcArgs.publicSubnetIds.map(id => pulumi.output(id));
             return;
         }
 
