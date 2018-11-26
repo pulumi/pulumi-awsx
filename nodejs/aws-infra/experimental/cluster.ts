@@ -41,7 +41,7 @@ export class Cluster extends pulumi.ComponentResource {
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
-        const instance = new aws.ecs.Cluster(name, args, parentOpts);
+        const instance = args.instance || new aws.ecs.Cluster(name, args, parentOpts);
 
         const network = args.network || Network.getDefault();
 
@@ -115,6 +115,12 @@ export interface ClusterArgs {
      * used.
      */
     network?: Network;
+
+    /**
+     * An existing to cluster to use for this awsinfra Cluster.  If not provided, a default one will
+     * be created.
+     */
+    instance?: aws.ecs.Cluster;
 
     /**
      * The name of the cluster (up to 255 letters, numbers, hyphens, and underscores)
