@@ -124,6 +124,31 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             executionRole,
         });
     }
+
+    // The default ECS Task assume role policy for Task and Execution Roles
+    public static defaultAssumeRolePolicy() {
+        return {
+            "Version": "2012-10-17",
+            "Statement": [{
+                    "Action": "sts:AssumeRole",
+                    "Principal": {
+                        "Service": "ecs-tasks.amazonaws.com",
+                    },
+                    "Effect": "Allow",
+                    "Sid": "",
+                }],
+        };
+    }
+
+    // Default policy arns for the Task role.
+    public static defaultTaskPolicyARNs() {
+        return [
+            // Provides wide access to "serverless" services (Dynamo, S3, etc.)
+            aws.iam.AWSLambdaFullAccess,
+            // Required for lambda compute to be able to run Tasks
+            aws.iam.AmazonEC2ContainerServiceFullAccess,
+        ];
+    }
 }
 
 (<any>TaskDefinition).doNotCapture = true;
@@ -183,20 +208,6 @@ function createRunFunction(
             console.log("Failed to start task:" + JSON.stringify(res.failures));
             throw new Error("Failed to start task:" + JSON.stringify(res.failures));
         }
-
-        return;
-
-        // Local functions
-        function addEnvironmentVariables(e: Record<string, string> | undefined) {
-            if (e) {
-                for (const key of Object.keys(e)) {
-                    const envVal = e[key];
-                    if (envVal) {
-                        env.push({ name: key, value: envVal });
-                    }
-                }
-            }
-        }
     };
 }
 
@@ -230,38 +241,14 @@ function computeContainerDefinitions(
     return pulumi.all(result);
 }
 
-const defaultComputePolicies = [
-    aws.iam.AWSLambdaFullAccess,                 // Provides wide access to "serverless" services (Dynamo, S3, etc.)
-    aws.iam.AmazonEC2ContainerServiceFullAccess, // Required for lambda compute to be able to run Tasks
-];
-
-export function defaultTaskDefinitionTaskRolePolicies() {
-    return defaultComputePolicies.slice();
-}
-
-// The ECS Task assume role policy for Task Roles
-const defaultTaskRolePolicy = {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": "sts:AssumeRole",
-            "Principal": {
-                "Service": "ecs-tasks.amazonaws.com",
-            },
-            "Effect": "Allow",
-            "Sid": "",
-        },
-    ],
-};
-
 function createTaskRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Role {
     const taskRole = new aws.iam.Role(`${name}-task`, {
-        assumeRolePolicy: JSON.stringify(defaultTaskRolePolicy),
+        assumeRolePolicy: JSON.stringify(TaskDefinition.defaultAssumeRolePolicy()),
     }, opts);
 
     // TODO[pulumi/pulumi-cloud#145]: These permissions are used for both Lambda and ECS compute.
     // We need to audit these permissions and potentially provide ways for users to directly configure these.
-    const policies = defaultComputePolicies;
+    const policies = TaskDefinition.defaultTaskPolicyARNs();
     for (let i = 0; i < policies.length; i++) {
         const policyArn = policies[i];
         const _ = new aws.iam.RolePolicyAttachment(
@@ -276,7 +263,7 @@ function createTaskRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Rol
 
 function createExecutionRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Role {
     const executionRole = new aws.iam.Role(`${name}-execution`, {
-        assumeRolePolicy: JSON.stringify(defaultTaskRolePolicy),
+        assumeRolePolicy: JSON.stringify(TaskDefinition.defaultAssumeRolePolicy()),
     }, opts);
     const _ = new aws.iam.RolePolicyAttachment(`${name}-execution`, {
         role: executionRole,
