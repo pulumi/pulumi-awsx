@@ -45,37 +45,13 @@ export class Cluster extends pulumi.ComponentResource {
 
         const network = args.network || Network.getDefault();
 
-        // Create the EC2 instance security group
-        const ALL = {
-            fromPort: 0,
-            toPort: 0,
-            protocol: "-1",  // all
-            cidrBlocks: [ "0.0.0.0/0" ],
-        };
-
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
         const instanceSecurityGroup = args.instanceSecurityGroup || new aws.ec2.SecurityGroup(name, {
             vpcId: network.vpcId,
-            ingress: [
-                // Expose SSH
-                {
-                    fromPort: 22,
-                    toPort: 22,
-                    protocol: "TCP",
-                    cidrBlocks: [ "0.0.0.0/0" ],
-                },
-                // Expose ephemeral container ports to Internet.
-                // TODO: Limit to load balancer(s).
-                {
-                    fromPort: 0,
-                    toPort: 65535,
-                    protocol: "TCP",
-                    cidrBlocks: [ "0.0.0.0/0" ],
-                },
-            ],
-            egress: [ ALL ],  // See TerraformEgressNote
+            ingress: Cluster.defaultSecurityGroupIngress(),
+            egress: Cluster.defaultSecurityGroupEgress(),
             tags: { Name: name },
         }, parentOpts);
 
@@ -88,6 +64,35 @@ export class Cluster extends pulumi.ComponentResource {
             network,
             instanceSecurityGroup,
         });
+    }
+
+    public static defaultSecurityGroupEgress() {
+        return [{
+            fromPort: 0,
+            toPort: 0,
+            protocol: "-1",  // all
+            cidrBlocks: [ "0.0.0.0/0" ],
+        }];
+    }
+
+    public static defaultSecurityGroupIngress() {
+        return [
+            // Expose SSH
+            {
+                fromPort: 22,
+                toPort: 22,
+                protocol: "TCP",
+                cidrBlocks: [ "0.0.0.0/0" ],
+            },
+            // Expose ephemeral container ports to Internet.
+            // TODO: Limit to load balancer(s).
+            {
+                fromPort: 0,
+                toPort: 65535,
+                protocol: "TCP",
+                cidrBlocks: [ "0.0.0.0/0" ],
+            },
+        ];
     }
 }
 
