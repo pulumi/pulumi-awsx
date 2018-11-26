@@ -81,22 +81,24 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
             fileSystem,
         });
     }
+
+    public static defaultInstanceProfilePolicyDocument(): aws.iam.PolicyDocument {
+        return {
+            Version: "2012-10-17",
+            Statement: [{
+                Action: [
+                    "sts:AssumeRole",
+                ],
+                Effect: "Allow",
+                Principal: {
+                    Service: [ "ec2.amazonaws.com" ],
+                },
+            }],
+        };
+    }
 }
 
 (<any>ClusterAutoScalingLaunchConfiguration).doNotCapture = true;
-
-const defaultAssumeInstanceRolePolicyDoc: aws.iam.PolicyDocument = {
-    Version: "2012-10-17",
-    Statement: [{
-        Action: [
-            "sts:AssumeRole",
-        ],
-        Effect: "Allow",
-        Principal: {
-            Service: [ "ec2.amazonaws.com" ],
-        },
-    }],
-};
 
 const defaultRootBlockDevice = {
     volumeSize: 8, // GiB
@@ -126,7 +128,7 @@ function getInstanceProfile(
     }
 
     const instanceRole = new aws.iam.Role(name, {
-        assumeRolePolicy: JSON.stringify(defaultAssumeInstanceRolePolicyDoc),
+        assumeRolePolicy: JSON.stringify(ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyDocument()),
     }, opts);
 
     const policyARNs = [aws.iam.AmazonEC2ContainerServiceforEC2Role, aws.iam.AmazonEC2ReadOnlyAccess];
