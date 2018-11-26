@@ -338,19 +338,10 @@ export interface TaskDefinitionArgs {
     logGroup?: aws.cloudwatch.LogGroup;
 
     /**
-     * Not used.  Provide [taskRole] instead.
-     */
-    taskRoleArn?: never;
-    /**
      * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
      * If not provided, a default will be created for the task.
      */
     taskRole?: aws.iam.Role;
-
-    /**
-     * Not used.  Provide [executionRole] instead.
-     */
-    executionRoleArn?: never;
 
     /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
