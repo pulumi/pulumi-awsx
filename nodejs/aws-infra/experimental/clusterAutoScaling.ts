@@ -96,6 +96,10 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
             }],
         };
     }
+
+    public static defaultInstanceProfilePolicyARNs() {
+        return [aws.iam.AmazonEC2ContainerServiceforEC2Role, aws.iam.AmazonEC2ReadOnlyAccess];
+    }
 }
 
 (<any>ClusterAutoScalingLaunchConfiguration).doNotCapture = true;
@@ -131,7 +135,7 @@ function getInstanceProfile(
         assumeRolePolicy: JSON.stringify(ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyDocument()),
     }, opts);
 
-    const policyARNs = [aws.iam.AmazonEC2ContainerServiceforEC2Role, aws.iam.AmazonEC2ReadOnlyAccess];
+    const policyARNs = ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyARNs();
     const instanceRolePolicies: aws.iam.RolePolicyAttachment[] = [];
     for (let i = 0; i < policyARNs.length; i++) {
         const policyARN = policyARNs[i];

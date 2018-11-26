@@ -126,7 +126,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 
     // The default ECS Task assume role policy for Task and Execution Roles
-    public static defaultAssumeRolePolicy() {
+    public static defaultRoleAssumeRolePolicy() {
         return {
             "Version": "2012-10-17",
             "Statement": [{
@@ -141,7 +141,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 
     // Default policy arns for the Task role.
-    public static defaultTaskPolicyARNs() {
+    public static defaultTaskRolePolicyARNs() {
         return [
             // Provides wide access to "serverless" services (Dynamo, S3, etc.)
             aws.iam.AWSLambdaFullAccess,
@@ -243,12 +243,12 @@ function computeContainerDefinitions(
 
 function createTaskRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Role {
     const taskRole = new aws.iam.Role(`${name}-task`, {
-        assumeRolePolicy: JSON.stringify(TaskDefinition.defaultAssumeRolePolicy()),
+        assumeRolePolicy: JSON.stringify(TaskDefinition.defaultRoleAssumeRolePolicy()),
     }, opts);
 
     // TODO[pulumi/pulumi-cloud#145]: These permissions are used for both Lambda and ECS compute.
     // We need to audit these permissions and potentially provide ways for users to directly configure these.
-    const policies = TaskDefinition.defaultTaskPolicyARNs();
+    const policies = TaskDefinition.defaultTaskRolePolicyARNs();
     for (let i = 0; i < policies.length; i++) {
         const policyArn = policies[i];
         const _ = new aws.iam.RolePolicyAttachment(
@@ -263,7 +263,7 @@ function createTaskRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Rol
 
 function createExecutionRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Role {
     const executionRole = new aws.iam.Role(`${name}-execution`, {
-        assumeRolePolicy: JSON.stringify(TaskDefinition.defaultAssumeRolePolicy()),
+        assumeRolePolicy: JSON.stringify(TaskDefinition.defaultRoleAssumeRolePolicy()),
     }, opts);
     const _ = new aws.iam.RolePolicyAttachment(`${name}-execution`, {
         role: executionRole,

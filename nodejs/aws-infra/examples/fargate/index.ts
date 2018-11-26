@@ -271,7 +271,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
         path: "/run",
         method: "GET",
         eventHandler: new aws.lambda.CallbackFunction("runRoute", {
-            policies: [...awsinfra.x.TaskDefinition.defaultTaskPolicyARNs()],
+            policies: [...awsinfra.x.TaskDefinition.defaultTaskRolePolicyARNs()],
             callback: async (req) => {
                 try {
                     const c = cluster;
