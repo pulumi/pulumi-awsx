@@ -51,17 +51,18 @@ func Test_Examples(t *testing.T) {
 	if !assert.NoError(t, err, "expected a valid working directory: %v", err) {
 		return
 	}
-	examples := []integration.ProgramTestOptions{
-		// {
-		// 	Dir: path.Join(cwd, "./examples/cluster"),
-		// 	Config: map[string]string{
-		// 		"aws:region":     region,
-		// 		"cloud:provider": "aws",
-		// 	},
-		// 	Dependencies: []string{
-		// 		"@pulumi/aws-infra",
-		// 	},
-		// },
+
+	shortTests := []integration.ProgramTestOptions{
+		{
+			Dir: path.Join(cwd, "./examples/cluster"),
+			Config: map[string]string{
+				"aws:region":     region,
+				"cloud:provider": "aws",
+			},
+			Dependencies: []string{
+				"@pulumi/aws-infra",
+			},
+		},
 		{
 			Dir:       path.Join(cwd, "./examples/fargate"),
 			StackName: addRandomSuffix("containers-fargate"),
@@ -80,7 +81,33 @@ func Test_Examples(t *testing.T) {
 		},
 	}
 
-	for _, ex := range examples {
+	longTests := []integration.ProgramTestOptions{
+		{
+			Dir:       path.Join(cwd, "./examples/ec2"),
+			StackName: addRandomSuffix("containers-ec2"),
+			Config: map[string]string{
+				"aws:region":               fargateRegion,
+				"cloud:provider":           "aws",
+				"containers:redisPassword": "SECRETPASSWORD",
+			},
+			Dependencies: []string{
+				"@pulumi/aws-infra",
+			},
+			PreviewCommandlineFlags: []string{
+				"--diff",
+			},
+			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, false /*isFargate*/),
+		},
+	}
+
+	allTests := shortTests
+
+	// Only include the long examples on non-Short test runs
+	if !testing.Short() {
+		allTests = append(allTests, longTests...)
+	}
+
+	for _, ex := range allTests {
 		example := ex.With(integration.ProgramTestOptions{
 			ReportStats: integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
 			Tracing:     "https://tracing.pulumi-engineering.com/collector/api/v1/spans",

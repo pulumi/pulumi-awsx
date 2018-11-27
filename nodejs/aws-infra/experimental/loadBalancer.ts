@@ -63,16 +63,58 @@ export interface PortInfo {
     certificateArn?: string;
 }
 
+export interface TargetGroupInfo {
+    targetGroupArn: string;
+    containerPort: number;
+
+    /**
+     * If not specified, will be set to [containerPort]
+     */
+    hostPort?: number;
+}
+
 export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
     public abstract portMappings(
         containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
     public abstract loadBalancers(
         containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
 
+    public static fromTargetGroupInfo(info: TargetGroupInfo) {
+        return LoadBalancerProvider.fromTargetGroupInfos([info]);
+    }
+
+    public static fromTargetGroupInfos(infos: TargetGroupInfo[]) {
+        return new TargetGroupInfosLoadBalancerProvider(infos);
+    }
+
     public static fromPortInfo(
             portInfo: PortInfo,
             args: aws.elasticloadbalancingv2.LoadBalancerArgs = {}) {
         return new PortInfoLoadBalancerProvider(portInfo, args);
+    }
+}
+
+export class TargetGroupInfosLoadBalancerProvider extends LoadBalancerProvider {
+    portMappings: (containerName: string, name: string, parent: pulumi.Resource) => pulumi.Input<aws.ecs.PortMapping[]>;
+    loadBalancers: (containerName: string, name: string, parent: pulumi.Resource) => LoadBalancers;
+
+    constructor(targetGroupInfos: TargetGroupInfo[]) {
+        super();
+
+        this.portMappings = (containerName: string, name: string, parent: pulumi.Resource) =>
+            targetGroupInfos.map(i => {
+                const containerPort = i.containerPort;
+                const hostPort = i.hostPort !== undefined ? i.hostPort : containerPort;
+
+                return { containerPort, hostPort };
+            });
+
+        this.loadBalancers = (containerName: string, name: string, parent: pulumi.Resource) =>
+            targetGroupInfos.map(i => ({
+                    containerName,
+                    targetGroupArn: i.targetGroupArn,
+                    containerPort: i.containerPort,
+                }));
     }
 }
 
