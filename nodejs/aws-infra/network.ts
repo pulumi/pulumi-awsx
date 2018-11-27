@@ -63,7 +63,7 @@ export interface NetworkVpcArgs {
     /**
      * The network subnets for the clusters
      */
-    readonly subnetIds: pulumi.Input<pulumi.Input<string>>[];
+    readonly subnetIds: pulumi.Input<string>[];
     /**
      * Whether the network includes private subnets.
      */
@@ -71,11 +71,11 @@ export interface NetworkVpcArgs {
     /**
      * The security group IDs for the network.
      */
-    readonly securityGroupIds: pulumi.Input<pulumi.Input<string>>[];
+    readonly securityGroupIds: pulumi.Input<string>[];
     /**
      * The public subnets for the VPC.  In case [usePrivateSubnets] == false, these are the same as [subnets].
      */
-    readonly publicSubnetIds: pulumi.Input<pulumi.Input<string>>[];
+    readonly publicSubnetIds: pulumi.Input<string>[];
 }
 
 // The lazily initialized default network instance.
