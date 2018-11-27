@@ -67,7 +67,8 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             retentionInDays: 1,
         }, parentOpts);
 
-        const taskRole = args.taskRole || createTaskRole(name, parentOpts);
+        const taskRole = args.taskRole || TaskDefinition.createTaskRole(
+            `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, parentOpts);
         const executionRole = args.executionRole || createExecutionRole(name, parentOpts);
 
 //         // todo(cyrusn): volumes.
@@ -125,8 +126,41 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         });
     }
 
+    /**
+     * Creates the [taskRole] for a [TaskDefinition] if not provided explicitly. If
+     * [assumeRolePolicy] is provided it will be used when creating the task, otherwise
+     * [defaultRoleAssumeRolePolicy] will be used.  If [policyArns] are provided, they will be used
+     * to create [RolePolicyAttachment]s for the Role.  Otherwise, [defaultTaskRolePolicyARNs] will
+     * be used.
+     */
+    public static createTaskRole(
+            name: string,
+            assumeRolePolicy?: string | aws.iam.PolicyDocument,
+            policyArns?: string[],
+            opts?: pulumi.ResourceOptions): aws.iam.Role {
+
+        if (typeof assumeRolePolicy !== "string") {
+            assumeRolePolicy = assumeRolePolicy || TaskDefinition.defaultRoleAssumeRolePolicy();
+            assumeRolePolicy = JSON.stringify(assumeRolePolicy);
+        }
+
+        const taskRole = new aws.iam.Role(name, { assumeRolePolicy }, opts);
+
+        policyArns = policyArns || TaskDefinition.defaultTaskRolePolicyARNs();
+        for (let i = 0; i < policyArns.length; i++) {
+            const policyArn = policyArns[i];
+            const _ = new aws.iam.RolePolicyAttachment(
+                `${name}-${utils.sha1hash(policyArn)}`, {
+                    role: taskRole,
+                    policyArn,
+                }, opts);
+        }
+
+        return taskRole;
+    }
+
     // The default ECS Task assume role policy for Task and Execution Roles
-    public static defaultRoleAssumeRolePolicy() {
+    public static defaultRoleAssumeRolePolicy(): aws.iam.PolicyDocument {
         return {
             "Version": "2012-10-17",
             "Statement": [{
@@ -239,26 +273,6 @@ function computeContainerDefinitions(
     }
 
     return pulumi.all(result);
-}
-
-function createTaskRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Role {
-    const taskRole = new aws.iam.Role(`${name}-task`, {
-        assumeRolePolicy: JSON.stringify(TaskDefinition.defaultRoleAssumeRolePolicy()),
-    }, opts);
-
-    // TODO[pulumi/pulumi-cloud#145]: These permissions are used for both Lambda and ECS compute.
-    // We need to audit these permissions and potentially provide ways for users to directly configure these.
-    const policies = TaskDefinition.defaultTaskRolePolicyARNs();
-    for (let i = 0; i < policies.length; i++) {
-        const policyArn = policies[i];
-        const _ = new aws.iam.RolePolicyAttachment(
-            `${name}-task-${utils.sha1hash(policyArn)}`, {
-                role: taskRole,
-                policyArn: policyArn,
-            }, opts);
-    }
-
-    return taskRole;
 }
 
 function createExecutionRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Role {
