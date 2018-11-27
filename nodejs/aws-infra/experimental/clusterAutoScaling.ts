@@ -48,7 +48,7 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
         // references the launch configuration and vice-versa, we use this to break the cycle.
         // TODO[pulumi/pulumi#381]: Creating an S3 bucket is an inelegant way to get a durable,
         // unique name.
-        const stackName = pulumi.output(args.stackName!) || new aws.s3.Bucket(name, {}, parentOpts).id;
+        const stackName = pulumi.output(args.stackName).apply(sn => sn || new aws.s3.Bucket(name, {}, parentOpts).id);
 
         // Use the instance provided, or create a new one.
         const instanceProfile = getInstanceProfile(name, args, parentOpts);
