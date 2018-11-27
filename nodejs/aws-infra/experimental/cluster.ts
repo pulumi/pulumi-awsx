@@ -30,9 +30,9 @@ export class Cluster extends pulumi.ComponentResource {
      */
     public readonly network: Network;
     /**
-     * The ECS Cluster's Security Group.
+     * Security groups associated with this this ECS Cluster.
      */
-    public readonly instanceSecurityGroup: aws.ec2.SecurityGroup;
+    public readonly instanceSecurityGroups: aws.ec2.SecurityGroup[];
 
     constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("aws-infra:x:Cluster", name, {
@@ -48,21 +48,21 @@ export class Cluster extends pulumi.ComponentResource {
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        const instanceSecurityGroup = args.instanceSecurityGroup || new aws.ec2.SecurityGroup(name, {
+        const instanceSecurityGroups = args.instanceSecurityGroups || [new aws.ec2.SecurityGroup(name, {
             vpcId: network.vpcId,
             ingress: Cluster.defaultSecurityGroupIngress(),
             egress: Cluster.defaultSecurityGroupEgress(),
             tags: { Name: name },
-        }, parentOpts);
+        }, parentOpts)];
 
         this.instance = instance;
         this.network = network;
-        this.instanceSecurityGroup = instanceSecurityGroup;
+        this.instanceSecurityGroups = instanceSecurityGroups;
 
         this.registerOutputs({
             instance,
             network,
-            instanceSecurityGroup,
+            instanceSecurityGroups,
         });
     }
 
@@ -103,7 +103,7 @@ export class Cluster extends pulumi.ComponentResource {
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     network?: Network;
-    instanceSecurityGroup?: aws.ec2.SecurityGroup;
+    instanceSecurityGroups?: aws.ec2.SecurityGroup[];
 }>;
 
 /**
@@ -131,7 +131,7 @@ export interface ClusterArgs {
      * The security group to place new instances into.  If not provided, a default will be
      * created.
      */
-    instanceSecurityGroup?: aws.ec2.SecurityGroup;
+    instanceSecurityGroups?: aws.ec2.SecurityGroup[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

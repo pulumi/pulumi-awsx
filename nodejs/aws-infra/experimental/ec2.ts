@@ -134,7 +134,7 @@ export class EC2Service extends mod.ClusterService {
             launchType: "EC2",
             networkConfiguration: {
                 assignPublicIp: false,
-                securityGroups: [cluster.instanceSecurityGroup.id],
+                securityGroups: cluster.instanceSecurityGroups.map(g => g.id),
                 subnets: cluster.network.subnetIds,
             },
         }, /*isFargate:*/ false, opts);

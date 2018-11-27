@@ -188,7 +188,7 @@ export class FargateService extends mod.ClusterService {
             launchType: "FARGATE",
             networkConfiguration: {
                 assignPublicIp: !cluster.network.usePrivateSubnets,
-                securityGroups: [cluster.instanceSecurityGroup.id],
+                securityGroups: cluster.instanceSecurityGroups.map(g => g.id),
                 subnets: cluster.network.subnetIds,
             },
         },  /*isFargate:*/ true, opts);

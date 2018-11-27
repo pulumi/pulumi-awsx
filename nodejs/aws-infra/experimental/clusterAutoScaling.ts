@@ -54,8 +54,11 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
         const instanceProfile = getInstanceProfile(name, args, parentOpts);
         const fileSystem = args.fileSystem;
 
+        const securityGroups =
+            pulumi.output(args.securityGroups).apply(g => g || cluster.instanceSecurityGroups.map(g => g.id));
         const instance = new aws.ec2.LaunchConfiguration(name, {
             ...args,
+            securityGroups,
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: pulumi.output(args.instanceType).apply(t => t || "t2.micro"),
             iamInstanceProfile: instanceProfile.id,
@@ -63,7 +66,6 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
             placementTenancy: pulumi.output(args.placementTenancy).apply(t => t || "default"),
             rootBlockDevice: pulumi.output(args.rootBlockDevice).apply(d => d || defaultRootBlockDevice),
             ebsBlockDevices: pulumi.output(args.ebsBlockDevices).apply(d => d || defaultEbsBlockDevices),
-            securityGroups: pulumi.output(args.securityGroups).apply(g => g || [ cluster.instanceSecurityGroup.id ]),
             userData: getInstanceUserData(cluster, args, stackName),
         }, parentOpts);
 

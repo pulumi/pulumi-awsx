@@ -164,7 +164,7 @@ function createRunFunction(
         const cluster = options.cluster;
         const usePrivateSubnets = cluster.network.usePrivateSubnets;
         const clusterArn = cluster.instance.id.get();
-        const securityGroupId = cluster.instanceSecurityGroup.id.get();
+        const securityGroupIds = cluster.instanceSecurityGroups.map(g => g.id.get());
         const subnetIds = cluster.network.subnetIds.map(i => i.get());
 
         const innerContainers = containerToEnvironment.get();
@@ -190,7 +190,7 @@ function createRunFunction(
             networkConfiguration: {
                 awsvpcConfiguration: {
                     assignPublicIp: assignPublicIp ? "ENABLED" : "DISABLED",
-                    securityGroups: [ securityGroupId ],
+                    securityGroups: securityGroupIds,
                     subnets: subnetIds,
                 },
             },
