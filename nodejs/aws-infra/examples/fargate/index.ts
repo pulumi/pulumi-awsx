@@ -316,4 +316,4 @@ const api = new aws.apigateway.x.API("examples-containers", {
 export let frontendURL = api.url;
 export let vpcId = network.vpcId;
 export let subnets = network.subnetIds;
-export let instanceSecurityGroup = cluster.instanceSecurityGroup;
+export let instanceSecurityGroups = cluster.instanceSecurityGroups;
