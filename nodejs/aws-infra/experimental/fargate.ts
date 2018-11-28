@@ -19,31 +19,6 @@ import * as utils from "./../utils";
 
 import * as mod from ".";
 
-export type FargateTaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
-    /** Not provided.  Defaults automatically to ["FARGATE"] */
-    requiresCompatibilities?: never;
-
-    /** Not provided.  Defaults automatically to "awsvpc" */
-    networkMode?: never;
-
-    /**
-     * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
-     * aren't multiple containers, especially when creating a ClusterTaskDefinition to call [run]
-     * on.
-     *
-     * Either [container] or [containers] must be provided.
-     */
-    container?: mod.ContainerDefinition;
-
-    /**
-     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
-     * ClusterService that will contain many containers within.
-     *
-     * Either [container] or [containers] must be provided.
-     */
-    containers?: Record<string, mod.ContainerDefinition>;
-}>;
-
 export class FargateTaskDefinition extends mod.TaskDefinition {
     constructor(name: string,
                 args: mod.FargateTaskDefinitionArgs,
@@ -150,25 +125,6 @@ function computeFargateMemoryAndCPU(containers: Record<string, mod.ContainerDefi
     });
 }
 
-export type FargateServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
-    /**
-     * The task definition to create the service from.  Either [taskDefinition] or
-     * [taskDefinitionArgs] must be provided.
-     */
-    taskDefinition?: mod.FargateTaskDefinition;
-
-    /**
-     * The task definition to create the service from.  Either [taskDefinition] or
-     * [taskDefinitionArgs] must be provided.
-     */
-    taskDefinitionArgs?: FargateTaskDefinitionArgs;
-
-    /**
-     * Not provided.  Will automatically be "FARGATE".
-     */
-    launchType?: never;
-}>;
-
 export class FargateService extends mod.ClusterService {
     constructor(name: string,
                 args: FargateServiceArgs,
@@ -196,3 +152,238 @@ export class FargateService extends mod.ClusterService {
 }
 
 (<any>FargateService).doNotCapture = true;
+
+type OverwriteTaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
+    requiresCompatibilities?: never;
+    networkMode?: never;
+    container?: mod.ContainerDefinition;
+    containers?: Record<string, mod.ContainerDefinition>;
+}>;
+
+export interface FargateTaskDefinitionArgs {
+    // Properties copied from mod.TaskDefinitionArgs
+
+    placementConstraints?: pulumi.Input<pulumi.Input<{
+        expression?: pulumi.Input<string>;
+        type: pulumi.Input<string>;
+    }>[]>;
+    /**
+     * A set of volume blocks that containers in your task may use.
+     */
+    volumes?: pulumi.Input<pulumi.Input<{
+        dockerVolumeConfiguration?: pulumi.Input<{
+            autoprovision?: pulumi.Input<boolean>;
+            driver?: pulumi.Input<string>;
+            driverOpts?: pulumi.Input<{
+                [key: string]: pulumi.Input<string>;
+            }>;
+            labels?: pulumi.Input<{
+                [key: string]: pulumi.Input<string>;
+            }>;
+            scope?: pulumi.Input<string>;
+        }>;
+        hostPath?: pulumi.Input<string>;
+        name: pulumi.Input<string>;
+    }>[]>;
+
+    // Properties we've added/changed.
+
+    /**
+     * Log group for logging information related to the service.  If not provided a default instance
+     * with a one-day retention policy will be created.
+     */
+    logGroup?: aws.cloudwatch.LogGroup;
+
+    /**
+     * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+     * If not provided, a default will be created for the task.
+     */
+    taskRole?: aws.iam.Role;
+
+    /**
+     * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+     *
+     * If not provided, a default will be created for the task.
+     */
+    executionRole?: aws.iam.Role;
+
+    /**
+     * The number of cpu units used by the task.  If not provided, a default will be computed
+     * based on the cumulative needs specified by [containerDefinitions]
+     */
+    cpu?: pulumi.Input<string>;
+
+    /**
+     * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+     * based on the cumulative needs specified by [containerDefinitions]
+     */
+    memory?: pulumi.Input<string>;
+
+    /**
+     * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
+     * aren't multiple containers, especially when creating a ClusterTaskDefinition to call [run]
+     * on.
+     *
+     * Either [container] or [containers] must be provided.
+     */
+    container?: mod.ContainerDefinition;
+
+    /**
+     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
+     * ClusterService that will contain many containers within.
+     *
+     * Either [container] or [containers] must be provided.
+     */
+    containers?: Record<string, mod.ContainerDefinition>;
+}
+
+// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
+let overwriteShape1: OverwriteTaskDefinitionArgs = undefined!;
+let argsShape1: FargateTaskDefinitionArgs = undefined!;
+argsShape1 = overwriteShape1;
+overwriteShape1 = argsShape1;
+
+type OverwriteFargateServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
+    taskDefinition?: mod.FargateTaskDefinition;
+    taskDefinitionArgs?: FargateTaskDefinitionArgs;
+    launchType?: never;
+}>;
+
+export interface FargateServiceArgs {
+    // Properties from mod.ServiceArgs
+
+    /**
+     * The upper limit (as a percentage of the service's desiredCount) of the number of running
+     * tasks that can be running in a service during a deployment. Not valid when using the `DAEMON`
+     * scheduling strategy.
+     */
+    deploymentMaximumPercent?: pulumi.Input<number>;
+    /**
+     * The lower limit (as a percentage of the service's desiredCount) of the number of running
+     * tasks that must remain running and healthy in a service during a deployment.
+     */
+    deploymentMinimumHealthyPercent?: pulumi.Input<number>;
+    /**
+     * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
+     * premature shutdown, up to 7200. Only valid for services configured to use load balancers.
+     */
+    healthCheckGracePeriodSeconds?: pulumi.Input<number>;
+    /**
+     * ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your
+     * behalf. This parameter is required if you are using a load balancer with your service, but
+     * only if your task definition does not use the `awsvpc` network mode. If using `awsvpc`
+     * network mode, do not specify this role. If your account has already created the Amazon ECS
+     * service-linked role, that role is used by default for your service unless you specify a role
+     * here.
+     */
+    iamRole?: pulumi.Input<string>;
+    /**
+     * A load balancer block. Load balancers documented below.
+     */
+    loadBalancers?: pulumi.Input<pulumi.Input<{
+        containerName: pulumi.Input<string>;
+        containerPort: pulumi.Input<number>;
+        elbName?: pulumi.Input<string>;
+        targetGroupArn?: pulumi.Input<string>;
+    }>[]>;
+    /**
+     * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * The network configuration for the service. This parameter is required for task definitions
+     * that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is
+     * not supported for other network modes.
+     */
+    networkConfiguration?: pulumi.Input<{
+        assignPublicIp?: pulumi.Input<boolean>;
+        securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
+        subnets: pulumi.Input<pulumi.Input<string>[]>;
+    }>;
+    /**
+     * Service level strategy rules that are taken into consideration during task placement. List
+     * from top to bottom in order of precedence. The maximum number of `ordered_placement_strategy`
+     * blocks is `5`. Defined below.
+     */
+    orderedPlacementStrategies?: pulumi.Input<pulumi.Input<{
+        field?: pulumi.Input<string>;
+        type: pulumi.Input<string>;
+    }>[]>;
+    /**
+     * rules that are taken into consideration during task placement. Maximum number of
+     * `placement_constraints` is `10`. Defined below.
+     */
+    placementConstraints?: pulumi.Input<pulumi.Input<{
+        expression?: pulumi.Input<string>;
+        type: pulumi.Input<string>;
+    }>[]>;
+    /**
+     * **Deprecated**, use `ordered_placement_strategy` instead.
+     */
+    placementStrategies?: pulumi.Input<pulumi.Input<{
+        field?: pulumi.Input<string>;
+        type: pulumi.Input<string>;
+    }>[]>;
+    /**
+     * The scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`.
+     * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
+     * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
+     */
+    schedulingStrategy?: pulumi.Input<string>;
+    /**
+     * The service discovery registries for the service. The maximum number of `service_registries` blocks is `1`.
+     */
+    serviceRegistries?: pulumi.Input<{
+        containerName?: pulumi.Input<string>;
+        containerPort?: pulumi.Input<number>;
+        port?: pulumi.Input<number>;
+        registryArn: pulumi.Input<string>;
+    }>;
+
+    // Changes we made to the core args type.
+
+    /**
+     * Cluster this service will run in.
+     */
+    cluster: mod.Cluster;
+
+    /**
+     * The number of instances of the task definition to place and keep running. Defaults to 1. Do
+     * not specify if using the `DAEMON` scheduling strategy.
+     */
+    desiredCount?: pulumi.Input<number>;
+
+    os?: pulumi.Input<"linux" | "windows">;
+
+    /**
+     * Wait for the service to reach a steady state (like [`aws ecs wait
+     * services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html))
+     * before continuing. Defaults to `true`.
+     */
+    waitForSteadyState?: pulumi.Input<boolean>;
+
+    /**
+     * Optional auto-scaling group for the cluster.
+     */
+    autoScalingGroup?: mod.ClusterAutoScalingGroup;
+
+    // Properties we're adding.
+
+    /**
+     * The task definition to create the service from.  Either [taskDefinition] or
+     * [taskDefinitionArgs] must be provided.
+     */
+    taskDefinition?: mod.FargateTaskDefinition;
+
+    /**
+     * The task definition to create the service from.  Either [taskDefinition] or
+     * [taskDefinitionArgs] must be provided.
+     */
+    taskDefinitionArgs?: FargateTaskDefinitionArgs;
+}
+
+// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
+let overwriteShape2: OverwriteFargateServiceArgs = undefined!;
+let argsShape2: FargateServiceArgs = undefined!;
+argsShape2 = overwriteShape2;
+overwriteShape2 = argsShape2;
