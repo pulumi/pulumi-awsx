@@ -15,7 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "../utils";
+import * as utils from "./../utils";
 
 import * as mod from ".";
 
@@ -63,7 +63,7 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
         const argsCopy: mod.TaskDefinitionArgs = {
             ...args,
             requiresCompatibilities: ["EC2"],
-            networkMode: pulumi.output(args.networkMode).apply(m => m || "awsvpc"),
+            networkMode: utils.ifUndefined(args.networkMode, "awsvpc"),
         };
 
         delete (<any>argsCopy).container;

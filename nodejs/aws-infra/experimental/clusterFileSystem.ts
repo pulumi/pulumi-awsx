@@ -39,7 +39,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
         const instance = new aws.efs.FileSystem(name, args, parentOpts);
 
         const mountTargets: aws.efs.MountTarget[] = [];
-        const mountPath = pulumi.output(args.mountPath).apply(p => p || "/mnt/efs");
+        const mountPath = utils.ifUndefined(args.mountPath, "/mnt/efs");
 
         // If requested, add EFS file system and mount targets in each subnet.
 

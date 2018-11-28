@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import * as aws from "@pulumi/aws";
-import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as utils from "../utils";

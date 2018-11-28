@@ -18,6 +18,8 @@ import { RunError } from "@pulumi/pulumi/errors";
 import { getAvailabilityZone } from "./aws";
 import { ClusterNetworkArgs } from "./cluster";
 
+import { ifUndefined } from "./utils";
+
 import { x } from ".";
 
 /**
@@ -192,9 +194,9 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         this.usePrivateSubnets = args.usePrivateSubnets || false;
 
         const vpc = new aws.ec2.Vpc(name, {
-            cidrBlock: pulumi.output(args.cidrBlock).apply(b => b || "10.10.0.0/16"),
-            enableDnsHostnames: pulumi.output(args.enableDnsHostnames).apply(e => e !== undefined ? e : true),
-            enableDnsSupport: pulumi.output(args.enableDnsSupport).apply(e => e !== undefined ? e : true),
+            cidrBlock: ifUndefined(args.cidrBlock, "10.10.0.0/16"),
+            enableDnsHostnames: ifUndefined(args.enableDnsHostnames, true),
+            enableDnsSupport: ifUndefined(args.enableDnsSupport, true),
             tags,
         }, parentOpts);
 

@@ -15,7 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "../utils";
+import * as utils from "./../utils";
 
 import * as mod from ".";
 
@@ -63,8 +63,8 @@ export class FargateTaskDefinition extends mod.TaskDefinition {
             ...args,
             requiresCompatibilities: ["FARGATE"],
             networkMode: "awsvpc",
-            memory: pulumi.output(args.memory).apply(memory => memory || computedMemory),
-            cpu: pulumi.output(args.cpu).apply(cpu => cpu || computedCPU),
+            memory: utils.ifUndefined(args.memory, computedMemory),
+            cpu: utils.ifUndefined(args.cpu, computedCPU),
         };
 
         delete (<any>argsCopy).container;

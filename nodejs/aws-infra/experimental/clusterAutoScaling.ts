@@ -17,7 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 
-import { Overwrite, sha1hash } from "./../utils";
+import * as utils from "./../utils";
 
 export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.LaunchConfiguration;
@@ -64,12 +64,12 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
             ...args,
             securityGroups,
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
-            instanceType: pulumi.output(args.instanceType).apply(t => t || "t2.micro"),
+            instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: instanceProfile.id,
-            enableMonitoring: pulumi.output(args.enableMonitoring).apply(b => b !== undefined ? b : true),
-            placementTenancy: pulumi.output(args.placementTenancy).apply(t => t || "default"),
-            rootBlockDevice: pulumi.output(args.rootBlockDevice).apply(d => d || defaultRootBlockDevice),
-            ebsBlockDevices: pulumi.output(args.ebsBlockDevices).apply(d => d || defaultEbsBlockDevices),
+            enableMonitoring: utils.ifUndefined(args.enableMonitoring, true),
+            placementTenancy: utils.ifUndefined(args.placementTenancy, "default"),
+            rootBlockDevice: utils.ifUndefined(args.rootBlockDevice, defaultRootBlockDevice),
+            ebsBlockDevices: utils.ifUndefined(args.ebsBlockDevices, defaultEbsBlockDevices),
             userData: getInstanceUserData(cluster, args, stackName),
         }, parentOpts);
 
@@ -164,7 +164,7 @@ function getInstanceProfile(
     for (let i = 0; i < policyARNs.length; i++) {
         const policyARN = policyARNs[i];
 
-        instanceRolePolicies.push(new aws.iam.RolePolicyAttachment(`${name}-${sha1hash(policyARN)}`, {
+        instanceRolePolicies.push(new aws.iam.RolePolicyAttachment(`${name}-${utils.sha1hash(policyARN)}`, {
             role: instanceRole,
             policyArn: policyARN,
         }, opts));
@@ -436,7 +436,7 @@ export interface TemplateParameters {
 // The shape we want for ClusterAutoScalingLaunchConfigurationArgs.  We don't export this as
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
-type OverwriteShape = Overwrite<aws.ec2.LaunchConfigurationArgs, {
+type OverwriteShape = utils.Overwrite<aws.ec2.LaunchConfigurationArgs, {
     cluster: mod.Cluster;
     imageId?: never;
     userData?: never;

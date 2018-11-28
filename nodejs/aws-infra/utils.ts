@@ -23,11 +23,13 @@ type Diff<T extends string | number | symbol, U extends string | number | symbol
 // with properties of the same name, but with entirely different types.
 export type Overwrite<T, U> = Pick<T, Diff<keyof T, keyof U>> & U;
 
+/** @internal */
 export type Mutable<T> = {
     -readonly [P in keyof T]: T[P];
 };
 
 // sha1hash returns a partial SHA1 hash of the input string.
+/** @internal */
 export function sha1hash(s: string): string {
     const shasum: crypto.Hash = crypto.createHash("sha1");
     shasum.update(s);
@@ -36,6 +38,7 @@ export function sha1hash(s: string): string {
     return shasum.digest("hex").substring(0, 8);
 }
 
+/** @internal */
 export function combineArrays<T>(
     e1: pulumi.Input<T[] | undefined>,
     e2: pulumi.Input<T[] | undefined>): pulumi.Output<T[]> {
@@ -47,4 +50,10 @@ export function combineArrays<T>(
     });
 
     return <pulumi.Output<T[]>>result;
+}
+
+/** @internal */
+export function ifUndefined<T>(input: pulumi.Input<T> | undefined, value: pulumi.Input<T>) {
+    return pulumi.all([input, value])
+                 .apply(([input, value]) => input !== undefined ? input : value);
 }

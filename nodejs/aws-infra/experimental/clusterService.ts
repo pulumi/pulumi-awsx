@@ -57,9 +57,9 @@ export abstract class ClusterService extends pulumi.ComponentResource {
             loadBalancers,
             cluster: clusterInstance.instance.arn,
             taskDefinition: args.taskDefinition.instance.arn,
-            desiredCount: pulumi.output(args.desiredCount).apply(c => c === undefined ? 1 : c),
-            launchType: pulumi.output(args.launchType).apply(t => t || "EC2"),
-            waitForSteadyState: pulumi.output(args.waitForSteadyState).apply(w => w !== undefined ? w : true),
+            desiredCount: utils.ifUndefined(args.desiredCount, 1),
+            launchType: utils.ifUndefined(args.launchType, "EC2"),
+            waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),
             placementConstraints: pulumi.output(args.os).apply(os => placementConstraints(isFargate, os)),
         }, parentOpts);
 
@@ -100,24 +100,13 @@ function getLoadBalancers(service: mod.ClusterService, name: string, args: Clust
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
         if (container.loadBalancerProvider) {
-            loadBalancers = combineLoadBalancers(
+            loadBalancers = utils.combineArrays(
                 loadBalancers, container.loadBalancerProvider.loadBalancers(containerName, name, service));
         }
     }
 
     return loadBalancers;
 }
-
-function combineLoadBalancers(
-        e1: pulumi.Input<mod.LoadBalancers | undefined>,
-        e2: pulumi.Input<mod.LoadBalancers | undefined>): mod.LoadBalancers {
-    return pulumi.all([e1, e2]).apply(([e1, e2]) => {
-        e1 = e1 || [];
-        e2 = e2 || [];
-        return [...e1, ...e2];
-    });
-}
-
 
 // const volumeNames = new Set<string>();
 
