@@ -98,9 +98,7 @@ export interface ContainerDefinition {
     disableNetworking?: pulumi.Input<boolean>;
     dnsSearchDomains?: pulumi.Input<string[]>;
     dnsServers?: pulumi.Input<string[]>;
-    dockerLabels?: pulumi.Input<{
-        [label: string]: string;
-    }>;
+    dockerLabels?: pulumi.Input<{ [label: string]: string; }>;
     dockerSecurityOptions?: pulumi.Input<string[]>;
     entryPoint?: pulumi.Input<string[]>;
     environment?: pulumi.Input<aws.ecs.KeyValuePair[]>;

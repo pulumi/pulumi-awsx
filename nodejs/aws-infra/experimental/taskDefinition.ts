@@ -312,29 +312,12 @@ export interface TaskDefinitionArgs {
      * A set of placement constraints rules that are taken into consideration during task placement.
      * Maximum number of `placement_constraints` is `10`.
      */
-    placementConstraints?: pulumi.Input<pulumi.Input<{
-        expression?: pulumi.Input<string>;
-        type: pulumi.Input<string>;
-    }>[]>;
+    placementConstraints?: aws.ecs.TaskDefinitionArgs["placementConstraints"];
 
     /**
      * A set of volume blocks that containers in your task may use.
      */
-    volumes?: pulumi.Input<pulumi.Input<{
-        dockerVolumeConfiguration?: pulumi.Input<{
-            autoprovision?: pulumi.Input<boolean>;
-            driver?: pulumi.Input<string>;
-            driverOpts?: pulumi.Input<{
-                [key: string]: pulumi.Input<string>;
-            }>;
-            labels?: pulumi.Input<{
-                [key: string]: pulumi.Input<string>;
-            }>;
-            scope?: pulumi.Input<string>;
-        }>;
-        hostPath?: pulumi.Input<string>;
-        name: pulumi.Input<string>;
-    }>[]>;
+    volumes?: aws.ecs.TaskDefinitionArgs["volumes"];
 
     // Properties we've added/changed.
 

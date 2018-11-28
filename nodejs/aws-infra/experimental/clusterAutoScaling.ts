@@ -438,45 +438,51 @@ export interface ClusterAutoScalingLaunchConfigurationArgs {
      * Associate a public ip address with an instance in a VPC.
      */
     associatePublicIpAddress?: pulumi.Input<boolean>;
+
     /**
      * If true, the launched EC2 instance will be EBS-optimized.
      */
     ebsOptimized?: pulumi.Input<boolean>;
+
     /**
      * Enables/disables detailed monitoring. This is enabled by default.
      */
     enableMonitoring?: pulumi.Input<boolean>;
+
     /**
      * Customize Ephemeral (also known as
      * "Instance Store") volumes on the instance. See Block Devices below for details.
      */
-    ephemeralBlockDevices?: pulumi.Input<pulumi.Input<{
-        deviceName: pulumi.Input<string>;
-        virtualName: pulumi.Input<string>;
-    }>[]>;
+    ephemeralBlockDevices?: aws.ec2.LaunchConfigurationArgs["ephemeralBlockDevices"];
+
     /**
      * The name attribute of the IAM instance profile to associate
      * with launched instances.
      */
     iamInstanceProfile?: pulumi.Input<string | aws.iam.InstanceProfile>;
+
     /**
      * The key name that should be used for the instance.
      */
     keyName?: pulumi.Input<string>;
+
     /**
      * The name of the launch configuration. If you leave
      * this blank, Terraform will auto-generate a unique name.
      */
     name?: pulumi.Input<string>;
+
     /**
      * Creates a unique name beginning with the specified
      * prefix. Conflicts with `name`.
      */
     namePrefix?: pulumi.Input<string>;
+
     /**
      * The maximum price to use for reserving spot instances.
      */
     spotPrice?: pulumi.Input<string>;
+
     /**
      * Can be used instead of `user_data` to pass base64-encoded binary data directly. Use this
      * instead of `user_data` whenever the value is not a valid UTF-8 string. For example,
@@ -484,10 +490,12 @@ export interface ClusterAutoScalingLaunchConfigurationArgs {
      * corruption.
      */
     userDataBase64?: pulumi.Input<string>;
+
     /**
      * The ID of a ClassicLink-enabled VPC. Only applies to EC2-Classic instances. (eg. `vpc-2730681a`)
      */
     vpcClassicLinkId?: pulumi.Input<string>;
+
     /**
      * The IDs of one or more security groups for the specified ClassicLink-enabled VPC (eg. `sg-46ae3d11`).
      */

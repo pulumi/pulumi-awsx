@@ -109,29 +109,12 @@ export interface EC2TaskDefinitionArgs {
      * A set of placement constraints rules that are taken into consideration during task placement.
      * Maximum number of `placement_constraints` is `10`.
      */
-    placementConstraints?: pulumi.Input<pulumi.Input<{
-        expression?: pulumi.Input<string>;
-        type: pulumi.Input<string>;
-    }>[]>;
+    placementConstraints?: aws.ecs.TaskDefinitionArgs["placementConstraints"];
 
     /**
      * A set of volume blocks that containers in your task may use.
      */
-    volumes?: pulumi.Input<pulumi.Input<{
-        dockerVolumeConfiguration?: pulumi.Input<{
-            autoprovision?: pulumi.Input<boolean>;
-            driver?: pulumi.Input<string>;
-            driverOpts?: pulumi.Input<{
-                [key: string]: pulumi.Input<string>;
-            }>;
-            labels?: pulumi.Input<{
-                [key: string]: pulumi.Input<string>;
-            }>;
-            scope?: pulumi.Input<string>;
-        }>;
-        hostPath?: pulumi.Input<string>;
-        name: pulumi.Input<string>;
-    }>[]>;
+    volumes?: aws.ecs.TaskDefinitionArgs["volumes"];
 
     // Properties we've added/changed.
 
@@ -226,12 +209,7 @@ export interface EC2ServiceArgs {
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: pulumi.Input<pulumi.Input<{
-        containerName: pulumi.Input<string>;
-        containerPort: pulumi.Input<number>;
-        elbName?: pulumi.Input<string>;
-        targetGroupArn?: pulumi.Input<string>;
-    }>[]>;
+    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
@@ -243,38 +221,25 @@ export interface EC2ServiceArgs {
      * that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is
      * not supported for other network modes.
      */
-    networkConfiguration?: pulumi.Input<{
-        assignPublicIp?: pulumi.Input<boolean>;
-        securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
-        subnets: pulumi.Input<pulumi.Input<string>[]>;
-    }>;
+    networkConfiguration?: aws.ecs.ServiceArgs["networkConfiguration"];
 
     /**
      * Service level strategy rules that are taken into consideration during task placement. List
      * from top to bottom in order of precedence. The maximum number of `ordered_placement_strategy`
      * blocks is `5`. Defined below.
      */
-    orderedPlacementStrategies?: pulumi.Input<pulumi.Input<{
-        field?: pulumi.Input<string>;
-        type: pulumi.Input<string>;
-    }>[]>;
+    orderedPlacementStrategies?: aws.ecs.ServiceArgs["orderedPlacementStrategies"];
 
     /**
      * rules that are taken into consideration during task placement. Maximum number of
      * `placement_constraints` is `10`. Defined below.
      */
-    placementConstraints?: pulumi.Input<pulumi.Input<{
-        expression?: pulumi.Input<string>;
-        type: pulumi.Input<string>;
-    }>[]>;
+    placementConstraints?: aws.ecs.ServiceArgs["placementConstraints"];
 
     /**
      * **Deprecated**, use `ordered_placement_strategy` instead.
      */
-    placementStrategies?: pulumi.Input<pulumi.Input<{
-        field?: pulumi.Input<string>;
-        type: pulumi.Input<string>;
-    }>[]>;
+    placementStrategies?: aws.ecs.ServiceArgs["placementStrategies"];
 
     /**
      * The scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`.
@@ -286,12 +251,7 @@ export interface EC2ServiceArgs {
     /**
      * The service discovery registries for the service. The maximum number of `service_registries` blocks is `1`.
      */
-    serviceRegistries?: pulumi.Input<{
-        containerName?: pulumi.Input<string>;
-        containerPort?: pulumi.Input<number>;
-        port?: pulumi.Input<number>;
-        registryArn: pulumi.Input<string>;
-    }>;
+    serviceRegistries?: aws.ecs.ServiceArgs["serviceRegistries"];
 
     /**
      * Cluster this service will run in.
