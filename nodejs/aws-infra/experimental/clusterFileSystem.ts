@@ -22,7 +22,7 @@ import * as utils from "../utils";
 export class ClusterFileSystem extends pulumi.ComponentResource {
     public readonly instance: aws.efs.FileSystem;
     public readonly cluster: mod.Cluster;
-    public readonly securityGroup: aws.ec2.SecurityGroup;
+    public readonly securityGroups: aws.ec2.SecurityGroup[];
     public readonly mountTargets: aws.efs.MountTarget[];
     public readonly mountPath: pulumi.Output<string>;
 
@@ -44,7 +44,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
         // If requested, add EFS file system and mount targets in each subnet.
 
         const efsSecurityGroupName = `${name}-fs`;
-        const securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(efsSecurityGroupName, {
+        const securityGroups = args.securityGroups || [new aws.ec2.SecurityGroup(efsSecurityGroupName, {
             vpcId: cluster.network.vpcId,
             ingress: [
                 // Allow NFS traffic from the instance security group
@@ -56,7 +56,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
                 },
             ],
             tags: { Name: efsSecurityGroupName },
-        }, parentOpts);
+        }, parentOpts)];
 
         const subnetIds = args.subnetIds || cluster.network.subnetIds;
         for (let i = 0; i < subnetIds.length; i++) {
@@ -64,7 +64,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
             mountTargets.push(new aws.efs.MountTarget(`${name}-${i}`, {
                 fileSystemId: instance.id,
                 subnetId: subnetId,
-                securityGroups: [ securityGroup.id ],
+                securityGroups: securityGroups.map(g => g.id),
             }, parentOpts));
         }
 
@@ -72,14 +72,14 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
         this.cluster = cluster;
         this.mountPath = mountPath;
         this.mountTargets = mountTargets;
-        this.securityGroup = securityGroup;
+        this.securityGroups = securityGroups;
 
         this.registerOutputs({
             instance,
             cluster,
             mountPath,
             mountTargets,
-            securityGroup,
+            securityGroups,
         });
     }
 }
@@ -91,7 +91,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.efs.FileSystemArgs, {
     cluster: mod.Cluster,
-    securityGroup?: aws.ec2.SecurityGroup;
+    securityGroups?: aws.ec2.SecurityGroup[];
     subnetIds?: pulumi.Input<string>[];
     mountPath?: pulumi.Input<string>;
 }>;
@@ -154,7 +154,7 @@ export interface ClusterFileSystemArgs {
      * The security group to use for the file system.  If not provided, a default one that allows
      * ingress for the cluster's VPC from port 2049 will be created.
      */
-    securityGroup?: aws.ec2.SecurityGroup;
+    securityGroups?: aws.ec2.SecurityGroup[];
 
     /**
      * The subnets to mount the file system against.  If not provided, file system will be mounted
