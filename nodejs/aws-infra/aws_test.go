@@ -254,9 +254,9 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 			logsByResource[l.ID] = append(cur, l)
 		}
 
-		for id, logs := range logsByResource {
-			t.Logf("LogId (%v): %v\n%v", len(logs), id, getAllMessageText(logs))
-		}
+		// for id, logs := range logsByResource {
+		// 	t.Logf("LogId (%v): %v\n%v", len(logs), id, getAllMessageText(logs))
+		// }
 
 		// NGINX logs
 		//  {examples-nginx 1512871243078 18.217.247.198 - - [10/Dec/2017:02:00:43 +0000] "GET / HTTP/1.1" ...
