@@ -231,7 +231,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             // We will use a different route table for this subnet depending on
             // whether we are in a public or private subnet
             const subnetRouteTable = createSubnetRouteTable(
-                publicRouteTable, subnet, name, i);
+                this, publicRouteTable, subnet, name, i);
 
             const routeTableAssociation = new aws.ec2.RouteTableAssociation(`${name}-${i}`, {
                 subnetId: subnet.id,
@@ -246,13 +246,13 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
 }
 
 function createSubnetRouteTable(
-        publicRouteTable: aws.ec2.RouteTable, subnet: aws.ec2.Subnet,
-        name: string, index: number) {
-    const parentOpts = { parent: this };
+        network: Network, publicRouteTable: aws.ec2.RouteTable,
+        subnet: aws.ec2.Subnet, name: string, index: number) {
+    const parentOpts = { parent: network };
 
-    if (!this.usePrivateSubnets) {
+    if (!network.usePrivateSubnets) {
         // The subnet is public, so register it as our public subnet
-        this.publicSubnetIds.push(subnet.id);
+        network.publicSubnetIds.push(subnet.id);
         return publicRouteTable;
     }
 
@@ -261,7 +261,7 @@ function createSubnetRouteTable(
     const tags = { Name: natName };
 
     const natGatewayPublicSubnet = new aws.ec2.Subnet(natName, {
-        vpcId: this.vpcId,
+        vpcId: network.vpcId,
         availabilityZone: getAvailabilityZone(index),
         cidrBlock: `10.10.${index+64}.0/24`, // Use top half of the subnet space
         mapPublicIpOnLaunch: true,        // Always assign a public IP in NAT subnet
@@ -277,7 +277,7 @@ function createSubnetRouteTable(
     // Record the subnet id, but depend on the RouteTableAssociation
     const natGatewayPublicSubnetId =
         pulumi.all([natGatewayPublicSubnet.id, natGatewayRoutes.id]).apply(([id]) => id);
-    this.publicSubnetIds.push(natGatewayPublicSubnetId);
+    network.publicSubnetIds.push(natGatewayPublicSubnetId);
 
     // We need an Elastic IP for the NAT Gateway
     const eip = new aws.ec2.Eip(natName, {}, parentOpts);
@@ -290,7 +290,7 @@ function createSubnetRouteTable(
     }, parentOpts);
 
     const natRouteTable = new aws.ec2.RouteTable(natName, {
-        vpcId: this.vpcId,
+        vpcId: network.vpcId,
         routes: [{
             cidrBlock: "0.0.0.0/0",
             natGatewayId: natGateway.id,

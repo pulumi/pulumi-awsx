@@ -69,7 +69,8 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
         const taskRole = args.taskRole || TaskDefinition.createTaskRole(
             `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, parentOpts);
-        const executionRole = args.executionRole || createExecutionRole(name, parentOpts);
+        const executionRole = args.executionRole || TaskDefinition.createExecutionRole(
+            `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, parentOpts);
 
 //         // todo(cyrusn): volumes.
 //         //     // Find all referenced Volumes.
@@ -139,24 +140,51 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             policyArns?: string[],
             opts?: pulumi.ResourceOptions): aws.iam.Role {
 
+        return TaskDefinition.createRole(
+            name, assumeRolePolicy,
+            policyArns || TaskDefinition.defaultTaskRolePolicyARNs(),
+            opts);
+    }
+
+    /**
+     * Creates the [executionRole] for a [TaskDefinition] if not provided explicitly. If
+     * [assumeRolePolicy] is provided it will be used when creating the task, otherwise
+     * [defaultRoleAssumeRolePolicy] will be used.  If [policyArns] are provided, they will be used
+     * to create [RolePolicyAttachment]s for the Role.  Otherwise, [defaultExecutionRolePolicyARNs] will
+     * be used.
+     */
+    public static createExecutionRole(
+            name: string,
+            assumeRolePolicy?: string | aws.iam.PolicyDocument,
+            policyArns?: string[],
+            opts?: pulumi.ResourceOptions): aws.iam.Role {
+
+        return TaskDefinition.createRole(
+            name, assumeRolePolicy,
+            policyArns || TaskDefinition.defaultExecutionRolePolicyARNs(),
+            opts);
+    }
+
+    private static createRole(
+            name: string,
+            assumeRolePolicy: string | aws.iam.PolicyDocument | undefined,
+            policyArns: string[],
+            opts: pulumi.ResourceOptions | undefined): aws.iam.Role {
+
         if (typeof assumeRolePolicy !== "string") {
             assumeRolePolicy = assumeRolePolicy || TaskDefinition.defaultRoleAssumeRolePolicy();
             assumeRolePolicy = JSON.stringify(assumeRolePolicy);
         }
 
-        const taskRole = new aws.iam.Role(name, { assumeRolePolicy }, opts);
+        const role = new aws.iam.Role(name, { assumeRolePolicy }, opts);
 
-        policyArns = policyArns || TaskDefinition.defaultTaskRolePolicyARNs();
         for (let i = 0; i < policyArns.length; i++) {
             const policyArn = policyArns[i];
             const _ = new aws.iam.RolePolicyAttachment(
-                `${name}-${utils.sha1hash(policyArn)}`, {
-                    role: taskRole,
-                    policyArn,
-                }, opts);
+                `${name}-${utils.sha1hash(policyArn)}`, { role, policyArn }, opts);
         }
 
-        return taskRole;
+        return role;
     }
 
     // The default ECS Task assume role policy for Task and Execution Roles
@@ -182,6 +210,11 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             // Required for lambda compute to be able to run Tasks
             aws.iam.AmazonEC2ContainerServiceFullAccess,
         ];
+    }
+
+    // Default policy arns for the Execution role.
+    public static defaultExecutionRolePolicyARNs() {
+        return ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"];
     }
 }
 
@@ -273,18 +306,6 @@ function computeContainerDefinitions(
     }
 
     return pulumi.all(result);
-}
-
-function createExecutionRole(name: string, opts: pulumi.ResourceOptions): aws.iam.Role {
-    const executionRole = new aws.iam.Role(`${name}-execution`, {
-        assumeRolePolicy: JSON.stringify(TaskDefinition.defaultRoleAssumeRolePolicy()),
-    }, opts);
-    const _ = new aws.iam.RolePolicyAttachment(`${name}-execution`, {
-        role: executionRole,
-        policyArn: "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-    }, opts);
-
-    return executionRole;
 }
 
 // The shape we want for ClusterTaskDefinitionArgsOverwriteShap.  We don't export this as
