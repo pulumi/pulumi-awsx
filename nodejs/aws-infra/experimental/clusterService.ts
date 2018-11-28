@@ -34,20 +34,15 @@ export abstract class ClusterService extends pulumi.ComponentResource {
                 opts: pulumi.ResourceOptions = {}) {
         super(type, name, args, opts);
 
-        const parentOpts = { parent: this };
-
-        const dependsOn = opts.dependsOn
-            ? Array.isArray(opts.dependsOn) ? opts.dependsOn : [opts.dependsOn]
-            : [];
-
-        opts.dependsOn = dependsOn;
-
         // If the cluster has an autoscaling group, ensure the service depends on it being created.
         // TODO(cyrusn): this isn't necessary if resource creation automatically makes 'deps' for
         // the opts passed in. Investigate.
+        const dependsOn: pulumi.Resource[] = [];
         if (args.autoScalingGroup) {
             dependsOn.push(args.autoScalingGroup);
         }
+
+        const parentOpts = { parent: this, dependsOn };
 
         const loadBalancers = getLoadBalancers(this, name, args);
 
