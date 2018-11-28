@@ -24,3 +24,4 @@ export * from "./image";
 export * from "./ec2";
 export * from "./fargate";
 export * from "./loadBalancer";
+export * from "./role";

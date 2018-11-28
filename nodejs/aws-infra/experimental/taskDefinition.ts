@@ -140,8 +140,9 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             policyArns?: string[],
             opts?: pulumi.ResourceOptions): aws.iam.Role {
 
-        return TaskDefinition.createRole(
-            name, assumeRolePolicy,
+        return mod.createRole(
+            name,
+            assumeRolePolicy || TaskDefinition.defaultRoleAssumeRolePolicy(),
             policyArns || TaskDefinition.defaultTaskRolePolicyARNs(),
             opts);
     }
@@ -159,32 +160,11 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             policyArns?: string[],
             opts?: pulumi.ResourceOptions): aws.iam.Role {
 
-        return TaskDefinition.createRole(
-            name, assumeRolePolicy,
+        return mod.createRole(
+            name,
+            assumeRolePolicy || TaskDefinition.defaultRoleAssumeRolePolicy(),
             policyArns || TaskDefinition.defaultExecutionRolePolicyARNs(),
             opts);
-    }
-
-    private static createRole(
-            name: string,
-            assumeRolePolicy: string | aws.iam.PolicyDocument | undefined,
-            policyArns: string[],
-            opts: pulumi.ResourceOptions | undefined): aws.iam.Role {
-
-        if (typeof assumeRolePolicy !== "string") {
-            assumeRolePolicy = assumeRolePolicy || TaskDefinition.defaultRoleAssumeRolePolicy();
-            assumeRolePolicy = JSON.stringify(assumeRolePolicy);
-        }
-
-        const role = new aws.iam.Role(name, { assumeRolePolicy }, opts);
-
-        for (let i = 0; i < policyArns.length; i++) {
-            const policyArn = policyArns[i];
-            const _ = new aws.iam.RolePolicyAttachment(
-                `${name}-${utils.sha1hash(policyArn)}`, { role, policyArn }, opts);
-        }
-
-        return role;
     }
 
     // The default ECS Task assume role policy for Task and Execution Roles

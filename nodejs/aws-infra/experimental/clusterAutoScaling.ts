@@ -23,8 +23,9 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
     public readonly instance: aws.ec2.LaunchConfiguration;
 
     public readonly cluster: mod.Cluster;
+
     /**
-     * Optional file system to mount.  Use [cluster.createFileSystem] to create an instance of this.
+     * Optional file system to mount.
      */
     public readonly fileSystem?: mod.ClusterFileSystem;
 
@@ -51,7 +52,10 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
         const stackName = pulumi.output(args.stackName).apply(sn => sn || new aws.s3.Bucket(name, {}, parentOpts).id);
 
         // Use the instance provided, or create a new one.
-        const instanceProfile = getInstanceProfile(name, args, parentOpts);
+        const instanceProfile = args.instanceProfile ||
+            ClusterAutoScalingLaunchConfiguration.createInstanceProfile(
+                name, /*assumeRolePolicy:*/ undefined, /*policyArns:*/ undefined, parentOpts);
+
         const fileSystem = args.fileSystem;
 
         const securityGroups =
@@ -102,6 +106,28 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
     public static defaultInstanceProfilePolicyARNs() {
         return [aws.iam.AmazonEC2ContainerServiceforEC2Role, aws.iam.AmazonEC2ReadOnlyAccess];
     }
+
+    /**
+     * Creates the [instanceProfile] for a [ClusterAutoScalingLaunchConfiguration] if not provided
+     * explicitly. If [assumeRolePolicy] is provided it will be used when creating the task,
+     * otherwise [defaultInstanceProfilePolicyDocument] will be used.  If [policyArns] are provided,
+     * they will be used to create [RolePolicyAttachment]s for the Role.  Otherwise,
+     * [defaultInstanceProfilePolicyARNs] will be used.
+     */
+    public static createInstanceProfile(
+        name: string,
+        assumeRolePolicy?: string | aws.iam.PolicyDocument,
+        policyArns?: string[],
+        opts?: pulumi.ResourceOptions) {
+
+        const { role, policies } = mod.createRoleAndPolicies(
+            name,
+            assumeRolePolicy || ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyDocument(),
+            policyArns || ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyARNs(),
+            opts);
+
+        return new aws.iam.InstanceProfile(name, { role }, {...opts, dependsOn: policies });
+    }
 }
 
 (<any>ClusterAutoScalingLaunchConfiguration).doNotCapture = true;
@@ -127,11 +153,7 @@ const defaultEbsBlockDevices = [{
     }];
 
 function getInstanceProfile(
-        name: string, args: ClusterAutoScalingLaunchConfigurationArgs, opts: pulumi.ResourceOptions) {
-
-    if (args.instanceProfile) {
-        return args.instanceProfile;
-    }
+        name: string, opts: pulumi.ResourceOptions) {
 
     const instanceRole = new aws.iam.Role(name, {
         assumeRolePolicy: JSON.stringify(ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyDocument()),
@@ -513,7 +535,7 @@ export interface ClusterAutoScalingLaunchConfigurationArgs {
     instanceProfile?: aws.iam.InstanceProfile;
 
     /**
-     * Optional file system to mount.  Use [cluster.createFileSystem] to create an instance of this.
+     * Optional file system to mount.
      */
     fileSystem?: mod.ClusterFileSystem;
 
