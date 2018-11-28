@@ -28,7 +28,7 @@ export function computeContainerDefinition(
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
     if (container.image === undefined && container.imageProvider === undefined) {
-        throw new Error("container requires either [image] or [imageProvider] to be set.");
+        throw new Error(`container '${containerName}' requires either [image] or [imageProvider] to be set.`);
     }
 
     const imageProvider = container.imageProvider;
