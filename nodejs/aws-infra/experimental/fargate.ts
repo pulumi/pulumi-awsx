@@ -163,10 +163,15 @@ type OverwriteTaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
 export interface FargateTaskDefinitionArgs {
     // Properties copied from mod.TaskDefinitionArgs
 
+    /**
+     * A set of placement constraints rules that are taken into consideration during task placement.
+     * Maximum number of `placement_constraints` is `10`.
+     */
     placementConstraints?: pulumi.Input<pulumi.Input<{
         expression?: pulumi.Input<string>;
         type: pulumi.Input<string>;
     }>[]>;
+
     /**
      * A set of volume blocks that containers in your task may use.
      */
@@ -258,16 +263,19 @@ export interface FargateServiceArgs {
      * scheduling strategy.
      */
     deploymentMaximumPercent?: pulumi.Input<number>;
+
     /**
      * The lower limit (as a percentage of the service's desiredCount) of the number of running
      * tasks that must remain running and healthy in a service during a deployment.
      */
     deploymentMinimumHealthyPercent?: pulumi.Input<number>;
+
     /**
      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
      * premature shutdown, up to 7200. Only valid for services configured to use load balancers.
      */
     healthCheckGracePeriodSeconds?: pulumi.Input<number>;
+
     /**
      * ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your
      * behalf. This parameter is required if you are using a load balancer with your service, but
@@ -277,6 +285,7 @@ export interface FargateServiceArgs {
      * here.
      */
     iamRole?: pulumi.Input<string>;
+
     /**
      * A load balancer block. Load balancers documented below.
      */
@@ -286,10 +295,12 @@ export interface FargateServiceArgs {
         elbName?: pulumi.Input<string>;
         targetGroupArn?: pulumi.Input<string>;
     }>[]>;
+
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
      */
     name?: pulumi.Input<string>;
+
     /**
      * The network configuration for the service. This parameter is required for task definitions
      * that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is
@@ -300,6 +311,7 @@ export interface FargateServiceArgs {
         securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
         subnets: pulumi.Input<pulumi.Input<string>[]>;
     }>;
+
     /**
      * Service level strategy rules that are taken into consideration during task placement. List
      * from top to bottom in order of precedence. The maximum number of `ordered_placement_strategy`
@@ -309,6 +321,7 @@ export interface FargateServiceArgs {
         field?: pulumi.Input<string>;
         type: pulumi.Input<string>;
     }>[]>;
+
     /**
      * rules that are taken into consideration during task placement. Maximum number of
      * `placement_constraints` is `10`. Defined below.
@@ -317,6 +330,7 @@ export interface FargateServiceArgs {
         expression?: pulumi.Input<string>;
         type: pulumi.Input<string>;
     }>[]>;
+
     /**
      * **Deprecated**, use `ordered_placement_strategy` instead.
      */
@@ -324,12 +338,14 @@ export interface FargateServiceArgs {
         field?: pulumi.Input<string>;
         type: pulumi.Input<string>;
     }>[]>;
+
     /**
      * The scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`.
      * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
      * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
      */
     schedulingStrategy?: pulumi.Input<string>;
+
     /**
      * The service discovery registries for the service. The maximum number of `service_registries` blocks is `1`.
      */

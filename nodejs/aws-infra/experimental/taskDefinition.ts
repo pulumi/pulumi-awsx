@@ -308,10 +308,15 @@ type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
 export interface TaskDefinitionArgs {
     // Properties copied from aws.ecs.TaskDefinitionArgs
 
+    /**
+     * A set of placement constraints rules that are taken into consideration during task placement.
+     * Maximum number of `placement_constraints` is `10`.
+     */
     placementConstraints?: pulumi.Input<pulumi.Input<{
         expression?: pulumi.Input<string>;
         type: pulumi.Input<string>;
     }>[]>;
+
     /**
      * A set of volume blocks that containers in your task may use.
      */
