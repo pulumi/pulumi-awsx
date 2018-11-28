@@ -152,29 +152,6 @@ const defaultEbsBlockDevices = [{
         deleteOnTermination: true,
     }];
 
-function getInstanceProfile(
-        name: string, opts: pulumi.ResourceOptions) {
-
-    const instanceRole = new aws.iam.Role(name, {
-        assumeRolePolicy: JSON.stringify(ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyDocument()),
-    }, opts);
-
-    const policyARNs = ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyARNs();
-    const instanceRolePolicies: aws.iam.RolePolicyAttachment[] = [];
-    for (let i = 0; i < policyARNs.length; i++) {
-        const policyARN = policyARNs[i];
-
-        instanceRolePolicies.push(new aws.iam.RolePolicyAttachment(`${name}-${utils.sha1hash(policyARN)}`, {
-            role: instanceRole,
-            policyArn: policyARN,
-        }, opts));
-    }
-
-    return new aws.iam.InstanceProfile(name, {
-        role: instanceRole,
-    }, {...opts, dependsOn: instanceRolePolicies});
-}
-
 
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
 async function getEcsAmiId(name?: string): Promise<string> {
