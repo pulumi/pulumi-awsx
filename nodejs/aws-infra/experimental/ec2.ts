@@ -74,7 +74,7 @@ export class EC2Service extends mod.ClusterService {
         }
 
         const taskDefinition = args.taskDefinition ||
-            new mod.EC2TaskDefinition(`${name}-task`, args.taskDefinitionArgs!, opts);
+            new mod.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
 
         const cluster = args.cluster;
         super("aws-infra:x:EC2Service", name, {

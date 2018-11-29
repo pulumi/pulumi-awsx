@@ -135,7 +135,7 @@ export class FargateService extends mod.ClusterService {
         }
 
         const taskDefinition = args.taskDefinition ||
-            new mod.FargateTaskDefinition(`${name}-task`, args.taskDefinitionArgs!, opts);
+            new mod.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
 
         const cluster = args.cluster;
         super("aws-infra:x:FargateService", name, {
