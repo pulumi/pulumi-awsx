@@ -42,7 +42,7 @@ export class Cluster
     public readonly securityGroupIds: () => pulumi.Input<pulumi.Input<string>[]>;
     public readonly extraBootcmdLines: () => pulumi.Input<mod.ec2.UserDataLine[]>;
 
-    // public readonly autoScalingGroups: mod.autoscaling.AutoScalingGroup[] = [];
+    public readonly autoScalingGroups: mod.autoscaling.AutoScalingGroup[] = [];
 
     constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("aws-infra:x:Cluster", name, {
@@ -81,7 +81,7 @@ export class Cluster
     }
 
     public addAutoScalingGroup(group: mod.autoscaling.AutoScalingGroup) {
-        // this.autoScalingGroups.push(group);
+        this.autoScalingGroups.push(group);
     }
 
     /**
@@ -104,7 +104,7 @@ export class Cluster
         launchConfigurationArgs.userDataProviders.push(this);
 
         const group = new mod.autoscaling.AutoScalingGroup(name, args, opts || { parent: this });
-        // this.addAutoScalingGroup(group);
+        this.addAutoScalingGroup(group);
 
         return group;
     }

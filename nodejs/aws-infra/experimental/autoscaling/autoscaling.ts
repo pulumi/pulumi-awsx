@@ -38,7 +38,8 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     constructor(name: string,
                 args: AutoScalingLaunchConfigurationArgs = {},
                 opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsinfra:x:autoscaling:AutoScalingLaunchConfiguration", name, args, opts);
+        super("awsinfra:x:autoscaling:AutoScalingLaunchConfiguration", name,
+            AutoScalingLaunchConfiguration.withoutProviders(args), opts);
 
         const parentOpts = { parent: this };
 
@@ -80,6 +81,19 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             instanceProfile,
             fileSystem,
         });
+    }
+
+    /** @internal */
+    public static withoutProviders(args: AutoScalingLaunchConfigurationArgs | undefined) {
+        if (!args) {
+            return undefined;
+        }
+
+        return <AutoScalingLaunchConfigurationArgs>{
+            ...args,
+            securityGroupsProvider: undefined,
+            userDataProviders: undefined,
+        };
     }
 
     public static defaultInstanceProfilePolicyDocument(): aws.iam.PolicyDocument {
@@ -326,7 +340,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     constructor(name: string,
                 args: AutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsinfra:x:autoscaling:AutoScalingGroup", name, args, opts);
+        super("awsinfra:x:autoscaling:AutoScalingGroup", name,
+            AutoScalingGroup.withoutProviders(args), opts);
 
         const parentOpts = { parent: this };
 
@@ -361,6 +376,14 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             instance,
             launchConfiguration,
         });
+    }
+
+    /** @internal */
+    public static withoutProviders(args: AutoScalingGroupArgs) {
+        return <AutoScalingGroupArgs>{
+            ...args,
+            launchConfigurationArgs: AutoScalingLaunchConfiguration.withoutProviders(args.launchConfigurationArgs),
+        };
     }
 }
 
