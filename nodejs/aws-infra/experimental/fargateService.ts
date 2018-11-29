@@ -19,32 +19,40 @@ import * as utils from "./../utils";
 
 import * as mod from ".";
 
-export class EC2TaskDefinition extends mod.TaskDefinition {
+export class FargateTaskDefinition extends mod.TaskDefinition {
     constructor(name: string,
-                args: EC2TaskDefinitionArgs,
+                args: mod.FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
+
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
 
         const containers = args.containers || { container: args.container! };
 
+        const computedMemoryAndCPU = computeFargateMemoryAndCPU(containers);
+        const computedMemory = computedMemoryAndCPU.apply(x => x.memory);
+        const computedCPU = computedMemoryAndCPU.apply(x => x.cpu);
+
         const argsCopy: mod.TaskDefinitionArgs = {
             ...args,
-            requiresCompatibilities: ["EC2"],
-            networkMode: utils.ifUndefined(args.networkMode, "awsvpc"),
+            requiresCompatibilities: ["FARGATE"],
+            networkMode: "awsvpc",
+            memory: utils.ifUndefined(args.memory, computedMemory),
+            cpu: utils.ifUndefined(args.cpu, computedCPU),
         };
 
         delete (<any>argsCopy).container;
         delete (<any>argsCopy).containers;
 
-        super("aws-infra:x:EC2TaskDefinition", name, containers, /*isFargate:*/ false, argsCopy, opts);
+        super("aws-infra:x:FargateTaskDefinition", name, containers, /*isFargate:*/ true, argsCopy, opts);
     }
 
     /**
      * Creates a service with this as its task definition.
      */
-    public createService(name: string, args: mod.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
+    public createService(
+            name: string, args: mod.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -53,20 +61,73 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new mod.EC2Service(name, {
+        return new mod.FargateService(name, {
             ...args,
             taskDefinition: this,
         }, opts || { parent: this });
     }
 }
 
-(<any>EC2TaskDefinition).doNotCapture = true;
+(<any>FargateTaskDefinition).doNotCapture = true;
 
-export class EC2Service extends mod.ClusterService {
-    public taskDefinitionInstance: EC2TaskDefinition;
+function computeFargateMemoryAndCPU(containers: Record<string, mod.ContainerDefinition>) {
+    return pulumi.output(containers).apply(containers => {
+        // Sum the requested memory and CPU for each container in the task.
+        let minTaskMemory = 0;
+        let minTaskCPU = 0;
+        for (const containerName of Object.keys(containers)) {
+            const containerDef = containers[containerName];
 
+            if (containerDef.memoryReservation) {
+                minTaskMemory += containerDef.memoryReservation;
+            } else if (containerDef.memory) {
+                minTaskMemory += containerDef.memory;
+            }
+
+            if (containerDef.cpu) {
+                minTaskCPU += containerDef.cpu;
+            }
+        }
+
+        // Compute the smallest allowed Fargate memory value compatible with the requested minimum memory.
+        let taskMemory: number;
+        let taskMemoryString: string;
+        if (minTaskMemory <= 512) {
+            taskMemory = 512;
+            taskMemoryString = "0.5GB";
+        } else {
+            const taskMemGB = minTaskMemory / 1024;
+            const taskMemWholeGB = Math.ceil(taskMemGB);
+            taskMemory = taskMemWholeGB * 1024;
+            taskMemoryString = `${taskMemWholeGB}GB`;
+        }
+
+        // Allowed CPU values are powers of 2 between 256 and 4096.  We just ensure it's a power of 2 that is at least
+        // 256. We leave the error case for requiring more CPU than is supported to ECS.
+        let taskCPU = Math.pow(2, Math.ceil(Math.log2(Math.max(minTaskCPU, 256))));
+
+        // Make sure we select an allowed CPU value for the specified memory.
+        if (taskMemory > 16384) {
+            taskCPU = Math.max(taskCPU, 4096);
+        } else if (taskMemory > 8192) {
+            taskCPU = Math.max(taskCPU, 2048);
+        } else if (taskMemory > 4096) {
+            taskCPU = Math.max(taskCPU, 1024);
+        } else if (taskMemory > 2048) {
+            taskCPU = Math.max(taskCPU, 512);
+        }
+
+        // Return the computed task memory and CPU values
+        return {
+            memory: taskMemoryString,
+            cpu: `${taskCPU}`,
+        };
+    });
+}
+
+export class FargateService extends mod.ClusterService {
     constructor(name: string,
-                args: EC2ServiceArgs,
+                args: FargateServiceArgs,
                 opts?: pulumi.ResourceOptions) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
@@ -74,36 +135,33 @@ export class EC2Service extends mod.ClusterService {
         }
 
         const taskDefinition = args.taskDefinition ||
-            new mod.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
+            new mod.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
 
         const cluster = args.cluster;
-        super("aws-infra:x:EC2Service", name, {
+        super("aws-infra:x:FargateService", name, {
             ...args,
             taskDefinition,
-            launchType: "EC2",
+            launchType: "FARGATE",
             networkConfiguration: {
-                assignPublicIp: false,
-                securityGroups: cluster.instanceSecurityGroups.map(g => g.id),
+                assignPublicIp: !cluster.network.usePrivateSubnets,
+                securityGroups: cluster.securityGroups.map(g => g.id),
                 subnets: cluster.network.subnetIds,
             },
-        }, /*isFargate:*/ false, opts);
-
-        this.taskDefinitionInstance = taskDefinition;
+        },  /*isFargate:*/ true, opts);
     }
 }
 
-(<any>EC2Service).doNotCapture = true;
+(<any>FargateService).doNotCapture = true;
 
-type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
+type OverwriteTaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
     requiresCompatibilities?: never;
-    cpu?: never;
-    memory?: never;
+    networkMode?: never;
     container?: mod.ContainerDefinition;
     containers?: Record<string, mod.ContainerDefinition>;
 }>;
 
-export interface EC2TaskDefinitionArgs {
-    // Properties from mod.TaskDefinitionArgs
+export interface FargateTaskDefinitionArgs {
+    // Properties copied from mod.TaskDefinitionArgs
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
@@ -138,12 +196,16 @@ export interface EC2TaskDefinitionArgs {
     executionRole?: aws.iam.Role;
 
     /**
-     * The Docker networking mode to use for the containers in the task. The valid values are
-     * `none`, `bridge`, `awsvpc`, and `host`.
+     * The number of cpu units used by the task.  If not provided, a default will be computed
+     * based on the cumulative needs specified by [containerDefinitions]
      */
-    networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
+    cpu?: pulumi.Input<string>;
 
-    // Properties we're adding.
+    /**
+     * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+     * based on the cumulative needs specified by [containerDefinitions]
+     */
+    memory?: pulumi.Input<string>;
 
     /**
      * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
@@ -162,19 +224,20 @@ export interface EC2TaskDefinitionArgs {
      */
     containers?: Record<string, mod.ContainerDefinition>;
 }
+
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape1: OverwriteEC2TaskDefinitionArgs = undefined!;
-let argsShape1: EC2TaskDefinitionArgs = undefined!;
+let overwriteShape1: OverwriteTaskDefinitionArgs = undefined!;
+let argsShape1: FargateTaskDefinitionArgs = undefined!;
 argsShape1 = overwriteShape1;
 overwriteShape1 = argsShape1;
 
-type OverwriteEC2ServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
-    taskDefinition?: EC2TaskDefinition;
-    taskDefinitionArgs?: EC2TaskDefinitionArgs;
+type OverwriteFargateServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
+    taskDefinition?: mod.FargateTaskDefinition;
+    taskDefinitionArgs?: FargateTaskDefinitionArgs;
     launchType?: never;
 }>;
 
-export interface EC2ServiceArgs {
+export interface FargateServiceArgs {
     // Properties from mod.ServiceArgs
 
     /**
@@ -253,6 +316,8 @@ export interface EC2ServiceArgs {
      */
     serviceRegistries?: aws.ecs.ServiceArgs["serviceRegistries"];
 
+    // Changes we made to the core args type.
+
     /**
      * Cluster this service will run in.
      */
@@ -276,25 +341,25 @@ export interface EC2ServiceArgs {
     /**
      * Optional auto-scaling group for the cluster.
      */
-    autoScalingGroup?: mod.autoscaling.ClusterAutoScalingGroup;
+    autoScalingGroup?: mod.autoscaling.AutoScalingGroup;
 
-    // Properties we add.
-
-    /**
-     * The task definition to create the service from.  Either [taskDefinition] or
-     * [taskDefinitionArgs] must be provided.
-     */
-    taskDefinition?: EC2TaskDefinition;
+    // Properties we're adding.
 
     /**
      * The task definition to create the service from.  Either [taskDefinition] or
      * [taskDefinitionArgs] must be provided.
      */
-    taskDefinitionArgs?: EC2TaskDefinitionArgs;
+    taskDefinition?: mod.FargateTaskDefinition;
+
+    /**
+     * The task definition to create the service from.  Either [taskDefinition] or
+     * [taskDefinitionArgs] must be provided.
+     */
+    taskDefinitionArgs?: FargateTaskDefinitionArgs;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape2: OverwriteEC2ServiceArgs = undefined!;
-let argsShape2: EC2ServiceArgs = undefined!;
+let overwriteShape2: OverwriteFargateServiceArgs = undefined!;
+let argsShape2: FargateServiceArgs = undefined!;
 argsShape2 = overwriteShape2;
 overwriteShape2 = argsShape2;

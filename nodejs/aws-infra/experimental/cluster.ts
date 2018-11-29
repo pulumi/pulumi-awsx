@@ -19,10 +19,15 @@ import { Network } from "./../network";
 
 import * as utils from "../utils";
 
+import * as mod from ".";
+
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
  */
-export class Cluster extends pulumi.ComponentResource {
+export class Cluster
+        extends pulumi.ComponentResource
+        implements mod.ec2.ISecurityGroupsProvider,
+                   mod.ec2.ILaunchConfigurationUserDataProvider {
     public readonly instance: aws.ecs.Cluster;
 
     /**
@@ -32,7 +37,12 @@ export class Cluster extends pulumi.ComponentResource {
     /**
      * Security groups associated with this this ECS Cluster.
      */
-    public readonly instanceSecurityGroups: aws.ec2.SecurityGroup[];
+    public readonly securityGroups: aws.ec2.SecurityGroup[];
+
+    public readonly securityGroupIds: () => pulumi.Input<pulumi.Input<string>[]>;
+    public readonly extraBootcmdLines: () => pulumi.Input<mod.ec2.UserDataLine[]>;
+
+    // public readonly autoScalingGroups: mod.autoscaling.AutoScalingGroup[] = [];
 
     constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("aws-infra:x:Cluster", name, {
@@ -48,22 +58,55 @@ export class Cluster extends pulumi.ComponentResource {
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        const instanceSecurityGroups = args.instanceSecurityGroups || [new aws.ec2.SecurityGroup(name, {
+        const securityGroups = args.securityGroups || [new aws.ec2.SecurityGroup(name, {
             vpcId: network.vpcId,
             ingress: Cluster.defaultSecurityGroupIngress(),
             egress: Cluster.defaultSecurityGroupEgress(),
             tags: { Name: name },
         }, parentOpts)];
 
+        this.securityGroupIds = () => securityGroups.map(g => g.id);
+        this.extraBootcmdLines = () => instance.id.apply(clusterId =>
+            [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
+
         this.instance = instance;
         this.network = network;
-        this.instanceSecurityGroups = instanceSecurityGroups;
+        this.securityGroups = securityGroups;
 
         this.registerOutputs({
             instance,
             network,
-            instanceSecurityGroups,
+            securityGroups,
         });
+    }
+
+    public addAutoScalingGroup(group: mod.autoscaling.AutoScalingGroup) {
+        // this.autoScalingGroups.push(group);
+    }
+
+    /**
+     * Creates a new autoscaling group and adds it to the list of autoscaling groups targeting this
+     * cluster.  The autoscaling group will be created with is network set to the same network as
+     * this cluster as well as using this cluster to initialize both its securityGroups and
+     * launchConfiguration userData.
+     */
+    public createAndAddAutoScalingGroup(
+            name: string,
+            args?: mod.autoscaling.AutoScalingGroupArgs,
+            opts?: pulumi.ResourceOptions) {
+
+        args = args || { network: this.network };
+
+        args.launchConfigurationArgs = args.launchConfigurationArgs || {};
+        const launchConfigurationArgs = args.launchConfigurationArgs;
+        launchConfigurationArgs.securityGroupsProvider = this;
+        launchConfigurationArgs.userDataProviders = launchConfigurationArgs.userDataProviders || [];
+        launchConfigurationArgs.userDataProviders.push(this);
+
+        const group = new mod.autoscaling.AutoScalingGroup(name, args, opts || { parent: this });
+        // this.addAutoScalingGroup(group);
+
+        return group;
     }
 
     public static defaultSecurityGroupEgress() {
@@ -103,7 +146,7 @@ export class Cluster extends pulumi.ComponentResource {
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     network?: Network;
-    instanceSecurityGroups?: aws.ec2.SecurityGroup[];
+    securityGroups?: aws.ec2.SecurityGroup[];
 }>;
 
 /**
@@ -131,7 +174,7 @@ export interface ClusterArgs {
      * The security group to place new instances into.  If not provided, a default will be
      * created.
      */
-    instanceSecurityGroups?: aws.ec2.SecurityGroup[];
+    securityGroups?: aws.ec2.SecurityGroup[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

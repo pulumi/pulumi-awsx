@@ -21,13 +21,11 @@ import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
 const cluster = new awsinfra.x.Cluster("testing", { network });
-const autoScalingGroup = new awsinfra.x.autoscaling.ClusterAutoScalingGroup("testing", {
-    cluster,
+const autoScalingGroup = cluster.createAndAddAutoScalingGroup("testing", {
     templateParameters: {
         minSize: 20,
     },
     launchConfigurationArgs: {
-        cluster,
         instanceType: "t2.medium",
     },
 });
@@ -332,4 +330,4 @@ const api = new aws.apigateway.x.API("examples-containers", {
 export let frontendURL = api.url;
 export let vpcId = network.vpcId;
 export let subnets = network.subnetIds;
-export let instanceSecurityGroups = cluster.instanceSecurityGroups;
+export let instanceSecurityGroups = cluster.securityGroups;

@@ -13,21 +13,3 @@
 // limitations under the License.
 
 export * from "./providers";
-
-export * from "./cluster";
-export * from "./clusterFileSystem";
-export * from "./clusterService";
-
-export * from "./taskDefinition";
-
-export * from "./containerDefinition";
-export * from "./image";
-export * from "./ec2Service";
-export * from "./fargateService";
-export * from "./loadBalancer";
-export * from "./role";
-
-import * as autoscaling from "./autoscaling";
-import * as ec2 from "./ec2";
-
-export { autoscaling, ec2 };

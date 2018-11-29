@@ -27,7 +27,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
     /**
      * Optional auto-scaling group for the cluster.
      */
-    public readonly autoScalingGroup?: mod.autoscaling.ClusterAutoScalingGroup;
+    public readonly autoScalingGroup?: mod.autoscaling.AutoScalingGroup;
 
     constructor(type: string, name: string,
                 args: ClusterServiceArgs, isFargate: boolean,
@@ -179,7 +179,7 @@ type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
     os?: pulumi.Input<"linux" | "windows">;
     waitForSteadyState?: pulumi.Input<boolean>;
-    autoScalingGroup?: mod.autoscaling.ClusterAutoScalingGroup;
+    autoScalingGroup?: mod.autoscaling.AutoScalingGroup;
 }>;
 
 export interface ClusterServiceArgs {
@@ -297,7 +297,7 @@ export interface ClusterServiceArgs {
     /**
      * Optional auto-scaling group for the cluster.
      */
-    autoScalingGroup?: mod.autoscaling.ClusterAutoScalingGroup;
+    autoScalingGroup?: mod.autoscaling.AutoScalingGroup;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

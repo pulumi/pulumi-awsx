@@ -16,13 +16,12 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
+import { Network } from "./../../network";
 
 import * as utils from "./../../utils";
 
-export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResource {
+export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.LaunchConfiguration;
-
-    public readonly cluster: x.Cluster;
 
     /**
      * Optional file system to mount.
@@ -37,13 +36,11 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
     public readonly stackName: pulumi.Output<string>;
 
     constructor(name: string,
-                args: ClusterAutoScalingLaunchConfigurationArgs,
+                args: AutoScalingLaunchConfigurationArgs = {},
                 opts: pulumi.ComponentResourceOptions = {}) {
-        super("aws-infra.x.ClusterAutoScalingLaunchConfiguration", name, args, opts);
+        super("awsinfra:x:autoscaling:AutoScalingLaunchConfiguration", name, args, opts);
 
         const parentOpts = { parent: this };
-
-        const cluster = args.cluster;
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.
@@ -53,13 +50,12 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
 
         // Use the instance provided, or create a new one.
         const instanceProfile = args.instanceProfile ||
-            ClusterAutoScalingLaunchConfiguration.createInstanceProfile(
+            AutoScalingLaunchConfiguration.createInstanceProfile(
                 name, /*assumeRolePolicy:*/ undefined, /*policyArns:*/ undefined, parentOpts);
 
         const fileSystem = args.fileSystem;
 
-        const securityGroups =
-            pulumi.output(args.securityGroups).apply(g => g || cluster.instanceSecurityGroups.map(g => g.id));
+        const securityGroups = getSecurityGroups(args);
         const instance = new aws.ec2.LaunchConfiguration(name, {
             ...args,
             securityGroups,
@@ -70,18 +66,16 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
             placementTenancy: utils.ifUndefined(args.placementTenancy, "default"),
             rootBlockDevice: utils.ifUndefined(args.rootBlockDevice, defaultRootBlockDevice),
             ebsBlockDevices: utils.ifUndefined(args.ebsBlockDevices, defaultEbsBlockDevices),
-            userData: getInstanceUserData(cluster, args, stackName),
+            userData: getInstanceUserData(args, stackName),
         }, parentOpts);
 
         this.instance = instance;
-        this.cluster = cluster;
         this.stackName = stackName;
         this.instanceProfile = instanceProfile;
         this.fileSystem = fileSystem;
 
         this.registerOutputs({
             instance,
-            cluster,
             stackName,
             instanceProfile,
             fileSystem,
@@ -122,15 +116,23 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
 
         const { role, policies } = x.createRoleAndPolicies(
             name,
-            assumeRolePolicy || ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyDocument(),
-            policyArns || ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyARNs(),
+            assumeRolePolicy || AutoScalingLaunchConfiguration.defaultInstanceProfilePolicyDocument(),
+            policyArns || AutoScalingLaunchConfiguration.defaultInstanceProfilePolicyARNs(),
             opts);
 
         return new aws.iam.InstanceProfile(name, { role }, {...opts, dependsOn: policies });
     }
 }
 
-(<any>ClusterAutoScalingLaunchConfiguration).doNotCapture = true;
+(<any>AutoScalingLaunchConfiguration).doNotCapture = true;
+
+function getSecurityGroups(args: AutoScalingLaunchConfigurationArgs): pulumi.Input<pulumi.Input<string>[]> {
+    if (args.securityGroupsProvider) {
+        return args.securityGroupsProvider.securityGroupIds();
+    }
+
+    return utils.ifUndefined(args.securityGroups, []);
+}
 
 const defaultRootBlockDevice = {
     volumeSize: 8, // GiB
@@ -187,15 +189,16 @@ async function getEcsAmiId(name?: string): Promise<string> {
 // https://github.com/convox/rack/blob/023831d8/provider/aws/dist/rack.json#L1669
 // https://github.com/awslabs/amazon-ecs-amazon-efs/blob/d92791f3/amazon-efs-ecs.json#L655
 function getInstanceUserData(
-    cluster: x.Cluster,
-    args: ClusterAutoScalingLaunchConfigurationArgs,
+    args: AutoScalingLaunchConfigurationArgs,
     cloudFormationStackName: pulumi.Output<string>) {
 
     const fileSystemId = args.fileSystem ? args.fileSystem.instance.id : undefined;
     const mountPath = args.fileSystem ? args.fileSystem.mountPath : undefined;
 
-    return pulumi.all([cluster.instance.id, cloudFormationStackName, fileSystemId, mountPath])
-                 .apply(([clusterId, cloudFormationStackName, fileSystemId, mountPath]) => {
+    const additionalBootcmdLines = getAdditionalBootcmdLines(args);
+
+    return pulumi.all([additionalBootcmdLines, cloudFormationStackName, fileSystemId, mountPath])
+                 .apply(([additionalBootcmdLines, cloudFormationStackName, fileSystemId, mountPath]) => {
         let fileSystemRuncmdBlock = "";
 
         if (fileSystemId) {
@@ -223,7 +226,7 @@ function getInstanceUserData(
             `;
         }
 
-        return `#cloud-config
+        let userData = `#cloud-config
         repo_upgrade_exclude:
             - kernel*
         packages:
@@ -235,9 +238,22 @@ function getInstanceUserData(
         bootcmd:
             - mkswap /dev/xvdb
             - swapon /dev/xvdb
-            - echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config
             - echo ECS_ENGINE_AUTH_TYPE=docker >> /etc/ecs/ecs.config
-        runcmd:
+`;
+        for (const line of additionalBootcmdLines) {
+            let contents = line.contents;
+            if (line.automaticallyIndent !== false) {
+                contents = "            " + contents;
+                if (contents[contents.length - 1] !== "\n") {
+                    contents += "\n";
+                }
+            }
+
+            userData += contents;
+        }
+
+        userData +=
+`        runcmd:
             # Set and use variables in the same command, since it's not obvious if
             # different commands will run in different shells.
             - |
@@ -257,54 +273,98 @@ function getInstanceUserData(
                     --stack "${cloudFormationStackName}" \
                     --resource Instances
         `;
+
+        return userData;
     });
 }
 
-export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
-    public readonly instance: aws.cloudformation.Stack;
+function getAdditionalBootcmdLines(args: AutoScalingLaunchConfigurationArgs): pulumi.Output<x.ec2.UserDataLine[]> {
+    let providers = args.userDataProviders;
+    if (!providers) {
+        return pulumi.output([]);
+    }
 
-    public readonly cluster: x.Cluster;
+    if (!Array.isArray(providers)) {
+        providers = [providers];
+    }
+
+    const temp: pulumi.Input<x.ec2.UserDataLine[]>[] = [];
+
+    for (const provider of providers) {
+        if (provider.extraBootcmdLines) {
+            const lines = provider.extraBootcmdLines();
+            if (lines) {
+                temp.push(lines);
+            }
+        }
+    }
+
+    const result = pulumi.output(temp).apply(topArray => {
+        const final: x.ec2.UserDataLine[] = [];
+
+        for (const array of topArray) {
+            for (const line of array) {
+                final.push(line);
+            }
+        }
+
+        return final;
+    });
+
+    return result;
+}
+
+export class AutoScalingGroup extends pulumi.ComponentResource {
+    public readonly network: Network;
+    public readonly instance: aws.cloudformation.Stack;
 
     /**
      * The launch configuration for this auto scaling group.
      */
-    public readonly launchConfiguration: ClusterAutoScalingLaunchConfiguration;
+    public readonly launchConfiguration: AutoScalingLaunchConfiguration;
 
     constructor(name: string,
-                args: ClusterAutoScalingGroupArgs,
+                args: AutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
-        super("aws-infra:x:ClusterAutoScalingGroup", name, args, opts);
+        super("awsinfra:x:autoscaling:AutoScalingGroup", name, args, opts);
 
         const parentOpts = { parent: this };
-        const cluster = args.cluster;
 
-        let launchConfiguration: ClusterAutoScalingLaunchConfiguration;
+        let launchConfiguration: AutoScalingLaunchConfiguration;
 
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
         if (args.launchConfiguration) {
             launchConfiguration = args.launchConfiguration;
         }
         else {
-            launchConfiguration = new ClusterAutoScalingLaunchConfiguration(
-                name, args.launchConfigurationArgs || { cluster }, parentOpts);
+            launchConfiguration = new AutoScalingLaunchConfiguration(
+                name, args.launchConfigurationArgs, parentOpts);
         }
 
-        this.instance = new aws.cloudformation.Stack(name, {
+        const network = args.network || Network.getDefault();
+        const instance = new aws.cloudformation.Stack(name, {
             ...args,
             name: launchConfiguration.stackName,
             templateBody: getCloudFormationTemplate(
                 name,
                 launchConfiguration.instance.id,
-                cluster.network.subnetIds,
+                network.subnetIds,
                 args.templateParameters || {}),
         }, parentOpts);
 
-        this.cluster = cluster;
+        this.network = network;
+        this.instance = instance;
         this.launchConfiguration = launchConfiguration;
+
+        this.registerOutputs({
+            network,
+            instance,
+            launchConfiguration,
+        });
     }
 }
 
-(<any>ClusterAutoScalingGroup).doNotCapture = true;
+(<any>AutoScalingGroup).doNotCapture = true;
 
 // TODO[pulumi/pulumi-aws/issues#43]: We'd prefer not to use CloudFormation, but it's the best way to implement
 // rolling updates in an autoscaling group.
@@ -360,11 +420,12 @@ function getCloudFormationTemplate(
                  });
 }
 
-export interface ClusterAutoScalingGroupArgs {
+export interface AutoScalingGroupArgs {
     /**
-     * Cluster to create the autoscaling group for.
+     * The network this autoscaling group is for.  If not provided this autoscaling group will be
+     * created for the default network.
      */
-    cluster: x.Cluster;
+    network?: Network;
 
     /**
      * The config to use when creating the auto scaling group.
@@ -375,7 +436,7 @@ export interface ClusterAutoScalingGroupArgs {
      * If neither are provided, a default instance will be create by calling
      * [cluster.createAutoScalingConfig()].
      */
-    launchConfiguration?: ClusterAutoScalingLaunchConfiguration;
+    launchConfiguration?: AutoScalingLaunchConfiguration;
 
     /**
      * The config to use when creating the auto scaling group.
@@ -386,7 +447,7 @@ export interface ClusterAutoScalingGroupArgs {
      * If neither are provided, a default instance will be create by calling
      * [cluster.createAutoScalingConfig()].
      */
-    launchConfigurationArgs?: ClusterAutoScalingLaunchConfigurationArgs;
+    launchConfigurationArgs?: AutoScalingLaunchConfigurationArgs;
 
     /**
      * Parameters to control the cloud formation stack template that is created.  If not provided
@@ -413,25 +474,23 @@ export interface TemplateParameters {
 // The shape we want for ClusterAutoScalingLaunchConfigurationArgs.  We don't export this as
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
-type OverwriteShape = utils.Overwrite<aws.ec2.LaunchConfigurationArgs, {
-    cluster: x.Cluster;
+type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ec2.LaunchConfigurationArgs>, {
     imageId?: never;
     userData?: never;
     stackName?: pulumi.Input<string>;
     instanceProfile?: aws.iam.InstanceProfile;
     fileSystem?: x.ClusterFileSystem;
-    securityGroups?: aws.ec2.LaunchConfiguration["securityGroups"];
     ecsOptimizedAMIName?: string;
     instanceType?: pulumi.Input<aws.ec2.InstanceType>;
     placementTenancy?: pulumi.Input<"default" | "dedicated">;
-    rootBlockDevice?: aws.ec2.LaunchConfigurationArgs["rootBlockDevice"];
-    ebsBlockDevices?: aws.ec2.LaunchConfigurationArgs["ebsBlockDevices"];
+
+    securityGroupsProvider?: x.ec2.ISecurityGroupsProvider;
 }>;
 
 /**
  * The set of arguments when creating the launch configuration for a cluster's autoscaling group.
  */
-export interface ClusterAutoScalingLaunchConfigurationArgs {
+export interface AutoScalingLaunchConfigurationArgs {
     // Values copied directly from aws.ec2.LaunchConfigurationArgs
 
     /**
@@ -504,11 +563,6 @@ export interface ClusterAutoScalingLaunchConfigurationArgs {
     // Changes made to normal args type.
 
     /**
-     * Cluster to create launch configuration for.
-     */
-    cluster: x.Cluster;
-
-    /**
      * The name of the stack the launch configuration will signal.
      */
     stackName?: pulumi.Input<string>;
@@ -525,10 +579,10 @@ export interface ClusterAutoScalingLaunchConfigurationArgs {
     fileSystem?: x.ClusterFileSystem;
 
     /**
-    * A list of associated security group IDS.  If not provided, the instanceSecurityGroup from the
-    * cluster will be used.
+    * A list of associated security group IDs.  These can also be provided using
+    * [securityGroupsProvider]
     */
-    securityGroups?: aws.ec2.LaunchConfiguration["securityGroups"];
+    securityGroups?: aws.ec2.LaunchConfigurationArgs["securityGroups"];
 
     /**
      * The name of the ECS-optimzed AMI to use for the Container Instances in this cluster, e.g.
@@ -570,10 +624,21 @@ export interface ClusterAutoScalingLaunchConfigurationArgs {
      * will be mounted at '/dev/xvdcz'.  Both devices will be deleted upon termination.
      */
     ebsBlockDevices?: aws.ec2.LaunchConfigurationArgs["ebsBlockDevices"];
+
+    /**
+     * Alternate way to provide [securityGroups];
+     */
+    securityGroupsProvider?: x.ec2.ISecurityGroupsProvider;
+
+    /**
+     * Additional providers that can add entries to the [userData] section of the underlying
+     * [aws.ec2.LaunchConfiguration] that will be created.
+     */
+    userDataProviders?: x.ec2.ILaunchConfigurationUserDataProvider[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
 let overwriteShape: OverwriteShape = undefined!;
-let argsShape: ClusterAutoScalingLaunchConfigurationArgs = undefined!;
+let argsShape: AutoScalingLaunchConfigurationArgs = undefined!;
 argsShape = overwriteShape;
 overwriteShape = argsShape;
