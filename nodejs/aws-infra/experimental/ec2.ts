@@ -276,7 +276,7 @@ export interface EC2ServiceArgs {
     /**
      * Optional auto-scaling group for the cluster.
      */
-    autoScalingGroup?: mod.ClusterAutoScalingGroup;
+    autoScalingGroup?: mod.autoscaling.ClusterAutoScalingGroup;
 
     // Properties we add.
 

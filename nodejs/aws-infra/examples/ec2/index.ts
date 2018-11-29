@@ -21,7 +21,7 @@ import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
 const cluster = new awsinfra.x.Cluster("testing", { network });
-const autoScalingGroup = new awsinfra.x.ClusterAutoScalingGroup("testing", {
+const autoScalingGroup = new awsinfra.x.autoscaling.ClusterAutoScalingGroup("testing", {
     cluster,
     templateParameters: {
         minSize: 20,

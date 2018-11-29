@@ -15,19 +15,19 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as mod from ".";
+import * as x from "..";
 
-import * as utils from "./../utils";
+import * as utils from "./../../utils";
 
 export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.LaunchConfiguration;
 
-    public readonly cluster: mod.Cluster;
+    public readonly cluster: x.Cluster;
 
     /**
      * Optional file system to mount.
      */
-    public readonly fileSystem?: mod.ClusterFileSystem;
+    public readonly fileSystem?: x.ClusterFileSystem;
 
     public readonly instanceProfile: aws.iam.InstanceProfile;
 
@@ -120,7 +120,7 @@ export class ClusterAutoScalingLaunchConfiguration extends pulumi.ComponentResou
         policyArns?: string[],
         opts?: pulumi.ResourceOptions) {
 
-        const { role, policies } = mod.createRoleAndPolicies(
+        const { role, policies } = x.createRoleAndPolicies(
             name,
             assumeRolePolicy || ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyDocument(),
             policyArns || ClusterAutoScalingLaunchConfiguration.defaultInstanceProfilePolicyARNs(),
@@ -187,7 +187,7 @@ async function getEcsAmiId(name?: string): Promise<string> {
 // https://github.com/convox/rack/blob/023831d8/provider/aws/dist/rack.json#L1669
 // https://github.com/awslabs/amazon-ecs-amazon-efs/blob/d92791f3/amazon-efs-ecs.json#L655
 function getInstanceUserData(
-    cluster: mod.Cluster,
+    cluster: x.Cluster,
     args: ClusterAutoScalingLaunchConfigurationArgs,
     cloudFormationStackName: pulumi.Output<string>) {
 
@@ -263,7 +263,7 @@ function getInstanceUserData(
 export class ClusterAutoScalingGroup extends pulumi.ComponentResource {
     public readonly instance: aws.cloudformation.Stack;
 
-    public readonly cluster: mod.Cluster;
+    public readonly cluster: x.Cluster;
 
     /**
      * The launch configuration for this auto scaling group.
@@ -364,7 +364,7 @@ export interface ClusterAutoScalingGroupArgs {
     /**
      * Cluster to create the autoscaling group for.
      */
-    cluster: mod.Cluster;
+    cluster: x.Cluster;
 
     /**
      * The config to use when creating the auto scaling group.
@@ -414,12 +414,12 @@ export interface TemplateParameters {
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ec2.LaunchConfigurationArgs, {
-    cluster: mod.Cluster;
+    cluster: x.Cluster;
     imageId?: never;
     userData?: never;
     stackName?: pulumi.Input<string>;
     instanceProfile?: aws.iam.InstanceProfile;
-    fileSystem?: mod.ClusterFileSystem;
+    fileSystem?: x.ClusterFileSystem;
     securityGroups?: aws.ec2.LaunchConfiguration["securityGroups"];
     ecsOptimizedAMIName?: string;
     instanceType?: pulumi.Input<aws.ec2.InstanceType>;
@@ -506,7 +506,7 @@ export interface ClusterAutoScalingLaunchConfigurationArgs {
     /**
      * Cluster to create launch configuration for.
      */
-    cluster: mod.Cluster;
+    cluster: x.Cluster;
 
     /**
      * The name of the stack the launch configuration will signal.
@@ -522,7 +522,7 @@ export interface ClusterAutoScalingLaunchConfigurationArgs {
     /**
      * Optional file system to mount.
      */
-    fileSystem?: mod.ClusterFileSystem;
+    fileSystem?: x.ClusterFileSystem;
 
     /**
     * A list of associated security group IDS.  If not provided, the instanceSecurityGroup from the

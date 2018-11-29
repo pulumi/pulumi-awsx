@@ -341,7 +341,7 @@ export interface FargateServiceArgs {
     /**
      * Optional auto-scaling group for the cluster.
      */
-    autoScalingGroup?: mod.ClusterAutoScalingGroup;
+    autoScalingGroup?: mod.autoscaling.ClusterAutoScalingGroup;
 
     // Properties we're adding.
 
