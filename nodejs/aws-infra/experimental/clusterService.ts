@@ -24,23 +24,15 @@ export abstract class ClusterService extends pulumi.ComponentResource {
     public readonly clusterInstance: mod.Cluster;
     public readonly taskDefinitionInstance: mod.TaskDefinition;
 
-    /**
-     * Optional auto-scaling group for the cluster.
-     */
-    public readonly autoScalingGroup?: mod.autoscaling.AutoScalingGroup;
-
     constructor(type: string, name: string,
                 args: ClusterServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
         super(type, name, args, opts);
 
-        // If the cluster has an autoscaling group, ensure the service depends on it being created.
-        // TODO(cyrusn): this isn't necessary if resource creation automatically makes 'deps' for
-        // the opts passed in. Investigate.
+        // If the cluster has any autoscaling groups, ensure the service depends on it being
+        // created.
         const dependsOn: pulumi.Resource[] = [];
-        if (args.autoScalingGroup) {
-            dependsOn.push(args.autoScalingGroup);
-        }
+        dependsOn.push(...args.cluster.autoScalingGroups);
 
         const parentOpts = { parent: this, dependsOn };
 
@@ -59,18 +51,15 @@ export abstract class ClusterService extends pulumi.ComponentResource {
         }, parentOpts);
 
         const taskDefinitionInstance = args.taskDefinition;
-        const autoScalingGroup = args.autoScalingGroup;
 
         this.instance = instance;
         this.clusterInstance = clusterInstance;
         this.taskDefinitionInstance = args.taskDefinition;
-        this.autoScalingGroup = args.autoScalingGroup;
 
         this.registerOutputs({
             instance,
             clusterInstance,
             taskDefinitionInstance,
-            autoScalingGroup,
         });
     }
 }
@@ -179,7 +168,6 @@ type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
     os?: pulumi.Input<"linux" | "windows">;
     waitForSteadyState?: pulumi.Input<boolean>;
-    autoScalingGroup?: mod.autoscaling.AutoScalingGroup;
 }>;
 
 export interface ClusterServiceArgs {
@@ -293,11 +281,6 @@ export interface ClusterServiceArgs {
      * before continuing. Defaults to `true`.
      */
     waitForSteadyState?: pulumi.Input<boolean>;
-
-    /**
-     * Optional auto-scaling group for the cluster.
-     */
-    autoScalingGroup?: mod.autoscaling.AutoScalingGroup;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

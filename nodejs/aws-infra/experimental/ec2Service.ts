@@ -273,11 +273,6 @@ export interface EC2ServiceArgs {
      */
     waitForSteadyState?: pulumi.Input<boolean>;
 
-    /**
-     * Optional auto-scaling group for the cluster.
-     */
-    autoScalingGroup?: mod.autoscaling.AutoScalingGroup;
-
     // Properties we add.
 
     /**

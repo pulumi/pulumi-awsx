@@ -34,7 +34,6 @@ const autoScalingGroup = cluster.createAndAddAutoScalingGroup("testing", {
 const nginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 });
 const nginx = new awsinfra.x.EC2Service("examples-nginx", {
     cluster,
-    autoScalingGroup,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -57,13 +56,12 @@ const simpleNginx = new awsinfra.x.EC2TaskDefinition("examples-simple-nginx", {
         memory: 128,
         loadBalancerProvider: simpleNginxLoadBalancer,
     },
-}).createService("examples-simple-nginx", { cluster, autoScalingGroup, desiredCount: 2});
+}).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
 export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
 const cachedNginx = new awsinfra.x.EC2Service("examples-cached-nginx", {
     cluster,
-    autoScalingGroup,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -81,7 +79,6 @@ const cachedNginx = new awsinfra.x.EC2Service("examples-cached-nginx", {
 
 const multistageCachedNginx = new awsinfra.x.EC2Service("examples-multistage-cached-nginx", {
     cluster,
-    autoScalingGroup,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -102,7 +99,6 @@ const customWebServerLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo
     { cluster, port: 80, targetPort: 8080 });
 const customWebServer = new awsinfra.x.EC2Service("mycustomservice", {
     cluster,
-    autoScalingGroup,
     taskDefinitionArgs: {
         containers: {
             webserver: {
@@ -135,7 +131,6 @@ class Cache {
         const redisLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 6379 });
         const redis = new awsinfra.x.EC2Service(name, {
             cluster,
-            autoScalingGroup,
             taskDefinitionArgs: {
                 containers: {
                     redis: {
@@ -202,7 +197,6 @@ const helloTask = new awsinfra.x.EC2TaskDefinition("examples-hello-world", {
 const builtServiceLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 });
 const builtService = new awsinfra.x.EC2Service("examples-nginx2", {
     cluster,
-    autoScalingGroup,
     taskDefinitionArgs: {
         containers: {
             nginx: {
