@@ -364,7 +364,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 name,
                 launchConfiguration.instance.id,
                 network.subnetIds,
-                args.templateParameters || {}),
+                utils.ifUndefined(args.templateParameters, {})),
         }, parentOpts);
 
         this.network = network;
@@ -389,22 +389,30 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
 
 (<any>AutoScalingGroup).doNotCapture = true;
 
+function ifUndefined<T>(val: T | undefined, defVal: T) {
+    return val !== undefined ? val : defVal;
+}
+
 // TODO[pulumi/pulumi-aws/issues#43]: We'd prefer not to use CloudFormation, but it's the best way to implement
 // rolling updates in an autoscaling group.
 function getCloudFormationTemplate(
     instanceName: string,
     instanceLaunchConfigurationId: pulumi.Output<string>,
     subnetIds: pulumi.Input<string>[],
-    parameters: pulumi.Input<TemplateParameters>): pulumi.Output<string> {
+    parameters: pulumi.Output<TemplateParameters>): pulumi.Output<string> {
 
     const subnetIdsArray = pulumi.all(subnetIds);
     return pulumi.all([subnetIdsArray, instanceLaunchConfigurationId, parameters])
                  .apply(([subnetIdsArray, instanceLaunchConfigurationId, parameters]) => {
 
-    const minSize = parameters.minSize !== undefined ? parameters.minSize : 2;
-    const maxSize = parameters.maxSize !== undefined ? parameters.maxSize : 100;
+    const minSize = ifUndefined(parameters.minSize, 2);
+    const maxSize = ifUndefined(parameters.maxSize, 100);
+    const cooldown = ifUndefined(parameters.defaultCooldown, 300);
+    const healthCheckGracePeriod = ifUndefined(parameters.healthCheckGracePeriod, 120);
+    const healthCheckType = ifUndefined(parameters.healthCheckType, "EC2");
+    const suspendProcesses = ifUndefined(parameters.suspendedProcesses, ["ScheduledActions"]);
 
-    return `
+    let result = `
     AWSTemplateFormatVersion: '2010-09-09'
     Outputs:
         Instances:
@@ -413,10 +421,10 @@ function getCloudFormationTemplate(
         Instances:
             Type: AWS::AutoScaling::AutoScalingGroup
             Properties:
-                Cooldown: 300
+                Cooldown: ${cooldown}
                 DesiredCapacity: ${minSize}
-                HealthCheckGracePeriod: 120
-                HealthCheckType: EC2
+                HealthCheckGracePeriod: ${healthCheckGracePeriod}
+                HealthCheckType: ${healthCheckType}
                 LaunchConfigurationName: "${instanceLaunchConfigurationId}"
                 MaxSize: ${maxSize}
                 MetricsCollection:
@@ -437,9 +445,17 @@ function getCloudFormationTemplate(
                     MinInstancesInService: ${minSize}
                     PauseTime: PT15M
                     SuspendProcesses:
-                    -   ScheduledActions
-                    WaitOnResourceSignals: true
+`;
+
+    for (const sp of suspendProcesses) {
+        result += "                    -   " + sp + "\n";
+    }
+
+    result +=
+`                    WaitOnResourceSignals: true
     `;
+
+    return result;
                  });
 }
 
@@ -479,25 +495,188 @@ export interface AutoScalingGroupArgs {
     templateParameters?: pulumi.Input<TemplateParameters>;
 }
 
-/**
- * Parameters to control the cloud formation stack template that is created.
- */
+type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling.GroupArgs>, {
+    /**
+     * The maximum size of the auto scale group.  Defaults to 100 if unspecified.
+     */
+    maxSize?: pulumi.Input<number>;
+    /**
+     * The minimum size of the auto scale group.  Defaults to 2 if unspecified.
+     */
+    minSize?: pulumi.Input<number>;
+}>;
+
 export interface TemplateParameters {
     /**
-     * The minimum size of the cluster. Defaults to 2.
+     * A list of one or more availability zones for the group. This parameter should not be specified when using `vpc_zone_identifier`.
      */
-    minSize?: number;
+    availabilityZones?: pulumi.Input<pulumi.Input<string>[]>;
     /**
-     * The maximum size of the cluster. Setting to 0 will prevent an EC2 AutoScalingGroup from being
-     * created. Defaults to 100.
+     * The number of Amazon EC2 instances that should be running in the group. (See also Waiting for
+     * Capacity below.)
      */
-    maxSize?: number;
+    desiredCapacity?: pulumi.Input<number>;
+    /**
+     * A list of metrics to collect. The allowed values are `GroupMinSize`, `GroupMaxSize`,
+     * `GroupDesiredCapacity`, `GroupInServiceInstances`, `GroupPendingInstances`,
+     * `GroupStandbyInstances`, `GroupTerminatingInstances`, `GroupTotalInstances`.
+     * * `wait_for_capacity_timeout` (Default: "10m") A maximum
+     * [duration](https://golang.org/pkg/time/#ParseDuration) that Terraform should
+     * wait for ASG instances to be healthy before timing out.  (See also Waiting
+     * for Capacity below.) Setting this to "0" causes
+     * Terraform to skip all Capacity Waiting behavior.
+     */
+    enabledMetrics?: pulumi.Input<pulumi.Input<aws.autoscaling.Metric>[]>;
+    /**
+     * Allows deleting the autoscaling group without waiting
+     * for all instances in the pool to terminate.  You can force an autoscaling group to delete
+     * even if it's in the process of scaling a resource. Normally, Terraform
+     * drains all the instances before deleting the group.  This bypasses that
+     * behavior and potentially leaves resources dangling.
+     */
+    forceDelete?: pulumi.Input<boolean>;
+    /**
+     * One or more [Lifecycle
+     * Hooks](http://docs.aws.amazon.com/autoscaling/latest/userguide/lifecycle-hooks.html) to
+     * attach to the autoscaling group **before** instances are launched. The syntax is exactly the
+     * same as the separate
+     * [`aws_autoscaling_lifecycle_hook`](https://www.terraform.io/docs/providers/aws/r/autoscaling_lifecycle_hooks.html)
+     * resource, without the `autoscaling_group_name` attribute. Please note that this will only
+     * work when creating a new autoscaling group. For all other use-cases, please use
+     * `aws_autoscaling_lifecycle_hook` resource.
+     */
+    initialLifecycleHooks?: aws.autoscaling.GroupArgs["initialLifecycleHooks"];
+    /**
+     * The name of the launch configuration to use.
+     */
+    launchConfiguration?: pulumi.Input<string | aws.ec2.LaunchConfiguration>;
+    /**
+     * Launch template specification to use to launch instances.
+     * See Launch Template Specification below for more details.
+     */
+    launchTemplate?: aws.autoscaling.GroupArgs["launchTemplate"];
+    /**
+     * A list of elastic load balancer names to add to the autoscaling
+     * group names. Only valid for classic load balancers. For ALBs, use `target_group_arns` instead.
+     */
+    loadBalancers?: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * The granularity to associate with the metrics to collect. The only valid value is `1Minute`.
+     * Default is `1Minute`.
+     */
+    metricsGranularity?: pulumi.Input<string | aws.autoscaling.MetricsGranularity>;
+    /**
+     * Setting this causes Terraform to wait for this number of instances to show up healthy in the
+     * ELB only on creation. Updates will not wait on ELB instance number changes. (See also Waiting
+     * for Capacity below.)
+     */
+    minElbCapacity?: pulumi.Input<number>;
+    /**
+     * The name of the auto scaling group. By default generated by Terraform.
+     */
+    name?: pulumi.Input<string>;
+    /**
+     * Creates a unique name beginning with the specified
+     * prefix. Conflicts with `name`.
+     */
+    namePrefix?: pulumi.Input<string>;
+    /**
+     * The name of the placement group into which you'll launch your instances, if any.
+     */
+    placementGroup?: pulumi.Input<string | aws.ec2.PlacementGroup>;
+    /**
+     * Allows setting instance protection. The
+     * autoscaling group will not select instances with this setting for terminination
+     * during scale in events.
+     */
+    protectFromScaleIn?: pulumi.Input<boolean>;
+    /**
+     * The ARN of the service-linked role that the ASG will use to call other AWS services
+     */
+    serviceLinkedRoleArn?: pulumi.Input<string>;
+    /**
+     * A list of tag blocks. Tags documented below.
+     */
+    tags?: aws.autoscaling.GroupArgs["tags"];
+    /**
+     * A list of tag blocks (maps). Tags documented below.
+     */
+    tagsCollection?: pulumi.Input<aws.Tags>;
+    /**
+     * A list of `aws_alb_target_group` ARNs, for use with Application Load Balancing.
+     */
+    targetGroupArns?: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * A list of policies to decide how the instances in the auto scale group should be terminated. The allowed values are `OldestInstance`, `NewestInstance`, `OldestLaunchConfiguration`, `ClosestToNextInstanceHour`, `Default`.
+     */
+    terminationPolicies?: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * A list of subnet IDs to launch resources in.
+     */
+    vpcZoneIdentifiers?: pulumi.Input<pulumi.Input<string>[]>;
+
+
+    waitForCapacityTimeout?: pulumi.Input<string>;
+    /**
+     * Setting this will cause Terraform to wait
+     * for exactly this number of healthy instances in all attached load balancers
+     * on both create and update operations. (Takes precedence over
+     * `min_elb_capacity` behavior.)
+     * (See also Waiting for Capacity below.)
+     */
+    waitForElbCapacity?: pulumi.Input<number>;
+
+    // Properties we've changed.
+    /**
+     * The amount of time, in seconds, after a scaling activity completes before another scaling
+     * activity can start.  Defaults to 300 if unspecified.
+     */
+    defaultCooldown?: pulumi.Input<number>;
+
+    /**
+     * Time (in seconds) after instance comes into service before checking health. Defaults to 120
+     * if unspecified.
+     */
+    healthCheckGracePeriod?: pulumi.Input<number>;
+
+    /**
+     * "EC2" or "ELB". Controls how health checking is done.  Defaults to "EC2" if unspecified.
+     */
+    healthCheckType?: pulumi.Input<"EC2" | "ELB">;
+
+    /**
+     * A list of processes to suspend for the AutoScaling Group. The allowed values are `Launch`,
+     * `Terminate`, `HealthCheck`, `ReplaceUnhealthy`, `AZRebalance`, `AlarmNotification`,
+     * `ScheduledActions`, `AddToLoadBalancer`. Note that if you suspend either the `Launch` or
+     * `Terminate` process types, it can prevent your autoscaling group from functioning properly.
+     *
+     * Defaults to "ScheduledActions" if not specified
+     */
+    suspendedProcesses?: pulumi.Input<pulumi.Input<
+        "Launch" | "Terminate" | "HealthCheck" | "ReplaceUnhealthy" |
+        "AZRebalance" | "AlarmNotification" | "ScheduledActions" | "AddToLoadBalancer">[]>;
+
+    /**
+     * The maximum size of the auto scale group.  Defaults to 100 if unspecified.
+     */
+    maxSize?: pulumi.Input<number>;
+
+    /**
+     * The minimum size of the auto scale group.  Defaults to 100 if unspecified.
+     */
+    minSize?: pulumi.Input<number>;
 }
+
+// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
+let overwriteShape1: OverwriteTemplateParameters = undefined!;
+let argsShape1: TemplateParameters = undefined!;
+argsShape1 = overwriteShape1;
+overwriteShape1 = argsShape1;
 
 // The shape we want for ClusterAutoScalingLaunchConfigurationArgs.  We don't export this as
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
-type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ec2.LaunchConfigurationArgs>, {
+type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable<aws.ec2.LaunchConfigurationArgs>, {
     imageId?: never;
     userData?: never;
     stackName?: pulumi.Input<string>;
@@ -661,7 +840,7 @@ export interface AutoScalingLaunchConfigurationArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape: OverwriteShape = undefined!;
-let argsShape: AutoScalingLaunchConfigurationArgs = undefined!;
-argsShape = overwriteShape;
-overwriteShape = argsShape;
+let overwriteShape2: OverwriteAutoScalingLaunchConfigurationArgs = undefined!;
+let argsShape2: AutoScalingLaunchConfigurationArgs = undefined!;
+argsShape2 = overwriteShape2;
+overwriteShape2 = argsShape2;
