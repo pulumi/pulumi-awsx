@@ -412,6 +412,16 @@ function getCloudFormationTemplate(
     const healthCheckType = ifUndefined(parameters.healthCheckType, "EC2");
     const suspendProcesses = ifUndefined(parameters.suspendedProcesses, ["ScheduledActions"]);
 
+    let suspendProcessesString = "";
+    for (let i = 0, n = suspendProcesses.length; i < n; i++) {
+        const sp = suspendProcesses[i];
+        if (i > 0) {
+            suspendProcessesString += "\n";
+        }
+
+        suspendProcessesString += "                    -   " + sp;
+    }
+
     let result = `
     AWSTemplateFormatVersion: '2010-09-09'
     Outputs:
@@ -445,14 +455,8 @@ function getCloudFormationTemplate(
                     MinInstancesInService: ${minSize}
                     PauseTime: PT15M
                     SuspendProcesses:
-`;
-
-    for (const sp of suspendProcesses) {
-        result += "                    -   " + sp + "\n";
-    }
-
-    result +=
-`                    WaitOnResourceSignals: true
+${suspendProcessesString}
+                    WaitOnResourceSignals: true
     `;
 
     return result;
