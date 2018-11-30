@@ -78,12 +78,12 @@ function placementConstraints(isFargate: boolean, os: mod.HostOperatingSystem | 
 }
 
 function getLoadBalancers(service: mod.ClusterService, name: string, args: ClusterServiceArgs) {
-    let loadBalancers: mod.LoadBalancers;
+    let loadBalancers: aws.ecs.ServiceArgs["loadBalancers"];
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
-        if (container.loadBalancerProvider) {
+        if (container.loadBalancer) {
             loadBalancers = utils.combineArrays(
-                loadBalancers, container.loadBalancerProvider.loadBalancers(containerName, name, service));
+                loadBalancers, container.loadBalancer.loadBalancers(containerName));
         }
     }
 
@@ -155,6 +155,10 @@ function getLoadBalancers(service: mod.ClusterService, name: string, args: Clust
 //         return this.path;
 //     }
 // }
+
+export interface ServiceLoadBalancers {
+    loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"];
+}
 
 // The shape we want for ClusterFileSystemArgs.  We don't export this as 'Overwrite' types are not pleasant to
 // work with. However, they internally allow us to succinctly express the shape we're trying to

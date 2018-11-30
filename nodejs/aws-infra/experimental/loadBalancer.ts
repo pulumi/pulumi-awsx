@@ -19,13 +19,6 @@ import * as utils from "../utils";
 
 import * as mod from ".";
 
-export type LoadBalancers = aws.ecs.ServiceArgs["loadBalancers"];
-
-export interface ILoadBalancerProvider {
-    portMappings(containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
-    loadBalancers(containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
-}
-
 export interface PortInfo {
     /**
      * The cluster this port will be exposed from.
@@ -60,6 +53,11 @@ export interface PortInfo {
      * resource](https://www.terraform.io/docs/providers/aws/r/lb_listener_certificate.html).
      */
     certificateArn?: string;
+
+    /**
+     * Additional arguments to control the underlying load balancer that is created.
+     */
+    loadBalancerArgs?: aws.elasticloadbalancingv2.LoadBalancerArgs;
 }
 
 export interface TargetGroupInfo {
@@ -72,35 +70,38 @@ export interface TargetGroupInfo {
     hostPort?: number;
 }
 
-export abstract class LoadBalancerProvider implements ILoadBalancerProvider {
-    public abstract portMappings(
-        containerName: string, name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping[]>;
-    public abstract loadBalancers(
-        containerName: string, name: string, parent: pulumi.Resource): LoadBalancers;
+export abstract class LoadBalancer
+        extends pulumi.ComponentResource
+        implements mod.ContainerPortMappings, mod.ServiceLoadBalancers {
 
-    public static fromTargetGroupInfo(info: TargetGroupInfo) {
-        return LoadBalancerProvider.fromTargetGroupInfos([info]);
+    public abstract portMappings(containerName: string): mod.ContainerDefinition["portMappings"];
+    public abstract loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"];
+
+    public constructor(type: string, name: string, props: Record<string, any>, opts?: pulumi.ComponentResourceOptions) {
+        super(type, name, props, opts);
     }
 
-    public static fromTargetGroupInfos(infos: TargetGroupInfo[]) {
-        return new TargetGroupInfosLoadBalancerProvider(infos);
+    public static fromTargetGroupInfo(name: string, info: TargetGroupInfo, opts?: pulumi.ComponentResourceOptions) {
+        return LoadBalancer.fromTargetGroupInfos(name, [info], opts);
     }
 
-    public static fromPortInfo(
-            portInfo: PortInfo,
-            args: aws.elasticloadbalancingv2.LoadBalancerArgs = {}) {
-        return new PortInfoLoadBalancerProvider(portInfo, args);
+    public static fromTargetGroupInfos(name: string, infos: TargetGroupInfo[], opts?: pulumi.ComponentResourceOptions) {
+        return new TargetGroupInfosLoadBalancer(name, infos, opts);
+    }
+
+    public static fromPortInfo(name: string, portInfo: PortInfo, opts?: pulumi.ComponentResourceOptions) {
+        return new PortInfoLoadBalancer(name, portInfo, opts);
     }
 }
 
-export class TargetGroupInfosLoadBalancerProvider extends LoadBalancerProvider {
-    portMappings: (containerName: string, name: string, parent: pulumi.Resource) => pulumi.Input<aws.ecs.PortMapping[]>;
-    loadBalancers: (containerName: string, name: string, parent: pulumi.Resource) => LoadBalancers;
+export class TargetGroupInfosLoadBalancer extends LoadBalancer {
+    portMappings: (containerName: string) => mod.ContainerDefinition["portMappings"];
+    loadBalancers: (containerName: string) => aws.ecs.ServiceArgs["loadBalancers"];
 
-    constructor(targetGroupInfos: TargetGroupInfo[]) {
-        super();
+    constructor(name: string, targetGroupInfos: TargetGroupInfo[], opts?: pulumi.ComponentResourceOptions) {
+        super("awsinfra:x:TargetGroupInfosLoadBalancer", name, { targetGroupInfos }, opts);
 
-        this.portMappings = (containerName: string, name: string, parent: pulumi.Resource) =>
+        this.portMappings = (containerName: string) =>
             targetGroupInfos.map(i => {
                 const containerPort = i.containerPort;
                 const hostPort = i.hostPort !== undefined ? i.hostPort : containerPort;
@@ -108,7 +109,7 @@ export class TargetGroupInfosLoadBalancerProvider extends LoadBalancerProvider {
                 return { containerPort, hostPort };
             });
 
-        this.loadBalancers = (containerName: string, name: string, parent: pulumi.Resource) =>
+        this.loadBalancers = (containerName: string) =>
             targetGroupInfos.map(i => ({
                     containerName,
                     targetGroupArn: i.targetGroupArn,
@@ -117,90 +118,88 @@ export class TargetGroupInfosLoadBalancerProvider extends LoadBalancerProvider {
     }
 }
 
-export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
-    portMappings: (containerName: string, name: string, parent: pulumi.Resource) => pulumi.Input<aws.ecs.PortMapping[]>;
-    loadBalancers: (containerName: string, name: string, parent: pulumi.Resource) => LoadBalancers;
+export class PortInfoLoadBalancer extends LoadBalancer {
+    public readonly loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
+    public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
+    public readonly listener: aws.elasticloadbalancingv2.Listener;
+
+    portMappings: (containerName: string) => mod.ContainerDefinition["portMappings"];
+    loadBalancers: (containerName: string) => aws.ecs.ServiceArgs["loadBalancers"];
+
     defaultEndpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
 
-    constructor(portInfo: PortInfo, loadBalancerArgs: aws.elasticloadbalancingv2.LoadBalancerArgs) {
-        super();
+    constructor(
+        name: string,
+        portInfo: PortInfo,
+        opts?: pulumi.ComponentResourceOptions) {
+        super("awsinfra:x:PortInfoLoadBalancer", name, portInfo, opts);
 
-        let loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
-        let targetGroup: aws.elasticloadbalancingv2.TargetGroup;
-        let listener: aws.elasticloadbalancingv2.Listener;
         let endpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 
-        const initialize = (containerName: string, name: string, parent: pulumi.Resource) => {
-            if (loadBalancer) {
-                return;
-            }
+        // Load balancers need *very* short names, so we unfortunately have to hash here.
+        //
+        // Note: Technically, we can only support one LB per service, so only the service name
+        // is needed here, but we anticipate this will not always be the case, so we include a
+        // set of values which must be unique.
+        const longName = `${name}-${portInfo.port}`;
+        const shortName = utils.sha1hash(`${longName}`);
 
-            // Load balancers need *very* short names, so we unfortunately have to hash here.
-            //
-            // Note: Technically, we can only support one LB per service, so only the service name
-            // is needed here, but we anticipate this will not always be the case, so we include a
-            // set of values which must be unique.
-            const longName = `${name}-${containerName}-${portInfo.port}`;
-            const shortName = utils.sha1hash(`${longName}`);
+        // Create an internal load balancer if requested.
+        const cluster = portInfo.cluster;
+        const internal = cluster.network.usePrivateSubnets && !portInfo.external;
 
-            // Create an internal load balancer if requested.
-            const cluster = portInfo.cluster;
-            const internal = cluster.network.usePrivateSubnets && !portInfo.external;
+        // See what kind of load balancer to create (application L7 for HTTP(S) traffic, or network L4 otherwise).
+        // Also ensure that we have an SSL certificate for termination at the LB, if that was requested.
+        const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
+            computeLoadBalancerInfo(portInfo);
 
-            // See what kind of load balancer to create (application L7 for HTTP(S) traffic, or network L4 otherwise).
-            // Also ensure that we have an SSL certificate for termination at the LB, if that was requested.
-            const { listenerProtocol, targetProtocol, useAppLoadBalancer, certificateArn } =
-                computeLoadBalancerInfo(portInfo);
+        const parentOpts = { parent: this };
 
-            const parentOpts = { parent };
+        const loadBalancerArgs = portInfo.loadBalancerArgs || {};
+        const loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
+            ...loadBalancerArgs,
+            loadBalancerType: useAppLoadBalancer ? "application" : "network",
+            subnets: cluster.network.publicSubnetIds,
+            internal: internal,
+            // If this is an application LB, we need to associate it with the ECS cluster's security
+            // group, so that traffic on any ports can reach it.  Otherwise, leave blank, and
+            // default to the VPC's group.
+            securityGroups: useAppLoadBalancer ? cluster.securityGroups.map(g => g.id) : undefined,
+            tags: { Name: longName },
+        }, parentOpts);
 
-            loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
-                ...loadBalancerArgs,
-                loadBalancerType: useAppLoadBalancer ? "application" : "network",
-                subnets: cluster.network.publicSubnetIds,
-                internal: internal,
-                // If this is an application LB, we need to associate it with the ECS cluster's security
-                // group, so that traffic on any ports can reach it.  Otherwise, leave blank, and
-                // default to the VPC's group.
-                securityGroups: useAppLoadBalancer ? cluster.securityGroups.map(g => g.id) : undefined,
-                tags: { Name: longName },
-            }, parentOpts);
+                // Create the target group for the new container/port pair.
+        const targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
+            port: portInfo.targetPort || portInfo.port,
+            protocol: targetProtocol,
+            vpcId: cluster.network.vpcId,
+            deregistrationDelay: 180, // 3 minutes
+            tags: { Name: longName },
+            targetType: "ip",
+        }, parentOpts);
 
-                    // Create the target group for the new container/port pair.
-            targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
-                port: portInfo.targetPort || portInfo.port,
-                protocol: targetProtocol,
-                vpcId: cluster.network.vpcId,
-                deregistrationDelay: 180, // 3 minutes
-                tags: { Name: longName },
-                targetType: "ip",
-            }, parentOpts);
+        // Listen on the requested port on the LB and forward to the target.
+        const listener = new aws.elasticloadbalancingv2.Listener(longName, {
+            loadBalancerArn: loadBalancer.arn,
+            protocol: listenerProtocol,
+            certificateArn: certificateArn,
+            port: portInfo.port,
+            defaultAction: {
+                type: "forward",
+                targetGroupArn: targetGroup.arn,
+            },
+            // If SSL is used, we automatically insert the recommended ELB security policy from
+            // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
+            sslPolicy: certificateArn ? "ELBSecurityPolicy-2016-08" : undefined,
+        }, parentOpts);
 
-            // Listen on the requested port on the LB and forward to the target.
-            listener = new aws.elasticloadbalancingv2.Listener(longName, {
-                loadBalancerArn: loadBalancer.arn,
-                protocol: listenerProtocol,
-                certificateArn: certificateArn,
-                port: portInfo.port,
-                defaultAction: {
-                    type: "forward",
-                    targetGroupArn: targetGroup.arn,
-                },
-                // If SSL is used, we automatically insert the recommended ELB security policy from
-                // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
-                sslPolicy: certificateArn ? "ELBSecurityPolicy-2016-08" : undefined,
-            }, parentOpts);
+        endpoint = listener.urn.apply(_ => pulumi.output({
+            hostname: loadBalancer.dnsName,
+            loadBalancer: loadBalancer,
+            port: portInfo.port,
+        }));
 
-            endpoint = listener.urn.apply(_ => pulumi.output({
-                hostname: loadBalancer.dnsName,
-                loadBalancer: loadBalancer,
-                port: portInfo.port,
-            }));
-        };
-
-        const portMappings = (containerName: string, name: string, parent: pulumi.Resource) => {
-            initialize(containerName, name, parent);
-
+        const portMappings = (containerName: string) => {
             const port = portInfo.targetPort || portInfo.port;
             const portMappings: aws.ecs.PortMapping[] = [{
                 containerPort: port,
@@ -220,23 +219,28 @@ export class PortInfoLoadBalancerProvider extends LoadBalancerProvider {
             return listener.urn.apply(_ => portMappings);
         };
 
-        const loadBalancers = (containerName: string, name: string, parent: pulumi.Resource) => {
-            initialize(containerName, name, parent);
-
-            const loadBalancers: LoadBalancers = listener.urn.apply(_ => [{
+        const loadBalancers = (containerName: string) =>
+            listener.urn.apply(_ => [{
                     containerName,
                     targetGroupArn: targetGroup.arn,
                     containerPort: portInfo.targetPort || portInfo.port,
                 }]);
 
-            return loadBalancers;
-        };
-
         const defaultEndpoint = () => endpoint;
+
+        this.loadBalancer = loadBalancer;
+        this.targetGroup = targetGroup;
+        this.listener = listener;
 
         this.portMappings = portMappings;
         this.loadBalancers = loadBalancers;
         this.defaultEndpoint = defaultEndpoint;
+
+        this.registerOutputs({
+            loadBalancer,
+            targetGroup,
+            listener,
+        });
     }
 }
 

@@ -32,7 +32,7 @@ export function computeContainerDefinition(
     }
 
     const imageProvider = container.imageProvider;
-    const loadBalancerProvider = container.loadBalancerProvider;
+    const loadBalancer = container.loadBalancer;
 
     let image = container.image;
     let environment = container.environment;
@@ -44,9 +44,9 @@ export function computeContainerDefinition(
             environment, imageProvider.environment(name, parent));
     }
 
-    if (loadBalancerProvider) {
+    if (loadBalancer) {
         portMappings = utils.combineArrays(
-            portMappings, loadBalancerProvider.portMappings(containerName, name, parent));
+            portMappings, loadBalancer.portMappings(containerName));
     }
 
     return pulumi.all([container, logGroup.id, image, environment, portMappings])
@@ -76,6 +76,10 @@ export function computeContainerDefinition(
     });
 }
 
+export interface ContainerPortMappings {
+    portMappings(containerName: string): ContainerDefinition["portMappings"];
+}
+
 type WithoutUndefined<T> = T extends undefined ? never : T;
 
 type MakeInputs<T> = {
@@ -88,7 +92,7 @@ type MakeInputs<T> = {
 type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     image?: pulumi.Input<string>
     imageProvider?: mod.IImageProvider;
-    loadBalancerProvider?: mod.LoadBalancerProvider;
+    loadBalancer?: ContainerPortMappings & mod.ServiceLoadBalancers;
 }>;
 
 export interface ContainerDefinition {
@@ -137,9 +141,9 @@ export interface ContainerDefinition {
     imageProvider?: mod.IImageProvider;
 
     /**
-     * Provider that can produce a load balancer for this container.
+     * Provider that can produce [portMappings] for this container.
      */
-    loadBalancerProvider?: mod.LoadBalancerProvider;
+    loadBalancer?: ContainerPortMappings & mod.ServiceLoadBalancers;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

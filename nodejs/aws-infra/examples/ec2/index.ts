@@ -31,7 +31,7 @@ const autoScalingGroup = cluster.createAndAddAutoScalingGroup("testing", {
 });
 
 // A simple NGINX service, scaled out over two containers.
-const nginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 });
+const nginxLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo("examples-nginx", { cluster, port: 80 });
 const nginx = new awsinfra.x.EC2Service("examples-nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -39,7 +39,7 @@ const nginx = new awsinfra.x.EC2Service("examples-nginx", {
             nginx: {
                 image: "nginx",
                 memory: 128,
-                loadBalancerProvider: nginxLoadBalancer,
+                loadBalancer: nginxLoadBalancer,
             },
         },
     },
@@ -49,12 +49,12 @@ const nginx = new awsinfra.x.EC2Service("examples-nginx", {
 export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 });
+const simpleNginxLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
 const simpleNginx = new awsinfra.x.EC2TaskDefinition("examples-simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
-        loadBalancerProvider: simpleNginxLoadBalancer,
+        loadBalancer: simpleNginxLoadBalancer,
     },
 }).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
@@ -70,7 +70,7 @@ const cachedNginx = new awsinfra.x.EC2Service("examples-cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                loadBalancerProvider: awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 }),
+                loadBalancer: awsinfra.x.LoadBalancer.fromPortInfo("examples-cached-nginx", { cluster, port: 80 }),
             },
         },
     },
@@ -88,22 +88,23 @@ const multistageCachedNginx = new awsinfra.x.EC2Service("examples-multistage-cac
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                loadBalancerProvider: awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 }),
+                loadBalancer: awsinfra.x.LoadBalancer.fromPortInfo(
+                    "examples-multistage-cached-nginx", { cluster, port: 80 }),
             },
         },
     },
     desiredCount: 2,
 });
 
-const customWebServerLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo(
-    { cluster, port: 80, targetPort: 8080 });
+const customWebServerLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo(
+    "mycustomservice", { cluster, port: 80, targetPort: 8080 });
 const customWebServer = new awsinfra.x.EC2Service("mycustomservice", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             webserver: {
                 memory: 128,
-                loadBalancerProvider: customWebServerLoadBalancer,
+                loadBalancer: customWebServerLoadBalancer,
                 imageProvider: awsinfra.x.ImageProvider.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
@@ -128,7 +129,7 @@ class Cache {
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 6379 });
+        const redisLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo(name, { cluster, port: 6379 });
         const redis = new awsinfra.x.EC2Service(name, {
             cluster,
             taskDefinitionArgs: {
@@ -136,7 +137,7 @@ class Cache {
                     redis: {
                         image: "redis:alpine",
                         memory: memory,
-                        loadBalancerProvider: redisLoadBalancer,
+                        loadBalancer: redisLoadBalancer,
                         command: ["redis-server", "--requirepass", redisPassword],
                     },
                 },
@@ -194,7 +195,7 @@ const helloTask = new awsinfra.x.EC2TaskDefinition("examples-hello-world", {
 });
 
 // build an anonymous image:
-const builtServiceLoadBalancer = awsinfra.x.LoadBalancerProvider.fromPortInfo({ cluster, port: 80 });
+const builtServiceLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo("examples-nginx2", { cluster, port: 80 });
 const builtService = new awsinfra.x.EC2Service("examples-nginx2", {
     cluster,
     taskDefinitionArgs: {
@@ -202,7 +203,7 @@ const builtService = new awsinfra.x.EC2Service("examples-nginx2", {
             nginx: {
                 imageProvider: awsinfra.x.ImageProvider.fromPath("./app"),
                 memory: 128,
-                loadBalancerProvider: builtServiceLoadBalancer,
+                loadBalancer: builtServiceLoadBalancer,
             },
         },
     },
