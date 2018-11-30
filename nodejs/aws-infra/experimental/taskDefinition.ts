@@ -367,7 +367,4 @@ export interface TaskDefinitionArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape: OverwriteShape = undefined!;
-let argsShape: TaskDefinitionArgs = undefined!;
-argsShape = overwriteShape;
-overwriteShape = argsShape;
+const test1: string = utils.checkCompat<OverwriteShape, TaskDefinitionArgs>();

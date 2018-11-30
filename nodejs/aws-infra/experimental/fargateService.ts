@@ -153,7 +153,7 @@ export class FargateService extends mod.ClusterService {
 
 (<any>FargateService).doNotCapture = true;
 
-type OverwriteTaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
+type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
     requiresCompatibilities?: never;
     networkMode?: never;
     container?: mod.ContainerDefinition;
@@ -224,12 +224,6 @@ export interface FargateTaskDefinitionArgs {
      */
     containers?: Record<string, mod.ContainerDefinition>;
 }
-
-// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape1: OverwriteTaskDefinitionArgs = undefined!;
-let argsShape1: FargateTaskDefinitionArgs = undefined!;
-argsShape1 = overwriteShape1;
-overwriteShape1 = argsShape1;
 
 type OverwriteFargateServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
     taskDefinition?: mod.FargateTaskDefinition;
@@ -354,7 +348,5 @@ export interface FargateServiceArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape2: OverwriteFargateServiceArgs = undefined!;
-let argsShape2: FargateServiceArgs = undefined!;
-argsShape2 = overwriteShape2;
-overwriteShape2 = argsShape2;
+const test1: string = utils.checkCompat<OverwriteFargateTaskDefinitionArgs, FargateTaskDefinitionArgs>();
+const test2: string = utils.checkCompat<OverwriteFargateServiceArgs, FargateServiceArgs>();

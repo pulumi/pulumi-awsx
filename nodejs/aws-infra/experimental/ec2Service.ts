@@ -162,11 +162,6 @@ export interface EC2TaskDefinitionArgs {
      */
     containers?: Record<string, mod.ContainerDefinition>;
 }
-// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape1: OverwriteEC2TaskDefinitionArgs = undefined!;
-let argsShape1: EC2TaskDefinitionArgs = undefined!;
-argsShape1 = overwriteShape1;
-overwriteShape1 = argsShape1;
 
 type OverwriteEC2ServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
     taskDefinition?: EC2TaskDefinition;
@@ -289,7 +284,5 @@ export interface EC2ServiceArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape2: OverwriteEC2ServiceArgs = undefined!;
-let argsShape2: EC2ServiceArgs = undefined!;
-argsShape2 = overwriteShape2;
-overwriteShape2 = argsShape2;
+const test1: string = utils.checkCompat<OverwriteEC2TaskDefinitionArgs, EC2TaskDefinitionArgs>();
+const test2: string = utils.checkCompat<OverwriteEC2ServiceArgs, EC2ServiceArgs>();

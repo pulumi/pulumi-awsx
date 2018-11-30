@@ -57,3 +57,11 @@ export function ifUndefined<T>(input: pulumi.Input<T> | undefined, value: pulumi
     return pulumi.all([input, value])
                  .apply(([input, value]) => input !== undefined ? input : value);
 }
+
+/** @internal */
+export type Compatible<T, U> = T extends U ? U extends T ? any : void : void;
+
+/** @internal */
+export function checkCompat<T, U>(): Compatible<T, U> {
+    return undefined!;
+}

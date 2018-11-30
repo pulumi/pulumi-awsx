@@ -576,10 +576,7 @@ export interface TemplateParameters {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape1: OverwriteTemplateParameters = undefined!;
-let argsShape1: TemplateParameters = undefined!;
-argsShape1 = overwriteShape1;
-overwriteShape1 = argsShape1;
+const test1: string = utils.checkCompat<OverwriteTemplateParameters, TemplateParameters>();
 
 // The shape we want for ClusterAutoScalingLaunchConfigurationArgs.  We don't export this as
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
@@ -748,7 +745,4 @@ export interface AutoScalingLaunchConfigurationArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-let overwriteShape2: OverwriteAutoScalingLaunchConfigurationArgs = undefined!;
-let argsShape2: AutoScalingLaunchConfigurationArgs = undefined!;
-argsShape2 = overwriteShape2;
-overwriteShape2 = argsShape2;
+const test2: string = utils.checkCompat<OverwriteAutoScalingLaunchConfigurationArgs, AutoScalingLaunchConfigurationArgs>();
