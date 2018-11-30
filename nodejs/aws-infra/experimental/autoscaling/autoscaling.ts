@@ -89,11 +89,14 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             return undefined;
         }
 
-        return <AutoScalingLaunchConfigurationArgs>{
+        const copy = <AutoScalingLaunchConfigurationArgs>{
             ...args,
-            securityGroupsProvider: undefined,
-            userDataProviders: undefined,
         };
+
+        delete copy.securityGroupsProvider;
+        delete copy.userDataProviders;
+
+        return copy;
     }
 
     public static defaultInstanceProfilePolicyDocument(): aws.iam.PolicyDocument {
