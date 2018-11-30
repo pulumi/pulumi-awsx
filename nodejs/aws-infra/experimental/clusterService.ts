@@ -64,8 +64,6 @@ export abstract class ClusterService extends pulumi.ComponentResource {
     }
 }
 
-(<any>ClusterService).doNotCapture = true;
-
 function placementConstraints(isFargate: boolean, os: mod.HostOperatingSystem | undefined) {
     if (isFargate) {
         return [];

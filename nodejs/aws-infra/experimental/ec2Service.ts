@@ -60,8 +60,6 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
     }
 }
 
-(<any>EC2TaskDefinition).doNotCapture = true;
-
 export class EC2Service extends mod.ClusterService {
     public taskDefinitionInstance: EC2TaskDefinition;
 
@@ -91,8 +89,6 @@ export class EC2Service extends mod.ClusterService {
         this.taskDefinitionInstance = taskDefinition;
     }
 }
-
-(<any>EC2Service).doNotCapture = true;
 
 type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
     requiresCompatibilities?: never;

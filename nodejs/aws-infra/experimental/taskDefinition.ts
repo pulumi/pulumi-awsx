@@ -200,8 +200,6 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 }
 
-(<any>TaskDefinition).doNotCapture = true;
-
 function createRunFunction(
         isFargate: boolean,
         taskDefArn: pulumi.Output<string>,

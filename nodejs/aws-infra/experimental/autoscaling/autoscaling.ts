@@ -138,8 +138,6 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     }
 }
 
-(<any>AutoScalingLaunchConfiguration).doNotCapture = true;
-
 function getSecurityGroups(args: AutoScalingLaunchConfigurationArgs): pulumi.Input<pulumi.Input<string>[]> {
     if (args.securityGroupsProvider) {
         return args.securityGroupsProvider.securityGroupIds();
@@ -386,8 +384,6 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         };
     }
 }
-
-(<any>AutoScalingGroup).doNotCapture = true;
 
 function ifUndefined<T>(val: T | undefined, defVal: T) {
     return val !== undefined ? val : defVal;
