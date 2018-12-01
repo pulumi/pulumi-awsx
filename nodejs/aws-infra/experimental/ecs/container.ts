@@ -28,33 +28,28 @@ export function computeContainerDefinition(
     container: Container,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
-    if (container.imageId === undefined && container.image === undefined) {
-        throw new Error(`container '${containerName}' requires either [imageId] or [image] to be set.`);
-    }
+    const containerImage = <ContainerImage>container.image;
+    const stringImage = <pulumi.Input<string>>container.image;
+    const image = containerImage.image
+        ? containerImage.image(name, parent)
+        : stringImage;
 
-    const image = container.image;
-    const loadBalancer = container.loadBalancer;
-
-    let imageId = container.imageId;
     let environment = container.environment;
-    let portMappings = container.portMappings;
-
-    if (image) {
-        imageId = image.id(name, parent);
+    if (containerImage.environment) {
         environment = utils.combineArrays(
-            environment, image.environment(name, parent));
+            environment, containerImage.environment(name, parent));
     }
 
-    if (loadBalancer) {
-        portMappings = utils.combineArrays(
-            portMappings, loadBalancer.portMappings(containerName));
-    }
+    const containerPortMappings = <ContainerPortMappings>container.portMappings;
+    const portMappings = containerPortMappings && containerPortMappings.portMappings
+        ? containerPortMappings.portMappings(containerName)
+        : <pulumi.Input<aws.ecs.PortMapping[]>>container.portMappings;
 
-    return pulumi.all([container, logGroup.id, imageId, environment, portMappings])
-                 .apply(([container, logGroupId, imageId, environment, portMappings]) => {
+    return pulumi.all([container, logGroup.id, image, environment, portMappings])
+                 .apply(([container, logGroupId, image, environment, portMappings]) => {
         const containerDefinition = {
             ...container,
-            image: imageId,
+            image,
             environment,
             portMappings,
             name: containerName,
@@ -77,8 +72,8 @@ export function computeContainerDefinition(
     });
 }
 
-export interface ContainerLoadBalancer {
-    portMappings(containerName: string): Container["portMappings"];
+export interface ContainerPortMappings {
+    portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]>;
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
@@ -91,9 +86,8 @@ type MakeInputs<T> = {
 // pleasant to work with. However, they internally allow us to succinctly express the shape we're
 // trying to provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
-    imageId?: pulumi.Input<string>
-    image?: ContainerImage;
-    loadBalancer?: ContainerLoadBalancer & ecs.ServiceLoadBalancer;
+    image: pulumi.Input<string> | ContainerImage;
+    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | (ContainerPortMappings & ecs.ServiceLoadBalancers);
 }>;
 
 export interface Container {
@@ -116,7 +110,6 @@ export interface Container {
     memory?: pulumi.Input<number>;
     memoryReservation?: pulumi.Input<number>;
     mountPoints?: pulumi.Input<aws.ecs.MountPoint[]>;
-    portMappings?: pulumi.Input<aws.ecs.PortMapping[]>;
     privileged?: pulumi.Input<boolean>;
     readonlyRootFilesystem?: pulumi.Input<boolean>;
     ulimits?: pulumi.Input<aws.ecs.Ulimit[]>;
@@ -132,22 +125,13 @@ export interface Container {
      * which can do whatever custom work is necessary.  See [Image] for common ways to create an
      * image from a local docker build.
      */
-    imageId?: pulumi.Input<string>;
+    image: pulumi.Input<string> | ContainerImage;
 
-    /**
-     * Provider that can produce the [imageId] and [environment] properties for this definition on
-     * demand.
-     */
-    image?: ContainerImage;
-
-    /**
-     * Provider that can produce [portMappings] for this container.
-     */
-    loadBalancer?: ContainerLoadBalancer & ecs.ServiceLoadBalancer;
+    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | (ContainerPortMappings & ecs.ServiceLoadBalancers);
 }
 
 export interface ContainerImage {
-    id(name: string, parent: pulumi.Resource): pulumi.Input<string>;
+    image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
     environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 }
 

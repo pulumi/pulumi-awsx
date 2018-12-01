@@ -22,7 +22,7 @@ import * as x from "..";
 import * as utils from "../../utils";
 
 export abstract class Image implements ecs.ContainerImage {
-    public abstract id(name: string, parent: pulumi.Resource): pulumi.Input<string>;
+    public abstract image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
     public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 
     /**
@@ -52,7 +52,7 @@ class FunctionImage extends Image {
         super();
     }
 
-    public id(name: string, parent: pulumi.Resource): pulumi.Input<string> {
+    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
         // TODO[pulumi/pulumi-cloud#85]: move this to a Pulumi Docker Hub account.
         return "lukehoban/nodejsrunner";
     }
@@ -81,7 +81,7 @@ class AssetImage extends Image {
         return [];
     }
 
-    public id(name: string, parent: pulumi.Resource): pulumi.Input<string> {
+    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
         const imageName = this.getImageName();
         const repository = this.getOrCreateRepository(imageName, { parent });
 

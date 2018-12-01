@@ -39,9 +39,9 @@ const nginx = new x.ecs.EC2Service("examples-nginx", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                imageId: "nginx",
+                image: "nginx",
                 memory: 128,
-                loadBalancer: nginxLoadBalancer,
+                portMappings: nginxLoadBalancer,
             },
         },
     },
@@ -54,9 +54,9 @@ export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 const simpleNginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
 const simpleNginx = new x.ecs.EC2TaskDefinition("examples-simple-nginx", {
     container: {
-        imageId: "nginx",
+        image: "nginx",
         memory: 128,
-        loadBalancer: simpleNginxLoadBalancer,
+        portMappings: simpleNginxLoadBalancer,
     },
 }).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
@@ -72,7 +72,7 @@ const cachedNginx = new x.ecs.EC2Service("examples-cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                loadBalancer: x.ecs.LoadBalancer.fromPortInfo("examples-cached-nginx", { cluster, port: 80 }),
+                portMappings: x.ecs.LoadBalancer.fromPortInfo("examples-cached-nginx", { cluster, port: 80 }),
             },
         },
     },
@@ -90,7 +90,7 @@ const multistageCachedNginx = new x.ecs.EC2Service("examples-multistage-cached-n
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                loadBalancer: x.ecs.LoadBalancer.fromPortInfo(
+                portMappings: x.ecs.LoadBalancer.fromPortInfo(
                     "examples-multistage-cached-nginx", { cluster, port: 80 }),
             },
         },
@@ -106,7 +106,7 @@ const customWebServer = new x.ecs.EC2Service("mycustomservice", {
         containers: {
             webserver: {
                 memory: 128,
-                loadBalancer: customWebServerLoadBalancer,
+                portMappings: customWebServerLoadBalancer,
                 image: x.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
@@ -137,9 +137,9 @@ class Cache {
             taskDefinitionArgs: {
                 containers: {
                     redis: {
-                        imageId: "redis:alpine",
+                        image: "redis:alpine",
                         memory: memory,
-                        loadBalancer: redisLoadBalancer,
+                        portMappings: redisLoadBalancer,
                         command: ["redis-server", "--requirepass", redisPassword],
                     },
                 },
@@ -191,7 +191,7 @@ const cache = new Cache("examples-mycache");
 
 const helloTask = new x.ecs.EC2TaskDefinition("examples-hello-world", {
     container: {
-        imageId: "hello-world",
+        image: "hello-world",
         memory: 20,
     },
 });
@@ -205,7 +205,7 @@ const builtService = new x.ecs.EC2Service("examples-nginx2", {
             nginx: {
                 image: x.ecs.Image.fromPath("./app"),
                 memory: 128,
-                loadBalancer: builtServiceLoadBalancer,
+                portMappings: builtServiceLoadBalancer,
             },
         },
     },

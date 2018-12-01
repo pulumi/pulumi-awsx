@@ -82,9 +82,11 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
     let loadBalancers: aws.ecs.ServiceArgs["loadBalancers"];
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
-        if (container.loadBalancer) {
+        const serviceLoadBalancers = <ServiceLoadBalancers>container.portMappings;
+
+        if (serviceLoadBalancers && serviceLoadBalancers.loadBalancers) {
             loadBalancers = utils.combineArrays(
-                loadBalancers, container.loadBalancer.loadBalancers(containerName));
+                loadBalancers, serviceLoadBalancers.loadBalancers(containerName));
         }
     }
 
@@ -157,7 +159,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 //     }
 // }
 
-export interface ServiceLoadBalancer {
+export interface ServiceLoadBalancers {
     loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"];
 }
 

@@ -146,8 +146,16 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     /** @internal */
     private static withoutContainerProviders(container: ecs.Container) {
         const copy = <ecs.Container>{ ...container };
-        delete copy.image;
-        delete copy.loadBalancer;
+
+        if ((<ecs.ContainerImage>copy.image).image) {
+            delete copy.image;
+        }
+
+        const containerPortMappings = <ecs.ContainerPortMappings>copy.portMappings;
+        if (containerPortMappings && containerPortMappings.portMappings) {
+            delete copy.portMappings;
+        }
+
         return copy;
     }
 

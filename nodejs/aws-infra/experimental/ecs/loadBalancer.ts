@@ -73,10 +73,10 @@ export interface TargetGroupInfo {
 
 export abstract class LoadBalancer
         extends pulumi.ComponentResource
-        implements ecs.ContainerLoadBalancer, ecs.ServiceLoadBalancer {
+        implements ecs.ContainerPortMappings, ecs.ServiceLoadBalancers {
 
-    public abstract portMappings(containerName: string): ecs.Container["portMappings"];
-    public abstract loadBalancers(containerName: string): ecs.ServiceArgs["loadBalancers"];
+    public abstract portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]>;
+    public abstract loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"];
 
     public constructor(type: string, name: string, props: Record<string, any>, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, props, opts);
@@ -96,8 +96,8 @@ export abstract class LoadBalancer
 }
 
 export class TargetGroupInfosLoadBalancer extends LoadBalancer {
-    portMappings: (containerName: string) => ecs.Container["portMappings"];
-    loadBalancers: (containerName: string) => ecs.ServiceArgs["loadBalancers"];
+    portMappings: (containerName: string) => pulumi.Input<aws.ecs.PortMapping[]>;
+    loadBalancers: (containerName: string) => aws.ecs.ServiceArgs["loadBalancers"];
 
     constructor(name: string, targetGroupInfos: TargetGroupInfo[], opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ecs:TargetGroupInfosLoadBalancer", name, { targetGroupInfos }, opts);
@@ -124,8 +124,8 @@ export class PortInfoLoadBalancer extends LoadBalancer {
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly listener: aws.elasticloadbalancingv2.Listener;
 
-    portMappings: (containerName: string) => ecs.Container["portMappings"];
-    loadBalancers: (containerName: string) => ecs.ServiceArgs["loadBalancers"];
+    portMappings: (containerName: string) => pulumi.Input<aws.ecs.PortMapping[]>;
+    loadBalancers: (containerName: string) => aws.ecs.ServiceArgs["loadBalancers"];
 
     defaultEndpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
 
