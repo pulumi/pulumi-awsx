@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./providers";
+export * from "./container";
+export * from "./taskDefinition";
 
-import * as autoscaling from "./autoscaling";
-import * as ec2 from "./ec2";
-import * as ecs from "./ecs";
-
-export { autoscaling, ec2, ecs };
-
-export * from "./clusterFileSystem";
-
-export * from "./role";
-
+export * from "./cluster";
+export * from "./image";
+export * from "./loadBalancer";
+export * from "./service";
+export * from "./ec2Service";
+export * from "./fargateService";

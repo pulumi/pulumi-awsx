@@ -15,19 +15,20 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import { Network } from "./../network";
+import { Network } from "./../../network";
 
-import * as utils from "../utils";
+import * as utils from "../../utils";
 
-import * as mod from ".";
+import * as ecs from ".";
+import * as x from "..";
 
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
  */
 export class Cluster
         extends pulumi.ComponentResource
-        implements mod.ec2.ISecurityGroupsProvider,
-                   mod.ec2.ILaunchConfigurationUserDataProvider {
+        implements x.ec2.ISecurityGroupsProvider,
+                   x.ec2.ILaunchConfigurationUserDataProvider {
     public readonly instance: aws.ecs.Cluster;
 
     /**
@@ -40,12 +41,12 @@ export class Cluster
     public readonly securityGroups: aws.ec2.SecurityGroup[];
 
     public readonly securityGroupIds: () => pulumi.Input<pulumi.Input<string>[]>;
-    public readonly extraBootcmdLines: () => pulumi.Input<mod.ec2.UserDataLine[]>;
+    public readonly extraBootcmdLines: () => pulumi.Input<x.ec2.UserDataLine[]>;
 
-    public readonly autoScalingGroups: mod.autoscaling.AutoScalingGroup[] = [];
+    public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 
     constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("aws-infra:x:Cluster", name, {
+        super("awsinfra:x:ecs:Cluster", name, {
             ...args,
         }, opts);
 
@@ -80,7 +81,7 @@ export class Cluster
         });
     }
 
-    public addAutoScalingGroup(group: mod.autoscaling.AutoScalingGroup) {
+    public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {
         this.autoScalingGroups.push(group);
     }
 
@@ -92,7 +93,7 @@ export class Cluster
      */
     public createAndAddAutoScalingGroup(
             name: string,
-            args?: mod.autoscaling.AutoScalingGroupArgs,
+            args?: x.autoscaling.AutoScalingGroupArgs,
             opts?: pulumi.ResourceOptions) {
 
         args = args || { network: this.network };
@@ -103,7 +104,7 @@ export class Cluster
         launchConfigurationArgs.userDataProviders = launchConfigurationArgs.userDataProviders || [];
         launchConfigurationArgs.userDataProviders.push(this);
 
-        const group = new mod.autoscaling.AutoScalingGroup(name, args, opts || { parent: this });
+        const group = new x.autoscaling.AutoScalingGroup(name, args, opts || { parent: this });
         this.addAutoScalingGroup(group);
 
         return group;

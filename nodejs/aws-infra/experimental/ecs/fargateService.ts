@@ -15,13 +15,14 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "./../utils";
+import * as utils from "./../../utils";
 
-import * as mod from ".";
+import * as ecs from ".";
+import * as x from "..";
 
-export class FargateTaskDefinition extends mod.TaskDefinition {
+export class FargateTaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
-                args: mod.FargateTaskDefinitionArgs,
+                args: ecs.FargateTaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
         if (!args.container && !args.containers) {
@@ -34,7 +35,7 @@ export class FargateTaskDefinition extends mod.TaskDefinition {
         const computedMemory = computedMemoryAndCPU.apply(x => x.memory);
         const computedCPU = computedMemoryAndCPU.apply(x => x.cpu);
 
-        const argsCopy: mod.TaskDefinitionArgs = {
+        const argsCopy: ecs.TaskDefinitionArgs = {
             ...args,
             containers,
             requiresCompatibilities: ["FARGATE"],
@@ -45,14 +46,14 @@ export class FargateTaskDefinition extends mod.TaskDefinition {
 
         delete (<any>argsCopy).container;
 
-        super("aws-infra:x:FargateTaskDefinition", name, /*isFargate:*/ true, argsCopy, opts);
+        super("awsinfra:x:ecs:FargateTaskDefinition", name, /*isFargate:*/ true, argsCopy, opts);
     }
 
     /**
      * Creates a service with this as its task definition.
      */
     public createService(
-            name: string, args: mod.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
+            name: string, args: ecs.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -61,14 +62,14 @@ export class FargateTaskDefinition extends mod.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new mod.FargateService(name, {
+        return new ecs.FargateService(name, {
             ...args,
             taskDefinition: this,
         }, opts || { parent: this });
     }
 }
 
-function computeFargateMemoryAndCPU(containers: Record<string, mod.ContainerDefinition>) {
+function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
     return pulumi.output(containers).apply(containers => {
         // Sum the requested memory and CPU for each container in the task.
         let minTaskMemory = 0;
@@ -123,7 +124,7 @@ function computeFargateMemoryAndCPU(containers: Record<string, mod.ContainerDefi
     });
 }
 
-export class FargateService extends mod.ClusterService {
+export class FargateService extends ecs.Service {
     constructor(name: string,
                 args: FargateServiceArgs,
                 opts?: pulumi.ResourceOptions) {
@@ -133,10 +134,10 @@ export class FargateService extends mod.ClusterService {
         }
 
         const taskDefinition = args.taskDefinition ||
-            new mod.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
+            new ecs.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
 
         const cluster = args.cluster;
-        super("aws-infra:x:FargateService", name, {
+        super("awsinfra:x:ecs:FargateService", name, {
             ...args,
             taskDefinition,
             launchType: "FARGATE",
@@ -149,15 +150,15 @@ export class FargateService extends mod.ClusterService {
     }
 }
 
-type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
+type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
     requiresCompatibilities?: never;
     networkMode?: never;
-    container?: mod.ContainerDefinition;
-    containers?: Record<string, mod.ContainerDefinition>;
+    container?: ecs.Container;
+    containers?: Record<string, ecs.Container>;
 }>;
 
 export interface FargateTaskDefinitionArgs {
-    // Properties copied from mod.TaskDefinitionArgs
+    // Properties copied from ecs.TaskDefinitionArgs
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
@@ -210,7 +211,7 @@ export interface FargateTaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    container?: mod.ContainerDefinition;
+    container?: ecs.Container;
 
     /**
      * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
@@ -218,17 +219,17 @@ export interface FargateTaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    containers?: Record<string, mod.ContainerDefinition>;
+    containers?: Record<string, ecs.Container>;
 }
 
-type OverwriteFargateServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
-    taskDefinition?: mod.FargateTaskDefinition;
+type OverwriteFargateServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
+    taskDefinition?: ecs.FargateTaskDefinition;
     taskDefinitionArgs?: FargateTaskDefinitionArgs;
     launchType?: never;
 }>;
 
 export interface FargateServiceArgs {
-    // Properties from mod.ServiceArgs
+    // Properties from ecs.ServiceArgs
 
     /**
      * The upper limit (as a percentage of the service's desiredCount) of the number of running
@@ -311,7 +312,7 @@ export interface FargateServiceArgs {
     /**
      * Cluster this service will run in.
      */
-    cluster: mod.Cluster;
+    cluster: ecs.Cluster;
 
     /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do
@@ -334,7 +335,7 @@ export interface FargateServiceArgs {
      * The task definition to create the service from.  Either [taskDefinition] or
      * [taskDefinitionArgs] must be provided.
      */
-    taskDefinition?: mod.FargateTaskDefinition;
+    taskDefinition?: ecs.FargateTaskDefinition;
 
     /**
      * The task definition to create the service from.  Either [taskDefinition] or

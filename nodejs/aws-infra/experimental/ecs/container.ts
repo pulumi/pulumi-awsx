@@ -15,33 +15,34 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as mod from ".";
+import * as ecs from ".";
+import * as x from "..";
 
-import * as utils from "../utils";
+import * as utils from "../../utils";
 
 /** @internal */
 export function computeContainerDefinition(
     parent: pulumi.Resource,
     name: string,
     containerName: string,
-    container: ContainerDefinition,
+    container: Container,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
-    if (container.image === undefined && container.imageProvider === undefined) {
-        throw new Error(`container '${containerName}' requires either [image] or [imageProvider] to be set.`);
+    if (container.imageId === undefined && container.image === undefined) {
+        throw new Error(`container '${containerName}' requires either [imageId] or [image] to be set.`);
     }
 
-    const imageProvider = container.imageProvider;
+    const image = container.image;
     const loadBalancer = container.loadBalancer;
 
-    let image = container.image;
+    let imageId = container.imageId;
     let environment = container.environment;
     let portMappings = container.portMappings;
 
-    if (imageProvider) {
-        image = imageProvider.image(name, parent);
+    if (image) {
+        imageId = image.id(name, parent);
         environment = utils.combineArrays(
-            environment, imageProvider.environment(name, parent));
+            environment, image.environment(name, parent));
     }
 
     if (loadBalancer) {
@@ -49,11 +50,11 @@ export function computeContainerDefinition(
             portMappings, loadBalancer.portMappings(containerName));
     }
 
-    return pulumi.all([container, logGroup.id, image, environment, portMappings])
-                 .apply(([container, logGroupId, image, environment, portMappings]) => {
+    return pulumi.all([container, logGroup.id, imageId, environment, portMappings])
+                 .apply(([container, logGroupId, imageId, environment, portMappings]) => {
         const containerDefinition = {
             ...container,
-            image,
+            image: imageId,
             environment,
             portMappings,
             name: containerName,
@@ -77,7 +78,7 @@ export function computeContainerDefinition(
 }
 
 export interface ContainerLoadBalancer {
-    portMappings(containerName: string): ContainerDefinition["portMappings"];
+    portMappings(containerName: string): Container["portMappings"];
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
@@ -90,12 +91,12 @@ type MakeInputs<T> = {
 // pleasant to work with. However, they internally allow us to succinctly express the shape we're
 // trying to provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
-    image?: pulumi.Input<string>
-    imageProvider?: mod.IImageProvider;
-    loadBalancer?: ContainerLoadBalancer & mod.ServiceLoadBalancer;
+    imageId?: pulumi.Input<string>
+    image?: ContainerImage;
+    loadBalancer?: ContainerLoadBalancer & ecs.ServiceLoadBalancer;
 }>;
 
-export interface ContainerDefinition {
+export interface Container {
     // Properties from aws.ecs.ContainerDefinition
     command?: pulumi.Input<string[]>;
     cpu?: pulumi.Input<number>;
@@ -126,25 +127,29 @@ export interface ContainerDefinition {
     // Changes made to core args type
 
     /**
-     * The image to use for the container.  If this is just a string, then the image will be pulled
-     * from the Docker Hub.  To provide customized image retrieval, provide [imageProvider] which
-     * can do whatever custom work is necessary and which should then update this
-     * ContainerDefinition appropriately.  See [ImageProvider] for common ways to create an image
-     * from a local docker build.
+     * The image id to use for the container.  If this is provided then the image with this idq will
+     * be pulled from Docker Hub.  To provide customized image retrieval, provide [imageProvide]
+     * which can do whatever custom work is necessary.  See [Image] for common ways to create an
+     * image from a local docker build.
      */
-    image?: pulumi.Input<string>;
+    imageId?: pulumi.Input<string>;
 
     /**
-     * Provider that can produce the [image] and [environment] properties for this definition on
+     * Provider that can produce the [imageId] and [environment] properties for this definition on
      * demand.
      */
-    imageProvider?: mod.IImageProvider;
+    image?: ContainerImage;
 
     /**
      * Provider that can produce [portMappings] for this container.
      */
-    loadBalancer?: ContainerLoadBalancer & mod.ServiceLoadBalancer;
+    loadBalancer?: ContainerLoadBalancer & ecs.ServiceLoadBalancer;
+}
+
+export interface ContainerImage {
+    id(name: string, parent: pulumi.Resource): pulumi.Input<string>;
+    environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-const test1: string = utils.checkCompat<OverwriteShape, ContainerDefinition>();
+const test1: string = utils.checkCompat<OverwriteShape, Container>();

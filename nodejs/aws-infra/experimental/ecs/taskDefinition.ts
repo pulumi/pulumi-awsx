@@ -15,9 +15,10 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "../utils";
+import * as utils from "../../utils";
 
-import * as mod from ".";
+import * as ecs from ".";
+import * as x from "..";
 
 export declare type HostOperatingSystem = "linux" | "windows";
 
@@ -25,7 +26,7 @@ export interface TaskRunOptions {
     /**
      * The cluster to run this task in.
      */
-    cluster: mod.Cluster;
+    cluster: ecs.Cluster;
 
     /**
      * The name of the container to run as a task.  If not provided, the first container in the list
@@ -47,7 +48,7 @@ export interface TaskRunOptions {
 export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly instance: aws.ecs.TaskDefinition;
     public readonly logGroup: aws.cloudwatch.LogGroup;
-    public readonly containers: Record<string, mod.ContainerDefinition>;
+    public readonly containers: Record<string, ecs.Container>;
     public readonly taskRole: aws.iam.Role;
     public readonly executionRole: aws.iam.Role;
 
@@ -131,7 +132,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
     /** @internal */
     private static withoutProviders(args: TaskDefinitionArgs) {
-        const containers: Record<string, mod.ContainerDefinition> = {};
+        const containers: Record<string, ecs.Container> = {};
         for (const containerName of Object.keys(args.containers)) {
             containers[containerName] = TaskDefinition.withoutContainerProviders(args.containers[containerName]);
         }
@@ -143,9 +144,9 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 
     /** @internal */
-    private static withoutContainerProviders(container: mod.ContainerDefinition) {
-        const copy = <mod.ContainerDefinition>{ ...container };
-        delete copy.imageProvider;
+    private static withoutContainerProviders(container: ecs.Container) {
+        const copy = <ecs.Container>{ ...container };
+        delete copy.image;
         delete copy.loadBalancer;
         return copy;
     }
@@ -163,7 +164,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             policyArns?: string[],
             opts?: pulumi.ResourceOptions): aws.iam.Role {
 
-        return mod.createRole(
+        return x.createRole(
             name,
             assumeRolePolicy || TaskDefinition.defaultRoleAssumeRolePolicy(),
             policyArns || TaskDefinition.defaultTaskRolePolicyARNs(),
@@ -183,7 +184,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             policyArns?: string[],
             opts?: pulumi.ResourceOptions): aws.iam.Role {
 
-        return mod.createRole(
+        return x.createRole(
             name,
             assumeRolePolicy || TaskDefinition.defaultRoleAssumeRolePolicy(),
             policyArns || TaskDefinition.defaultExecutionRolePolicyARNs(),
@@ -295,7 +296,7 @@ function placementConstraints(isFargate: boolean, os: HostOperatingSystem | unde
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
-    containers: Record<string, mod.ContainerDefinition>,
+    containers: Record<string, ecs.Container>,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
@@ -303,7 +304,7 @@ function computeContainerDefinitions(
     for (const containerName of Object.keys(containers)) {
         const container = containers[containerName];
 
-        result.push(mod.computeContainerDefinition(parent, name, containerName, container, logGroup));
+        result.push(ecs.computeContainerDefinition(parent, name, containerName, container, logGroup));
     }
 
     return pulumi.all(result);
@@ -325,7 +326,7 @@ type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
     requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
     networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
 
-    containers: Record<string, mod.ContainerDefinition>;
+    containers: Record<string, ecs.Container>;
 }>;
 
 export interface TaskDefinitionArgs {
@@ -392,7 +393,7 @@ export interface TaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    containers: Record<string, mod.ContainerDefinition>;
+    containers: Record<string, ecs.Container>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

@@ -16,20 +16,21 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as aws from "@pulumi/aws";
 import * as awsinfra from "@pulumi/aws-infra";
+const x = awsinfra.x;
 
 import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
-const cluster = new awsinfra.x.Cluster("testing", { network });
+const cluster = new x.ecs.Cluster("testing", { network });
 
 // A simple NGINX service, scaled out over two containers.
-const nginxLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo("examples-nginx", { cluster, port: 80 });
-const nginx = new awsinfra.x.FargateService("examples-nginx", {
+const nginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-nginx", { cluster, port: 80 });
+const nginx = new x.ecs.FargateService("examples-nginx", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: "nginx",
+                imageId: "nginx",
                 memory: 128,
                 loadBalancer: nginxLoadBalancer,
             },
@@ -41,10 +42,10 @@ const nginx = new awsinfra.x.FargateService("examples-nginx", {
 export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
-const simpleNginx = new awsinfra.x.FargateTaskDefinition("examples-simple-nginx", {
+const simpleNginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
+const simpleNginx = new x.ecs.FargateTaskDefinition("examples-simple-nginx", {
     container: {
-        image: "nginx",
+        imageId: "nginx",
         memory: 128,
         loadBalancer: simpleNginxLoadBalancer,
     },
@@ -52,17 +53,17 @@ const simpleNginx = new awsinfra.x.FargateTaskDefinition("examples-simple-nginx"
 
 export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
-const cachedNginx = new awsinfra.x.FargateService("examples-cached-nginx", {
+const cachedNginx = new x.ecs.FargateService("examples-cached-nginx", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                imageProvider: awsinfra.x.ImageProvider.fromDockerBuild({
+                image: x.ecs.Image.fromDockerBuild({
                     context: "./app",
                     cacheFrom: true,
                 }),
                 memory: 128,
-                loadBalancer: awsinfra.x.LoadBalancer.fromPortInfo(
+                loadBalancer: x.ecs.LoadBalancer.fromPortInfo(
                     "examples-cached-nginx", { cluster, port: 80 }),
             },
         },
@@ -70,18 +71,18 @@ const cachedNginx = new awsinfra.x.FargateService("examples-cached-nginx", {
     desiredCount: 2,
 });
 
-const multistageCachedNginx = new awsinfra.x.FargateService("examples-multistage-cached-nginx", {
+const multistageCachedNginx = new x.ecs.FargateService("examples-multistage-cached-nginx", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                imageProvider: awsinfra.x.ImageProvider.fromDockerBuild({
+                image: x.ecs.Image.fromDockerBuild({
                     context: "./app",
                     dockerfile: "./app/Dockerfile-multistage",
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                loadBalancer: awsinfra.x.LoadBalancer.fromPortInfo(
+                loadBalancer: x.ecs.LoadBalancer.fromPortInfo(
                     "examples-multistage-cached-nginx", { cluster, port: 80 }),
             },
         },
@@ -89,16 +90,16 @@ const multistageCachedNginx = new awsinfra.x.FargateService("examples-multistage
     desiredCount: 2,
 });
 
-const customWebServerLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo(
+const customWebServerLoadBalancer = x.ecs.LoadBalancer.fromPortInfo(
     "mycustomservice", { cluster, port: 80, targetPort: 8080 });
-const customWebServer = new awsinfra.x.FargateService("mycustomservice", {
+const customWebServer = new x.ecs.FargateService("mycustomservice", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             webserver: {
                 memory: 128,
                 loadBalancer: customWebServerLoadBalancer,
-                imageProvider: awsinfra.x.ImageProvider.fromFunction(() => {
+                image: x.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
                     http.createServer((req: any, res: any) => {
@@ -122,13 +123,13 @@ class Cache {
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo(name, { cluster, port: 6379 });
-        const redis = new awsinfra.x.FargateService(name, {
+        const redisLoadBalancer = x.ecs.LoadBalancer.fromPortInfo(name, { cluster, port: 6379 });
+        const redis = new x.ecs.FargateService(name, {
             cluster,
             taskDefinitionArgs: {
                 containers: {
                     redis: {
-                        image: "redis:alpine",
+                        imageId: "redis:alpine",
                         memory: memory,
                         loadBalancer: redisLoadBalancer,
                         command: ["redis-server", "--requirepass", redisPassword],
@@ -180,21 +181,21 @@ class Cache {
 
 const cache = new Cache("examples-mycache");
 
-const helloTask = new awsinfra.x.FargateTaskDefinition("examples-hello-world", {
+const helloTask = new x.ecs.FargateTaskDefinition("examples-hello-world", {
     container: {
-        image: "hello-world",
+        imageId: "hello-world",
         memory: 20,
     },
 });
 
 // build an anonymous image:
-const builtServiceLoadBalancer = awsinfra.x.LoadBalancer.fromPortInfo("examples-nginx2", { cluster, port: 80 });
-const builtService = new awsinfra.x.FargateService("examples-nginx2", {
+const builtServiceLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-nginx2", { cluster, port: 80 });
+const builtService = new x.ecs.FargateService("examples-nginx2", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                imageProvider: awsinfra.x.ImageProvider.fromPath("./app"),
+                image: x.ecs.Image.fromPath("./app"),
                 memory: 128,
                 loadBalancer: builtServiceLoadBalancer,
             },
@@ -273,7 +274,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
         path: "/run",
         method: "GET",
         eventHandler: new aws.lambda.CallbackFunction("runRoute", {
-            policies: [...awsinfra.x.TaskDefinition.defaultTaskRolePolicyARNs()],
+            policies: [...x.ecs.TaskDefinition.defaultTaskRolePolicyARNs()],
             callback: async (req) => {
                 try {
                     const c = cluster;

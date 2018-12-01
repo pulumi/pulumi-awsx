@@ -15,13 +15,13 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as mod from ".";
+import * as x from ".";
 
 import * as utils from "../utils";
 
 export class ClusterFileSystem extends pulumi.ComponentResource {
     public readonly instance: aws.efs.FileSystem;
-    public readonly cluster: mod.Cluster;
+    public readonly cluster: x.ecs.Cluster;
     public readonly securityGroups: aws.ec2.SecurityGroup[];
     public readonly mountTargets: aws.efs.MountTarget[];
     public readonly mountPath: pulumi.Output<string>;
@@ -88,7 +88,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.efs.FileSystemArgs, {
-    cluster: mod.Cluster,
+    cluster: x.ecs.Cluster,
     securityGroups?: aws.ec2.SecurityGroup[];
     subnetIds?: pulumi.Input<string>[];
     mountPath?: pulumi.Input<string>;
@@ -153,7 +153,7 @@ export interface ClusterFileSystemArgs {
      * Cluster this file system is intended to be used with.  Configuration values needed
      * by this file system will be pulled from this unless overridden below.
      */
-    cluster: mod.Cluster;
+    cluster: x.ecs.Cluster;
 
     /**
      * The security group to use for the file system.  If not provided, a default one that allows

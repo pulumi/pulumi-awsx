@@ -15,11 +15,12 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "./../utils";
+import * as utils from "./../../utils";
 
-import * as mod from ".";
+import * as ecs from ".";
+import * as x from "..";
 
-export class EC2TaskDefinition extends mod.TaskDefinition {
+export class EC2TaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
                 args: EC2TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
@@ -29,7 +30,7 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
 
         const containers = args.containers || { container: args.container! };
 
-        const argsCopy: mod.TaskDefinitionArgs = {
+        const argsCopy: ecs.TaskDefinitionArgs = {
             ...args,
             containers,
             requiresCompatibilities: ["EC2"],
@@ -38,13 +39,13 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
 
         delete (<any>argsCopy).container;
 
-        super("aws-infra:x:EC2TaskDefinition", name, /*isFargate:*/ false, argsCopy, opts);
+        super("awsinfra:x:ecs:EC2TaskDefinition", name, /*isFargate:*/ false, argsCopy, opts);
     }
 
     /**
      * Creates a service with this as its task definition.
      */
-    public createService(name: string, args: mod.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
+    public createService(name: string, args: ecs.EC2ServiceArgs, opts?: pulumi.ResourceOptions) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -53,14 +54,14 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new mod.EC2Service(name, {
+        return new ecs.EC2Service(name, {
             ...args,
             taskDefinition: this,
         }, opts || { parent: this });
     }
 }
 
-export class EC2Service extends mod.ClusterService {
+export class EC2Service extends ecs.Service {
     public taskDefinitionInstance: EC2TaskDefinition;
 
     constructor(name: string,
@@ -72,10 +73,10 @@ export class EC2Service extends mod.ClusterService {
         }
 
         const taskDefinition = args.taskDefinition ||
-            new mod.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
+            new ecs.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
 
         const cluster = args.cluster;
-        super("aws-infra:x:EC2Service", name, {
+        super("awsinfra:x:ecs:EC2Service", name, {
             ...args,
             taskDefinition,
             launchType: "EC2",
@@ -90,16 +91,16 @@ export class EC2Service extends mod.ClusterService {
     }
 }
 
-type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<mod.TaskDefinitionArgs, {
+type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
     requiresCompatibilities?: never;
     cpu?: never;
     memory?: never;
-    container?: mod.ContainerDefinition;
-    containers?: Record<string, mod.ContainerDefinition>;
+    container?: ecs.Container;
+    containers?: Record<string, ecs.Container>;
 }>;
 
 export interface EC2TaskDefinitionArgs {
-    // Properties from mod.TaskDefinitionArgs
+    // Properties from ecs.TaskDefinitionArgs
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
@@ -148,7 +149,7 @@ export interface EC2TaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    container?: mod.ContainerDefinition;
+    container?: ecs.Container;
 
     /**
      * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
@@ -156,17 +157,17 @@ export interface EC2TaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    containers?: Record<string, mod.ContainerDefinition>;
+    containers?: Record<string, ecs.Container>;
 }
 
-type OverwriteEC2ServiceArgs = utils.Overwrite<mod.ClusterServiceArgs, {
+type OverwriteEC2ServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
     taskDefinition?: EC2TaskDefinition;
     taskDefinitionArgs?: EC2TaskDefinitionArgs;
     launchType?: never;
 }>;
 
 export interface EC2ServiceArgs {
-    // Properties from mod.ServiceArgs
+    // Properties from ecs.ServiceArgs
 
     /**
      * The upper limit (as a percentage of the service's desiredCount) of the number of running
@@ -247,7 +248,7 @@ export interface EC2ServiceArgs {
     /**
      * Cluster this service will run in.
      */
-    cluster: mod.Cluster;
+    cluster: ecs.Cluster;
 
     /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do

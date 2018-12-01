@@ -15,17 +15,18 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as mod from ".";
+import * as ecs from ".";
+import * as x from "..";
 
-import * as utils from "./../utils";
+import * as utils from "./../../utils";
 
-export abstract class ClusterService extends pulumi.ComponentResource {
+export abstract class Service extends pulumi.ComponentResource {
     public readonly instance: aws.ecs.Service;
-    public readonly clusterInstance: mod.Cluster;
-    public readonly taskDefinitionInstance: mod.TaskDefinition;
+    public readonly clusterInstance: ecs.Cluster;
+    public readonly taskDefinitionInstance: ecs.TaskDefinition;
 
     constructor(type: string, name: string,
-                args: ClusterServiceArgs, isFargate: boolean,
+                args: ServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
         super(type, name, args, opts);
 
@@ -64,7 +65,7 @@ export abstract class ClusterService extends pulumi.ComponentResource {
     }
 }
 
-function placementConstraints(isFargate: boolean, os: mod.HostOperatingSystem | undefined) {
+function placementConstraints(isFargate: boolean, os: ecs.HostOperatingSystem | undefined) {
     if (isFargate) {
         return [];
     }
@@ -77,7 +78,7 @@ function placementConstraints(isFargate: boolean, os: mod.HostOperatingSystem | 
     }];
 }
 
-function getLoadBalancers(service: mod.ClusterService, name: string, args: ClusterServiceArgs) {
+function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
     let loadBalancers: aws.ecs.ServiceArgs["loadBalancers"];
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
@@ -164,15 +165,15 @@ export interface ServiceLoadBalancer {
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
-    cluster: mod.Cluster;
-    taskDefinition: mod.TaskDefinition;
+    cluster: ecs.Cluster;
+    taskDefinition: ecs.TaskDefinition;
     desiredCount?: pulumi.Input<number>;
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
     os?: pulumi.Input<"linux" | "windows">;
     waitForSteadyState?: pulumi.Input<boolean>;
 }>;
 
-export interface ClusterServiceArgs {
+export interface ServiceArgs {
     // Properties from aws.ecs.ServiceArgs
 
     /**
@@ -256,12 +257,12 @@ export interface ClusterServiceArgs {
     /**
      * Cluster this service will run in.
      */
-    cluster: mod.Cluster;
+    cluster: ecs.Cluster;
 
     /**
      * The task definition to create the service from.
      */
-    taskDefinition: mod.TaskDefinition;
+    taskDefinition: ecs.TaskDefinition;
 
     /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do
@@ -286,4 +287,4 @@ export interface ClusterServiceArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-const test1: string = utils.checkCompat<OverwriteShape, ClusterServiceArgs>();
+const test1: string = utils.checkCompat<OverwriteShape, ServiceArgs>();

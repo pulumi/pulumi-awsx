@@ -15,15 +15,16 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "../utils";
+import * as utils from "../../utils";
 
-import * as mod from ".";
+import * as ecs from ".";
+import * as x from "..";
 
 export interface PortInfo {
     /**
      * The cluster this port will be exposed from.
      */
-    cluster: mod.Cluster;
+    cluster: ecs.Cluster;
     /**
      * The incoming port where the service exposes the endpoint.
      */
@@ -72,10 +73,10 @@ export interface TargetGroupInfo {
 
 export abstract class LoadBalancer
         extends pulumi.ComponentResource
-        implements mod.ContainerLoadBalancer, mod.ServiceLoadBalancer {
+        implements ecs.ContainerLoadBalancer, ecs.ServiceLoadBalancer {
 
-    public abstract portMappings(containerName: string): mod.ContainerDefinition["portMappings"];
-    public abstract loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"];
+    public abstract portMappings(containerName: string): ecs.Container["portMappings"];
+    public abstract loadBalancers(containerName: string): ecs.ServiceArgs["loadBalancers"];
 
     public constructor(type: string, name: string, props: Record<string, any>, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, props, opts);
@@ -95,11 +96,11 @@ export abstract class LoadBalancer
 }
 
 export class TargetGroupInfosLoadBalancer extends LoadBalancer {
-    portMappings: (containerName: string) => mod.ContainerDefinition["portMappings"];
-    loadBalancers: (containerName: string) => aws.ecs.ServiceArgs["loadBalancers"];
+    portMappings: (containerName: string) => ecs.Container["portMappings"];
+    loadBalancers: (containerName: string) => ecs.ServiceArgs["loadBalancers"];
 
     constructor(name: string, targetGroupInfos: TargetGroupInfo[], opts?: pulumi.ComponentResourceOptions) {
-        super("awsinfra:x:TargetGroupInfosLoadBalancer", name, { targetGroupInfos }, opts);
+        super("awsinfra:x:ecs:TargetGroupInfosLoadBalancer", name, { targetGroupInfos }, opts);
 
         this.portMappings = (containerName: string) =>
             targetGroupInfos.map(i => {
@@ -123,8 +124,8 @@ export class PortInfoLoadBalancer extends LoadBalancer {
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly listener: aws.elasticloadbalancingv2.Listener;
 
-    portMappings: (containerName: string) => mod.ContainerDefinition["portMappings"];
-    loadBalancers: (containerName: string) => aws.ecs.ServiceArgs["loadBalancers"];
+    portMappings: (containerName: string) => ecs.Container["portMappings"];
+    loadBalancers: (containerName: string) => ecs.ServiceArgs["loadBalancers"];
 
     defaultEndpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
 
@@ -132,7 +133,7 @@ export class PortInfoLoadBalancer extends LoadBalancer {
         name: string,
         portInfo: PortInfo,
         opts?: pulumi.ComponentResourceOptions) {
-        super("awsinfra:x:PortInfoLoadBalancer", name, portInfo, opts);
+        super("awsinfra:x:ecs:PortInfoLoadBalancer", name, portInfo, opts);
 
         let endpoint: pulumi.Output<aws.apigateway.x.Endpoint>;
 

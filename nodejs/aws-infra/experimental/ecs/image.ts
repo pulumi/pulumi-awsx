@@ -16,48 +16,43 @@ import * as aws from "@pulumi/aws";
 import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "../utils";
+import * as ecs from ".";
+import * as x from "..";
 
-export type ImageEnvironment = Record<string, pulumi.Input<string>>;
+import * as utils from "../../utils";
 
-export interface IImageProvider {
-    image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
-    environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
-}
-
-export abstract class ImageProvider implements IImageProvider {
-    public abstract image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
+export abstract class Image implements ecs.ContainerImage {
+    public abstract id(name: string, parent: pulumi.Resource): pulumi.Input<string>;
     public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 
     /**
-     * Creates a [ContainerImage] given a path to a folder in which a Docker build should be run.
+     * Creates an [Image] given a path to a folder in which a Docker build should be run.
      */
-    public static fromPath(path: string): IImageProvider {
-        return new AssetImageProvider(path);
+    public static fromPath(path: string): Image {
+        return new AssetImage(path);
     }
 
     /**
-     *Creates a [ContainerImage] using the detailed build instructions provided in [build].
+     *Creates an [Image] using the detailed build instructions provided in [build].
      */
-
-    public static fromDockerBuild(build: docker.DockerBuild): IImageProvider {
-        return new AssetImageProvider(build);
+    public static fromDockerBuild(build: docker.DockerBuild): Image {
+        return new AssetImage(build);
     }
 
     /**
-     * Creates a [ContainerImage] given function code to use as the implementation of the container.
+     * Creates an [Image] given function code to use as the implementation of the container.
      */
-    public static fromFunction(func: () => void): IImageProvider {
-        return new FunctionImageProvider(func);
+    public static fromFunction(func: () => void): Image {
+        return new FunctionImage(func);
     }
 }
 
-class FunctionImageProvider extends ImageProvider {
+class FunctionImage extends Image {
     constructor(private readonly func: () => void) {
         super();
     }
 
-    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
+    public id(name: string, parent: pulumi.Resource): pulumi.Input<string> {
         // TODO[pulumi/pulumi-cloud#85]: move this to a Pulumi Docker Hub account.
         return "lukehoban/nodejsrunner";
     }
@@ -71,7 +66,7 @@ class FunctionImageProvider extends ImageProvider {
     }
 }
 
-class AssetImageProvider extends ImageProvider {
+class AssetImage extends Image {
     // repositories contains a cache of already created ECR repositories.
     private static readonly repositories = new Map<string, aws.ecr.Repository>();
 
@@ -86,7 +81,7 @@ class AssetImageProvider extends ImageProvider {
         return [];
     }
 
-    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
+    public id(name: string, parent: pulumi.Resource): pulumi.Input<string> {
         const imageName = this.getImageName();
         const repository = this.getOrCreateRepository(imageName, { parent });
 
@@ -124,10 +119,10 @@ class AssetImageProvider extends ImageProvider {
 
     // getOrCreateRepository returns the ECR repository for this image, lazily allocating if necessary.
     private getOrCreateRepository(imageName: string, opts: pulumi.ResourceOptions): aws.ecr.Repository {
-        let repository: aws.ecr.Repository | undefined = AssetImageProvider.repositories.get(imageName);
+        let repository: aws.ecr.Repository | undefined = AssetImage.repositories.get(imageName);
         if (!repository) {
             repository = new aws.ecr.Repository(imageName.toLowerCase(), {}, opts);
-            AssetImageProvider.repositories.set(imageName, repository);
+            AssetImage.repositories.set(imageName, repository);
 
             // Set a default lifecycle policy such that at most a single untagged image is retained.
             // We tag all cached build layers as well as the final image, so those images will never expire.
@@ -161,7 +156,7 @@ class AssetImageProvider extends ImageProvider {
             logResource: pulumi.Resource) {
 
         // See if we've already built this.
-        let uniqueImageName = AssetImageProvider.buildImageCache.get(imageName);
+        let uniqueImageName = AssetImage.buildImageCache.get(imageName);
         if (uniqueImageName) {
             uniqueImageName.apply(d =>
                 pulumi.log.debug(`    already built: ${imageName} (${d})`, logResource));
@@ -192,7 +187,7 @@ class AssetImageProvider extends ImageProvider {
                 };
             });
 
-            AssetImageProvider.buildImageCache.set(imageName, uniqueImageName);
+            AssetImage.buildImageCache.set(imageName, uniqueImageName);
 
             uniqueImageName.apply(d =>
                 pulumi.log.debug(`    build complete: ${imageName} (${d})`, logResource));
