@@ -90,7 +90,11 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         }
 
         const copy = <AutoScalingLaunchConfigurationArgs>{ ...args };
-        delete copy.securityGroupsProvider;
+
+        if (copy.securityGroups && (<AutoScalingSecurityGroups>copy.securityGroups).securityGroupIds) {
+            delete copy.securityGroups;
+        }
+
         delete copy.userDataProviders;
         return copy;
     }
@@ -138,11 +142,14 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
 }
 
 function getSecurityGroups(args: AutoScalingLaunchConfigurationArgs): pulumi.Input<pulumi.Input<string>[]> {
-    if (args.securityGroupsProvider) {
-        return args.securityGroupsProvider.securityGroupIds();
+    const autoScalingSecurityGroups = <AutoScalingSecurityGroups>args.securityGroups;
+
+    if (autoScalingSecurityGroups && autoScalingSecurityGroups.securityGroupIds) {
+        return autoScalingSecurityGroups.securityGroupIds();
     }
 
-    return utils.ifUndefined(args.securityGroups, []);
+    return utils.ifUndefined(
+        <aws.ec2.LaunchConfigurationArgs["securityGroups"]>args.securityGroups, []);
 }
 
 const defaultRootBlockDevice = {
@@ -585,8 +592,7 @@ type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable
     ecsOptimizedAMIName?: string;
     instanceType?: pulumi.Input<aws.ec2.InstanceType>;
     placementTenancy?: pulumi.Input<"default" | "dedicated">;
-
-    securityGroupsProvider?: x.ec2.ISecurityGroupsProvider;
+    securityGroups?: aws.ec2.LaunchConfigurationArgs["securityGroups"] | AutoScalingSecurityGroups;
 }>;
 
 /**
@@ -681,12 +687,6 @@ export interface AutoScalingLaunchConfigurationArgs {
     fileSystem?: x.ClusterFileSystem;
 
     /**
-    * A list of associated security group IDs.  These can also be provided using
-    * [securityGroupsProvider]
-    */
-    securityGroups?: aws.ec2.LaunchConfigurationArgs["securityGroups"];
-
-    /**
      * The name of the ECS-optimzed AMI to use for the Container Instances in this cluster, e.g.
      * "amzn-ami-2017.09.l-amazon-ecs-optimized". Defaults to using the latest recommended ECS Linux
      * Optimized AMI, which may change over time and cause recreation of EC2 instances when new
@@ -727,16 +727,22 @@ export interface AutoScalingLaunchConfigurationArgs {
      */
     ebsBlockDevices?: aws.ec2.LaunchConfigurationArgs["ebsBlockDevices"];
 
+    // Changed by us.
+
     /**
-     * Alternate way to provide [securityGroups];
-     */
-    securityGroupsProvider?: x.ec2.ISecurityGroupsProvider;
+    * A list of associated security group IDs.
+    */
+   securityGroups?: aws.ec2.LaunchConfigurationArgs["securityGroups"] | AutoScalingSecurityGroups;
 
     /**
      * Additional providers that can add entries to the [userData] section of the underlying
      * [aws.ec2.LaunchConfiguration] that will be created.
      */
     userDataProviders?: x.ec2.ILaunchConfigurationUserDataProvider[];
+}
+
+export interface AutoScalingSecurityGroups {
+    securityGroupIds(): pulumi.Input<pulumi.Input<string>[]>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

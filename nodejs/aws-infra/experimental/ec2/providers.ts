@@ -14,10 +14,6 @@
 
 import * as pulumi from "@pulumi/pulumi";
 
-export interface ISecurityGroupsProvider {
-    securityGroupIds(): pulumi.Input<pulumi.Input<string>[]>;
-}
-
 /**
  * A line that should be added to the [userData] section of a LaunchConfiguration template.
  */

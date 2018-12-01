@@ -27,7 +27,7 @@ import * as x from "..";
  */
 export class Cluster
         extends pulumi.ComponentResource
-        implements x.ec2.ISecurityGroupsProvider,
+        implements x.autoscaling.AutoScalingSecurityGroups,
                    x.ec2.ILaunchConfigurationUserDataProvider {
     public readonly instance: aws.ecs.Cluster;
 
@@ -100,7 +100,7 @@ export class Cluster
 
         args.launchConfigurationArgs = args.launchConfigurationArgs || {};
         const launchConfigurationArgs = args.launchConfigurationArgs;
-        launchConfigurationArgs.securityGroupsProvider = this;
+        launchConfigurationArgs.securityGroups = this;
         launchConfigurationArgs.userDataProviders = launchConfigurationArgs.userDataProviders || [];
         launchConfigurationArgs.userDataProviders.push(this);
 
