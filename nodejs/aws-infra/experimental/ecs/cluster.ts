@@ -101,8 +101,7 @@ export class Cluster
         args.launchConfigurationArgs = args.launchConfigurationArgs || {};
         const launchConfigurationArgs = args.launchConfigurationArgs;
         launchConfigurationArgs.securityGroups = this;
-        launchConfigurationArgs.userDataProviders = launchConfigurationArgs.userDataProviders || [];
-        launchConfigurationArgs.userDataProviders.push(this);
+        launchConfigurationArgs.userData = this;
 
         const group = new x.autoscaling.AutoScalingGroup(name, args, opts || { parent: this });
         this.addAutoScalingGroup(group);

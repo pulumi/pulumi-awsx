@@ -95,7 +95,10 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             delete copy.securityGroups;
         }
 
-        delete copy.userDataProviders;
+        if (copy.userData && (<AutoScalingUserData>copy.userData).extraBootcmdLines) {
+            delete copy.userData;
+        }
+
         return copy;
     }
 
@@ -210,10 +213,15 @@ function getInstanceUserData(
     args: AutoScalingLaunchConfigurationArgs,
     cloudFormationStackName: pulumi.Output<string>) {
 
+    const autoScalingUserData = <AutoScalingUserData>args.userData;
+    if (args.userData !== undefined && !autoScalingUserData.extraBootcmdLines) {
+        return <pulumi.Input<string>>args.userData;
+    }
+
     const fileSystemId = args.fileSystem ? args.fileSystem.instance.id : undefined;
     const mountPath = args.fileSystem ? args.fileSystem.mountPath : undefined;
 
-    const additionalBootcmdLines = getAdditionalBootcmdLines(args);
+    const additionalBootcmdLines = getAdditionalBootcmdLines(autoScalingUserData);
 
     return pulumi.all([additionalBootcmdLines, cloudFormationStackName, fileSystemId, mountPath])
                  .apply(([additionalBootcmdLines, cloudFormationStackName, fileSystemId, mountPath]) => {
@@ -296,40 +304,12 @@ function getInstanceUserData(
     });
 }
 
-function getAdditionalBootcmdLines(args: AutoScalingLaunchConfigurationArgs): pulumi.Output<x.ec2.UserDataLine[]> {
-    let providers = args.userDataProviders;
-    if (!providers) {
+function getAdditionalBootcmdLines(args: AutoScalingUserData | undefined): pulumi.Output<x.ec2.UserDataLine[]> {
+    if (!args) {
         return pulumi.output([]);
     }
 
-    if (!Array.isArray(providers)) {
-        providers = [providers];
-    }
-
-    const temp: pulumi.Input<x.ec2.UserDataLine[]>[] = [];
-
-    for (const provider of providers) {
-        if (provider.extraBootcmdLines) {
-            const lines = provider.extraBootcmdLines();
-            if (lines) {
-                temp.push(lines);
-            }
-        }
-    }
-
-    const result = pulumi.output(temp).apply(topArray => {
-        const final: x.ec2.UserDataLine[] = [];
-
-        for (const array of topArray) {
-            for (const line of array) {
-                final.push(line);
-            }
-        }
-
-        return final;
-    });
-
-    return result;
+    return pulumi.output(args.extraBootcmdLines());
 }
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
@@ -585,7 +565,6 @@ const test1: string = utils.checkCompat<OverwriteTemplateParameters, TemplatePar
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
 type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable<aws.ec2.LaunchConfigurationArgs>, {
     imageId?: never;
-    userData?: never;
     stackName?: pulumi.Input<string>;
     instanceProfile?: aws.iam.InstanceProfile;
     fileSystem?: x.ClusterFileSystem;
@@ -593,6 +572,7 @@ type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable
     instanceType?: pulumi.Input<aws.ec2.InstanceType>;
     placementTenancy?: pulumi.Input<"default" | "dedicated">;
     securityGroups?: aws.ec2.LaunchConfigurationArgs["securityGroups"] | AutoScalingSecurityGroups;
+    userData?: pulumi.Input<string> | AutoScalingUserData;
 }>;
 
 /**
@@ -735,14 +715,33 @@ export interface AutoScalingLaunchConfigurationArgs {
    securityGroups?: aws.ec2.LaunchConfigurationArgs["securityGroups"] | AutoScalingSecurityGroups;
 
     /**
-     * Additional providers that can add entries to the [userData] section of the underlying
-     * [aws.ec2.LaunchConfiguration] that will be created.
+     * The user data to provide when launching the instance. Do not pass gzip-compressed data via this argument; see `user_data_base64` instead.
      */
-    userDataProviders?: x.ec2.ILaunchConfigurationUserDataProvider[];
+    userData?: pulumi.Input<string> | AutoScalingUserData;
 }
 
 export interface AutoScalingSecurityGroups {
     securityGroupIds(): pulumi.Input<pulumi.Input<string>[]>;
+}
+
+export interface AutoScalingUserData {
+    extraBootcmdLines(): pulumi.Input<UserDataLine[]>;
+}
+
+/**
+ * A line that should be added to the [userData] section of a LaunchConfiguration template.
+ */
+export interface UserDataLine {
+    /**
+     * Actual contents of the line.
+     */
+    contents: string;
+
+    /**
+     * Whether the line should be automatically indented to the right level.  Defaults to [true].
+     * Set explicitly to [false] to control all indentation.
+     */
+    automaticallyIndent?: boolean;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
