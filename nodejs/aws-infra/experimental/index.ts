@@ -15,10 +15,9 @@
 export * from "./providers";
 
 import * as autoscaling from "./autoscaling";
-import * as ec2 from "./ec2";
 import * as ecs from "./ecs";
 
-export { autoscaling, ec2, ecs };
+export { autoscaling, ecs };
 
 export * from "./clusterFileSystem";
 

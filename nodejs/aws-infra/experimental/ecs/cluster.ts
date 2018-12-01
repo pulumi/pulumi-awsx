@@ -28,7 +28,7 @@ import * as x from "..";
 export class Cluster
         extends pulumi.ComponentResource
         implements x.autoscaling.AutoScalingSecurityGroups,
-                   x.ec2.ILaunchConfigurationUserDataProvider {
+                   x.autoscaling.AutoScalingUserData {
     public readonly instance: aws.ecs.Cluster;
 
     /**
@@ -41,7 +41,7 @@ export class Cluster
     public readonly securityGroups: aws.ec2.SecurityGroup[];
 
     public readonly securityGroupIds: () => pulumi.Input<pulumi.Input<string>[]>;
-    public readonly extraBootcmdLines: () => pulumi.Input<x.ec2.UserDataLine[]>;
+    public readonly extraBootcmdLines: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
 
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 

@@ -304,7 +304,7 @@ function getInstanceUserData(
     });
 }
 
-function getAdditionalBootcmdLines(args: AutoScalingUserData | undefined): pulumi.Output<x.ec2.UserDataLine[]> {
+function getAdditionalBootcmdLines(args: AutoScalingUserData | undefined): pulumi.Output<UserDataLine[]> {
     if (!args) {
         return pulumi.output([]);
     }
