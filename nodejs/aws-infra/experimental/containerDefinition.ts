@@ -76,7 +76,7 @@ export function computeContainerDefinition(
     });
 }
 
-export interface ContainerPortMappings {
+export interface ContainerLoadBalancer {
     portMappings(containerName: string): ContainerDefinition["portMappings"];
 }
 
@@ -92,7 +92,7 @@ type MakeInputs<T> = {
 type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     image?: pulumi.Input<string>
     imageProvider?: mod.IImageProvider;
-    loadBalancer?: ContainerPortMappings & mod.ServiceLoadBalancers;
+    loadBalancer?: ContainerLoadBalancer & mod.ServiceLoadBalancer;
 }>;
 
 export interface ContainerDefinition {
@@ -143,7 +143,7 @@ export interface ContainerDefinition {
     /**
      * Provider that can produce [portMappings] for this container.
      */
-    loadBalancer?: ContainerPortMappings & mod.ServiceLoadBalancers;
+    loadBalancer?: ContainerLoadBalancer & mod.ServiceLoadBalancer;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

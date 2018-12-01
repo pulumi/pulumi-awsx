@@ -72,7 +72,7 @@ export interface TargetGroupInfo {
 
 export abstract class LoadBalancer
         extends pulumi.ComponentResource
-        implements mod.ContainerPortMappings, mod.ServiceLoadBalancers {
+        implements mod.ContainerLoadBalancer, mod.ServiceLoadBalancer {
 
     public abstract portMappings(containerName: string): mod.ContainerDefinition["portMappings"];
     public abstract loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"];

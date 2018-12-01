@@ -156,7 +156,7 @@ function getLoadBalancers(service: mod.ClusterService, name: string, args: Clust
 //     }
 // }
 
-export interface ServiceLoadBalancers {
+export interface ServiceLoadBalancer {
     loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"];
 }
 
