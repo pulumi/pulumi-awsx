@@ -36,6 +36,7 @@ export class FargateTaskDefinition extends mod.TaskDefinition {
 
         const argsCopy: mod.TaskDefinitionArgs = {
             ...args,
+            containers,
             requiresCompatibilities: ["FARGATE"],
             networkMode: "awsvpc",
             memory: utils.ifUndefined(args.memory, computedMemory),
@@ -43,9 +44,8 @@ export class FargateTaskDefinition extends mod.TaskDefinition {
         };
 
         delete (<any>argsCopy).container;
-        delete (<any>argsCopy).containers;
 
-        super("aws-infra:x:FargateTaskDefinition", name, containers, /*isFargate:*/ true, argsCopy, opts);
+        super("aws-infra:x:FargateTaskDefinition", name, /*isFargate:*/ true, argsCopy, opts);
     }
 
     /**

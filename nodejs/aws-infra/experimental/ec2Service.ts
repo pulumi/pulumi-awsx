@@ -31,14 +31,14 @@ export class EC2TaskDefinition extends mod.TaskDefinition {
 
         const argsCopy: mod.TaskDefinitionArgs = {
             ...args,
+            containers,
             requiresCompatibilities: ["EC2"],
             networkMode: utils.ifUndefined(args.networkMode, "awsvpc"),
         };
 
         delete (<any>argsCopy).container;
-        delete (<any>argsCopy).containers;
 
-        super("aws-infra:x:EC2TaskDefinition", name, containers, /*isFargate:*/ false, argsCopy, opts);
+        super("aws-infra:x:EC2TaskDefinition", name, /*isFargate:*/ false, argsCopy, opts);
     }
 
     /**

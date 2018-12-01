@@ -89,13 +89,9 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             return undefined;
         }
 
-        const copy = <AutoScalingLaunchConfigurationArgs>{
-            ...args,
-        };
-
+        const copy = <AutoScalingLaunchConfigurationArgs>{ ...args };
         delete copy.securityGroupsProvider;
         delete copy.userDataProviders;
-
         return copy;
     }
 

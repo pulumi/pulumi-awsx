@@ -57,10 +57,9 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly run: (options: TaskRunOptions) => Promise<void>;
 
     constructor(type: string, name: string,
-                containers: Record<string, mod.ContainerDefinition>,
                 isFargate: boolean, args: TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, args, opts);
+        super(type, name, TaskDefinition.withoutProviders(args), opts);
 
         const parentOpts = { parent: this };
         const logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
@@ -90,6 +89,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 // //         }
 // //     }
 
+        const containers = args.containers;
         const containerDefinitions = computeContainerDefinitions(this, name, containers, logGroup);
         const containerString = containerDefinitions.apply(JSON.stringify);
         const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
@@ -127,6 +127,27 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             taskRole,
             executionRole,
         });
+    }
+
+    /** @internal */
+    private static withoutProviders(args: TaskDefinitionArgs) {
+        const containers: Record<string, mod.ContainerDefinition> = {};
+        for (const containerName of Object.keys(args.containers)) {
+            containers[containerName] = TaskDefinition.withoutContainerProviders(args.containers[containerName]);
+        }
+
+        return <TaskDefinitionArgs>{
+            ...args,
+            containers,
+        };
+    }
+
+    /** @internal */
+    private static withoutContainerProviders(container: mod.ContainerDefinition) {
+        const copy = <mod.ContainerDefinition>{ ...container };
+        delete copy.imageProvider;
+        delete copy.loadBalancer;
+        return copy;
     }
 
     /**
@@ -303,6 +324,8 @@ type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
     memory?: pulumi.Input<string>;
     requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
     networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
+
+    containers: Record<string, mod.ContainerDefinition>;
 }>;
 
 export interface TaskDefinitionArgs {
@@ -362,6 +385,14 @@ export interface TaskDefinitionArgs {
      * `none`, `bridge`, `awsvpc`, and `host`.
      */
     networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
+
+    /**
+     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
+     * ClusterService that will contain many containers within.
+     *
+     * Either [container] or [containers] must be provided.
+     */
+    containers: Record<string, mod.ContainerDefinition>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
