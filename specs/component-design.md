@@ -26,6 +26,7 @@ Exceptions:
    awsinfra.ecs.Cluster helps simplify creating an aws Cluster by also automatically provisioning 
    SecurityGroups for the user that can allow ingress/egress from the Cluster.  When components 
    automatically create resources on behalf of the user they should also:
+    * Expose those resources on the component so that they are avialable to the client.
     * Allow the user to pass in values for those resources explicitly.
     * Provide access to the defaults for those child resources through statics on the type. For example
       awsinfra.ecs.Cluster exposes defaultSecurityGroupIngress and defaultSecurityGroupEgress.  This
@@ -35,10 +36,10 @@ Exceptions:
       having to replicate all the creation code.  For example awsinfra.ecs.TaskDefinition exposes 
       `createTaskRole` and `createExecutionRole` to allow users to use the same logic, while passing
       in different data.
-    * The above three items effectively serve to give the user full control over the child resources, 
-      while also being able to leverage both the default data and the default logic of our components.
-      Without the latter two items, users who wanted to tweak something small would have to replicate
-      a both. 
+    * The above three items effectively serve to give the user full control over the creation of child 
+      resources, while also being able to leverage both the default data and the default logic of our 
+      components. Without the latter two items, users who wanted to tweak something small would have to 
+      replicate both. 
       
 1. When sensible, allow components to expose 'deployment-time' instance methods that help create other 
    components.  This should generally only be provided when:
