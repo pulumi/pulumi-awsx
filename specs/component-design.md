@@ -9,7 +9,8 @@ is a more convenient `aws.ecs.Service`.
 
 1. Components should use the same module names, and similar class names to the raw aws resources they are
 wrapping to help provide familiarity and to clearly indicate what part of aws they are providing convenience
-over.
+over.  As much as possible, the same names from the underlying aws resources should be used to make it very
+clear what the component resource names correspond to.  
 
 1. As much as possible, component resources should accept a highly overlapping set of options to the resource
 they wrap. For example, an `awsinfra.ecs.TaskDefinition` should accept very similar arguments as an `aws.ecs.TaskDefinition`.  Importantly, unless there is strong reason otherwise, the shape of data accepted
@@ -88,3 +89,17 @@ Exceptions:
    `Service + loadBalancers = ServiceLoadBalancers`.  `Container + image = ContainerImage`.  This helps
    indicate that this is an interface that is used for a particular resource's needs as opposed to
    being a general purpose entity (which 'LoadBalance' or 'Image') might convey.
+   
+1. When a resource accepts in one of the above interface, it can be valuable to provide easy ways to provide
+   default implementations of such an interface.  For example, `awsinfra.ecs.Container` allows a 
+   `ContainerImage` to be provided for its `image` property.  To support easy generation of common 
+   `ContainerImage`s the `awsinfra.ecs` module also has an `Image` factory class that can be used to
+   construct a few different default implementations here.  
+
+
+# Open design notes:
+
+The pairing between an callback-interface and the factory that can make defaultinstances of it is not
+very well defined.  We might want to consider easier ways to discover this sort of thing.  For example,
+we have `ServiceLoadBalancers`.  Perhaps you should be able to make such a thing by calling 
+`Service.createLoadBalancer`. 
