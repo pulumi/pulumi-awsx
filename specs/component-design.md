@@ -7,11 +7,11 @@ feel like light and natural extensions and aggregations of existing resources an
 an awsinfr.ecs.Cluster is an easier to use extension of an aws.ecs.Cluster.  An awsinfra.ecs.Service is
 a more convenient aws.ecs.Service.
 
-2. Components should use the same module names, and similar class names to the raw aws resources they are
+1. Components should use the same module names, and similar class names to the raw aws resources they are
 wrapping to help provide familiarity and to clearly indicate what part of aws they are providing convenience
 over.
 
-3. As much as possible, component resources should accept a highly overlapping set of options to the resource
+1. As much as possible, component resources should accept a highly overlapping set of options to the resource
 they wrap. For example, an awsinfra.ecs.TaskDefinition should accept very similar arguments as an aws.ecs.TaskDefinition.
 Exceptions:
    * A component can hide options that they will be entirely responsible for.  For example, an 
@@ -22,7 +22,7 @@ Exceptions:
      the user to not have to provide them if the defaults are acceptable.
    * A component can add properties.
    
-4. Components will generally be a collection of sensibly bound-together resources.  For example, an 
+1. Components will generally be a collection of sensibly bound-together resources.  For example, an 
    awsinfra.ecs.Cluster helps simplify creating an aws Cluster by also automatically provisioning 
    SecurityGroups for the user that can allow ingress/egress from the Cluster.  When components 
    automatically create resources on behalf of the user they should also:
@@ -40,4 +40,25 @@ Exceptions:
       Without the latter two items, users who wanted to tweak something small would have to replicate
       a both. 
       
+1. When sensible, allow components to expose 'deployment-time' instance methods that help create other 
+   components.  This should generally only be provided when:
+   * There is a intuitive link between the two resources and how they relate to each other.  i.e. "TaskDefinitions" 
+     and "Services".  
+   * Providing the instance method greatly simplifies the task for the user by reducing the
+     amount of information they need to provide.  For example, when creating an auto-scaling-group ("asg")
+     for a cluster, the asg needs to know about the cluster both for its launch-configuration's security-groups,
+     and also to initialize the 'userData' for the cloud-formation stack with the ID of the cluster for 
+     so that the asg can appropriately signal that the cluster is ok as it launches instances.  In this 
+     sitaution, a user can always manually create an asg and pass it information about the cluster.  However,
+     it is also sensible to be able to ask the cluster itself to provdie an asg with those values suitably
+     filled in so that the user does not need to know all the places they need to pass this data along.
+     
+1. When sensible, allow components to expose 'runtime' intance methods that help with complex functionality.
+   This shoudl generally only be provided when there is substantial complexity in calling the underlying
+   aws-sdk functions, and the component can greatly simplify that.  For example, the aws-sdk exposes a 
+   `sdk.ecs.runTask`. However, this function requires the user to pass along a lot of information that we 
+   can automatically compute on their behalf (like `placementContraints`, `networkConfiguration` and `launchType`).
+   In this case, there is a substanctive reduction in effort and cognitive load by providing a more convenient
+   entry-point ourselves that takes care of this for the user.
+     
      
