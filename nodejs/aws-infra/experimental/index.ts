@@ -12,8 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./cluster";
-export * from "./network";
+export * from "./providers";
 
-import * as x from "./experimental";
-export { x };
+import * as autoscaling from "./autoscaling";
+import * as ecs from "./ecs";
+
+export { autoscaling, ecs };
+
+export * from "./clusterFileSystem";
+
+export * from "./role";
+

@@ -22,7 +22,7 @@ const instanceType = "t2.small";
 
 let network = new awsinfra.Network(`${prefix}-net`, {
     numberOfAvailabilityZones: numAvailabilityZones, // Create subnets in many AZs
-    usePrivateSubnets: true,                            // Run compute inside private subnets in each AZ
+    usePrivateSubnets: true,                         // Run compute inside private subnets in each AZ
 });
 
 const cluster = new awsinfra.Cluster(prefix, {

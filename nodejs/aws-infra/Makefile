@@ -16,11 +16,14 @@ build::
 	$(MAKE) docs
 
 docs::
-	node_modules/.bin/typedoc --json \
-		bin/docs.json --mode modules --includeDeclarations --excludeExternals --excludeNotExported
+# 	node_modules/.bin/typedoc --json \
+# 		bin/docs.json --mode modules --includeDeclarations --excludeExternals --excludeNotExported
 
 lint::
 	tslint -c ../tslint.json -p tsconfig.json
 
 test_all::
 	PATH=$(PULUMI_BIN):$(PATH) go test -v -count=1 -cover -timeout 2h -parallel ${TESTPARALLELISM} .
+
+test_fast::
+	PATH=$(PULUMI_BIN):$(PATH) go test -short -v -count=1 -cover -timeout 2h -parallel ${TESTPARALLELISM} .

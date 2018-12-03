@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./cluster";
-export * from "./network";
+export * from "./container";
+export * from "./taskDefinition";
 
-import * as x from "./experimental";
-export { x };
+export * from "./cluster";
+export * from "./image";
+export * from "./loadBalancer";
+export * from "./service";
+export * from "./ec2Service";
+export * from "./fargateService";

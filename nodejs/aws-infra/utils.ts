@@ -12,13 +12,56 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as pulumi from "@pulumi/pulumi";
+
 import * as crypto from "crypto";
 
+type Diff<T extends string | number | symbol, U extends string | number | symbol> =
+  ({ [P in T]: P } & { [P in U]: never } & { [x: string]: never })[T];
+
+// Overwrite allows you to take an existing type, and then overwrite existing properties in it
+// with properties of the same name, but with entirely different types.
+export type Overwrite<T, U> = Pick<T, Diff<keyof T, keyof U>> & U;
+
+/** @internal */
+export type Mutable<T> = {
+    -readonly [P in keyof T]: T[P];
+};
+
 // sha1hash returns a partial SHA1 hash of the input string.
+/** @internal */
 export function sha1hash(s: string): string {
     const shasum: crypto.Hash = crypto.createHash("sha1");
     shasum.update(s);
     // TODO[pulumi/pulumi#377] Workaround for issue with long names not generating per-deplioyment randomness, leading
     //     to collisions.  For now, limit the size of hashes to ensure we generate shorter/ resource names.
     return shasum.digest("hex").substring(0, 8);
+}
+
+/** @internal */
+export function combineArrays<T>(
+    e1: pulumi.Input<T[] | undefined>,
+    e2: pulumi.Input<T[] | undefined>): pulumi.Output<T[]> {
+
+    const result = pulumi.all([e1, e2]).apply(([e1, e2]) => {
+        e1 = e1 || [];
+        e2 = e2 || [];
+        return [...e1, ...e2];
+    });
+
+    return <pulumi.Output<T[]>>result;
+}
+
+/** @internal */
+export function ifUndefined<T>(input: pulumi.Input<T> | undefined, value: pulumi.Input<T>) {
+    return pulumi.all([input, value])
+                 .apply(([input, value]) => input !== undefined ? input : value);
+}
+
+/** @internal */
+export type Compatible<T, U> = T extends U ? U extends T ? any : void : void;
+
+/** @internal */
+export function checkCompat<T, U>(): Compatible<T, U> {
+    return undefined!;
 }
