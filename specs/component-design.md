@@ -12,7 +12,10 @@ wrapping to help provide familiarity and to clearly indicate what part of aws th
 over.
 
 1. As much as possible, component resources should accept a highly overlapping set of options to the resource
-they wrap. For example, an `awsinfra.ecs.TaskDefinition` should accept very similar arguments as an `aws.ecs.TaskDefinition`.
+they wrap. For example, an `awsinfra.ecs.TaskDefinition` should accept very similar arguments as an `aws.ecs.TaskDefinition`.  Importantly, unless there is strong reason otherwise, the shape of data accepted
+should match the shape the underlying Resource accepts.  For example, an `awsinfra.ecs.Service`'s 'environment'
+should be the same shape as what an `aws.ecs.Service` accepts.  We should not be arbitrarily converting between
+raw data representations.
 Exceptions:
    * A component can hide options that they will be entirely responsible for.  For example, an 
      `awsinfra.ecs.FargateTaskDefinition` will supply suitable `Fargate` arguments for many 
@@ -61,6 +64,15 @@ Exceptions:
    can automatically compute on their behalf (like `placementContraints`, `networkConfiguration` and `launchType`).
    In this case, there is a substanctive reduction in effort and cognitive load by providing a more convenient
    entry-point ourselves that takes care of this for the user.
+   
+1. When creating a component resource, we do not subclass existing raw aws resources.  Inheritance 
+   presents a large set of design challanges, including how to properly represent same-named, but
+   differently typed, properties on the raw resource and the component resource.  Similarly, with
+   inheritance, it is not possible to have default resource parented properly.  This is because the
+   default resource must be created before calling 'super' so that their data can be passed to the 
+   raw resource.  But there is no way to then 'parent' as we haven't created the resource htat will
+   be their parent.  Composition prevents these issues, at the cost of making it so that there are
+   extra virtual 'component resources' in the users stack that wrap these logical resources.
      
 1. When a resource has properties that logically are related to some other resource, expose the 
    property both in its raw form, but also through a callback-style interface that allows just passing
