@@ -72,3 +72,7 @@ Exceptions:
    interface is the `Service`s way of describing a point where data can be provided by a knowledgable 
    resource.  Our actual 'Load Balancers' can then implement this interface, allowing someone to 
    create a Service easily by just passing it an appropriate implementation.  
+   * Naming for these 'provider data' points should be 'ResourceName + propertyName'.  For example: 
+   `Service + loadBalancers = ServiceLoadBalancers`.  `Container + image = ContainerImage`.  This helps
+   indicate that this is an interface that is used for a particular resource's needs as opposed to
+   being a general purpose entity (which 'LoadBalance' or 'Image') might convey.
