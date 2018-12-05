@@ -31,8 +31,6 @@ export class NetworkLoadBalancer extends x.elasticloadbalancingv2.LoadBalancer {
         };
 
         super("awsinfra:x:elasticloadbalancingv2:NetworkLoadBalancer", name, argsCopy, opts);
-        this.targetGroups = [];
-        this.listeners = [];
     }
 
     /**
@@ -48,7 +46,7 @@ export class NetworkLoadBalancer extends x.elasticloadbalancingv2.LoadBalancer {
     }
 
     /**
-     * Creates a new NetworkTargetGroup and adds it to [targetGroup].
+     * Creates a new NetworkTargetGroup and adds it to [targetGroups].
      */
     public createAndAddTargetGroup(
         name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions): NetworkTargetGroup {
@@ -63,7 +61,7 @@ export class NetworkLoadBalancer extends x.elasticloadbalancingv2.LoadBalancer {
 export class NetworkTargetGroup extends x.elasticloadbalancingv2.TargetGroup {
     public readonly loadBalancer: NetworkLoadBalancer;
 
-    public readonly listeners: NetworkListener[] = [];
+    public readonly listeners: NetworkListener[];
 
     constructor(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
@@ -198,10 +196,7 @@ export interface NetworkLoadBalancerArgs {
 }
 
 export interface NetworkTargetGroupArgs {
-    /**
-     * The load balancer this is a target group for.
-     */
-    loadBalancer: NetworkLoadBalancer;
+    // Copied from TargetGroupArgs.
 
     /**
      * The port to use to connect with the target. Valid values are either ports 1-65536, or
@@ -255,6 +250,13 @@ export interface NetworkTargetGroupArgs {
      * (100.64.0.0/10). You can't specify publicly routable IP addresses.
      */
     targetType?: pulumi.Input<"instance" | "ip">;
+
+    // Add by us:
+
+    /**
+     * The load balancer this is a target group for.
+     */
+    loadBalancer: NetworkLoadBalancer;
 }
 
 export interface NetworkListenerArgs {
