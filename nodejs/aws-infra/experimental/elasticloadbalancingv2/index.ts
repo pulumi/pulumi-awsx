@@ -14,4 +14,6 @@
 
 export * from "./loadBalancer";
 export * from "./applicationLoadBalancer";
+export * from "./networkLoadBalancer";
+
 
