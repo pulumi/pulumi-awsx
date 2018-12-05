@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./providers";
-
 import * as autoscaling from "./autoscaling";
 import * as ecs from "./ecs";
 
