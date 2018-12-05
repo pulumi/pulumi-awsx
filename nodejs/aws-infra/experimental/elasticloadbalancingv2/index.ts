@@ -13,7 +13,8 @@
 // limitations under the License.
 
 export * from "./loadBalancer";
-export * from "./applicationLoadBalancer";
-export * from "./networkLoadBalancer";
+export * from "./targetGroup";
+export * from "./listener";
 
-
+export * from "./application";
+export * from "./network";

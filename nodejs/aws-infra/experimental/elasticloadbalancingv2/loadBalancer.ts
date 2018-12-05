@@ -22,6 +22,7 @@ import * as utils from "./../../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly instance: aws.elasticloadbalancingv2.LoadBalancer;
+    public readonly network: Network;
 
     constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
@@ -39,9 +40,11 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         }, parentOpts);
 
         this.instance = instance;
+        this.network = network;
 
         this.registerOutputs({
             instance,
+            network,
         });
     }
 }
