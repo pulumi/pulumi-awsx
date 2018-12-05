@@ -56,10 +56,9 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
 
         const fileSystem = args.fileSystem;
 
-        const securityGroups = getSecurityGroups(args);
         const instance = new aws.ec2.LaunchConfiguration(name, {
             ...args,
-            securityGroups,
+            securityGroups: (args.securityGroups || []).map(g => g.id),
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: instanceProfile.id,
@@ -91,9 +90,9 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
 
         const copy = <AutoScalingLaunchConfigurationArgs>{ ...args };
 
-        if (copy.securityGroups && (<AutoScalingSecurityGroups>copy.securityGroups).securityGroupIds) {
-            delete copy.securityGroups;
-        }
+        // if (copy.securityGroups && (<AutoScalingSecurityGroups>copy.securityGroups).securityGroupIds) {
+        //     delete copy.securityGroups;
+        // }
 
         if (copy.userData && (<AutoScalingUserData>copy.userData).extraBootcmdLines) {
             delete copy.userData;
@@ -144,16 +143,16 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     }
 }
 
-function getSecurityGroups(args: AutoScalingLaunchConfigurationArgs): pulumi.Input<pulumi.Input<string>[]> {
-    const autoScalingSecurityGroups = <AutoScalingSecurityGroups>args.securityGroups;
+// function getSecurityGroups(args: AutoScalingLaunchConfigurationArgs): pulumi.Input<pulumi.Input<string>[]> {
+//     const autoScalingSecurityGroups = <AutoScalingSecurityGroups>args.securityGroups;
 
-    if (autoScalingSecurityGroups && autoScalingSecurityGroups.securityGroupIds) {
-        return autoScalingSecurityGroups.securityGroupIds();
-    }
+//     if (autoScalingSecurityGroups && autoScalingSecurityGroups.securityGroupIds) {
+//         return autoScalingSecurityGroups.securityGroupIds();
+//     }
 
-    return utils.ifUndefined(
-        <aws.ec2.LaunchConfigurationArgs["securityGroups"]>args.securityGroups, []);
-}
+//     return utils.ifUndefined(
+//         <aws.ec2.LaunchConfigurationArgs["securityGroups"]>args.securityGroups, []);
+// }
 
 const defaultRootBlockDevice = {
     volumeSize: 8, // GiB
@@ -571,7 +570,7 @@ type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable
     ecsOptimizedAMIName?: string;
     instanceType?: pulumi.Input<aws.ec2.InstanceType>;
     placementTenancy?: pulumi.Input<"default" | "dedicated">;
-    securityGroups?: aws.ec2.LaunchConfigurationArgs["securityGroups"] | AutoScalingSecurityGroups;
+    securityGroups?: aws.ec2.SecurityGroup[];
     userData?: pulumi.Input<string> | AutoScalingUserData;
 }>;
 
@@ -712,16 +711,12 @@ export interface AutoScalingLaunchConfigurationArgs {
     /**
     * A list of associated security group IDs.
     */
-   securityGroups?: aws.ec2.LaunchConfigurationArgs["securityGroups"] | AutoScalingSecurityGroups;
+   securityGroups?: aws.ec2.SecurityGroup[];
 
     /**
      * The user data to provide when launching the instance. Do not pass gzip-compressed data via this argument; see `user_data_base64` instead.
      */
     userData?: pulumi.Input<string> | AutoScalingUserData;
-}
-
-export interface AutoScalingSecurityGroups {
-    securityGroupIds(): pulumi.Input<pulumi.Input<string>[]>;
 }
 
 export interface AutoScalingUserData {

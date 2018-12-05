@@ -27,8 +27,7 @@ import * as x from "..";
  */
 export class Cluster
         extends pulumi.ComponentResource
-        implements x.autoscaling.AutoScalingSecurityGroups,
-                   x.autoscaling.AutoScalingUserData {
+        implements x.autoscaling.AutoScalingUserData {
     public readonly instance: aws.ecs.Cluster;
 
     /**
@@ -40,7 +39,6 @@ export class Cluster
      */
     public readonly securityGroups: aws.ec2.SecurityGroup[];
 
-    public readonly securityGroupIds: () => pulumi.Input<pulumi.Input<string>[]>;
     public readonly extraBootcmdLines: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
 
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
@@ -66,7 +64,6 @@ export class Cluster
             tags: { Name: name },
         }, parentOpts)];
 
-        this.securityGroupIds = () => securityGroups.map(g => g.id);
         this.extraBootcmdLines = () => instance.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
 
@@ -100,7 +97,7 @@ export class Cluster
 
         args.launchConfigurationArgs = args.launchConfigurationArgs || {};
         const launchConfigurationArgs = args.launchConfigurationArgs;
-        launchConfigurationArgs.securityGroups = this;
+        launchConfigurationArgs.securityGroups = this.securityGroups;
         launchConfigurationArgs.userData = this;
 
         const group = new x.autoscaling.AutoScalingGroup(name, args, opts || { parent: this });

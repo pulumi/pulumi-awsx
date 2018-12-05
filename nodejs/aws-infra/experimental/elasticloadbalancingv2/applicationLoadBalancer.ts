@@ -22,8 +22,6 @@ import * as utils from "./../../utils";
 
 export class ApplicationLoadBalancer extends x.elasticloadbalancingv2.LoadBalancer {
     constructor(name: string, args: ApplicationLoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
-        const securityGroups =
-
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
             ...args,
             loadBalancerType: "application",
@@ -49,8 +47,8 @@ export interface ApplicationLoadBalancerArgs {
     external?: boolean;
 
     /**
-     * If true, deletion of the load balancer will be disabled via
-     * the AWS API. This will prevent Terraform from deleting the load balancer. Defaults to `false`.
+     * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent
+     * Terraform from deleting the load balancer. Defaults to `false`.
      */
     enableDeletionProtection?: pulumi.Input<boolean>;
 
@@ -80,29 +78,22 @@ export interface ApplicationLoadBalancerArgs {
     // Properties added here.
 
     /**
-     * An Access Logs block. Access Logs documented below. Only valid for Load Balancers of type
-     * `application`.
+     * An Access Logs block. Access Logs documented below.
      */
     accessLogs?: aws.elasticloadbalancingv2.LoadBalancerArgs["accessLogs"];
 
     /**
-     * Indicates whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
+     * Indicates whether HTTP/2 is enabled. Defaults to `true`.
      */
     enableHttp2?: pulumi.Input<boolean>;
 
     /**
-     * The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers
-     * of type `application`. Default: 60.
+     * The time in seconds that the connection is allowed to be idle. Default: 60.
      */
     idleTimeout?: pulumi.Input<number>;
 
     /**
-     * A list of security group IDs to assign to the LB. Only valid for Load Balancers of type
-     * `application`.
+     * A list of security group IDs to assign to the LB.
      */
-    securityGroups?: pulumi.Input<pulumi.Input<string>[]> | ApplicationLoadBalancerSecurityGroups;
-}
-
-export interface ApplicationLoadBalancerSecurityGroups {
-    securityGroupIds(): pulumi.Input<pulumi.Input<string>[]>;
+    securityGroups: aws.ec2.SecurityGroup[];
 }

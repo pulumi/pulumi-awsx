@@ -35,6 +35,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
             ...args,
             subnets,
             internal: external.apply(e => !e),
+            securityGroups: args.securityGroups ? args.securityGroups.map(g => g.id) : undefined,
         }, parentOpts);
 
         this.instance = instance;
@@ -106,6 +107,12 @@ export interface LoadBalancerArgs {
      * A mapping of tags to assign to the resource.
      */
     tags?: pulumi.Input<aws.Tags>;
+
+    /**
+     * A list of security group IDs to assign to the LB. Only valid for Load Balancers of type
+     * `application`.
+     */
+    securityGroups?: aws.ec2.SecurityGroup[];
 }
 
 export interface LoadBalancerSubnets {
