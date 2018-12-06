@@ -22,18 +22,18 @@ import * as utils from "./../../utils";
 
 export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.SecurityGroupRule;
-    public readonly securityGroup: x.ec2.SecurityGroup;
 
-    constructor(type: string, name: string, args: SecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, args, opts);
+    constructor(type: string, name: string,
+                securityGroup: x.ec2.SecurityGroup,
+                args: SecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        super(type, name, args, opts || { parent: securityGroup });
 
         const instance = new aws.ec2.SecurityGroupRule(name, {
             ...args,
-            securityGroupId: args.securityGroup.instance.id,
+            securityGroupId: securityGroup.instance.id,
         });
 
         this.instance = instance;
-        this.securityGroup = args.securityGroup;
 
         this.registerOutputs({
             instance,
@@ -42,45 +42,36 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 }
 
 export class EgressSecurityGroupRule extends SecurityGroupRule {
-    constructor(name: string, args: EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        if (!args.securityGroup) {
-            throw new Error("[securityGroup] must be provided when creating an EgressSecurityGroupRule.");
-        }
-
-        super("awsinfra:x:ec2:EgressSecurityGroupRule", name, {
+    constructor(name: string, securityGroup: x.ec2.SecurityGroup,
+                args: EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        super("awsinfra:x:ec2:EgressSecurityGroupRule", name, securityGroup, {
             ...args,
-            securityGroup: args.securityGroup,
             type: "egress",
         }, opts);
+
+        securityGroup.egressRules.push(this);
     }
 }
 
 export class IngressSecurityGroupRule extends SecurityGroupRule {
-    constructor(name: string, args: IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        if (!args.securityGroup) {
-            throw new Error("[securityGroup] must be provided when creating an IngressSecurityGroupRule.");
-        }
+    constructor(name: string, securityGroup: x.ec2.SecurityGroup,
+                args: IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
 
-        super("awsinfra:x:ec2:IngressSecurityGroupRule", name, {
+        super("awsinfra:x:ec2:IngressSecurityGroupRule", name, securityGroup, {
             ...args,
-            securityGroup: args.securityGroup,
             type: "ingress",
         }, opts);
+
+        securityGroup.ingressRules.push(this);
     }
 }
 
 type OverwriteSecurityGroupRuleArgs = utils.Overwrite<aws.ec2.SecurityGroupRuleArgs, {
     securityGroupId?: never;
-    securityGroup: x.ec2.SecurityGroup;
     type: pulumi.Input<"ingress" | "egress">;
 }>;
 
 export interface SecurityGroupRuleArgs {
-    /**
-     * The security group to apply this rule to.
-     */
-    securityGroup: x.ec2.SecurityGroup;
-
     /**
      * List of CIDR blocks. Cannot be specified with `source_security_group_id`.
      */
@@ -137,16 +128,10 @@ export interface SecurityGroupRuleArgs {
 }
 
 type OverwriteEgressSecurityGroupRuleArgs = utils.Overwrite<SecurityGroupRuleArgs, {
-    securityGroup?: x.ec2.SecurityGroup;
     type?: never;
 }>;
 
 export interface EgressSecurityGroupRuleArgs {
-    /**
-     * The security group to apply this rule to.
-     */
-    securityGroup?: x.ec2.SecurityGroup;
-
     /**
      * List of CIDR blocks. Cannot be specified with `source_security_group_id`.
      */
@@ -189,17 +174,11 @@ export interface EgressSecurityGroupRuleArgs {
 }
 
 type OverwriteIngressSecurityGroupRuleArgs = utils.Overwrite<SecurityGroupRuleArgs, {
-    securityGroup?: x.ec2.SecurityGroup;
     type?: never;
     prefixListIds?: never;
 }>;
 
 export interface IngressSecurityGroupRuleArgs {
-    /**
-     * The security group to apply this rule to.
-     */
-    securityGroup?: x.ec2.SecurityGroup;
-
     /**
      * List of CIDR blocks. Cannot be specified with `source_security_group_id`.
      */
