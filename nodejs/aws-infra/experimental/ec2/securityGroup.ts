@@ -106,6 +106,14 @@ export class IngressSecurityGroupRule extends SecurityGroupRule {
     }
 }
 
+type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
+    name?: never;
+    namePrefix?: never;
+    vpcId?: never;
+
+    network?: Network;
+}>;
+
 export interface SecurityGroupArgs {
     /**
      * An existing SecurityGroup to use for this awsinfra SecurityGroup.  If not provided, a default
@@ -148,6 +156,12 @@ export interface SecurityGroupArgs {
 
     tags?: pulumi.Input<aws.Tags>;
 }
+
+type OverwriteSecurityGroupRuleArgs = utils.Overwrite<aws.ec2.SecurityGroupRuleArgs, {
+    securityGroupId?: never;
+    securityGroup: SecurityGroup;
+    type: pulumi.Input<"ingress" | "egress">;
+}>;
 
 export interface SecurityGroupRuleArgs {
     /**
@@ -210,6 +224,11 @@ export interface SecurityGroupRuleArgs {
     type: pulumi.Input<"ingress" | "egress">;
 }
 
+type OverwriteEgressSecurityGroupRuleArgs = utils.Overwrite<SecurityGroupRuleArgs, {
+    securityGroup?: SecurityGroup;
+    type?: never;
+}>;
+
 export interface EgressSecurityGroupRuleArgs {
     /**
      * The security group to apply this rule to.
@@ -257,6 +276,12 @@ export interface EgressSecurityGroupRuleArgs {
     toPort: pulumi.Input<number>;
 }
 
+type OverwriteIngressSecurityGroupRuleArgs = utils.Overwrite<SecurityGroupRuleArgs, {
+    securityGroup?: SecurityGroup;
+    type?: never;
+    prefixListIds?: never;
+}>;
+
 export interface IngressSecurityGroupRuleArgs {
     /**
      * The security group to apply this rule to.
@@ -299,3 +324,9 @@ export interface IngressSecurityGroupRuleArgs {
      */
     toPort: pulumi.Input<number>;
 }
+
+// Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
+const test1: string = utils.checkCompat<OverwriteSecurityGroupArgs, SecurityGroupArgs>();
+const test2: string = utils.checkCompat<OverwriteSecurityGroupRuleArgs, SecurityGroupRuleArgs>();
+const test3: string = utils.checkCompat<OverwriteEgressSecurityGroupRuleArgs, EgressSecurityGroupRuleArgs>();
+const test4: string = utils.checkCompat<OverwriteIngressSecurityGroupRuleArgs, IngressSecurityGroupRuleArgs>();
