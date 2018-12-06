@@ -24,9 +24,6 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.SecurityGroup;
     public readonly network: Network;
 
-    public readonly egressRules: EgressSecurityGroupRule[] = [];
-    public readonly ingressRules: IngressSecurityGroupRule[] = [];
-
     constructor(name: string, args: SecurityGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ec2:SecurityGroup", name, args, opts);
 
@@ -45,14 +42,14 @@ export class SecurityGroup extends pulumi.ComponentResource {
         });
     }
 
-    public addEgressRule(name: string, args: EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createEgressRule(name: string, args: EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
         return new EgressSecurityGroupRule(name, {
             ...args,
             securityGroup: this,
         }, opts || { parent: this });
     }
 
-    public addIngressRule(name: string, args: IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createIngressRule(name: string, args: IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
         return new IngressSecurityGroupRule(name, {
             ...args,
             securityGroup: this,
@@ -69,7 +66,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 
         const instance = new aws.ec2.SecurityGroupRule(name, {
             ...args,
-            securityGroupId: args.securityGroup.instance.arn,
+            securityGroupId: args.securityGroup.instance.id,
         });
 
         this.instance = instance;
@@ -92,8 +89,6 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
             securityGroup: args.securityGroup,
             type: "egress",
         }, opts);
-
-        args.securityGroup.egressRules.push(this);
     }
 }
 
@@ -108,8 +103,6 @@ export class IngressSecurityGroupRule extends SecurityGroupRule {
             securityGroup: args.securityGroup,
             type: "ingress",
         }, opts);
-
-        args.securityGroup.ingressRules.push(this);
     }
 }
 

@@ -44,7 +44,7 @@ export class Cluster
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 
     constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsinfra:x:ecs:Cluster", name, Cluster.withoutProviders(args), opts);
+        super("awsinfra:x:ecs:Cluster", name, args, opts);
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
@@ -111,14 +111,14 @@ export class Cluster
             tags: { Name: name },
         }, opts);
 
-        Cluster.addDefaultSecurityGroupEgressRules(securityGroup);
-        Cluster.addDefaultSecurityGroupIngressRules(securityGroup);
+        Cluster.createDefaultSecurityGroupEgressRules(securityGroup);
+        Cluster.createDefaultSecurityGroupIngressRules(securityGroup);
 
         return securityGroup;
     }
 
-    public static addDefaultSecurityGroupEgressRules(securityGroup: x.ec2.SecurityGroup) {
-        securityGroup.addEgressRule("egress", {
+    public static createDefaultSecurityGroupEgressRules(securityGroup: x.ec2.SecurityGroup) {
+        securityGroup.createEgressRule("egress", {
             fromPort: 0,
             toPort: 0,
             protocol: "-1",  // all
@@ -126,8 +126,8 @@ export class Cluster
         });
     }
 
-    public static addDefaultSecurityGroupIngressRules(securityGroup: x.ec2.SecurityGroup) {
-        securityGroup.addIngressRule("ssh", {
+    public static createDefaultSecurityGroupIngressRules(securityGroup: x.ec2.SecurityGroup) {
+        securityGroup.createIngressRule("ssh", {
             fromPort: 22,
             toPort: 22,
             protocol: "TCP",
@@ -136,7 +136,7 @@ export class Cluster
 
         // Expose ephemeral container ports to Internet.
         // TODO: Limit to load balancer(s).
-        securityGroup.addIngressRule("containers", {
+        securityGroup.createIngressRule("containers", {
             fromPort: 0,
             toPort: 65535,
             protocol: "TCP",
