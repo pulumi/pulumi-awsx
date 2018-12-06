@@ -36,7 +36,7 @@ export abstract class TargetGroup extends pulumi.ComponentResource {
             ...args,
             vpcId: this.network.vpcId,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
-            deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 180),
+            deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 300),
         }, parentOpts);
     }
 }
@@ -50,7 +50,7 @@ export interface TargetGroupArgs {
     /**
      * The amount time for Elastic Load Balancing to wait before changing the state of a
      * deregistering target from draining to unused. The range is 0-3600 seconds. The default value
-     * is 180 seconds.
+     * is 300 seconds.
      */
     deregistrationDelay?: pulumi.Input<number>;
 
@@ -66,7 +66,7 @@ export interface TargetGroupArgs {
     port: pulumi.Input<number>;
 
     /**
-     * The protocol to use to connect with the target.  Defaults to HTTP if unspecified.
+     * The protocol to use to connect with the target.
      */
     protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
 
