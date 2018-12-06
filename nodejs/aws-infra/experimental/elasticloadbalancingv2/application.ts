@@ -248,6 +248,8 @@ export interface ApplicationLoadBalancerArgs {
      * A list of security group IDs to assign to the LB.
      */
     securityGroups: aws.ec2.SecurityGroup[];
+
+    listeners?: ApplicableListenerArgs[];
 }
 
 export interface ApplicationTargetGroupArgs {
