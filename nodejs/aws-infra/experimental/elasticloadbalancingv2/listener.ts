@@ -29,9 +29,16 @@ export abstract class Listener extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
+        // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
+        // security policy from:
+        // http://docs.aws.amazon.com/elasticloadbalancing/latest/application/create-https-listener.html.
+        const defaultSslPolicy = pulumi.output(args.certificateArn)
+                                       .apply(a => a ? "ELBSecurityPolicy-2016-08" : undefined!);
+
         const instance = new aws.elasticloadbalancingv2.Listener(name, {
             ...args,
             loadBalancerArn: args.loadBalancer.instance.arn,
+            sslPolicy: utils.ifUndefined(args.sslPolicy, defaultSslPolicy),
         }, parentOpts);
 
         this.instance = instance;
