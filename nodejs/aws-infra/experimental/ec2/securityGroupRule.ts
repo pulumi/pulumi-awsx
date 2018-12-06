@@ -22,6 +22,7 @@ import * as utils from "./../../utils";
 
 export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.SecurityGroupRule;
+    public readonly securityGroup: x.ec2.SecurityGroup;
 
     constructor(type: string, name: string,
                 securityGroup: x.ec2.SecurityGroup,
@@ -34,9 +35,11 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
         });
 
         this.instance = instance;
+        this.securityGroup = securityGroup;
 
         this.registerOutputs({
             instance,
+            securityGroup,
         });
     }
 }
@@ -48,8 +51,6 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
             ...args,
             type: "egress",
         }, opts);
-
-        securityGroup.egressRules.push(this);
     }
 }
 
@@ -61,8 +62,6 @@ export class IngressSecurityGroupRule extends SecurityGroupRule {
             ...args,
             type: "ingress",
         }, opts);
-
-        securityGroup.ingressRules.push(this);
     }
 }
 
