@@ -13,3 +13,4 @@
 // limitations under the License.
 
 export * from "./securityGroup";
+export * from "./securityGroupRule";
