@@ -82,7 +82,7 @@ export class EC2Service extends ecs.Service {
             launchType: "EC2",
             networkConfiguration: {
                 assignPublicIp: false,
-                securityGroups: cluster.securityGroups.map(g => g.id),
+                securityGroups: cluster.securityGroups.map(g => g.instance.id),
                 subnets: cluster.network.subnetIds,
             },
         }, /*isFargate:*/ false, opts);

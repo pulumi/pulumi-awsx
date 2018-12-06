@@ -241,7 +241,7 @@ function createRunFunction(
         const cluster = options.cluster;
         const usePrivateSubnets = cluster.network.usePrivateSubnets;
         const clusterArn = cluster.instance.id.get();
-        const securityGroupIds = cluster.securityGroups.map(g => g.id.get());
+        const securityGroupIds = cluster.securityGroups.map(g => g.instance.id.get());
         const subnetIds = cluster.network.subnetIds.map(i => i.get());
 
         const innerContainers = containerToEnvironment.get();

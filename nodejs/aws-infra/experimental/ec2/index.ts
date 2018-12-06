@@ -12,15 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./providers";
-
-import * as autoscaling from "./autoscaling";
-import * as ec2 from "./ec2";
-import * as ecs from "./ecs";
-
-export { autoscaling, ec2, ecs };
-
-export * from "./clusterFileSystem";
-
-export * from "./role";
-
+export * from "./securityGroup";
+export * from "./securityGroupRule";

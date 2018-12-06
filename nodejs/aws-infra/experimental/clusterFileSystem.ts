@@ -49,7 +49,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
             ingress: [
                 // Allow NFS traffic from the instance security group
                 {
-                    securityGroups: cluster.securityGroups.map(g => g.id),
+                    securityGroups: cluster.securityGroups.map(g => g.instance.id),
                     protocol: "TCP",
                     fromPort: 2049,
                     toPort: 2049,
