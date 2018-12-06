@@ -21,9 +21,6 @@ import { Network } from "./../../network";
 import * as utils from "./../../utils";
 
 export class NetworkLoadBalancer extends x.elasticloadbalancingv2.LoadBalancer {
-    public readonly targetGroups: NetworkTargetGroup[];
-    public readonly listeners: NetworkListener[];
-
     constructor(name: string, args: NetworkLoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
             ...args,
@@ -31,31 +28,26 @@ export class NetworkLoadBalancer extends x.elasticloadbalancingv2.LoadBalancer {
         };
 
         super("awsinfra:x:elasticloadbalancingv2:NetworkLoadBalancer", name, argsCopy, opts);
+
+        this.registerOutputs({
+            instance: this.instance,
+            network: this.network,
+        });
     }
 
-    /**
-     * Creates a new NetworkListener and adds it to [listeners].
-     */
-    public createAndAddListener(
-            name: string, args: NetworkListenerArgs, opts?: pulumi.ComponentResourceOptions): NetworkListener {
-
-        return new NetworkListener(name, {
-            ...args,
-            loadBalancer: this,
-        }, opts || { parent: this });
+    public createListener(name: string, args: NetworkListenerArgs,
+                          opts?: pulumi.ComponentResourceOptions): NetworkListener {
+        return new NetworkListener(name, this, undefined, args, opts);
     }
 
-    /**
-     * Creates a new NetworkTargetGroup and adds it to [targetGroups].
-     */
-    public createAndAddTargetGroup(name: string, args: NetworkTargetGroupArgs,
-                                   opts?: pulumi.ComponentResourceOptions): NetworkTargetGroup {
+    public createTargetGroup(name: string, args: NetworkTargetGroupArgs,
+                             opts?: pulumi.ComponentResourceOptions): NetworkTargetGroup {
         return new NetworkTargetGroup(name, this, args, opts);
     }
 }
 
 export class NetworkTargetGroup extends x.elasticloadbalancingv2.TargetGroup {
-    public readonly listeners: NetworkListener[];
+    public readonly loadBalancer: NetworkLoadBalancer;
 
     constructor(name: string, loadBalancer: NetworkLoadBalancer,
                 args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
@@ -65,34 +57,36 @@ export class NetworkTargetGroup extends x.elasticloadbalancingv2.TargetGroup {
             protocol: "TCP",
         }, opts || { parent: loadBalancer });
 
-        loadBalancer.targetGroups.push(this);
+        this.loadBalancer = loadBalancer;
+
+        this.registerOutputs({
+            instance: this.instance,
+            network: this.network,
+            loadBalancer: this.loadBalancer,
+        });
     }
 
-    /**
-     * Creates a new NetworkListener and adds it to [listeners] and [loadBalancer.listeners].
-     */
-    public createAndAddListener(
-            name: string, args: NetworkListenerArgs, opts?: pulumi.ComponentResourceOptions): NetworkListener {
-
-        return new NetworkListener(name, {
-            ...args,
-            targetGroup: this,
-            loadBalancer: this.loadBalancer,
-        }, opts || { parent: this });
+    public createListener(name: string, args: NetworkListenerArgs,
+                          opts?: pulumi.ComponentResourceOptions): NetworkListener {
+        return new NetworkListener(name, this.loadBalancer, this, args, opts);
     }
 }
 
 export class NetworkListener extends x.elasticloadbalancingv2.Listener {
+    public readonly loadBalancer: NetworkLoadBalancer;
     public readonly targetGroup: NetworkTargetGroup;
 
-    constructor(name: string, args: NetworkListenerArgs, opts?: pulumi.ComponentResourceOptions) {
-        if (args.targetGroup === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
+    constructor(name: string,
+                loadBalancer: NetworkLoadBalancer,
+                targetGroupOpt: NetworkTargetGroup | undefined,
+                args: NetworkListenerArgs,
+                opts?: pulumi.ComponentResourceOptions) {
+        if (targetGroupOpt === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
             throw new Error(
-"One of [targetGroup] or [targetGroupArgs] or [port] must be provided when creating a NetworkListener.");
+"One of [targetGroup] or [args.targetGroupArgs] or [args.port] must be provided when creating a NetworkListener.");
         }
 
-        const targetGroup = getTargetGroup(name, args, opts);
-        const loadBalancer = args.loadBalancer || targetGroup.loadBalancer;
+        const targetGroup = getTargetGroup(name, loadBalancer, targetGroupOpt, args, opts);
         if (loadBalancer !== targetGroup.loadBalancer) {
             throw new Error("Listener's [loadBalancer] was not the same as its [targetGroup]'s load balancer.");
         }
@@ -109,33 +103,40 @@ export class NetworkListener extends x.elasticloadbalancingv2.Listener {
             loadBalancer,
             protocol: "TCP",
             port: utils.ifUndefined(args.port, targetGroup.instance.port),
-        }, opts);
+        }, opts || { parent: targetGroup });
 
+        this.loadBalancer = loadBalancer;
         this.targetGroup = targetGroup;
 
-        targetGroup.listeners.push(this);
-        targetGroup.loadBalancer.listeners.push(this);
+        this.registerOutputs({
+            instance: this.instance,
+            loadBalancer: this.loadBalancer,
+            targetGroup: this.targetGroup,
+        });
     }
 }
 
 function getTargetGroup(
-        name: string, args: NetworkListenerArgs,
-        opts: pulumi.ComponentResourceOptions | undefined) {
-    if (args.targetGroup) {
-        return args.targetGroup;
+        name: string,
+        loadBalancer: NetworkLoadBalancer,
+        targetGroup: NetworkTargetGroup | undefined,
+        args: NetworkListenerArgs,
+        opts: pulumi.ComponentResourceOptions | undefined): NetworkTargetGroup {
+    if (targetGroup) {
+        return targetGroup;
     }
 
     let targetGroupArgs = args.targetGroupArgs;
     if (!targetGroupArgs) {
-        if (args.loadBalancer === undefined || args.port === undefined) {
+        if (args.port === undefined) {
             throw new Error(
-"[loadBalancer] and [port] must both be provided if [targetGroup] and [targetGroupArgs] are not provided.");
+"[args.port] must both be provided if [targetGroup] and [targetGroupArgs] are not provided.");
         }
 
-        targetGroupArgs =  { loadBalancer: args.loadBalancer, port: args.port };
+        targetGroupArgs =  { port: args.port };
     }
 
-    return new NetworkTargetGroup(name, targetGroupArgs, opts);
+    return new NetworkTargetGroup(name, loadBalancer, targetGroupArgs, opts);
 }
 
 export interface NetworkLoadBalancerArgs {
@@ -249,19 +250,7 @@ export interface NetworkTargetGroupArgs {
 
 export interface NetworkListenerArgs {
     /**
-     * The load balancer this listener is associated with.s
-     */
-    loadBalancer?: NetworkLoadBalancer;
-
-    /**
-     * Target group of this listener. One of [targetGroup] or [targetGroupArgs] or [port] must be
-     * specified.
-     */
-    targetGroup?: NetworkTargetGroup;
-
-    /**
-     * Arguments to create a target group. One of [targetGroup] or [targetGroupArgs] or [port] must be
-     * specified.
+     * Arguments to create a target group if one was not explicitly provided.
      */
     targetGroupArgs?: NetworkTargetGroupArgs;
 

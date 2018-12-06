@@ -24,31 +24,20 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly instance: aws.elasticloadbalancingv2.LoadBalancer;
     public readonly network: Network;
 
-    public readonly targetGroups: x.elasticloadbalancingv2.TargetGroup[] = [];
-    public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
-
     constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
 
         const parentOpts = { parent: this };
 
-        const network = args.network || Network.getDefault();
+        this.network = args.network || Network.getDefault();
         const external = utils.ifUndefined(args.external, false);
-        const subnets = getSubnets(args, network, external);
-        const instance = new aws.elasticloadbalancingv2.LoadBalancer(name, {
+        this.instance = new aws.elasticloadbalancingv2.LoadBalancer(name, {
             ...args,
-            subnets,
+            subnets: getSubnets(args, this.network, external),
             internal: external.apply(e => !e),
             securityGroups: args.securityGroups ? args.securityGroups.map(g => g.id) : undefined,
         }, parentOpts);
 
-        this.instance = instance;
-        this.network = network;
-
-        this.registerOutputs({
-            instance,
-            network,
-        });
     }
 }
 

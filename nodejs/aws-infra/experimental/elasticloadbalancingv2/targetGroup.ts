@@ -24,26 +24,17 @@ export abstract class TargetGroup extends pulumi.ComponentResource {
     public readonly instance: aws.elasticloadbalancingv2.TargetGroup;
     public readonly network: Network;
 
-    public readonly listeners: x.elasticloadbalancingv2.Listener[];
-
     constructor(type: string, name: string, args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
 
         const parentOpts = { parent: this };
 
-        const network = args.network;
-        const instance = new aws.elasticloadbalancingv2.TargetGroup(name, {
+        this.network = args.network;
+        this.instance = new aws.elasticloadbalancingv2.TargetGroup(name, {
             ...args,
-            vpcId: network.vpcId,
+            vpcId: this.network.vpcId,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
         }, parentOpts);
-
-        this.instance = instance;
-        this.network = network;
-
-        this.registerOutputs({
-            instance,
-        });
     }
 }
 

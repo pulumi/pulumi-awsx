@@ -21,6 +21,9 @@ import { Network } from "./../../network";
 import * as utils from "./../../utils";
 
 export abstract class Listener extends pulumi.ComponentResource {
+    public readonly instance: aws.elasticloadbalancingv2.Listener;
+    public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
+
     constructor(type: string, name: string, args: ListenerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
 
@@ -31,11 +34,20 @@ export abstract class Listener extends pulumi.ComponentResource {
             loadBalancerArn: args.loadBalancer.instance.arn,
         }, parentOpts);
 
-        this.registerOutputs({
-            instance,
-        });
+        this.instance = instance;
+        this.loadBalancer = args.loadBalancer;
     }
 }
+
+type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
+    loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
+    certificateArn?: pulumi.Input<string>;
+    defaultAction: aws.elasticloadbalancingv2.ListenerArgs["defaultAction"];
+    loadBalancerArn?: never;
+    port: pulumi.Input<number>;
+    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
+    sslPolicy?: pulumi.Input<string>;
+}>;
 
 export interface ListenerArgs {
     loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
@@ -69,3 +81,4 @@ export interface ListenerArgs {
     sslPolicy?: pulumi.Input<string>;
 }
 
+const test1: string = utils.checkCompat<OverwriteShape, ListenerArgs>();
