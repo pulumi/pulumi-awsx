@@ -166,7 +166,9 @@ export class ApplicationListener extends x.elasticloadbalancingv2.Listener {
     }
 }
 
-function getTargetGroup(name: string, args: ApplicationListenerArgs, opts: pulumi.ComponentResourceOptions) {
+function getTargetGroup(
+        name: string, args: ApplicationListenerArgs,
+        opts: pulumi.ComponentResourceOptions | undefined) {
     if (args.targetGroup) {
         return args.targetGroup;
     }
@@ -249,7 +251,10 @@ export interface ApplicationLoadBalancerArgs {
      */
     securityGroups: aws.ec2.SecurityGroup[];
 
-    listeners?: ApplicableListenerArgs[];
+    /**
+     * A list of listeners to create with this load balancer.  This
+     */
+    listeners?: ApplicationListenerArgs[];
 }
 
 export interface ApplicationTargetGroupArgs {

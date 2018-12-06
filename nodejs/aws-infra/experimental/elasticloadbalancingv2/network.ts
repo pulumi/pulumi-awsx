@@ -126,15 +126,18 @@ export class NetworkListener extends x.elasticloadbalancingv2.Listener {
     }
 }
 
-function getTargetGroup(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions) {
+function getTargetGroup(
+        name: string, args: NetworkListenerArgs,
+        opts: pulumi.ComponentResourceOptions | undefined) {
     if (args.targetGroup) {
         return args.targetGroup;
     }
 
     let targetGroupArgs = args.targetGroupArgs;
     if (!targetGroupArgs) {
-        if (args.loadBalancer === undefined) {
-            throw new Error("[loadBalancer] must be provided if [targetGroup] and [targetGroupArgs] are not provided.");
+        if (args.loadBalancer === undefined || args.port === undefined) {
+            throw new Error(
+"[loadBalancer] and [port] must both be provided if [targetGroup] and [targetGroupArgs] are not provided.");
         }
 
         targetGroupArgs =  { loadBalancer: args.loadBalancer, port: args.port };
