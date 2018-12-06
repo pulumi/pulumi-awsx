@@ -27,8 +27,7 @@ import * as x from "..";
  */
 export class Cluster
         extends pulumi.ComponentResource
-        implements x.autoscaling.AutoScalingSecurityGroups,
-                   x.autoscaling.AutoScalingUserData {
+        implements x.autoscaling.AutoScalingUserData {
     public readonly instance: aws.ecs.Cluster;
 
     /**
@@ -38,17 +37,14 @@ export class Cluster
     /**
      * Security groups associated with this this ECS Cluster.
      */
-    public readonly securityGroups: aws.ec2.SecurityGroup[];
+    public readonly securityGroups: x.ec2.SecurityGroup[];
 
-    public readonly securityGroupIds: () => pulumi.Input<pulumi.Input<string>[]>;
     public readonly extraBootcmdLines: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
 
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 
     constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsinfra:x:ecs:Cluster", name, {
-            ...args,
-        }, opts);
+        super("awsinfra:x:ecs:Cluster", name, Cluster.withoutProviders(args), opts);
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
@@ -59,14 +55,9 @@ export class Cluster
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        const securityGroups = args.securityGroups || [new aws.ec2.SecurityGroup(name, {
-            vpcId: network.vpcId,
-            ingress: Cluster.defaultSecurityGroupIngress(),
-            egress: Cluster.defaultSecurityGroupEgress(),
-            tags: { Name: name },
-        }, parentOpts)];
+        const securityGroups = args.securityGroups ||
+            [Cluster.createDefaultSecurityGroup(name, network, parentOpts)];
 
-        this.securityGroupIds = () => securityGroups.map(g => g.id);
         this.extraBootcmdLines = () => instance.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
 
@@ -100,7 +91,7 @@ export class Cluster
 
         args.launchConfigurationArgs = args.launchConfigurationArgs || {};
         const launchConfigurationArgs = args.launchConfigurationArgs;
-        launchConfigurationArgs.securityGroups = this;
+        launchConfigurationArgs.securityGroups = this.securityGroups;
         launchConfigurationArgs.userData = this;
 
         const group = new x.autoscaling.AutoScalingGroup(name, args, opts || { parent: this });
@@ -109,33 +100,48 @@ export class Cluster
         return group;
     }
 
-    public static defaultSecurityGroupEgress() {
-        return [{
+    public static createDefaultSecurityGroup(
+            name: string,
+            network?: Network,
+            opts?: pulumi.ComponentResourceOptions): x.ec2.SecurityGroup {
+
+        network = network || Network.getDefault();
+        const securityGroup = new x.ec2.SecurityGroup(name, {
+            network,
+            tags: { Name: name },
+        }, opts);
+
+        Cluster.addDefaultSecurityGroupEgressRules(securityGroup);
+        Cluster.addDefaultSecurityGroupIngressRules(securityGroup);
+
+        return securityGroup;
+    }
+
+    public static addDefaultSecurityGroupEgressRules(securityGroup: x.ec2.SecurityGroup) {
+        securityGroup.addEgressRule("egress", {
             fromPort: 0,
             toPort: 0,
             protocol: "-1",  // all
             cidrBlocks: [ "0.0.0.0/0" ],
-        }];
+        });
     }
 
-    public static defaultSecurityGroupIngress() {
-        return [
-            // Expose SSH
-            {
-                fromPort: 22,
-                toPort: 22,
-                protocol: "TCP",
-                cidrBlocks: [ "0.0.0.0/0" ],
-            },
-            // Expose ephemeral container ports to Internet.
-            // TODO: Limit to load balancer(s).
-            {
-                fromPort: 0,
-                toPort: 65535,
-                protocol: "TCP",
-                cidrBlocks: [ "0.0.0.0/0" ],
-            },
-        ];
+    public static addDefaultSecurityGroupIngressRules(securityGroup: x.ec2.SecurityGroup) {
+        securityGroup.addIngressRule("ssh", {
+            fromPort: 22,
+            toPort: 22,
+            protocol: "TCP",
+            cidrBlocks: [ "0.0.0.0/0" ],
+        });
+
+        // Expose ephemeral container ports to Internet.
+        // TODO: Limit to load balancer(s).
+        securityGroup.addIngressRule("containers", {
+            fromPort: 0,
+            toPort: 65535,
+            protocol: "TCP",
+            cidrBlocks: [ "0.0.0.0/0" ],
+        });
     }
 }
 
@@ -144,7 +150,7 @@ export class Cluster
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     network?: Network;
-    securityGroups?: aws.ec2.SecurityGroup[];
+    securityGroups?: x.ec2.SecurityGroup[];
 }>;
 
 /**
@@ -158,7 +164,7 @@ export interface ClusterArgs {
     network?: Network;
 
     /**
-     * An existing to cluster to use for this awsinfra Cluster.  If not provided, a default one will
+     * An existing Cluster to use for this awsinfra Cluster.  If not provided, a default one will
      * be created.
      */
     instance?: aws.ecs.Cluster;
@@ -172,7 +178,7 @@ export interface ClusterArgs {
      * The security group to place new instances into.  If not provided, a default will be
      * created.
      */
-    securityGroups?: aws.ec2.SecurityGroup[];
+    securityGroups?: x.ec2.SecurityGroup[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

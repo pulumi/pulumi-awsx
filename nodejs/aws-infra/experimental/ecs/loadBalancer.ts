@@ -165,7 +165,7 @@ export class PortInfoLoadBalancer extends LoadBalancer {
             // If this is an application LB, we need to associate it with the ECS cluster's security
             // group, so that traffic on any ports can reach it.  Otherwise, leave blank, and
             // default to the VPC's group.
-            securityGroups: useAppLoadBalancer ? cluster.securityGroups.map(g => g.id) : undefined,
+            securityGroups: useAppLoadBalancer ? cluster.securityGroups.map(g => g.instance.id) : undefined,
             tags: { Name: longName },
         }, parentOpts);
 
