@@ -21,11 +21,11 @@ import { Network } from "./../../network";
 import * as utils from "./../../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
-    public readonly targetGroups: x.elasticloadbalancingv2.TargetGroup[] = [];
-    public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
-
     public readonly instance: aws.elasticloadbalancingv2.LoadBalancer;
     public readonly network: Network;
+
+    public readonly targetGroups: x.elasticloadbalancingv2.TargetGroup[] = [];
+    public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
 
     constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
