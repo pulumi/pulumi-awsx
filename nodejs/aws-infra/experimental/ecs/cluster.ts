@@ -118,24 +118,24 @@ export class Cluster
     }
 
     public static createDefaultSecurityGroupEgressRules(securityGroup: x.ec2.SecurityGroup) {
-        x.ec2.SecurityGroupRule.egress("egress", securityGroup,
+        return [x.ec2.SecurityGroupRule.egress("egress", securityGroup,
             new x.ec2.AnyIPv4Location(),
             new x.ec2.AllTraffic(),
-            "allow output to any ipv4 address using any protocol");
+            "allow output to any ipv4 address using any protocol")];
     }
 
     public static createDefaultSecurityGroupIngressRules(securityGroup: x.ec2.SecurityGroup) {
-        x.ec2.SecurityGroupRule.ingress("ssh", securityGroup,
-            new x.ec2.AnyIPv4Location(),
-            new x.ec2.TcpPorts(22),
-            "allow ssh in from any ipv4 address");
+        return [x.ec2.SecurityGroupRule.ingress("ssh", securityGroup,
+                    new x.ec2.AnyIPv4Location(),
+                    new x.ec2.TcpPorts(22),
+                    "allow ssh in from any ipv4 address"),
 
-        // Expose ephemeral container ports to Internet.
-        // TODO: Limit to load balancer(s).
-        x.ec2.SecurityGroupRule.ingress("containers", securityGroup,
-            new x.ec2.AnyIPv4Location(),
-            new x.ec2.AllTcpPorts(),
-            "allow incoming tcp on any port from any ipv4 address");
+                // Expose ephemeral container ports to Internet.
+                // TODO: Limit to load balancer(s).
+                x.ec2.SecurityGroupRule.ingress("containers", securityGroup,
+                    new x.ec2.AnyIPv4Location(),
+                    new x.ec2.AllTcpPorts(),
+                    "allow incoming tcp on any port from any ipv4 address")];
     }
 }
 
