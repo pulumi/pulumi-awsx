@@ -38,12 +38,14 @@ export interface SecurityGroupRuleLocation {
     sourceSecurityGroupId?: pulumi.Input<string>;
 }
 
+export type SecurityGroupRuleProtocol = "-1" | "tcp" | "udp" | "icmp";
+
 export interface SecurityGroupRulePorts {
     /**
      * The protocol. If not icmp, tcp, udp, or all use the [protocol
      * number](https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml)
      */
-    protocol: pulumi.Input<PortInfoProtocol>;
+    protocol: pulumi.Input<SecurityGroupRuleProtocol>;
     /**
      * The start port (or ICMP type number if protocol is "icmp").
      */
@@ -53,8 +55,6 @@ export interface SecurityGroupRulePorts {
      */
     toPort?: pulumi.Input<number>;
 }
-
-export type PortInfoProtocol = "-1" | "tcp" | "udp" | "icmp";
 
 export class AnyIPv4Location implements SecurityGroupRuleLocation {
     public readonly cidrBlocks = ["0.0.0.0/0"];
@@ -105,19 +105,41 @@ export class AllTraffic implements SecurityGroupRulePorts {
     public readonly toPort = 0;
 }
 
-export class SecurityGroupRules {
+export abstract class SecurityGroupRule extends pulumi.ComponentResource {
+    public readonly instance: aws.ec2.SecurityGroupRule;
+    public readonly securityGroup: x.ec2.SecurityGroup;
+
+    constructor(type: string, name: string,
+                securityGroup: x.ec2.SecurityGroup,
+                args: SecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        super(type, name, args, opts || { parent: securityGroup });
+
+        const instance = new aws.ec2.SecurityGroupRule(name, {
+            ...args,
+            securityGroupId: securityGroup.instance.id,
+        });
+
+        this.instance = instance;
+        this.securityGroup = securityGroup;
+
+        this.registerOutputs({
+            instance,
+            securityGroup,
+        });
+    }
+
     public static egressArgs(
             destination: SecurityGroupRuleLocation,
             ports: SecurityGroupRulePorts,
             description?: pulumi.Input<string>): EgressSecurityGroupRuleArgs {
-        return SecurityGroupRules.createArgs(destination, ports, description);
+        return SecurityGroupRule.createArgs(destination, ports, description);
     }
 
     public static ingressArgs(
             source: SecurityGroupRuleLocation,
             ports: SecurityGroupRulePorts,
             description?: pulumi.Input<string>): IngressSecurityGroupRuleArgs {
-        return SecurityGroupRules.createArgs(source, ports, description);
+        return SecurityGroupRule.createArgs(source, ports, description);
     }
 
     private static createArgs(
@@ -141,7 +163,7 @@ export class SecurityGroupRules {
 
         return new EgressSecurityGroupRule(
             name, securityGroup,
-            SecurityGroupRules.egressArgs(destination, ports, description),
+            SecurityGroupRule.egressArgs(destination, ports, description),
             opts);
     }
 
@@ -154,32 +176,8 @@ export class SecurityGroupRules {
 
         return new IngressSecurityGroupRule(
             name, securityGroup,
-            SecurityGroupRules.ingressArgs(source, ports, description),
+            SecurityGroupRule.ingressArgs(source, ports, description),
             opts);
-    }
-}
-
-export abstract class SecurityGroupRule extends pulumi.ComponentResource {
-    public readonly instance: aws.ec2.SecurityGroupRule;
-    public readonly securityGroup: x.ec2.SecurityGroup;
-
-    constructor(type: string, name: string,
-                securityGroup: x.ec2.SecurityGroup,
-                args: SecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, args, opts || { parent: securityGroup });
-
-        const instance = new aws.ec2.SecurityGroupRule(name, {
-            ...args,
-            securityGroupId: securityGroup.instance.id,
-        });
-
-        this.instance = instance;
-        this.securityGroup = securityGroup;
-
-        this.registerOutputs({
-            instance,
-            securityGroup,
-        });
     }
 }
 
