@@ -23,6 +23,7 @@ import * as utils from "./../../utils";
 export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly instance: aws.elasticloadbalancingv2.LoadBalancer;
     public readonly network: Network;
+    public readonly securityGroups: x.ec2.SecurityGroup[];
 
     constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
@@ -30,14 +31,15 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         const parentOpts = { parent: this };
 
         this.network = args.network || Network.getDefault();
+        this.securityGroups = args.securityGroups || [];
+
         const external = utils.ifUndefined(args.external, false);
         this.instance = new aws.elasticloadbalancingv2.LoadBalancer(name, {
             ...args,
             subnets: getSubnets(args, this.network, external),
             internal: external.apply(e => !e),
-            securityGroups: args.securityGroups ? args.securityGroups.map(g => g.id) : undefined,
+            securityGroups: this.securityGroups.map(g => g.instance.id),
         }, parentOpts);
-
     }
 }
 
@@ -107,7 +109,7 @@ export interface LoadBalancerArgs {
      * A list of security group IDs to assign to the LB. Only valid for Load Balancers of type
      * `application`.
      */
-    securityGroups?: aws.ec2.SecurityGroup[];
+    securityGroups?: x.ec2.SecurityGroup[];
 }
 
 export interface LoadBalancerSubnets {

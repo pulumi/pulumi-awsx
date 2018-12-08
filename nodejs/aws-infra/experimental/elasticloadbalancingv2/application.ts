@@ -144,6 +144,21 @@ export class ApplicationListener extends x.elasticloadbalancingv2.Listener {
             protocol,
         }, opts);
 
+        const parentOpts = { parent: this };
+
+        // If the listener is externally available, then open it's port both for ingress
+        // and egress in the load balancer's security groups.
+        if (args.external !== false) {
+            const location = new x.ec2.AnyIPv4Location();
+            const tcpPort = new x.ec2.TcpPorts(port);
+            const description = `Externally available at port ${port}`;
+
+            for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
+                const securityGroup = this.loadBalancer.securityGroups[i];
+                securityGroup.openPorts("external-" + i, location, tcpPort, description, parentOpts)
+            }
+        }
+
         this.targetGroup = targetGroup;
 
         this.registerOutputs({
@@ -235,7 +250,7 @@ export interface ApplicationLoadBalancerArgs {
     /**
      * A list of security group IDs to assign to the LB.
      */
-    securityGroups: aws.ec2.SecurityGroup[];
+    securityGroups: x.ec2.SecurityGroup[];
 }
 
 export interface ApplicationTargetGroupArgs {
@@ -341,4 +356,17 @@ interface ApplicationListenerArgs {
      * The name of the SSL Policy for the listener. Required if `protocol` is `HTTPS`.
      */
     sslPolicy?: pulumi.Input<string>;
+
+    /**
+     * If the listener should be available externally.  If this is [true] and the LoadBalancer for
+     * this Listener is [external=true], then this listener is available to the entire internet.  If
+     * this is [tru]e and the LoadBalancer is [external=false], then this listener is available to
+     * everything in the LoadBalancer's VPC.
+     *
+     * If this is [false] then access will controlled entirely by the egress an ingress rules of the
+     * security groups of the LoadBalancer.
+     *
+     * Defaults to [true].
+     */
+    external?: boolean;
 }
