@@ -17,6 +17,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as mod from ".";
 import * as x from "..";
 import { Network } from "./../../network";
 
@@ -24,7 +25,7 @@ import * as utils from "./../../utils";
 
 export type ApplicationProtocol = "HTTP" | "HTTPS";
 
-export class ApplicationLoadBalancer extends x.elasticloadbalancingv2.LoadBalancer {
+export class ApplicationLoadBalancer extends mod.LoadBalancer {
     constructor(name: string, args: ApplicationLoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
             ...args,
@@ -50,7 +51,7 @@ export class ApplicationLoadBalancer extends x.elasticloadbalancingv2.LoadBalanc
     }
 }
 
-export class ApplicationTargetGroup extends x.elasticloadbalancingv2.TargetGroup {
+export class ApplicationTargetGroup extends mod.TargetGroup {
     public readonly loadBalancer: ApplicationLoadBalancer;
 
     constructor(name: string, loadBalancer: ApplicationLoadBalancer,
@@ -108,7 +109,7 @@ function computePortInfo(
     return { port, protocol };
 }
 
-export class ApplicationListener extends x.elasticloadbalancingv2.Listener {
+export class ApplicationListener extends mod.Listener {
     public readonly targetGroup: ApplicationTargetGroup;
 
     constructor(name: string,

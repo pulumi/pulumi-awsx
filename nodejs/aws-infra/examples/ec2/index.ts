@@ -111,7 +111,7 @@ const customWebServer = new x.ecs.EC2Service("mycustomservice", {
                     const rand = Math.random();
                     const http = require("http");
                     http.createServer((req: any, res: any) => {
-                        res.end(`Hello, world! (from ${rand})`);
+                        res.end(`Hello, custom world! (from ${rand})}`);
                     }).listen(8080);
                 }),
             },

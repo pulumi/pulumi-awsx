@@ -17,12 +17,13 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as mod from ".";
 import * as x from "..";
 import { Network } from "./../../network";
 
 import * as utils from "./../../utils";
 
-export class NetworkLoadBalancer extends x.elasticloadbalancingv2.LoadBalancer {
+export class NetworkLoadBalancer extends mod.LoadBalancer {
     constructor(name: string, args: NetworkLoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
             ...args,
@@ -48,7 +49,7 @@ export class NetworkLoadBalancer extends x.elasticloadbalancingv2.LoadBalancer {
     }
 }
 
-export class NetworkTargetGroup extends x.elasticloadbalancingv2.TargetGroup {
+export class NetworkTargetGroup extends mod.TargetGroup {
     public readonly loadBalancer: NetworkLoadBalancer;
 
     constructor(name: string, loadBalancer: NetworkLoadBalancer,
@@ -74,7 +75,7 @@ export class NetworkTargetGroup extends x.elasticloadbalancingv2.TargetGroup {
     }
 }
 
-export class NetworkListener extends x.elasticloadbalancingv2.Listener {
+export class NetworkListener extends mod.Listener {
     public readonly loadBalancer: NetworkLoadBalancer;
     public readonly targetGroup: NetworkTargetGroup;
 
