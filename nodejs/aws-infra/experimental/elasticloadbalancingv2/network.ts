@@ -24,7 +24,7 @@ import { Network } from "./../../network";
 import * as utils from "./../../utils";
 
 export class NetworkLoadBalancer extends mod.LoadBalancer {
-    constructor(name: string, args: NetworkLoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
             ...args,
             loadBalancerType: "network",
@@ -84,7 +84,7 @@ export class NetworkListener
     constructor(name: string,
                 loadBalancer: NetworkLoadBalancer,
                 targetGroupOpt: NetworkTargetGroup | undefined,
-                args: NetworkListenerArgs,
+                args: NetworkListenerArgs = { },
                 opts?: pulumi.ComponentResourceOptions) {
         if (targetGroupOpt === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
             throw new Error(

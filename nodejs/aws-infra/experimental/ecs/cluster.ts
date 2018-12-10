@@ -72,6 +72,21 @@ export class Cluster
         });
     }
 
+    public createApplicationLoadBalancer(
+            name: string,
+            args: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs = {},
+            opts?: pulumi.ComponentResourceOptions) {
+        const argsCopy = {
+            ...args,
+        };
+
+        argsCopy.network = argsCopy.network || this.network;
+        argsCopy.securityGroups = argsCopy.securityGroups || this.securityGroups;
+
+        return new x.elasticloadbalancingv2.ApplicationLoadBalancer(
+            name, argsCopy, opts || { parent: this });
+    }
+
     public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {
         this.autoScalingGroups.push(group);
     }

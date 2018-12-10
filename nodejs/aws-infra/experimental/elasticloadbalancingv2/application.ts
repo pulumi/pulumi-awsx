@@ -26,7 +26,7 @@ import * as utils from "./../../utils";
 export type ApplicationProtocol = "HTTP" | "HTTPS";
 
 export class ApplicationLoadBalancer extends mod.LoadBalancer {
-    constructor(name: string, args: ApplicationLoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
             ...args,
             loadBalancerType: "application",
@@ -55,7 +55,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     public readonly loadBalancer: ApplicationLoadBalancer;
 
     constructor(name: string, loadBalancer: ApplicationLoadBalancer,
-                args: ApplicationTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+                args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
         super("awsinfra:x:elasticloadbalancingv2:ApplicationTargetGroup", name, {
@@ -123,7 +123,7 @@ export class ApplicationListener
     constructor(name: string,
                 loadBalancer: ApplicationLoadBalancer,
                 targetGroupOpt: ApplicationTargetGroup | undefined,
-                args: ApplicationListenerArgs,
+                args: ApplicationListenerArgs = {},
                 opts?: pulumi.ComponentResourceOptions) {
         if (targetGroupOpt === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
             throw new Error(
@@ -267,7 +267,7 @@ export interface ApplicationLoadBalancerArgs {
     /**
      * A list of security group IDs to assign to the LB.
      */
-    securityGroups: x.ec2.SecurityGroup[];
+    securityGroups?: x.ec2.SecurityGroup[];
 }
 
 export interface ApplicationTargetGroupArgs {

@@ -245,6 +245,20 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             this.subnetIds.push(subnetId);
         }
     }
+
+    public createNetworkLoadBalancer(
+            name: string,
+            args: x.elasticloadbalancingv2.NetworkLoadBalancerArgs = {},
+            opts?: pulumi.ComponentResourceOptions) {
+        const argsCopy = {
+            ...args,
+        };
+
+        argsCopy.network = argsCopy.network || this;
+
+        return new x.elasticloadbalancingv2.NetworkLoadBalancer(
+            name, argsCopy, opts || { parent: this });
+    }
 }
 
 function createSubnetRouteTable(
