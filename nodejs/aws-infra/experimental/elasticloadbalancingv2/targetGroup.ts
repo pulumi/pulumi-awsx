@@ -22,7 +22,9 @@ import { Network } from "./../../network";
 
 import * as utils from "./../../utils";
 
-export abstract class TargetGroup extends pulumi.ComponentResource {
+export abstract class TargetGroup
+        extends pulumi.ComponentResource
+        implements x.ecs.ContainerPortMappings, x.ecs.ServiceLoadBalancers  {
     public readonly instance: aws.elasticloadbalancingv2.TargetGroup;
     public readonly network: Network;
 
@@ -31,13 +33,32 @@ export abstract class TargetGroup extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
+        const longName = `${name}`;
+        const shortName = utils.sha1hash(`${longName}`);
+
         this.network = args.network;
         this.instance = new aws.elasticloadbalancingv2.TargetGroup(name, {
             ...args,
             vpcId: this.network.vpcId,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
             deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 300),
+            targetType: utils.ifUndefined(args.targetType, "ip"),
+            tags: utils.mergeTags(args.tags, { Name: longName }),
         }, parentOpts);
+    }
+
+    public portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]> {
+        return this.instance.port.apply(p => [{ containerPort: +p }]);
+    }
+
+    public loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"] {
+        const targetGroup = this.instance;
+        return pulumi.all([targetGroup.arn, targetGroup.port])
+                     .apply(([targetGroupArn, containerPort]) => [{
+                        containerName,
+                        containerPort,
+                        targetGroupArn,
+                     }]);
     }
 }
 

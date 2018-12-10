@@ -24,6 +24,8 @@ export abstract class Listener extends pulumi.ComponentResource {
     public readonly instance: aws.elasticloadbalancingv2.Listener;
     public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
 
+    public readonly endpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
+
     constructor(type: string, name: string, args: ListenerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
 
@@ -41,8 +43,16 @@ export abstract class Listener extends pulumi.ComponentResource {
             sslPolicy: utils.ifUndefined(args.sslPolicy, defaultSslPolicy),
         }, parentOpts);
 
+        const loadBalancer = args.loadBalancer.instance;
+        const endpoint = instance.urn.apply(_ => pulumi.output({
+            hostname: loadBalancer.dnsName,
+            loadBalancer: loadBalancer,
+            port: args.port,
+        }));
+
         this.instance = instance;
         this.loadBalancer = args.loadBalancer;
+        this.endpoint = () => endpoint;
     }
 }
 

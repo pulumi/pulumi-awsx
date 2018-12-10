@@ -59,8 +59,8 @@ export class SecurityGroup extends pulumi.ComponentResource {
                      opts?: pulumi.ComponentResourceOptions) {
         const egressArgs = x.ec2.SecurityGroupRule.egressArgs(location, ports, description);
         const ingressArgs = x.ec2.SecurityGroupRule.ingressArgs(location, ports, description);
-        const egress = this.createEgressRule(name, egressArgs, opts);
-        const ingress = this.createIngressRule(name, ingressArgs, opts);
+        const egress = this.createEgressRule(name + "-egress", egressArgs, opts);
+        const ingress = this.createIngressRule(name + "-ingress", ingressArgs, opts);
 
         return { egress, ingress };
     }

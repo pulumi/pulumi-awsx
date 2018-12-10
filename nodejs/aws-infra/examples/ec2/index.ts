@@ -300,6 +300,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
         path: "/custom",
         method: "GET",
         eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
+            const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
             try {
                 const fetch = (await import("node-fetch")).default;
                 const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
@@ -325,6 +326,3 @@ const api = new aws.apigateway.x.API("examples-containers", {
 });
 
 export let frontendURL = api.url;
-export let vpcId = network.vpcId;
-export let subnets = network.subnetIds;
-export let instanceSecurityGroups = cluster.securityGroups;

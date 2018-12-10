@@ -90,15 +90,18 @@ const multistageCachedNginx = new x.ecs.FargateService("examples-multistage-cach
     desiredCount: 2,
 });
 
-const customWebServerLoadBalancer = x.ecs.LoadBalancer.fromPortInfo(
-    "mycustomservice", { cluster, port: 80, targetPort: 8080 });
+const customWebServerLoadBalancer = new x.elasticloadbalancingv2.NetworkLoadBalancer(
+    "mycustomservice", { network: cluster.network });
+const customWebServerListener = customWebServerLoadBalancer.createListener(
+    "mycustomlistener", { port: 80, targetGroupArgs: { port: 8080 } });
+
 const customWebServer = new x.ecs.FargateService("mycustomservice", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             webserver: {
                 memory: 128,
-                portMappings: customWebServerLoadBalancer,
+                portMappings: customWebServerListener,
                 image: x.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
@@ -208,6 +211,7 @@ const builtService = new x.ecs.FargateService("examples-nginx2", {
 function errorJSON(err: any) {
     const result: any = Object.create(null);
     Object.getOwnPropertyNames(err).forEach(key => result[key] = err[key]);
+    result.florp = "blopr";
     return result;
 }
 
@@ -292,9 +296,10 @@ const api = new aws.apigateway.x.API("examples-containers", {
         path: "/custom",
         method: "GET",
         eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
+            const endpoint = customWebServerListener.endpoint().get();
             try {
                 const fetch = (await import("node-fetch")).default;
-                const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
+                const endpoint = customWebServerListener.endpoint().get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();
@@ -317,6 +322,3 @@ const api = new aws.apigateway.x.API("examples-containers", {
 });
 
 export let frontendURL = api.url;
-export let vpcId = network.vpcId;
-export let subnets = network.subnetIds;
-export let instanceSecurityGroups = cluster.securityGroups;

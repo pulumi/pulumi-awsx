@@ -88,28 +88,36 @@ function computePortInfo(
         throw new Error("At least one of [port] or [protocol] must be provided.");
     }
 
-    port = utils.ifUndefined(port,
-        pulumi.output(protocol).apply(p => {
-            switch (p) {
-                case "HTTP": return 80;
-                case "HTTPS": return 443;
-                default: throw new Error("Unknown protocol: " + JSON.stringify(p));
-            }
-        }));
+    port = pulumi.all([port, protocol]).apply(([port, protocol]) => {
+        if (port !== undefined) {
+            return port;
+        }
 
-    protocol = utils.ifUndefined(protocol,
-        pulumi.output(port).apply(p => {
-            switch (p) {
-                case 80: case 8000: case 8008: case 8080: return <ApplicationProtocol>"HTTP";
-                case 443: case 8443: return <ApplicationProtocol>"HTTPS";
-                default: throw new Error("Invalid port: " + JSON.stringify(p));
-            }
-        }));
+        switch (protocol) {
+            case "HTTP": return 80;
+            case "HTTPS": return 443;
+            default: throw new Error("Unknown protocol: " + JSON.stringify(protocol));
+        }
+    });
+
+    protocol = pulumi.all([port, protocol]).apply(([port, protocol]) => {
+        if (protocol !== undefined) {
+            return protocol;
+        }
+
+        switch (port) {
+            case 80: case 8000: case 8008: case 8080: return <ApplicationProtocol>"HTTP";
+            case 443: case 8443: return <ApplicationProtocol>"HTTPS";
+            default: throw new Error("Invalid port: " + JSON.stringify(port));
+        }
+    });
 
     return { port, protocol };
 }
 
-export class ApplicationListener extends mod.Listener {
+export class ApplicationListener
+        extends mod.Listener
+        implements x.ecs.ContainerPortMappings, x.ecs.ServiceLoadBalancers {
     public readonly targetGroup: ApplicationTargetGroup;
 
     constructor(name: string,
@@ -156,7 +164,7 @@ export class ApplicationListener extends mod.Listener {
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
-                securityGroup.openPorts("external-" + i, location, tcpPort, description, parentOpts)
+                securityGroup.openPorts("-external-" + i, location, tcpPort, description, parentOpts);
             }
         }
 
@@ -167,6 +175,14 @@ export class ApplicationListener extends mod.Listener {
             loadBalancer: this.loadBalancer,
             targetGroup: this.targetGroup,
         });
+    }
+
+    public portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]> {
+        return this.targetGroup.portMappings(containerName);
+    }
+
+    public loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"] {
+        return this.targetGroup.loadBalancers(containerName);
     }
 }
 
@@ -296,11 +312,13 @@ export interface ApplicationTargetGroupArgs {
     /**
      * The type of target that you must specify when registering targets with this target group. The
      * possible values are `instance` (targets are specified by instance ID) or `ip` (targets are
-     * specified by IP address). The default is `instance`. Note that you can't specify targets for
-     * a target group using both instance IDs and IP addresses. If the target type is `ip`, specify
-     * IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the
-     * RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range
-     * (100.64.0.0/10). You can't specify publicly routable IP addresses.
+     * specified by IP address). The default is `ip`.
+     *
+     * Note that you can't specify targets for a target group using both instance IDs and IP
+     * addresses. If the target type is `ip`, specify IP addresses from the subnets of the virtual
+     * private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and
+     * 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable
+     * IP addresses.
      */
     targetType?: pulumi.Input<"instance" | "ip">;
 

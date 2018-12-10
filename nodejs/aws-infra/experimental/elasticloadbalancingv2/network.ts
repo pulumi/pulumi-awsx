@@ -75,7 +75,9 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     }
 }
 
-export class NetworkListener extends mod.Listener {
+export class NetworkListener
+        extends mod.Listener
+        implements x.ecs.ContainerPortMappings, x.ecs.ServiceLoadBalancers {
     public readonly loadBalancer: NetworkLoadBalancer;
     public readonly targetGroup: NetworkTargetGroup;
 
@@ -116,6 +118,14 @@ export class NetworkListener extends mod.Listener {
             loadBalancer: this.loadBalancer,
             targetGroup: this.targetGroup,
         });
+    }
+
+    public portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]> {
+        return this.targetGroup.portMappings(containerName);
+    }
+
+    public loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"] {
+        return this.targetGroup.loadBalancers(containerName);
     }
 }
 
@@ -242,11 +252,13 @@ export interface NetworkTargetGroupArgs {
     /**
      * The type of target that you must specify when registering targets with this target group. The
      * possible values are `instance` (targets are specified by instance ID) or `ip` (targets are
-     * specified by IP address). The default is `instance`. Note that you can't specify targets for
-     * a target group using both instance IDs and IP addresses. If the target type is `ip`, specify
-     * IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the
-     * RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range
-     * (100.64.0.0/10). You can't specify publicly routable IP addresses.
+     * specified by IP address). The default is `ip`.
+     *
+     * Note that you can't specify targets for a target group using both instance IDs and IP
+     * addresses. If the target type is `ip`, specify IP addresses from the subnets of the virtual
+     * private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and
+     * 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable
+     * IP addresses.
      */
     targetType?: pulumi.Input<"instance" | "ip">;
 }
