@@ -60,7 +60,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, TaskDefinition.withoutProviders(args), opts);
+        super(type, name, utils.normalizeProps(args), opts);
 
         const parentOpts = { parent: this };
         const logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
@@ -128,35 +128,6 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             taskRole,
             executionRole,
         });
-    }
-
-    /** @internal */
-    private static withoutProviders(args: TaskDefinitionArgs) {
-        const containers: Record<string, ecs.Container> = {};
-        for (const containerName of Object.keys(args.containers)) {
-            containers[containerName] = TaskDefinition.withoutContainerProviders(args.containers[containerName]);
-        }
-
-        return <TaskDefinitionArgs>{
-            ...args,
-            containers,
-        };
-    }
-
-    /** @internal */
-    private static withoutContainerProviders(container: ecs.Container) {
-        const copy = <ecs.Container>{ ...container };
-
-        if ((<ecs.ContainerImage>copy.image).image) {
-            delete copy.image;
-        }
-
-        const containerPortMappings = <ecs.ContainerPortMappings>copy.portMappings;
-        if (containerPortMappings && containerPortMappings.portMappings) {
-            delete copy.portMappings;
-        }
-
-        return copy;
     }
 
     /**

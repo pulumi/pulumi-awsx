@@ -28,7 +28,7 @@ export abstract class Service extends pulumi.ComponentResource {
     constructor(type: string, name: string,
                 args: ServiceArgs, isFargate: boolean,
                 opts: pulumi.ResourceOptions = {}) {
-        super(type, name, args, opts);
+        super(type, name, utils.normalizeProps(args), opts);
 
         // If the cluster has any autoscaling groups, ensure the service depends on it being
         // created.

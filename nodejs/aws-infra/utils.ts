@@ -75,3 +75,56 @@ export function mergeTags(tags1: pulumi.Input<aws.Tags> | undefined,
         ...(tags2 || {}),
     }));
 }
+
+/** @internal */
+export function normalizeProps(props: any): Record<string, any> {
+    const result: Record<string, any> = { };
+    for (const key of Object.keys(props)) {
+        result[key] = normalize(props[key]);
+    }
+
+    return result;
+}
+
+function normalize(val: any): any {
+    if (val === undefined ||
+        val === null ||
+        typeof val === "boolean" ||
+        typeof val === "number" ||
+        typeof val === "string") {
+
+        return val;
+    }
+
+    // Don't try to convert an entire component over when it is passed in as a prop.
+    // Just include the urn for the resource.
+    if (pulumi.ComponentResource.isInstance(val)) {
+        return val.urn;
+    }
+
+    if (pulumi.Resource.isInstance(val)) {
+        return val;
+    }
+
+    if (val instanceof Function) {
+        return undefined;
+    }
+
+    if (Array.isArray(val)) {
+        const result = [];
+        for (const child of val) {
+            result.push(normalize(child));
+        }
+        return result;
+    }
+
+    if (val instanceof Promise) {
+        return val.then(normalize);
+    }
+
+    if (pulumi.Output.isInstance(val)) {
+        return val.apply(normalize);
+    }
+
+    return normalizeProps(val);
+}

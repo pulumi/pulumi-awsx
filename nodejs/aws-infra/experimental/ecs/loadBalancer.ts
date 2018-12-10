@@ -79,7 +79,7 @@ export abstract class LoadBalancer
     public abstract loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"];
 
     public constructor(type: string, name: string, props: Record<string, any>, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, props, opts);
+        super(type, name, utils.normalizeProps(props), opts);
     }
 
     public static fromTargetGroupInfo(name: string, info: TargetGroupInfo, opts?: pulumi.ComponentResourceOptions) {
