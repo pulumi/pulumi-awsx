@@ -128,7 +128,7 @@ function computePortInfo(
 
 export class ApplicationListener
         extends mod.Listener
-        implements x.ecs.ContainerPortMappings, x.ecs.ServiceLoadBalancers {
+        implements x.ecs.ContainerPortMappings {
     public readonly targetGroup: ApplicationTargetGroup;
 
     constructor(name: string,
@@ -191,12 +191,12 @@ export class ApplicationListener
         targetGroup.listeners.push(this);
     }
 
-    public portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]> {
-        return this.targetGroup.portMappings(containerName);
+    public portMappings() {
+        return this.targetGroup.portMappings();
     }
 
-    public loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"] {
-        return this.targetGroup.loadBalancers(containerName);
+    public loadBalancers() {
+        return this.targetGroup.loadBalancers();
     }
 }
 

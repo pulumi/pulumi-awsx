@@ -88,7 +88,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
 
 export class NetworkListener
         extends mod.Listener
-        implements x.ecs.ContainerPortMappings, x.ecs.ServiceLoadBalancers {
+        implements x.ecs.ContainerPortMappings {
     public readonly loadBalancer: NetworkLoadBalancer;
     public readonly targetGroup: NetworkTargetGroup;
 
@@ -134,12 +134,12 @@ export class NetworkListener
         targetGroup.listeners.push(this);
     }
 
-    public portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]> {
-        return this.targetGroup.portMappings(containerName);
+    public portMappings() {
+        return this.targetGroup.portMappings();
     }
 
-    public loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"] {
-        return this.targetGroup.loadBalancers(containerName);
+    public loadBalancers() {
+        return this.targetGroup.loadBalancers();
     }
 }
 
