@@ -39,7 +39,7 @@ const nginx = new x.ecs.FargateService("examples-nginx", {
     desiredCount: 2,
 });
 
-export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
+const nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
 const simpleNginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
@@ -51,7 +51,7 @@ const simpleNginx = new x.ecs.FargateTaskDefinition("examples-simple-nginx", {
     },
 }).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
-export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
+const simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
 const cachedNginx = new x.ecs.FargateService("examples-cached-nginx", {
     cluster,

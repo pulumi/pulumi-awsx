@@ -77,16 +77,11 @@ export function mergeTags(tags1: pulumi.Input<aws.Tags> | undefined,
 }
 
 /** @internal */
-export function normalizeProps(props: any): Record<string, any> {
-    const result: Record<string, any> = { };
-    for (const key of Object.keys(props)) {
-        result[key] = normalize(props[key]);
-    }
-
-    return result;
+export function normalizeProps(val: any): any {
+    return normalize("", val, new Set());
 }
 
-function normalize(val: any): any {
+function normalize(path: string, val: any, set: Set<any>): any {
     if (val === undefined ||
         val === null ||
         typeof val === "boolean" ||
@@ -96,14 +91,24 @@ function normalize(val: any): any {
         return val;
     }
 
-    // Don't try to convert an entire component over when it is passed in as a prop.
-    // Just include the urn for the resource.
-    if (pulumi.ComponentResource.isInstance(val)) {
-        return val.urn;
+    if (set.has(val)) {
+        return undefined;
     }
 
-    if (pulumi.Resource.isInstance(val)) {
+    set.add(val);
+    // console.log("Serializing: " + path);
+
+    if (pulumi.CustomResource.isInstance(val)) {
         return val;
+    }
+
+    // Component resources often contain cycles of resources due to logical-child resources pointing
+    // at parent resources, and parent resources holding and exposing children through lists. As
+    // such, we don't include component resources at all so that there are no such cycles and so
+    // that we don't end up deadlocking on a child that is already waiting on us.
+    if (pulumi.ComponentResource.isInstance(val)) {
+        // console.log("skipping component: " + path);
+        return val.urn;
     }
 
     if (val instanceof Function) {
@@ -112,19 +117,30 @@ function normalize(val: any): any {
 
     if (Array.isArray(val)) {
         const result = [];
+        let index = 0;
         for (const child of val) {
-            result.push(normalize(child));
+            result.push(normalize(path + "[" + index++ + "]", child, set));
         }
         return result;
     }
 
+    // if (val instanceof Promise || pulumi.Output.isInstance(val)) {
+    //     return val;
+    // }
+
     if (val instanceof Promise) {
-        return val.then(normalize);
+        return val.then(v => normalize(path + ".then", v, set));
     }
 
     if (pulumi.Output.isInstance(val)) {
-        return val.apply(normalize);
+        return val.apply(v => normalize(path + ".apply", v, set));
     }
 
-    return normalizeProps(val);
+
+    const result: Record<string, any> = { };
+    for (const key of Object.keys(val)) {
+        result[key] = normalize(path + "." + key, val[key], set);
+    }
+
+    return result;
 }

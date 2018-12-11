@@ -29,9 +29,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
     constructor(name: string,
                 args: ClusterFileSystemArgs,
                 opts: pulumi.CustomResourceOptions = {}) {
-        super("aws-infra:x:ClusterFileSystem", name, {
-            ...args,
-        }, opts);
+        super("aws-infra:x:ClusterFileSystem", name, utils.normalizeProps(args), opts);
 
         const parentOpts = { parent: this };
 

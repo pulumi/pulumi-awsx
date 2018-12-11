@@ -26,6 +26,9 @@ import * as utils from "./../../utils";
 export type ApplicationProtocol = "HTTP" | "HTTPS";
 
 export class ApplicationLoadBalancer extends mod.LoadBalancer {
+    public readonly listeners: ApplicationListener[];
+    public readonly targetGroups: ApplicationTargetGroup[];
+
     constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
             ...args,
@@ -33,6 +36,9 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
         };
 
         super("awsinfra:x:elasticloadbalancingv2:ApplicationLoadBalancer", name, argsCopy, opts);
+
+        this.listeners = [];
+        this.targetGroups = [];
 
         this.registerOutputs({
             instance: this.instance,
@@ -54,6 +60,8 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
 export class ApplicationTargetGroup extends mod.TargetGroup {
     public readonly loadBalancer: ApplicationLoadBalancer;
 
+    public readonly listeners: ApplicationListener[];
+
     constructor(name: string, loadBalancer: ApplicationLoadBalancer,
                 args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         const { port, protocol } = computePortInfo(args.port, args.protocol);
@@ -66,12 +74,15 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
         }, opts);
 
         this.loadBalancer = loadBalancer;
+        this.listeners = [];
 
         this.registerOutputs({
             instance: this.instance,
             network: this.network,
             loadBalancer: this.loadBalancer,
         });
+
+        loadBalancer.targetGroups.push(this);
     }
 
     public createListener(name: string, args: ApplicationListenerArgs,
@@ -175,6 +186,9 @@ export class ApplicationListener
             loadBalancer: this.loadBalancer,
             targetGroup: this.targetGroup,
         });
+
+        loadBalancer.listeners.push(this);
+        targetGroup.listeners.push(this);
     }
 
     public portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]> {

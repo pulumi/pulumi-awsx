@@ -23,7 +23,7 @@ import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
 const cluster = new x.ecs.Cluster("testing", { network });
-const autoScalingGroup = cluster.createAndAddAutoScalingGroup("testing", {
+const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     templateParameters: {
         minSize: 20,
     },
@@ -48,7 +48,7 @@ const nginx = new x.ecs.EC2Service("examples-nginx", {
     desiredCount: 2,
 });
 
-export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
+const nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
 const simpleNginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
@@ -60,7 +60,7 @@ const simpleNginx = new x.ecs.EC2TaskDefinition("examples-simple-nginx", {
     },
 }).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
-export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
+const simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
 const cachedNginx = new x.ecs.EC2Service("examples-cached-nginx", {
     cluster,

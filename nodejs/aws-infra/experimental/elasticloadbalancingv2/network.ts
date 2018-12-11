@@ -24,6 +24,9 @@ import { Network } from "./../../network";
 import * as utils from "./../../utils";
 
 export class NetworkLoadBalancer extends mod.LoadBalancer {
+    public readonly listeners: NetworkListener[];
+    public readonly targetGroups: NetworkTargetGroup[];
+
     constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
             ...args,
@@ -31,6 +34,9 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
         };
 
         super("awsinfra:x:elasticloadbalancingv2:NetworkLoadBalancer", name, argsCopy, opts);
+
+        this.listeners = [];
+        this.targetGroups = [];
 
         this.registerOutputs({
             instance: this.instance,
@@ -52,6 +58,8 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
 export class NetworkTargetGroup extends mod.TargetGroup {
     public readonly loadBalancer: NetworkLoadBalancer;
 
+    public readonly listeners: NetworkListener[];
+
     constructor(name: string, loadBalancer: NetworkLoadBalancer,
                 args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
@@ -61,12 +69,15 @@ export class NetworkTargetGroup extends mod.TargetGroup {
         }, opts || { parent: loadBalancer });
 
         this.loadBalancer = loadBalancer;
+        this.listeners = [];
 
         this.registerOutputs({
             instance: this.instance,
             network: this.network,
             loadBalancer: this.loadBalancer,
         });
+
+        loadBalancer.targetGroups.push(this);
     }
 
     public createListener(name: string, args: NetworkListenerArgs,
@@ -118,6 +129,9 @@ export class NetworkListener
             loadBalancer: this.loadBalancer,
             targetGroup: this.targetGroup,
         });
+
+        loadBalancer.listeners.push(this);
+        targetGroup.listeners.push(this);
     }
 
     public portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]> {
