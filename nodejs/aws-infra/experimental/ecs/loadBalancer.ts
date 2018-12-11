@@ -201,22 +201,8 @@ export class PortInfoLoadBalancer extends LoadBalancer {
         }));
 
         const portMappings = (containerName: string) => {
-            const port = portInfo.targetPort || portInfo.port;
-            const portMappings: aws.ecs.PortMapping[] = [{
-                containerPort: port,
-                // From https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html:
-                // > For task definitions that use the awsvpc network mode, you should only
-                // > specify the containerPort. The hostPort can be left blank or it must be the
-                // > same value as the containerPort.
-                //
-                // However, if left blank, it will be automatically populated by AWS, potentially leading to dirty
-                // diffs even when no changes have been made. Since we are currently always using `awsvpc` mode, we
-                // go ahead and populate it with the same value as `containerPort`.
-                //
-                // See https://github.com/terraform-providers/terraform-provider-aws/issues/3401.
-                hostPort: port,
-            }];
-
+            const containerPort = portInfo.targetPort || portInfo.port;
+            const portMappings: aws.ecs.PortMapping[] = [{ containerPort }];
             return listener.urn.apply(_ => portMappings);
         };
 

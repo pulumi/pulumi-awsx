@@ -40,10 +40,7 @@ export function computeContainerDefinition(
             environment, containerImage.environment(name, parent));
     }
 
-    const containerPortMappings = <ContainerPortMappings>container.portMappings;
-    const portMappings = containerPortMappings && containerPortMappings.portMappings
-        ? containerPortMappings.portMappings(containerName)
-        : <pulumi.Input<aws.ecs.PortMapping[]>>container.portMappings;
+    const portMappings = getPortMappings(containerName, container);
 
     return pulumi.all([container, logGroup.id, image, environment, portMappings])
                  .apply(([container, logGroupId, image, environment, portMappings]) => {
@@ -70,6 +67,47 @@ export function computeContainerDefinition(
 
         return containerDefinition;
     });
+}
+
+function getPortMappings(containerName: string, container: Container) {
+
+    const containerPortMappings = <ContainerPortMappings>container.portMappings;
+    const portMappings = containerPortMappings && containerPortMappings.portMappings
+        ? containerPortMappings.portMappings(containerName)
+        : <pulumi.Input<aws.ecs.PortMapping[]>>container.portMappings;
+
+    return pulumi.output(portMappings)
+                 .apply(mappings => convertMappings(mappings));
+}
+
+function convertMappings(mappings: aws.ecs.PortMapping[]) {
+    if (!mappings) {
+        return undefined;
+    }
+
+    const result: aws.ecs.PortMapping[] = [];
+    for (const mapping of mappings) {
+        const copy = { ...mapping };
+
+        if (copy.hostPort === undefined) {
+            // From https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html:
+            // > For task definitions that use the awsvpc network mode, you should only specify
+            // > the containerPort. The hostPort can be left blank or it must be the same value
+            // > as the containerPort.
+            //
+            // However, if left blank, it will be automatically populated by AWS, potentially
+            // leading to dirty diffs even when no changes have been made. Since we are
+            // currently always using `awsvpc` mode, we go ahead and populate it with the same
+            // value as `containerPort`.
+            //
+            // See https://github.com/terraform-providers/terraform-provider-aws/issues/3401.
+            copy.hostPort = copy.containerPort;
+        }
+
+        result.push(copy);
+    }
+
+    return result;
 }
 
 export interface ContainerPortMappings {
