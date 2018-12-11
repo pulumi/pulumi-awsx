@@ -80,7 +80,7 @@ export class EC2Service extends ecs.Service {
             ...args,
             taskDefinition,
             launchType: "EC2",
-            networkConfiguration: {
+            networkConfiguration: args.networkConfiguration || {
                 assignPublicIp: false,
                 securityGroups: cluster.securityGroups.map(g => g.instance.id),
                 subnets: cluster.network.subnetIds,
