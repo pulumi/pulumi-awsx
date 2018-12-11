@@ -78,8 +78,8 @@ export abstract class LoadBalancer
     public abstract portMappings(): pulumi.Input<aws.ecs.PortMapping[]>;
     public abstract loadBalancers(): pulumi.Input<pulumi.Input<x.ecs.ContainerLoadBalancer>[]>;
 
-    public constructor(type: string, name: string, props: Record<string, any>, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, utils.normalizeProps(props), opts);
+    public constructor(type: string, name: string, args: Record<string, any>, opts?: pulumi.ComponentResourceOptions) {
+        super(type, name, args, opts);
     }
 
     public static fromTargetGroupInfo(name: string, info: TargetGroupInfo, opts?: pulumi.ComponentResourceOptions) {

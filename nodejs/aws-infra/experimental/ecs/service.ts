@@ -79,27 +79,23 @@ function placementConstraints(isFargate: boolean, os: ecs.HostOperatingSystem | 
 }
 
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
-    let allLoadBalancers: aws.ecs.ServiceArgs["loadBalancers"];
-
     const serviceLoadBalancers = <ServiceLoadBalancers>args.loadBalancers;
-    if (serviceLoadBalancers && serviceLoadBalancers.loadBalancers) {
-        allLoadBalancers = serviceLoadBalancers.loadBalancers();
-    }
-    else {
-        allLoadBalancers = <aws.ecs.ServiceArgs["loadBalancers"]>args.loadBalancers;
-    }
 
+    // Get the initial set of load balancers if specified.
+    let allLoadBalancers = serviceLoadBalancers && serviceLoadBalancers.loadBalancers
+        ? serviceLoadBalancers.loadBalancers()
+        : <aws.ecs.ServiceArgs["loadBalancers"]>args.loadBalancers;
+
+    // Now walk each container and see if it wants to add load balancer information as well.
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
         const serviceLoadBalancers = <x.ecs.ContainerPortMappings>container.portMappings;
 
         if (serviceLoadBalancers && serviceLoadBalancers.loadBalancers) {
+            // Containers don't know their own name.  So we add the name in here on their behalf.
             const computedLoadBalancers =
                 pulumi.output(serviceLoadBalancers.loadBalancers())
-                      .apply(lbs => lbs.map(lb => ({
-                            ...lb,
-                            containerName,
-                        })));
+                      .apply(lbs => lbs.map(lb => ({ ...lb, containerName })));
 
             allLoadBalancers = utils.combineArrays(allLoadBalancers, computedLoadBalancers);
         }

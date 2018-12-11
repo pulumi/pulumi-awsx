@@ -38,7 +38,7 @@ import (
 	"github.com/pulumi/pulumi/pkg/util/contract"
 )
 
-const fargateRegion = "us-east-2"
+const fargateRegion = "us-west-1"
 
 func Test_Examples(t *testing.T) {
 	region := os.Getenv("AWS_REGION")
@@ -110,7 +110,6 @@ func Test_Examples(t *testing.T) {
 	for _, ex := range allTests {
 		example := ex.With(integration.ProgramTestOptions{
 			ReportStats: integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
-			Tracing:     "https://tracing.pulumi-engineering.com/collector/api/v1/spans",
 			// TODO[pulumi/pulumi#1900]: This should be the default value, every test we have causes some sort of
 			// change during a `pulumi refresh` for reasons outside our control.
 			ExpectRefreshChanges: true,
