@@ -29,7 +29,7 @@ export abstract class TargetGroup
     public readonly network: Network;
 
     constructor(type: string, name: string, args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, utils.normalizeProps(args), opts);
+        super(type, name, args, opts);
 
         const parentOpts = { parent: this };
 

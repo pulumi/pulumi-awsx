@@ -104,8 +104,8 @@ function normalize(path: string, val: any, set: Set<any>): any {
 
     // Component resources often contain cycles of resources due to logical-child resources pointing
     // at parent resources, and parent resources holding and exposing children through lists. As
-    // such, we don't include component resources at all so that there are no such cycles and so
-    // that we don't end up deadlocking on a child that is already waiting on us.
+    // such, we only reference a component component resources at all so that there are no such
+    // cycles and so that we don't end up deadlocking on a child that is already waiting on us.
     if (pulumi.ComponentResource.isInstance(val)) {
         // console.log("skipping component: " + path);
         return val.urn;

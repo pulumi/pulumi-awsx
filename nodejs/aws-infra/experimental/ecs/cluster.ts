@@ -44,7 +44,7 @@ export class Cluster
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 
     constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsinfra:x:ecs:Cluster", name, utils.normalizeProps(args), opts);
+        super("awsinfra:x:ecs:Cluster", name, args, opts);
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };

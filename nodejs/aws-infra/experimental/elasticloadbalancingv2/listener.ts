@@ -27,7 +27,7 @@ export abstract class Listener extends pulumi.ComponentResource {
     public readonly endpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
 
     constructor(type: string, name: string, args: ListenerArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, utils.normalizeProps(args), opts);
+        super(type, name, args, opts);
 
         const parentOpts = { parent: this };
 

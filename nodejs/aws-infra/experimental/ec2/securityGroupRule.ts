@@ -112,7 +112,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     constructor(type: string, name: string,
                 securityGroup: x.ec2.SecurityGroup,
                 args: SecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, utils.normalizeProps(args), opts || { parent: securityGroup });
+        super(type, name, args, opts || { parent: securityGroup });
 
         const instance = new aws.ec2.SecurityGroupRule(name, {
             ...args,

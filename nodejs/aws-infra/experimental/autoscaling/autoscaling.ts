@@ -39,7 +39,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
                 args: AutoScalingLaunchConfigurationArgs = {},
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:autoscaling:AutoScalingLaunchConfiguration", name,
-            utils.normalizeProps(args), opts);
+            args, opts);
 
         const parentOpts = { parent: this };
 
@@ -294,7 +294,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 args: AutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:autoscaling:AutoScalingGroup", name,
-            utils.normalizeProps(args), opts);
+            args, opts);
 
         const parentOpts = { parent: this };
 

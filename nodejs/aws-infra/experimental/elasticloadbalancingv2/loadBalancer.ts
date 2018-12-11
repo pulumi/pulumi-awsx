@@ -26,7 +26,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
     constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, utils.normalizeProps(args), opts);
+        super(type, name, args, opts);
 
         const longName = `${name}`;
         const shortName = utils.sha1hash(`${longName}`);

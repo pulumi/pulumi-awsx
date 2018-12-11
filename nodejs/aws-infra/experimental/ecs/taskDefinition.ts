@@ -60,7 +60,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, utils.normalizeProps(args), opts);
+        super(type, name, args, opts);
 
         const parentOpts = { parent: this };
         const logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {

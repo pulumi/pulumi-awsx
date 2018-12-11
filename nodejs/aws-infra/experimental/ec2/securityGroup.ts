@@ -28,7 +28,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
     constructor(name: string, args: SecurityGroupArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("awsinfra:x:ec2:SecurityGroup", name, utils.normalizeProps(args), opts);
+        super("awsinfra:x:ec2:SecurityGroup", name, args, opts);
 
         const network = args.network || Network.getDefault();
         const instance = args.instance || new aws.ec2.SecurityGroup(name, {
