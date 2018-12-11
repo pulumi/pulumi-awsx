@@ -23,7 +23,7 @@ import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
 const cluster = new x.ecs.Cluster("testing", { network });
-const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
+const autoScalingGroup = cluster.createAndAddAutoScalingGroup("testing", {
     templateParameters: {
         minSize: 20,
     },
@@ -48,7 +48,7 @@ const nginx = new x.ecs.EC2Service("examples-nginx", {
     desiredCount: 2,
 });
 
-const nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
+export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
 const simpleNginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
@@ -60,7 +60,7 @@ const simpleNginx = new x.ecs.EC2TaskDefinition("examples-simple-nginx", {
     },
 }).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
-const simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
+export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
 const cachedNginx = new x.ecs.EC2Service("examples-cached-nginx", {
     cluster,
@@ -111,7 +111,7 @@ const customWebServer = new x.ecs.EC2Service("mycustomservice", {
                     const rand = Math.random();
                     const http = require("http");
                     http.createServer((req: any, res: any) => {
-                        res.end(`Hello, custom world! (from ${rand})`);
+                        res.end(`Hello, world! (from ${rand})`);
                     }).listen(8080);
                 }),
             },
@@ -300,7 +300,6 @@ const api = new aws.apigateway.x.API("examples-containers", {
         path: "/custom",
         method: "GET",
         eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
-            const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
             try {
                 const fetch = (await import("node-fetch")).default;
                 const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
@@ -326,3 +325,6 @@ const api = new aws.apigateway.x.API("examples-containers", {
 });
 
 export let frontendURL = api.url;
+export let vpcId = network.vpcId;
+export let subnets = network.subnetIds;
+export let instanceSecurityGroups = cluster.securityGroups;
