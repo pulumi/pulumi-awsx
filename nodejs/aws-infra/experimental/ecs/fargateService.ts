@@ -141,7 +141,7 @@ export class FargateService extends ecs.Service {
             ...args,
             taskDefinition,
             launchType: "FARGATE",
-            networkConfiguration: {
+            networkConfiguration: args.networkConfiguration || {
                 assignPublicIp: !cluster.network.usePrivateSubnets,
                 securityGroups: cluster.securityGroups.map(g => g.instance.id),
                 subnets: cluster.network.subnetIds,
