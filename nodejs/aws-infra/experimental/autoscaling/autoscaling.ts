@@ -39,7 +39,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
                 args: AutoScalingLaunchConfigurationArgs = {},
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:autoscaling:AutoScalingLaunchConfiguration", name,
-            AutoScalingLaunchConfiguration.withoutProviders(args), opts);
+            args, opts);
 
         const parentOpts = { parent: this };
 
@@ -80,21 +80,6 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             instanceProfile,
             fileSystem,
         });
-    }
-
-    /** @internal */
-    public static withoutProviders(args: AutoScalingLaunchConfigurationArgs | undefined) {
-        if (!args) {
-            return undefined;
-        }
-
-        const copy = <AutoScalingLaunchConfigurationArgs>{ ...args };
-
-        if (copy.userData && (<AutoScalingUserData>copy.userData).extraBootcmdLines) {
-            delete copy.userData;
-        }
-
-        return copy;
     }
 
     public static defaultInstanceProfilePolicyDocument(): aws.iam.PolicyDocument {
@@ -309,7 +294,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 args: AutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:autoscaling:AutoScalingGroup", name,
-            AutoScalingGroup.withoutProviders(args), opts);
+            args, opts);
 
         const parentOpts = { parent: this };
 
@@ -344,14 +329,6 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             instance,
             launchConfiguration,
         });
-    }
-
-    /** @internal */
-    public static withoutProviders(args: AutoScalingGroupArgs) {
-        return <AutoScalingGroupArgs>{
-            ...args,
-            launchConfigurationArgs: AutoScalingLaunchConfiguration.withoutProviders(args.launchConfigurationArgs),
-        };
     }
 }
 

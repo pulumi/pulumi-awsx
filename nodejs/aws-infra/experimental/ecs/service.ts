@@ -79,18 +79,29 @@ function placementConstraints(isFargate: boolean, os: ecs.HostOperatingSystem | 
 }
 
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
-    let loadBalancers: aws.ecs.ServiceArgs["loadBalancers"];
+    const serviceLoadBalancers = <ServiceLoadBalancers>args.loadBalancers;
+
+    // Get the initial set of load balancers if specified.
+    let allLoadBalancers = serviceLoadBalancers && serviceLoadBalancers.loadBalancers
+        ? serviceLoadBalancers.loadBalancers()
+        : <aws.ecs.ServiceArgs["loadBalancers"]>args.loadBalancers;
+
+    // Now walk each container and see if it wants to add load balancer information as well.
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
-        const serviceLoadBalancers = <ServiceLoadBalancers>container.portMappings;
+        const serviceLoadBalancers = <x.ecs.ContainerPortMappings>container.portMappings;
 
         if (serviceLoadBalancers && serviceLoadBalancers.loadBalancers) {
-            loadBalancers = utils.combineArrays(
-                loadBalancers, serviceLoadBalancers.loadBalancers(containerName));
+            // Containers don't know their own name.  So we add the name in here on their behalf.
+            const computedLoadBalancers =
+                pulumi.output(serviceLoadBalancers.loadBalancers())
+                      .apply(lbs => lbs.map(lb => ({ ...lb, containerName })));
+
+            allLoadBalancers = utils.combineArrays(allLoadBalancers, computedLoadBalancers);
         }
     }
 
-    return loadBalancers;
+    return allLoadBalancers;
 }
 
 // const volumeNames = new Set<string>();
@@ -160,7 +171,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 // }
 
 export interface ServiceLoadBalancers {
-    loadBalancers(containerName: string): aws.ecs.ServiceArgs["loadBalancers"];
+    loadBalancers(): aws.ecs.ServiceArgs["loadBalancers"];
 }
 
 // The shape we want for ClusterFileSystemArgs.  We don't export this as 'Overwrite' types are not pleasant to
@@ -173,6 +184,7 @@ type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
     os?: pulumi.Input<"linux" | "windows">;
     waitForSteadyState?: pulumi.Input<boolean>;
+    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"] | ServiceLoadBalancers;
 }>;
 
 export interface ServiceArgs {
@@ -210,7 +222,7 @@ export interface ServiceArgs {
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"];
+    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"] | ServiceLoadBalancers;
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)

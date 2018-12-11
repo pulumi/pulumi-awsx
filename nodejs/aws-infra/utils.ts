@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as crypto from "crypto";
@@ -64,4 +65,13 @@ export type Compatible<T, U> = T extends U ? U extends T ? any : void : void;
 /** @internal */
 export function checkCompat<T, U>(): Compatible<T, U> {
     return undefined!;
+}
+
+/** @internal */
+export function mergeTags(tags1: pulumi.Input<aws.Tags> | undefined,
+                          tags2: pulumi.Input<aws.Tags> | undefined): pulumi.Output<aws.Tags> {
+    return pulumi.all([tags1, tags2]).apply(([tags1, tags2]) => ({
+        ...(tags1 || {}),
+        ...(tags2 || {}),
+    }));
 }

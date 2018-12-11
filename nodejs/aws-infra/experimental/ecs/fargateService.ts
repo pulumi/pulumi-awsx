@@ -263,7 +263,7 @@ export interface FargateServiceArgs {
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"];
+    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"] | x.ecs.ServiceLoadBalancers;
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)

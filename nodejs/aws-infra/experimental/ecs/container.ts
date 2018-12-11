@@ -40,7 +40,7 @@ export function computeContainerDefinition(
             environment, containerImage.environment(name, parent));
     }
 
-    const portMappings = getPortMappings(containerName, container);
+    const portMappings = getPortMappings(container);
 
     return pulumi.all([container, logGroup.id, image, environment, portMappings])
                  .apply(([container, logGroupId, image, environment, portMappings]) => {
@@ -69,11 +69,11 @@ export function computeContainerDefinition(
     });
 }
 
-function getPortMappings(containerName: string, container: Container) {
+function getPortMappings(container: Container) {
 
     const containerPortMappings = <ContainerPortMappings>container.portMappings;
     const portMappings = containerPortMappings && containerPortMappings.portMappings
-        ? containerPortMappings.portMappings(containerName)
+        ? containerPortMappings.portMappings()
         : <pulumi.Input<aws.ecs.PortMapping[]>>container.portMappings;
 
     return pulumi.output(portMappings)
@@ -110,8 +110,15 @@ function convertMappings(mappings: aws.ecs.PortMapping[]) {
     return result;
 }
 
+export interface ContainerLoadBalancer {
+    containerPort: pulumi.Input<number>;
+    elbName?: pulumi.Input<string>;
+    targetGroupArn?: pulumi.Input<string>;
+}
+
 export interface ContainerPortMappings {
-    portMappings(containerName: string): pulumi.Input<aws.ecs.PortMapping[]>;
+    portMappings(): pulumi.Input<aws.ecs.PortMapping[]>;
+    loadBalancers(): pulumi.Input<pulumi.Input<ContainerLoadBalancer>[]>;
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
@@ -125,7 +132,7 @@ type MakeInputs<T> = {
 // trying to provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     image: pulumi.Input<string> | ContainerImage;
-    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | (ContainerPortMappings & ecs.ServiceLoadBalancers);
+    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | ContainerPortMappings;
 }>;
 
 export interface Container {
@@ -165,7 +172,7 @@ export interface Container {
      */
     image: pulumi.Input<string> | ContainerImage;
 
-    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | (ContainerPortMappings & ecs.ServiceLoadBalancers);
+    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | ContainerPortMappings;
 }
 
 export interface ContainerImage {

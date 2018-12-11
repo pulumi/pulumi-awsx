@@ -82,7 +82,7 @@ export class Cluster
      * this cluster as well as using this cluster to initialize both its securityGroups and
      * launchConfiguration userData.
      */
-    public createAndAddAutoScalingGroup(
+    public createAutoScalingGroup(
             name: string,
             args?: x.autoscaling.AutoScalingGroupArgs,
             opts?: pulumi.ResourceOptions) {

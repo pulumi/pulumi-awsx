@@ -188,6 +188,8 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
             ...args,
             type: "egress",
         }, opts);
+
+        securityGroup.egressRules.push(this);
     }
 }
 
@@ -199,6 +201,8 @@ export class IngressSecurityGroupRule extends SecurityGroupRule {
             ...args,
             type: "ingress",
         }, opts);
+
+        securityGroup.ingressRules.push(this);
     }
 }
 
