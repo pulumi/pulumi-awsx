@@ -23,7 +23,7 @@ import { Config, Output } from "@pulumi/pulumi";
 
 const network = awsinfra.Network.getDefault();
 const cluster = new x.ecs.Cluster("testing", { network });
-const autoScalingGroup = cluster.createAndAddAutoScalingGroup("testing", {
+const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     templateParameters: {
         minSize: 20,
     },
@@ -48,7 +48,7 @@ const nginx = new x.ecs.EC2Service("examples-nginx", {
     desiredCount: 2,
 });
 
-export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
+const nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
 const simpleNginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
@@ -60,7 +60,7 @@ const simpleNginx = new x.ecs.EC2TaskDefinition("examples-simple-nginx", {
     },
 }).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
-export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
+const simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
 const cachedNginx = new x.ecs.EC2Service("examples-cached-nginx", {
     cluster,
@@ -98,15 +98,18 @@ const multistageCachedNginx = new x.ecs.EC2Service("examples-multistage-cached-n
     desiredCount: 2,
 });
 
-const customWebServerLoadBalancer = x.ecs.LoadBalancer.fromPortInfo(
-    "mycustomservice", { cluster, port: 80, targetPort: 8080 });
-const customWebServer = new x.ecs.EC2Service("mycustomservice", {
+const customWebServerLoadBalancer = cluster.network.createNetworkLoadBalancer("custom");
+const customWebServerListener =
+    customWebServerLoadBalancer.createTargetGroup("custom", { port: 8080 })
+                               .createListener("custom", { port: 80 });
+
+const customWebServer = new x.ecs.EC2Service("custom", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             webserver: {
                 memory: 128,
-                portMappings: customWebServerLoadBalancer,
+                portMappings: customWebServerListener,
                 image: x.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
@@ -302,7 +305,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
         eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
             try {
                 const fetch = (await import("node-fetch")).default;
-                const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
+                const endpoint = customWebServerListener.endpoint().get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();
@@ -325,6 +328,3 @@ const api = new aws.apigateway.x.API("examples-containers", {
 });
 
 export let frontendURL = api.url;
-export let vpcId = network.vpcId;
-export let subnets = network.subnetIds;
-export let instanceSecurityGroups = cluster.securityGroups;

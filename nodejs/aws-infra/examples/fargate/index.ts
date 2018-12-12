@@ -39,7 +39,7 @@ const nginx = new x.ecs.FargateService("examples-nginx", {
     desiredCount: 2,
 });
 
-export let nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
+const nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
 const simpleNginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
@@ -51,7 +51,7 @@ const simpleNginx = new x.ecs.FargateTaskDefinition("examples-simple-nginx", {
     },
 }).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
-export let simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
+const simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
 
 const cachedNginx = new x.ecs.FargateService("examples-cached-nginx", {
     cluster,
@@ -90,15 +90,18 @@ const multistageCachedNginx = new x.ecs.FargateService("examples-multistage-cach
     desiredCount: 2,
 });
 
-const customWebServerLoadBalancer = x.ecs.LoadBalancer.fromPortInfo(
-    "mycustomservice", { cluster, port: 80, targetPort: 8080 });
+const customWebServerLoadBalancer = cluster.network.createNetworkLoadBalancer("custom");
+const customWebServerListener =
+    customWebServerLoadBalancer.createTargetGroup("custom", { port: 8080 })
+                               .createListener("custom", { port: 80 });
+
 const customWebServer = new x.ecs.FargateService("mycustomservice", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             webserver: {
                 memory: 128,
-                portMappings: customWebServerLoadBalancer,
+                portMappings: customWebServerListener,
                 image: x.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
@@ -208,6 +211,7 @@ const builtService = new x.ecs.FargateService("examples-nginx2", {
 function errorJSON(err: any) {
     const result: any = Object.create(null);
     Object.getOwnPropertyNames(err).forEach(key => result[key] = err[key]);
+    result.florp = "blopr";
     return result;
 }
 
@@ -292,9 +296,10 @@ const api = new aws.apigateway.x.API("examples-containers", {
         path: "/custom",
         method: "GET",
         eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
+            const endpoint = customWebServerListener.endpoint().get();
             try {
                 const fetch = (await import("node-fetch")).default;
-                const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
+                const endpoint = customWebServerListener.endpoint().get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();
@@ -317,6 +322,3 @@ const api = new aws.apigateway.x.API("examples-containers", {
 });
 
 export let frontendURL = api.url;
-export let vpcId = network.vpcId;
-export let subnets = network.subnetIds;
-export let instanceSecurityGroups = cluster.securityGroups;

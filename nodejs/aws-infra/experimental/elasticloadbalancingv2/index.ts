@@ -12,14 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as autoscaling from "./autoscaling";
-import * as ec2 from "./ec2";
-import * as ecs from "./ecs";
-import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
+export * from "./loadBalancer";
+export * from "./targetGroup";
+export * from "./listener";
 
-export { autoscaling, ec2, ecs, elasticloadbalancingv2 };
-
-export * from "./clusterFileSystem";
-
-export * from "./role";
-
+export * from "./application";
+export * from "./network";

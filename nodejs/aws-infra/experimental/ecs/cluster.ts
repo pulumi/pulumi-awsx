@@ -72,6 +72,24 @@ export class Cluster
         });
     }
 
+    /**
+     * Creates a new [ApplicableLoadBalancer] corresponding to the network and security groups for
+     * this cluster.
+     */
+    public createApplicationLoadBalancer(
+            name: string,
+            args: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs = {},
+            opts?: pulumi.ComponentResourceOptions) {
+
+        // Use the network and security groups from this cluster, unless the caller has specified
+        // their own.
+        return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
+                network: this.network,
+                securityGroups: this.securityGroups,
+                ...args,
+            }, opts || { parent: this });
+    }
+
     public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {
         this.autoScalingGroups.push(group);
     }

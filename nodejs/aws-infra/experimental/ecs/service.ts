@@ -91,10 +91,10 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
         const container = args.taskDefinition.containers[containerName];
         const serviceLoadBalancers = <x.ecs.ContainerPortMappings>container.portMappings;
 
-        if (serviceLoadBalancers && serviceLoadBalancers.loadBalancers) {
+        if (serviceLoadBalancers && serviceLoadBalancers.containerLoadBalancers) {
             // Containers don't know their own name.  So we add the name in here on their behalf.
             const computedLoadBalancers =
-                pulumi.output(serviceLoadBalancers.loadBalancers())
+                pulumi.output(serviceLoadBalancers.containerLoadBalancers())
                       .apply(lbs => lbs.map(lb => ({ ...lb, containerName })));
 
             allLoadBalancers = utils.combineArrays(allLoadBalancers, computedLoadBalancers);
