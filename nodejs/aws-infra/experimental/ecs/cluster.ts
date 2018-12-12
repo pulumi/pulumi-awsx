@@ -76,15 +76,14 @@ export class Cluster
             name: string,
             args: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs = {},
             opts?: pulumi.ComponentResourceOptions) {
-        const argsCopy = {
-            ...args,
-        };
 
-        argsCopy.network = argsCopy.network || this.network;
-        argsCopy.securityGroups = argsCopy.securityGroups || this.securityGroups;
-
-        return new x.elasticloadbalancingv2.ApplicationLoadBalancer(
-            name, argsCopy, opts || { parent: this });
+        // Use the network and security groups from this cluster, unless the caller has specified
+        // their own.
+        return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
+                network: this.network,
+                securityGroups: this.securityGroups,
+                ...args,
+            }, opts || { parent: this });
     }
 
     public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {
