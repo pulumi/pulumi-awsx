@@ -205,15 +205,15 @@ function getTargetGroup(
         targetGroup: ApplicationTargetGroup | undefined,
         args: ApplicationListenerArgs,
         opts: pulumi.ComponentResourceOptions | undefined) {
+
+    // If a target group was provided then just use it.
     if (targetGroup) {
         return targetGroup;
     }
 
-    let targetGroupArgs = args.targetGroupArgs;
-    if (!targetGroupArgs) {
-        targetGroupArgs =  { port: args.port, protocol: args.protocol };
-    }
-
+    // Otherwise create a new target group.  Either use the full arguments for that if provided, or
+    // use the desired listener port/protocol to make it.
+    const targetGroupArgs = args.targetGroupArgs || { port: args.port, protocol: args.protocol };
     return new ApplicationTargetGroup(name, loadBalancer, targetGroupArgs, opts);
 }
 
