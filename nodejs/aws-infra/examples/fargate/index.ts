@@ -106,7 +106,7 @@ const customWebServer = new x.ecs.FargateService("mycustomservice", {
                     const rand = Math.random();
                     const http = require("http");
                     http.createServer((req: any, res: any) => {
-                        res.end(`Hello, custom world! (from ${rand})`);
+                        res.end(`Hello, world! (from ${rand})`);
                     }).listen(8080);
                 }),
             },
