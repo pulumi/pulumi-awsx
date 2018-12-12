@@ -70,10 +70,9 @@ export function computeContainerDefinition(
 }
 
 function getPortMappings(container: Container) {
-
     const containerPortMappings = <ContainerPortMappings>container.portMappings;
-    const portMappings = containerPortMappings && containerPortMappings.portMappings
-        ? containerPortMappings.portMappings()
+    const portMappings = containerPortMappings && containerPortMappings.containerPortMappings
+        ? containerPortMappings.containerPortMappings()
         : <pulumi.Input<aws.ecs.PortMapping[]>>container.portMappings;
 
     return pulumi.output(portMappings)
@@ -117,13 +116,8 @@ export interface ContainerLoadBalancer {
 }
 
 export interface ContainerPortMappings {
-    portMappings(): pulumi.Input<pulumi.Input<aws.ecs.PortMapping>[]>;
-    loadBalancers(): pulumi.Input<pulumi.Input<ContainerLoadBalancer>[]>;
-}
-
-export interface ContainerPortMapping {
-    portMapping(): pulumi.Input<aws.ecs.PortMapping>;
-    loadBalancer(): pulumi.Input<ContainerLoadBalancer>;
+    containerPortMappings(): pulumi.Input<pulumi.Input<aws.ecs.PortMapping>[]>;
+    containerLoadBalancers(): pulumi.Input<pulumi.Input<ContainerLoadBalancer>[]>;
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;

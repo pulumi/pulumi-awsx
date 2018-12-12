@@ -90,9 +90,10 @@ const multistageCachedNginx = new x.ecs.FargateService("examples-multistage-cach
     desiredCount: 2,
 });
 
-const customWebServerLoadBalancer = cluster.network.createNetworkLoadBalancer("mycustomservice");
-const customWebServerListener = customWebServerLoadBalancer.createListener(
-    "mycustomlistener", { port: 80, targetGroupArgs: { port: 8080 } });
+const customWebServerLoadBalancer = cluster.network.createNetworkLoadBalancer("custom");
+const customWebServerListener =
+    customWebServerLoadBalancer.createTargetGroup("custom", { port: 8080 })
+                               .createListener("custom", { port: 80 });
 
 const customWebServer = new x.ecs.FargateService("mycustomservice", {
     cluster,

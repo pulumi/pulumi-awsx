@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// tslint:disable:max-line-length
+
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
@@ -20,13 +22,18 @@ import { Network } from "./../../network";
 
 import * as utils from "./../../utils";
 
-export abstract class Listener extends pulumi.ComponentResource {
+export abstract class Listener
+        extends pulumi.ComponentResource
+        implements x.ecs.ContainerPortMappings, x.elasticloadbalancingv2.ListenerDefaultAction {
     public readonly instance: aws.elasticloadbalancingv2.Listener;
     public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
+    public readonly defaultTargetGroup?: x.elasticloadbalancingv2.TargetGroup;
 
     public readonly endpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
 
-    constructor(type: string, name: string, args: ListenerArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(type: string, name: string,
+                defaultTargetGroup: x.elasticloadbalancingv2.TargetGroup | undefined,
+                args: ListenerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
 
         const parentOpts = { parent: this };
@@ -52,8 +59,46 @@ export abstract class Listener extends pulumi.ComponentResource {
 
         this.instance = instance;
         this.loadBalancer = args.loadBalancer;
+
+        if (defaultTargetGroup) {
+            this.defaultTargetGroup = defaultTargetGroup;
+            defaultTargetGroup.listeners.push(this);
+        }
+
         this.endpoint = () => endpoint;
     }
+
+    public containerPortMappings() {
+        if (!this.defaultTargetGroup) {
+            throw new Error("A [Listener] can only be used as a [ContainerPortMapping] if it has a [defaultTargetGroup]");
+        }
+
+        return this.defaultTargetGroup!.containerPortMappings();
+    }
+
+    public containerLoadBalancers() {
+        if (!this.defaultTargetGroup) {
+            throw new Error("A [Listener] can only be used as a [ContainerPortMapping] if it has a [defaultTargetGroup]");
+        }
+
+        return this.defaultTargetGroup!.containerLoadBalancers();
+    }
+
+    public listenerDefaultAction() {
+        if (!this.defaultTargetGroup) {
+            throw new Error("A [Listener] can only be used as a [ListenerDefaultAction] if it has a [defaultTargetGroup]");
+        }
+
+        return this.defaultTargetGroup!.listenerDefaultAction();
+    }
+}
+
+export interface ListenerDefaultAction {
+    listenerDefaultAction(): aws.elasticloadbalancingv2.ListenerArgs["defaultAction"];
+}
+
+export interface ListenerActions {
+    actions(): aws.elasticloadbalancingv2.ListenerRuleArgs["actions"];
 }
 
 type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {

@@ -80,7 +80,9 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
  * balancer.
  */
 export class ApplicationTargetGroup extends mod.TargetGroup {
-    public readonly applicationLoadBalancer: ApplicationLoadBalancer;
+    public readonly loadBalancer: ApplicationLoadBalancer;
+
+    public readonly listeners: x.elasticloadbalancingv2.ApplicationListener[];
 
     constructor(name: string, loadBalancer: ApplicationLoadBalancer,
                 args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
@@ -93,7 +95,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             protocol,
         }, opts);
 
-        this.applicationLoadBalancer = loadBalancer;
+        this.loadBalancer = loadBalancer;
 
         this.registerOutputs({
             instance: this.instance,
@@ -106,8 +108,8 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 
     public createListener(name: string, args: ApplicationListenerArgs,
                           opts?: pulumi.ComponentResourceOptions): ApplicationListener {
-        return new ApplicationListener(name, this.applicationLoadBalancer, {
-            targetGroup: this,
+        return new ApplicationListener(name, this.loadBalancer, {
+            defaultAction: this,
             ...args,
         }, opts);
     }
@@ -148,36 +150,20 @@ function computePortInfo(
     return { port, protocol };
 }
 
-export class ApplicationListener
-        extends mod.Listener
-        implements x.ecs.ContainerPortMappings {
-    public readonly targetGroups: ApplicationTargetGroup[];
+export class ApplicationListener extends mod.Listener {
+    public readonly loadBalancer: ApplicationLoadBalancer;
+    public readonly defaultTargetGroup?: x.elasticloadbalancingv2.ApplicationTargetGroup;
 
     constructor(name: string,
                 loadBalancer: ApplicationLoadBalancer,
-                args: ApplicationListenerArgs = {},
+                args: ApplicationListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
-        if (args.targetGroup === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
-            throw new Error(
-"One of [targetGroupOpt] or [targetGroupArgs] or [port] must be provided when creating an ApplicationListener.");
-        }
 
-        const targetGroup = getTargetGroup(name, loadBalancer, args, opts);
-        if (loadBalancer !== targetGroup.applicationLoadBalancer) {
-            throw new Error("Listener's [loadBalancer] was not the same as its [targetGroup]'s load balancer.");
-        }
+        const { port, protocol } = computePortInfo(args.port, args.protocol);
+        const { defaultAction, targetGroup } = getDefaultAction(
+            name, loadBalancer, args, port, protocol, opts);
 
-        const defaultAction = pulumi.output(args.defaultAction).apply(
-            d => d || {
-                targetGroupArn: targetGroup.instance.arn,
-                type: "forward",
-            });
-
-        const { port, protocol } = computePortInfo(
-            utils.ifUndefined(args.port, targetGroup.instance.port),
-            utils.ifUndefined(args.protocol, <pulumi.Output<ApplicationProtocol>>targetGroup.instance.protocol));
-
-        super("awsinfra:x:elasticloadbalancingv2:ApplicationListener", name, {
+        super("awsinfra:x:elasticloadbalancingv2:ApplicationListener", name, targetGroup, {
             ...args,
             defaultAction,
             loadBalancer,
@@ -200,39 +186,36 @@ export class ApplicationListener
             }
         }
 
-        this.targetGroups = [targetGroup];
+        this.loadBalancer = loadBalancer;
+        loadBalancer.listeners.push(this);
 
         this.registerOutputs({
             instance: this.instance,
             loadBalancer: this.loadBalancer,
         });
-
-        loadBalancer.listeners.push(this);
-    }
-
-    public portMappings() {
-        return this.targetGroups.map(tg => tg.portMapping());
-    }
-
-    public loadBalancers() {
-        return this.targetGroups.map(tg => tg.loadBalancer());
     }
 }
 
-function getTargetGroup(
+function getDefaultAction(
         name: string, loadBalancer: ApplicationLoadBalancer,
         args: ApplicationListenerArgs,
+        port: pulumi.Input<number>,
+        protocol: pulumi.Input<ApplicationProtocol>,
         opts: pulumi.ComponentResourceOptions | undefined) {
 
-    // If a target group was provided then just use it.
-    if (args.targetGroup) {
-        return args.targetGroup;
+    if (args.defaultAction) {
+        const listenerAction = <x.elasticloadbalancingv2.ListenerDefaultAction>args.defaultAction;
+        const defaultAction = listenerAction.listenerDefaultAction
+            ? listenerAction.listenerDefaultAction()
+            : <aws.elasticloadbalancingv2.ListenerArgs["defaultAction"]>args.defaultAction;
+
+        const targetGroup = x.elasticloadbalancingv2.TargetGroup.isTargetGroup(listenerAction) ? listenerAction : undefined;
+        return { defaultAction, targetGroup };
     }
 
-    // Otherwise create a new target group.  Either use the full arguments for that if provided, or
-    // use the desired listener port/protocol to make it.
-    const targetGroupArgs = args.targetGroupArgs || { port: args.port, protocol: args.protocol };
-    return new ApplicationTargetGroup(name, loadBalancer, targetGroupArgs, opts);
+    const targetGroup = new ApplicationTargetGroup(
+        name, loadBalancer, { port, protocol }, opts);
+    return { defaultAction: targetGroup.listenerDefaultAction(), targetGroup };
 }
 
 export interface ApplicationLoadBalancerArgs {
@@ -369,18 +352,8 @@ export interface ApplicationTargetGroupArgs {
 }
 
 interface ApplicationListenerArgs {
-    targetGroup?: ApplicationTargetGroup;
-
     /**
-     * Arguments to create a target group. One of [targetGroup] or [targetGroupArgs] or [port] must be
-     * specified.
-     */
-    targetGroupArgs?: ApplicationTargetGroupArgs;
-
-    /**
-     * The port. Specify a value from `1` to `65535`. One of [targetGroup] or [targetGroupArgs] or
-     * [port] must be specified.  Can be inferred from [targetGroup] or [targetGroupArgs] or
-     * [protocol] if not provided.
+     * The port. Specify a value from `1` to `65535`.  Computed from "protocol" if not provided.
      */
     port?: pulumi.Input<number>;
 
@@ -391,9 +364,9 @@ interface ApplicationListenerArgs {
 
     /**
      * An Action block. Action blocks are documented below.  If not provided, a suitable
-     * defaultAction will be chosen that forwards to the [targetGroup] for this listener.
+     * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
      */
-    defaultAction?: aws.elasticloadbalancingv2.Listener["defaultAction"];
+    defaultAction?: aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] | x.elasticloadbalancingv2.ListenerDefaultAction;
 
     // TODO: consider extracting out an HttpsApplicationListener.
 

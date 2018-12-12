@@ -98,15 +98,18 @@ const multistageCachedNginx = new x.ecs.EC2Service("examples-multistage-cached-n
     desiredCount: 2,
 });
 
-const customWebServerLoadBalancer = x.ecs.LoadBalancer.fromPortInfo(
-    "mycustomservice", { cluster, port: 80, targetPort: 8080 });
-const customWebServer = new x.ecs.EC2Service("mycustomservice", {
+const customWebServerLoadBalancer = cluster.network.createNetworkLoadBalancer("custom");
+const customWebServerListener =
+    customWebServerLoadBalancer.createTargetGroup("custom", { port: 8080 })
+                               .createListener("custom", { port: 80 });
+
+const customWebServer = new x.ecs.EC2Service("custom", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             webserver: {
                 memory: 128,
-                portMappings: customWebServerLoadBalancer,
+                portMappings: customWebServerListener,
                 image: x.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
@@ -300,10 +303,9 @@ const api = new aws.apigateway.x.API("examples-containers", {
         path: "/custom",
         method: "GET",
         eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
-            const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
             try {
                 const fetch = (await import("node-fetch")).default;
-                const endpoint = customWebServerLoadBalancer.defaultEndpoint().get();
+                const endpoint = customWebServerListener.endpoint().get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();

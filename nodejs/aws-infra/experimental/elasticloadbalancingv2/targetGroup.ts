@@ -24,9 +24,16 @@ import * as utils from "./../../utils";
 
 export abstract class TargetGroup
         extends pulumi.ComponentResource
-        implements x.ecs.ContainerPortMapping {
+        implements x.ecs.ContainerPortMappings, x.elasticloadbalancingv2.ListenerDefaultAction {
+
+    /** @internal */
+    // tslint:disable-next-line:variable-name
+    private readonly __isTargetGroup = true;
+
     public readonly instance: aws.elasticloadbalancingv2.TargetGroup;
     public readonly network: Network;
+
+    public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
 
     constructor(type: string, name: string, args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
@@ -47,17 +54,35 @@ export abstract class TargetGroup
         }, parentOpts);
     }
 
-    public portMapping() {
-        return this.instance.port.apply(p => ({ containerPort: +p }));
+    /** @internal */
+    public static isTargetGroup(obj: any): obj is TargetGroup {
+        return obj && !!obj.__isTargetGroup;
     }
 
-    public loadBalancer() {
-        const targetGroup = this.instance;
-        return pulumi.all([targetGroup.arn, targetGroup.port])
-                     .apply(([targetGroupArn, containerPort]) => ({
-                        containerPort,
-                        targetGroupArn,
-                     }));
+    private dependencies() {
+        // Return an output that depends on our listeners.  That way anything that depends on us
+        // will only proceed once our load balancer connections have been created.
+        return pulumi.output(this.listeners.map(r => r.instance.urn));
+    }
+
+    public containerPortMappings(): pulumi.Input<pulumi.Input<aws.ecs.PortMapping>[]> {
+        return pulumi.output([this.instance.port, this.dependencies()]).apply(([port]) => [{
+            containerPort: +port,
+        }]);
+    }
+
+    public containerLoadBalancers(): pulumi.Input<pulumi.Input<x.ecs.ContainerLoadBalancer>[]> {
+        return this.dependencies().apply(_ => [{
+            containerPort: this.instance.port,
+            targetGroupArn: this.instance.arn,
+        }]);
+    }
+
+    public listenerDefaultAction(): aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] {
+        return this.dependencies().apply(_ => ({
+            targetGroupArn: this.instance.arn,
+            type: "forward",
+        }));
     }
 }
 

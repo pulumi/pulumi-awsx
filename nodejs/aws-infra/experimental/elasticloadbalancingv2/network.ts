@@ -54,17 +54,19 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
 }
 
 export class NetworkTargetGroup extends mod.TargetGroup {
-    public readonly networkLoadBalancer: NetworkLoadBalancer;
+    public readonly loadBalancer: NetworkLoadBalancer;
 
-    constructor(name: string, networkLoadBalancer: NetworkLoadBalancer,
+    public readonly listeners: x.elasticloadbalancingv2.NetworkListener[];
+
+    constructor(name: string, loadBalancer: NetworkLoadBalancer,
                 args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
             ...args,
-            network: networkLoadBalancer.network,
+            network: loadBalancer.network,
             protocol: "TCP",
-        }, opts || { parent: networkLoadBalancer });
+        }, opts || { parent: loadBalancer });
 
-        this.networkLoadBalancer = networkLoadBalancer;
+        this.loadBalancer = loadBalancer;
 
         this.registerOutputs({
             instance: this.instance,
@@ -72,92 +74,62 @@ export class NetworkTargetGroup extends mod.TargetGroup {
             loadBalancer: this.loadBalancer,
         });
 
-        networkLoadBalancer.targetGroups.push(this);
+        loadBalancer.targetGroups.push(this);
     }
 
     public createListener(name: string, args: NetworkListenerArgs,
                           opts?: pulumi.ComponentResourceOptions): NetworkListener {
-        return new NetworkListener(name, this.networkLoadBalancer, {
-            targetGroup: this,
+        return new NetworkListener(name, this.loadBalancer, {
+            defaultAction: this,
             ...args,
         }, opts || { parent: this });
     }
 }
 
-export class NetworkListener
-        extends mod.Listener
-        implements x.ecs.ContainerPortMappings {
+export class NetworkListener extends mod.Listener {
     public readonly loadBalancer: NetworkLoadBalancer;
-    public readonly targetGroups: NetworkTargetGroup[];
+    public readonly defaultTargetGroup?: x.elasticloadbalancingv2.NetworkTargetGroup;
 
     constructor(name: string,
                 loadBalancer: NetworkLoadBalancer,
-                args: NetworkListenerArgs = { },
+                args: NetworkListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
-        if (args.targetGroup === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
-            throw new Error(
-"One of [args.targetGroup] or [args.targetGroupArgs] or [args.port] must be provided when creating a NetworkListener.");
-        }
+        const { defaultAction, targetGroup } = getDefaultAction(name, loadBalancer, args, opts);
 
-        const targetGroup = getTargetGroup(name, loadBalancer, args, opts);
-        if (loadBalancer !== targetGroup.networkLoadBalancer) {
-            throw new Error("Listener's [loadBalancer] was not the same as its [targetGroup]'s load balancer.");
-        }
-
-        const defaultAction = pulumi.output(args.defaultAction).apply(
-            d => d || {
-                targetGroupArn: targetGroup.instance.arn,
-                type: "forward",
-            });
-
-        super("awsinfra:x:elasticloadbalancingv2:NetworkListener", name, {
+        super("awsinfra:x:elasticloadbalancingv2:NetworkListener", name, targetGroup, {
             ...args,
             defaultAction,
             loadBalancer,
             protocol: "TCP",
-            port: utils.ifUndefined(args.port, targetGroup.instance.port),
-        }, opts || { parent: targetGroup });
+        }, opts || { parent: loadBalancer });
 
         this.loadBalancer = loadBalancer;
-        this.targetGroups = [targetGroup];
+        loadBalancer.listeners.push(this);
 
         this.registerOutputs({
             instance: this.instance,
             loadBalancer: this.loadBalancer,
         });
-
-        loadBalancer.listeners.push(this);
-    }
-
-    public portMappings() {
-        return this.targetGroups.map(tg => tg.portMapping());
-    }
-
-    public loadBalancers() {
-        return this.targetGroups.map(tg => tg.loadBalancer());
     }
 }
 
-function getTargetGroup(
+function getDefaultAction(
         name: string,
         loadBalancer: NetworkLoadBalancer,
         args: NetworkListenerArgs,
-        opts: pulumi.ComponentResourceOptions | undefined): NetworkTargetGroup {
-    if (args.targetGroup) {
-        return args.targetGroup;
+        opts: pulumi.ComponentResourceOptions | undefined) {
+    if (args.defaultAction) {
+        const listenerAction = <x.elasticloadbalancingv2.ListenerDefaultAction>args.defaultAction;
+        const defaultAction = listenerAction.listenerDefaultAction
+            ? listenerAction.listenerDefaultAction()
+            : <aws.elasticloadbalancingv2.ListenerArgs["defaultAction"]>args.defaultAction;
+
+        const targetGroup = x.elasticloadbalancingv2.TargetGroup.isTargetGroup(listenerAction) ? listenerAction : undefined;
+        return { defaultAction, targetGroup };
     }
 
-    let targetGroupArgs = args.targetGroupArgs;
-    if (!targetGroupArgs) {
-        if (args.port === undefined) {
-            throw new Error(
-"[args.port] must both be provided if [targetGroup] and [targetGroupArgs] are not provided.");
-        }
-
-        targetGroupArgs =  { port: args.port };
-    }
-
-    return new NetworkTargetGroup(name, loadBalancer, targetGroupArgs, opts);
+    const targetGroup = new NetworkTargetGroup(name, loadBalancer, { port: args.port }, opts);
+    return { defaultAction: targetGroup.listenerDefaultAction(), targetGroup };
 }
 
 export interface NetworkLoadBalancerArgs {
@@ -273,24 +245,13 @@ export interface NetworkTargetGroupArgs {
 
 export interface NetworkListenerArgs {
     /**
-     * The default target group for the listener to forward requests to by default.
+     * The port. Specify a value from `1` to `65535`.
      */
-    targetGroup?: NetworkTargetGroup;
-
-    /**
-     * Arguments to create a target group if one was not explicitly provided.
-     */
-    targetGroupArgs?: NetworkTargetGroupArgs;
-
-    /**
-     * The port. Specify a value from `1` to `65535`. One of [targetGroup] or [targetGroupArgs] or [port] must be
-     * specified.  Can be inferred from [targetGroup] or [targetGroupArgs] if not provided.
-     */
-    port?: pulumi.Input<number>;
+    port: pulumi.Input<number>;
 
     /**
      * An Action block. Action blocks are documented below.  If not provided, a suitable
-     * defaultAction will be chosen that forwards to the [targetGroup] for this listener.
+     * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
      */
-    defaultAction?: aws.elasticloadbalancingv2.Listener["defaultAction"];
+    defaultAction?: aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] | x.elasticloadbalancingv2.ListenerDefaultAction;
 }
