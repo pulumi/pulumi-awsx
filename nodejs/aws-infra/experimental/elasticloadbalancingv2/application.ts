@@ -25,6 +25,15 @@ import * as utils from "./../../utils";
 
 export type ApplicationProtocol = "HTTP" | "HTTPS";
 
+/**
+ * A application load balancer serves as the single point of contact for clients. The load balancer
+ * distributes incoming application traffic across multiple targets, such as EC2 instances, in
+ * multiple Availability Zones. This increases the availability of your application. You add one or
+ * more listeners to your load balancer.
+ *
+ * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html for
+ * more details.
+ */
 export class ApplicationLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: ApplicationListener[];
     public readonly targetGroups: ApplicationTargetGroup[];
@@ -46,19 +55,32 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
         });
     }
 
+    /**
+     * Creates a new listener for this [ApplicationLoadBalancer] see ApplicationListener for more
+     * details.
+     */
     public createListener(name: string, args: ApplicationListenerArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new ApplicationListener(name, this, undefined, args, opts);
+        return new ApplicationListener(name, this, args, opts);
     }
 
+    /**
+     * Creates a target group for this [ApplicationLoadBalancer] see ApplicationTargetGroup for more
+     * details.
+     */
     public createTargetGroup(name: string, args: ApplicationTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         return new ApplicationTargetGroup(name, this, args, opts);
     }
 }
 
+/**
+ * Each target group routes requests to one or more registered targets, such as EC2 instances, using
+ * the protocol and port number that you specify. You can register a target with multiple target
+ * groups. You can configure health checks on a per target group basis. Health checks are performed
+ * on all targets registered to a target group that is specified in a listener rule for your load
+ * balancer.
+ */
 export class ApplicationTargetGroup extends mod.TargetGroup {
-    public readonly loadBalancer: ApplicationLoadBalancer;
-
-    public readonly listeners: ApplicationListener[];
+    public readonly applicationLoadBalancer: ApplicationLoadBalancer;
 
     constructor(name: string, loadBalancer: ApplicationLoadBalancer,
                 args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
@@ -71,8 +93,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             protocol,
         }, opts);
 
-        this.loadBalancer = loadBalancer;
-        this.listeners = [];
+        this.applicationLoadBalancer = loadBalancer;
 
         this.registerOutputs({
             instance: this.instance,
@@ -85,7 +106,10 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 
     public createListener(name: string, args: ApplicationListenerArgs,
                           opts?: pulumi.ComponentResourceOptions): ApplicationListener {
-        return new ApplicationListener(name, this.loadBalancer, this, args, opts);
+        return new ApplicationListener(name, this.applicationLoadBalancer, {
+            targetGroup: this,
+            ...args,
+        }, opts);
     }
 }
 
@@ -127,20 +151,19 @@ function computePortInfo(
 export class ApplicationListener
         extends mod.Listener
         implements x.ecs.ContainerPortMappings {
-    public readonly targetGroup: ApplicationTargetGroup;
+    public readonly targetGroups: ApplicationTargetGroup[];
 
     constructor(name: string,
                 loadBalancer: ApplicationLoadBalancer,
-                targetGroupOpt: ApplicationTargetGroup | undefined,
                 args: ApplicationListenerArgs = {},
                 opts?: pulumi.ComponentResourceOptions) {
-        if (targetGroupOpt === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
+        if (args.targetGroup === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
             throw new Error(
 "One of [targetGroupOpt] or [targetGroupArgs] or [port] must be provided when creating an ApplicationListener.");
         }
 
-        const targetGroup = getTargetGroup(name, loadBalancer, targetGroupOpt, args, opts);
-        if (loadBalancer !== targetGroup.loadBalancer) {
+        const targetGroup = getTargetGroup(name, loadBalancer, args, opts);
+        if (loadBalancer !== targetGroup.applicationLoadBalancer) {
             throw new Error("Listener's [loadBalancer] was not the same as its [targetGroup]'s load balancer.");
         }
 
@@ -177,36 +200,33 @@ export class ApplicationListener
             }
         }
 
-        this.targetGroup = targetGroup;
+        this.targetGroups = [targetGroup];
 
         this.registerOutputs({
             instance: this.instance,
             loadBalancer: this.loadBalancer,
-            targetGroup: this.targetGroup,
         });
 
         loadBalancer.listeners.push(this);
-        targetGroup.listeners.push(this);
     }
 
     public portMappings() {
-        return this.targetGroup.portMappings();
+        return this.targetGroups.map(tg => tg.portMapping());
     }
 
     public loadBalancers() {
-        return this.targetGroup.loadBalancers();
+        return this.targetGroups.map(tg => tg.loadBalancer());
     }
 }
 
 function getTargetGroup(
         name: string, loadBalancer: ApplicationLoadBalancer,
-        targetGroup: ApplicationTargetGroup | undefined,
         args: ApplicationListenerArgs,
         opts: pulumi.ComponentResourceOptions | undefined) {
 
     // If a target group was provided then just use it.
-    if (targetGroup) {
-        return targetGroup;
+    if (args.targetGroup) {
+        return args.targetGroup;
     }
 
     // Otherwise create a new target group.  Either use the full arguments for that if provided, or
@@ -349,6 +369,8 @@ export interface ApplicationTargetGroupArgs {
 }
 
 interface ApplicationListenerArgs {
+    targetGroup?: ApplicationTargetGroup;
+
     /**
      * Arguments to create a target group. One of [targetGroup] or [targetGroupArgs] or [port] must be
      * specified.

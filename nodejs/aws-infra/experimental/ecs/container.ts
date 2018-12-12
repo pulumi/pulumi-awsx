@@ -117,8 +117,13 @@ export interface ContainerLoadBalancer {
 }
 
 export interface ContainerPortMappings {
-    portMappings(): pulumi.Input<aws.ecs.PortMapping[]>;
+    portMappings(): pulumi.Input<pulumi.Input<aws.ecs.PortMapping>[]>;
     loadBalancers(): pulumi.Input<pulumi.Input<ContainerLoadBalancer>[]>;
+}
+
+export interface ContainerPortMapping {
+    portMapping(): pulumi.Input<aws.ecs.PortMapping>;
+    loadBalancer(): pulumi.Input<ContainerLoadBalancer>;
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;

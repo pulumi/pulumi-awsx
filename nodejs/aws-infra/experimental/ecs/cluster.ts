@@ -72,6 +72,10 @@ export class Cluster
         });
     }
 
+    /**
+     * Creates a new [ApplicableLoadBalancer] corresponding to the network and security groups for
+     * this cluster.
+     */
     public createApplicationLoadBalancer(
             name: string,
             args: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs = {},

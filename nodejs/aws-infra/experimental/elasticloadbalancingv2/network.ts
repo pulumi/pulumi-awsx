@@ -45,7 +45,7 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     }
 
     public createListener(name: string, args: NetworkListenerArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new NetworkListener(name, this, undefined, args, opts);
+        return new NetworkListener(name, this, args, opts);
     }
 
     public createTargetGroup(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
@@ -54,20 +54,17 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
 }
 
 export class NetworkTargetGroup extends mod.TargetGroup {
-    public readonly loadBalancer: NetworkLoadBalancer;
+    public readonly networkLoadBalancer: NetworkLoadBalancer;
 
-    public readonly listeners: NetworkListener[];
-
-    constructor(name: string, loadBalancer: NetworkLoadBalancer,
+    constructor(name: string, networkLoadBalancer: NetworkLoadBalancer,
                 args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
             ...args,
-            network: loadBalancer.network,
+            network: networkLoadBalancer.network,
             protocol: "TCP",
-        }, opts || { parent: loadBalancer });
+        }, opts || { parent: networkLoadBalancer });
 
-        this.loadBalancer = loadBalancer;
-        this.listeners = [];
+        this.networkLoadBalancer = networkLoadBalancer;
 
         this.registerOutputs({
             instance: this.instance,
@@ -75,12 +72,15 @@ export class NetworkTargetGroup extends mod.TargetGroup {
             loadBalancer: this.loadBalancer,
         });
 
-        loadBalancer.targetGroups.push(this);
+        networkLoadBalancer.targetGroups.push(this);
     }
 
     public createListener(name: string, args: NetworkListenerArgs,
                           opts?: pulumi.ComponentResourceOptions): NetworkListener {
-        return new NetworkListener(name, this.loadBalancer, this, args, opts);
+        return new NetworkListener(name, this.networkLoadBalancer, {
+            targetGroup: this,
+            ...args,
+        }, opts || { parent: this });
     }
 }
 
@@ -88,20 +88,19 @@ export class NetworkListener
         extends mod.Listener
         implements x.ecs.ContainerPortMappings {
     public readonly loadBalancer: NetworkLoadBalancer;
-    public readonly targetGroup: NetworkTargetGroup;
+    public readonly targetGroups: NetworkTargetGroup[];
 
     constructor(name: string,
                 loadBalancer: NetworkLoadBalancer,
-                targetGroupOpt: NetworkTargetGroup | undefined,
                 args: NetworkListenerArgs = { },
                 opts?: pulumi.ComponentResourceOptions) {
-        if (targetGroupOpt === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
+        if (args.targetGroup === undefined && args.targetGroupArgs === undefined && args.port === undefined) {
             throw new Error(
-"One of [targetGroup] or [args.targetGroupArgs] or [args.port] must be provided when creating a NetworkListener.");
+"One of [args.targetGroup] or [args.targetGroupArgs] or [args.port] must be provided when creating a NetworkListener.");
         }
 
-        const targetGroup = getTargetGroup(name, loadBalancer, targetGroupOpt, args, opts);
-        if (loadBalancer !== targetGroup.loadBalancer) {
+        const targetGroup = getTargetGroup(name, loadBalancer, args, opts);
+        if (loadBalancer !== targetGroup.networkLoadBalancer) {
             throw new Error("Listener's [loadBalancer] was not the same as its [targetGroup]'s load balancer.");
         }
 
@@ -120,35 +119,32 @@ export class NetworkListener
         }, opts || { parent: targetGroup });
 
         this.loadBalancer = loadBalancer;
-        this.targetGroup = targetGroup;
+        this.targetGroups = [targetGroup];
 
         this.registerOutputs({
             instance: this.instance,
             loadBalancer: this.loadBalancer,
-            targetGroup: this.targetGroup,
         });
 
         loadBalancer.listeners.push(this);
-        targetGroup.listeners.push(this);
     }
 
     public portMappings() {
-        return this.targetGroup.portMappings();
+        return this.targetGroups.map(tg => tg.portMapping());
     }
 
     public loadBalancers() {
-        return this.targetGroup.loadBalancers();
+        return this.targetGroups.map(tg => tg.loadBalancer());
     }
 }
 
 function getTargetGroup(
         name: string,
         loadBalancer: NetworkLoadBalancer,
-        targetGroup: NetworkTargetGroup | undefined,
         args: NetworkListenerArgs,
         opts: pulumi.ComponentResourceOptions | undefined): NetworkTargetGroup {
-    if (targetGroup) {
-        return targetGroup;
+    if (args.targetGroup) {
+        return args.targetGroup;
     }
 
     let targetGroupArgs = args.targetGroupArgs;
@@ -276,6 +272,11 @@ export interface NetworkTargetGroupArgs {
 }
 
 export interface NetworkListenerArgs {
+    /**
+     * The default target group for the listener to forward requests to by default.
+     */
+    targetGroup?: NetworkTargetGroup;
+
     /**
      * Arguments to create a target group if one was not explicitly provided.
      */
