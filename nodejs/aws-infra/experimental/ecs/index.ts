@@ -17,7 +17,6 @@ export * from "./taskDefinition";
 
 export * from "./cluster";
 export * from "./image";
-export * from "./loadBalancer";
 export * from "./service";
 export * from "./ec2Service";
 export * from "./fargateService";

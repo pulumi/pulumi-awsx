@@ -258,6 +258,29 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
                 ...args,
             }, opts || { parent: this });
     }
+
+    /**
+     * Creates a new [NetworkLoadBalancer] and [NetworkListener] for this [Network].  The
+     * NetworkListener will have a default [NetworkTargetGroup] created for it.
+     */
+    public createNetworkListener(name: string,
+                                 listenerArgs: x.elasticloadbalancingv2.NetworkListenerArgs,
+                                 loadBalancerArgs?: x.elasticloadbalancingv2.NetworkLoadBalancerArgs,
+                                 opts?: pulumi.ComponentResourceOptions) {
+        return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
+                   .createListener(name, listenerArgs, opts);
+    }
+
+    /**
+     * Creates a new [NetworkLoadBalancer] and [NetworkTargetGroup] for this [Network].
+     */
+    public createNetworkTargetGroup(name: string,
+                                    targetGroupArgs: x.elasticloadbalancingv2.NetworkTargetGroupArgs,
+                                    loadBalancerArgs?: x.elasticloadbalancingv2.NetworkLoadBalancerArgs,
+                                    opts?: pulumi.ComponentResourceOptions) {
+        return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
+                   .createTargetGroup(name, targetGroupArgs, opts);
+    }
 }
 
 function createSubnetRouteTable(

@@ -53,6 +53,23 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     }
 }
 
+/**
+ * Each target group is used to route requests to one or more registered targets. When you create
+ * each listener rule, you specify a target group and conditions. When a rule condition is met,
+ * traffic is forwarded to the corresponding target group. You can create different target groups
+ * for different types of requests. For example, create one target group for general requests and
+ * other target groups for requests to the microservices for your application.
+
+ * You define health check settings for your load balancer on a per target group basis. Each target
+ * group uses the default health check settings, unless you override them when you create the target
+ * group or modify them later on. After you specify a target group in a rule for a listener, the
+ * load balancer continually monitors the health of all targets registered with the target group
+ * that are in an Availability Zone enabled for the load balancer. The load balancer routes requests
+ * to the registered targets that are healthy.
+ *
+ * See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html
+ * for more details.
+ */
 export class NetworkTargetGroup extends mod.TargetGroup {
     public readonly loadBalancer: NetworkLoadBalancer;
 
@@ -86,6 +103,14 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     }
 }
 
+/**
+ * A listener is a process that checks for connection requests, using the protocol and port that you
+ * configure. The rules that you define for a listener determine how the load balancer routes
+ * requests to the targets in one or more target groups.
+ *
+ * See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html
+ * for more details.
+ */
 export class NetworkListener extends mod.Listener {
     public readonly loadBalancer: NetworkLoadBalancer;
     public readonly defaultTargetGroup?: x.elasticloadbalancingv2.NetworkTargetGroup;
