@@ -33,7 +33,7 @@ const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
 });
 
 // A simple NGINX service, scaled out over two containers.
-const nginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-nginx", { cluster, port: 80 });
+const nginxListener = cluster.network.createNetworkListener("examples-nginx", { port: 80 });
 const nginx = new x.ecs.EC2Service("examples-nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -41,26 +41,26 @@ const nginx = new x.ecs.EC2Service("examples-nginx", {
             nginx: {
                 image: "nginx",
                 memory: 128,
-                portMappings: nginxLoadBalancer,
+                portMappings: nginxListener,
             },
         },
     },
     desiredCount: 2,
 });
 
-const nginxEndpoint = nginxLoadBalancer.defaultEndpoint();
+const nginxEndpoint = nginxListener.endpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-simple-nginx", { cluster, port: 80 });
+const simpleNginxListener = cluster.network.createNetworkListener("examples-simple-nginx", { port: 80 });
 const simpleNginx = new x.ecs.EC2TaskDefinition("examples-simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
-        portMappings: simpleNginxLoadBalancer,
+        portMappings: simpleNginxListener,
     },
 }).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
-const simpleNginxEndpoint = simpleNginxLoadBalancer.defaultEndpoint();
+const simpleNginxEndpoint = simpleNginxListener.endpoint();
 
 const cachedNginx = new x.ecs.EC2Service("examples-cached-nginx", {
     cluster,
@@ -72,7 +72,7 @@ const cachedNginx = new x.ecs.EC2Service("examples-cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                portMappings: x.ecs.LoadBalancer.fromPortInfo("examples-cached-nginx", { cluster, port: 80 }),
+                portMappings: cluster.network.createNetworkListener("examples-cached-nginx", { port: 80 }),
             },
         },
     },
@@ -90,18 +90,17 @@ const multistageCachedNginx = new x.ecs.EC2Service("examples-multistage-cached-n
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                portMappings: x.ecs.LoadBalancer.fromPortInfo(
-                    "examples-multistage-cached-nginx", { cluster, port: 80 }),
+                portMappings: cluster.network.createNetworkListener(
+                    "examples-multistage-cached-nginx", { port: 80 }),
             },
         },
     },
     desiredCount: 2,
 });
 
-const customWebServerLoadBalancer = cluster.network.createNetworkLoadBalancer("custom");
 const customWebServerListener =
-    customWebServerLoadBalancer.createTargetGroup("custom", { port: 8080 })
-                               .createListener("custom", { port: 80 });
+    cluster.network.createNetworkTargetGroup("custom", { port: 8080 })
+                   .createListener("custom", { port: 80 });
 
 const customWebServer = new x.ecs.EC2Service("custom", {
     cluster,
@@ -134,7 +133,7 @@ class Cache {
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisLoadBalancer = x.ecs.LoadBalancer.fromPortInfo(name, { cluster, port: 6379 });
+        const redisListener = cluster.network.createNetworkListener(name, { port: 6379 });
         const redis = new x.ecs.EC2Service(name, {
             cluster,
             taskDefinitionArgs: {
@@ -142,7 +141,7 @@ class Cache {
                     redis: {
                         image: "redis:alpine",
                         memory: memory,
-                        portMappings: redisLoadBalancer,
+                        portMappings: redisListener,
                         command: ["redis-server", "--requirepass", redisPassword],
                     },
                 },
@@ -150,7 +149,7 @@ class Cache {
         });
 
         this.get = (key: string) => {
-            const endpoint = redisLoadBalancer.defaultEndpoint().get();
+            const endpoint = redisListener.endpoint().get();
             console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
             const client = require("redis").createClient(
                 endpoint.port,
@@ -169,7 +168,7 @@ class Cache {
             });
         };
         this.set = (key: string, value: string) => {
-            const endpoint = redisLoadBalancer.defaultEndpoint().get();
+            const endpoint = redisListener.endpoint().get();
             console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
             const client = require("redis").createClient(
                 endpoint.port,
@@ -200,7 +199,7 @@ const helloTask = new x.ecs.EC2TaskDefinition("examples-hello-world", {
 });
 
 // build an anonymous image:
-const builtServiceLoadBalancer = x.ecs.LoadBalancer.fromPortInfo("examples-nginx2", { cluster, port: 80 });
+const builtServiceListener = cluster.network.createNetworkListener("examples-nginx2", { port: 80 });
 const builtService = new x.ecs.EC2Service("examples-nginx2", {
     cluster,
     taskDefinitionArgs: {
@@ -208,7 +207,7 @@ const builtService = new x.ecs.EC2Service("examples-nginx2", {
             nginx: {
                 image: x.ecs.Image.fromPath("./app"),
                 memory: 128,
-                portMappings: builtServiceLoadBalancer,
+                portMappings: builtServiceListener,
             },
         },
     },
@@ -240,8 +239,8 @@ const api = new aws.apigateway.x.API("examples-containers", {
                 return {
                     statusCode: 200,
                     body: JSON.stringify({
-                        nginx: nginxLoadBalancer.defaultEndpoint().get(),
-                        nginx2: builtServiceLoadBalancer.defaultEndpoint().get(),
+                        nginx: nginxListener.endpoint().get(),
+                        nginx2: builtServiceListener.endpoint().get(),
                     }),
                 };
             } catch (err) {
@@ -265,7 +264,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
                     };
                 }
 
-                const endpoint = nginxLoadBalancer.defaultEndpoint().get();
+                const endpoint = nginxListener.endpoint().get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();
@@ -323,7 +322,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
         },
     }, {
         path: "/nginx",
-        target: nginxLoadBalancer.defaultEndpoint(),
+        target: nginxListener.endpoint(),
     }],
 });
 
