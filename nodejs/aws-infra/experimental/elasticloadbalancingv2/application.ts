@@ -46,13 +46,11 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
         });
     }
 
-    public createListener(name: string, args: ApplicationListenerArgs,
-                          opts?: pulumi.ComponentResourceOptions): ApplicationListener {
+    public createListener(name: string, args: ApplicationListenerArgs, opts?: pulumi.ComponentResourceOptions) {
         return new ApplicationListener(name, this, undefined, args, opts);
     }
 
-    public createTargetGroup(name: string, args: ApplicationTargetGroupArgs,
-                             opts?: pulumi.ComponentResourceOptions): ApplicationTargetGroup {
+    public createTargetGroup(name: string, args: ApplicationTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         return new ApplicationTargetGroup(name, this, args, opts);
     }
 }
