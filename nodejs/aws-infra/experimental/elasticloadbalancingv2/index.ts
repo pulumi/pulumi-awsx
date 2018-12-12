@@ -15,6 +15,7 @@
 export * from "./loadBalancer";
 export * from "./targetGroup";
 export * from "./listener";
+export * from "./listenerRule";
 
 export * from "./application";
 export * from "./network";
