@@ -79,22 +79,19 @@ function placementConstraints(isFargate: boolean, os: ecs.HostOperatingSystem | 
 }
 
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
-    const serviceLoadBalancers = <ServiceLoadBalancers>args.loadBalancers;
-
     // Get the initial set of load balancers if specified.
-    let allLoadBalancers = serviceLoadBalancers && serviceLoadBalancers.loadBalancers
-        ? serviceLoadBalancers.loadBalancers()
+    let allLoadBalancers = x.ecs.isServiceLoadBalancers(args.loadBalancers)
+        ? args.loadBalancers.serviceLoadBalancers()
         : <aws.ecs.ServiceArgs["loadBalancers"]>args.loadBalancers;
 
     // Now walk each container and see if it wants to add load balancer information as well.
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
-        const serviceLoadBalancers = <x.ecs.ContainerPortMappings>container.portMappings;
 
-        if (serviceLoadBalancers && serviceLoadBalancers.containerLoadBalancers) {
+        if (x.ecs.isContainerPortMappings(container.portMappings)) {
             // Containers don't know their own name.  So we add the name in here on their behalf.
             const computedLoadBalancers =
-                pulumi.output(serviceLoadBalancers.containerLoadBalancers())
+                pulumi.output(container.portMappings.containerLoadBalancers())
                       .apply(lbs => lbs.map(lb => ({ ...lb, containerName })));
 
             allLoadBalancers = utils.combineArrays(allLoadBalancers, computedLoadBalancers);
@@ -171,7 +168,12 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 // }
 
 export interface ServiceLoadBalancers {
-    loadBalancers(): aws.ecs.ServiceArgs["loadBalancers"];
+    serviceLoadBalancers(): aws.ecs.ServiceArgs["loadBalancers"];
+}
+
+/** @internal */
+export function isServiceLoadBalancers(obj: any): obj is ServiceLoadBalancers {
+    return obj && !!(<ServiceLoadBalancers>obj).serviceLoadBalancers;
 }
 
 // The shape we want for ClusterFileSystemArgs.  We don't export this as 'Overwrite' types are not pleasant to
