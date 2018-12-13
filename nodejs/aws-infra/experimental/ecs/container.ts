@@ -28,17 +28,13 @@ export function computeContainerDefinition(
     container: Container,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
-    const containerImage = <ContainerImage>container.image;
-    const stringImage = <pulumi.Input<string>>container.image;
-    const image = containerImage.image
-        ? containerImage.image(name, parent)
-        : stringImage;
+    const image = isContainerImage(container.image)
+        ? container.image.image(name, parent)
+        : container.image;
 
-    let environment = container.environment;
-    if (containerImage.environment) {
-        environment = utils.combineArrays(
-            environment, containerImage.environment(name, parent));
-    }
+    const environment = isContainerImage(container.image)
+        ? utils.combineArrays(container.environment, container.image.environment(name, parent))
+        : container.environment;
 
     const portMappings = getPortMappings(container);
 
@@ -70,16 +66,15 @@ export function computeContainerDefinition(
 }
 
 function getPortMappings(container: Container) {
-    const containerPortMappings = <ContainerPortMappings>container.portMappings;
-    const portMappings = containerPortMappings && containerPortMappings.containerPortMappings
-        ? containerPortMappings.containerPortMappings()
-        : <pulumi.Input<aws.ecs.PortMapping[]>>container.portMappings;
+    const portMappings = isContainerPortMappings(container.portMappings)
+        ? container.portMappings.containerPortMappings()
+        : container.portMappings;
 
     return pulumi.output(portMappings)
                  .apply(mappings => convertMappings(mappings));
 }
 
-function convertMappings(mappings: aws.ecs.PortMapping[]) {
+function convertMappings(mappings: aws.ecs.PortMapping[] | undefined) {
     if (!mappings) {
         return undefined;
     }
@@ -118,6 +113,12 @@ export interface ContainerLoadBalancer {
 export interface ContainerPortMappings {
     containerPortMappings(): pulumi.Input<pulumi.Input<aws.ecs.PortMapping>[]>;
     containerLoadBalancers(): pulumi.Input<pulumi.Input<ContainerLoadBalancer>[]>;
+}
+
+/** @internal */
+export function isContainerPortMappings(obj: any): obj is ContainerPortMappings {
+    return obj && !!(<ContainerPortMappings>obj).containerPortMappings &&
+                  !!(<ContainerPortMappings>obj).containerLoadBalancers;
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
@@ -177,6 +178,11 @@ export interface Container {
 export interface ContainerImage {
     image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
     environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
+}
+
+/** @internal */
+export function isContainerImage(obj: any): obj is ContainerImage {
+    return obj && !!(<ContainerImage>obj).image && !!(<ContainerImage>obj).environment;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

@@ -119,9 +119,9 @@ export class NetworkListener extends mod.Listener {
                 loadBalancer: NetworkLoadBalancer,
                 args: NetworkListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
-        const { defaultAction, targetGroup } = getDefaultAction(name, loadBalancer, args, opts);
+        const { defaultAction, defaultListener } = getDefaultAction(name, loadBalancer, args, opts);
 
-        super("awsinfra:x:elasticloadbalancingv2:NetworkListener", name, targetGroup, {
+        super("awsinfra:x:elasticloadbalancingv2:NetworkListener", name, defaultListener, {
             ...args,
             defaultAction,
             loadBalancer,
@@ -144,17 +144,13 @@ function getDefaultAction(
         args: NetworkListenerArgs,
         opts: pulumi.ComponentResourceOptions | undefined) {
     if (args.defaultAction) {
-        const listenerAction = <x.elasticloadbalancingv2.ListenerDefaultAction>args.defaultAction;
-        const defaultAction = listenerAction.listenerDefaultAction
-            ? listenerAction.listenerDefaultAction()
-            : <aws.elasticloadbalancingv2.ListenerArgs["defaultAction"]>args.defaultAction;
-
-        const targetGroup = x.elasticloadbalancingv2.TargetGroup.isTargetGroup(listenerAction) ? listenerAction : undefined;
-        return { defaultAction, targetGroup };
+        return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
+            ? { defaultAction: args.defaultAction.listenerDefaultAction(), defaultListener: args.defaultAction }
+            : { defaultAction: args.defaultAction, defaultListener: undefined };
     }
 
     const targetGroup = new NetworkTargetGroup(name, loadBalancer, { port: args.port }, opts);
-    return { defaultAction: targetGroup.listenerDefaultAction(), targetGroup };
+    return { defaultAction: targetGroup.listenerDefaultAction(), defaultListener: targetGroup };
 }
 
 export interface NetworkLoadBalancerArgs {

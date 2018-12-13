@@ -160,10 +160,13 @@ export class ApplicationListener extends mod.Listener {
                 opts?: pulumi.ComponentResourceOptions) {
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
-        const { defaultAction, targetGroup } = getDefaultAction(
+        const { defaultAction, defaultListener } = getDefaultAction(
             name, loadBalancer, args, port, protocol, opts);
 
-        super("awsinfra:x:elasticloadbalancingv2:ApplicationListener", name, targetGroup, {
+        // Pass along the target as the defaultTarget for this listener.  This allows this listener
+        // to defer to it for ContainerPortMappings information.  this allows this listener to be
+        // passed in as the portMappings information needed for a Service.
+        super("awsinfra:x:elasticloadbalancingv2:ApplicationListener", name, defaultListener, {
             ...args,
             defaultAction,
             loadBalancer,
@@ -204,18 +207,13 @@ function getDefaultAction(
         opts: pulumi.ComponentResourceOptions | undefined) {
 
     if (args.defaultAction) {
-        const listenerAction = <x.elasticloadbalancingv2.ListenerDefaultAction>args.defaultAction;
-        const defaultAction = listenerAction.listenerDefaultAction
-            ? listenerAction.listenerDefaultAction()
-            : <aws.elasticloadbalancingv2.ListenerArgs["defaultAction"]>args.defaultAction;
-
-        const targetGroup = x.elasticloadbalancingv2.TargetGroup.isTargetGroup(listenerAction) ? listenerAction : undefined;
-        return { defaultAction, targetGroup };
+        return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
+            ? { defaultAction: args.defaultAction.listenerDefaultAction(), defaultListener: args.defaultAction }
+            : { defaultAction: args.defaultAction, defaultListener: undefined };
     }
 
-    const targetGroup = new ApplicationTargetGroup(
-        name, loadBalancer, { port, protocol }, opts);
-    return { defaultAction: targetGroup.listenerDefaultAction(), targetGroup };
+    const targetGroup = new ApplicationTargetGroup(name, loadBalancer, { port, protocol }, opts);
+    return { defaultAction: targetGroup.listenerDefaultAction(), defaultListener: targetGroup };
 }
 
 export interface ApplicationLoadBalancerArgs {

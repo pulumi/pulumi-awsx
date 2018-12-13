@@ -26,10 +26,6 @@ export abstract class TargetGroup
         extends pulumi.ComponentResource
         implements x.ecs.ContainerPortMappings, x.elasticloadbalancingv2.ListenerDefaultAction {
 
-    /** @internal */
-    // tslint:disable-next-line:variable-name
-    private readonly __isTargetGroup = true;
-
     public readonly instance: aws.elasticloadbalancingv2.TargetGroup;
     public readonly network: Network;
 
@@ -52,11 +48,6 @@ export abstract class TargetGroup
             targetType: utils.ifUndefined(args.targetType, "ip"),
             tags: utils.mergeTags(args.tags, { Name: longName }),
         }, parentOpts);
-    }
-
-    /** @internal */
-    public static isTargetGroup(obj: any): obj is TargetGroup {
-        return obj && !!obj.__isTargetGroup;
     }
 
     private dependencies() {
@@ -83,6 +74,11 @@ export abstract class TargetGroup
             targetGroupArn: this.instance.arn,
             type: "forward",
         }));
+    }
+
+    /** Do not call directly.  Intended for use by [Listener] and [ListenerRule] */
+    public registerListener(listener: x.elasticloadbalancingv2.Listener) {
+        this.listeners.push(listener);
     }
 }
 

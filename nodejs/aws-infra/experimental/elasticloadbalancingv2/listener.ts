@@ -24,15 +24,16 @@ import * as utils from "./../../utils";
 
 export abstract class Listener
         extends pulumi.ComponentResource
-        implements x.ecs.ContainerPortMappings, x.elasticloadbalancingv2.ListenerDefaultAction {
+        implements x.ecs.ContainerPortMappings {
     public readonly instance: aws.elasticloadbalancingv2.Listener;
     public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
-    public readonly defaultTargetGroup?: x.elasticloadbalancingv2.TargetGroup;
 
     public readonly endpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
 
+    private readonly defaultListenerAction?: ListenerDefaultAction;
+
     constructor(type: string, name: string,
-                defaultTargetGroup: x.elasticloadbalancingv2.TargetGroup | undefined,
+                defaultListenerAction: ListenerDefaultAction | undefined,
                 args: ListenerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
 
@@ -59,46 +60,58 @@ export abstract class Listener
 
         this.instance = instance;
         this.loadBalancer = args.loadBalancer;
+        this.defaultListenerAction = defaultListenerAction;
 
-        if (defaultTargetGroup) {
-            this.defaultTargetGroup = defaultTargetGroup;
-            defaultTargetGroup.listeners.push(this);
+        if (defaultListenerAction) {
+            // If our default rule hooked up this listener to a target group, then add our listener
+            // to the set of listeners the target group knows about.  This is necessary so that
+            // anything that depends on the target group will end up depending on this rule getting
+            // created.
+            defaultListenerAction.registerListener(this);
         }
 
         this.endpoint = () => endpoint;
     }
 
     public containerPortMappings() {
-        if (!this.defaultTargetGroup) {
-            throw new Error("A [Listener] can only be used as a [ContainerPortMapping] if it has a [defaultTargetGroup]");
+        if (!x.ecs.isContainerPortMappings(this.defaultListenerAction)) {
+            throw new Error("[Listener] was not connected to a [defaultAction] that can provide [containerPortMappings]");
         }
 
-        return this.defaultTargetGroup!.containerPortMappings();
+        return this.defaultListenerAction.containerPortMappings();
     }
 
     public containerLoadBalancers() {
-        if (!this.defaultTargetGroup) {
-            throw new Error("A [Listener] can only be used as a [ContainerPortMapping] if it has a [defaultTargetGroup]");
+        if (!x.ecs.isContainerPortMappings(this.defaultListenerAction)) {
+            throw new Error("[Listener] was not connected to a [defaultAction] that can provide [containerPortMappings]");
         }
 
-        return this.defaultTargetGroup!.containerLoadBalancers();
+        return this.defaultListenerAction.containerLoadBalancers();
     }
 
-    public listenerDefaultAction() {
-        if (!this.defaultTargetGroup) {
-            throw new Error("A [Listener] can only be used as a [ListenerDefaultAction] if it has a [defaultTargetGroup]");
-        }
-
-        return this.defaultTargetGroup!.listenerDefaultAction();
+    public addListenerRule(name: string, args: x.elasticloadbalancingv2.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        return new x.elasticloadbalancingv2.ListenerRule(name, this, args, opts);
     }
 }
 
 export interface ListenerDefaultAction {
     listenerDefaultAction(): aws.elasticloadbalancingv2.ListenerArgs["defaultAction"];
+    registerListener(listener: Listener): void;
 }
 
 export interface ListenerActions {
     actions(): aws.elasticloadbalancingv2.ListenerRuleArgs["actions"];
+    registerListener(listener: Listener): void;
+}
+
+/** @internal */
+export function isListenerDefaultAction(obj: any): obj is ListenerDefaultAction {
+    return obj && !!obj.listenerDefaultAction && !!obj.registerListener;
+}
+
+/** @internal */
+export function isListenerActions(obj: any): obj is ListenerActions {
+    return obj && !!obj.actions && !!obj.registerListener;
 }
 
 type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
