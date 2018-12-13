@@ -103,19 +103,24 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      */
     public readonly securityGroupIds: pulumi.Output<string>[];
     /**
-     * The subnets in which compute should run.  These are the private subnets if [usePrivateSubnets] == true, else
-     * these are the public subnets.
+     * The security groups for the network.
+     */
+    public readonly securityGroups: x.ec2.SecurityGroup[];
+    /**
+     * The subnets in which compute should run.  These are the private subnets if
+     * [usePrivateSubnets] == true, else these are the public subnets.
      */
     public readonly subnetIds: pulumi.Output<string>[];
     /**
-     * The public subnets for the VPC.  In case [usePrivateSubnets] == false, these are the same as [subnets].
+     * The public subnets for the VPC.  In case [usePrivateSubnets] == false, these are the same as
+     * [subnets].
      */
     public readonly publicSubnetIds: pulumi.Output<string>[];
 
     /**
-     * Gets the default VPC for the AWS account as a Network.  This first time this is called,
-     * the default network will be lazily created, using whatever options are provided in opts.
-     * All subsequent calls will return that same network even if different opts are provided.
+     * Gets the default VPC for the AWS account as a Network.  This first time this is called, the
+     * default network will be lazily created, using whatever options are provided in opts. All
+     * subsequent calls will return that same network even if different opts are provided.
      */
     public static getDefault(opts?: pulumi.ResourceOptions): Network {
         if (!defaultNetwork) {
@@ -161,23 +166,23 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
     }
 
     constructor(name: string, args?: NetworkArgs, opts?: pulumi.ResourceOptions);
-    constructor(name: string, mergedArgs?: NetworkArgs | NetworkVpcArgs, opts?: pulumi.ResourceOptions) {
+    constructor(name: string, mergedArgs: NetworkArgs | NetworkVpcArgs = {}, opts: pulumi.ResourceOptions = {}) {
+        super("aws-infra:network:Network", name, {}, opts);
+
         // IDEA: default to the number of availability zones in this region, rather than 2.  To do this requires
         // invoking the provider, which requires that we "go async" at a very inopportune time here.  When
         // pulumi/pulumi#331 lands, this will be much easier to do, and we can improve this situation.
-        if (!mergedArgs) {
-            mergedArgs = {};
-        }
 
-        super("aws-infra:network:Network", name, {}, opts);
-
+        const parentOpts = { parent: this };
         const vpcArgs = <NetworkVpcArgs>mergedArgs;
+
         if (vpcArgs.vpcId) {
             this.vpcId = pulumi.output(vpcArgs.vpcId);
             this.subnetIds = vpcArgs.subnetIds.map(id => pulumi.output(id));
             this.usePrivateSubnets = vpcArgs.usePrivateSubnets;
             this.securityGroupIds = vpcArgs.securityGroupIds.map(id => pulumi.output(id));
             this.publicSubnetIds = vpcArgs.publicSubnetIds.map(id => pulumi.output(id));
+            this.securityGroups = initializeSecurityGroups(name, this);
             return;
         }
 
@@ -188,7 +193,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
                 `Unsupported number of availability zones for network: ${numberOfAvailabilityZones}`);
         }
 
-        const parentOpts = { parent: this };
         const tags = { Name: name };
 
         this.usePrivateSubnets = args.usePrivateSubnets || false;
@@ -201,7 +205,10 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         }, parentOpts);
 
         this.vpcId = vpc.id;
+
         this.securityGroupIds = [ vpc.defaultSecurityGroupId ];
+        this.securityGroups = initializeSecurityGroups(name, this);
+
         this.subnetIds = [];
         this.publicSubnetIds = [];
 
@@ -281,6 +288,54 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
                    .createTargetGroup(name, targetGroupArgs, opts);
     }
+
+    /**
+     * Creates a new [ApplicationLoadBalancer] for this [Network].
+     */
+    public createApplicationLoadBalancer(
+            name: string,
+            args: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs = {},
+            opts?: pulumi.ComponentResourceOptions) {
+        return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
+                network: this,
+                securityGroups: this.securityGroups,
+                ...args,
+            }, opts || { parent: this });
+    }
+
+    /**
+     * Creates a new [ApplicationLoadBalancer] and [ApplicationListener] for this [Network].  The
+     * ApplicationListener will have a default [ApplicationTargetGroup] created for it.
+     */
+    public createApplicationListener(name: string,
+                                     listenerArgs: x.elasticloadbalancingv2.ApplicationListenerArgs,
+                                     loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
+                                     opts?: pulumi.ComponentResourceOptions) {
+        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
+                   .createListener(name, listenerArgs, opts);
+    }
+
+    /**
+     * Creates a new [ApplicationLoadBalancer] and [ApplicationTargetGroup] for this [Network].
+     */
+    public createApplicationTargetGroup(name: string,
+                                        targetGroupArgs: x.elasticloadbalancingv2.ApplicationTargetGroupArgs,
+                                        loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
+                                        opts?: pulumi.ComponentResourceOptions) {
+        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
+                   .createTargetGroup(name, targetGroupArgs, opts);
+    }
+}
+
+function initializeSecurityGroups(name: string, network: Network) {
+    const result: x.ec2.SecurityGroup[] = [];
+    for (let i = 0, n = network.securityGroupIds.length; i < n; i++) {
+        const groupName = `${name}-${i}`;
+        const securityGroup = aws.ec2.SecurityGroup.get(groupName, network.securityGroupIds[i]);
+        result.push(new x.ec2.SecurityGroup(groupName, { network, instance: securityGroup }, { parent: network }));
+    }
+
+    return result;
 }
 
 function createSubnetRouteTable(
