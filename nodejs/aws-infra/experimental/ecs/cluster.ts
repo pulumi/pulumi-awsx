@@ -90,6 +90,29 @@ export class Cluster
             }, opts || { parent: this });
     }
 
+    /**
+     * Creates a new [ApplicationLoadBalancer] and [ApplicationListener] for this [Cluster].  The
+     * ApplicationListener will have a default [ApplicationTargetGroup] created for it.
+     */
+    public createApplicationListener(name: string,
+                                     listenerArgs: x.elasticloadbalancingv2.ApplicationListenerArgs,
+                                     loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
+                                     opts?: pulumi.ComponentResourceOptions) {
+        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
+                   .createListener(name, listenerArgs, opts);
+    }
+
+    /**
+     * Creates a new [ApplicationLoadBalancer] and [ApplicationTargetGroup] for this [Cluster].
+     */
+    public createApplicationTargetGroup(name: string,
+                                        targetGroupArgs: x.elasticloadbalancingv2.ApplicationTargetGroupArgs,
+                                        loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
+                                        opts?: pulumi.ComponentResourceOptions) {
+        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
+                   .createTargetGroup(name, targetGroupArgs, opts);
+    }
+
     public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {
         this.autoScalingGroups.push(group);
     }

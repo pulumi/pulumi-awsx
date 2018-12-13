@@ -349,7 +349,7 @@ export interface ApplicationTargetGroupArgs {
     protocol?: pulumi.Input<ApplicationProtocol>;
 }
 
-interface ApplicationListenerArgs {
+export interface ApplicationListenerArgs {
     /**
      * The port. Specify a value from `1` to `65535`.  Computed from "protocol" if not provided.
      */
