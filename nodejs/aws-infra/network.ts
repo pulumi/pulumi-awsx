@@ -103,10 +103,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      */
     public readonly securityGroupIds: pulumi.Output<string>[];
     /**
-     * The security groups for the network.
-     */
-    public readonly securityGroups: x.ec2.SecurityGroup[];
-    /**
      * The subnets in which compute should run.  These are the private subnets if
      * [usePrivateSubnets] == true, else these are the public subnets.
      */
@@ -116,6 +112,9 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      * [subnets].
      */
     public readonly publicSubnetIds: pulumi.Output<string>[];
+
+    // tslint:disable-next-line:variable-name
+    private __securityGroups: x.ec2.SecurityGroup[];
 
     /**
      * Gets the default VPC for the AWS account as a Network.  This first time this is called, the
@@ -182,7 +181,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             this.usePrivateSubnets = vpcArgs.usePrivateSubnets;
             this.securityGroupIds = vpcArgs.securityGroupIds.map(id => pulumi.output(id));
             this.publicSubnetIds = vpcArgs.publicSubnetIds.map(id => pulumi.output(id));
-            this.securityGroups = initializeSecurityGroups(name, this);
             return;
         }
 
@@ -207,7 +205,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         this.vpcId = vpc.id;
 
         this.securityGroupIds = [ vpc.defaultSecurityGroupId ];
-        this.securityGroups = initializeSecurityGroups(name, this);
 
         this.subnetIds = [];
         this.publicSubnetIds = [];
@@ -251,6 +248,25 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             const subnetId = pulumi.all([subnet.id, routeTableAssociation.id]).apply(([id]) => id);
             this.subnetIds.push(subnetId);
         }
+    }
+
+    public getSecurityGroups() {
+        if (this.__securityGroups) {
+            return this.__securityGroups;
+        }
+
+        const result: x.ec2.SecurityGroup[] = [];
+        for (let i = 0, n = this.securityGroupIds.length; i < n; i++) {
+            const groupName = `${name}-${i}`;
+            const securityGroup = aws.ec2.SecurityGroup.get(groupName, this.securityGroupIds[i]);
+            result.push(new x.ec2.SecurityGroup(groupName, {
+                network: this,
+                instance: securityGroup,
+            }, { parent: this }));
+        }
+
+        this.__securityGroups = result;
+        return result;
     }
 
     /**
@@ -298,7 +314,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             opts?: pulumi.ComponentResourceOptions) {
         return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
                 network: this,
-                securityGroups: this.securityGroups,
+                securityGroups: this.getSecurityGroups(),
                 ...args,
             }, opts || { parent: this });
     }
@@ -325,17 +341,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
                    .createTargetGroup(name, targetGroupArgs, opts);
     }
-}
-
-function initializeSecurityGroups(name: string, network: Network) {
-    const result: x.ec2.SecurityGroup[] = [];
-    for (let i = 0, n = network.securityGroupIds.length; i < n; i++) {
-        const groupName = `${name}-${i}`;
-        const securityGroup = aws.ec2.SecurityGroup.get(groupName, network.securityGroupIds[i]);
-        result.push(new x.ec2.SecurityGroup(groupName, { network, instance: securityGroup }, { parent: network }));
-    }
-
-    return result;
 }
 
 function createSubnetRouteTable(
