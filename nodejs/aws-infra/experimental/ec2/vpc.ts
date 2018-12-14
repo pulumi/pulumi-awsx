@@ -44,10 +44,14 @@ export class Vpc extends pulumi.ComponentResource {
 
         // Create the appropriate subnets.  Default to a single public and private subnet for each
         // availability zone if none were specified.
-        topology.createSubnets(args.subnets || [
+        const subnetArgs = args.subnets || [
             { type: "public" },
             { type: "private"},
-        ]);
+        ];
+
+        topology.createSubnets(subnetArgs);
+
+        createGateways(subnetArgs);
 
         this.instance = instance;
 
@@ -69,6 +73,17 @@ export class Vpc extends pulumi.ComponentResource {
     // public static getDefault(): Vpc {
 
     // }
+}
+
+function createGateways(subnetArgs: VpcSubnetArgs[]) {
+    const isolatedSubnets = subnetArgs.filter(s => s.type === "isolated");
+
+    // if all the subnets are isolated, we don't have to create any gateways for them.
+    if (isolatedSubnets.length === subnetArgs.length) {
+        return;
+    }
+
+
 }
 
 /**
