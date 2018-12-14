@@ -113,8 +113,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      */
     public readonly publicSubnetIds: pulumi.Output<string>[];
 
-    // tslint:disable-next-line:variable-name
-    private __securityGroups: x.ec2.SecurityGroup[];
+    public readonly securityGroups: () => x.ec2.SecurityGroup[];
 
     /**
      * Gets the default VPC for the AWS account as a Network.  This first time this is called, the
@@ -248,25 +247,25 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             const subnetId = pulumi.all([subnet.id, routeTableAssociation.id]).apply(([id]) => id);
             this.subnetIds.push(subnetId);
         }
-    }
 
-    public getSecurityGroups() {
-        if (this.__securityGroups) {
-            return this.__securityGroups;
-        }
+        let securityGroups: x.ec2.SecurityGroup[];
+        this.securityGroups = () => {
+            if (!securityGroups) {
+                const result: x.ec2.SecurityGroup[] = [];
+                for (let i = 0, n = this.securityGroupIds.length; i < n; i++) {
+                    const groupName = `${name}-${i}`;
+                    const securityGroup = aws.ec2.SecurityGroup.get(groupName, this.securityGroupIds[i]);
+                    result.push(new x.ec2.SecurityGroup(groupName, {
+                        network: this,
+                        instance: securityGroup,
+                    }, { parent: this }));
+                }
 
-        const result: x.ec2.SecurityGroup[] = [];
-        for (let i = 0, n = this.securityGroupIds.length; i < n; i++) {
-            const groupName = `${name}-${i}`;
-            const securityGroup = aws.ec2.SecurityGroup.get(groupName, this.securityGroupIds[i]);
-            result.push(new x.ec2.SecurityGroup(groupName, {
-                network: this,
-                instance: securityGroup,
-            }, { parent: this }));
-        }
+                securityGroups = result;
+            }
 
-        this.__securityGroups = result;
-        return result;
+            return securityGroups;
+        };
     }
 
     /**
@@ -314,7 +313,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             opts?: pulumi.ComponentResourceOptions) {
         return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
                 network: this,
-                securityGroups: this.getSecurityGroups(),
+                securityGroups: this.securityGroups(),
                 ...args,
             }, opts || { parent: this });
     }
