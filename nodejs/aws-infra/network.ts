@@ -251,17 +251,16 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         let securityGroups: x.ec2.SecurityGroup[];
         this.securityGroups = () => {
             if (!securityGroups) {
-                const result: x.ec2.SecurityGroup[] = [];
+                securityGroups = [];
+
                 for (let i = 0, n = this.securityGroupIds.length; i < n; i++) {
                     const groupName = `${name}-${i}`;
                     const securityGroup = aws.ec2.SecurityGroup.get(groupName, this.securityGroupIds[i]);
-                    result.push(new x.ec2.SecurityGroup(groupName, {
+                    securityGroups.push(new x.ec2.SecurityGroup(groupName, {
                         network: this,
                         instance: securityGroup,
                     }, { parent: this }));
                 }
-
-                securityGroups = result;
             }
 
             return securityGroups;
