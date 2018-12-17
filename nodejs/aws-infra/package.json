@@ -11,7 +11,7 @@
     "homepage": "https://pulumi.io",
     "repository": "https://github.com/pulumi/pulumi-aws-infra",
     "dependencies": {
-        "@pulumi/pulumi": "dev",
+        "@pulumi/pulumi": "0.16.8-dev.1544998603",
         "@pulumi/aws": "dev",
         "@pulumi/docker": "^0.16.1"
     },
@@ -23,4 +23,3 @@
         "typescript": "^3.1.6"
     }
 }
-
