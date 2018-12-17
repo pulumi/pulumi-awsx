@@ -20,19 +20,52 @@ import { VpcTopology } from "./vpcTopology";
 
 import * as utils from "./../../utils";
 
-export class Vpc extends pulumi.ComponentResource {
-    public readonly instance: aws.ec2.Vpc;
+let defaultVpc: Vpc;
 
+export class Vpc extends pulumi.ComponentResource {
+    /**
+     * Id for the underlying [aws.ec2.Vpc] instance.
+     */
+    public readonly vpcId: pulumi.Output<string>;
+    public readonly publicSubnetIds: pulumi.Output<string>[];
+    public readonly privateSubnetIds: pulumi.Output<string>[];
+    public readonly isolatedSubnetIds: pulumi.Output<string>[];
+    // tslint:disable-next-line:variable-name
+    private __instance: aws.ec2.Vpc;
+
+    public readonly instance: () => aws.ec2.Vpc;
+
+    /**
+     * Only available if this was created using [VpcArgs].
+     */
     public readonly publicSubnets: x.ec2.Subnet[] = [];
     public readonly privateSubnets: x.ec2.Subnet[] = [];
     public readonly isolatedSubnets: x.ec2.Subnet[] = [];
 
-    constructor(name: string, args: VpcArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: VpcArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, args: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, args: VpcArgs | ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ec2:Vpc", name, {}, opts);
+
+        this.instance = () => {
+            if (!this.__instance) {
+                this.__instance = aws.ec2.Vpc.get(name, this.vpcId);
+            }
+
+            return this.__instance;
+        };
+
+        if (isExistingVpcArgs(args)) {
+            this.vpcId = pulumi.output(args.vpcId);
+            this.publicSubnetIds = createOutputs(args.publicSubnetIds);
+            this.privateSubnetIds = createOutputs(args.privateSubnetIds);
+            this.isolatedSubnetIds = createOutputs(args.isolatedSubnetIds);
+            return;
+        }
 
         const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
         const numberOfAvailabilityZones = args.numberOfAvailabilityZones === undefined ? 2 : args.numberOfAvailabilityZones;
-        this.instance = new aws.ec2.Vpc(name, {
+        this.__instance = new aws.ec2.Vpc(name, {
             ...args,
             cidrBlock,
             enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
@@ -56,19 +89,42 @@ export class Vpc extends pulumi.ComponentResource {
         this.registerOutputs();
     }
 
-    // /**
-    //  * Gets an existing Vpc with the provided id.
-    //  */
-    // public static get(name: string, vpcId: pulumi.Input<string>): Vpc {
+    /**
+     * Gets the default vpc for the current aws account and region.
+     *
+     * See https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html for more details.
+     */
+    public static getDefault(opts?: pulumi.ComponentResourceOptions): Vpc {
+        if (!defaultVpc) {
+            return defaultVpc;
+        }
 
-    // }
+        const vpc = aws.ec2.getVpc({default: true});
+        const vpcId = vpc.then(v => v.id);
 
-    // /**
-    //  * Gets the default vpc for the current aws account and region.
-    //  */
-    // public static getDefault(): Vpc {
+        // The default VPC will contain at least two public subnets (one per availability zone).
+        // See https://docs.aws.amazon.com/vpc/latest/userguide/images/default-vpc-diagram.png for
+        // more information.
+        const subnetIds = vpcId.then(id => aws.ec2.getSubnetIds({ vpcId: id }))
+                               .then(subnets => subnets.ids);
+        const subnet0 = subnetIds.then(ids => ids[0]);
+        const subnet1 = subnetIds.then(ids => ids[1]);
 
-    // }
+        defaultVpc = new Vpc("default-vpc", {
+            vpcId,
+            publicSubnetIds: [subnet0, subnet1],
+        }, opts);
+
+        return defaultVpc;
+    }
+}
+
+function createOutputs(inputs: pulumi.Input<string>[] | undefined) {
+    if (!inputs) {
+        return [];
+    }
+
+    return inputs.map(i => pulumi.output(i));
 }
 
 function createGateways(subnetArgs: VpcSubnetArgs[]) {
@@ -122,6 +178,21 @@ export interface VpcSubnetArgs {
     cidrMask?: number;
 
     tags?: pulumi.Input<aws.Tags>;
+}
+
+export interface ExistingVpcArgs {
+    /** The id of the VPC. */
+    vpcId: pulumi.Input<string>;
+    /** The public subnets for the vpc. */
+    publicSubnetIds?: pulumi.Input<string>[];
+    /** The private subnets for the vpc. */
+    privateSubnetIds?: pulumi.Input<string>[];
+    /** The isolated subnets for the vpc. */
+    isolatedSubnetIds?: pulumi.Input<string>[];
+}
+
+function isExistingVpcArgs(obj: any): obj is ExistingVpcArgs {
+    return !!(<ExistingVpcArgs>obj).vpcId;
 }
 
 type OverwriteShape = utils.Overwrite<aws.ec2.VpcArgs, {

@@ -36,7 +36,6 @@ export class VpcTopology {
     }
 
     public createSubnets(subnetArgsArray: x.ec2.VpcSubnetArgs[]) {
-
         const maskedSubnets = subnetArgsArray.filter(s => s.cidrMask !== undefined);
         const unmaskedSubnets = subnetArgsArray.filter(s => s.cidrMask === undefined);
 
@@ -117,10 +116,18 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                 }),
             }, this.opts);
 
-            switch (subnetArgs.type) {
-                case "public": this.vpc.publicSubnets.push(subnet); break;
-                case "private": this.vpc.privateSubnets.push(subnet); break;
-                case "isolated": this.vpc.isolatedSubnets.push(subnet); break;
+            const [subnets, subnetIds] = getSubnets(this.vpc, subnetArgs.type);
+            subnets.push(subnet);
+            subnetIds.push(subnet.instance.id);
+        }
+
+        return;
+
+        function getSubnets(vpc: x.ec2.Vpc, type: x.ec2.VpcSubnetType): [x.ec2.Subnet[], pulumi.Output<String>[]] {
+            switch (type) {
+                case "public": return [vpc.publicSubnets, vpc.publicSubnetIds];
+                case "private": return [vpc.privateSubnets, vpc.privateSubnetIds];
+                case "isolated": return [vpc.isolatedSubnets, vpc.isolatedSubnetIds];
                 default: throw new Error("Unexpected subnet type: " + subnetArgs.type);
             }
         }
