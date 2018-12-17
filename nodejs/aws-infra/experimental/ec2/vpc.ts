@@ -28,11 +28,11 @@ export class Vpc extends pulumi.ComponentResource {
     public readonly isolatedSubnets: x.ec2.Subnet[] = [];
 
     constructor(name: string, args: VpcArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("awsinfra:x:ec2:Vpc", name, args, opts);
+        super("awsinfra:x:ec2:Vpc", name, {}, opts);
 
         const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
         const numberOfAvailabilityZones = args.numberOfAvailabilityZones === undefined ? 2 : args.numberOfAvailabilityZones;
-        const instance = new aws.ec2.Vpc(name, {
+        this.instance = new aws.ec2.Vpc(name, {
             ...args,
             cidrBlock,
             enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
@@ -53,11 +53,7 @@ export class Vpc extends pulumi.ComponentResource {
 
         createGateways(subnetArgs);
 
-        this.instance = instance;
-
-        this.registerOutputs({
-            instance,
-        });
+        this.registerOutputs();
     }
 
     // /**
