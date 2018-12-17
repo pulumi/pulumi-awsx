@@ -44,32 +44,25 @@ export class Cluster
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 
     constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsinfra:x:ecs:Cluster", name, args, opts);
+        super("awsinfra:x:ecs:Cluster", name, {}, opts);
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
         const instance = args.instance || new aws.ecs.Cluster(name, args, parentOpts);
+        this.instance = instance;
 
-        const network = args.network || Network.getDefault();
+        this.network = args.network || Network.getDefault();
 
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        const securityGroups = args.securityGroups ||
-            [Cluster.createDefaultSecurityGroup(name, network, parentOpts)];
+        this.securityGroups = args.securityGroups ||
+            [Cluster.createDefaultSecurityGroup(name, this.network, parentOpts)];
 
         this.extraBootcmdLines = () => instance.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
 
-        this.instance = instance;
-        this.network = network;
-        this.securityGroups = securityGroups;
-
-        this.registerOutputs({
-            instance,
-            network,
-            securityGroups,
-        });
+        this.registerOutputs();
     }
 
     /**

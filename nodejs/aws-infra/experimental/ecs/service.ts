@@ -22,8 +22,8 @@ import * as utils from "./../../utils";
 
 export abstract class Service extends pulumi.ComponentResource {
     public readonly instance: aws.ecs.Service;
-    public readonly clusterInstance: ecs.Cluster;
-    public readonly taskDefinitionInstance: ecs.TaskDefinition;
+    public readonly cluster: ecs.Cluster;
+    public readonly taskDefinition: ecs.TaskDefinition;
 
     constructor(type: string, name: string,
                 args: ServiceArgs, isFargate: boolean,
@@ -39,11 +39,11 @@ export abstract class Service extends pulumi.ComponentResource {
 
         const loadBalancers = getLoadBalancers(this, name, args);
 
-        const clusterInstance = args.cluster;
-        const instance = new aws.ecs.Service(name, {
+        this.cluster = args.cluster;
+        this.instance = new aws.ecs.Service(name, {
             ...args,
             loadBalancers,
-            cluster: clusterInstance.instance.arn,
+            cluster: this.cluster.instance.arn,
             taskDefinition: args.taskDefinition.instance.arn,
             desiredCount: utils.ifUndefined(args.desiredCount, 1),
             launchType: utils.ifUndefined(args.launchType, "EC2"),
@@ -51,17 +51,9 @@ export abstract class Service extends pulumi.ComponentResource {
             placementConstraints: pulumi.output(args.os).apply(os => placementConstraints(isFargate, os)),
         }, parentOpts);
 
-        const taskDefinitionInstance = args.taskDefinition;
+        this.taskDefinition = args.taskDefinition;
 
-        this.instance = instance;
-        this.clusterInstance = clusterInstance;
-        this.taskDefinitionInstance = args.taskDefinition;
-
-        this.registerOutputs({
-            instance,
-            clusterInstance,
-            taskDefinitionInstance,
-        });
+        this.registerOutputs();
     }
 }
 

@@ -29,25 +29,25 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
     constructor(name: string,
                 args: ClusterFileSystemArgs,
                 opts: pulumi.CustomResourceOptions = {}) {
-        super("aws-infra:x:ClusterFileSystem", name, args, opts);
+        super("aws-infra:x:ClusterFileSystem", name, {}, opts);
 
         const parentOpts = { parent: this };
 
-        const cluster = args.cluster;
-        const instance = new aws.efs.FileSystem(name, args, parentOpts);
+        this.cluster = args.cluster;
+        this.instance = new aws.efs.FileSystem(name, args, parentOpts);
 
-        const mountTargets: aws.efs.MountTarget[] = [];
-        const mountPath = utils.ifUndefined(args.mountPath, "/mnt/efs");
+        this.mountTargets = [];
+        this.mountPath = utils.ifUndefined(args.mountPath, "/mnt/efs");
 
         // If requested, add EFS file system and mount targets in each subnet.
 
         const efsSecurityGroupName = `${name}-fs`;
-        const securityGroups = args.securityGroups || [new aws.ec2.SecurityGroup(efsSecurityGroupName, {
-            vpcId: cluster.network.vpcId,
+        this.securityGroups = args.securityGroups || [new aws.ec2.SecurityGroup(efsSecurityGroupName, {
+            vpcId: this.cluster.network.vpcId,
             ingress: [
                 // Allow NFS traffic from the instance security group
                 {
-                    securityGroups: cluster.securityGroups.map(g => g.instance.id),
+                    securityGroups: this.cluster.securityGroups.map(g => g.instance.id),
                     protocol: "TCP",
                     fromPort: 2049,
                     toPort: 2049,
@@ -56,29 +56,17 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
             tags: { Name: efsSecurityGroupName },
         }, parentOpts)];
 
-        const subnetIds = args.subnetIds || cluster.network.subnetIds;
+        const subnetIds = args.subnetIds || this.cluster.network.subnetIds;
         for (let i = 0; i < subnetIds.length; i++) {
             const subnetId = subnetIds[i];
-            mountTargets.push(new aws.efs.MountTarget(`${name}-${i}`, {
-                fileSystemId: instance.id,
+            this.mountTargets.push(new aws.efs.MountTarget(`${name}-${i}`, {
+                fileSystemId: this.instance.id,
                 subnetId: subnetId,
-                securityGroups: securityGroups.map(g => g.id),
+                securityGroups: this.securityGroups.map(g => g.id),
             }, parentOpts));
         }
 
-        this.instance = instance;
-        this.cluster = cluster;
-        this.mountPath = mountPath;
-        this.mountTargets = mountTargets;
-        this.securityGroups = securityGroups;
-
-        this.registerOutputs({
-            instance,
-            cluster,
-            mountPath,
-            mountTargets,
-            securityGroups,
-        });
+        this.registerOutputs();
     }
 }
 

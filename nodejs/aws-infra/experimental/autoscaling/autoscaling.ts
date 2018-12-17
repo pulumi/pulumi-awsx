@@ -38,8 +38,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     constructor(name: string,
                 args: AutoScalingLaunchConfigurationArgs = {},
                 opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsinfra:x:autoscaling:AutoScalingLaunchConfiguration", name,
-            args, opts);
+        super("awsinfra:x:autoscaling:AutoScalingLaunchConfiguration", name, {}, opts);
 
         const parentOpts = { parent: this };
 
@@ -47,39 +46,29 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         // references the launch configuration and vice-versa, we use this to break the cycle.
         // TODO[pulumi/pulumi#381]: Creating an S3 bucket is an inelegant way to get a durable,
         // unique name.
-        const stackName = pulumi.output(args.stackName).apply(sn => sn || new aws.s3.Bucket(name, {}, parentOpts).id);
+        this.stackName = pulumi.output(args.stackName).apply(sn => sn || new aws.s3.Bucket(name, {}, parentOpts).id);
 
         // Use the instance provided, or create a new one.
-        const instanceProfile = args.instanceProfile ||
+        this.instanceProfile = args.instanceProfile ||
             AutoScalingLaunchConfiguration.createInstanceProfile(
                 name, /*assumeRolePolicy:*/ undefined, /*policyArns:*/ undefined, parentOpts);
 
-        const fileSystem = args.fileSystem;
+        this.fileSystem = args.fileSystem;
 
-        const instance = new aws.ec2.LaunchConfiguration(name, {
+        this.instance = new aws.ec2.LaunchConfiguration(name, {
             ...args,
             securityGroups: (args.securityGroups || []).map(g => g.instance.id),
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
-            iamInstanceProfile: instanceProfile.id,
+            iamInstanceProfile: this.instanceProfile.id,
             enableMonitoring: utils.ifUndefined(args.enableMonitoring, true),
             placementTenancy: utils.ifUndefined(args.placementTenancy, "default"),
             rootBlockDevice: utils.ifUndefined(args.rootBlockDevice, defaultRootBlockDevice),
             ebsBlockDevices: utils.ifUndefined(args.ebsBlockDevices, defaultEbsBlockDevices),
-            userData: getInstanceUserData(args, stackName),
+            userData: getInstanceUserData(args, this.stackName),
         }, parentOpts);
 
-        this.instance = instance;
-        this.stackName = stackName;
-        this.instanceProfile = instanceProfile;
-        this.fileSystem = fileSystem;
-
-        this.registerOutputs({
-            instance,
-            stackName,
-            instanceProfile,
-            fileSystem,
-        });
+        this.registerOutputs();
     }
 
     public static defaultInstanceProfilePolicyDocument(): aws.iam.PolicyDocument {
@@ -293,42 +282,31 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     constructor(name: string,
                 args: AutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsinfra:x:autoscaling:AutoScalingGroup", name,
-            args, opts);
+        super("awsinfra:x:autoscaling:AutoScalingGroup", name, {}, opts);
 
         const parentOpts = { parent: this };
 
-        let launchConfiguration: AutoScalingLaunchConfiguration;
-
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
         if (args.launchConfiguration) {
-            launchConfiguration = args.launchConfiguration;
+            this.launchConfiguration = args.launchConfiguration;
         }
         else {
-            launchConfiguration = new AutoScalingLaunchConfiguration(
+            this.launchConfiguration = new AutoScalingLaunchConfiguration(
                 name, args.launchConfigurationArgs, parentOpts);
         }
 
-        const network = args.network || Network.getDefault();
-        const instance = new aws.cloudformation.Stack(name, {
+        this.network = args.network || Network.getDefault();
+        this.instance = new aws.cloudformation.Stack(name, {
             ...args,
-            name: launchConfiguration.stackName,
+            name: this.launchConfiguration.stackName,
             templateBody: getCloudFormationTemplate(
                 name,
-                launchConfiguration.instance.id,
-                network.subnetIds,
+                this.launchConfiguration.instance.id,
+                this.network.subnetIds,
                 utils.ifUndefined(args.templateParameters, {})),
         }, parentOpts);
 
-        this.network = network;
-        this.instance = instance;
-        this.launchConfiguration = launchConfiguration;
-
-        this.registerOutputs({
-            network,
-            instance,
-            launchConfiguration,
-        });
+        this.registerOutputs();
     }
 }
 
