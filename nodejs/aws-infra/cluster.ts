@@ -132,18 +132,7 @@ export class Cluster extends pulumi.ComponentResource {
             throw new pulumi.RunError("Expected a valid Network to use for creating Cluster");
         }
 
-        super("aws-infra:cluster:Cluster", name, {
-            addEFS: args.addEFS,
-            instanceType: args.instanceType,
-            instanceRolePolicyARNs: args.instanceRolePolicyARNs,
-            instanceRootVolumeSize: args.instanceRootVolumeSize,
-            instanceDockerImageVolumeSize: args.instanceDockerImageVolumeSize,
-            instanceSwapVolumeSize: args.instanceSwapVolumeSize,
-            minSize: args.minSize,
-            maxSize: args.maxSize,
-            publicKey: args.publicKey,
-            ecsOptimizedAMIName: args.ecsOptimizedAMIName,
-        }, opts);
+        super("aws-infra:cluster:Cluster", name, {}, opts);
 
         this.network = args.network;
 
@@ -224,13 +213,7 @@ export class Cluster extends pulumi.ComponentResource {
                 this, name, args, instanceSecurityGroup, cluster, filesystem);
         }
 
-        this.registerOutputs({
-            network: this.network,
-            ecsClusterARN: this.ecsClusterARN,
-            securityGroupId: this.securityGroupId,
-            autoScalingGroupStack: this.autoScalingGroupStack,
-            efsMountPath: this.efsMountPath,
-        });
+        this.registerOutputs();
     }
 }
 

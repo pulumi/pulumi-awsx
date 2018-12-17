@@ -40,6 +40,8 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
         delete (<any>argsCopy).container;
 
         super("awsinfra:x:ecs:EC2TaskDefinition", name, /*isFargate:*/ false, argsCopy, opts);
+
+        this.registerOutputs();
     }
 
     /**
@@ -62,7 +64,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 }
 
 export class EC2Service extends ecs.Service {
-    public taskDefinitionInstance: EC2TaskDefinition;
+    public taskDefinition: EC2TaskDefinition;
 
     constructor(name: string,
                 args: EC2ServiceArgs,
@@ -87,7 +89,7 @@ export class EC2Service extends ecs.Service {
             },
         }, /*isFargate:*/ false, opts);
 
-        this.taskDefinitionInstance = taskDefinition;
+        this.registerOutputs();
     }
 }
 

@@ -47,6 +47,8 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
         delete (<any>argsCopy).container;
 
         super("awsinfra:x:ecs:FargateTaskDefinition", name, /*isFargate:*/ true, argsCopy, opts);
+
+        this.registerOutputs();
     }
 
     /**
@@ -125,6 +127,8 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
 }
 
 export class FargateService extends ecs.Service {
+    public readonly taskDefinition: FargateTaskDefinition;
+
     constructor(name: string,
                 args: FargateServiceArgs,
                 opts?: pulumi.ResourceOptions) {
@@ -147,6 +151,8 @@ export class FargateService extends ecs.Service {
                 subnets: cluster.network.subnetIds,
             },
         },  /*isFargate:*/ true, opts);
+
+        this.registerOutputs();
     }
 }
 
