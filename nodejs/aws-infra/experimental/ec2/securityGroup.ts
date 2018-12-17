@@ -28,21 +28,15 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
     constructor(name: string, args: SecurityGroupArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("awsinfra:x:ec2:SecurityGroup", name, args, opts);
+        super("awsinfra:x:ec2:SecurityGroup", name, {}, opts);
 
-        const network = args.network || Network.getDefault();
-        const instance = args.instance || new aws.ec2.SecurityGroup(name, {
+        this.network = args.network || Network.getDefault();
+        this.instance = args.instance || new aws.ec2.SecurityGroup(name, {
             ...args,
-            vpcId: network.vpcId,
+            vpcId: this.network.vpcId,
         }, { parent: this });
 
-        this.instance = instance;
-        this.network = network;
-
-        this.registerOutputs({
-            instance,
-            network,
-        });
+        this.registerOutputs();
     }
 
     public createEgressRule(

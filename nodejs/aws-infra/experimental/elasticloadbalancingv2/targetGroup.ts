@@ -32,7 +32,7 @@ export abstract class TargetGroup
     public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
 
     constructor(type: string, name: string, args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, args, opts);
+        super(type, name, {}, opts);
 
         const parentOpts = { parent: this };
 

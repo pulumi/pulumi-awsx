@@ -60,16 +60,16 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
                 opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, args, opts);
+        super(type, name, {}, opts);
 
         const parentOpts = { parent: this };
-        const logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
+        this.logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
         }, parentOpts);
 
-        const taskRole = args.taskRole || TaskDefinition.createTaskRole(
+        this.taskRole = args.taskRole || TaskDefinition.createTaskRole(
             `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, parentOpts);
-        const executionRole = args.executionRole || TaskDefinition.createExecutionRole(
+        this.executionRole = args.executionRole || TaskDefinition.createExecutionRole(
             `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, parentOpts);
 
 //         // todo(cyrusn): volumes.
@@ -90,21 +90,21 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 // //         }
 // //     }
 
-        const containers = args.containers;
-        const containerDefinitions = computeContainerDefinitions(this, name, containers, logGroup);
+        this.containers = args.containers;
+        const containerDefinitions = computeContainerDefinitions(this, name, this.containers, this.logGroup);
         const containerString = containerDefinitions.apply(JSON.stringify);
         const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
 
-        const instance = new aws.ecs.TaskDefinition(name, {
+        this.instance = new aws.ecs.TaskDefinition(name, {
             ...args,
             family,
-            taskRoleArn: taskRole.arn,
-            executionRoleArn: executionRole.arn,
+            taskRoleArn: this.taskRole.arn,
+            executionRoleArn: this.executionRole.arn,
             containerDefinitions: containerString,
         }, parentOpts);
 
         const containerToEnvironment =
-            pulumi.output(containers)
+            pulumi.output(this.containers)
                   .apply(c => {
                         const result: Record<string, aws.ecs.KeyValuePair[]> = {};
                         for (const key of Object.keys(c)) {
@@ -113,21 +113,9 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
                         return result;
                   });
 
-        this.run = createRunFunction(isFargate, instance.arn, containerToEnvironment);
+        this.run = createRunFunction(isFargate, this.instance.arn, containerToEnvironment);
 
-        this.instance = instance;
-        this.containers = containers;
-        this.logGroup = logGroup;
-        this.taskRole = taskRole;
-        this.executionRole = executionRole;
-
-        this.registerOutputs({
-            instance,
-            containers,
-            logGroup,
-            taskRole,
-            executionRole,
-        });
+        this.registerOutputs();
     }
 
     /**
