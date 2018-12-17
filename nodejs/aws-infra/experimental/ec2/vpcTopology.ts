@@ -106,7 +106,8 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
         }
 
         for (let i = 0; i < this.numberOfAvailabilityZones; i++) {
-            const subnetName = `${this.vpcName}-${subnetArgs.type}-${i}`;
+            const subnetName = this.getSubnetName(subnetArgs, i);
+
             const subnet = new x.ec2.Subnet(subnetName, this.vpc, {
                 availabilityZone: getAvailabilityZone(i),
                 cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
@@ -131,5 +132,14 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                 default: throw new Error("Unexpected subnet type: " + subnetArgs.type);
             }
         }
+    }
+
+    private getSubnetName(subnetArgs: x.ec2.VpcSubnetArgs, i: number) {
+        let subnetName = `${subnetArgs.type}-${i}`;
+        if (subnetArgs.name) {
+            subnetName = `${subnetArgs.name}-` + subnetName;
+        }
+
+        return subnetName;
     }
 }

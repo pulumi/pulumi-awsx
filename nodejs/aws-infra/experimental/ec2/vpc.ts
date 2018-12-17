@@ -27,11 +27,9 @@ export class Vpc extends pulumi.ComponentResource {
      * Id for the underlying [aws.ec2.Vpc] instance.
      */
     public readonly vpcId: pulumi.Output<string>;
-    public readonly publicSubnetIds: pulumi.Output<string>[];
-    public readonly privateSubnetIds: pulumi.Output<string>[];
-    public readonly isolatedSubnetIds: pulumi.Output<string>[];
-    // tslint:disable-next-line:variable-name
-    private __instance: aws.ec2.Vpc;
+    public readonly publicSubnetIds: pulumi.Output<string>[] = [];
+    public readonly privateSubnetIds: pulumi.Output<string>[] = [];
+    public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
 
     public readonly instance: () => aws.ec2.Vpc;
 
@@ -47,31 +45,36 @@ export class Vpc extends pulumi.ComponentResource {
     constructor(name: string, args: VpcArgs | ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ec2:Vpc", name, {}, opts);
 
-        this.instance = () => {
-            if (!this.__instance) {
-                this.__instance = aws.ec2.Vpc.get(name, this.vpcId);
-            }
-
-            return this.__instance;
-        };
-
         if (isExistingVpcArgs(args)) {
             this.vpcId = pulumi.output(args.vpcId);
             this.publicSubnetIds = createOutputs(args.publicSubnetIds);
             this.privateSubnetIds = createOutputs(args.privateSubnetIds);
             this.isolatedSubnetIds = createOutputs(args.isolatedSubnetIds);
+
+            let instance: aws.ec2.Vpc;
+            this.instance = () => {
+                if (!instance) {
+                    instance = aws.ec2.Vpc.get(name, this.vpcId);
+                }
+
+                return instance;
+            };
+
             return;
         }
 
         const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
         const numberOfAvailabilityZones = args.numberOfAvailabilityZones === undefined ? 2 : args.numberOfAvailabilityZones;
-        this.__instance = new aws.ec2.Vpc(name, {
+        const instance = new aws.ec2.Vpc(name, {
             ...args,
             cidrBlock,
             enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
             enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
             instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
         });
+
+        this.instance = () => instance;
+        this.vpcId =  instance.id;
 
         const topology = new VpcTopology(this, name, cidrBlock, numberOfAvailabilityZones, opts);
 
@@ -163,6 +166,13 @@ export interface VpcSubnetArgs {
      * The type of subnet to make in each availability zone.
      */
     type: VpcSubnetType;
+
+    /**
+     * An optional name to use as part of the subnet name.  If not provided, will be set to
+     * "public"/"private"/"isolated" depending on the [type] of this subnet.  Required if making
+     * multiple subnets with the same type.
+     */
+    name?: string;
 
     /**
      * The number of leading bits in the Vpc cidrBlock to use to define the cidrBlock for this

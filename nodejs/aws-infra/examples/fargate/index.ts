@@ -20,6 +20,10 @@ const x = awsinfra.x;
 
 import { Config, Output } from "@pulumi/pulumi";
 
+const vpc = new awsinfra.x.ec2.Vpc("testvpc", {
+    subnets: [{ type: "public" }, { type: "private" }, { type: "isolated" }],
+});
+
 const network = awsinfra.Network.getDefault();
 const cluster = new x.ecs.Cluster("testing", { network });
 
@@ -320,3 +324,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
 });
 
 export let frontendURL = api.url;
+export let vpcId = vpc.vpcId;
+export let publicSubnets = vpc.publicSubnets;
+export let privateSubnets = vpc.privateSubnets;
+export let isolatedSubnets = vpc.isolatedSubnets;

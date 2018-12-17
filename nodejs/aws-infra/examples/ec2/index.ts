@@ -21,6 +21,12 @@ const x = awsinfra.x;
 
 import { Config, Output } from "@pulumi/pulumi";
 
+
+const vpc = new awsinfra.x.ec2.Vpc("testvpc", {
+    subnets: [{ type: "public", name: "db" }, { type: "private", name: "db" }, { type: "isolated", name: "db" },
+              { type: "public", name: "web" }, { type: "private", name: "web" }, { type: "isolated", name: "web" }],
+});
+
 const network = awsinfra.Network.getDefault();
 const cluster = new x.ecs.Cluster("testing", { network });
 const autoScalingGroup = cluster.createAutoScalingGroup("testing", {

@@ -22,11 +22,28 @@ import * as utils from "./../../utils";
 
 export class Subnet extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.Subnet;
+    public readonly routeTable: aws.ec2.RouteTable;
+    public readonly routeTableAssociation: aws.ec2.RouteTableAssociation;
 
     constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("awsinfra:x:ec2:Subnet", name, args, opts || { parent: vpc });
+        super("awsinfra:x:ec2:Subnet", name, {}, opts || { parent: vpc });
 
-        throw new Error("nyi");
+        const parentOpts = { parent: this };
+        this.instance = new aws.ec2.Subnet(name, {
+            vpcId: vpc.vpcId,
+            ...args,
+        }, parentOpts);
+
+        this.routeTable = new aws.ec2.RouteTable(name, {
+            vpcId: vpc.vpcId,
+        }, parentOpts);
+
+        this.routeTableAssociation = new aws.ec2.RouteTableAssociation(name, {
+            routeTableId: this.routeTable.id,
+            subnetId: this.instance.id,
+        }, parentOpts);
+
+        this.registerOutputs();
     }
 }
 
