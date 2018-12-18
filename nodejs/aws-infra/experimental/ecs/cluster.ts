@@ -15,8 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import { Network } from "./../../network";
-
 import * as utils from "../../utils";
 
 import * as ecs from ".";
@@ -33,7 +31,7 @@ export class Cluster
     /**
      * The network in which to create this cluster.
      */
-    public readonly network: Network;
+    public readonly vpc: x.ec2.Vpc;
     /**
      * Security groups associated with this this ECS Cluster.
      */
@@ -51,13 +49,13 @@ export class Cluster
         const instance = args.instance || new aws.ecs.Cluster(name, args, parentOpts);
         this.instance = instance;
 
-        this.network = args.network || Network.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
 
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
         this.securityGroups = args.securityGroups ||
-            [Cluster.createDefaultSecurityGroup(name, this.network, parentOpts)];
+            [Cluster.createDefaultSecurityGroup(name, this.vpc, parentOpts)];
 
         this.extraBootcmdLines = () => instance.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
@@ -77,7 +75,7 @@ export class Cluster
         // Use the network and security groups from this cluster, unless the caller has specified
         // their own.
         return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
-                network: this.network,
+                vpc: this.vpc,
                 securityGroups: this.securityGroups,
                 ...args,
             }, opts || { parent: this });
@@ -121,7 +119,7 @@ export class Cluster
             args?: x.autoscaling.AutoScalingGroupArgs,
             opts?: pulumi.ResourceOptions) {
 
-        args = args || { network: this.network };
+        args = args || { vpc: this.vpc };
 
         args.launchConfigurationArgs = args.launchConfigurationArgs || {};
         const launchConfigurationArgs = args.launchConfigurationArgs;
@@ -136,12 +134,12 @@ export class Cluster
 
     public static createDefaultSecurityGroup(
             name: string,
-            network?: Network,
+            vpc?: x.ec2.Vpc,
             opts?: pulumi.ComponentResourceOptions): x.ec2.SecurityGroup {
 
-        network = network || Network.getDefault();
+        vpc = vpc || x.ec2.Vpc.getDefault();
         const securityGroup = new x.ec2.SecurityGroup(name, {
-            network,
+            vpc,
             tags: { Name: name },
         }, opts);
 
@@ -177,7 +175,7 @@ export class Cluster
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
-    network?: Network;
+    vpc?: x.ec2.Vpc;
     securityGroups?: x.ec2.SecurityGroup[];
 }>;
 
@@ -186,10 +184,10 @@ type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
  */
 export interface ClusterArgs {
     /**
-     * The network in which to create this cluster.  If not provided, Network.getDefault() will be
+     * The network in which to create this cluster.  If not provided, Vpc.getDefault() will be
      * used.
      */
-    network?: Network;
+    vpc?: x.ec2.Vpc;
 
     /**
      * An existing Cluster to use for this awsinfra Cluster.  If not provided, a default one will

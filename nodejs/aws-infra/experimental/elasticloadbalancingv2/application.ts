@@ -19,7 +19,6 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 import * as x from "..";
-import { Network } from "./../../network";
 
 import * as utils from "./../../utils";
 
@@ -87,7 +86,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 
         super("awsinfra:x:elasticloadbalancingv2:ApplicationTargetGroup", name, {
             ...args,
-            network: loadBalancer.network,
+            vpc: loadBalancer.vpc,
             port,
             protocol,
         }, opts);
@@ -209,10 +208,10 @@ export interface ApplicationLoadBalancerArgs {
     // Properties from LoadBalancerArgs
 
     /**
-     * The network this load balancer will be used with.  Defaults to `[Network.getDefault]` if
+     * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    network?: Network;
+    vpc?: x.ec2.Vpc;
 
     /**
      * Whether or not the load balancer is exposed to the internet. Defaults to `false` if

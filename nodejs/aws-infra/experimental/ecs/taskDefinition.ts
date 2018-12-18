@@ -43,6 +43,12 @@ export interface TaskRunOptions {
      * Optional environment variables to override those set in the container definition.
      */
     environment?: aws.ecs.KeyValuePair[];
+
+    // /**
+    //  * The subnets to run the task in.  Defaults to the public subnets of the cluster's VPC if
+    //  * unspecified.
+    //  */
+    // subnets?: string[];
 }
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
@@ -198,10 +204,9 @@ function createRunFunction(
         const ecs = new aws.sdk.ECS();
 
         const cluster = options.cluster;
-        const usePrivateSubnets = cluster.network.usePrivateSubnets;
         const clusterArn = cluster.instance.id.get();
         const securityGroupIds = cluster.securityGroups.map(g => g.instance.id.get());
-        const subnetIds = cluster.network.subnetIds.map(i => i.get());
+        const subnetIds = cluster.vpc.publicSubnetIds.map(i => i.get());
 
         const innerContainers = containerToEnvironment.get();
         const containerName = options.containerName || Object.keys(innerContainers)[0];
@@ -215,7 +220,7 @@ function createRunFunction(
 
         const env = [...env1, ...env2];
 
-        const assignPublicIp = isFargate && !usePrivateSubnets;
+        const assignPublicIp = isFargate; // && !usePrivateSubnets;
 
         // Run the task
         const res = await ecs.runTask({

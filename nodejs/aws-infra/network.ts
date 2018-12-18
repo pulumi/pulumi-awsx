@@ -103,19 +103,20 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      */
     public readonly securityGroupIds: pulumi.Output<string>[];
     /**
-     * The subnets in which compute should run.  These are the private subnets if [usePrivateSubnets] == true, else
-     * these are the public subnets.
+     * The subnets in which compute should run.  These are the private subnets if
+     * [usePrivateSubnets] == true, else these are the public subnets.
      */
     public readonly subnetIds: pulumi.Output<string>[];
     /**
-     * The public subnets for the VPC.  In case [usePrivateSubnets] == false, these are the same as [subnets].
+     * The public subnets for the VPC.  In case [usePrivateSubnets] == false, these are the same as
+     * [subnets].
      */
     public readonly publicSubnetIds: pulumi.Output<string>[];
 
     /**
-     * Gets the default VPC for the AWS account as a Network.  This first time this is called,
-     * the default network will be lazily created, using whatever options are provided in opts.
-     * All subsequent calls will return that same network even if different opts are provided.
+     * Gets the default VPC for the AWS account as a Network.  This first time this is called, the
+     * default network will be lazily created, using whatever options are provided in opts. All
+     * subsequent calls will return that same network even if different opts are provided.
      */
     public static getDefault(opts?: pulumi.ResourceOptions): Network {
         if (!defaultNetwork) {
@@ -161,17 +162,16 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
     }
 
     constructor(name: string, args?: NetworkArgs, opts?: pulumi.ResourceOptions);
-    constructor(name: string, mergedArgs?: NetworkArgs | NetworkVpcArgs, opts?: pulumi.ResourceOptions) {
+    constructor(name: string, mergedArgs: NetworkArgs | NetworkVpcArgs = {}, opts: pulumi.ResourceOptions = {}) {
+        super("aws-infra:network:Network", name, {}, opts);
+
         // IDEA: default to the number of availability zones in this region, rather than 2.  To do this requires
         // invoking the provider, which requires that we "go async" at a very inopportune time here.  When
         // pulumi/pulumi#331 lands, this will be much easier to do, and we can improve this situation.
-        if (!mergedArgs) {
-            mergedArgs = {};
-        }
 
-        super("aws-infra:network:Network", name, {}, opts);
-
+        const parentOpts = { parent: this };
         const vpcArgs = <NetworkVpcArgs>mergedArgs;
+
         if (vpcArgs.vpcId) {
             this.vpcId = pulumi.output(vpcArgs.vpcId);
             this.subnetIds = vpcArgs.subnetIds.map(id => pulumi.output(id));
@@ -188,7 +188,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
                 `Unsupported number of availability zones for network: ${numberOfAvailabilityZones}`);
         }
 
-        const parentOpts = { parent: this };
         const tags = { Name: name };
 
         this.usePrivateSubnets = args.usePrivateSubnets || false;
@@ -201,6 +200,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         }, parentOpts);
 
         this.vpcId = vpc.id;
+
         this.securityGroupIds = [ vpc.defaultSecurityGroupId ];
         this.subnetIds = [];
         this.publicSubnetIds = [];
@@ -244,42 +244,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             const subnetId = pulumi.all([subnet.id, routeTableAssociation.id]).apply(([id]) => id);
             this.subnetIds.push(subnetId);
         }
-    }
-
-    /**
-     * Creates a new [NetworkLoadBalancer] for this [Network].
-     */
-    public createNetworkLoadBalancer(
-            name: string,
-            args: x.elasticloadbalancingv2.NetworkLoadBalancerArgs = {},
-            opts?: pulumi.ComponentResourceOptions) {
-        return new x.elasticloadbalancingv2.NetworkLoadBalancer(name, {
-                network: this,
-                ...args,
-            }, opts || { parent: this });
-    }
-
-    /**
-     * Creates a new [NetworkLoadBalancer] and [NetworkListener] for this [Network].  The
-     * NetworkListener will have a default [NetworkTargetGroup] created for it.
-     */
-    public createNetworkListener(name: string,
-                                 listenerArgs: x.elasticloadbalancingv2.NetworkListenerArgs,
-                                 loadBalancerArgs?: x.elasticloadbalancingv2.NetworkLoadBalancerArgs,
-                                 opts?: pulumi.ComponentResourceOptions) {
-        return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
-                   .createListener(name, listenerArgs, opts);
-    }
-
-    /**
-     * Creates a new [NetworkLoadBalancer] and [NetworkTargetGroup] for this [Network].
-     */
-    public createNetworkTargetGroup(name: string,
-                                    targetGroupArgs: x.elasticloadbalancingv2.NetworkTargetGroupArgs,
-                                    loadBalancerArgs?: x.elasticloadbalancingv2.NetworkLoadBalancerArgs,
-                                    opts?: pulumi.ComponentResourceOptions) {
-        return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
-                   .createTargetGroup(name, targetGroupArgs, opts);
     }
 }
 

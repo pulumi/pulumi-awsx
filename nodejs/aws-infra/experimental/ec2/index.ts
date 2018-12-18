@@ -14,3 +14,5 @@
 
 export * from "./securityGroup";
 export * from "./securityGroupRule";
+export * from "./subnet";
+export * from "./vpc";

@@ -16,8 +16,6 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { Network } from "./../../network";
-
 import * as utils from "./../../utils";
 
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
@@ -271,7 +269,7 @@ function getAdditionalBootcmdLines(args: AutoScalingUserData | undefined): pulum
 }
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
-    public readonly network: Network;
+    public readonly vpc: x.ec2.Vpc;
     public readonly instance: aws.cloudformation.Stack;
 
     /**
@@ -295,14 +293,14 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 name, args.launchConfigurationArgs, parentOpts);
         }
 
-        this.network = args.network || Network.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         this.instance = new aws.cloudformation.Stack(name, {
             ...args,
             name: this.launchConfiguration.stackName,
             templateBody: getCloudFormationTemplate(
                 name,
                 this.launchConfiguration.instance.id,
-                this.network.subnetIds,
+                this.vpc.publicSubnetIds,
                 utils.ifUndefined(args.templateParameters, {})),
         }, parentOpts);
 
@@ -386,10 +384,10 @@ ${suspendProcessesString}
 
 export interface AutoScalingGroupArgs {
     /**
-     * The network this autoscaling group is for.  If not provided this autoscaling group will be
-     * created for the default network.
+     * The vpc this autoscaling group is for.  If not provided this autoscaling group will be
+     * created for the default vpc.
      */
-    network?: Network;
+    vpc?: x.ec2.Vpc;
 
     /**
      * The config to use when creating the auto scaling group.

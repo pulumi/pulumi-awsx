@@ -16,8 +16,6 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { Network } from "./../../network";
-
 import * as utils from "./../../utils";
 
 export interface SecurityGroupRuleLocation {

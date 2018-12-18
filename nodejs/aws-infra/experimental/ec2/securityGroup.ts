@@ -16,13 +16,11 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { Network } from "./../../network";
-
 import * as utils from "./../../utils";
 
 export class SecurityGroup extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.SecurityGroup;
-    public readonly network: Network;
+    public readonly vpc: x.ec2.Vpc;
 
     public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
@@ -30,10 +28,10 @@ export class SecurityGroup extends pulumi.ComponentResource {
     constructor(name: string, args: SecurityGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ec2:SecurityGroup", name, {}, opts);
 
-        this.network = args.network || Network.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         this.instance = args.instance || new aws.ec2.SecurityGroup(name, {
             ...args,
-            vpcId: this.network.vpcId,
+            vpcId: this.vpc.vpcId,
         }, { parent: this });
 
         this.registerOutputs();
@@ -68,7 +66,7 @@ type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
     namePrefix?: never;
     vpcId?: never;
 
-    network?: Network;
+    vpc?: x.ec2.Vpc;
 }>;
 
 export interface SecurityGroupArgs {
@@ -79,9 +77,9 @@ export interface SecurityGroupArgs {
     instance?: aws.ec2.SecurityGroup;
 
     /**
-     * The network this security group applies to.  Or [Network.getDefault] if unspecified.
+     * The vpc this security group applies to.  Or [Network.getDefault] if unspecified.
      */
-    network?: Network;
+    vpc?: x.ec2.Vpc;
 
     /**
      * The security group description. Defaults to "Managed by Terraform". Cannot be "". __NOTE__:

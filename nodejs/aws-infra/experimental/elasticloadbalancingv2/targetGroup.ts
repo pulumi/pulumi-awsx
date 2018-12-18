@@ -18,7 +18,6 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { Network } from "./../../network";
 
 import * as utils from "./../../utils";
 
@@ -27,7 +26,7 @@ export abstract class TargetGroup
         implements x.ecs.ContainerPortMappings, x.elasticloadbalancingv2.ListenerDefaultAction {
 
     public readonly instance: aws.elasticloadbalancingv2.TargetGroup;
-    public readonly network: Network;
+    public readonly vpc: x.ec2.Vpc;
 
     public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
 
@@ -39,10 +38,10 @@ export abstract class TargetGroup
         const longName = `${name}`;
         const shortName = utils.sha1hash(`${longName}`);
 
-        this.network = args.network;
+        this.vpc = args.vpc;
         this.instance = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
             ...args,
-            vpcId: this.network.vpcId,
+            vpcId: this.vpc.vpcId,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
             deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 300),
             targetType: utils.ifUndefined(args.targetType, "ip"),
@@ -84,9 +83,9 @@ export abstract class TargetGroup
 
 export interface TargetGroupArgs {
     /**
-     * The network for this target group.
+     * The vpc for this target group.
      */
-    network: Network;
+    vpc: x.ec2.Vpc;
 
     /**
      * The amount time for Elastic Load Balancing to wait before changing the state of a
