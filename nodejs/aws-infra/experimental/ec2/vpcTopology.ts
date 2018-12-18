@@ -105,6 +105,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
             throw new Error(`Cidr mask must be between "16" and "28" but was ${cidrMask}`);
         }
 
+        const [subnets, subnetIds] = getSubnets(this.vpc, subnetArgs.type);
         for (let i = 0; i < this.numberOfAvailabilityZones; i++) {
             const subnetName = this.getSubnetName(subnetArgs, i);
 
@@ -117,7 +118,6 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                 }),
             }, this.opts);
 
-            const [subnets, subnetIds] = getSubnets(this.vpc, subnetArgs.type);
             subnets.push(subnet);
             subnetIds.push(subnet.instance.id);
         }

@@ -40,6 +40,16 @@ export class Vpc extends pulumi.ComponentResource {
     public readonly privateSubnets: x.ec2.Subnet[] = [];
     public readonly isolatedSubnets: x.ec2.Subnet[] = [];
 
+    /**
+     * The internet gateway created to allow traffic to/from the internet to the public subnets.
+     */
+    public readonly internetGateway: aws.ec2.InternetGateway;
+
+    /**
+     * The nat gateways created to allow private subnets access to the internet.
+     */
+    public readonly natGateways: aws.ec2.NatGateway[] = [];
+
     constructor(name: string, args: VpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args: VpcArgs | ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions) {
@@ -65,6 +75,11 @@ export class Vpc extends pulumi.ComponentResource {
 
         const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
         const numberOfAvailabilityZones = args.numberOfAvailabilityZones === undefined ? 2 : args.numberOfAvailabilityZones;
+        const numberOfNatGateways = args.numberOfNatGateways === undefined ? numberOfAvailabilityZones : args.numberOfNatGateways;
+        if (numberOfNatGateways > numberOfAvailabilityZones) {
+            throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
+        }
+
         const instance = new aws.ec2.Vpc(name, {
             ...args,
             cidrBlock,
@@ -76,20 +91,112 @@ export class Vpc extends pulumi.ComponentResource {
         this.instance = () => instance;
         this.vpcId =  instance.id;
 
-        const topology = new VpcTopology(this, name, cidrBlock, numberOfAvailabilityZones, opts);
-
         // Create the appropriate subnets.  Default to a single public and private subnet for each
         // availability zone if none were specified.
-        const subnetArgs = args.subnets || [
+        const topology = new VpcTopology(this, name, cidrBlock, numberOfAvailabilityZones, opts);
+        topology.createSubnets(args.subnets || [
             { type: "public" },
             { type: "private"},
-        ];
+        ]);
 
-        topology.createSubnets(subnetArgs);
+        // Create an internet gateway if we have public subnets.
+        this.internetGateway = this.createInternetGateway(name)!;
 
-        createGateways(subnetArgs);
+        // Create nat gateways if we have private subnets.
+        this.createNatGateways(numberOfAvailabilityZones, numberOfNatGateways);
 
         this.registerOutputs();
+    }
+
+    private createInternetGateway(name: string) {
+        if (this.publicSubnets.length === 0) {
+            return undefined;
+        }
+
+        // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
+        // for more details.
+        const internetGateway = new aws.ec2.InternetGateway(name, {
+            vpcId: this.vpcId,
+        });
+
+        // Hook up all public subnets through that internet gateway.
+        for (const publicSubnet of this.publicSubnets) {
+            publicSubnet.routes.push(new aws.ec2.Route(`${publicSubnet.subnetName}-ig`, {
+                // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
+                // select the internet gateway ID in the Target list.
+                destinationCidrBlock: "0.0.0.0/0",
+                routeTableId: publicSubnet.routeTable.id,
+                gatewayId: internetGateway.id,
+            }, { parent: publicSubnet }));
+        }
+
+        return internetGateway;
+    }
+
+    private createNatGateways(numberOfAvailabilityZones: number, numberOfNatGateways: number) {
+        // Create nat gateways if we have private subnets and we have public subnets to place them in.
+        if (this.privateSubnets.length === 0 || numberOfNatGateways === 0 || this.publicSubnets.length === 0) {
+            return;
+        }
+
+        for (let i = 0; i < numberOfNatGateways; i++) {
+            // Each public subnet was already created across all availability zones.  So, to
+            // maximize coverage of availability zones, we can just walk the public subnets and
+            // create a nat gateway for it's availability zone.  If more natgateways were
+            // requested then we'll just round-robin them among the availability zones.
+            const availabilityZone = i % numberOfAvailabilityZones;
+
+            // this indexing is safe since we would have created the any subnet across all
+            // availability zones.
+            const publicSubnet = this.publicSubnets[availabilityZone];
+            const parentSubnet = { parent: publicSubnet };
+
+            // from https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
+            //
+            // you must also specify an Elastic IP address to associate with the NAT gateway
+            // when you create it. After you've created a NAT gateway, you must update the route
+            // table associated with one or more of your private subnets to point Internet-bound
+            // traffic to the NAT gateway. This enables instances in your private subnets to
+            // communicate with the internet.
+            const natName = `nat-${i}`;
+            const elasticIP = new aws.ec2.Eip(natName, {
+                vpc: true,
+            }, parentSubnet);
+
+            const natGateway = new aws.ec2.NatGateway(natName, {
+                allocationId: elasticIP.allocationId,
+                subnetId: publicSubnet.instance.id,
+            }, parentSubnet);
+
+            this.natGateways.push(natGateway);
+        }
+
+        let roundRobinIndex = 0;
+
+        // We created subnets 'numberOfAvailabilityZones' at a time.  So just jump through them in
+        // chunks of that size.
+        for (let i = 0, n = this.privateSubnets.length; i < n; i += numberOfAvailabilityZones) {
+            // For each chunk of subnets, we will have spread them across all the availability
+            // zones.  We also created a nat gateway per availability zone *up to*
+            // numberOfNatGateways.  So for the subnets in an availability zone that we created a
+            // nat gateway in, just route to that nat gateway.  For the other subnets that are
+            // in an availability zone without a nat gateway, we just round-robin between any
+            // nat gateway we created.
+            for (let j = 0; j < numberOfAvailabilityZones; j++) {
+                const privateSubnet = this.privateSubnets[i + j];
+                const natGateway = j < numberOfNatGateways
+                    ? this.natGateways[j]
+                    : this.natGateways[roundRobinIndex++];
+
+                privateSubnet.routes.push(new aws.ec2.Route(`${privateSubnet.subnetName}-nat-${j}`, {
+                    // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
+                    // select the internet gateway ID in the Target list.
+                    destinationCidrBlock: "0.0.0.0/0",
+                    routeTableId: privateSubnet.routeTable.id,
+                    natGatewayId: natGateway.id,
+                }, { parent: privateSubnet }));
+            }
+        }
     }
 
     /**
@@ -128,17 +235,6 @@ function createOutputs(inputs: pulumi.Input<string>[] | undefined) {
     }
 
     return inputs.map(i => pulumi.output(i));
-}
-
-function createGateways(subnetArgs: VpcSubnetArgs[]) {
-    const isolatedSubnets = subnetArgs.filter(s => s.type === "isolated");
-
-    // if all the subnets are isolated, we don't have to create any gateways for them.
-    if (isolatedSubnets.length === subnetArgs.length) {
-        return;
-    }
-
-
 }
 
 /**
@@ -221,6 +317,27 @@ export interface VpcArgs {
      * unspecified.
      */
     numberOfAvailabilityZones?: number;
+
+    /**
+     * The number of NAT gateways to create if there are any private subnets created.  A NAT gateway
+     * enables instances in a private subnet to connect to the internet or other AWS services, but
+     * prevent the internet from initiating a connection with those instances. A minimum of '1'
+     * gateway is needed if an instance is to be allowed connection to the internet.
+     *
+     * If this is set, a nat gateway will be made for each availability zone in the current region.
+     * The first public subnet for that availability zone will be the one used to place the nat
+     * gateway in.  If less gateways are requested than availability zones, then only
+     * that many nat gateways will be created.
+     *
+     * Private subnets in an availability zone that contains a nat gateway will route through that
+     * gateway.  Private subnets in an availability zone that does not contain a nat gateway will be
+     * routed to the other nat gateways in a round-robin fashion.
+     *
+     * See https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html for more details.
+     *
+     * Defaults to [numberOfAvailabilityZones].
+     */
+    numberOfNatGateways?: number;
     /**
      * Requests an Amazon-provided IPv6 CIDR
      * block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or

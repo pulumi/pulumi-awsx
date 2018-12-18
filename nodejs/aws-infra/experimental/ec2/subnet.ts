@@ -21,12 +21,17 @@ import { Network } from "./../../network";
 import * as utils from "./../../utils";
 
 export class Subnet extends pulumi.ComponentResource {
+    public readonly subnetName: string;
     public readonly instance: aws.ec2.Subnet;
     public readonly routeTable: aws.ec2.RouteTable;
     public readonly routeTableAssociation: aws.ec2.RouteTableAssociation;
 
+    public readonly routes: aws.ec2.Route[] = [];
+
     constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ec2:Subnet", name, {}, opts || { parent: vpc });
+
+        this.subnetName = name;
 
         const parentOpts = { parent: this };
         this.instance = new aws.ec2.Subnet(name, {
