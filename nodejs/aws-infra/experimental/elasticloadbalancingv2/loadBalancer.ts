@@ -16,13 +16,11 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { Network } from "./../../network";
-
 import * as utils from "./../../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly instance: aws.elasticloadbalancingv2.LoadBalancer;
-    public readonly network: Network;
+    public readonly vpc: x.ec2.Vpc;
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
     constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
@@ -33,14 +31,14 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
-        this.network = args.network || Network.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         this.securityGroups = args.securityGroups || [];
 
         const external = utils.ifUndefined(args.external, false);
         this.instance = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
             ...args,
-            subnets: getSubnets(args, this.network, external),
-            internal: external.apply(ex => this.network.usePrivateSubnets && !ex),
+            subnets: getSubnets(args, this.vpc, external),
+            internal: external.apply(ex => !ex),
             securityGroups: this.securityGroups.map(g => g.instance.id),
             tags: utils.mergeTags(args.tags, { Name: longName }),
         }, parentOpts);
@@ -48,27 +46,24 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 }
 
 function getSubnets(
-    args: LoadBalancerArgs, network: Network, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
+    args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
 
     if (!args.subnets) {
-        // No subnets requested.  Determine the subnets automatically from the network.
-        return external.apply(e => e ? network.publicSubnetIds : network.subnetIds);
+        // No subnets requested.  Determine the subnets automatically from the vpc.
+        return external.apply(e => e ? vpc.publicSubnetIds : vpc.privateSubnetIds);
     }
 
-    const loadBalancerSubnets = <LoadBalancerSubnets>args.subnets;
-    if (loadBalancerSubnets.subnets) {
-        return loadBalancerSubnets.subnets();
-    }
-
-    return <pulumi.Input<pulumi.Input<string>[]>>args.subnets;
+    return isLoadBalancerSubnets(args.subnets)
+        ? args.subnets.subnets()
+        : args.subnets;
 }
 
 export interface LoadBalancerArgs {
     /**
-     * The network this load balancer will be used with.  Defaults to `[Network.getDefault]` if
+     * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    network?: Network;
+    vpc?: x.ec2.Vpc;
 
     /**
      * Whether or not the load balancer is exposed to the internet. Defaults to `false` if
@@ -118,4 +113,8 @@ export interface LoadBalancerArgs {
 
 export interface LoadBalancerSubnets {
     subnets(): pulumi.Input<pulumi.Input<string>[]>;
+}
+
+function isLoadBalancerSubnets(obj: any): obj is LoadBalancerSubnets {
+    return obj && !!(<LoadBalancerSubnets>obj).subnets;
 }

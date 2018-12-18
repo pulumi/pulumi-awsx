@@ -103,10 +103,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      */
     public readonly securityGroupIds: pulumi.Output<string>[];
     /**
-     * The security groups for the network.
-     */
-    public readonly securityGroups: x.ec2.SecurityGroup[];
-    /**
      * The subnets in which compute should run.  These are the private subnets if
      * [usePrivateSubnets] == true, else these are the public subnets.
      */
@@ -182,7 +178,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             this.usePrivateSubnets = vpcArgs.usePrivateSubnets;
             this.securityGroupIds = vpcArgs.securityGroupIds.map(id => pulumi.output(id));
             this.publicSubnetIds = vpcArgs.publicSubnetIds.map(id => pulumi.output(id));
-            this.securityGroups = initializeSecurityGroups(name, this);
             return;
         }
 
@@ -207,8 +202,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         this.vpcId = vpc.id;
 
         this.securityGroupIds = [ vpc.defaultSecurityGroupId ];
-        this.securityGroups = initializeSecurityGroups(name, this);
-
         this.subnetIds = [];
         this.publicSubnetIds = [];
 
@@ -252,90 +245,6 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
             this.subnetIds.push(subnetId);
         }
     }
-
-    /**
-     * Creates a new [NetworkLoadBalancer] for this [Network].
-     */
-    public createNetworkLoadBalancer(
-            name: string,
-            args: x.elasticloadbalancingv2.NetworkLoadBalancerArgs = {},
-            opts?: pulumi.ComponentResourceOptions) {
-        return new x.elasticloadbalancingv2.NetworkLoadBalancer(name, {
-                network: this,
-                ...args,
-            }, opts || { parent: this });
-    }
-
-    /**
-     * Creates a new [NetworkLoadBalancer] and [NetworkListener] for this [Network].  The
-     * NetworkListener will have a default [NetworkTargetGroup] created for it.
-     */
-    public createNetworkListener(name: string,
-                                 listenerArgs: x.elasticloadbalancingv2.NetworkListenerArgs,
-                                 loadBalancerArgs?: x.elasticloadbalancingv2.NetworkLoadBalancerArgs,
-                                 opts?: pulumi.ComponentResourceOptions) {
-        return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
-                   .createListener(name, listenerArgs, opts);
-    }
-
-    /**
-     * Creates a new [NetworkLoadBalancer] and [NetworkTargetGroup] for this [Network].
-     */
-    public createNetworkTargetGroup(name: string,
-                                    targetGroupArgs: x.elasticloadbalancingv2.NetworkTargetGroupArgs,
-                                    loadBalancerArgs?: x.elasticloadbalancingv2.NetworkLoadBalancerArgs,
-                                    opts?: pulumi.ComponentResourceOptions) {
-        return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
-                   .createTargetGroup(name, targetGroupArgs, opts);
-    }
-
-    /**
-     * Creates a new [ApplicationLoadBalancer] for this [Network].
-     */
-    public createApplicationLoadBalancer(
-            name: string,
-            args: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs = {},
-            opts?: pulumi.ComponentResourceOptions) {
-        return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
-                network: this,
-                securityGroups: this.securityGroups,
-                ...args,
-            }, opts || { parent: this });
-    }
-
-    /**
-     * Creates a new [ApplicationLoadBalancer] and [ApplicationListener] for this [Network].  The
-     * ApplicationListener will have a default [ApplicationTargetGroup] created for it.
-     */
-    public createApplicationListener(name: string,
-                                     listenerArgs: x.elasticloadbalancingv2.ApplicationListenerArgs,
-                                     loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
-                                     opts?: pulumi.ComponentResourceOptions) {
-        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
-                   .createListener(name, listenerArgs, opts);
-    }
-
-    /**
-     * Creates a new [ApplicationLoadBalancer] and [ApplicationTargetGroup] for this [Network].
-     */
-    public createApplicationTargetGroup(name: string,
-                                        targetGroupArgs: x.elasticloadbalancingv2.ApplicationTargetGroupArgs,
-                                        loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
-                                        opts?: pulumi.ComponentResourceOptions) {
-        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
-                   .createTargetGroup(name, targetGroupArgs, opts);
-    }
-}
-
-function initializeSecurityGroups(name: string, network: Network) {
-    const result: x.ec2.SecurityGroup[] = [];
-    for (let i = 0, n = network.securityGroupIds.length; i < n; i++) {
-        const groupName = `${name}-${i}`;
-        const securityGroup = aws.ec2.SecurityGroup.get(groupName, network.securityGroupIds[i]);
-        result.push(new x.ec2.SecurityGroup(groupName, { network, instance: securityGroup }, { parent: network }));
-    }
-
-    return result;
 }
 
 function createSubnetRouteTable(

@@ -30,8 +30,10 @@ export class Vpc extends pulumi.ComponentResource {
     public readonly publicSubnetIds: pulumi.Output<string>[] = [];
     public readonly privateSubnetIds: pulumi.Output<string>[] = [];
     public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
+    public readonly securityGroupIds: pulumi.Output<string>[] = [];
 
     public readonly instance: () => aws.ec2.Vpc;
+    public readonly securityGroups: () => x.ec2.SecurityGroup[];
 
     /**
      * Only available if this was created using [VpcArgs].
@@ -220,13 +222,101 @@ export class Vpc extends pulumi.ComponentResource {
         const subnet0 = subnetIds.then(ids => ids[0]);
         const subnet1 = subnetIds.then(ids => ids[1]);
 
+        const defaultSecurityGroup = vpcId.then(id => aws.ec2.getSecurityGroup({ name: "default", vpcId: id }))
+                                          .then(sg => sg.id);
+
         defaultVpc = new Vpc("default-vpc", {
             vpcId,
             publicSubnetIds: [subnet0, subnet1],
+            securityGroupIds: [defaultSecurityGroup],
         }, opts);
 
         return defaultVpc;
     }
+
+    /**
+     * Creates a new [NetworkLoadBalancer] for this [Vpc].
+     */
+    public createNetworkLoadBalancer(
+            name: string,
+            args: x.elasticloadbalancingv2.NetworkLoadBalancerArgs = {},
+            opts?: pulumi.ComponentResourceOptions) {
+        return new x.elasticloadbalancingv2.NetworkLoadBalancer(name, {
+                vpc: this,
+                ...args,
+            }, opts || { parent: this });
+    }
+
+    /**
+     * Creates a new [NetworkLoadBalancer] and [NetworkListener] for this [Vpc].  The
+     * NetworkListener will have a default [NetworkTargetGroup] created for it.
+     */
+    public createNetworkListener(name: string,
+                                 listenerArgs: x.elasticloadbalancingv2.NetworkListenerArgs,
+                                 loadBalancerArgs?: x.elasticloadbalancingv2.NetworkLoadBalancerArgs,
+                                 opts?: pulumi.ComponentResourceOptions) {
+        return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
+                   .createListener(name, listenerArgs, opts);
+    }
+
+    /**
+     * Creates a new [NetworkLoadBalancer] and [NetworkTargetGroup] for this [Network].
+     */
+    public createNetworkTargetGroup(name: string,
+                                    targetGroupArgs: x.elasticloadbalancingv2.NetworkTargetGroupArgs,
+                                    loadBalancerArgs?: x.elasticloadbalancingv2.NetworkLoadBalancerArgs,
+                                    opts?: pulumi.ComponentResourceOptions) {
+        return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
+                   .createTargetGroup(name, targetGroupArgs, opts);
+    }
+
+    /**
+     * Creates a new [ApplicationLoadBalancer] for this [Vpc].
+     */
+    public createApplicationLoadBalancer(
+            name: string,
+            args: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs = {},
+            opts?: pulumi.ComponentResourceOptions) {
+        return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
+                vpc: this,
+                securityGroups: this.securityGroups(),
+                ...args,
+            }, opts || { parent: this });
+    }
+
+    /**
+     * Creates a new [ApplicationLoadBalancer] and [ApplicationListener] for this [Network].  The
+     * ApplicationListener will have a default [ApplicationTargetGroup] created for it.
+     */
+    public createApplicationListener(name: string,
+                                     listenerArgs: x.elasticloadbalancingv2.ApplicationListenerArgs,
+                                     loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
+                                     opts?: pulumi.ComponentResourceOptions) {
+        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
+                   .createListener(name, listenerArgs, opts);
+    }
+
+    /**
+     * Creates a new [ApplicationLoadBalancer] and [ApplicationTargetGroup] for this [Network].
+     */
+    public createApplicationTargetGroup(name: string,
+                                        targetGroupArgs: x.elasticloadbalancingv2.ApplicationTargetGroupArgs,
+                                        loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
+                                        opts?: pulumi.ComponentResourceOptions) {
+        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
+                   .createTargetGroup(name, targetGroupArgs, opts);
+    }
+}
+
+function initializeSecurityGroups(name: string, network: Network) {
+    const result: x.ec2.SecurityGroup[] = [];
+    for (let i = 0, n = network.securityGroupIds.length; i < n; i++) {
+        const groupName = `${name}-${i}`;
+        const securityGroup = aws.ec2.SecurityGroup.get(groupName, network.securityGroupIds[i]);
+        result.push(new x.ec2.SecurityGroup(groupName, { network, instance: securityGroup }, { parent: network }));
+    }
+
+    return result;
 }
 
 function createOutputs(inputs: pulumi.Input<string>[] | undefined) {
@@ -295,6 +385,8 @@ export interface ExistingVpcArgs {
     privateSubnetIds?: pulumi.Input<string>[];
     /** The isolated subnets for the vpc. */
     isolatedSubnetIds?: pulumi.Input<string>[];
+    /** The security group ids for the vpc. */
+    securityGroupIds?: pulumi.Input<string>[];
 }
 
 function isExistingVpcArgs(obj: any): obj is ExistingVpcArgs {
