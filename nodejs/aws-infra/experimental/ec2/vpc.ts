@@ -70,6 +70,7 @@ export class Vpc extends pulumi.ComponentResource {
 
                 return instance;
             };
+            (<any>this.instance).doNotCapture = true;
 
             this.registerOutputs();
             return;
@@ -102,103 +103,14 @@ export class Vpc extends pulumi.ComponentResource {
         ]);
 
         // Create an internet gateway if we have public subnets.
-        this.internetGateway = this.createInternetGateway(name)!;
+        this.internetGateway = createInternetGateway(this, name)!;
 
         // Create nat gateways if we have private subnets.
-        this.createNatGateways(numberOfAvailabilityZones, numberOfNatGateways);
+        createNatGateways(this, numberOfAvailabilityZones, numberOfNatGateways);
 
         this.registerOutputs();
-    }
 
-    private createInternetGateway(name: string) {
-        if (this.publicSubnets.length === 0) {
-            return undefined;
-        }
-
-        // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
-        // for more details.
-        const internetGateway = new aws.ec2.InternetGateway(name, {
-            vpcId: this.vpcId,
-        });
-
-        // Hook up all public subnets through that internet gateway.
-        for (const publicSubnet of this.publicSubnets) {
-            publicSubnet.routes.push(new aws.ec2.Route(`${publicSubnet.subnetName}-ig`, {
-                // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
-                // select the internet gateway ID in the Target list.
-                destinationCidrBlock: "0.0.0.0/0",
-                routeTableId: publicSubnet.routeTable.id,
-                gatewayId: internetGateway.id,
-            }, { parent: publicSubnet }));
-        }
-
-        return internetGateway;
-    }
-
-    private createNatGateways(numberOfAvailabilityZones: number, numberOfNatGateways: number) {
-        // Create nat gateways if we have private subnets and we have public subnets to place them in.
-        if (this.privateSubnets.length === 0 || numberOfNatGateways === 0 || this.publicSubnets.length === 0) {
-            return;
-        }
-
-        for (let i = 0; i < numberOfNatGateways; i++) {
-            // Each public subnet was already created across all availability zones.  So, to
-            // maximize coverage of availability zones, we can just walk the public subnets and
-            // create a nat gateway for it's availability zone.  If more natgateways were
-            // requested then we'll just round-robin them among the availability zones.
-            const availabilityZone = i % numberOfAvailabilityZones;
-
-            // this indexing is safe since we would have created the any subnet across all
-            // availability zones.
-            const publicSubnet = this.publicSubnets[availabilityZone];
-            const parentOpts = { parent: publicSubnet };
-
-            // from https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
-            //
-            // you must also specify an Elastic IP address to associate with the NAT gateway
-            // when you create it. After you've created a NAT gateway, you must update the route
-            // table associated with one or more of your private subnets to point Internet-bound
-            // traffic to the NAT gateway. This enables instances in your private subnets to
-            // communicate with the internet.
-            const natName = `nat-${i}`;
-            const elasticIP = new aws.ec2.Eip(natName, {
-                tags: { Name: natName },
-            }, parentOpts);
-
-            const natGateway = new aws.ec2.NatGateway(natName, {
-                subnetId: publicSubnet.subnetId,
-                allocationId: elasticIP.id,
-            }, parentOpts);
-
-            this.natGateways.push(natGateway);
-        }
-
-        let roundRobinIndex = 0;
-
-        // We created subnets 'numberOfAvailabilityZones' at a time.  So just jump through them in
-        // chunks of that size.
-        for (let i = 0, n = this.privateSubnets.length; i < n; i += numberOfAvailabilityZones) {
-            // For each chunk of subnets, we will have spread them across all the availability
-            // zones.  We also created a nat gateway per availability zone *up to*
-            // numberOfNatGateways.  So for the subnets in an availability zone that we created a
-            // nat gateway in, just route to that nat gateway.  For the other subnets that are
-            // in an availability zone without a nat gateway, we just round-robin between any
-            // nat gateway we created.
-            for (let j = 0; j < numberOfAvailabilityZones; j++) {
-                const privateSubnet = this.privateSubnets[i + j];
-                const natGateway = j < numberOfNatGateways
-                    ? this.natGateways[j]
-                    : this.natGateways[roundRobinIndex++];
-
-                privateSubnet.routes.push(new aws.ec2.Route(`${privateSubnet.subnetName}-nat-${j}`, {
-                    // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
-                    // select the internet gateway ID in the Target list.
-                    destinationCidrBlock: "0.0.0.0/0",
-                    routeTableId: privateSubnet.routeTable.id,
-                    natGatewayId: natGateway.id,
-                }, { parent: privateSubnet }));
-            }
-        }
+        return;
     }
 
     /**
@@ -268,6 +180,101 @@ export class Vpc extends pulumi.ComponentResource {
                                     opts?: pulumi.ComponentResourceOptions) {
         return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
                    .createTargetGroup(name, targetGroupArgs, opts);
+    }
+}
+
+(<any>Vpc.prototype.createNetworkListener).doNotCapture = true;
+(<any>Vpc.prototype.createNetworkLoadBalancer).doNotCapture = true;
+(<any>Vpc.prototype.createNetworkTargetGroup).doNotCapture = true;
+
+function createInternetGateway(vpc: Vpc, name: string) {
+    if (vpc.publicSubnets.length === 0) {
+        return undefined;
+    }
+
+    // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
+    // for more details.
+    const internetGateway = new aws.ec2.InternetGateway(name, {
+        vpcId: vpc.vpcId,
+    });
+
+    // Hook up all public subnets through that internet gateway.
+    for (const publicSubnet of vpc.publicSubnets) {
+        publicSubnet.routes.push(new aws.ec2.Route(`${publicSubnet.subnetName}-ig`, {
+            // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
+            // select the internet gateway ID in the Target list.
+            destinationCidrBlock: "0.0.0.0/0",
+            routeTableId: publicSubnet.routeTable.id,
+            gatewayId: internetGateway.id,
+        }, { parent: publicSubnet }));
+    }
+
+    return internetGateway;
+}
+
+function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
+    // Create nat gateways if we have private subnets and we have public subnets to place them in.
+    if (vpc.privateSubnets.length === 0 || numberOfNatGateways === 0 || vpc.publicSubnets.length === 0) {
+        return;
+    }
+
+    for (let i = 0; i < numberOfNatGateways; i++) {
+        // Each public subnet was already created across all availability zones.  So, to
+        // maximize coverage of availability zones, we can just walk the public subnets and
+        // create a nat gateway for it's availability zone.  If more natgateways were
+        // requested then we'll just round-robin them among the availability zones.
+        const availabilityZone = i % numberOfAvailabilityZones;
+
+        // this indexing is safe since we would have created the any subnet across all
+        // availability zones.
+        const publicSubnet = vpc.publicSubnets[availabilityZone];
+        const parentOpts = { parent: publicSubnet };
+
+        // from https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
+        //
+        // you must also specify an Elastic IP address to associate with the NAT gateway
+        // when you create it. After you've created a NAT gateway, you must update the route
+        // table associated with one or more of your private subnets to point Internet-bound
+        // traffic to the NAT gateway. This enables instances in your private subnets to
+        // communicate with the internet.
+        const natName = `nat-${i}`;
+        const elasticIP = new aws.ec2.Eip(natName, {
+            tags: { Name: natName },
+        }, parentOpts);
+
+        const natGateway = new aws.ec2.NatGateway(natName, {
+            subnetId: publicSubnet.subnetId,
+            allocationId: elasticIP.id,
+        }, parentOpts);
+
+        vpc.natGateways.push(natGateway);
+    }
+
+    let roundRobinIndex = 0;
+
+    // We created subnets 'numberOfAvailabilityZones' at a time.  So just jump through them in
+    // chunks of that size.
+    for (let i = 0, n = vpc.privateSubnets.length; i < n; i += numberOfAvailabilityZones) {
+        // For each chunk of subnets, we will have spread them across all the availability
+        // zones.  We also created a nat gateway per availability zone *up to*
+        // numberOfNatGateways.  So for the subnets in an availability zone that we created a
+        // nat gateway in, just route to that nat gateway.  For the other subnets that are
+        // in an availability zone without a nat gateway, we just round-robin between any
+        // nat gateway we created.
+        for (let j = 0; j < numberOfAvailabilityZones; j++) {
+            const privateSubnet = vpc.privateSubnets[i + j];
+            const natGateway = j < numberOfNatGateways
+                ? vpc.natGateways[j]
+                : vpc.natGateways[roundRobinIndex++];
+
+            privateSubnet.routes.push(new aws.ec2.Route(`${privateSubnet.subnetName}-nat-${j}`, {
+                // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
+                // select the internet gateway ID in the Target list.
+                destinationCidrBlock: "0.0.0.0/0",
+                routeTableId: privateSubnet.routeTable.id,
+                natGatewayId: natGateway.id,
+            }, { parent: privateSubnet }));
+        }
     }
 }
 
