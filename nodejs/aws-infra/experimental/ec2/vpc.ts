@@ -183,9 +183,9 @@ export class Vpc extends pulumi.ComponentResource {
     }
 }
 
-(<any>Vpc.prototype.createNetworkListener).doNotCapture = true;
-(<any>Vpc.prototype.createNetworkLoadBalancer).doNotCapture = true;
-(<any>Vpc.prototype.createNetworkTargetGroup).doNotCapture = true;
+// (<any>Vpc.prototype.createNetworkListener).doNotCapture = true;
+// (<any>Vpc.prototype.createNetworkLoadBalancer).doNotCapture = true;
+// (<any>Vpc.prototype.createNetworkTargetGroup).doNotCapture = true;
 
 function createInternetGateway(vpc: Vpc, name: string) {
     if (vpc.publicSubnets.length === 0) {
