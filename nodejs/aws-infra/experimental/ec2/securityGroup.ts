@@ -61,10 +61,6 @@ export class SecurityGroup extends pulumi.ComponentResource {
     }
 }
 
-// (<any>SecurityGroup.prototype.createEgressRule).doNotCapture = true;
-// (<any>SecurityGroup.prototype.createIngressRule).doNotCapture = true;
-// (<any>SecurityGroup.prototype.openPorts).doNotCapture = true;
-
 type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
     name?: never;
     namePrefix?: never;

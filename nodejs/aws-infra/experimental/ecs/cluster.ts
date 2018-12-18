@@ -171,12 +171,6 @@ export class Cluster
     }
 }
 
-// (<any>Cluster.prototype.addAutoScalingGroup).doNotCapture = true;
-// (<any>Cluster.prototype.createApplicationListener).doNotCapture = true;
-// (<any>Cluster.prototype.createApplicationLoadBalancer).doNotCapture = true;
-// (<any>Cluster.prototype.createApplicationTargetGroup).doNotCapture = true;
-// (<any>Cluster.prototype.createAutoScalingGroup).doNotCapture = true;
-
 // The shape we want for ClusterArgs.  We don't export this as 'Overwrite' types are not pleasant to
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.

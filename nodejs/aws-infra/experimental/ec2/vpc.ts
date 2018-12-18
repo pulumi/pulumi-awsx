@@ -23,15 +23,15 @@ import * as utils from "./../../utils";
 let defaultVpc: Vpc;
 
 export class Vpc extends pulumi.ComponentResource {
-    /**
-     * Id for the underlying [aws.ec2.Vpc] instance.
-     */
+    /** Id for the underlying [aws.ec2.Vpc] instance. */
     public readonly vpcId: pulumi.Output<string>;
+    public readonly vpcName: string;
     public readonly publicSubnetIds: pulumi.Output<string>[] = [];
     public readonly privateSubnetIds: pulumi.Output<string>[] = [];
     public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
 
-    public readonly instance: () => aws.ec2.Vpc;
+    // tslint:disable-next-line:variable-name
+    private __instance: aws.ec2.Vpc;
 
     /**
      * Only available if this was created using [VpcArgs].
@@ -54,23 +54,13 @@ export class Vpc extends pulumi.ComponentResource {
     constructor(name: string, args: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args: VpcArgs | ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ec2:Vpc", name, {}, opts);
+        this.vpcName = name;
 
         if (isExistingVpcArgs(args)) {
             this.vpcId = pulumi.output(args.vpcId);
             this.publicSubnetIds = createOutputs(args.publicSubnetIds);
             this.privateSubnetIds = createOutputs(args.privateSubnetIds);
             this.isolatedSubnetIds = createOutputs(args.isolatedSubnetIds);
-
-            let instance: aws.ec2.Vpc;
-            const vpcId = this.vpcId;
-            this.instance = () => {
-                if (!instance) {
-                    instance = aws.ec2.Vpc.get(name, vpcId);
-                }
-
-                return instance;
-            };
-            (<any>this.instance).doNotCapture = true;
 
             this.registerOutputs();
             return;
@@ -83,7 +73,7 @@ export class Vpc extends pulumi.ComponentResource {
             throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
         }
 
-        const instance = new aws.ec2.Vpc(name, {
+        this.__instance = new aws.ec2.Vpc(name, {
             ...args,
             cidrBlock,
             enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
@@ -91,8 +81,7 @@ export class Vpc extends pulumi.ComponentResource {
             instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
         });
 
-        this.instance = () => instance;
-        this.vpcId =  instance.id;
+        this.vpcId =  this.__instance.id;
 
         // Create the appropriate subnets.  Default to a single public and private subnet for each
         // availability zone if none were specified.
@@ -111,6 +100,14 @@ export class Vpc extends pulumi.ComponentResource {
         this.registerOutputs();
 
         return;
+    }
+
+    public instance(): aws.ec2.Vpc {
+        if (!this.__instance) {
+            this.__instance = aws.ec2.Vpc.get(this.vpcName, this.vpcId);
+        }
+
+        return this.__instance;
     }
 
     /**
@@ -183,9 +180,7 @@ export class Vpc extends pulumi.ComponentResource {
     }
 }
 
-// (<any>Vpc.prototype.createNetworkListener).doNotCapture = true;
-// (<any>Vpc.prototype.createNetworkLoadBalancer).doNotCapture = true;
-// (<any>Vpc.prototype.createNetworkTargetGroup).doNotCapture = true;
+(<any>Vpc.prototype.instance).doNotCapture = true;
 
 function createInternetGateway(vpc: Vpc, name: string) {
     if (vpc.publicSubnets.length === 0) {
