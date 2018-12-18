@@ -141,14 +141,18 @@ export class FargateService extends ecs.Service {
             new ecs.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
 
         const cluster = args.cluster;
+        const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
+        const securityGroups = args.securityGroups || cluster.securityGroups;
+        const subnets = assignPublicIp.apply(pub => pub ? cluster.vpc.publicSubnetIds : cluster.vpc.privateSubnetIds);
+
         super("awsinfra:x:ecs:FargateService", name, {
             ...args,
             taskDefinition,
             launchType: "FARGATE",
-            networkConfiguration: args.networkConfiguration || {
-                assignPublicIp: !cluster.network.usePrivateSubnets,
-                securityGroups: cluster.securityGroups.map(g => g.instance.id),
-                subnets: cluster.network.subnetIds,
+            networkConfiguration: {
+                subnets,
+                assignPublicIp,
+                securityGroups: securityGroups.map(g => g.instance.id),
             },
         },  /*isFargate:*/ true, opts);
 
@@ -232,6 +236,7 @@ type OverwriteFargateServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
     taskDefinition?: ecs.FargateTaskDefinition;
     taskDefinitionArgs?: FargateTaskDefinitionArgs;
     launchType?: never;
+    networkConfiguration?: never;
 }>;
 
 export interface FargateServiceArgs {
@@ -277,11 +282,25 @@ export interface FargateServiceArgs {
     name?: pulumi.Input<string>;
 
     /**
-     * The network configuration for the service. This parameter is required for task definitions
-     * that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is
-     * not supported for other network modes.
+     * Whether or not public IPs should be provided for the instances.
+     *
+     * Defaults to [true] if unspecified.
      */
-    networkConfiguration?: aws.ecs.ServiceArgs["networkConfiguration"];
+    assignPublicIp?: pulumi.Input<boolean>;
+
+    /**
+     * The security groups to use for the instances.
+     *
+     * Defaults to [cluster.securityGroups] if unspecified.
+     */
+    securityGroups?: x.ec2.SecurityGroup[];
+
+    /**
+     * The subnets to connect the instances to.  If unspecified and [assignPublicIp] is true, then
+     * these will be the public subnets of the cluster's vpc.  If unspecified and [assignPublicIp]
+     * is false, then these will be the private subnets of the cluster's vpc.
+     */
+    subnets?: pulumi.Input<pulumi.Input<string>[]>;
 
     /**
      * Service level strategy rules that are taken into consideration during task placement. List

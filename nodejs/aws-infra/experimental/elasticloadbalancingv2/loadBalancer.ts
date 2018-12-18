@@ -34,7 +34,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         this.securityGroups = args.securityGroups || [];
 
-        const external = utils.ifUndefined(args.external, false);
+        const external = utils.ifUndefined(args.external, true);
         this.instance = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
             ...args,
             subnets: getSubnets(args, this.vpc, external),
@@ -48,10 +48,22 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 function getSubnets(
     args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
 
+    // console.log("Getting subnets for LB");
     if (!args.subnets) {
+        // console.log("no subnets provided");
         // No subnets requested.  Determine the subnets automatically from the vpc.
-        return external.apply(e => e ? vpc.publicSubnetIds : vpc.privateSubnetIds);
+        return external.apply(e => {
+            if (e) {
+                // console.log("Using public subnets:");
+                return vpc.publicSubnetIds;
+            } else {
+                // console.log("Using private subnets:");
+                return vpc.privateSubnetIds;
+            }
+        });
     }
+
+    // console.log("subnets provided");
 
     return isLoadBalancerSubnets(args.subnets)
         ? args.subnets.subnets()
@@ -66,7 +78,7 @@ export interface LoadBalancerArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * Whether or not the load balancer is exposed to the internet. Defaults to `false` if
+     * Whether or not the load balancer is exposed to the internet. Defaults to `true` if
      * unspecified.
      */
     external?: boolean;

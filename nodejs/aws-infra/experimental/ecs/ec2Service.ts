@@ -78,14 +78,17 @@ export class EC2Service extends ecs.Service {
             new ecs.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
 
         const cluster = args.cluster;
+        const securityGroups = args.securityGroups || cluster.securityGroups;
+        const subnets = cluster.vpc.privateSubnetIds;
+
         super("awsinfra:x:ecs:EC2Service", name, {
             ...args,
             taskDefinition,
             launchType: "EC2",
-            networkConfiguration: args.networkConfiguration || {
+            networkConfiguration: {
+                subnets,
                 assignPublicIp: false,
-                securityGroups: cluster.securityGroups.map(g => g.instance.id),
-                subnets: cluster.network.subnetIds,
+                securityGroups: securityGroups.map(g => g.instance.id),
             },
         }, /*isFargate:*/ false, opts);
 
@@ -166,6 +169,7 @@ type OverwriteEC2ServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
     taskDefinition?: EC2TaskDefinition;
     taskDefinitionArgs?: EC2TaskDefinitionArgs;
     launchType?: never;
+    networkConfiguration?: never;
 }>;
 
 export interface EC2ServiceArgs {
@@ -211,11 +215,17 @@ export interface EC2ServiceArgs {
     name?: pulumi.Input<string>;
 
     /**
-     * The network configuration for the service. This parameter is required for task definitions
-     * that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is
-     * not supported for other network modes.
+     * The security groups to use for the instances.
+     *
+     * Defaults to [cluster.securityGroups] if unspecified.
      */
-    networkConfiguration?: aws.ecs.ServiceArgs["networkConfiguration"];
+    securityGroups?: x.ec2.SecurityGroup[];
+
+    /**
+     * The subnets to connect the instances to.  If unspecified then these will be the private
+     * subnets of the cluster's vpc.
+     */
+    subnets?: pulumi.Input<pulumi.Input<string>[]>;
 
     /**
      * Service level strategy rules that are taken into consideration during task placement. List

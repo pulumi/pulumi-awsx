@@ -30,10 +30,8 @@ export class Vpc extends pulumi.ComponentResource {
     public readonly publicSubnetIds: pulumi.Output<string>[] = [];
     public readonly privateSubnetIds: pulumi.Output<string>[] = [];
     public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
-    public readonly securityGroupIds: pulumi.Output<string>[] = [];
 
     public readonly instance: () => aws.ec2.Vpc;
-    public readonly securityGroups: () => x.ec2.SecurityGroup[];
 
     /**
      * Only available if this was created using [VpcArgs].
@@ -64,14 +62,16 @@ export class Vpc extends pulumi.ComponentResource {
             this.isolatedSubnetIds = createOutputs(args.isolatedSubnetIds);
 
             let instance: aws.ec2.Vpc;
+            const vpcId = this.vpcId;
             this.instance = () => {
                 if (!instance) {
-                    instance = aws.ec2.Vpc.get(name, this.vpcId);
+                    instance = aws.ec2.Vpc.get(name, vpcId);
                 }
 
                 return instance;
             };
 
+            this.registerOutputs();
             return;
         }
 
@@ -207,7 +207,7 @@ export class Vpc extends pulumi.ComponentResource {
      * See https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html for more details.
      */
     public static getDefault(opts?: pulumi.ComponentResourceOptions): Vpc {
-        if (!defaultVpc) {
+        if (defaultVpc) {
             return defaultVpc;
         }
 
@@ -269,54 +269,6 @@ export class Vpc extends pulumi.ComponentResource {
         return this.createNetworkLoadBalancer(name, loadBalancerArgs, opts)
                    .createTargetGroup(name, targetGroupArgs, opts);
     }
-
-    /**
-     * Creates a new [ApplicationLoadBalancer] for this [Vpc].
-     */
-    public createApplicationLoadBalancer(
-            name: string,
-            args: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs = {},
-            opts?: pulumi.ComponentResourceOptions) {
-        return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
-                vpc: this,
-                securityGroups: this.securityGroups(),
-                ...args,
-            }, opts || { parent: this });
-    }
-
-    /**
-     * Creates a new [ApplicationLoadBalancer] and [ApplicationListener] for this [Network].  The
-     * ApplicationListener will have a default [ApplicationTargetGroup] created for it.
-     */
-    public createApplicationListener(name: string,
-                                     listenerArgs: x.elasticloadbalancingv2.ApplicationListenerArgs,
-                                     loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
-                                     opts?: pulumi.ComponentResourceOptions) {
-        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
-                   .createListener(name, listenerArgs, opts);
-    }
-
-    /**
-     * Creates a new [ApplicationLoadBalancer] and [ApplicationTargetGroup] for this [Network].
-     */
-    public createApplicationTargetGroup(name: string,
-                                        targetGroupArgs: x.elasticloadbalancingv2.ApplicationTargetGroupArgs,
-                                        loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
-                                        opts?: pulumi.ComponentResourceOptions) {
-        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
-                   .createTargetGroup(name, targetGroupArgs, opts);
-    }
-}
-
-function initializeSecurityGroups(name: string, network: Network) {
-    const result: x.ec2.SecurityGroup[] = [];
-    for (let i = 0, n = network.securityGroupIds.length; i < n; i++) {
-        const groupName = `${name}-${i}`;
-        const securityGroup = aws.ec2.SecurityGroup.get(groupName, network.securityGroupIds[i]);
-        result.push(new x.ec2.SecurityGroup(groupName, { network, instance: securityGroup }, { parent: network }));
-    }
-
-    return result;
 }
 
 function createOutputs(inputs: pulumi.Input<string>[] | undefined) {

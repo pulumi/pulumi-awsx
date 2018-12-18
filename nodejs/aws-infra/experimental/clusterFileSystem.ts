@@ -43,7 +43,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
 
         const efsSecurityGroupName = `${name}-fs`;
         this.securityGroups = args.securityGroups || [new aws.ec2.SecurityGroup(efsSecurityGroupName, {
-            vpcId: this.cluster.network.vpcId,
+            vpcId: this.cluster.vpc.vpcId,
             ingress: [
                 // Allow NFS traffic from the instance security group
                 {
@@ -56,7 +56,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
             tags: { Name: efsSecurityGroupName },
         }, parentOpts)];
 
-        const subnetIds = args.subnetIds || this.cluster.network.subnetIds;
+        const subnetIds = args.subnetIds || this.cluster.vpc.publicSubnetIds;
         for (let i = 0; i < subnetIds.length; i++) {
             const subnetId = subnetIds[i];
             this.mountTargets.push(new aws.efs.MountTarget(`${name}-${i}`, {

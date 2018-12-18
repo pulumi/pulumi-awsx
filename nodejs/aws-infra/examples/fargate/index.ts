@@ -20,15 +20,11 @@ const x = awsinfra.x;
 
 import { Config, Output } from "@pulumi/pulumi";
 
-const vpc = new awsinfra.x.ec2.Vpc("testvpc", {
-    subnets: [{ type: "public" }, { type: "private" }, { type: "isolated" }],
-});
-
-const network = awsinfra.Network.getDefault();
-const cluster = new x.ecs.Cluster("testing", { network });
+const vpc = x.ec2.Vpc.getDefault();
+const cluster = new x.ecs.Cluster("testing", { vpc });
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = cluster.network.createNetworkListener("examples-nginx", { port: 80 });
+const nginxListener = vpc.createNetworkListener("examples-nginx", { port: 80 });
 const nginx = new x.ecs.FargateService("examples-nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -46,7 +42,7 @@ const nginx = new x.ecs.FargateService("examples-nginx", {
 const nginxEndpoint = nginxListener.endpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = cluster.network.createNetworkListener("examples-simple-nginx", { port: 80 });
+const simpleNginxListener = vpc.createNetworkListener("examples-simple-nginx", { port: 80 });
 const simpleNginx = new x.ecs.FargateTaskDefinition("examples-simple-nginx", {
     container: {
         image: "nginx",
@@ -67,7 +63,7 @@ const cachedNginx = new x.ecs.FargateService("examples-cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                portMappings: cluster.network.createNetworkListener("examples-cached-nginx", { port: 80 }),
+                portMappings: vpc.createNetworkListener("examples-cached-nginx", { port: 80 }),
             },
         },
     },
@@ -85,7 +81,7 @@ const multistageCachedNginx = new x.ecs.FargateService("examples-multistage-cach
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                portMappings: cluster.network.createNetworkListener(
+                portMappings: vpc.createNetworkListener(
                     "examples-multistage-cached-nginx", { port: 80 }),
             },
         },
@@ -94,8 +90,8 @@ const multistageCachedNginx = new x.ecs.FargateService("examples-multistage-cach
 });
 
 const customWebServerListener =
-    cluster.network.createNetworkTargetGroup("custom", { port: 8080 })
-                   .createListener("custom", { port: 80 });
+    vpc.createNetworkTargetGroup("custom", { port: 8080 })
+       .createListener("custom", { port: 80 });
 
 const customWebServer = new x.ecs.FargateService("mycustomservice", {
     cluster,
@@ -128,7 +124,7 @@ class Cache {
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisListener = cluster.network.createNetworkListener(name, { port: 6379 });
+        const redisListener = vpc.createNetworkListener(name, { port: 6379 });
         const redis = new x.ecs.FargateService(name, {
             cluster,
             taskDefinitionArgs: {
@@ -194,7 +190,7 @@ const helloTask = new x.ecs.FargateTaskDefinition("examples-hello-world", {
 });
 
 // build an anonymous image:
-const builtServiceListener = cluster.network.createNetworkListener("examples-nginx2", { port: 80 });
+const builtServiceListener = vpc.createNetworkListener("examples-nginx2", { port: 80 });
 const builtService = new x.ecs.FargateService("examples-nginx2", {
     cluster,
     taskDefinitionArgs: {

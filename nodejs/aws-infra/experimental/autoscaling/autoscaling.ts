@@ -300,7 +300,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             templateBody: getCloudFormationTemplate(
                 name,
                 this.launchConfiguration.instance.id,
-                this.vpc.subnetIds,
+                this.vpc.publicSubnetIds,
                 utils.ifUndefined(args.templateParameters, {})),
         }, parentOpts);
 
