@@ -79,7 +79,7 @@ export class EC2Service extends ecs.Service {
 
         const cluster = args.cluster;
         const securityGroups = args.securityGroups || cluster.securityGroups;
-        const subnets = cluster.vpc.privateSubnetIds;
+        const subnets = args.subnets || cluster.vpc.publicSubnetIds;
 
         super("awsinfra:x:ecs:EC2Service", name, {
             ...args,
@@ -222,7 +222,7 @@ export interface EC2ServiceArgs {
     securityGroups?: x.ec2.SecurityGroup[];
 
     /**
-     * The subnets to connect the instances to.  If unspecified then these will be the private
+     * The subnets to connect the instances to.  If unspecified then these will be the public
      * subnets of the cluster's vpc.
      */
     subnets?: pulumi.Input<pulumi.Input<string>[]>;
