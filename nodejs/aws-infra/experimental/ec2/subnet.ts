@@ -22,6 +22,7 @@ import * as utils from "./../../utils";
 
 export class Subnet extends pulumi.ComponentResource {
     public readonly subnetName: string;
+    public readonly subnetId: pulumi.Output<string>;
     public readonly instance: aws.ec2.Subnet;
     public readonly routeTable: aws.ec2.RouteTable;
     public readonly routeTableAssociation: aws.ec2.RouteTableAssociation;
@@ -48,6 +49,8 @@ export class Subnet extends pulumi.ComponentResource {
             subnetId: this.instance.id,
         }, parentOpts);
 
+        this.subnetId = pulumi.all([this.instance.id, this.routeTableAssociation.id])
+                              .apply(([id]) => id);
         this.registerOutputs();
     }
 }

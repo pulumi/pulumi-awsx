@@ -149,7 +149,7 @@ export class Vpc extends pulumi.ComponentResource {
             // this indexing is safe since we would have created the any subnet across all
             // availability zones.
             const publicSubnet = this.publicSubnets[availabilityZone];
-            const parentSubnet = { parent: publicSubnet };
+            const parentOpts = { parent: publicSubnet };
 
             // from https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
             //
@@ -160,13 +160,13 @@ export class Vpc extends pulumi.ComponentResource {
             // communicate with the internet.
             const natName = `nat-${i}`;
             const elasticIP = new aws.ec2.Eip(natName, {
-                vpc: true,
-            }, parentSubnet);
+                tags: { Name: natName },
+            }, parentOpts);
 
             const natGateway = new aws.ec2.NatGateway(natName, {
-                allocationId: elasticIP.allocationId,
-                subnetId: publicSubnet.instance.id,
-            }, parentSubnet);
+                subnetId: publicSubnet.subnetId,
+                allocationId: elasticIP.id,
+            }, parentOpts);
 
             this.natGateways.push(natGateway);
         }
