@@ -15,41 +15,12 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as awssdk from "aws-sdk";
+
 import * as utils from "../../utils";
 
 import * as ecs from ".";
 import * as x from "..";
-
-export declare type HostOperatingSystem = "linux" | "windows";
-
-export interface TaskRunOptions {
-    /**
-     * The cluster to run this task in.
-     */
-    cluster: ecs.Cluster;
-
-    /**
-     * The name of the container to run as a task.  If not provided, the first container in the list
-     * of containers in the ClusterTaskDefinition will be the one that is run.
-     */
-    containerName?: string;
-
-    /**
-     * The OS to run.  Defaults to 'linux' if unspecified.
-     */
-    os?: HostOperatingSystem;
-
-    /**
-     * Optional environment variables to override those set in the container definition.
-     */
-    environment?: aws.ecs.KeyValuePair[];
-
-    // /**
-    //  * The subnets to run the task in.  Defaults to the public subnets of the cluster's VPC if
-    //  * unspecified.
-    //  */
-    // subnets?: string[];
-}
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly instance: aws.ecs.TaskDefinition;
@@ -58,10 +29,10 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly taskRole: aws.iam.Role;
     public readonly executionRole: aws.iam.Role;
 
-    /**
-     * Runs this task definition in this cluster once.
-     */
-    public readonly run: (options: TaskRunOptions) => Promise<void>;
+    public readonly runTask: (
+        params: RunTaskRequest,
+        callback?: (err: awssdk.AWSError, data: awssdk.ECS.Types.RunTaskResponse) => void,
+    ) => awssdk.Request<awssdk.ECS.Types.RunTaskResponse, awssdk.AWSError>;
 
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
@@ -109,17 +80,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerString,
         }, parentOpts);
 
-        const containerToEnvironment =
-            pulumi.output(this.containers)
-                  .apply(c => {
-                        const result: Record<string, aws.ecs.KeyValuePair[]> = {};
-                        for (const key of Object.keys(c)) {
-                            result[key] = c[key].environment || [];
-                        }
-                        return result;
-                  });
-
-        this.run = createRunFunction(isFargate, this.instance.arn, containerToEnvironment);
+        this.runTask = createRunFunction(isFargate, this.instance.arn);
 
         this.registerOutputs();
     }
@@ -195,38 +156,32 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 }
 
-function createRunFunction(
-        isFargate: boolean,
-        taskDefArn: pulumi.Output<string>,
-        containerToEnvironment: pulumi.Output<Record<string, aws.ecs.KeyValuePair[]>>) {
+export type RunTaskRequest = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
+    /**
+     * The Cluster to run the Task in.
+     */
+    cluster: ecs.Cluster;
+    taskDefinition: never;
+    launchType: never;
+}>;
 
-    return async function runTask(options: TaskRunOptions) {
+function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
+    return function runTask(
+                params: RunTaskRequest,
+                callback?: (err: awssdk.AWSError, data: awssdk.ECS.Types.RunTaskResponse) => void,
+            ): awssdk.Request<awssdk.ECS.Types.RunTaskResponse, awssdk.AWSError> {
+
         const ecs = new aws.sdk.ECS();
 
-        const cluster = options.cluster;
+        const cluster = params.cluster;
         const clusterArn = cluster.instance.id.get();
         const securityGroupIds = cluster.securityGroups.map(g => g.instance.id.get());
         const subnetIds = cluster.vpc.publicSubnetIds.map(i => i.get());
-
-        const innerContainers = containerToEnvironment.get();
-        const containerName = options.containerName || Object.keys(innerContainers)[0];
-        if (!containerName) {
-            throw new Error("No valid container name found to run task for.");
-        }
-
-        // Extract the environment values from the options
-        const env1 = innerContainers[containerName] || [];
-        const env2 = options.environment || [];
-
-        const env = [...env1, ...env2];
-
         const assignPublicIp = isFargate; // && !usePrivateSubnets;
 
         // Run the task
-        const res = await ecs.runTask({
-            cluster: clusterArn,
+        return ecs.runTask({
             taskDefinition: taskDefArn.get(),
-            placementConstraints: placementConstraints(isFargate, options.os),
             launchType: isFargate ? "FARGATE" : "EC2",
             networkConfiguration: {
                 awsvpcConfiguration: {
@@ -235,34 +190,10 @@ function createRunFunction(
                     subnets: subnetIds,
                 },
             },
-            overrides: {
-                containerOverrides: [
-                    {
-                        name: "container",
-                        environment: env,
-                    },
-                ],
-            },
-        }).promise();
-
-        if (res.failures && res.failures.length > 0) {
-            console.log("Failed to start task:" + JSON.stringify(res.failures));
-            throw new Error("Failed to start task:" + JSON.stringify(res.failures));
-        }
+            ...params,
+            cluster: clusterArn, // Make sure to override the value of `params.cluster`
+        });
     };
-}
-
-function placementConstraints(isFargate: boolean, os: HostOperatingSystem | undefined) {
-    if (isFargate) {
-        return undefined;
-    }
-
-    os = os || "linux";
-
-    return [{
-        type: "memberOf",
-        expression: `attribute:ecs.os-type == ${os}`,
-    }];
 }
 
 function computeContainerDefinitions(
