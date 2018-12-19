@@ -40,11 +40,17 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     }
 
     public createListener(name: string, args: NetworkListenerArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new NetworkListener(name, this, args, opts);
+        return new NetworkListener(name, {
+            loadBalancer: this,
+            ...args,
+        }, opts || { parent: this });
     }
 
     public createTargetGroup(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new NetworkTargetGroup(name, this, args, opts);
+        return new NetworkTargetGroup(name, {
+            loadBalancer: this,
+            ...args,
+        }, opts || { parent: this });
     }
 }
 
@@ -70,8 +76,8 @@ export class NetworkTargetGroup extends mod.TargetGroup {
 
     public readonly listeners: x.elasticloadbalancingv2.NetworkListener[];
 
-    constructor(name: string, loadBalancer: NetworkLoadBalancer,
-                args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {}, opts);
         super("awsinfra:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
             ...args,
             vpc: loadBalancer.vpc,
@@ -86,8 +92,9 @@ export class NetworkTargetGroup extends mod.TargetGroup {
 
     public createListener(name: string, args: NetworkListenerArgs,
                           opts?: pulumi.ComponentResourceOptions): NetworkListener {
-        return new NetworkListener(name, this.loadBalancer, {
+        return new NetworkListener(name, {
             defaultAction: this,
+            loadBalancer: this.loadBalancer,
             ...args,
         }, opts || { parent: this });
     }
@@ -106,9 +113,9 @@ export class NetworkListener extends mod.Listener {
     public readonly defaultTargetGroup?: x.elasticloadbalancingv2.NetworkTargetGroup;
 
     constructor(name: string,
-                loadBalancer: NetworkLoadBalancer,
                 args: NetworkListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
+        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {}, opts);
         const { defaultAction, defaultListener } = getDefaultAction(name, loadBalancer, args, opts);
 
         super("awsinfra:x:elasticloadbalancingv2:NetworkListener", name, defaultListener, {
@@ -136,7 +143,7 @@ function getDefaultAction(
             : { defaultAction: args.defaultAction, defaultListener: undefined };
     }
 
-    const targetGroup = new NetworkTargetGroup(name, loadBalancer, { port: args.port }, opts);
+    const targetGroup = new NetworkTargetGroup(name, { loadBalancer, port: args.port }, opts);
     return { defaultAction: targetGroup.listenerDefaultAction(), defaultListener: targetGroup };
 }
 
@@ -193,6 +200,12 @@ export interface NetworkLoadBalancerArgs {
 }
 
 export interface NetworkTargetGroupArgs {
+    /**
+     * The load balancer this target group is associated with.  If not provided, a new load balancer
+     * will be automatically created.
+     */
+    loadBalancer?: NetworkLoadBalancer;
+
     // Copied from TargetGroupArgs.
 
     /**
@@ -252,6 +265,12 @@ export interface NetworkTargetGroupArgs {
 }
 
 export interface NetworkListenerArgs {
+    /**
+     * The load balancer this listener is associated with.  If not provided, a new load balancer
+     * will be automatically created.
+     */
+    loadBalancer?: NetworkLoadBalancer;
+
     /**
      * The port. Specify a value from `1` to `65535`.
      */

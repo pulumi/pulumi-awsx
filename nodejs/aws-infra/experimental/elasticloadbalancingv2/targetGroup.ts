@@ -41,7 +41,7 @@ export abstract class TargetGroup
         this.vpc = args.vpc;
         this.instance = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
             ...args,
-            vpcId: this.vpc.vpcId,
+            vpcId: this.vpc.instance.id,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
             deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 300),
             targetType: utils.ifUndefined(args.targetType, "ip"),

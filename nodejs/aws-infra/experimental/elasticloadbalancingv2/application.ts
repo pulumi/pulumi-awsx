@@ -56,7 +56,10 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
      * details.
      */
     public createListener(name: string, args: ApplicationListenerArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new ApplicationListener(name, this, args, opts);
+        return new ApplicationListener(name, {
+            loadBalancer: this,
+            ...args,
+        }, opts || { parent: this });
     }
 
     /**
@@ -64,7 +67,10 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
      * details.
      */
     public createTargetGroup(name: string, args: ApplicationTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new ApplicationTargetGroup(name, this, args, opts);
+        return new ApplicationTargetGroup(name, {
+            loadBalancer: this,
+            ...args,
+        }, opts || { parent: this });
     }
 }
 
@@ -80,8 +86,8 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 
     public readonly listeners: x.elasticloadbalancingv2.ApplicationListener[];
 
-    constructor(name: string, loadBalancer: ApplicationLoadBalancer,
-                args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {}, opts);
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
         super("awsinfra:x:elasticloadbalancingv2:ApplicationTargetGroup", name, {
@@ -99,8 +105,9 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 
     public createListener(name: string, args: ApplicationListenerArgs,
                           opts?: pulumi.ComponentResourceOptions): ApplicationListener {
-        return new ApplicationListener(name, this.loadBalancer, {
+        return new ApplicationListener(name, {
             defaultAction: this,
+            loadBalancer: this.loadBalancer,
             ...args,
         }, opts);
     }
@@ -146,10 +153,10 @@ export class ApplicationListener extends mod.Listener {
     public readonly defaultTargetGroup?: x.elasticloadbalancingv2.ApplicationTargetGroup;
 
     constructor(name: string,
-                loadBalancer: ApplicationLoadBalancer,
                 args: ApplicationListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
+        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {}, opts);
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultAction, defaultListener } = getDefaultAction(
             name, loadBalancer, args, port, protocol, opts);
@@ -200,7 +207,7 @@ function getDefaultAction(
             : { defaultAction: args.defaultAction, defaultListener: undefined };
     }
 
-    const targetGroup = new ApplicationTargetGroup(name, loadBalancer, { port, protocol }, opts);
+    const targetGroup = new ApplicationTargetGroup(name, { loadBalancer, port, protocol }, opts);
     return { defaultAction: targetGroup.listenerDefaultAction(), defaultListener: targetGroup };
 }
 
@@ -272,6 +279,12 @@ export interface ApplicationLoadBalancerArgs {
 }
 
 export interface ApplicationTargetGroupArgs {
+    /**
+     * The load balancer this target group is associated with.  If not provided, a new load balancer
+     * will be automatically created.
+     */
+    loadBalancer?: ApplicationLoadBalancer;
+
     // Copied from TargetGroupArgs
 
     /**
@@ -338,6 +351,12 @@ export interface ApplicationTargetGroupArgs {
 }
 
 export interface ApplicationListenerArgs {
+    /**
+     * The load balancer this listener is associated with.  If not provided, a new load balancer
+     * will be automatically created.
+     */
+    loadBalancer?: ApplicationLoadBalancer;
+
     /**
      * The port. Specify a value from `1` to `65535`.  Computed from "protocol" if not provided.
      */

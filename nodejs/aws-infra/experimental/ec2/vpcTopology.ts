@@ -105,17 +105,18 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
             throw new Error(`Cidr mask must be between "16" and "28" but was ${cidrMask}`);
         }
 
-        const [subnets, subnetIds] = getSubnets(this.vpc, subnetArgs.type);
+        const type = subnetArgs.type;
+        const subnets = this.vpc.getSubnets(type);
+        const subnetIds = this.vpc.getSubnetIds(type);
+
         for (let i = 0; i < this.numberOfAvailabilityZones; i++) {
-            const subnetName = this.getSubnetName(subnetArgs, i);
+            const subnetName = getSubnetName(subnetArgs, i);
 
             const subnet = new x.ec2.Subnet(subnetName, this.vpc, {
                 availabilityZone: getAvailabilityZone(i),
                 cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
-                mapPublicIpOnLaunch: subnetArgs.type === "public",
-                tags: utils.mergeTags(subnetArgs.tags, {
-                    type: subnetArgs.type,
-                }),
+                mapPublicIpOnLaunch: type === "public",
+                tags: utils.mergeTags(subnetArgs.tags, { type }),
             }, this.opts);
 
             subnets.push(subnet);
@@ -124,22 +125,13 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
 
         return;
 
-        function getSubnets(vpc: x.ec2.Vpc, type: x.ec2.VpcSubnetType): [x.ec2.Subnet[], pulumi.Output<String>[]] {
-            switch (type) {
-                case "public": return [vpc.publicSubnets, vpc.publicSubnetIds];
-                case "private": return [vpc.privateSubnets, vpc.privateSubnetIds];
-                case "isolated": return [vpc.isolatedSubnets, vpc.isolatedSubnetIds];
-                default: throw new Error("Unexpected subnet type: " + subnetArgs.type);
+        function getSubnetName(subnetArgs: x.ec2.VpcSubnetArgs, i: number) {
+            let subnetName = `${subnetArgs.type}-${i}`;
+            if (subnetArgs.name) {
+                subnetName = `${subnetArgs.name}-` + subnetName;
             }
-        }
-    }
 
-    private getSubnetName(subnetArgs: x.ec2.VpcSubnetArgs, i: number) {
-        let subnetName = `${subnetArgs.type}-${i}`;
-        if (subnetArgs.name) {
-            subnetName = `${subnetArgs.name}-` + subnetName;
+            return subnetName;
         }
-
-        return subnetName;
     }
 }

@@ -63,47 +63,6 @@ export class Cluster
         this.registerOutputs();
     }
 
-    /**
-     * Creates a new [ApplicableLoadBalancer] corresponding to the network and security groups for
-     * this cluster.
-     */
-    public createApplicationLoadBalancer(
-            name: string,
-            args: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs = {},
-            opts?: pulumi.ComponentResourceOptions) {
-
-        // Use the network and security groups from this cluster, unless the caller has specified
-        // their own.
-        return new x.elasticloadbalancingv2.ApplicationLoadBalancer(name, {
-                vpc: this.vpc,
-                securityGroups: this.securityGroups,
-                ...args,
-            }, opts || { parent: this });
-    }
-
-    /**
-     * Creates a new [ApplicationLoadBalancer] and [ApplicationListener] for this [Cluster].  The
-     * ApplicationListener will have a default [ApplicationTargetGroup] created for it.
-     */
-    public createApplicationListener(name: string,
-                                     listenerArgs: x.elasticloadbalancingv2.ApplicationListenerArgs,
-                                     loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
-                                     opts?: pulumi.ComponentResourceOptions) {
-        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
-                   .createListener(name, listenerArgs, opts);
-    }
-
-    /**
-     * Creates a new [ApplicationLoadBalancer] and [ApplicationTargetGroup] for this [Cluster].
-     */
-    public createApplicationTargetGroup(name: string,
-                                        targetGroupArgs: x.elasticloadbalancingv2.ApplicationTargetGroupArgs,
-                                        loadBalancerArgs?: x.elasticloadbalancingv2.ApplicationLoadBalancerArgs,
-                                        opts?: pulumi.ComponentResourceOptions) {
-        return this.createApplicationLoadBalancer(name, loadBalancerArgs, opts)
-                   .createTargetGroup(name, targetGroupArgs, opts);
-    }
-
     public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {
         this.autoScalingGroups.push(group);
     }
