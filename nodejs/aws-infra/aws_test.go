@@ -216,7 +216,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 			assert.Equal(t, "application/json", contentType)
 			bytes, err := ioutil.ReadAll(resp.Body)
 			assert.NoError(t, err)
-			var data map[string]bool
+			var data map[string]interface{}
 			err = json.Unmarshal(bytes, &data)
 			assert.NoError(t, err)
 			success, ok := data["success"]
