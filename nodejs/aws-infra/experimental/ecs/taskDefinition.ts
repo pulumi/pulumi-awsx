@@ -163,14 +163,63 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 }
 
-export type RunTaskRequest = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
+export interface RunTaskRequest {
     /**
-     * The Cluster to run the Task in.
+     * The Cluster to run the Task within.
      */
+    cluster: ecs.Cluster;
+    /**
+     * A list of container overrides in JSON format that specify the name of a container in the specified task definition and the overrides it should receive. You can override the default command for a container (that is specified in the task definition or Docker image) with a command override. You can also override existing environment variables (that are specified in the task definition or Docker image) on a container or add new environment variables to it with an environment override.  A total of 8192 characters are allowed for overrides. This limit includes the JSON formatting characters of the override structure.
+     */
+    overrides?: awssdk.ECS.TaskOverride;
+    /**
+     * The number of instantiations of the specified task to place on your cluster. You can specify up to 10 tasks per call.
+     */
+    count?: awssdk.ECS.BoxedInteger;
+    /**
+     * An optional tag specified when a task is started. For example, if you automatically trigger a task to run a batch process job, you could apply a unique identifier for that job to your task with the startedBy parameter. You can then identify which tasks belong to that job by filtering the results of a ListTasks call with the startedBy value. Up to 36 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed. If a task is started by an Amazon ECS service, then the startedBy parameter contains the deployment ID of the service that starts it.
+     */
+    startedBy?: awssdk.ECS.String;
+    /**
+     * The name of the task group to associate with the task. The default value is the family name of the task definition (for example, family:my-family-name).
+     */
+    group?: awssdk.ECS.String;
+    /**
+     * An array of placement constraint objects to use for the task. You can specify up to 10 constraints per task (including constraints in the task definition and those specified at runtime).
+     */
+    placementConstraints?: awssdk.ECS.PlacementConstraints;
+    /**
+     * The placement strategy objects to use for the task. You can specify a maximum of five strategy rules per task.
+     */
+    placementStrategy?: awssdk.ECS.PlacementStrategies;
+    /**
+     * The platform version the task should run. A platform version is only specified for tasks using the Fargate launch type. If one is not specified, the LATEST platform version is used by default. For more information, see AWS Fargate Platform Versions in the Amazon Elastic Container Service Developer Guide.
+     */
+    platformVersion?: awssdk.ECS.String;
+    /**
+     * The network configuration for the task. This parameter is required for task definitions that use the awsvpc network mode to receive their own elastic network interface, and it is not supported for other network modes. For more information, see Task Networking in the Amazon Elastic Container Service Developer Guide.
+     */
+    networkConfiguration?: awssdk.ECS.NetworkConfiguration;
+    /**
+     * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define. Tag keys can have a maximum character length of 128 characters, and tag values can have a maximum length of 256 characters.
+     */
+    tags?: awssdk.ECS.Tags;
+    /**
+     * Specifies whether to enable Amazon ECS managed tags for the task. For more information, see Tagging Your Amazon ECS Resources in the Amazon Elastic Container Service Developer Guide.
+     */
+    enableECSManagedTags?: awssdk.ECS.Boolean;
+    /**
+     * Specifies whether to propagate the tags from the task definition or the service to the task. If no value is specified, the tags are not propagated.
+     */
+    propagateTags?: awssdk.ECS.PropagateTags;
+}
+
+type RunTaskRequestOverrideShape = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
     cluster: ecs.Cluster;
     taskDefinition?: never;
     launchType?: never;
 }>;
+const _: string = utils.checkCompat<RunTaskRequestOverrideShape, RunTaskRequest>();
 
 function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
     return function run(
