@@ -288,11 +288,10 @@ const api = new aws.apigateway.x.API("examples-containers", {
             policies: [...x.ecs.TaskDefinition.defaultTaskRolePolicyARNs()],
             callback: async (req) => {
                 try {
-                    const c = cluster;
-                    await helloTask.run({ cluster: c });
+                    const result = await helloTask.run({ cluster }).promise();
                     return {
                         statusCode: 200,
-                        body: JSON.stringify({ success: true }),
+                        body: JSON.stringify({ success: true, tasks: result.tasks }),
                     };
                 } catch (err) {
                     return handleError(err);

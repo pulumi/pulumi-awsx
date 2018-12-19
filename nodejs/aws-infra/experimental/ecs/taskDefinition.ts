@@ -29,7 +29,14 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly taskRole: aws.iam.Role;
     public readonly executionRole: aws.iam.Role;
 
-    public readonly runTask: (
+    /**
+     * Run one or more instances of this TaskDefinition using the ECS `runTask` API, returning the Task instances.
+     *
+     * This wrapper around `runTask` provides appropriate defaults based on the TaskDefinition and allows specifying a Cluster instead of individual network configurations.
+     *
+     * This API is designed for use at runtime.
+     */
+    public readonly run: (
         params: RunTaskRequest,
         callback?: (err: awssdk.AWSError, data: awssdk.ECS.Types.RunTaskResponse) => void,
     ) => awssdk.Request<awssdk.ECS.Types.RunTaskResponse, awssdk.AWSError>;
@@ -80,7 +87,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerString,
         }, parentOpts);
 
-        this.runTask = createRunFunction(isFargate, this.instance.arn);
+        this.run = createRunFunction(isFargate, this.instance.arn);
 
         this.registerOutputs();
     }
@@ -161,12 +168,12 @@ export type RunTaskRequest = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
      * The Cluster to run the Task in.
      */
     cluster: ecs.Cluster;
-    taskDefinition: never;
-    launchType: never;
+    taskDefinition?: never;
+    launchType?: never;
 }>;
 
 function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
-    return function runTask(
+    return function run(
                 params: RunTaskRequest,
                 callback?: (err: awssdk.AWSError, data: awssdk.ECS.Types.RunTaskResponse) => void,
             ): awssdk.Request<awssdk.ECS.Types.RunTaskResponse, awssdk.AWSError> {
