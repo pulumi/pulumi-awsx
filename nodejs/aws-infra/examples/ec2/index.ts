@@ -34,7 +34,7 @@ const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
 });
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = vpc.createNetworkListener("examples-nginx", { port: 80 });
+const nginxListener = new x.elasticloadbalancingv2.NetworkListener("examples-nginx", { port: 80 });
 const nginx = new x.ecs.EC2Service("examples-nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -52,7 +52,7 @@ const nginx = new x.ecs.EC2Service("examples-nginx", {
 const nginxEndpoint = nginxListener.endpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = vpc.createNetworkListener("examples-simple-nginx", { port: 80 });
+const simpleNginxListener = new x.elasticloadbalancingv2.NetworkListener("examples-simple-nginx", { port: 80 });
 const simpleNginx = new x.ecs.EC2TaskDefinition("examples-simple-nginx", {
     container: {
         image: "nginx",
@@ -73,7 +73,7 @@ const cachedNginx = new x.ecs.EC2Service("examples-cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                portMappings: vpc.createNetworkListener("examples-cached-nginx", { port: 80 }),
+                portMappings: new x.elasticloadbalancingv2.NetworkListener("examples-cached-nginx", { port: 80 }),
             },
         },
     },
@@ -91,7 +91,7 @@ const multistageCachedNginx = new x.ecs.EC2Service("examples-multistage-cached-n
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                portMappings: vpc.createNetworkListener(
+                portMappings: new x.elasticloadbalancingv2.NetworkListener(
                     "examples-multistage-cached-nginx", { port: 80 }),
             },
         },
@@ -100,8 +100,8 @@ const multistageCachedNginx = new x.ecs.EC2Service("examples-multistage-cached-n
 });
 
 const customWebServerListener =
-    vpc.createNetworkTargetGroup("custom", { port: 8080 })
-       .createListener("custom", { port: 80 });
+    new x.elasticloadbalancingv2.NetworkTargetGroup("custom", { port: 8080 })
+         .createListener("custom", { port: 80 });
 
 const customWebServer = new x.ecs.EC2Service("custom", {
     cluster,
@@ -134,7 +134,7 @@ class Cache {
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisListener = vpc.createNetworkListener(name, { port: 6379 });
+        const redisListener = new x.elasticloadbalancingv2.NetworkListener(name, { port: 6379 });
         const redis = new x.ecs.EC2Service(name, {
             cluster,
             taskDefinitionArgs: {
@@ -200,7 +200,7 @@ const helloTask = new x.ecs.EC2TaskDefinition("examples-hello-world", {
 });
 
 // build an anonymous image:
-const builtServiceListener = vpc.createNetworkListener("examples-nginx2", { port: 80 });
+const builtServiceListener = new x.elasticloadbalancingv2.NetworkListener("examples-nginx2", { port: 80 });
 const builtService = new x.ecs.EC2Service("examples-nginx2", {
     cluster,
     taskDefinitionArgs: {

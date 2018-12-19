@@ -27,38 +27,119 @@ export class Subnet extends pulumi.ComponentResource {
 
     public readonly routes: aws.ec2.Route[] = [];
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ec2:Subnet", name, {}, opts || { parent: vpc });
 
         this.subnetName = name;
 
         const parentOpts = { parent: this };
-        this.instance = new aws.ec2.Subnet(name, {
-            vpcId: vpc.vpcId,
-            ...args,
-        }, parentOpts);
+        if (isExistingSubnetArgs(args)) {
+            this.instance = args.instance;
+            this.subnetId = args.instance.id;
+            // TODO(cyrusn): We should be able to find the existing RouteTable and RouteTableAssociation
+            // when importing a subnet.
+        }
+        else {
+            this.instance = new aws.ec2.Subnet(name, {
+                vpcId: vpc.instance.id,
+                ...args,
+            }, parentOpts);
 
-        this.routeTable = new aws.ec2.RouteTable(name, {
-            vpcId: vpc.vpcId,
-        }, parentOpts);
+            this.routeTable = new aws.ec2.RouteTable(name, {
+                vpcId: vpc.instance.id,
+            }, parentOpts);
 
-        this.routeTableAssociation = new aws.ec2.RouteTableAssociation(name, {
-            routeTableId: this.routeTable.id,
-            subnetId: this.instance.id,
-        }, parentOpts);
+            this.routeTableAssociation = new aws.ec2.RouteTableAssociation(name, {
+                routeTableId: this.routeTable.id,
+                subnetId: this.instance.id,
+            }, parentOpts);
 
-        this.subnetId = pulumi.all([this.instance.id, this.routeTableAssociation.id])
-                              .apply(([id]) => id);
+            this.subnetId = pulumi.all([this.instance.id, this.routeTableAssociation.id])
+                                .apply(([id]) => id);
+        }
+
         this.registerOutputs();
+    }
+
+    public createRoute(name: string, args: RouteArgs, opts?: pulumi.ComponentResourceOptions) {
+        this.routes.push(new aws.ec2.Route(`${this.subnetName}-${name}`, {
+            ...args,
+            routeTableId: this.routeTable.id,
+        }, opts || { parent: this }));
     }
 }
 
-type OverwriteShape = utils.Overwrite<aws.ec2.SubnetArgs, {
+(<any>Subnet.prototype.createRoute).doNotCapture = true;
+
+export interface ExistingSubnetArgs {
+    /**
+     * Optional existing instance to use to make the awsinfra Subnet out of.  If this is provided No
+     * RouteTable or RouteTableAssociation will be automatically be created.
+     */
+    instance: aws.ec2.Subnet;
+}
+
+function isExistingSubnetArgs(obj: any): obj is ExistingSubnetArgs {
+    return !!(<ExistingSubnetArgs>obj).instance;
+}
+
+type RouteArgsShape = utils.Overwrite<aws.ec2.RouteArgs, {
+    routeTableId?: never;
+}>;
+
+/**
+ * The set of arguments for constructing a Route resource.
+ */
+export interface RouteArgs {
+    /**
+     * The destination CIDR block.
+     */
+    destinationCidrBlock?: pulumi.Input<string>;
+    /**
+     * The destination IPv6 CIDR block.
+     */
+    destinationIpv6CidrBlock?: pulumi.Input<string>;
+    /**
+     * Identifier of a VPC Egress Only Internet Gateway.
+     */
+    egressOnlyGatewayId?: pulumi.Input<string>;
+    /**
+     * Identifier of a VPC internet gateway or a virtual private gateway.
+     */
+    gatewayId?: pulumi.Input<string>;
+    /**
+     * Identifier of an EC2 instance.
+     */
+    instanceId?: pulumi.Input<string>;
+    /**
+     * Identifier of a VPC NAT gateway.
+     */
+    natGatewayId?: pulumi.Input<string>;
+    /**
+     * Identifier of an EC2 network interface.
+     */
+    networkInterfaceId?: pulumi.Input<string>;
+    /**
+     * Identifier of an EC2 Transit Gateway.
+     */
+    transitGatewayId?: pulumi.Input<string>;
+    /**
+     * Identifier of a VPC peering connection.
+     */
+    vpcPeeringConnectionId?: pulumi.Input<string>;
+}
+
+type SubnetArgsShape = utils.Overwrite<aws.ec2.SubnetArgs, {
     vpcId?: never;
 }>;
 
-
 export interface SubnetArgs {
+    /**
+     * The CIDR block for the subnet.
+     */
+    cidrBlock: pulumi.Input<string>;
     /**
      * Specify true to indicate
      * that network interfaces created in the specified subnet should be
@@ -73,10 +154,6 @@ export interface SubnetArgs {
      * The AZ ID of the subnet.
      */
     availabilityZoneId?: pulumi.Input<string>;
-    /**
-     * The CIDR block for the subnet.
-     */
-    cidrBlock: pulumi.Input<string>;
     /**
      * The IPv6 network range for the subnet,
      * in CIDR notation. The subnet size must use a /64 prefix length.
@@ -95,4 +172,5 @@ export interface SubnetArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-const test1: string = utils.checkCompat<OverwriteShape, SubnetArgs>();
+const test1: string = utils.checkCompat<SubnetArgsShape, SubnetArgs>();
+const test2: string = utils.checkCompat<RouteArgsShape, RouteArgs>();

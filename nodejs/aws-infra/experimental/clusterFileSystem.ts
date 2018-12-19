@@ -43,7 +43,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
 
         const efsSecurityGroupName = `${name}-fs`;
         this.securityGroups = args.securityGroups || [new aws.ec2.SecurityGroup(efsSecurityGroupName, {
-            vpcId: this.cluster.vpc.vpcId,
+            vpcId: this.cluster.vpc.instance.id,
             ingress: [
                 // Allow NFS traffic from the instance security group
                 {
