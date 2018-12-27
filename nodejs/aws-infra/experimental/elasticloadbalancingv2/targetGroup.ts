@@ -57,13 +57,13 @@ export abstract class TargetGroup
 
     public containerPortMappings(): pulumi.Input<pulumi.Input<aws.ecs.PortMapping>[]> {
         return pulumi.output([this.instance.port, this.dependencies()]).apply(([port]) => [{
-            containerPort: +port,
+            containerPort: +port!,
         }]);
     }
 
     public containerLoadBalancers(): pulumi.Input<pulumi.Input<x.ecs.ContainerLoadBalancer>[]> {
         return this.dependencies().apply(_ => [{
-            containerPort: this.instance.port,
+            containerPort: this.instance.port.apply(p => p!),
             targetGroupArn: this.instance.arn,
         }]);
     }
