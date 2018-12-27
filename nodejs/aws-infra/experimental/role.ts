@@ -22,7 +22,7 @@ export function createRoleAndPolicies(
     name: string,
     assumeRolePolicy: string | aws.iam.PolicyDocument,
     policyArns: string[],
-    opts: pulumi.ResourceOptions | undefined) {
+    opts: pulumi.ComponentResourceOptions | undefined) {
 
     if (typeof assumeRolePolicy !== "string") {
         assumeRolePolicy = JSON.stringify(assumeRolePolicy);
@@ -45,7 +45,7 @@ export function createRole(
     name: string,
     assumeRolePolicy: string | aws.iam.PolicyDocument,
     policyArns: string[],
-    opts: pulumi.ResourceOptions | undefined) {
+    opts: pulumi.ComponentResourceOptions | undefined) {
 
     const { role } = createRoleAndPolicies(name, assumeRolePolicy, policyArns, opts);
     return role;

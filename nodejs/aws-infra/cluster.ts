@@ -127,7 +127,7 @@ export class Cluster extends pulumi.ComponentResource {
      */
     public readonly efsMountPath?: string;
 
-    constructor(name: string, args: ClusterArgs, opts?: pulumi.ResourceOptions) {
+    constructor(name: string, args: ClusterArgs, opts?: pulumi.ComponentResourceOptions) {
         if (!args.network) {
             throw new pulumi.RunError("Expected a valid Network to use for creating Cluster");
         }

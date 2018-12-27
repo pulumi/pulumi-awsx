@@ -99,7 +99,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         name: string,
         assumeRolePolicy?: string | aws.iam.PolicyDocument,
         policyArns?: string[],
-        opts?: pulumi.ResourceOptions) {
+        opts?: pulumi.ComponentResourceOptions) {
 
         const { role, policies } = x.createRoleAndPolicies(
             name,

@@ -27,7 +27,7 @@ export abstract class Service extends pulumi.ComponentResource {
 
     constructor(type: string, name: string,
                 args: ServiceArgs, isFargate: boolean,
-                opts: pulumi.ResourceOptions = {}) {
+                opts: pulumi.ComponentResourceOptions = {}) {
         super(type, name, args, opts);
 
         // If the cluster has any autoscaling groups, ensure the service depends on it being
@@ -112,7 +112,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 //     public readonly kind: cloud.VolumeKind;
 //     public readonly name: string;
 
-//     constructor(name: string, opts?: pulumi.ResourceOptions) {
+//     constructor(name: string, opts?: pulumi.ComponentResourceOptions) {
 //         if (volumeNames.has(name)) {
 //             throw new Error("Must provide a unique volume name");
 //         }
