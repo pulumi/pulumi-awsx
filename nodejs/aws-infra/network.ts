@@ -118,7 +118,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
      * default network will be lazily created, using whatever options are provided in opts. All
      * subsequent calls will return that same network even if different opts are provided.
      */
-    public static getDefault(opts?: pulumi.ResourceOptions): Network {
+    public static getDefault(opts?: pulumi.ComponentResourceOptions): Network {
         if (!defaultNetwork) {
             const vpc = aws.ec2.getVpc({default: true});
             const vpcId = vpc.then(v => v.id);
@@ -144,7 +144,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
     /**
      * Creates a new network using the configuration values of an existing VPC.
      */
-    public static fromVpc(name: string, vpcArgs: NetworkVpcArgs, opts?: pulumi.ResourceOptions): Network {
+    public static fromVpc(name: string, vpcArgs: NetworkVpcArgs, opts?: pulumi.ComponentResourceOptions): Network {
         if (!vpcArgs.vpcId) {
             throw new RunError("vpcArgs.vpcId must be provided.");
         }
@@ -161,8 +161,8 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
         return new Network(name, vpcArgs, opts);
     }
 
-    constructor(name: string, args?: NetworkArgs, opts?: pulumi.ResourceOptions);
-    constructor(name: string, mergedArgs: NetworkArgs | NetworkVpcArgs = {}, opts: pulumi.ResourceOptions = {}) {
+    constructor(name: string, args?: NetworkArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, mergedArgs: NetworkArgs | NetworkVpcArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("aws-infra:network:Network", name, {}, opts);
 
         // IDEA: default to the number of availability zones in this region, rather than 2.  To do this requires

@@ -118,7 +118,7 @@ class AssetImage extends Image {
     }
 
     // getOrCreateRepository returns the ECR repository for this image, lazily allocating if necessary.
-    private getOrCreateRepository(imageName: string, opts: pulumi.ResourceOptions): aws.ecr.Repository {
+    private getOrCreateRepository(imageName: string, opts: pulumi.ComponentResourceOptions): aws.ecr.Repository {
         let repository: aws.ecr.Repository | undefined = AssetImage.repositories.get(imageName);
         if (!repository) {
             repository = new aws.ecr.Repository(imageName.toLowerCase(), {}, opts);

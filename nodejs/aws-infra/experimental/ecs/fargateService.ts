@@ -55,7 +55,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
      * Creates a service with this as its task definition.
      */
     public createService(
-            name: string, args: ecs.FargateServiceArgs, opts?: pulumi.ResourceOptions) {
+            name: string, args: ecs.FargateServiceArgs, opts?: pulumi.ComponentResourceOptions) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -131,7 +131,7 @@ export class FargateService extends ecs.Service {
 
     constructor(name: string,
                 args: FargateServiceArgs,
-                opts?: pulumi.ResourceOptions) {
+                opts?: pulumi.ComponentResourceOptions) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");

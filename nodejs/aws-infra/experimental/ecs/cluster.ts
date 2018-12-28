@@ -76,7 +76,7 @@ export class Cluster
     public createAutoScalingGroup(
             name: string,
             args?: x.autoscaling.AutoScalingGroupArgs,
-            opts?: pulumi.ResourceOptions) {
+            opts?: pulumi.ComponentResourceOptions) {
 
         args = args || { vpc: this.vpc };
 

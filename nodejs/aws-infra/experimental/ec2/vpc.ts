@@ -76,7 +76,7 @@ export class Vpc extends pulumi.ComponentResource {
             const topology = new VpcTopology(this, name, cidrBlock, numberOfAvailabilityZones, opts);
             topology.createSubnets(args.subnets || [
                 { type: "public" },
-                { type: "private"},
+                { type: "private" },
             ]);
 
             // Create an internet gateway if we have public subnets.
@@ -117,14 +117,14 @@ export class Vpc extends pulumi.ComponentResource {
             return defaultVpc;
         }
 
-        const vpc = aws.ec2.getVpc({default: true});
+        const vpc = aws.ec2.getVpc({ default: true }, opts);
         const vpcId = vpc.then(v => v.id);
 
         // The default VPC will contain at least two public subnets (one per availability zone).
         // See https://docs.aws.amazon.com/vpc/latest/userguide/images/default-vpc-diagram.png for
         // more information.
         const subnetIds = vpcId.then(id => aws.ec2.getSubnetIds({ vpcId: id }))
-                               .then(subnets => subnets.ids);
+            .then(subnets => subnets.ids);
         const subnet0 = subnetIds.then(ids => ids[0]);
         const subnet1 = subnetIds.then(ids => ids[1]);
         const publicSubnetIds = [subnet0, subnet1];
@@ -135,7 +135,7 @@ export class Vpc extends pulumi.ComponentResource {
 
     public static fromExistingIds(name: string, idArgs: ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions) {
         const vpc = new Vpc(name, {
-            instance: aws.ec2.Vpc.get(name, idArgs.vpcId),
+            instance: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
         }, opts);
 
         createSubnets(vpc, "public", idArgs.publicSubnetIds);
