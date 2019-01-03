@@ -15,41 +15,12 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as awssdk from "aws-sdk";
+
 import * as utils from "../../utils";
 
 import * as ecs from ".";
 import * as x from "..";
-
-export declare type HostOperatingSystem = "linux" | "windows";
-
-export interface TaskRunOptions {
-    /**
-     * The cluster to run this task in.
-     */
-    cluster: ecs.Cluster;
-
-    /**
-     * The name of the container to run as a task.  If not provided, the first container in the list
-     * of containers in the ClusterTaskDefinition will be the one that is run.
-     */
-    containerName?: string;
-
-    /**
-     * The OS to run.  Defaults to 'linux' if unspecified.
-     */
-    os?: HostOperatingSystem;
-
-    /**
-     * Optional environment variables to override those set in the container definition.
-     */
-    environment?: aws.ecs.KeyValuePair[];
-
-    // /**
-    //  * The subnets to run the task in.  Defaults to the public subnets of the cluster's VPC if
-    //  * unspecified.
-    //  */
-    // subnets?: string[];
-}
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly instance: aws.ecs.TaskDefinition;
@@ -59,9 +30,15 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly executionRole: aws.iam.Role;
 
     /**
-     * Runs this task definition in this cluster once.
+     * Run one or more instances of this TaskDefinition using the ECS `runTask` API, returning the Task instances.
+     *
+     * This wrapper around `runTask` provides appropriate defaults based on the TaskDefinition and allows specifying a Cluster instead of individual network configurations.
+     *
+     * This API is designed for use at runtime.
      */
-    public readonly run: (options: TaskRunOptions) => Promise<void>;
+    public readonly run: (
+        params: RunTaskRequest,
+    ) => Promise<awssdk.ECS.Types.RunTaskResponse>;
 
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
@@ -109,17 +86,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerString,
         }, parentOpts);
 
-        const containerToEnvironment =
-            pulumi.output(this.containers)
-                  .apply(c => {
-                        const result: Record<string, aws.ecs.KeyValuePair[]> = {};
-                        for (const key of Object.keys(c)) {
-                            result[key] = c[key].environment || [];
-                        }
-                        return result;
-                  });
-
-        this.run = createRunFunction(isFargate, this.instance.arn, containerToEnvironment);
+        this.run = createRunFunction(isFargate, this.instance.arn);
 
         this.registerOutputs();
     }
@@ -195,38 +162,78 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 }
 
-function createRunFunction(
-        isFargate: boolean,
-        taskDefArn: pulumi.Output<string>,
-        containerToEnvironment: pulumi.Output<Record<string, aws.ecs.KeyValuePair[]>>) {
+export interface RunTaskRequest {
+    /**
+     * The Cluster to run the Task within.
+     */
+    cluster: ecs.Cluster;
+    /**
+     * A list of container overrides in JSON format that specify the name of a container in the specified task definition and the overrides it should receive. You can override the default command for a container (that is specified in the task definition or Docker image) with a command override. You can also override existing environment variables (that are specified in the task definition or Docker image) on a container or add new environment variables to it with an environment override.  A total of 8192 characters are allowed for overrides. This limit includes the JSON formatting characters of the override structure.
+     */
+    overrides?: awssdk.ECS.TaskOverride;
+    /**
+     * The number of instantiations of the specified task to place on your cluster. You can specify up to 10 tasks per call.
+     */
+    count?: awssdk.ECS.BoxedInteger;
+    /**
+     * An optional tag specified when a task is started. For example, if you automatically trigger a task to run a batch process job, you could apply a unique identifier for that job to your task with the startedBy parameter. You can then identify which tasks belong to that job by filtering the results of a ListTasks call with the startedBy value. Up to 36 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed. If a task is started by an Amazon ECS service, then the startedBy parameter contains the deployment ID of the service that starts it.
+     */
+    startedBy?: awssdk.ECS.String;
+    /**
+     * The name of the task group to associate with the task. The default value is the family name of the task definition (for example, family:my-family-name).
+     */
+    group?: awssdk.ECS.String;
+    /**
+     * An array of placement constraint objects to use for the task. You can specify up to 10 constraints per task (including constraints in the task definition and those specified at runtime).
+     */
+    placementConstraints?: awssdk.ECS.PlacementConstraints;
+    /**
+     * The placement strategy objects to use for the task. You can specify a maximum of five strategy rules per task.
+     */
+    placementStrategy?: awssdk.ECS.PlacementStrategies;
+    /**
+     * The platform version the task should run. A platform version is only specified for tasks using the Fargate launch type. If one is not specified, the LATEST platform version is used by default. For more information, see AWS Fargate Platform Versions in the Amazon Elastic Container Service Developer Guide.
+     */
+    platformVersion?: awssdk.ECS.String;
+    /**
+     * The network configuration for the task. This parameter is required for task definitions that use the awsvpc network mode to receive their own elastic network interface, and it is not supported for other network modes. For more information, see Task Networking in the Amazon Elastic Container Service Developer Guide.
+     */
+    networkConfiguration?: awssdk.ECS.NetworkConfiguration;
+    /**
+     * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define. Tag keys can have a maximum character length of 128 characters, and tag values can have a maximum length of 256 characters.
+     */
+    tags?: awssdk.ECS.Tags;
+    /**
+     * Specifies whether to enable Amazon ECS managed tags for the task. For more information, see Tagging Your Amazon ECS Resources in the Amazon Elastic Container Service Developer Guide.
+     */
+    enableECSManagedTags?: awssdk.ECS.Boolean;
+    /**
+     * Specifies whether to propagate the tags from the task definition or the service to the task. If no value is specified, the tags are not propagated.
+     */
+    propagateTags?: awssdk.ECS.PropagateTags;
+}
 
-    return async function runTask(options: TaskRunOptions) {
+type RunTaskRequestOverrideShape = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
+    cluster: ecs.Cluster;
+    taskDefinition?: never;
+    launchType?: never;
+}>;
+const _: string = utils.checkCompat<RunTaskRequestOverrideShape, RunTaskRequest>();
+
+function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
+    return function run(params: RunTaskRequest) {
+
         const ecs = new aws.sdk.ECS();
 
-        const cluster = options.cluster;
+        const cluster = params.cluster;
         const clusterArn = cluster.instance.id.get();
         const securityGroupIds = cluster.securityGroups.map(g => g.instance.id.get());
         const subnetIds = cluster.vpc.publicSubnetIds.map(i => i.get());
-
-        const innerContainers = containerToEnvironment.get();
-        const containerName = options.containerName || Object.keys(innerContainers)[0];
-        if (!containerName) {
-            throw new Error("No valid container name found to run task for.");
-        }
-
-        // Extract the environment values from the options
-        const env1 = innerContainers[containerName] || [];
-        const env2 = options.environment || [];
-
-        const env = [...env1, ...env2];
-
         const assignPublicIp = isFargate; // && !usePrivateSubnets;
 
         // Run the task
-        const res = await ecs.runTask({
-            cluster: clusterArn,
+        return ecs.runTask({
             taskDefinition: taskDefArn.get(),
-            placementConstraints: placementConstraints(isFargate, options.os),
             launchType: isFargate ? "FARGATE" : "EC2",
             networkConfiguration: {
                 awsvpcConfiguration: {
@@ -235,34 +242,10 @@ function createRunFunction(
                     subnets: subnetIds,
                 },
             },
-            overrides: {
-                containerOverrides: [
-                    {
-                        name: "container",
-                        environment: env,
-                    },
-                ],
-            },
+            ...params,
+            cluster: clusterArn, // Make sure to override the value of `params.cluster`
         }).promise();
-
-        if (res.failures && res.failures.length > 0) {
-            console.log("Failed to start task:" + JSON.stringify(res.failures));
-            throw new Error("Failed to start task:" + JSON.stringify(res.failures));
-        }
     };
-}
-
-function placementConstraints(isFargate: boolean, os: HostOperatingSystem | undefined) {
-    if (isFargate) {
-        return undefined;
-    }
-
-    os = os || "linux";
-
-    return [{
-        type: "memberOf",
-        expression: `attribute:ecs.os-type == ${os}`,
-    }];
 }
 
 function computeContainerDefinitions(

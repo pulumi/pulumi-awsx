@@ -48,26 +48,12 @@ export abstract class Service extends pulumi.ComponentResource {
             desiredCount: utils.ifUndefined(args.desiredCount, 1),
             launchType: utils.ifUndefined(args.launchType, "EC2"),
             waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),
-            placementConstraints: pulumi.output(args.os).apply(os => placementConstraints(isFargate, os)),
         }, parentOpts);
 
         this.taskDefinition = args.taskDefinition;
 
         this.registerOutputs();
     }
-}
-
-function placementConstraints(isFargate: boolean, os: ecs.HostOperatingSystem | undefined) {
-    if (isFargate) {
-        return [];
-    }
-
-    os = os || "linux";
-
-    return [{
-        type: "memberOf",
-        expression: `attribute:ecs.os-type == ${os}`,
-    }];
 }
 
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
@@ -283,8 +269,6 @@ export interface ServiceArgs {
      * Defaults to `EC2`.
      */
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
-
-    os?: pulumi.Input<"linux" | "windows">;
 
     /**
      * Wait for the service to reach a steady state (like [`aws ecs wait
