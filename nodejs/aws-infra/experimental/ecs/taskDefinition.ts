@@ -38,8 +38,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
      */
     public readonly run: (
         params: RunTaskRequest,
-        callback?: (err: awssdk.AWSError, data: awssdk.ECS.Types.RunTaskResponse) => void,
-    ) => awssdk.Request<awssdk.ECS.Types.RunTaskResponse, awssdk.AWSError>;
+    ) => Promise<awssdk.ECS.Types.RunTaskResponse>;
 
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
@@ -222,10 +221,7 @@ type RunTaskRequestOverrideShape = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
 const _: string = utils.checkCompat<RunTaskRequestOverrideShape, RunTaskRequest>();
 
 function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
-    return function run(
-                params: RunTaskRequest,
-                callback?: (err: awssdk.AWSError, data: awssdk.ECS.Types.RunTaskResponse) => void,
-            ): awssdk.Request<awssdk.ECS.Types.RunTaskResponse, awssdk.AWSError> {
+    return function run(params: RunTaskRequest) {
 
         const ecs = new aws.sdk.ECS();
 
@@ -248,7 +244,7 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
             },
             ...params,
             cluster: clusterArn, // Make sure to override the value of `params.cluster`
-        });
+        }).promise();
     };
 }
 
