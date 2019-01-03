@@ -324,3 +324,4 @@ export let vpcId = vpc.instance.id;
 export let publicSubnets = vpc.publicSubnetIds;
 export let privateSubnets = vpc.privateSubnetIds;
 export let isolatedSubnets = vpc.isolatedSubnetIds;
+export let vpcInstance = vpc;
