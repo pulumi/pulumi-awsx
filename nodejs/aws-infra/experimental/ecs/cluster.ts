@@ -147,7 +147,7 @@ function getSecurityGroups(cluster: Cluster, name: string, args: ClusterArgs, op
         return result;
     }
 
-    return [Cluster.createDefaultSecurityGroup(name, this.vpc, opts)];
+    return [Cluster.createDefaultSecurityGroup(name, cluster.vpc, opts)];
 }
 
 // The shape we want for ClusterArgs.  We don't export this as 'Overwrite' types are not pleasant to
