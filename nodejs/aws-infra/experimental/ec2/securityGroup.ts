@@ -25,17 +25,26 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
-    constructor(name: string, args: SecurityGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:ec2:SecurityGroup", name, {}, opts);
 
-        if (args.instance !== undefined && args.instanceId !== undefined) {
-            throw new Error("Cannot provide both [args.instance] and [args.instanceId].");
-        }
-
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
-        this.instance = getSecurityGroup(this, name, args);
+        this.instance = args.instance || new aws.ec2.SecurityGroup(name, {
+            ...args,
+            vpcId: this.vpc.instance.id,
+        }, { parent: this });
 
         this.registerOutputs();
+    }
+
+    public static fromExistingId(
+        name: string, id: pulumi.Input<string>,
+        args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+
+        return new SecurityGroup(name, {
+            ...args,
+            instance: aws.ec2.SecurityGroup.get(name, id, {}, opts),
+        }, opts);
     }
 
     public createEgressRule(
@@ -62,21 +71,6 @@ export class SecurityGroup extends pulumi.ComponentResource {
     }
 }
 
-function getSecurityGroup(securityGroup: SecurityGroup, name: string, args: SecurityGroupArgs) {
-    if (args.instance) {
-        return args.instance;
-    }
-
-    if (args.instanceId !== undefined) {
-        return aws.ec2.SecurityGroup.get(name, args.instanceId, {}, { parent: securityGroup });
-    }
-
-    return new aws.ec2.SecurityGroup(name, {
-        ...args,
-        vpcId: securityGroup.vpc.instance.id,
-    }, { parent: securityGroup });
-}
-
 type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
     name?: never;
     namePrefix?: never;
@@ -87,17 +81,10 @@ type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
 
 export interface SecurityGroupArgs {
     /**
-     * An existing SecurityGroup to use for this awsinfra SecurityGroup.  Only one of [instance] and
-     * [instanceId] can be provided.  If neither are provided, a default one will be created.
+     * An existing SecurityGroup to use for this awsinfra SecurityGroup.  If not provided, a default
+     * one will be created.
      */
     instance?: aws.ec2.SecurityGroup;
-
-    /**
-     * An existing id for a SecurityGroup to use for this awsinfra SecurityGroup. Only one of
-     * [instance] and [instanceId] can be provided.  If neither are provided, a default one will be
-     * created.
-     */
-    instanceId?: string;
 
     /**
      * The vpc this security group applies to.  Or [Network.getDefault] if unspecified.
