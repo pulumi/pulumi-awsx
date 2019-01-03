@@ -25,7 +25,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
-    constructor(name: string, args: SecurityGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:ec2:SecurityGroup", name, {}, opts);
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
@@ -35,6 +35,16 @@ export class SecurityGroup extends pulumi.ComponentResource {
         }, { parent: this });
 
         this.registerOutputs();
+    }
+
+    public static fromExistingId(
+        name: string, id: pulumi.Input<string>,
+        args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+
+        return new SecurityGroup(name, {
+            ...args,
+            instance: aws.ec2.SecurityGroup.get(name, id, {}, opts),
+        }, opts);
     }
 
     public createEgressRule(
