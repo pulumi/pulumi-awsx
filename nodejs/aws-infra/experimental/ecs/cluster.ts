@@ -54,8 +54,7 @@ export class Cluster
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        this.securityGroups = args.securityGroups ||
-            [Cluster.createDefaultSecurityGroup(name, this.vpc, parentOpts)];
+        this.securityGroups = getSecurityGroups(this, name, args, parentOpts);
 
         this.extraBootcmdLines = () => instance.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
@@ -130,12 +129,32 @@ export class Cluster
     }
 }
 
+function getSecurityGroups(cluster: Cluster, name: string, args: ClusterArgs, opts: pulumi.ResourceOptions) {
+    if (args.securityGroups && args.securityGroupIds) {
+        throw new Error("Cannot provide both [args.securityGroups] and [args.securityGroupIds]");
+    }
+
+    if (args.securityGroups) {
+        return args.securityGroups;
+    }
+
+    if (args.securityGroupIds) {
+        return args.securityGroupIds.map((id, index) =>
+            x.ec2.SecurityGroup.fromExistingId(`${name}-${index}`, id, {
+                vpc: cluster.vpc,
+            }, opts));
+    }
+
+    return [Cluster.createDefaultSecurityGroup(name, this.vpc, opts)];
+}
+
 // The shape we want for ClusterArgs.  We don't export this as 'Overwrite' types are not pleasant to
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     vpc?: x.ec2.Vpc;
     securityGroups?: x.ec2.SecurityGroup[];
+    securityGroupIds?: pulumi.Input<string>[];
 }>;
 
 /**
@@ -160,10 +179,16 @@ export interface ClusterArgs {
     name?: pulumi.Input<string>;
 
     /**
-     * The security group to place new instances into.  If not provided, a default will be
-     * created.
+     * The security group to place new instances into.  If neither [securityGroups] nor
+     *  [securityGroupIds] are provided, a default will be created for the Cluster.
      */
     securityGroups?: x.ec2.SecurityGroup[];
+
+    /**
+     * The security group ids to place new instances into.  If neither [securityGroups] nor
+     *  [securityGroupIds] are provided, a default will be created for the Cluster.
+     */
+    securityGroupIds?: pulumi.Input<string>[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
