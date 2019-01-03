@@ -138,9 +138,9 @@ export class Vpc extends pulumi.ComponentResource {
             instance: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
         }, opts);
 
-        createSubnets(vpc, "public", idArgs.publicSubnetIds);
-        createSubnets(vpc, "private", idArgs.privateSubnetIds);
-        createSubnets(vpc, "isolated", idArgs.isolatedSubnetIds);
+        createSubnets(vpc, name, "public", idArgs.publicSubnetIds);
+        createSubnets(vpc, name, "private", idArgs.privateSubnetIds);
+        createSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
 
         return vpc;
     }
@@ -235,15 +235,15 @@ function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOf
     }
 }
 
-function createSubnets(vpc: Vpc, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
+function createSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
     const parentOpts = { parent: vpc };
     const subnets = vpc.getSubnets(type);
     const subnetIds = vpc.getSubnetIds(type);
 
     for (let i = 0, n = inputs.length; i < n; i++) {
-        const subnetName = `${type}-${i}`;
+        const subnetName = `${vpcName}-${type}-${i}`;
         const subnet = new x.ec2.Subnet(subnetName, vpc, {
-            instance: aws.ec2.Subnet.get(subnetName, inputs[i], undefined, parentOpts),
+            instance: aws.ec2.Subnet.get(subnetName, inputs[i], /*state:*/undefined, parentOpts),
         }, parentOpts);
 
         subnets.push(subnet);
