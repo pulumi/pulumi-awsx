@@ -135,7 +135,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             name: string,
             assumeRolePolicy?: string | aws.iam.PolicyDocument,
             policyArns?: string[],
-            opts?: pulumi.ResourceOptions): aws.iam.Role {
+            opts?: pulumi.ComponentResourceOptions): aws.iam.Role {
 
         return x.createRole(
             name,
@@ -155,7 +155,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             name: string,
             assumeRolePolicy?: string | aws.iam.PolicyDocument,
             policyArns?: string[],
-            opts?: pulumi.ResourceOptions): aws.iam.Role {
+            opts?: pulumi.ComponentResourceOptions): aws.iam.Role {
 
         return x.createRole(
             name,

@@ -76,7 +76,7 @@ export class Vpc extends pulumi.ComponentResource {
             const topology = new VpcTopology(this, name, cidrBlock, numberOfAvailabilityZones, opts);
             topology.createSubnets(args.subnets || [
                 { type: "public" },
-                { type: "private"},
+                { type: "private" },
             ]);
 
             // Create an internet gateway if we have public subnets.
@@ -117,14 +117,14 @@ export class Vpc extends pulumi.ComponentResource {
             return defaultVpc;
         }
 
-        const vpc = aws.ec2.getVpc({default: true});
+        const vpc = aws.ec2.getVpc({ default: true }, opts);
         const vpcId = vpc.then(v => v.id);
 
         // The default VPC will contain at least two public subnets (one per availability zone).
         // See https://docs.aws.amazon.com/vpc/latest/userguide/images/default-vpc-diagram.png for
         // more information.
         const subnetIds = vpcId.then(id => aws.ec2.getSubnetIds({ vpcId: id }))
-                               .then(subnets => subnets.ids);
+            .then(subnets => subnets.ids);
         const subnet0 = subnetIds.then(ids => ids[0]);
         const subnet1 = subnetIds.then(ids => ids[1]);
         const publicSubnetIds = [subnet0, subnet1];
@@ -135,12 +135,12 @@ export class Vpc extends pulumi.ComponentResource {
 
     public static fromExistingIds(name: string, idArgs: ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions) {
         const vpc = new Vpc(name, {
-            instance: aws.ec2.Vpc.get(name, idArgs.vpcId),
+            instance: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
         }, opts);
 
-        createSubnets(vpc, "public", idArgs.publicSubnetIds);
-        createSubnets(vpc, "private", idArgs.privateSubnetIds);
-        createSubnets(vpc, "isolated", idArgs.isolatedSubnetIds);
+        createSubnets(vpc, name, "public", idArgs.publicSubnetIds);
+        createSubnets(vpc, name, "private", idArgs.privateSubnetIds);
+        createSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
 
         return vpc;
     }
@@ -235,15 +235,15 @@ function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOf
     }
 }
 
-function createSubnets(vpc: Vpc, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
+function createSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
     const parentOpts = { parent: vpc };
     const subnets = vpc.getSubnets(type);
     const subnetIds = vpc.getSubnetIds(type);
 
     for (let i = 0, n = inputs.length; i < n; i++) {
-        const subnetName = `${type}-${i}`;
+        const subnetName = `${vpcName}-${type}-${i}`;
         const subnet = new x.ec2.Subnet(subnetName, vpc, {
-            instance: aws.ec2.Subnet.get(subnetName, inputs[i], undefined, parentOpts),
+            instance: aws.ec2.Subnet.get(subnetName, inputs[i], /*state:*/undefined, parentOpts),
         }, parentOpts);
 
         subnets.push(subnet);
@@ -252,7 +252,7 @@ function createSubnets(vpc: Vpc, type: VpcSubnetType, inputs: pulumi.Input<strin
 }
 
 /**
- * The type of this subet.
+ * The type of this subnet.
  *
  * 1. A "public" subnet will route traffic to an [InternetGateway].  If you specify a public subnet
  *    this InternetGateway will be created on your behalf and traffic will be routed accordingly.
