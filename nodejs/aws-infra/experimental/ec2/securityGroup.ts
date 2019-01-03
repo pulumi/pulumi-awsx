@@ -25,6 +25,9 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
+    // tslint:disable-next-line:variable-name
+    private readonly __isSecurityGroupInstance = true;
+
     constructor(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:ec2:SecurityGroup", name, {}, opts);
 
@@ -35,6 +38,11 @@ export class SecurityGroup extends pulumi.ComponentResource {
         }, { parent: this });
 
         this.registerOutputs();
+    }
+
+    /** @internal */
+    public static isSecurityGroupInstance(obj: any): obj is SecurityGroup {
+        return !!(<SecurityGroup>obj).__isSecurityGroupInstance;
     }
 
     public static fromExistingId(
