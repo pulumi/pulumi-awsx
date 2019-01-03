@@ -19,6 +19,7 @@ import * as x from "..";
 import * as utils from "./../../utils";
 
 export class Subnet extends pulumi.ComponentResource {
+    public readonly vpc: x.ec2.Vpc;
     public readonly subnetName: string;
     public readonly subnetId: pulumi.Output<string>;
     public readonly instance: aws.ec2.Subnet;
@@ -32,6 +33,7 @@ export class Subnet extends pulumi.ComponentResource {
     constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ec2:Subnet", name, {}, opts || { parent: vpc });
 
+        this.vpc = vpc;
         this.subnetName = name;
 
         const parentOpts = { parent: this };
