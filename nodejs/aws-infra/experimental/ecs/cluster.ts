@@ -182,8 +182,8 @@ export interface ClusterArgs {
     name?: pulumi.Input<string>;
 
     /**
-     * The security group to place new instances into.  If this is not provided a default will be
-     * created for the Cluster.
+     * The security group to place new instances into.  If not provided, a default will be
+     * created.
      */
     securityGroups?: SecurityGroupLike[];
 }
