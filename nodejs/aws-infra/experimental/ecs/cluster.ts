@@ -56,7 +56,8 @@ export class Cluster
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        this.securityGroups = getSecurityGroups(this, name, args, parentOpts);
+        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) ||
+            [Cluster.createDefaultSecurityGroup(name, this.vpc, parentOpts)];
 
         this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
@@ -129,27 +130,6 @@ export class Cluster
                     new x.ec2.AllTcpPorts(),
                     "allow incoming tcp on any port from any ipv4 address")];
     }
-}
-
-function getSecurityGroups(cluster: Cluster, name: string, args: ClusterArgs, opts: pulumi.ResourceOptions) {
-    if (args.securityGroups) {
-        const result: x.ec2.SecurityGroup[] = [];
-        for (let i = 0, n = args.securityGroups.length; i < n; i++) {
-            const obj = args.securityGroups[i];
-            if (x.ec2.SecurityGroup.isSecurityGroupInstance(obj)) {
-                result.push(obj);
-            }
-            else {
-                result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, {
-                    vpc: cluster.vpc,
-                }, opts));
-            }
-        }
-
-        return result;
-    }
-
-    return [Cluster.createDefaultSecurityGroup(name, cluster.vpc, opts)];
 }
 
 // The shape we want for ClusterArgs.  We don't export this as 'Overwrite' types are not pleasant to

@@ -32,7 +32,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         const parentOpts = { parent: this };
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
-        this.securityGroups = args.securityGroups || [];
+        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) || [];
 
         const external = utils.ifUndefined(args.external, true);
         this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
@@ -120,7 +120,7 @@ export interface LoadBalancerArgs {
      * A list of security group IDs to assign to the LB. Only valid for Load Balancers of type
      * `application`.
      */
-    securityGroups?: x.ec2.SecurityGroup[];
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 }
 
 export interface LoadBalancerSubnets {

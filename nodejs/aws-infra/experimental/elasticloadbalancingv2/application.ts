@@ -275,7 +275,7 @@ export interface ApplicationLoadBalancerArgs {
     /**
      * A list of security group IDs to assign to the LB.
      */
-    securityGroups?: x.ec2.SecurityGroup[];
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 }
 
 export interface ApplicationTargetGroupArgs {

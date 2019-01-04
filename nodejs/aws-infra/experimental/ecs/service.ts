@@ -24,6 +24,7 @@ export abstract class Service extends pulumi.ComponentResource {
     public readonly service: aws.ecs.Service;
     public readonly cluster: ecs.Cluster;
     public readonly taskDefinition: ecs.TaskDefinition;
+    public readonly securityGroups: x.ec2.SecurityGroup[];
 
     constructor(type: string, name: string,
                 args: ServiceArgs, isFargate: boolean,
@@ -160,6 +161,7 @@ export function isServiceLoadBalancers(obj: any): obj is ServiceLoadBalancers {
 type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     cluster: ecs.Cluster;
     taskDefinition: ecs.TaskDefinition;
+    securityGroups: x.ec2.SecurityGroup[];
     desiredCount?: pulumi.Input<number>;
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
     os?: pulumi.Input<"linux" | "windows">;
@@ -257,6 +259,11 @@ export interface ServiceArgs {
      * The task definition to create the service from.
      */
     taskDefinition: ecs.TaskDefinition;
+
+    /**
+     * Security groups determining how this service can be reached.
+     */
+    securityGroups: x.ec2.SecurityGroup[];
 
     /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do

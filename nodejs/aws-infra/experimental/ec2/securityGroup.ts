@@ -83,6 +83,30 @@ export class SecurityGroup extends pulumi.ComponentResource {
 
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 
+/** @internal */
+export function getSecurityGroups(
+        vpc: x.ec2.Vpc, name: string, args: SecurityGroupOrId[] | undefined,
+        opts: pulumi.ResourceOptions | undefined) {
+    if (!args) {
+        return undefined;
+    }
+
+    const result: x.ec2.SecurityGroup[] = [];
+    for (let i = 0, n = args.length; i < n; i++) {
+        const obj = args[i];
+        if (x.ec2.SecurityGroup.isSecurityGroupInstance(obj)) {
+            result.push(obj);
+        }
+        else {
+            result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, {
+                vpc,
+            }, opts));
+        }
+    }
+
+    return result;
+}
+
 type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
     name?: never;
     namePrefix?: never;
