@@ -183,7 +183,7 @@ export class ApplicationListener extends mod.Listener {
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
-                securityGroup.openPorts("external-" + i, location, tcpPort, description, parentOpts);
+                securityGroup.openPorts(`${name}-external-${i}`, location, tcpPort, description, parentOpts);
             }
         }
 
