@@ -20,6 +20,7 @@ import * as utils from "./../../utils";
 
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public readonly instance: aws.ec2.LaunchConfiguration;
+    public readonly securityGroups: x.ec2.SecurityGroup[];
 
     /**
      * Optional file system to mount.
@@ -33,7 +34,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
      */
     public readonly stackName: pulumi.Output<string>;
 
-    constructor(name: string,
+    constructor(name: string, vpc: x.ec2.Vpc,
                 args: AutoScalingLaunchConfigurationArgs = {},
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:autoscaling:AutoScalingLaunchConfiguration", name, {}, opts);
@@ -52,10 +53,11 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
                 name, /*assumeRolePolicy:*/ undefined, /*policyArns:*/ undefined, parentOpts);
 
         this.fileSystem = args.fileSystem;
+        this.securityGroups = x.ec2.getSecurityGroups(vpc, name, args.securityGroups, parentOpts) || [];
 
         this.instance = new aws.ec2.LaunchConfiguration(name, {
             ...args,
-            securityGroups: (args.securityGroups || []).map(g => g.instance.id),
+            securityGroups: this.securityGroups.map(g => g.instance.id),
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: this.instanceProfile.id,
@@ -284,16 +286,17 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
         if (args.launchConfiguration) {
             this.launchConfiguration = args.launchConfiguration;
         }
         else {
             this.launchConfiguration = new AutoScalingLaunchConfiguration(
-                name, args.launchConfigurationArgs, parentOpts);
+                name, this.vpc, args.launchConfigurationArgs, parentOpts);
         }
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         this.instance = new aws.cloudformation.Stack(name, {
             ...args,
             name: this.launchConfiguration.stackName,
@@ -508,7 +511,7 @@ type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable
     ecsOptimizedAMIName?: string;
     instanceType?: pulumi.Input<aws.ec2.InstanceType>;
     placementTenancy?: pulumi.Input<"default" | "dedicated">;
-    securityGroups?: x.ec2.SecurityGroup[];
+    securityGroups?: x.ec2.SecurityGroupOrId[];
     userData?: pulumi.Input<string> | AutoScalingUserData;
 }>;
 
@@ -649,7 +652,7 @@ export interface AutoScalingLaunchConfigurationArgs {
     /**
     * A list of associated security group IDs.
     */
-   securityGroups?: x.ec2.SecurityGroup[];
+   securityGroups?: x.ec2.SecurityGroupOrId[];
 
     /**
      * The user data to provide when launching the instance. Do not pass gzip-compressed data via this argument; see `user_data_base64` instead.

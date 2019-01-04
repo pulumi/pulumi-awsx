@@ -54,7 +54,8 @@ export class Cluster
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        this.securityGroups = getSecurityGroups(this, name, args, parentOpts);
+        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) ||
+            [Cluster.createDefaultSecurityGroup(name, this.vpc, parentOpts)];
 
         this.extraBootcmdLines = () => instance.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
@@ -129,36 +130,13 @@ export class Cluster
     }
 }
 
-function getSecurityGroups(cluster: Cluster, name: string, args: ClusterArgs, opts: pulumi.ResourceOptions) {
-    if (args.securityGroups) {
-        const result: x.ec2.SecurityGroup[] = [];
-        for (let i = 0, n = args.securityGroups.length; i < n; i++) {
-            const obj = args.securityGroups[i];
-            if (x.ec2.SecurityGroup.isSecurityGroupInstance(obj)) {
-                result.push(obj);
-            }
-            else {
-                result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, {
-                    vpc: cluster.vpc,
-                }, opts));
-            }
-        }
-
-        return result;
-    }
-
-    return [Cluster.createDefaultSecurityGroup(name, cluster.vpc, opts)];
-}
-
 // The shape we want for ClusterArgs.  We don't export this as 'Overwrite' types are not pleasant to
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     vpc?: x.ec2.Vpc;
-    securityGroups?: SecurityGroupLike[];
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 }>;
-
-export type SecurityGroupLike = x.ec2.SecurityGroup | pulumi.Input<string>;
 
 /**
  * Arguments bag for creating infrastructure for a new Cluster.
@@ -185,7 +163,7 @@ export interface ClusterArgs {
      * The security group to place new instances into.  If not provided, a default will be
      * created.
      */
-    securityGroups?: SecurityGroupLike[];
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

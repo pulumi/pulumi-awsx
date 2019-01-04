@@ -64,7 +64,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 }
 
 export class EC2Service extends ecs.Service {
-    public taskDefinition: EC2TaskDefinition;
+    public readonly taskDefinition: EC2TaskDefinition;
 
     constructor(name: string,
                 args: EC2ServiceArgs,
@@ -78,12 +78,14 @@ export class EC2Service extends ecs.Service {
             new ecs.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
 
         const cluster = args.cluster;
-        const securityGroups = args.securityGroups || cluster.securityGroups;
+        const securityGroups = x.ec2.getSecurityGroups(
+            cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = args.subnets || cluster.vpc.publicSubnetIds;
 
         super("awsinfra:x:ecs:EC2Service", name, {
             ...args,
             taskDefinition,
+            securityGroups,
             launchType: "EC2",
             networkConfiguration: {
                 subnets,
@@ -170,6 +172,7 @@ type OverwriteEC2ServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
     taskDefinitionArgs?: EC2TaskDefinitionArgs;
     launchType?: never;
     networkConfiguration?: never;
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 }>;
 
 export interface EC2ServiceArgs {
@@ -219,7 +222,7 @@ export interface EC2ServiceArgs {
      *
      * Defaults to [cluster.securityGroups] if unspecified.
      */
-    securityGroups?: x.ec2.SecurityGroup[];
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 
     /**
      * The subnets to connect the instances to.  If unspecified then these will be the public

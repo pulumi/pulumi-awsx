@@ -142,12 +142,14 @@ export class FargateService extends ecs.Service {
 
         const cluster = args.cluster;
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
-        const securityGroups = args.securityGroups || cluster.securityGroups;
+        const securityGroups = x.ec2.getSecurityGroups(
+            cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = assignPublicIp.apply(pub => pub ? cluster.vpc.publicSubnetIds : cluster.vpc.privateSubnetIds);
 
         super("awsinfra:x:ecs:FargateService", name, {
             ...args,
             taskDefinition,
+            securityGroups,
             launchType: "FARGATE",
             networkConfiguration: {
                 subnets,
@@ -237,6 +239,7 @@ type OverwriteFargateServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
     taskDefinitionArgs?: FargateTaskDefinitionArgs;
     launchType?: never;
     networkConfiguration?: never;
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 }>;
 
 export interface FargateServiceArgs {
@@ -293,7 +296,7 @@ export interface FargateServiceArgs {
      *
      * Defaults to [cluster.securityGroups] if unspecified.
      */
-    securityGroups?: x.ec2.SecurityGroup[];
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 
     /**
      * The subnets to connect the instances to.  If unspecified and [assignPublicIp] is true, then
