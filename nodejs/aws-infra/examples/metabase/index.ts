@@ -80,8 +80,14 @@ export class Metabase extends pulumi.ComponentResource {
             const res = await aws.ec2.getSubnet({ id: subnetId }, { parent: this });
             return res.vpcId;
         });
-        const loadbalancerSecurityGroup = new aws.ec2.SecurityGroup(`${name}metabase`, {
+
+        const vpc = awsinfra.x.ec2.Vpc.fromExistingIds("meta", {
             vpcId: vpcId,
+            publicSubnetIds: args.subnetIds,
+        });
+
+        const loadbalancerSecurityGroup = new awsinfra.x.ec2.SecurityGroup(`${name}metabase`, {
+            vpc,
             ingress: [{
                 // Allow any access on HTTPS
                 protocol: "tcp",
@@ -103,31 +109,27 @@ export class Metabase extends pulumi.ComponentResource {
                 securityGroups: args.securityGroupIds,
             }],
         }, { parent: this });
-        const loadbalancer = new aws.elasticloadbalancingv2.LoadBalancer(`${name}metabase`, {
-            loadBalancerType: "application",
+
+        const loadbalancer = new awsinfra.x.elasticloadbalancingv2.ApplicationLoadBalancer(`${name}metabase`, {
             subnets: args.subnetIds,
-            securityGroups: [loadbalancerSecurityGroup.id],
+            securityGroups: [loadbalancerSecurityGroup],
         }, { parent: this });
-        const targetgroup = new aws.elasticloadbalancingv2.TargetGroup(`${name}metabase`, {
+
+        const targetgroup = loadbalancer.createTargetGroup(`${name}metabase`, {
             targetType: "ip",
             port: metabasePort,
             protocol: "HTTP",
-            vpcId: vpcId,
-        }, { parent: this });
-        const listener = new aws.elasticloadbalancingv2.Listener(`${name}metabase`, {
-            loadBalancerArn: loadbalancer.arn,
+        });
+
+        const listener = targetgroup.createListener(`${name}metabase`, {
             port: 8080,
             protocol: "HTTP",
             // certificateArn: certificate.arn,
-            defaultAction: {
-                type: "forward",
-                targetGroupArn: targetgroup.arn,
-            },
             // Require the use of SSL/TLS v1.2 or higher to connect.
             // sslPolicy: "ELBSecurityPolicy-TLS-1-2-2017-01",
-        }, { parent: this });
-        const httpRedirectListener = new aws.elasticloadbalancingv2.Listener(`${name}metabase-redirecthttp`, {
-            loadBalancerArn: loadbalancer.arn,
+        });
+
+        const httpRedirectListener = loadbalancer.createListener(`${name}metabase-redirecthttp`, {
             port: 80,
             protocol: "HTTP",
             defaultAction: {
@@ -138,71 +140,71 @@ export class Metabase extends pulumi.ComponentResource {
                     statusCode: "HTTP_301",
                 },
             },
-        }, { parent: this });
+        });
 
         // Fargate Service to run Metabase
-        const metabaseCluster = new aws.ecs.Cluster(`${name}metabase`, {}, { parent: this });
+        const metabaseCluster = new awsinfra.x.ecs.Cluster(`${name}metabase`, {}, { parent: this });
         const metabaseExecutionRole = aws.iam.Role.get(`${name}metabase`, "ecsTaskExecutionRole", {}, { parent: this });
         const regionName = aws.getRegion({}, { parent: this}).then(r => r.name);
-        function metabaseContainer(cluster: aws.rds.Cluster): pulumi.Output<string> {
-            return pulumi
-                .all([
-                    cluster.endpoint, cluster.masterUsername, cluster.masterPassword,
-                    cluster.port, cluster.databaseName, regionName])
-                .apply(([hostname, username, password, port, dbName, region]) => JSON.stringify([{
-                    name: "metabase",
-                    image: "metabase/metabase",
-                    portMappings: [{ containerPort: metabasePort }],
-                    environment: [
-                        { name: "JAVA_TIMEZONE", value: "US/Pacific" },
-                        { name: "MB_DB_TYPE", value: "mysql" },
-                        { name: "MB_DB_DBNAME", value: dbName },
-                        { name: "MB_DB_PORT", value: port },
-                        { name: "MB_DB_USER", value: username },
-                        { name: "MB_DB_PASS", value: password },
-                        { name: "MB_DB_HOST", value: hostname },
-                    ],
-                    logConfiguration: {
-                        logDriver: "awslogs",
-                        options: {
-                            "awslogs-group": "/ecs/metabase",
-                            "awslogs-region": region,
-                            "awslogs-stream-prefix": "ecs",
-                        },
+        function metabaseContainer(cluster: aws.rds.Cluster): Record<string, awsinfra.x.ecs.Container> {
+            const allProps = pulumi.all([
+                cluster.endpoint, cluster.masterUsername, cluster.masterPassword,
+                cluster.port, cluster.databaseName]);
+
+            return { "metabase": {
+                image: "metabase/metabase",
+                portMappings: listener, // [{ containerPort: metabasePort }],
+                environment: allProps.apply(([hostname, username, password, port, dbName]) => <aws.ecs.KeyValuePair[]>[
+                    { name: "JAVA_TIMEZONE", value: "US/Pacific" },
+                    { name: "MB_DB_TYPE", value: "mysql" },
+                    { name: "MB_DB_DBNAME", value: dbName },
+                    { name: "MB_DB_PORT", value: port },
+                    { name: "MB_DB_USER", value: username },
+                    { name: "MB_DB_PASS", value: password },
+                    { name: "MB_DB_HOST", value: hostname },
+                ]),
+                logConfiguration: regionName.then(region => <aws.ecs.LogConfiguration>({
+                    logDriver: "awslogs",
+                    options: {
+                        "awslogs-group": "/ecs/metabase",
+                        "awslogs-region": region,
+                        "awslogs-stream-prefix": "ecs",
                     },
-                }]));
+                })),
+            }};
         }
-        const metabaseTaskDefintion = new aws.ecs.TaskDefinition(`${name}metabase`, {
-            family: "metabase",
+        const metabaseTaskDefinition = new awsinfra.x.ecs.FargateTaskDefinition(`${name}metabase`, {
+            // family: "metabase",
             cpu: "2048",
             memory: "4096",
-            requiresCompatibilities: ["FARGATE"],
-            networkMode: "awsvpc",
-            executionRoleArn: metabaseExecutionRole.arn,
-            containerDefinitions: metabaseContainer(metabaseMysqlCluster),
+            executionRole: metabaseExecutionRole,
+            containers: metabaseContainer(metabaseMysqlCluster),
         }, { parent: this });
-        const metabaseService = new aws.ecs.Service(`${name}metabase`, {
-            cluster: metabaseCluster.arn,
-            taskDefinition: metabaseTaskDefintion.arn,
+
+        const metabaseService = metabaseTaskDefinition.createService(`${name}metabase`, {
+            cluster: metabaseCluster,
             // We want only one instance connected to our database...
             desiredCount: 1,
             deploymentMaximumPercent: 100,
             // ...and are okay with allowing downtime during deployments to achieve this.
             deploymentMinimumHealthyPercent: 0,
-            networkConfiguration: {
-                // We don't actualy technically need/want a public IP, but need one to be able to access DockerHub when
-                // running in a public subnet (without a NAT).
-                assignPublicIp: true,
-                subnets: args.subnetIds,
-                securityGroups: args.securityGroupIds,
-            },
-            launchType: "FARGATE",
-            loadBalancers: [{
-                containerName: "metabase",
-                containerPort: metabasePort,
-                targetGroupArn: targetgroup.arn,
-            }],
-        }, { parent: this, dependsOn: [targetgroup, listener, loadbalancer] });
+            securityGroups: args.securityGroupIds,
+            assignPublicIp: true,
+            subnets: args.subnetIds,
+            // networkConfiguration: {
+            //     // We don't actualy technically need/want a public IP, but need one to be able to access DockerHub when
+            //     // running in a public subnet (without a NAT).
+            //     assignPublicIp: true,
+            //     subnets: args.subnetIds,
+            //     securityGroups: args.securityGroupIds,
+            // },
+            // launchType: "FARGATE",
+            // loadBalancers: [{
+            //     containerName: "metabase",
+            //     containerPort: metabasePort,
+            //     targetGroupArn: targetgroup.arn,
+            // }],
+        }, { parent: this /*, dependsOn: [targetgroup, listener, loadbalancer]*/ });
 
         // Add DNS record for public endpoint
         const metabaseDnsRecord = new aws.route53.Record(`${name}metabase`, {
@@ -210,8 +212,8 @@ export class Metabase extends pulumi.ComponentResource {
             type: "A",
             name: args.domainName, // "metabase.corp." + "pulumi-test.io",
             aliases: [{
-                name: loadbalancer.dnsName,
-                zoneId: loadbalancer.zoneId,
+                name: loadbalancer.loadBalancer.dnsName,
+                zoneId: loadbalancer.loadBalancer.zoneId,
                 evaluateTargetHealth: true,
             }],
         }, { parent: this });
