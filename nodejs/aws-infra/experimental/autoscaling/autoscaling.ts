@@ -19,7 +19,8 @@ import * as x from "..";
 import * as utils from "./../../utils";
 
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
-    public readonly instance: aws.ec2.LaunchConfiguration;
+    public readonly launchConfiguration: aws.ec2.LaunchConfiguration;
+    public readonly id: pulumi.Output<string>;
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
     /**
@@ -55,9 +56,9 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         this.fileSystem = args.fileSystem;
         this.securityGroups = x.ec2.getSecurityGroups(vpc, name, args.securityGroups, parentOpts) || [];
 
-        this.instance = new aws.ec2.LaunchConfiguration(name, {
+        this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             ...args,
-            securityGroups: this.securityGroups.map(g => g.instance.id),
+            securityGroups: this.securityGroups.map(g => g.id),
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: this.instanceProfile.id,
@@ -67,6 +68,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             ebsBlockDevices: utils.ifUndefined(args.ebsBlockDevices, defaultEbsBlockDevices),
             userData: getInstanceUserData(args, this.stackName),
         }, parentOpts);
+        this.id = this.launchConfiguration.id;
 
         this.registerOutputs();
     }
@@ -176,7 +178,7 @@ function getInstanceUserData(
         return <pulumi.Input<string>>args.userData;
     }
 
-    const fileSystemId = args.fileSystem ? args.fileSystem.instance.id : undefined;
+    const fileSystemId = args.fileSystem ? args.fileSystem.id : undefined;
     const mountPath = args.fileSystem ? args.fileSystem.mountPath : undefined;
 
     const additionalBootcmdLines = getAdditionalBootcmdLines(autoScalingUserData);
@@ -272,7 +274,7 @@ function getAdditionalBootcmdLines(args: AutoScalingUserData | undefined): pulum
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
     public readonly vpc: x.ec2.Vpc;
-    public readonly instance: aws.cloudformation.Stack;
+    public readonly stack: aws.cloudformation.Stack;
 
     /**
      * The launch configuration for this auto scaling group.
@@ -297,12 +299,13 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 name, this.vpc, args.launchConfigurationArgs, parentOpts);
         }
 
-        this.instance = new aws.cloudformation.Stack(name, {
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        this.stack = new aws.cloudformation.Stack(name, {
             ...args,
             name: this.launchConfiguration.stackName,
             templateBody: getCloudFormationTemplate(
                 name,
-                this.launchConfiguration.instance.id,
+                this.launchConfiguration.id,
                 this.vpc.publicSubnetIds,
                 utils.ifUndefined(args.templateParameters, {})),
         }, parentOpts);

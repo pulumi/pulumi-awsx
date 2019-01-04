@@ -23,7 +23,7 @@ import * as utils from "./../../utils";
 export abstract class Listener
         extends pulumi.ComponentResource
         implements x.ecs.ContainerPortMappings {
-    public readonly instance: aws.elasticloadbalancingv2.Listener;
+    public readonly listener: aws.elasticloadbalancingv2.Listener;
     public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
 
     public readonly endpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
@@ -43,14 +43,14 @@ export abstract class Listener
         const defaultSslPolicy = pulumi.output(args.certificateArn)
                                        .apply(a => a ? "ELBSecurityPolicy-2016-08" : undefined!);
 
-        this.instance = new aws.elasticloadbalancingv2.Listener(name, {
+        this.listener = new aws.elasticloadbalancingv2.Listener(name, {
             ...args,
-            loadBalancerArn: args.loadBalancer.instance.arn,
+            loadBalancerArn: args.loadBalancer.loadBalancer.arn,
             sslPolicy: utils.ifUndefined(args.sslPolicy, defaultSslPolicy),
         }, parentOpts);
 
-        const loadBalancer = args.loadBalancer.instance;
-        const endpoint = this.instance.urn.apply(_ => pulumi.output({
+        const loadBalancer = args.loadBalancer.loadBalancer;
+        const endpoint = this.listener.urn.apply(_ => pulumi.output({
             hostname: loadBalancer.dnsName,
             loadBalancer: loadBalancer,
             port: args.port,

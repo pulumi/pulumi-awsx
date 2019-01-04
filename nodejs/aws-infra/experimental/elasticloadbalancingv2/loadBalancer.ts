@@ -19,7 +19,7 @@ import * as x from "..";
 import * as utils from "./../../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
-    public readonly instance: aws.elasticloadbalancingv2.LoadBalancer;
+    public readonly loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
     public readonly vpc: x.ec2.Vpc;
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
@@ -35,11 +35,11 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) || [];
 
         const external = utils.ifUndefined(args.external, true);
-        this.instance = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
+        this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
             ...args,
             subnets: getSubnets(args, this.vpc, external),
             internal: external.apply(ex => !ex),
-            securityGroups: this.securityGroups.map(g => g.instance.id),
+            securityGroups: this.securityGroups.map(g => g.id),
             tags: utils.mergeTags(args.tags, { Name: longName }),
         }, parentOpts);
    }

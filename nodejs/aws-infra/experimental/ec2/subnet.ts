@@ -21,8 +21,13 @@ import * as utils from "./../../utils";
 export class Subnet extends pulumi.ComponentResource {
     public readonly vpc: x.ec2.Vpc;
     public readonly subnetName: string;
-    public readonly subnetId: pulumi.Output<string>;
-    public readonly instance: aws.ec2.Subnet;
+
+    /**
+     * Underlying id for the aws subnet.  This should be used over [this.subnet.id] as this
+     * Output will only resolve once the route table and all associations are resolved.
+     */
+    public readonly id: pulumi.Output<string>;
+    public readonly subnet: aws.ec2.Subnet;
     public readonly routeTable: aws.ec2.RouteTable;
     public readonly routeTableAssociation: aws.ec2.RouteTableAssociation;
 
@@ -38,28 +43,28 @@ export class Subnet extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
         if (isExistingSubnetArgs(args)) {
-            this.instance = args.instance;
-            this.subnetId = args.instance.id;
+            this.subnet = args.subnet;
+            this.id = args.subnet.id;
             // TODO(cyrusn): We should be able to find the existing RouteTable and RouteTableAssociation
             // when importing a subnet.
         }
         else {
-            this.instance = new aws.ec2.Subnet(name, {
-                vpcId: vpc.instance.id,
+            this.subnet = new aws.ec2.Subnet(name, {
+                vpcId: vpc.id,
                 ...args,
             }, parentOpts);
 
             this.routeTable = new aws.ec2.RouteTable(name, {
-                vpcId: vpc.instance.id,
+                vpcId: vpc.id,
             }, parentOpts);
 
             this.routeTableAssociation = new aws.ec2.RouteTableAssociation(name, {
                 routeTableId: this.routeTable.id,
-                subnetId: this.instance.id,
+                subnetId: this.subnet.id,
             }, parentOpts);
 
-            this.subnetId = pulumi.all([this.instance.id, this.routeTableAssociation.id])
-                                .apply(([id]) => id);
+            this.id = pulumi.all([this.subnet.id, this.routeTableAssociation.id])
+                            .apply(([id]) => id);
         }
 
         this.registerOutputs();
@@ -80,11 +85,11 @@ export interface ExistingSubnetArgs {
      * Optional existing instance to use to make the awsinfra Subnet out of.  If this is provided No
      * RouteTable or RouteTableAssociation will be automatically be created.
      */
-    instance: aws.ec2.Subnet;
+    subnet: aws.ec2.Subnet;
 }
 
 function isExistingSubnetArgs(obj: any): obj is ExistingSubnetArgs {
-    return !!(<ExistingSubnetArgs>obj).instance;
+    return !!(<ExistingSubnetArgs>obj).subnet;
 }
 
 type RouteArgsShape = utils.Overwrite<aws.ec2.RouteArgs, {

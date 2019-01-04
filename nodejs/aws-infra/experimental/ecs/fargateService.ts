@@ -154,7 +154,7 @@ export class FargateService extends ecs.Service {
             networkConfiguration: {
                 subnets,
                 assignPublicIp,
-                securityGroups: securityGroups.map(g => g.instance.id),
+                securityGroups: securityGroups.map(g => g.id),
             },
         },  /*isFargate:*/ true, opts);
 

@@ -26,7 +26,8 @@ import * as x from "..";
 export class Cluster
         extends pulumi.ComponentResource
         implements x.autoscaling.AutoScalingUserData {
-    public readonly instance: aws.ecs.Cluster;
+    public readonly cluster: aws.ecs.Cluster;
+    public readonly id: pulumi.Output<string>;
 
     /**
      * The network in which to create this cluster.
@@ -46,8 +47,9 @@ export class Cluster
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
-        const instance = args.instance || new aws.ecs.Cluster(name, args, parentOpts);
-        this.instance = instance;
+        const cluster = args.cluster || new aws.ecs.Cluster(name, args, parentOpts);
+        this.cluster = cluster;
+        this.id = cluster.id;
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
 
@@ -57,7 +59,7 @@ export class Cluster
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) ||
             [Cluster.createDefaultSecurityGroup(name, this.vpc, parentOpts)];
 
-        this.extraBootcmdLines = () => instance.id.apply(clusterId =>
+        this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
 
         this.registerOutputs();
@@ -152,7 +154,7 @@ export interface ClusterArgs {
      * An existing Cluster to use for this awsinfra Cluster.  If not provided, a default one will
      * be created.
      */
-    instance?: aws.ecs.Cluster;
+    cluster?: aws.ecs.Cluster;
 
     /**
      * The name of the cluster (up to 255 letters, numbers, hyphens, and underscores)

@@ -19,7 +19,8 @@ import * as x from "..";
 import * as utils from "./../../utils";
 
 export class SecurityGroup extends pulumi.ComponentResource {
-    public readonly instance: aws.ec2.SecurityGroup;
+    public readonly securityGroup: aws.ec2.SecurityGroup;
+    public readonly id: pulumi.Output<string>;
     public readonly vpc: x.ec2.Vpc;
 
     public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
@@ -32,10 +33,11 @@ export class SecurityGroup extends pulumi.ComponentResource {
         super("awsinfra:x:ec2:SecurityGroup", name, {}, opts);
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
-        this.instance = args.instance || new aws.ec2.SecurityGroup(name, {
+        this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
-            vpcId: this.vpc.instance.id,
+            vpcId: this.vpc.id,
         }, { parent: this });
+        this.id = this.securityGroup.id;
 
         this.registerOutputs();
     }
@@ -51,7 +53,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
 
         return new SecurityGroup(name, {
             ...args,
-            instance: aws.ec2.SecurityGroup.get(name, id, {}, opts),
+            securityGroup: aws.ec2.SecurityGroup.get(name, id, {}, opts),
         }, opts);
     }
 
@@ -118,7 +120,7 @@ export interface SecurityGroupArgs {
      * An existing SecurityGroup to use for this awsinfra SecurityGroup.  If not provided, a default
      * one will be created.
      */
-    instance?: aws.ec2.SecurityGroup;
+    securityGroup?: aws.ec2.SecurityGroup;
 
     /**
      * The vpc this security group applies to.  Or [Network.getDefault] if unspecified.
