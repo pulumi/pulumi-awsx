@@ -20,7 +20,8 @@ import * as x from ".";
 import * as utils from "../utils";
 
 export class ClusterFileSystem extends pulumi.ComponentResource {
-    public readonly instance: aws.efs.FileSystem;
+    public readonly fileSystem: aws.efs.FileSystem;
+    public readonly id: pulumi.Output<string>;
     public readonly cluster: x.ecs.Cluster;
     public readonly securityGroups: aws.ec2.SecurityGroup[];
     public readonly mountTargets: aws.efs.MountTarget[];
@@ -34,7 +35,8 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
         const parentOpts = { parent: this };
 
         this.cluster = args.cluster;
-        this.instance = new aws.efs.FileSystem(name, args, parentOpts);
+        this.fileSystem = new aws.efs.FileSystem(name, args, parentOpts);
+        this.id = this.fileSystem.id;
 
         this.mountTargets = [];
         this.mountPath = utils.ifUndefined(args.mountPath, "/mnt/efs");
@@ -43,11 +45,11 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
 
         const efsSecurityGroupName = `${name}-fs`;
         this.securityGroups = args.securityGroups || [new aws.ec2.SecurityGroup(efsSecurityGroupName, {
-            vpcId: this.cluster.vpc.instance.id,
+            vpcId: this.cluster.vpc.id,
             ingress: [
                 // Allow NFS traffic from the instance security group
                 {
-                    securityGroups: this.cluster.securityGroups.map(g => g.instance.id),
+                    securityGroups: this.cluster.securityGroups.map(g => g.id),
                     protocol: "TCP",
                     fromPort: 2049,
                     toPort: 2049,
@@ -60,7 +62,7 @@ export class ClusterFileSystem extends pulumi.ComponentResource {
         for (let i = 0; i < subnetIds.length; i++) {
             const subnetId = subnetIds[i];
             this.mountTargets.push(new aws.efs.MountTarget(`${name}-${i}`, {
-                fileSystemId: this.instance.id,
+                fileSystemId: this.fileSystem.id,
                 subnetId: subnetId,
                 securityGroups: this.securityGroups.map(g => g.id),
             }, parentOpts));

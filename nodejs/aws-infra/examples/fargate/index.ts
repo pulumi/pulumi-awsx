@@ -319,7 +319,7 @@ const api = new aws.apigateway.x.API("examples-containers", {
 });
 
 export let frontendURL = api.url;
-export let vpcId = vpc.instance.id;
+export let vpcId = vpc.id;
 export let publicSubnets = vpc.publicSubnetIds;
 export let privateSubnets = vpc.privateSubnetIds;
 export let isolatedSubnets = vpc.isolatedSubnetIds;
