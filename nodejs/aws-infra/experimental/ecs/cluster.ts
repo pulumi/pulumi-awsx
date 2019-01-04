@@ -26,7 +26,8 @@ import * as x from "..";
 export class Cluster
         extends pulumi.ComponentResource
         implements x.autoscaling.AutoScalingUserData {
-    public readonly instance: aws.ecs.Cluster;
+    public readonly cluster: aws.ecs.Cluster;
+    public readonly id: pulumi.Output<string>;
 
     /**
      * The network in which to create this cluster.
@@ -46,8 +47,9 @@ export class Cluster
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
-        const instance = args.instance || new aws.ecs.Cluster(name, args, parentOpts);
-        this.instance = instance;
+        const cluster = args.cluster || new aws.ecs.Cluster(name, args, parentOpts);
+        this.cluster = cluster;
+        this.id = cluster.id;
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
 
@@ -56,7 +58,7 @@ export class Cluster
         // across both instance and Lambda compute.
         this.securityGroups = getSecurityGroups(this, name, args, parentOpts);
 
-        this.extraBootcmdLines = () => instance.id.apply(clusterId =>
+        this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
 
         this.registerOutputs();
@@ -155,10 +157,8 @@ function getSecurityGroups(cluster: Cluster, name: string, args: ClusterArgs, op
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     vpc?: x.ec2.Vpc;
-    securityGroups?: SecurityGroupLike[];
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 }>;
-
-export type SecurityGroupLike = x.ec2.SecurityGroup | pulumi.Input<string>;
 
 /**
  * Arguments bag for creating infrastructure for a new Cluster.
@@ -174,7 +174,7 @@ export interface ClusterArgs {
      * An existing Cluster to use for this awsinfra Cluster.  If not provided, a default one will
      * be created.
      */
-    instance?: aws.ecs.Cluster;
+    cluster?: aws.ecs.Cluster;
 
     /**
      * The name of the cluster (up to 255 letters, numbers, hyphens, and underscores)
@@ -185,7 +185,7 @@ export interface ClusterArgs {
      * The security group to place new instances into.  If not provided, a default will be
      * created.
      */
-    securityGroups?: SecurityGroupLike[];
+    securityGroups?: x.ec2.SecurityGroupOrId[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

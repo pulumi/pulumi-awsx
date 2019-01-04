@@ -23,7 +23,7 @@ import * as ecs from ".";
 import * as x from "..";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
-    public readonly instance: aws.ecs.TaskDefinition;
+    public readonly taskDefinition: aws.ecs.TaskDefinition;
     public readonly logGroup: aws.cloudwatch.LogGroup;
     public readonly containers: Record<string, ecs.Container>;
     public readonly taskRole: aws.iam.Role;
@@ -78,7 +78,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         const containerString = containerDefinitions.apply(JSON.stringify);
         const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
 
-        this.instance = new aws.ecs.TaskDefinition(name, {
+        this.taskDefinition = new aws.ecs.TaskDefinition(name, {
             ...args,
             family,
             taskRoleArn: this.taskRole.arn,
@@ -86,7 +86,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerString,
         }, parentOpts);
 
-        this.run = createRunFunction(isFargate, this.instance.arn);
+        this.run = createRunFunction(isFargate, this.taskDefinition.arn);
 
         this.registerOutputs();
     }
@@ -226,8 +226,8 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
         const ecs = new aws.sdk.ECS();
 
         const cluster = params.cluster;
-        const clusterArn = cluster.instance.id.get();
-        const securityGroupIds = cluster.securityGroups.map(g => g.instance.id.get());
+        const clusterArn = cluster.id.get();
+        const securityGroupIds = cluster.securityGroups.map(g => g.id.get());
         const subnetIds = cluster.vpc.publicSubnetIds.map(i => i.get());
         const assignPublicIp = isFargate; // && !usePrivateSubnets;
 

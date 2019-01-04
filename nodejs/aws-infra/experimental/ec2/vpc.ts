@@ -29,7 +29,8 @@ export class Vpc extends pulumi.ComponentResource {
     public readonly privateSubnetIds: pulumi.Output<string>[] = [];
     public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
 
-    public readonly instance: aws.ec2.Vpc;
+    public readonly vpc: aws.ec2.Vpc;
+    public readonly id: pulumi.Output<string>;
 
     public readonly publicSubnets: x.ec2.Subnet[] = [];
     public readonly privateSubnets: x.ec2.Subnet[] = [];
@@ -53,7 +54,8 @@ export class Vpc extends pulumi.ComponentResource {
         super("awsinfra:x:ec2:Vpc", name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
-            this.instance = args.instance;
+            this.vpc = args.vpc;
+            this.id = this.vpc.id;
         }
         else {
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
@@ -63,13 +65,14 @@ export class Vpc extends pulumi.ComponentResource {
                 throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
             }
 
-            this.instance = new aws.ec2.Vpc(name, {
+            this.vpc = new aws.ec2.Vpc(name, {
                 ...args,
                 cidrBlock,
                 enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
                 enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
             });
+            this.id = this.vpc.id;
 
             // Create the appropriate subnets.  Default to a single public and private subnet for each
             // availability zone if none were specified.
@@ -135,7 +138,7 @@ export class Vpc extends pulumi.ComponentResource {
 
     public static fromExistingIds(name: string, idArgs: ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions) {
         const vpc = new Vpc(name, {
-            instance: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
+            vpc: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
         }, opts);
 
         createSubnets(vpc, name, "public", idArgs.publicSubnetIds);
@@ -154,7 +157,7 @@ function createInternetGateway(vpc: Vpc, name: string) {
     // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
     // for more details.
     const internetGateway = new aws.ec2.InternetGateway(name, {
-        vpcId: vpc.instance.id,
+        vpcId: vpc.id,
     });
 
     // Hook up all public subnets through that internet gateway.
@@ -201,7 +204,7 @@ function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOf
         }, parentOpts);
 
         const natGateway = new aws.ec2.NatGateway(natName, {
-            subnetId: publicSubnet.subnetId,
+            subnetId: publicSubnet.id,
             allocationId: elasticIP.id,
         }, parentOpts);
 
@@ -243,11 +246,11 @@ function createSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: p
     for (let i = 0, n = inputs.length; i < n; i++) {
         const subnetName = `${vpcName}-${type}-${i}`;
         const subnet = new x.ec2.Subnet(subnetName, vpc, {
-            instance: aws.ec2.Subnet.get(subnetName, inputs[i], /*state:*/undefined, parentOpts),
+            subnet: aws.ec2.Subnet.get(subnetName, inputs[i], /*state:*/undefined, parentOpts),
         }, parentOpts);
 
         subnets.push(subnet);
-        subnetIds.push(subnet.subnetId);
+        subnetIds.push(subnet.id);
     }
 }
 
@@ -317,11 +320,11 @@ function isExistingVpcIdArgs(obj: any): obj is ExistingVpcIdArgs {
 
 export interface ExistingVpcArgs {
     /** The id of the VPC. */
-    instance: aws.ec2.Vpc;
+    vpc: aws.ec2.Vpc;
 }
 
 function isExistingVpcArgs(obj: any): obj is ExistingVpcArgs {
-    return !!(<ExistingVpcArgs>obj).instance;
+    return !!(<ExistingVpcArgs>obj).vpc;
 }
 
 type OverwriteShape = utils.Overwrite<aws.ec2.VpcArgs, {

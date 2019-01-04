@@ -21,7 +21,7 @@ import * as x from "..";
 import * as utils from "./../../utils";
 
 export abstract class Service extends pulumi.ComponentResource {
-    public readonly instance: aws.ecs.Service;
+    public readonly service: aws.ecs.Service;
     public readonly cluster: ecs.Cluster;
     public readonly taskDefinition: ecs.TaskDefinition;
 
@@ -40,11 +40,11 @@ export abstract class Service extends pulumi.ComponentResource {
         const loadBalancers = getLoadBalancers(this, name, args);
 
         this.cluster = args.cluster;
-        this.instance = new aws.ecs.Service(name, {
+        this.service = new aws.ecs.Service(name, {
             ...args,
             loadBalancers,
-            cluster: this.cluster.instance.arn,
-            taskDefinition: args.taskDefinition.instance.arn,
+            cluster: this.cluster.cluster.arn,
+            taskDefinition: args.taskDefinition.taskDefinition.arn,
             desiredCount: utils.ifUndefined(args.desiredCount, 1),
             launchType: utils.ifUndefined(args.launchType, "EC2"),
             waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),

@@ -19,7 +19,7 @@ import * as x from "..";
 import * as utils from "./../../utils";
 
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
-    public readonly instance: aws.ec2.LaunchConfiguration;
+    public readonly launchConfiguration: aws.ec2.LaunchConfiguration;
 
     /**
      * Optional file system to mount.
@@ -53,9 +53,9 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
 
         this.fileSystem = args.fileSystem;
 
-        this.instance = new aws.ec2.LaunchConfiguration(name, {
+        this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             ...args,
-            securityGroups: (args.securityGroups || []).map(g => g.instance.id),
+            securityGroups: (args.securityGroups || []).map(g => g.id),
             imageId: getEcsAmiId(args.ecsOptimizedAMIName),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: this.instanceProfile.id,
@@ -174,7 +174,7 @@ function getInstanceUserData(
         return <pulumi.Input<string>>args.userData;
     }
 
-    const fileSystemId = args.fileSystem ? args.fileSystem.instance.id : undefined;
+    const fileSystemId = args.fileSystem ? args.fileSystem.id : undefined;
     const mountPath = args.fileSystem ? args.fileSystem.mountPath : undefined;
 
     const additionalBootcmdLines = getAdditionalBootcmdLines(autoScalingUserData);
@@ -270,7 +270,7 @@ function getAdditionalBootcmdLines(args: AutoScalingUserData | undefined): pulum
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
     public readonly vpc: x.ec2.Vpc;
-    public readonly instance: aws.cloudformation.Stack;
+    public readonly stack: aws.cloudformation.Stack;
 
     /**
      * The launch configuration for this auto scaling group.
@@ -294,12 +294,12 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         }
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
-        this.instance = new aws.cloudformation.Stack(name, {
+        this.stack = new aws.cloudformation.Stack(name, {
             ...args,
             name: this.launchConfiguration.stackName,
             templateBody: getCloudFormationTemplate(
                 name,
-                this.launchConfiguration.instance.id,
+                this.launchConfiguration.launchConfiguration.id,
                 this.vpc.publicSubnetIds,
                 utils.ifUndefined(args.templateParameters, {})),
         }, parentOpts);

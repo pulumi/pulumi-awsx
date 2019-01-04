@@ -120,7 +120,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
             }, this.opts);
 
             subnets.push(subnet);
-            subnetIds.push(subnet.subnetId);
+            subnetIds.push(subnet.id);
         }
 
         return;
