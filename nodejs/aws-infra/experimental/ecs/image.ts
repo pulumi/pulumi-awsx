@@ -21,7 +21,7 @@ import * as x from "..";
 
 import * as utils from "../../utils";
 
-export abstract class Image implements ecs.ContainerImage {
+export abstract class Image implements ecs.ContainerImageProvider {
     public abstract image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
     public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 
