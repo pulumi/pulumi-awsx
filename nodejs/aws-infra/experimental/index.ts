@@ -18,8 +18,3 @@ import * as ecs from "./ecs";
 import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
 
 export { autoscaling, ec2, ecs, elasticloadbalancingv2 };
-
-export * from "./clusterFileSystem";
-
-export * from "./role";
-

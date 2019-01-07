@@ -16,17 +16,13 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
+import * as roleUtils from "../role";
 import * as utils from "./../../utils";
 
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public readonly launchConfiguration: aws.ec2.LaunchConfiguration;
     public readonly id: pulumi.Output<string>;
     public readonly securityGroups: x.ec2.SecurityGroup[];
-
-    /**
-     * Optional file system to mount.
-     */
-    public readonly fileSystem?: x.ClusterFileSystem;
 
     public readonly instanceProfile: aws.iam.InstanceProfile;
 
@@ -53,7 +49,6 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             AutoScalingLaunchConfiguration.createInstanceProfile(
                 name, /*assumeRolePolicy:*/ undefined, /*policyArns:*/ undefined, parentOpts);
 
-        this.fileSystem = args.fileSystem;
         this.securityGroups = x.ec2.getSecurityGroups(vpc, name, args.securityGroups, parentOpts) || [];
 
         this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
@@ -105,7 +100,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         policyArns?: string[],
         opts?: pulumi.ComponentResourceOptions) {
 
-        const { role, policies } = x.createRoleAndPolicies(
+        const { role, policies } = roleUtils.createRoleAndPolicies(
             name,
             assumeRolePolicy || AutoScalingLaunchConfiguration.defaultInstanceProfilePolicyDocument(),
             policyArns || AutoScalingLaunchConfiguration.defaultInstanceProfilePolicyARNs(),
@@ -174,43 +169,15 @@ function getInstanceUserData(
     cloudFormationStackName: pulumi.Output<string>) {
 
     const autoScalingUserData = <AutoScalingUserData>args.userData;
-    if (args.userData !== undefined && !autoScalingUserData.extraBootcmdLines) {
-        return <pulumi.Input<string>>args.userData;
+    if (args.userData !== undefined && !isAutoScalingUserData(args.userData)) {
+        return args.userData;
     }
 
-    const fileSystemId = args.fileSystem ? args.fileSystem.id : undefined;
-    const mountPath = args.fileSystem ? args.fileSystem.mountPath : undefined;
-
     const additionalBootcmdLines = getAdditionalBootcmdLines(autoScalingUserData);
+    const additionalRuncmdLines = getAdditionalRuncmdLines(autoScalingUserData);
 
-    return pulumi.all([additionalBootcmdLines, cloudFormationStackName, fileSystemId, mountPath])
-                 .apply(([additionalBootcmdLines, cloudFormationStackName, fileSystemId, mountPath]) => {
-        let fileSystemRuncmdBlock = "";
-
-        if (fileSystemId) {
-            // This string must be indented exactly as much as the block of commands it's inserted
-            // into below!
-            mountPath = mountPath || "/mnt/efs";
-
-            // tslint:disable max-line-length
-            fileSystemRuncmdBlock = `
-                # Create EFS mount path
-                mkdir ${mountPath}
-                chown ec2-user:ec2-user ${mountPath}
-                # Create environment variables
-                EFS_FILE_SYSTEM_ID=${fileSystemId}
-                DIR_SRC=$AWS_AVAILABILITY_ZONE.$EFS_FILE_SYSTEM_ID.efs.$AWS_REGION.amazonaws.com
-                DIR_TGT=${mountPath}
-                # Update /etc/fstab with the new NFS mount
-                cp -p /etc/fstab /etc/fstab.back-$(date +%F)
-                echo -e \"$DIR_SRC:/ $DIR_TGT nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2 0 0\" | tee -a /etc/fstab
-                mount -a -t nfs4
-                # Restart Docker
-                docker ps
-                service docker stop
-                service docker start
-            `;
-        }
+    return pulumi.all([additionalBootcmdLines, additionalRuncmdLines, cloudFormationStackName])
+                 .apply(([additionalBootcmdLines, additionalRuncmdLines, cloudFormationStackName]) => {
 
         let userData = `#cloud-config
         repo_upgrade_exclude:
@@ -226,17 +193,7 @@ function getInstanceUserData(
             - swapon /dev/xvdb
             - echo ECS_ENGINE_AUTH_TYPE=docker >> /etc/ecs/ecs.config
 `;
-        for (const line of additionalBootcmdLines) {
-            let contents = line.contents;
-            if (line.automaticallyIndent !== false) {
-                contents = "            " + contents;
-                if (contents[contents.length - 1] !== "\n") {
-                    contents += "\n";
-                }
-            }
-
-            userData += contents;
-        }
+        userData += collapseLines(additionalBootcmdLines);
 
         userData +=
 `        runcmd:
@@ -247,8 +204,11 @@ function getInstanceUserData(
                 AWS_AVAILABILITY_ZONE=$(curl -s 169.254.169.254/2016-09-02/meta-data/placement/availability-zone)
                 AWS_REGION=$(echo $AWS_AVAILABILITY_ZONE | sed 's/.$//')
 
-                ${fileSystemRuncmdBlock}
+`;
 
+        userData += collapseLines(additionalRuncmdLines);
+
+        userData += `
                 # Disable container access to EC2 metadata instance
                 # See http://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
                 iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP
@@ -264,12 +224,40 @@ function getInstanceUserData(
     });
 }
 
+function collapseLines(additionalBootcmdLines: x.autoscaling.UserDataLine[]) {
+    let result = "";
+    for (const line of additionalBootcmdLines) {
+        let contents = line.contents;
+
+        // By default, automatically indent.  Do not indent only in the case where the client
+        // explicitly passes 'false'.
+        if (line.automaticallyIndent !== false) {
+            contents = "            " + contents;
+            if (contents[contents.length - 1] !== "\n") {
+                contents += "\n";
+            }
+        }
+
+        result += contents;
+    }
+
+    return result;
+}
+
 function getAdditionalBootcmdLines(args: AutoScalingUserData | undefined): pulumi.Output<UserDataLine[]> {
-    if (!args) {
+    if (!args || !args.extraBootcmdLines) {
         return pulumi.output([]);
     }
 
     return pulumi.output(args.extraBootcmdLines());
+}
+
+function getAdditionalRuncmdLines(args: AutoScalingUserData | undefined): pulumi.Output<UserDataLine[]> {
+    if (!args || !args.extraRuncmdLines) {
+        return pulumi.output([]);
+    }
+
+    return pulumi.output(args.extraRuncmdLines());
 }
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
@@ -510,7 +498,6 @@ type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable
     imageId?: never;
     stackName?: pulumi.Input<string>;
     instanceProfile?: aws.iam.InstanceProfile;
-    fileSystem?: x.ClusterFileSystem;
     ecsOptimizedAMIName?: string;
     instanceType?: pulumi.Input<aws.ec2.InstanceType>;
     placementTenancy?: pulumi.Input<"default" | "dedicated">;
@@ -605,11 +592,6 @@ export interface AutoScalingLaunchConfigurationArgs {
     instanceProfile?: aws.iam.InstanceProfile;
 
     /**
-     * Optional file system to mount.
-     */
-    fileSystem?: x.ClusterFileSystem;
-
-    /**
      * The name of the ECS-optimzed AMI to use for the Container Instances in this cluster, e.g.
      * "amzn-ami-2017.09.l-amazon-ecs-optimized". Defaults to using the latest recommended ECS Linux
      * Optimized AMI, which may change over time and cause recreation of EC2 instances when new
@@ -664,7 +646,21 @@ export interface AutoScalingLaunchConfigurationArgs {
 }
 
 export interface AutoScalingUserData {
-    extraBootcmdLines(): pulumi.Input<UserDataLine[]>;
+    /**
+     * Additional lines to be placed in the `runcmd` section of the launch configuration.
+     */
+    extraRuncmdLines?(): pulumi.Input<UserDataLine[]>;
+
+    /**
+     * Additional lines to be placed in the `bootcmd` section of the launch configuration.
+     */
+    extraBootcmdLines?(): pulumi.Input<UserDataLine[]>;
+}
+
+function isAutoScalingUserData(obj: any): obj is AutoScalingUserData {
+    return obj !== undefined &&
+        (!!(<AutoScalingUserData>obj).extraBootcmdLines ||
+         !!(<AutoScalingUserData>obj).extraRuncmdLines);
 }
 
 /**

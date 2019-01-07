@@ -17,10 +17,10 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as awssdk from "aws-sdk";
 
-import * as utils from "../../utils";
-
 import * as ecs from ".";
 import * as x from "..";
+import * as utils from "../../utils";
+import * as role from "../role";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly taskDefinition: aws.ecs.TaskDefinition;
@@ -104,7 +104,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             policyArns?: string[],
             opts?: pulumi.ComponentResourceOptions): aws.iam.Role {
 
-        return x.createRole(
+        return role.createRole(
             name,
             assumeRolePolicy || TaskDefinition.defaultRoleAssumeRolePolicy(),
             policyArns || TaskDefinition.defaultTaskRolePolicyARNs(),
@@ -124,7 +124,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             policyArns?: string[],
             opts?: pulumi.ComponentResourceOptions): aws.iam.Role {
 
-        return x.createRole(
+        return role.createRole(
             name,
             assumeRolePolicy || TaskDefinition.defaultRoleAssumeRolePolicy(),
             policyArns || TaskDefinition.defaultExecutionRolePolicyARNs(),
