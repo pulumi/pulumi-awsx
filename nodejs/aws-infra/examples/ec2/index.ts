@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
-
 import * as aws from "@pulumi/aws";
 import * as awsinfra from "@pulumi/aws-infra";
 
 const x = awsinfra.x;
 
-import { Config, Output } from "@pulumi/pulumi";
-
+import { Config } from "@pulumi/pulumi";
 
 const vpc = x.ec2.Vpc.getDefault();
 const cluster = new x.ecs.Cluster("testing", { vpc });
@@ -42,7 +39,7 @@ const nginx = new x.ecs.EC2Service("examples-nginx", {
             nginx: {
                 image: "nginx",
                 memory: 128,
-                portMappings: nginxListener,
+                portMappings: [nginxListener],
             },
         },
     },
@@ -57,7 +54,7 @@ const simpleNginx = new x.ecs.EC2TaskDefinition("examples-simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
-        portMappings: simpleNginxListener,
+        portMappings: [simpleNginxListener],
     },
 }).createService("examples-simple-nginx", { cluster, desiredCount: 2});
 
@@ -73,7 +70,8 @@ const cachedNginx = new x.ecs.EC2Service("examples-cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                portMappings: new x.elasticloadbalancingv2.NetworkListener("examples-cached-nginx", { port: 80 }),
+                portMappings: [new x.elasticloadbalancingv2.NetworkListener(
+                    "examples-cached-nginx", { port: 80 })],
             },
         },
     },
@@ -91,8 +89,8 @@ const multistageCachedNginx = new x.ecs.EC2Service("examples-multistage-cached-n
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                portMappings: new x.elasticloadbalancingv2.NetworkListener(
-                    "examples-multistage-cached-nginx", { port: 80 }),
+                portMappings: [new x.elasticloadbalancingv2.NetworkListener(
+                    "examples-multistage-cached-nginx", { port: 80 })],
             },
         },
     },
@@ -109,7 +107,7 @@ const customWebServer = new x.ecs.EC2Service("custom", {
         containers: {
             webserver: {
                 memory: 128,
-                portMappings: customWebServerListener,
+                portMappings: [customWebServerListener],
                 image: x.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");
@@ -142,7 +140,7 @@ class Cache {
                     redis: {
                         image: "redis:alpine",
                         memory: memory,
-                        portMappings: redisListener,
+                        portMappings: [redisListener],
                         command: ["redis-server", "--requirepass", redisPassword],
                     },
                 },
@@ -208,7 +206,7 @@ const builtService = new x.ecs.EC2Service("examples-nginx2", {
             nginx: {
                 image: x.ecs.Image.fromPath("./app"),
                 memory: 128,
-                portMappings: builtServiceListener,
+                portMappings: [builtServiceListener],
             },
         },
     },

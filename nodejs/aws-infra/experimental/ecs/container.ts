@@ -66,19 +66,23 @@ export function computeContainerDefinition(
 }
 
 function getPortMappings(container: Container) {
-    const portMappings = isContainerPortMappings(container.portMappings)
-        ? container.portMappings.containerPortMappings()
-        : container.portMappings;
-
-    return pulumi.output(portMappings)
-                 .apply(mappings => convertMappings(mappings));
-}
-
-function convertMappings(mappings: aws.ecs.PortMapping[] | undefined) {
-    if (!mappings) {
+    if (!container.portMappings) {
         return undefined;
     }
 
+    const result: pulumi.Output<aws.ecs.PortMapping>[] = [];
+
+    if (container.portMappings) {
+        for (const obj of container.portMappings) {
+            const portMapping = pulumi.output(isPortMappingProvider(obj) ? obj.portMapping() : obj);
+            result.push(pulumi.output(portMapping));
+        }
+    }
+
+    return pulumi.all(result).apply(mappings => convertMappings(mappings));
+}
+
+function convertMappings(mappings: aws.ecs.PortMapping[]) {
     const result: aws.ecs.PortMapping[] = [];
     for (const mapping of mappings) {
         const copy = { ...mapping };
@@ -104,21 +108,28 @@ function convertMappings(mappings: aws.ecs.PortMapping[] | undefined) {
     return result;
 }
 
+export interface PortMappingProvider {
+    portMapping(): pulumi.Input<aws.ecs.PortMapping>;
+}
+
 export interface ContainerLoadBalancer {
     containerPort: pulumi.Input<number>;
     elbName?: pulumi.Input<string>;
     targetGroupArn?: pulumi.Input<string>;
 }
 
-export interface ContainerPortMappings {
-    containerPortMappings(): pulumi.Input<pulumi.Input<aws.ecs.PortMapping>[]>;
-    containerLoadBalancers(): pulumi.Input<pulumi.Input<ContainerLoadBalancer>[]>;
+export interface ContainerLoadBalancerProvider {
+    containerLoadBalancer(): pulumi.Input<ContainerLoadBalancer>;
 }
 
 /** @internal */
-export function isContainerPortMappings(obj: any): obj is ContainerPortMappings {
-    return obj && !!(<ContainerPortMappings>obj).containerPortMappings &&
-                  !!(<ContainerPortMappings>obj).containerLoadBalancers;
+export function isPortMappingProvider(obj: any): obj is PortMappingProvider {
+    return obj && !!(<PortMappingProvider>obj).portMapping;
+}
+
+/** @internal */
+export function isContainerLoadBalancerProvider(obj: any): obj is ContainerLoadBalancerProvider {
+    return obj && !!(<ContainerLoadBalancerProvider>obj).containerLoadBalancer;
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
@@ -132,7 +143,7 @@ type MakeInputs<T> = {
 // trying to provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     image: pulumi.Input<string> | ContainerImage;
-    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | ContainerPortMappings;
+    portMappings?: (pulumi.Input<aws.ecs.PortMapping> | PortMappingProvider)[];
 }>;
 
 export interface Container {
@@ -172,7 +183,7 @@ export interface Container {
      */
     image: pulumi.Input<string> | ContainerImage;
 
-    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | ContainerPortMappings;
+    portMappings?: (pulumi.Input<aws.ecs.PortMapping> | PortMappingProvider)[];
 }
 
 export interface ContainerImage {
