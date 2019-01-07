@@ -116,7 +116,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
         this.securityGroupRule = new aws.ec2.SecurityGroupRule(name, {
             ...args,
             securityGroupId: securityGroup.id,
-        });
+        }, { parent: this });
 
         this.registerOutputs();
     }
