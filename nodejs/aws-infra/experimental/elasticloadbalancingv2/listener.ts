@@ -22,7 +22,8 @@ import * as utils from "./../../utils";
 
 export abstract class Listener
         extends pulumi.ComponentResource
-        implements x.ecs.PortMappingProvider, x.ecs.ContainerLoadBalancerProvider {
+        implements x.ecs.ContainerPortMappingProvider,
+                   x.ecs.ContainerLoadBalancerProvider {
     public readonly listener: aws.elasticloadbalancingv2.Listener;
     public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
 
@@ -70,12 +71,12 @@ export abstract class Listener
         this.endpoint = () => endpoint;
     }
 
-    public portMapping() {
-        if (!x.ecs.isPortMappingProvider(this.defaultListenerAction)) {
+    public containerPortMapping() {
+        if (!x.ecs.isContainerPortMappingProvider(this.defaultListenerAction)) {
             throw new Error("[Listener] was not connected to a [defaultAction] that can provide [portMapping]s");
         }
 
-        return this.defaultListenerAction.portMapping();
+        return this.defaultListenerAction.containerPortMapping();
     }
 
     public containerLoadBalancer() {

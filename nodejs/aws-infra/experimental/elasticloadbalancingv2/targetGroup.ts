@@ -23,7 +23,7 @@ import * as utils from "./../../utils";
 
 export abstract class TargetGroup
         extends pulumi.ComponentResource
-        implements x.ecs.PortMappingProvider,
+        implements x.ecs.ContainerPortMappingProvider,
                    x.ecs.ContainerLoadBalancerProvider,
                    x.elasticloadbalancingv2.ListenerDefaultAction {
 
@@ -57,7 +57,7 @@ export abstract class TargetGroup
         return pulumi.output(this.listeners.map(r => r.listener.urn));
     }
 
-    public portMapping(): pulumi.Input<aws.ecs.PortMapping> {
+    public containerPortMapping(): pulumi.Input<aws.ecs.PortMapping> {
         return pulumi.output([this.targetGroup.port, this.dependencies()]).apply(([port]) => ({
             containerPort: +port!,
         }));
