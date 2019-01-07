@@ -195,14 +195,15 @@ function getInstanceUserData(
 `;
         userData += collapseLines(additionalBootcmdLines);
 
-        userData += `
-        runcmd:
+        userData +=
+`        runcmd:
             # Set and use variables in the same command, since it's not obvious if
             # different commands will run in different shells.
             - |
                 # Knock one letter off of availability zone to get region.
                 AWS_AVAILABILITY_ZONE=$(curl -s 169.254.169.254/2016-09-02/meta-data/placement/availability-zone)
                 AWS_REGION=$(echo $AWS_AVAILABILITY_ZONE | sed 's/.$//')
+
 `;
 
         userData += collapseLines(additionalRuncmdLines);
