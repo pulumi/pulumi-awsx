@@ -210,7 +210,7 @@ export interface EC2ServiceArgs {
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"] | x.ecs.ServiceLoadBalancers;
+    loadBalancers?: (pulumi.Input<x.ecs.ServiceLoadBalancer> | x.ecs.ServiceLoadBalancerProvider)[];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)

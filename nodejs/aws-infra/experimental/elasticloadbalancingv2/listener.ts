@@ -22,7 +22,7 @@ import * as utils from "./../../utils";
 
 export abstract class Listener
         extends pulumi.ComponentResource
-        implements x.ecs.ContainerPortMappings {
+        implements x.ecs.PortMappingProvider, x.ecs.ContainerLoadBalancerProvider {
     public readonly listener: aws.elasticloadbalancingv2.Listener;
     public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
 
@@ -70,20 +70,20 @@ export abstract class Listener
         this.endpoint = () => endpoint;
     }
 
-    public containerPortMappings() {
-        if (!x.ecs.isContainerPortMappings(this.defaultListenerAction)) {
-            throw new Error("[Listener] was not connected to a [defaultAction] that can provide [containerPortMappings]");
+    public portMapping() {
+        if (!x.ecs.isPortMappingProvider(this.defaultListenerAction)) {
+            throw new Error("[Listener] was not connected to a [defaultAction] that can provide [portMapping]s");
         }
 
-        return this.defaultListenerAction.containerPortMappings();
+        return this.defaultListenerAction.portMapping();
     }
 
-    public containerLoadBalancers() {
-        if (!x.ecs.isContainerPortMappings(this.defaultListenerAction)) {
-            throw new Error("[Listener] was not connected to a [defaultAction] that can provide [containerPortMappings]");
+    public containerLoadBalancer() {
+        if (!x.ecs.isContainerLoadBalancerProvider(this.defaultListenerAction)) {
+            throw new Error("[Listener] was not connected to a [defaultAction] that can provide [containerLoadBalancer]s");
         }
 
-        return this.defaultListenerAction.containerLoadBalancers();
+        return this.defaultListenerAction.containerLoadBalancer();
     }
 
     public addListenerRule(name: string, args: x.elasticloadbalancingv2.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
