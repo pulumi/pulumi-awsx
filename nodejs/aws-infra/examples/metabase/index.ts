@@ -224,12 +224,6 @@ export class Metabase extends pulumi.ComponentResource {
 
 export const vpc = awsinfra.x.ec2.Vpc.getDefault();
 export const securityGroup = new awsinfra.x.ec2.SecurityGroup("testing", { vpc });
-securityGroup.createIngressRule("test-ingress", {
-    cidrBlocks: ["0.0.0.0/0"],
-    protocol: "tcp",
-    fromPort: 80,
-    toPort: 80,
-});
 
 export const metabase = new Metabase("test", {
     hostedZoneName: "cyrus.moolumi.io",
