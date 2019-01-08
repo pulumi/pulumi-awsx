@@ -17,8 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as ecs from ".";
 import * as x from "..";
-
-import * as utils from "./../../utils";
+import * as utils from "./../utils";
 
 export abstract class Service extends pulumi.ComponentResource {
     public readonly service: aws.ecs.Service;

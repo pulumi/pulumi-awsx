@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { getAvailabilityZone } from "./../../aws";
+import { getAvailabilityZone } from "./../aws";
 import { Cidr32Block, getIPv4Address } from "./cidr";
 
-import * as utils from "./../../utils";
+import * as utils from "./../utils";
 
 /** @internal */
 export class VpcTopology {

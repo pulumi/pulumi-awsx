@@ -18,7 +18,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import { VpcTopology } from "./vpcTopology";
 
-import * as utils from "./../../utils";
+import * as utils from "./../utils";
 
 let defaultVpc: Vpc;
 

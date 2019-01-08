@@ -12,14 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as aws from "@pulumi/aws";
-import * as pulumi from "@pulumi/pulumi";
-
-import * as x from "..";
-import { getAvailabilityZone } from "./../../aws";
-
-import * as utils from "./../../utils";
-
 // See https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing for full details
 
 // For IPv4, CIDR notation is an alternative to the older system of representing networks by their
