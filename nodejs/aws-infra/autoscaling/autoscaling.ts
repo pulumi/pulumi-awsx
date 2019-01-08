@@ -17,7 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
 import * as roleUtils from "../role";
-import * as utils from "./../../utils";
+import * as utils from "./../utils";
 
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public readonly launchConfiguration: aws.ec2.LaunchConfiguration;

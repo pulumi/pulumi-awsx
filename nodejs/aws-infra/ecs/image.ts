@@ -17,9 +17,7 @@ import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as ecs from ".";
-import * as x from "..";
-
-import * as utils from "../../utils";
+import * as utils from "../utils";
 
 export abstract class Image implements ecs.ContainerImageProvider {
     public abstract image(name: string, parent: pulumi.Resource): pulumi.Input<string>;

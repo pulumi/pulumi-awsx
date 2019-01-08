@@ -15,10 +15,8 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "../../utils";
-
-import * as ecs from ".";
 import * as x from "..";
+import * as utils from "../utils";
 
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.

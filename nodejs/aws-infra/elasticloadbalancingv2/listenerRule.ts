@@ -18,7 +18,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../../utils";
+import * as utils from "./../utils";
 
 /**
  * The rules that you define for your listener determine how the load balancer routes requests to
