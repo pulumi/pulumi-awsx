@@ -24,7 +24,7 @@ const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
         minSize: 20,
     },
     launchConfigurationArgs: {
-        instanceType: "t2.medium",
+        instanceType: "t2.xlarge",
     },
 });
 
