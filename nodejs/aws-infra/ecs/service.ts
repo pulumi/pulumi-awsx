@@ -30,16 +30,17 @@ export abstract class Service extends pulumi.ComponentResource {
                 opts: pulumi.ComponentResourceOptions = {}) {
         super(type, name, args, opts);
 
+        this.cluster = args.cluster || x.ecs.Cluster.getDefault();
+
         // If the cluster has any autoscaling groups, ensure the service depends on it being
         // created.
         const dependsOn: pulumi.Resource[] = [];
-        dependsOn.push(...args.cluster.autoScalingGroups);
+        dependsOn.push(...this.cluster.autoScalingGroups);
 
         const parentOpts = { parent: this, dependsOn };
 
         const loadBalancers = getLoadBalancers(this, name, args);
 
-        this.cluster = args.cluster;
         this.service = new aws.ecs.Service(name, {
             ...args,
             loadBalancers,
@@ -176,7 +177,7 @@ export function isServiceLoadBalancerProvider(obj: any): obj is ServiceLoadBalan
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
-    cluster: ecs.Cluster;
+    cluster?: ecs.Cluster;
     taskDefinition: ecs.TaskDefinition;
     securityGroups: x.ec2.SecurityGroup[];
     desiredCount?: pulumi.Input<number>;
@@ -268,9 +269,9 @@ export interface ServiceArgs {
     // Changes we made to the core args type.
 
     /**
-     * Cluster this service will run in.
+     * Cluster this service will run in.  If not specified [Cluster.getDefault()] will be used.
      */
-    cluster: ecs.Cluster;
+    cluster?: ecs.Cluster;
 
     /**
      * The task definition to create the service from.

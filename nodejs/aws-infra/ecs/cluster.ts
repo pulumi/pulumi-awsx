@@ -18,6 +18,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import * as utils from "../utils";
 
+let defaultCluster: Cluster;
+
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
  */
@@ -89,6 +91,19 @@ export class Cluster
         this.addAutoScalingGroup(group);
 
         return group;
+    }
+
+    /**
+     * Gets or creates a cluster that can be used by default for the current aws account and region.
+     * The cluster will use the default Vpc for the account and will be provisioned with a security
+     * group created by [createDefaultSecurityGroup].
+     */
+    public static getDefault(opts?: pulumi.ComponentResourceOptions): Cluster {
+        if (!defaultCluster) {
+            defaultCluster = new Cluster("default-cluster", { }, opts);
+        }
+
+        return defaultCluster;
     }
 
     public static createDefaultSecurityGroup(
