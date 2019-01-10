@@ -1,7 +1,7 @@
 // Copyright 2016-2018, Pulumi Corporation.  All rights reserved.
 
 import * as aws from "@pulumi/aws";
-import * as awsinfra from "@pulumi/aws-infra";
+import * as awsx from "@pulumi/aws-infra";
 import * as pulumi from "@pulumi/pulumi";
 import * as random from "@pulumi/random";
 
@@ -81,12 +81,12 @@ export class Metabase extends pulumi.ComponentResource {
             return res.vpcId;
         });
 
-        const vpc = awsinfra.x.ec2.Vpc.fromExistingIds("meta", {
+        const vpc = awsx.ec2.Vpc.fromExistingIds("meta", {
             vpcId: vpcId,
             publicSubnetIds: args.subnetIds,
         });
 
-        const loadbalancerSecurityGroup = new awsinfra.x.ec2.SecurityGroup(`${name}metabase`, {
+        const loadbalancerSecurityGroup = new awsx.ec2.SecurityGroup(`${name}metabase`, {
             vpc,
             ingress: [{
                 // Allow any access on HTTPS
@@ -110,7 +110,7 @@ export class Metabase extends pulumi.ComponentResource {
             }],
         }, { parent: this });
 
-        const loadbalancer = new awsinfra.x.elasticloadbalancingv2.ApplicationLoadBalancer(`${name}metabase`, {
+        const loadbalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer(`${name}metabase`, {
             subnets: args.subnetIds,
             securityGroups: [loadbalancerSecurityGroup],
         }, { parent: this });
@@ -143,17 +143,17 @@ export class Metabase extends pulumi.ComponentResource {
         });
 
         // Fargate Service to run Metabase
-        const metabaseCluster = new awsinfra.x.ecs.Cluster(`${name}metabase`, {}, { parent: this });
+        const metabaseCluster = new awsx.ecs.Cluster(`${name}metabase`, {}, { parent: this });
         const metabaseExecutionRole = aws.iam.Role.get(`${name}metabase`, "ecsTaskExecutionRole", {}, { parent: this });
         const regionName = aws.getRegion({}, { parent: this}).then(r => r.name);
-        function metabaseContainer(cluster: aws.rds.Cluster): Record<string, awsinfra.x.ecs.Container> {
+        function metabaseContainer(cluster: aws.rds.Cluster): Record<string, awsx.ecs.Container> {
             const allProps = pulumi.all([
                 cluster.endpoint, cluster.masterUsername, cluster.masterPassword,
                 cluster.port, cluster.databaseName]);
 
             return { "metabase": {
                 image: "metabase/metabase",
-                portMappings: listener, // [{ containerPort: metabasePort }],
+                portMappings: [listener],
                 environment: allProps.apply(([hostname, username, password, port, dbName]) => <aws.ecs.KeyValuePair[]>[
                     { name: "JAVA_TIMEZONE", value: "US/Pacific" },
                     { name: "MB_DB_TYPE", value: "mysql" },
@@ -173,7 +173,7 @@ export class Metabase extends pulumi.ComponentResource {
                 })),
             }};
         }
-        const metabaseTaskDefinition = new awsinfra.x.ecs.FargateTaskDefinition(`${name}metabase`, {
+        const metabaseTaskDefinition = new awsx.ecs.FargateTaskDefinition(`${name}metabase`, {
             // family: "metabase",
             cpu: "2048",
             memory: "4096",
@@ -191,20 +191,7 @@ export class Metabase extends pulumi.ComponentResource {
             securityGroups: args.securityGroupIds,
             assignPublicIp: true,
             subnets: args.subnetIds,
-            // networkConfiguration: {
-            //     // We don't actualy technically need/want a public IP, but need one to be able to access DockerHub when
-            //     // running in a public subnet (without a NAT).
-            //     assignPublicIp: true,
-            //     subnets: args.subnetIds,
-            //     securityGroups: args.securityGroupIds,
-            // },
-            // launchType: "FARGATE",
-            // loadBalancers: [{
-            //     containerName: "metabase",
-            //     containerPort: metabasePort,
-            //     targetGroupArn: targetgroup.arn,
-            // }],
-        }, { parent: this /*, dependsOn: [targetgroup, listener, loadbalancer]*/ });
+        }, { parent: this });
 
         // Add DNS record for public endpoint
         const metabaseDnsRecord = new aws.route53.Record(`${name}metabase`, {
@@ -222,8 +209,8 @@ export class Metabase extends pulumi.ComponentResource {
     }
 }
 
-export const vpc = awsinfra.x.ec2.Vpc.getDefault();
-export const securityGroup = new awsinfra.x.ec2.SecurityGroup("testing", { vpc });
+export const vpc = awsx.ec2.Vpc.getDefault();
+export const securityGroup = new awsx.ec2.SecurityGroup("testing", { vpc });
 
 export const metabase = new Metabase("test", {
     hostedZoneName: "cyrus.moolumi.io",
