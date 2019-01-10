@@ -72,19 +72,6 @@ export class SecurityGroup extends pulumi.ComponentResource {
             name: string, args: x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
         return new x.ec2.IngressSecurityGroupRule(name, this, args, opts);
     }
-
-    public openPorts(name: string,
-                     location: x.ec2.SecurityGroupRuleLocation,
-                     ports: x.ec2.SecurityGroupRulePorts,
-                     description?: string,
-                     opts?: pulumi.ComponentResourceOptions) {
-        const egressArgs = x.ec2.SecurityGroupRule.egressArgs(location, ports, description);
-        const ingressArgs = x.ec2.SecurityGroupRule.ingressArgs(location, ports, description);
-        const egress = this.createEgressRule(name + "-egress", egressArgs, opts);
-        const ingress = this.createIngressRule(name + "-ingress", ingressArgs, opts);
-
-        return { egress, ingress };
-    }
 }
 
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
