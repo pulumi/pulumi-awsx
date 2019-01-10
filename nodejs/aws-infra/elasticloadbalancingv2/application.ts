@@ -176,14 +176,13 @@ export class ApplicationListener extends mod.Listener {
         // If the listener is externally available, then open it's port both for ingress
         // in the load balancer's security groups.
         if (args.external !== false) {
-            const location = new x.ec2.AnyIPv4Location();
-            const tcpPort = new x.ec2.TcpPorts(port);
-            const description = `Externally available at port ${port}`;
+            const args = x.ec2.SecurityGroupRule.ingressArgs(
+                new x.ec2.AnyIPv4Location(), new x.ec2.TcpPorts(port),
+                `Externally available at port ${port}`);
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
-                x.ec2.SecurityGroupRule.ingress(`${name}-external-${i}-ingress`,
-                    securityGroup, location, tcpPort, description, parentOpts);
+                securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, parentOpts);
             }
         }
 
