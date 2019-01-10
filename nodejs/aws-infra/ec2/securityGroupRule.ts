@@ -110,6 +110,12 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     constructor(type: string, name: string,
                 securityGroup: x.ec2.SecurityGroup,
                 args: SecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        if (securityGroup.hasInlineRules) {
+            throw new Error(
+`Security group rule '${name}' cannot be created because its security group '${securityGroup.securityGroupName}' defined rules inline.
+Either remove the inlined 'ingress'/'egress' rules from security group '${securityGroup.securityGroupName}', or inline this rule into it.`);
+        }
+
         super(type, name, {}, opts || { parent: securityGroup });
 
         this.securityGroup = securityGroup;

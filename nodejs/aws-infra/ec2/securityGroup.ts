@@ -23,6 +23,9 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public readonly id: pulumi.Output<string>;
     public readonly vpc: x.ec2.Vpc;
 
+    /** @internal */ public readonly securityGroupName: string;
+    /** @internal */ public readonly hasInlineRules: boolean;
+
     public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
@@ -32,12 +35,15 @@ export class SecurityGroup extends pulumi.ComponentResource {
     constructor(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:ec2:SecurityGroup", name, {}, opts);
 
+        this.securityGroupName = name;
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
             vpcId: this.vpc.id,
         }, { parent: this });
+
         this.id = this.securityGroup.id;
+        this.hasInlineRules = !!args.egress || !!args.ingress;
 
         this.registerOutputs();
     }

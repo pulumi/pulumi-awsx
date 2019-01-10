@@ -155,6 +155,18 @@ export class ApplicationListener extends mod.Listener {
                 opts?: pulumi.ComponentResourceOptions) {
 
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {}, opts);
+
+        if (args.external !== false) {
+            for (let i = 0, n = loadBalancer.securityGroups.length; i < n; i++) {
+                const securityGroup = loadBalancer.securityGroups[i];
+                if (securityGroup.hasInlineRules) {
+                    throw new Error(
+`Application listener '${name}' cannot open ports on security group '${securityGroup.securityGroupName}' because it defined rules inline.
+Either remove the inlined 'ingress'/'egress' rules from security group '${securityGroup.securityGroupName}', or mark this listener as 'external: false'.`);
+                }
+            }
+        }
+
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultAction, defaultListener } = getDefaultAction(
             name, loadBalancer, args, port, protocol, opts);
@@ -173,7 +185,7 @@ export class ApplicationListener extends mod.Listener {
         const parentOpts = { parent: this };
 
         // If the listener is externally available, then open it's port both for ingress
-        // and egress in the load balancer's security groups.
+        // in the load balancer's security groups.
         if (args.external !== false) {
             const location = new x.ec2.AnyIPv4Location();
             const tcpPort = new x.ec2.TcpPorts(port);
@@ -181,7 +193,8 @@ export class ApplicationListener extends mod.Listener {
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
-                securityGroup.openPorts(`${name}-external-${i}`, location, tcpPort, description, parentOpts);
+                x.ec2.SecurityGroupRule.ingress(`${name}-external-${i}-ingress`,
+                    securityGroup, location, tcpPort, description, parentOpts);
             }
         }
 
