@@ -18,12 +18,13 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-
-import * as utils from "./../../utils";
+import * as utils from "./../utils";
 
 export abstract class TargetGroup
         extends pulumi.ComponentResource
-        implements x.ecs.ContainerPortMappings, x.elasticloadbalancingv2.ListenerDefaultAction {
+        implements x.ecs.ContainerPortMappingProvider,
+                   x.ecs.ContainerLoadBalancerProvider,
+                   x.elasticloadbalancingv2.ListenerDefaultAction {
 
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly vpc: x.ec2.Vpc;
@@ -55,17 +56,17 @@ export abstract class TargetGroup
         return pulumi.output(this.listeners.map(r => r.listener.urn));
     }
 
-    public containerPortMappings(): pulumi.Input<pulumi.Input<aws.ecs.PortMapping>[]> {
-        return pulumi.output([this.targetGroup.port, this.dependencies()]).apply(([port]) => [{
+    public containerPortMapping(): pulumi.Input<aws.ecs.PortMapping> {
+        return pulumi.output([this.targetGroup.port, this.dependencies()]).apply(([port]) => ({
             containerPort: +port!,
-        }]);
+        }));
     }
 
-    public containerLoadBalancers(): pulumi.Input<pulumi.Input<x.ecs.ContainerLoadBalancer>[]> {
-        return this.dependencies().apply(_ => [{
+    public containerLoadBalancer(): pulumi.Input<x.ecs.ContainerLoadBalancer> {
+        return this.dependencies().apply(_ => ({
             containerPort: this.targetGroup.port.apply(p => p!),
             targetGroupArn: this.targetGroup.arn,
-        }]);
+        }));
     }
 
     public listenerDefaultAction(): aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] {

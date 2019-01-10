@@ -15,10 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as ecs from ".";
-import * as x from "..";
-
-import * as utils from "../../utils";
+import * as utils from "../utils";
 
 /** @internal */
 export function computeContainerDefinition(
@@ -28,11 +25,11 @@ export function computeContainerDefinition(
     container: Container,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
-    const image = isContainerImage(container.image)
+    const image = isContainerImageProvider(container.image)
         ? container.image.image(name, parent)
         : container.image;
 
-    const environment = isContainerImage(container.image)
+    const environment = isContainerImageProvider(container.image)
         ? utils.combineArrays(container.environment, container.image.environment(name, parent))
         : container.environment;
 
@@ -66,19 +63,25 @@ export function computeContainerDefinition(
 }
 
 function getPortMappings(container: Container) {
-    const portMappings = isContainerPortMappings(container.portMappings)
-        ? container.portMappings.containerPortMappings()
-        : container.portMappings;
-
-    return pulumi.output(portMappings)
-                 .apply(mappings => convertMappings(mappings));
-}
-
-function convertMappings(mappings: aws.ecs.PortMapping[] | undefined) {
-    if (!mappings) {
+    if (!container.portMappings) {
         return undefined;
     }
 
+    const result: pulumi.Output<aws.ecs.PortMapping>[] = [];
+
+    if (container.portMappings) {
+        for (const obj of container.portMappings) {
+            const portMapping = pulumi.output(isContainerPortMappingProvider(obj)
+                ? obj.containerPortMapping()
+                : obj);
+            result.push(pulumi.output(portMapping));
+        }
+    }
+
+    return pulumi.all(result).apply(mappings => convertMappings(mappings));
+}
+
+function convertMappings(mappings: aws.ecs.PortMapping[]) {
     const result: aws.ecs.PortMapping[] = [];
     for (const mapping of mappings) {
         const copy = { ...mapping };
@@ -104,21 +107,28 @@ function convertMappings(mappings: aws.ecs.PortMapping[] | undefined) {
     return result;
 }
 
+export interface ContainerPortMappingProvider {
+    containerPortMapping(): pulumi.Input<aws.ecs.PortMapping>;
+}
+
 export interface ContainerLoadBalancer {
     containerPort: pulumi.Input<number>;
     elbName?: pulumi.Input<string>;
     targetGroupArn?: pulumi.Input<string>;
 }
 
-export interface ContainerPortMappings {
-    containerPortMappings(): pulumi.Input<pulumi.Input<aws.ecs.PortMapping>[]>;
-    containerLoadBalancers(): pulumi.Input<pulumi.Input<ContainerLoadBalancer>[]>;
+export interface ContainerLoadBalancerProvider {
+    containerLoadBalancer(): pulumi.Input<ContainerLoadBalancer>;
 }
 
 /** @internal */
-export function isContainerPortMappings(obj: any): obj is ContainerPortMappings {
-    return obj && !!(<ContainerPortMappings>obj).containerPortMappings &&
-                  !!(<ContainerPortMappings>obj).containerLoadBalancers;
+export function isContainerPortMappingProvider(obj: any): obj is ContainerPortMappingProvider {
+    return obj && !!(<ContainerPortMappingProvider>obj).containerPortMapping;
+}
+
+/** @internal */
+export function isContainerLoadBalancerProvider(obj: any): obj is ContainerLoadBalancerProvider {
+    return obj && !!(<ContainerLoadBalancerProvider>obj).containerLoadBalancer;
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
@@ -131,8 +141,8 @@ type MakeInputs<T> = {
 // pleasant to work with. However, they internally allow us to succinctly express the shape we're
 // trying to provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
-    image: pulumi.Input<string> | ContainerImage;
-    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | ContainerPortMappings;
+    image: pulumi.Input<string> | ContainerImageProvider;
+    portMappings?: (pulumi.Input<aws.ecs.PortMapping> | ContainerPortMappingProvider)[];
 }>;
 
 export interface Container {
@@ -170,19 +180,19 @@ export interface Container {
      * which can do whatever custom work is necessary.  See [Image] for common ways to create an
      * image from a local docker build.
      */
-    image: pulumi.Input<string> | ContainerImage;
+    image: pulumi.Input<string> | ContainerImageProvider;
 
-    portMappings?: pulumi.Input<aws.ecs.PortMapping[]> | ContainerPortMappings;
+    portMappings?: (pulumi.Input<aws.ecs.PortMapping> | ContainerPortMappingProvider)[];
 }
 
-export interface ContainerImage {
+export interface ContainerImageProvider {
     image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
     environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 }
 
 /** @internal */
-export function isContainerImage(obj: any): obj is ContainerImage {
-    return obj && !!(<ContainerImage>obj).image && !!(<ContainerImage>obj).environment;
+export function isContainerImageProvider(obj: any): obj is ContainerImageProvider {
+    return obj && !!(<ContainerImageProvider>obj).image && !!(<ContainerImageProvider>obj).environment;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

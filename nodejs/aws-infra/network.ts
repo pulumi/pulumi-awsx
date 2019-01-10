@@ -20,8 +20,6 @@ import { ClusterNetworkArgs } from "./cluster";
 
 import { ifUndefined } from "./utils";
 
-import { x } from ".";
-
 /**
  * Optional arguments that can be provided when creating a network.
  */

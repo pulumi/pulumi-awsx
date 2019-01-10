@@ -15,5 +15,9 @@
 export * from "./cluster";
 export * from "./network";
 
-import * as x from "./experimental";
-export { x };
+import * as autoscaling from "./autoscaling";
+import * as ec2 from "./ec2";
+import * as ecs from "./ecs";
+import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
+
+export { autoscaling, ec2, ecs, elasticloadbalancingv2 };

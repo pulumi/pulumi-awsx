@@ -17,8 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as ecs from ".";
 import * as x from "..";
-
-import * as utils from "./../../utils";
+import * as utils from "./../utils";
 
 export abstract class Service extends pulumi.ComponentResource {
     public readonly service: aws.ecs.Service;
@@ -31,16 +30,17 @@ export abstract class Service extends pulumi.ComponentResource {
                 opts: pulumi.ComponentResourceOptions = {}) {
         super(type, name, args, opts);
 
+        this.cluster = args.cluster || x.ecs.Cluster.getDefault();
+
         // If the cluster has any autoscaling groups, ensure the service depends on it being
         // created.
         const dependsOn: pulumi.Resource[] = [];
-        dependsOn.push(...args.cluster.autoScalingGroups);
+        dependsOn.push(...this.cluster.autoScalingGroups);
 
         const parentOpts = { parent: this, dependsOn };
 
         const loadBalancers = getLoadBalancers(this, name, args);
 
-        this.cluster = args.cluster;
         this.service = new aws.ecs.Service(name, {
             ...args,
             loadBalancers,
@@ -58,26 +58,37 @@ export abstract class Service extends pulumi.ComponentResource {
 }
 
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
+    const result: pulumi.Output<ServiceLoadBalancer>[] = [];
+
     // Get the initial set of load balancers if specified.
-    let allLoadBalancers = x.ecs.isServiceLoadBalancers(args.loadBalancers)
-        ? args.loadBalancers.serviceLoadBalancers()
-        : <aws.ecs.ServiceArgs["loadBalancers"]>args.loadBalancers;
+    if (args.loadBalancers) {
+        for (const obj of args.loadBalancers) {
+            const loadBalancer = isServiceLoadBalancerProvider(obj)
+                ? obj.serviceLoadBalancer()
+                : obj;
+            result.push(pulumi.output(loadBalancer));
+        }
+    }
 
     // Now walk each container and see if it wants to add load balancer information as well.
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
+        if (!container.portMappings) {
+            continue;
+        }
 
-        if (x.ecs.isContainerPortMappings(container.portMappings)) {
-            // Containers don't know their own name.  So we add the name in here on their behalf.
-            const computedLoadBalancers =
-                pulumi.output(container.portMappings.containerLoadBalancers())
-                      .apply(lbs => lbs.map(lb => ({ ...lb, containerName })));
-
-            allLoadBalancers = utils.combineArrays(allLoadBalancers, computedLoadBalancers);
+        for (const obj of container.portMappings) {
+            if (x.ecs.isContainerLoadBalancerProvider(obj)) {
+                // Containers don't know their own name.  So we add the name in here on their behalf.
+                const containerLoadBalancer = obj.containerLoadBalancer();
+                const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
+                    lb => ({...lb, containerName}));
+                result.push(serviceLoadBalancer);
+            }
         }
     }
 
-    return allLoadBalancers;
+    return pulumi.output(result);
 }
 
 // const volumeNames = new Set<string>();
@@ -146,27 +157,34 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 //     }
 // }
 
-export interface ServiceLoadBalancers {
-    serviceLoadBalancers(): aws.ecs.ServiceArgs["loadBalancers"];
+export interface ServiceLoadBalancer {
+    containerName: pulumi.Input<string>;
+    containerPort: pulumi.Input<number>;
+    elbName?: pulumi.Input<string>;
+    targetGroupArn?: pulumi.Input<string>;
+}
+
+export interface ServiceLoadBalancerProvider {
+    serviceLoadBalancer(): pulumi.Input<ServiceLoadBalancer>;
 }
 
 /** @internal */
-export function isServiceLoadBalancers(obj: any): obj is ServiceLoadBalancers {
-    return obj && !!(<ServiceLoadBalancers>obj).serviceLoadBalancers;
+export function isServiceLoadBalancerProvider(obj: any): obj is ServiceLoadBalancerProvider {
+    return obj && !!(<ServiceLoadBalancerProvider>obj).serviceLoadBalancer;
 }
 
 // The shape we want for ClusterFileSystemArgs.  We don't export this as 'Overwrite' types are not pleasant to
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
-    cluster: ecs.Cluster;
+    cluster?: ecs.Cluster;
     taskDefinition: ecs.TaskDefinition;
     securityGroups: x.ec2.SecurityGroup[];
     desiredCount?: pulumi.Input<number>;
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
     os?: pulumi.Input<"linux" | "windows">;
     waitForSteadyState?: pulumi.Input<boolean>;
-    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"] | ServiceLoadBalancers;
+    loadBalancers?: (pulumi.Input<ServiceLoadBalancer> | ServiceLoadBalancerProvider)[];
 }>;
 
 export interface ServiceArgs {
@@ -204,7 +222,7 @@ export interface ServiceArgs {
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"] | ServiceLoadBalancers;
+    loadBalancers?: (pulumi.Input<ServiceLoadBalancer> | ServiceLoadBalancerProvider)[];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
@@ -251,9 +269,9 @@ export interface ServiceArgs {
     // Changes we made to the core args type.
 
     /**
-     * Cluster this service will run in.
+     * Cluster this service will run in.  If not specified [Cluster.getDefault()] will be used.
      */
-    cluster: ecs.Cluster;
+    cluster?: ecs.Cluster;
 
     /**
      * The task definition to create the service from.

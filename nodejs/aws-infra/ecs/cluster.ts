@@ -15,10 +15,10 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "../../utils";
-
-import * as ecs from ".";
 import * as x from "..";
+import * as utils from "../utils";
+
+let defaultCluster: Cluster;
 
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
@@ -42,7 +42,7 @@ export class Cluster
 
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 
-    constructor(name: string, args: ClusterArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: ClusterArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:ecs:Cluster", name, {}, opts);
 
         // First create an ECS cluster.
@@ -93,6 +93,19 @@ export class Cluster
         return group;
     }
 
+    /**
+     * Gets or creates a cluster that can be used by default for the current aws account and region.
+     * The cluster will use the default Vpc for the account and will be provisioned with a security
+     * group created by [createDefaultSecurityGroup].
+     */
+    public static getDefault(opts?: pulumi.ComponentResourceOptions): Cluster {
+        if (!defaultCluster) {
+            defaultCluster = new Cluster("default-cluster", { }, opts);
+        }
+
+        return defaultCluster;
+    }
+
     public static createDefaultSecurityGroup(
             name: string,
             vpc?: x.ec2.Vpc,
@@ -104,28 +117,28 @@ export class Cluster
             tags: { Name: name },
         }, opts);
 
-        Cluster.createDefaultSecurityGroupEgressRules(securityGroup);
-        Cluster.createDefaultSecurityGroupIngressRules(securityGroup);
+        Cluster.createDefaultSecurityGroupEgressRules(name, securityGroup);
+        Cluster.createDefaultSecurityGroupIngressRules(name, securityGroup);
 
         return securityGroup;
     }
 
-    public static createDefaultSecurityGroupEgressRules(securityGroup: x.ec2.SecurityGroup) {
-        return [x.ec2.SecurityGroupRule.egress("egress", securityGroup,
+    public static createDefaultSecurityGroupEgressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
+        return [x.ec2.SecurityGroupRule.egress(`${name}-egress`, securityGroup,
             new x.ec2.AnyIPv4Location(),
             new x.ec2.AllTraffic(),
             "allow output to any ipv4 address using any protocol")];
     }
 
-    public static createDefaultSecurityGroupIngressRules(securityGroup: x.ec2.SecurityGroup) {
-        return [x.ec2.SecurityGroupRule.ingress("ssh", securityGroup,
+    public static createDefaultSecurityGroupIngressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
+        return [x.ec2.SecurityGroupRule.ingress(`${name}-ssh`, securityGroup,
                     new x.ec2.AnyIPv4Location(),
                     new x.ec2.TcpPorts(22),
                     "allow ssh in from any ipv4 address"),
 
                 // Expose ephemeral container ports to Internet.
                 // TODO: Limit to load balancer(s).
-                x.ec2.SecurityGroupRule.ingress("containers", securityGroup,
+                x.ec2.SecurityGroupRule.ingress(`${name}-containers`, securityGroup,
                     new x.ec2.AnyIPv4Location(),
                     new x.ec2.AllTcpPorts(),
                     "allow incoming tcp on any port from any ipv4 address")];

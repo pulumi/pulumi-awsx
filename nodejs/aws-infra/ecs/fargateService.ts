@@ -15,10 +15,9 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "./../../utils";
-
 import * as ecs from ".";
 import * as x from "..";
+import * as utils from "./../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
@@ -140,7 +139,7 @@ export class FargateService extends ecs.Service {
         const taskDefinition = args.taskDefinition ||
             new ecs.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
 
-        const cluster = args.cluster;
+        const cluster = args.cluster || x.ecs.Cluster.getDefault();
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
@@ -217,17 +216,16 @@ export interface FargateTaskDefinitionArgs {
     memory?: pulumi.Input<string>;
 
     /**
-     * Single container to make a ClusterTaskDefinition from.  Useful for simple cases where there
-     * aren't multiple containers, especially when creating a ClusterTaskDefinition to call [run]
-     * on.
+     * Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
+     * multiple containers, especially when creating a TaskDefinition to call [run] on.
      *
      * Either [container] or [containers] must be provided.
      */
     container?: ecs.Container;
 
     /**
-     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
-     * ClusterService that will contain many containers within.
+     * All the containers to make a TaskDefinition from.  Useful when creating a Service that will
+     * contain many containers within.
      *
      * Either [container] or [containers] must be provided.
      */
@@ -277,7 +275,7 @@ export interface FargateServiceArgs {
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: aws.ecs.ServiceArgs["loadBalancers"] | x.ecs.ServiceLoadBalancers;
+    loadBalancers?: (pulumi.Input<x.ecs.ServiceLoadBalancer> | x.ecs.ServiceLoadBalancerProvider)[];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
@@ -338,9 +336,9 @@ export interface FargateServiceArgs {
     // Changes we made to the core args type.
 
     /**
-     * Cluster this service will run in.
+     * Cluster this service will run in.  If unspecified, [Cluster.getDefault()] will be used.
      */
-    cluster: ecs.Cluster;
+    cluster?: ecs.Cluster;
 
     /**
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do

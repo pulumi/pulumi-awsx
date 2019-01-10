@@ -20,8 +20,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as mod from ".";
 import * as x from "..";
 
-import * as utils from "./../../utils";
-
 export type ApplicationProtocol = "HTTP" | "HTTPS";
 
 /**
