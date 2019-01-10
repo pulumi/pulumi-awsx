@@ -156,17 +156,6 @@ export class ApplicationListener extends mod.Listener {
 
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {}, opts);
 
-        if (args.external !== false) {
-            for (let i = 0, n = loadBalancer.securityGroups.length; i < n; i++) {
-                const securityGroup = loadBalancer.securityGroups[i];
-                if (securityGroup.hasInlineRules) {
-                    throw new Error(
-`Application listener '${name}' cannot open ports on security group '${securityGroup.securityGroupName}' because it defined rules inline.
-Either remove the inlined 'ingress'/'egress' rules from security group '${securityGroup.securityGroupName}', or mark this listener as 'external: false'.`);
-                }
-            }
-        }
-
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultAction, defaultListener } = getDefaultAction(
             name, loadBalancer, args, port, protocol, opts);
