@@ -101,14 +101,18 @@ export class Metabase extends pulumi.ComponentResource {
                 fromPort: 80,
                 cidrBlocks: ["0.0.0.0/0"],
             }],
-            egress: [{
-                // Send requests only to the port that the Metabase container is serving in the target security group
+        }, { parent: this });
+
+        // Send requests only to the port that the Metabase container is serving in the target security group
+        for (let i = 0, n = args.securityGroupIds.length; i < n; i++) {
+            const id = args.securityGroupIds[i];
+            loadbalancerSecurityGroup.createEgressRule(`${name}metabase-egress-${i}`, {
                 protocol: "tcp",
                 toPort: metabasePort,
                 fromPort: metabasePort,
-                securityGroups: args.securityGroupIds,
-            }],
-        }, { parent: this });
+                sourceSecurityGroupId: id,
+            });
+        }
 
         const loadbalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer(`${name}metabase`, {
             subnets: args.subnetIds,
