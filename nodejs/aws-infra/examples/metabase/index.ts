@@ -217,8 +217,8 @@ export const vpc = awsx.ec2.Vpc.getDefault();
 export const securityGroup = new awsx.ec2.SecurityGroup("testing", { vpc });
 
 export const metabase = new Metabase("test", {
-    hostedZoneName: "cyrus.moolumi.io",
-    domainName: "metabase.corp.cyrus.moolumi.io",
+    hostedZoneName: "citesting.moolumi.io",
+    domainName: "metabase.corp.citesting.moolumi.io",
     securityGroupIds: [securityGroup.id],
     subnetIds: vpc.publicSubnetIds,
 });

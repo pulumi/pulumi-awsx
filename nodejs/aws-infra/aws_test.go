@@ -64,6 +64,16 @@ func Test_Examples(t *testing.T) {
 			},
 		},
 		{
+			Dir: path.Join(cwd, "./examples/metabase"),
+			Config: map[string]string{
+				"aws:region":     region,
+				"cloud:provider": "aws",
+			},
+			Dependencies: []string{
+				"@pulumi/aws-infra",
+			},
+		},
+		{
 			Dir:       path.Join(cwd, "./examples/fargate"),
 			StackName: addRandomSuffix("containers-fargate"),
 			Config: map[string]string{
