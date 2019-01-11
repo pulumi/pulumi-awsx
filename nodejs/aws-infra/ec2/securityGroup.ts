@@ -32,14 +32,40 @@ export class SecurityGroup extends pulumi.ComponentResource {
     constructor(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsinfra:x:ec2:SecurityGroup", name, {}, opts);
 
+        // We allow egress/ingress rules to be defined in-line for SecurityGroup (like terraform
+        // does). However, we handle these by explicitly *not* passing this to the security group,
+        // and instead manually making SecurityGroupRules.  This ensures that rules can be added
+        // after the fact (for example, if someone wants to open an app-listener up later).
+        // TerraForm doesn't support both inlined and after-the-fact rules.  So we just make
+        // everything after-the-fact to make the programming model simple and to allow users to
+        // mix/match both styles if they prefer.
+        const egressRules = args.egress || [];
+        const ingressRules = args.ingress || [];
+
+        // Explicitly delete these props so we do *not* pass them into the SecurityGroup created
+        // below.
+        delete args.egress;
+        delete args.ingress;
+
+        const parentOpts = { parent: this };
+
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
             vpcId: this.vpc.id,
-        }, { parent: this });
+        }, parentOpts);
+
         this.id = this.securityGroup.id;
 
         this.registerOutputs();
+
+        for (let i = 0, n = egressRules.length; i < n; i++) {
+            this.createEgressRule(`${name}-egress-${i}`, egressRules[i], parentOpts);
+        }
+
+        for (let i = 0, n = ingressRules.length; i < n; i++) {
+            this.createEgressRule(`${name}-ingress-${i}`, ingressRules[i], parentOpts);
+        }
     }
 
     /** @internal */
@@ -65,19 +91,6 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public createIngressRule(
             name: string, args: x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
         return new x.ec2.IngressSecurityGroupRule(name, this, args, opts);
-    }
-
-    public openPorts(name: string,
-                     location: x.ec2.SecurityGroupRuleLocation,
-                     ports: x.ec2.SecurityGroupRulePorts,
-                     description?: string,
-                     opts?: pulumi.ComponentResourceOptions) {
-        const egressArgs = x.ec2.SecurityGroupRule.egressArgs(location, ports, description);
-        const ingressArgs = x.ec2.SecurityGroupRule.ingressArgs(location, ports, description);
-        const egress = this.createEgressRule(name + "-egress", egressArgs, opts);
-        const ingress = this.createIngressRule(name + "-ingress", ingressArgs, opts);
-
-        return { egress, ingress };
     }
 }
 
@@ -113,6 +126,8 @@ type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
     vpcId?: never;
 
     vpc?: x.ec2.Vpc;
+    egress?: x.ec2.EgressSecurityGroupRuleArgs[];
+    ingress?: x.ec2.IngressSecurityGroupRuleArgs[];
 }>;
 
 export interface SecurityGroupArgs {
@@ -138,13 +153,13 @@ export interface SecurityGroupArgs {
      * Can be specified multiple times for each egress rule. Each egress block supports fields
      * documented below.
      */
-    egress?: aws.ec2.SecurityGroupArgs["egress"];
+    egress?: x.ec2.EgressSecurityGroupRuleArgs[];
 
     /**
      * Can be specified multiple times for each ingress rule. Each ingress block supports fields
      * documented below.
      */
-    ingress?: aws.ec2.SecurityGroupArgs["ingress"];
+    ingress?: x.ec2.IngressSecurityGroupRuleArgs[];
 
     /**
      * Instruct Terraform to revoke all of the Security Groups attached ingress and egress rules

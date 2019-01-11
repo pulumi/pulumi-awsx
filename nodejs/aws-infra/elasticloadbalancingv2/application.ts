@@ -155,6 +155,7 @@ export class ApplicationListener extends mod.Listener {
                 opts?: pulumi.ComponentResourceOptions) {
 
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {}, opts);
+
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultAction, defaultListener } = getDefaultAction(
             name, loadBalancer, args, port, protocol, opts);
@@ -175,16 +176,15 @@ export class ApplicationListener extends mod.Listener {
         // port.apply(p => console.log(`Port for ${name} is ${p}`));
 
         // If the listener is externally available, then open it's port both for ingress
-        // and egress in the load balancer's security groups.
+        // in the load balancer's security groups.
         if (args.external !== false) {
-            const location = new x.ec2.AnyIPv4Location();
-            const tcpPort = new x.ec2.TcpPorts(port);
-            const description = `Externally available at port ${port}`;
+            const args = x.ec2.SecurityGroupRule.ingressArgs(
+                new x.ec2.AnyIPv4Location(), new x.ec2.TcpPorts(port),
+                `Externally available at port ${port}`);
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
-                x.ec2.SecurityGroupRule.ingress(`${name}-external-${i}-ingress`, securityGroup,
-                    location, tcpPort, description, parentOpts);
+                securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, parentOpts);
             }
         }
 
