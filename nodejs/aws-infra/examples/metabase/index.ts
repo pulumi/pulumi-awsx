@@ -70,10 +70,10 @@ export class Metabase extends pulumi.ComponentResource {
             records: [certificate.domainValidationOptions.apply(opt => opt[0].resourceRecordValue)],
             ttl: 60,
         }, { parent: this });
-        // const certificateValidation = new aws.acm.CertificateValidation(`${name}metabase`, {
-        //     certificateArn: certificate.arn,
-        //     validationRecordFqdns: [certificateValidationRecord.fqdn],
-        // }, { parent: this });
+        const certificateValidation = new aws.acm.CertificateValidation(`${name}metabase`, {
+            certificateArn: certificate.arn,
+            validationRecordFqdns: [certificateValidationRecord.fqdn],
+        }, { parent: this });
 
         // Stable load balancer endpoint (no other way to get a consistent IP for an ECS service!!!)
         const vpcId = pulumi.output(args.subnetIds[0]).apply(async subnetId => {
@@ -126,12 +126,12 @@ export class Metabase extends pulumi.ComponentResource {
         });
 
         const listener = targetgroup.createListener(`${name}metabase`, {
-            port: 8080,
-            protocol: "HTTP",
-            // certificateArn: certificate.arn,
+            port: 443,
+            protocol: "HTTPS",
+            certificateArn: certificate.arn,
             // Require the use of SSL/TLS v1.2 or higher to connect.
-            // sslPolicy: "ELBSecurityPolicy-TLS-1-2-2017-01",
-        });
+            sslPolicy: "ELBSecurityPolicy-TLS-1-2-2017-01",
+        }, { dependsOn: certificateValidation });
 
         const httpRedirectListener = loadbalancer.createListener(`${name}metabase-redirecthttp`, {
             port: 80,
