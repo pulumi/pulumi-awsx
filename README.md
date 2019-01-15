@@ -7,7 +7,7 @@ Pulumi's framework for Amazon Web Services (AWS) infrastructure.
 This package is meant for use with the Pulumi CLI.  Please visit [pulumi.io](https://pulumi.io) for
 installation instructions.
 
-The AWS Infrastructure package is intended to provide wrappers around many core AWS 'raw' resources to make them easier and more convenient to use.  In general, the `@pulumi/aws-infra` package mirrors the module structure of `@pulumi/aws` (i.e. `@pulumi/aws-infra/ecs` or `@pulumi/aws-infra/ec2`).  These [Component Resources](https://github.com/pulumi/pulumi/blob/bf300038d4b2602b5e932dbce80562fd435d3aa6/sdk/nodejs/resource.ts#L258) are designed to take care of much of the redundancy and boilerplate necessary when using the raw AWS resources, while still striving to expose all underlying functionality if needed.
+The AWS Infrastructure package is intended to provide [component](https://pulumi.io/reference/programming-model.html#components) wrappers around many core AWS 'raw' resources to make them easier and more convenient to use.  In general, the `@pulumi/aws-infra` package mirrors the module structure of `@pulumi/aws` (i.e. `@pulumi/aws-infra/ecs` or `@pulumi/aws-infra/ec2`).  These [components](https://pulumi.io/reference/programming-model.html#components) are designed to take care of much of the redundancy and boilerplate necessary when using the raw AWS resources, while still striving to expose all underlying functionality if needed.
 
 The AWS Infrastructure package undergoes constant improvements and additions.  While we will strive to maintain backward compatability here, we will occasionally make breaks here as appropriate if it helps improve the overall quality of this package.
 
