@@ -13,10 +13,6 @@ The AWS Infrastructure package undergoes constant improvements and additions.  W
 
 The AWS Infrastructure package exposes many high level abstractions.  Including, but not limited to:
 
-* ~~`Network`~~. Deprecated.  Use [ec2.VPC](https://github.com/pulumi/pulumi-aws-infra/blob/0b432e320c6929866038507e997d55c8d8f62bc3/nodejs/aws-infra/ec2/vpc.ts#L25) instead.
-
-* ~~`Cluster`~~. Deprecated.  Use [ecs.Cluster](https://github.com/pulumi/pulumi-aws-infra/blob/0b432e320c6929866038507e997d55c8d8f62bc3/nodejs/aws-infra/ecs/cluster.ts#L26) instead.
-
 * [`autoscaling`](https://github.com/pulumi/pulumi-aws-infra/blob/master/nodejs/aws-infra/autoscaling). A module that makes creating auto-scaling launch configurations and launch groups easier.   Note: given an aws-infra `ecs.Cluster`, the easiest way to create an auto-scaling group is to just call [`createAutoScalingGroup`](https://github.com/pulumi/pulumi-aws-infra/blob/0b432e320c6929866038507e997d55c8d8f62bc3/nodejs/aws-infra/ecs/cluster.ts#L78) on it.  This will produce an auto-scaling group already property configured for that cluster.
 
 * [`ec2`](https://github.com/pulumi/pulumi-aws-infra/blob/master/nodejs/aws-infra/ec2).  A module that makes it easier to work with your AWS network, subnets, and security groups.  By default, the resources in the package follow the [AWS Best Practices](
@@ -25,6 +21,11 @@ The AWS Infrastructure package exposes many high level abstractions.  Including,
 * [`ecs`](https://github.com/pulumi/pulumi-aws-infra/blob/master/nodejs/aws-infra/ecs).  A module that makes it easy to create and configure clusters, tasks and services for running containers. Convenience resources are created to make the common tasks of creating EC2 or Fargate services and tasks much simpler.  
 
 * [`elasticloadbalancingv2`](https://github.com/pulumi/pulumi-aws-infra/tree/master/nodejs/aws-infra/elasticloadbalancingv2).  A module for simply setting up [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/). This module provides convenient ways to set up either `Network` or `Application` load balancers, along with the appropriate ELB Target Groups and Listeners in order to have a high availability, automatically-scaled service.  These ELB components also work well with the other aws-infra components.  For example, an [`elasticloadbalancingv2.TargetGroup`](https://github.com/pulumi/pulumi-aws-infra/blob/0b432e320c6929866038507e997d55c8d8f62bc3/nodejs/aws-infra/elasticloadbalancingv2/targetGroup.ts#L23) can be passed in directly as the `portMapping` target of an [`ecs.Container`](https://github.com/pulumi/pulumi-aws-infra/blob/0b432e320c6929866038507e997d55c8d8f62bc3/nodejs/aws-infra/ecs/container.ts#L185).  
+
+* ~~`Network`~~. Deprecated.  Use [ec2.VPC](https://github.com/pulumi/pulumi-aws-infra/blob/0b432e320c6929866038507e997d55c8d8f62bc3/nodejs/aws-infra/ec2/vpc.ts#L25) instead.
+
+* ~~`Cluster`~~. Deprecated.  Use [ecs.Cluster](https://github.com/pulumi/pulumi-aws-infra/blob/0b432e320c6929866038507e997d55c8d8f62bc3/nodejs/aws-infra/ecs/cluster.ts#L26) instead.
+
 
 ## Installing
 
