@@ -119,5 +119,28 @@ const vpc = new awsx.ec2.Vpc("custom", {
 
 In the case where there is one NAT gateway per availability zone, then routing is very simple.  Each `private` subnet will have have connections routed through gateway in that availability zone.  In the case where there are less NAT gateways than availability zones, then routing works slightly differently.  If there are N NAT gateways requested, then the first N availability zones will get a NAT gateway.  Routing to `private` subnets in those availability zones works as above.  However, all remaining availability zones will have their `private` subnets routed to in a round-robin fashion from the availability zones with NAT gateways.  While this can save money, it also introduces higher risk as failure of one availability zone may impact others.
 
+## Security Groups
+
+All traffic in and out of a VPC is controlled by [Security Groups](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html).  Security groups can control incoming traffic through `ingress` rules and outgoing traffic through `egress` rules.  `ingress` and `egress` can be customized like so:
+
+```ts
+import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/aws-infra";
+
+const vpc = new awsx.ec2.Vpc("custom", {
+   // ...
+});
+
+const sg = new awsx.ec2.SecurityGroup(`sg`, { vpc });
+SecurityGroupRule.ingress("https-access", sg,
+   new awsx.ec2.AnyIPv4Location(),
+   new awsx.ec2.TcpPorts(443),
+   "allow https access");
+SecurityGroupRule.ingress("ssd-access", sg,
+   new awsx.ec2.AnyIPv4Location(),
+   new awsx.ec2.TcpPorts(22),
+   "allow ssh access");
+```
+
 For detailed reference documentation, please visit [the API docs](
 https://pulumi.io/reference/pkg/nodejs/@pulumi/aws-infra/ec2/).
