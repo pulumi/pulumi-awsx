@@ -1,6 +1,6 @@
 # Pulumi Elastic Load Balancing Components
 
-Pulumi's API's for simplifying [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/).  The API provides a simple way to create either Application (ALB) or Network (NLB0 load balancers, and their associated Target Groups and Listeners.  For more details, see [Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) and [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html).
+Pulumi's API's for simplifying [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/).  The API provides a simple way to create either Application (ALB) or Network (NLB) load balancers, and their associated Target Groups and Listeners.  For more details, see [Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) and [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html).
 
 ## Network Load Balancer
 
