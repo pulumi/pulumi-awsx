@@ -80,5 +80,9 @@ const nginx = new awsx.ecs.EC2Service("examples-nginx", {
 });
 ```
 
+# Application Load Balancers
+
+ALBs follow the same pattern above as NLBs.  To create ad use them, simply replace usages of `Network` above with `Application`.  i.e. instead of `new awsx.elasticloadbalancingv2.NetworkLoadBalancer` use `new awsx.elasticloadbalancingv2.ApplicationLoadBalancer`.
+
 For detailed reference documentation, please visit [the API docs](
 https://pulumi.io/reference/pkg/nodejs/@pulumi/aws-infra/elasticloadbalancingv2/).
