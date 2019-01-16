@@ -11,15 +11,15 @@
     "homepage": "https://pulumi.io",
     "repository": "https://github.com/pulumi/pulumi-aws-infra",
     "dependencies": {
-        "@pulumi/pulumi": "^0.16.9",
-        "@pulumi/aws": "^0.16.5",
-        "@pulumi/docker": "^0.16.1"
+        "@pulumi/pulumi": "^0.16.10",
+        "@pulumi/aws": "^0.16.6",
+        "@pulumi/docker": "^0.16.3"
     },
     "devDependencies": {
         "@types/aws-sdk": "^2.7.0",
-        "@types/node": "^8.0.26",
+        "@types/node": "^10.0.0",
         "tslint": "^5.11.0",
         "typedoc": "^0.13.0",
-        "typescript": "^3.1.6"
+        "typescript": "^3.0.0"
     }
 }
