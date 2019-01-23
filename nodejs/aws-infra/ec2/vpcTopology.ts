@@ -109,7 +109,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
         const subnetIds = this.vpc.getSubnetIds(type);
 
         for (let i = 0; i < this.numberOfAvailabilityZones; i++) {
-            const subnetName = getSubnetName(subnetArgs, i);
+            const subnetName = getSubnetName(this.vpcName, subnetArgs, i);
 
             const subnet = new x.ec2.Subnet(subnetName, this.vpc, {
                 availabilityZone: getAvailabilityZone(i),
@@ -124,13 +124,13 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
 
         return;
 
-        function getSubnetName(subnetArgs: x.ec2.VpcSubnetArgs, i: number) {
+        function getSubnetName(vpcName: string, subnetArgs: x.ec2.VpcSubnetArgs, i: number) {
             let subnetName = `${subnetArgs.type}-${i}`;
             if (subnetArgs.name) {
                 subnetName = `${subnetArgs.name}-` + subnetName;
             }
 
-            return subnetName;
+            return `${vpcName}-${subnetName}`;
         }
     }
 }
