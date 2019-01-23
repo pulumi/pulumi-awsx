@@ -126,7 +126,7 @@ function getIPv4AddressValue(address: string): number {
     function getOctet(piece: string): number {
         const val = parseInt(piece, 10);
         if (val < 0 || val >= 256) {
-            throw new Error(`Each part of the ip address must be between 0 and 255. Got "${val}"`);
+            throw new Error(`Each part of the ip address must be between 0 and 255. Parsed "${val}" from "${piece} in ${address}"`);
         }
 
         return val;
@@ -134,7 +134,7 @@ function getIPv4AddressValue(address: string): number {
 }
 
 export function getIPv4Address(value: number): string {
-    const ipAddress = (value>>24) + "." +
+    const ipAddress = ((value>>24) & 255) + "." +
                       ((value>>16) & 255) + "." +
                       ((value>>8) & 255) + "." +
                       (value & 255);
