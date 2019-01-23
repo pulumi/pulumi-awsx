@@ -64,6 +64,16 @@ func Test_Examples(t *testing.T) {
 			},
 		},
 		{
+			Dir:       path.Join(cwd, "./examples/vpc"),
+			StackName: addRandomSuffix("vpc"),
+			Config: map[string]string{
+				"aws:region":               fargateRegion,
+			},
+			Dependencies: []string{
+				"@pulumi/aws-infra",
+			},
+		},
+		{
 			Dir:       path.Join(cwd, "./examples/fargate"),
 			StackName: addRandomSuffix("containers-fargate"),
 			Config: map[string]string{

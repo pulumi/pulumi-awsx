@@ -1,0 +1,24 @@
+{
+    "name": "vpc",
+    "version": "0.0.1",
+    "license": "Apache-2.0",
+    "main": "bin/index.js",
+    "typings": "bin/index.d.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@pulumi/pulumi": "dev",
+        "@pulumi/aws": "dev",
+        "node-fetch": "^1.7.3",
+        "redis": "^2.8.0"
+    },
+    "devDependencies": {
+        "@types/node": "^10.0.0",
+        "@types/node-fetch": "^1.6.7",
+        "typescript": "^3.0.0"
+    },
+    "peerDependencies": {
+        "@pulumi/aws-infra": "latest"
+    }
+}
