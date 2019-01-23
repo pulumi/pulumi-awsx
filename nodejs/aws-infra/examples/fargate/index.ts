@@ -55,7 +55,7 @@ const cachedNginx = new awsx.ecs.FargateService("examples-cached-nginx", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsx.ecs.Image.fromDockerBuild({
+                image: awsx.ecs.Image.fromDockerBuild("examples-cached-nginx", {
                     context: "./app",
                     cacheFrom: true,
                 }),
@@ -72,7 +72,7 @@ const multistageCachedNginx = new awsx.ecs.FargateService("examples-multistage-c
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsx.ecs.Image.fromDockerBuild({
+                image: awsx.ecs.Image.fromDockerBuild("examples-multistage-cached-nginx", {
                     context: "./app",
                     dockerfile: "./app/Dockerfile-multistage",
                     cacheFrom: {stages: ["build"]},
@@ -193,7 +193,7 @@ const builtService = new awsx.ecs.FargateService("examples-nginx2", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsx.ecs.Image.fromPath("./app"),
+                image: awsx.ecs.Image.fromPath("examples-nginx2", "./app"),
                 memory: 128,
                 portMappings: [builtServiceListener],
             },
