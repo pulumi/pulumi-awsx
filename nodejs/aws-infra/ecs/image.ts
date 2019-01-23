@@ -100,9 +100,6 @@ class AssetImage extends Image {
                 ? AssetImage.createRepository(this.nameOrRepository, { parent })
                 : this.nameOrRepository;
 
-            // This is a container to build; produce a name, either user-specified or auto-computed.
-            this.pathOrBuild.apply(pathOrBuild =>
-                pulumi.log.debug(`Building container image at '${JSON.stringify(pathOrBuild)}'`, repository));
             const { repositoryUrl, registryId } = repository;
 
             this.imageResult = pulumi.all([this.pathOrBuild, repositoryUrl, registryId])
@@ -169,6 +166,8 @@ class AssetImage extends Image {
             repositoryUrl: string,
             registryId: string,
             logResource: pulumi.Resource) {
+
+        pulumi.log.debug(`Building container image at '${JSON.stringify(pathOrBuild)}'`, logResource);
 
         const imageName = AssetImage.getImageName(pathOrBuild);
 
