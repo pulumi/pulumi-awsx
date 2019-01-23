@@ -15,6 +15,20 @@
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/aws-infra";
 
-const vpc1 = new awsx.ec2.Vpc("custom1", {
+const vpcWithDifferentCidrBlock = new awsx.ec2.Vpc("custom1", {
     cidrBlock: "192.168.0.0/16",
+});
+
+const vpcWithOnlyPublicSubnets = new awsx.ec2.Vpc("custom2", {
+    cidrBlock: "193.168.0.0/16",
+    subnets: [{
+        type: "public"
+    }]
+});
+
+const vpcWithOnlyPrivateSubnets = new awsx.ec2.Vpc("custom3", {
+    cidrBlock: "194.168.0.0/16",
+    subnets: [{
+        type: "private"
+    }]
 });
