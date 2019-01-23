@@ -21,7 +21,7 @@ const vpc = awsx.ec2.Vpc.getDefault();
 const cluster = new awsx.ecs.Cluster("testing", { vpc });
 const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     templateParameters: {
-        minSize: 20,
+        minSize: 10,
     },
     launchConfigurationArgs: {
         instanceType: "t2.medium",
