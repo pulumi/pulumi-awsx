@@ -113,7 +113,7 @@ func Test_Examples(t *testing.T) {
 	allTests := shortTests
 
 	// Only include the long examples on non-Short test runs
-	if !testing.Short() {
+	if !testing.Short() || true {
 		allTests = append(allTests, longTests...)
 	}
 
