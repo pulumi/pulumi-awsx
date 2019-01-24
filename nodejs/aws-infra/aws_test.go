@@ -67,7 +67,7 @@ func Test_Examples(t *testing.T) {
 			Dir:       path.Join(cwd, "./examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
 			Config: map[string]string{
-				"aws:region":               fargateRegion,
+				"aws:region": fargateRegion,
 			},
 			Dependencies: []string{
 				"@pulumi/aws-infra",
@@ -110,14 +110,18 @@ func Test_Examples(t *testing.T) {
 		},
 	}
 
-	allTests := shortTests
+	var tests []integration.ProgramTestOptions
 
-	// Only include the long examples on non-Short test runs
-	if !testing.Short()  {
-		allTests = append(allTests, longTests...)
+	// Run the short or long tests depending on the config.  Note that we only run long tests on
+	// travis after already running short tests.  So no need to actually run both at the same time
+	// ever.
+	if testing.Short() {
+		tests = shortTests
+	} else {
+		tests = longTests
 	}
 
-	for _, ex := range allTests {
+	for _, ex := range tests {
 		example := ex.With(integration.ProgramTestOptions{
 			ReportStats: integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
 			// TODO[pulumi/pulumi#1900]: This should be the default value, every test we have causes some sort of
