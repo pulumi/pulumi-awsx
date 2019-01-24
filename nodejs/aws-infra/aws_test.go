@@ -67,15 +67,15 @@ func Test_Examples(t *testing.T) {
 			Dir:       path.Join(cwd, "./examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
 			Config: map[string]string{
-				"aws:region":               fargateRegion,
+				"aws:region": fargateRegion,
 			},
 			Dependencies: []string{
 				"@pulumi/aws-infra",
 			},
 		},
 		{
-			Dir:       path.Join(cwd, "./examples/fargate"),
-			StackName: addRandomSuffix("containers-fargate"),
+			Dir:       path.Join(cwd, "./examples/services"),
+			StackName: addRandomSuffix("services"),
 			Config: map[string]string{
 				"aws:region":               fargateRegion,
 				"cloud:provider":           "aws",
@@ -87,33 +87,19 @@ func Test_Examples(t *testing.T) {
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
-			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargate*/),
+			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
+				containersRuntimeValidator(fargateRegion, true /*isFargate*/)(t, stackInfo)
+				containersRuntimeValidator(fargateRegion, false /*isFargate*/)(t, stackInfo)
+			},
 		},
 	}
 
-	longTests := []integration.ProgramTestOptions{
-		{
-			Dir:       path.Join(cwd, "./examples/ec2"),
-			StackName: addRandomSuffix("containers-ec2"),
-			Config: map[string]string{
-				"aws:region":               fargateRegion,
-				"cloud:provider":           "aws",
-				"containers:redisPassword": "SECRETPASSWORD",
-			},
-			Dependencies: []string{
-				"@pulumi/aws-infra",
-			},
-			PreviewCommandlineFlags: []string{
-				"--diff",
-			},
-			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, false /*isFargate*/),
-		},
-	}
+	longTests := []integration.ProgramTestOptions{}
 
 	allTests := shortTests
 
 	// Only include the long examples on non-Short test runs
-	if !testing.Short()  {
+	if !testing.Short() {
 		allTests = append(allTests, longTests...)
 	}
 
@@ -169,7 +155,14 @@ func getLogs(t *testing.T, region string, stackInfo integration.RuntimeValidatio
 
 func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
-		baseURL, ok := stackInfo.Outputs["frontendURL"].(string)
+		var baseURL string
+		var ok bool
+		if isFargate {
+			baseURL, ok = stackInfo.Outputs["fargateFrontendURL"].(string)
+		} else {
+			baseURL, ok = stackInfo.Outputs["ec2FrontendURL"].(string)
+		}
+
 		assert.True(t, ok, "expected a `frontendURL` output property of type string")
 
 		// Validate the GET /test endpoint
