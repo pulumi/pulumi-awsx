@@ -89,9 +89,6 @@ func Test_Examples(t *testing.T) {
 			},
 			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargate*/),
 		},
-	}
-
-	longTests := []integration.ProgramTestOptions{
 		{
 			Dir:       path.Join(cwd, "./examples/ec2"),
 			StackName: addRandomSuffix("containers-ec2"),
@@ -110,10 +107,13 @@ func Test_Examples(t *testing.T) {
 		},
 	}
 
+	longTests := []integration.ProgramTestOptions{
+	}
+
 	allTests := shortTests
 
 	// Only include the long examples on non-Short test runs
-	if !testing.Short() || true {
+	if !testing.Short()  {
 		allTests = append(allTests, longTests...)
 	}
 
