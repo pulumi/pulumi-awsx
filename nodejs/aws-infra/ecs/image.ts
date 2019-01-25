@@ -110,7 +110,7 @@ class AssetImage extends Image {
         return this.imageResult;
     }
 
-    private static getImageName(pathOrBuild: string | docker.DockerBuild) {
+    private static getImageName(pathOrBuild: string | pulumi.Unwrap<docker.DockerBuild>) {
         // Produce a hash of the build context and use that for the image name.
         let buildSig: string;
         if (typeof pathOrBuild === "string") {
@@ -162,7 +162,7 @@ class AssetImage extends Image {
     }
 
     private static computeImageFromAsset(
-            pathOrBuild: string | docker.DockerBuild,
+            pathOrBuild: string | pulumi.Unwrap<docker.DockerBuild>,
             repositoryUrl: string,
             registryId: string,
             logResource: pulumi.Resource) {
