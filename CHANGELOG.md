@@ -1,5 +1,10 @@
-
 ## 0.16.3 (unreleased)
+
+- experimental abstractions have been promoted to supported abstractions.  see new modules for:
+  - autoscaling
+  - ec2
+  - ecs
+  - elasticloadbalancingv2
 
 ## 0.16.2 (Released December 5th, 2018)
 
