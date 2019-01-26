@@ -38,7 +38,7 @@ import (
 	"github.com/pulumi/pulumi/pkg/util/contract"
 )
 
-const fargateRegion = "us-east-1"
+const fargateRegion = "us-east-2"
 
 func Test_Examples(t *testing.T) {
 	region := os.Getenv("AWS_REGION")
