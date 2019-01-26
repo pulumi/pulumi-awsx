@@ -17,7 +17,7 @@ import * as awsx from "@pulumi/aws-infra";
 
 import { Config } from "@pulumi/pulumi";
 
-const vpc = awsx.ec2.Vpc.getDefault();
+const vpc = new awsx.ec2.Vpc("ec2", {});
 const cluster = new awsx.ecs.Cluster("ec2-testing", { vpc });
 const autoScalingGroup = cluster.createAutoScalingGroup("ec2-testing", {
     templateParameters: {
@@ -36,12 +36,12 @@ const nginx = new awsx.ecs.EC2Service("ec2-nginx", {
         containers: {
             nginx: {
                 image: "nginx",
-                memory: 128,
+                memory: 64,
                 portMappings: [nginxListener],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const nginxEndpoint = nginxListener.endpoint();
@@ -51,10 +51,10 @@ const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2
 const simpleNginx = new awsx.ecs.EC2TaskDefinition("ec2-simple-nginx", {
     container: {
         image: "nginx",
-        memory: 128,
+        memory: 64,
         portMappings: [simpleNginxListener],
     },
-}).createService("examples-simple-nginx", { cluster, desiredCount: 2});
+}).createService("examples-simple-nginx", { cluster, desiredCount: 1});
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint();
 
@@ -67,13 +67,13 @@ const cachedNginx = new awsx.ecs.EC2Service("ec2-cached-nginx", {
                     context: "./app",
                     cacheFrom: true,
                 }),
-                memory: 128,
+                memory: 64,
                 portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
                     "ec2-cached-nginx", { port: 80 })],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const multistageCachedNginx = new awsx.ecs.EC2Service("ec2-multistage-cached-nginx", {
@@ -86,13 +86,13 @@ const multistageCachedNginx = new awsx.ecs.EC2Service("ec2-multistage-cached-ngi
                     dockerfile: "./app/Dockerfile-multistage",
                     cacheFrom: {stages: ["build"]},
                 }),
-                memory: 128,
+                memory: 64,
                 portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
                     "ec2-multistage-cached-nginx", { port: 80 })],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const customWebServerListener =
@@ -104,7 +104,7 @@ const customWebServer = new awsx.ecs.EC2Service("ec2-custom", {
     taskDefinitionArgs: {
         containers: {
             webserver: {
-                memory: 128,
+                memory: 64,
                 portMappings: [customWebServerListener],
                 image: awsx.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
@@ -116,7 +116,7 @@ const customWebServer = new awsx.ecs.EC2Service("ec2-custom", {
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const config = new Config("containers");
@@ -203,12 +203,12 @@ const builtService = new awsx.ecs.EC2Service("ec2-nginx2", {
         containers: {
             nginx: {
                 image: awsx.ecs.Image.fromPath("ec2-nginx2", "./app"),
-                memory: 128,
+                memory: 64,
                 portMappings: [builtServiceListener],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
     waitForSteadyState: false,
 });
 
