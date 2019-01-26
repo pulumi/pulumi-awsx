@@ -17,7 +17,7 @@ import * as awsx from "@pulumi/aws-infra";
 
 import { Config } from "@pulumi/pulumi";
 
-const vpc = awsx.ec2.Vpc.getDefault();
+const vpc = new awsx.ec2.Vpc("ec2vpc", {});
 const cluster = new awsx.ecs.Cluster("testing", { vpc });
 const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     templateParameters: {
