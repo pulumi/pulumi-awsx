@@ -19,22 +19,12 @@ import { Config } from "@pulumi/pulumi";
 
 const vpc = awsx.ec2.Vpc.getDefault();
 const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
-const cluster2 = new awsx.ecs.Cluster("ec2-testing-2", { vpc });
 cluster1.createAutoScalingGroup("ec2-testing-1", {
     templateParameters: {
         minSize: 20,
     },
     launchConfigurationArgs: {
-        instanceType: "t2.large",
-    },
-});
-
-cluster2.createAutoScalingGroup("ec2-testing-2", {
-    templateParameters: {
-        minSize: 20,
-    },
-    launchConfigurationArgs: {
-        instanceType: "t2.large",
+        instanceType: "t2.xlarge",
     },
 });
 
@@ -110,7 +100,7 @@ const customWebServerListener =
          .createListener("ec2-custom", { port: 80 });
 
 const customWebServer = new awsx.ecs.EC2Service("ec2-custom", {
-    cluster: cluster2,
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             webserver: {
@@ -142,7 +132,7 @@ class Ec2Cache {
     constructor(name: string, memory: number = 128) {
         const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { port: 6379 });
         const redis = new awsx.ecs.EC2Service(name, {
-            cluster: cluster2,
+            cluster: cluster1,
             taskDefinitionArgs: {
                 containers: {
                     redis: {
@@ -208,7 +198,7 @@ const helloTask = new awsx.ecs.EC2TaskDefinition("ec2-hello-world", {
 // build an anonymous image:
 const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2-nginx2", { port: 80 });
 const builtService = new awsx.ecs.EC2Service("ec2-nginx2", {
-    cluster: cluster2,
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -294,7 +284,7 @@ const api = new aws.apigateway.x.API("ec2-containers", {
             policies: [...awsx.ecs.TaskDefinition.defaultTaskRolePolicyARNs()],
             callback: async (req) => {
                 try {
-                    const result = await helloTask.run({ cluster: cluster2 });
+                    const result = await helloTask.run({ cluster: cluster1 });
                     return {
                         statusCode: 200,
                         body: JSON.stringify({ success: true, tasks: result.tasks }),
