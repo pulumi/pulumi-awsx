@@ -67,6 +67,11 @@ export class Cluster
 
     public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {
         this.autoScalingGroups.push(group);
+
+        // Anyone who takes a dependency on this cluster should take a dependency on the
+        // autoscaling group fully coming up.
+        const urn = pulumi.all([this.urn, group.urn]).apply(([oldUrn]) => oldUrn);
+        (<any>this).urn = urn;
     }
 
     /**
