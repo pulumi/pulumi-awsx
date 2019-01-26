@@ -20,11 +20,12 @@ import { Config } from "@pulumi/pulumi";
 const vpc = new awsx.ec2.Vpc("ec2", {});
 const cluster = new awsx.ecs.Cluster("ec2-testing", { vpc });
 const autoScalingGroup = cluster.createAutoScalingGroup("ec2-testing", {
+    vpc,
     templateParameters: {
         minSize: 20,
     },
     launchConfigurationArgs: {
-        instanceType: "t2.medium",
+        instanceType: "t2.small",
     },
 });
 
