@@ -22,7 +22,7 @@ const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
 const cluster2 = new awsx.ecs.Cluster("ec2-testing-2", { vpc });
 cluster1.createAutoScalingGroup("ec2-testing-1", {
     templateParameters: {
-        minSize: 20,
+        minSize: 1,
     },
     launchConfigurationArgs: {
         instanceType: "t2.large",
@@ -31,7 +31,7 @@ cluster1.createAutoScalingGroup("ec2-testing-1", {
 
 cluster2.createAutoScalingGroup("ec2-testing-2", {
     templateParameters: {
-        minSize: 20,
+        minSize: 1,
     },
     launchConfigurationArgs: {
         instanceType: "t2.large",
