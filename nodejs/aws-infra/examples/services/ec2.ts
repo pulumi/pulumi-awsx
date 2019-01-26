@@ -18,20 +18,30 @@ import * as awsx from "@pulumi/aws-infra";
 import { Config } from "@pulumi/pulumi";
 
 const vpc = awsx.ec2.Vpc.getDefault();
-const cluster = new awsx.ecs.Cluster("ec2-testing", { vpc });
-const autoScalingGroup = cluster.createAutoScalingGroup("ec2-testing", {
+const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
+const cluster2 = new awsx.ecs.Cluster("ec2-testing-2", { vpc });
+cluster1.createAutoScalingGroup("ec2-testing-1", {
     templateParameters: {
         minSize: 20,
     },
     launchConfigurationArgs: {
-        instanceType: "t3.xlarge",
+        instanceType: "t2.large",
+    },
+});
+
+cluster2.createAutoScalingGroup("ec2-testing-2", {
+    templateParameters: {
+        minSize: 20,
+    },
+    launchConfigurationArgs: {
+        instanceType: "t2.large",
     },
 });
 
 // A simple NGINX service, scaled out over two containers.
 const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2-nginx", { port: 80 });
 const nginx = new awsx.ecs.EC2Service("ec2-nginx", {
-    cluster,
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -54,12 +64,12 @@ const simpleNginx = new awsx.ecs.EC2TaskDefinition("ec2-simple-nginx", {
         memory: 64,
         portMappings: [simpleNginxListener],
     },
-}).createService("examples-simple-nginx", { cluster, desiredCount: 1});
+}).createService("examples-simple-nginx", { cluster: cluster1, desiredCount: 1});
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint();
 
 const cachedNginx = new awsx.ecs.EC2Service("ec2-cached-nginx", {
-    cluster,
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -77,7 +87,7 @@ const cachedNginx = new awsx.ecs.EC2Service("ec2-cached-nginx", {
 });
 
 const multistageCachedNginx = new awsx.ecs.EC2Service("ec2-multistage-cached-nginx", {
-    cluster,
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -100,7 +110,7 @@ const customWebServerListener =
          .createListener("ec2-custom", { port: 80 });
 
 const customWebServer = new awsx.ecs.EC2Service("ec2-custom", {
-    cluster,
+    cluster: cluster2,
     taskDefinitionArgs: {
         containers: {
             webserver: {
@@ -132,7 +142,7 @@ class Ec2Cache {
     constructor(name: string, memory: number = 128) {
         const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { port: 6379 });
         const redis = new awsx.ecs.EC2Service(name, {
-            cluster,
+            cluster: cluster2,
             taskDefinitionArgs: {
                 containers: {
                     redis: {
@@ -198,7 +208,7 @@ const helloTask = new awsx.ecs.EC2TaskDefinition("ec2-hello-world", {
 // build an anonymous image:
 const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2-nginx2", { port: 80 });
 const builtService = new awsx.ecs.EC2Service("ec2-nginx2", {
-    cluster,
+    cluster: cluster2,
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -284,7 +294,7 @@ const api = new aws.apigateway.x.API("ec2-containers", {
             policies: [...awsx.ecs.TaskDefinition.defaultTaskRolePolicyARNs()],
             callback: async (req) => {
                 try {
-                    const result = await helloTask.run({ cluster });
+                    const result = await helloTask.run({ cluster: cluster2 });
                     return {
                         statusCode: 200,
                         body: JSON.stringify({ success: true, tasks: result.tasks }),
