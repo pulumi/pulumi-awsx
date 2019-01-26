@@ -36,12 +36,12 @@ const nginx = new awsx.ecs.EC2Service("examples-nginx", {
         containers: {
             nginx: {
                 image: "nginx",
-                memory: 128,
+                memory: 64,
                 portMappings: [nginxListener],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const nginxEndpoint = nginxListener.endpoint();
@@ -51,10 +51,10 @@ const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("exa
 const simpleNginx = new awsx.ecs.EC2TaskDefinition("examples-simple-nginx", {
     container: {
         image: "nginx",
-        memory: 128,
+        memory: 64,
         portMappings: [simpleNginxListener],
     },
-}).createService("examples-simple-nginx", { cluster, desiredCount: 2});
+}).createService("examples-simple-nginx", { cluster, desiredCount: 1});
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint();
 
@@ -67,13 +67,13 @@ const cachedNginx = new awsx.ecs.EC2Service("examples-cached-nginx", {
                     context: "./app",
                     cacheFrom: true,
                 }),
-                memory: 128,
+                memory: 64,
                 portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
                     "examples-cached-nginx", { port: 80 })],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const multistageCachedNginx = new awsx.ecs.EC2Service("examples-multistage-cached-nginx", {
@@ -86,13 +86,13 @@ const multistageCachedNginx = new awsx.ecs.EC2Service("examples-multistage-cache
                     dockerfile: "./app/Dockerfile-multistage",
                     cacheFrom: {stages: ["build"]},
                 }),
-                memory: 128,
+                memory: 64,
                 portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
                     "examples-multistage-cached-nginx", { port: 80 })],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const customWebServerListener =
@@ -104,7 +104,7 @@ const customWebServer = new awsx.ecs.EC2Service("custom", {
     taskDefinitionArgs: {
         containers: {
             webserver: {
-                memory: 128,
+                memory: 64,
                 portMappings: [customWebServerListener],
                 image: awsx.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
@@ -116,7 +116,7 @@ const customWebServer = new awsx.ecs.EC2Service("custom", {
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const config = new Config("containers");
@@ -129,7 +129,7 @@ class Cache {
     get: (key: string) => Promise<string>;
     set: (key: string, value: string) => Promise<void>;
 
-    constructor(name: string, memory: number = 128) {
+    constructor(name: string, memory: number = 64) {
         const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { port: 6379 });
         const redis = new awsx.ecs.EC2Service(name, {
             cluster,
@@ -203,12 +203,12 @@ const builtService = new awsx.ecs.EC2Service("examples-nginx2", {
         containers: {
             nginx: {
                 image: awsx.ecs.Image.fromPath("examples-nginx2", "./app"),
-                memory: 128,
+                memory: 64,
                 portMappings: [builtServiceListener],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
     waitForSteadyState: false,
 });
 
