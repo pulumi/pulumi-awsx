@@ -21,11 +21,11 @@ const vpc = awsx.ec2.Vpc.getDefault();
 const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
 cluster1.createAutoScalingGroup("ec2-testing-1", {
     templateParameters: {
-        minSize: 20,
+        minSize: 10,
     },
     launchConfigurationArgs: {
-        instanceType: "t2.xlarge",
-    },
+        instanceType: "t2.medium",
+},
 });
 
 // A simple NGINX service, scaled out over two containers.
