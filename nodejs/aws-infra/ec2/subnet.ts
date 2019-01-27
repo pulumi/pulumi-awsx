@@ -67,7 +67,7 @@ export class Subnet extends pulumi.ComponentResource {
                             .apply(([id]) => id);
         }
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     public createRoute(name: string, args: RouteArgs, opts?: pulumi.ComponentResourceOptions) {

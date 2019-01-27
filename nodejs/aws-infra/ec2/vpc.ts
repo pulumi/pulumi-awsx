@@ -89,7 +89,7 @@ export class Vpc extends pulumi.ComponentResource {
             createNatGateways(this, numberOfAvailabilityZones, numberOfNatGateways);
         }
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     public getSubnets(type: VpcSubnetType) {

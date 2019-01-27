@@ -62,7 +62,7 @@ export class Cluster
         this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {

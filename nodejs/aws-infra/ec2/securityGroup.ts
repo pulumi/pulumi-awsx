@@ -57,7 +57,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
 
         this.id = this.securityGroup.id;
 
-        this.registerOutputs();
+        this.registerOutputs({});
 
         for (let i = 0, n = egressRules.length; i < n; i++) {
             this.createEgressRule(`${name}-egress-${i}`, egressRules[i], parentOpts);

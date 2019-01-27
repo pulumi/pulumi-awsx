@@ -46,7 +46,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
         this.listeners = [];
         this.targetGroups = [];
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     /**
@@ -98,7 +98,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     public createListener(name: string, args: ApplicationListenerArgs,
@@ -189,7 +189,7 @@ export class ApplicationListener extends mod.Listener {
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 }
 

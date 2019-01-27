@@ -118,7 +118,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
             securityGroupId: securityGroup.id,
         }, { parent: this });
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     public static egressArgs(
