@@ -270,7 +270,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 		// https://github.com/pulumi/pulumi-cloud/issues/666
 		// We are only making the proxy route in fargate testing.
 		if isFargate {
-			nginxLogs, exists := getLogsWithPrefix(logsByResource, "examples-nginx-")
+			nginxLogs, exists := getLogsWithPrefix(logsByResource, "fargate-nginx-")
 			if !assert.True(t, exists) {
 				return
 			}
@@ -283,7 +283,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 		// Hello World container Task logs
 		//  {examples-hello-world 1512871250458 Hello from Docker!}
 		{
-			helloWorldLogs, exists := getLogsWithPrefix(logsByResource, "examples-hello-world-")
+			helloWorldLogs, exists := getLogsWithPrefix(logsByResource, "fargate-hello-world-")
 			if !assert.True(t, exists) {
 				return
 			}
@@ -296,7 +296,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 		// Cache Redis container  logs
 		//  {examples-mycache 1512870479441 1:C 10 Dec 01:47:59.440 # oO0OoO0OoO0Oo Redis is starting ...
 		{
-			redisLogs, exists := getLogsWithPrefix(logsByResource, "examples-mycache-")
+			redisLogs, exists := getLogsWithPrefix(logsByResource, "fargate-mycache-")
 			if !assert.True(t, exists) {
 				return
 			}
