@@ -77,12 +77,12 @@ export class Cluster
      */
     public createAutoScalingGroup(
             name: string,
-            args?: x.autoscaling.AutoScalingGroupArgs,
+            args: x.autoscaling.AutoScalingGroupArgs = {},
             opts?: pulumi.ComponentResourceOptions) {
 
-        args = args || { vpc: this.vpc };
-
+        args.vpc = args.vpc || this.vpc;
         args.launchConfigurationArgs = args.launchConfigurationArgs || {};
+
         const launchConfigurationArgs = args.launchConfigurationArgs;
         launchConfigurationArgs.securityGroups = this.securityGroups;
         launchConfigurationArgs.userData = this;

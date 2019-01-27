@@ -74,8 +74,8 @@ func Test_Examples(t *testing.T) {
 			},
 		},
 		{
-			Dir:       path.Join(cwd, "./examples/fargate"),
-			StackName: addRandomSuffix("containers-fargate"),
+			Dir:       path.Join(cwd, "./examples/services"),
+			StackName: addRandomSuffix("services"),
 			Config: map[string]string{
 				"aws:region":               fargateRegion,
 				"cloud:provider":           "aws",
@@ -84,39 +84,23 @@ func Test_Examples(t *testing.T) {
 			Dependencies: []string{
 				"@pulumi/aws-infra",
 			},
-			Quick: true,
+			Quick:       true,
+			SkipRefresh: true,
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
-			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargate*/),
+			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
+				containersRuntimeValidator(fargateRegion, true /*isFargate*/)(t, stackInfo)
+			},
 		},
 	}
 
-	longTests := []integration.ProgramTestOptions{
-		{
-			Dir:       path.Join(cwd, "./examples/ec2"),
-			StackName: addRandomSuffix("containers-ec2"),
-			Config: map[string]string{
-				"aws:region":               fargateRegion,
-				"cloud:provider":           "aws",
-				"containers:redisPassword": "SECRETPASSWORD",
-			},
-			Dependencies: []string{
-				"@pulumi/aws-infra",
-			},
-			Quick: true,
-			PreviewCommandlineFlags: []string{
-				"--diff",
-			},
-			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, false /*isFargate*/),
-		},
-	}
-
-	var tests []integration.ProgramTestOptions
+	longTests := []integration.ProgramTestOptions{}
 
 	// Run the short or long tests depending on the config.  Note that we only run long tests on
 	// travis after already running short tests.  So no need to actually run both at the same time
 	// ever.
+	var tests []integration.ProgramTestOptions
 	if testing.Short() {
 		tests = shortTests
 	} else {
@@ -175,7 +159,14 @@ func getLogs(t *testing.T, region string, stackInfo integration.RuntimeValidatio
 
 func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
-		baseURL, ok := stackInfo.Outputs["frontendURL"].(string)
+		var baseURL string
+		var ok bool
+		if isFargate {
+			baseURL, ok = stackInfo.Outputs["fargateFrontendURL"].(string)
+		} else {
+			baseURL, ok = stackInfo.Outputs["ec2FrontendURL"].(string)
+		}
+
 		assert.True(t, ok, "expected a `frontendURL` output property of type string")
 
 		// Validate the GET /test endpoint
@@ -279,7 +270,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 		// https://github.com/pulumi/pulumi-cloud/issues/666
 		// We are only making the proxy route in fargate testing.
 		if isFargate {
-			nginxLogs, exists := getLogsWithPrefix(logsByResource, "examples-nginx-")
+			nginxLogs, exists := getLogsWithPrefix(logsByResource, "fargate-nginx-")
 			if !assert.True(t, exists) {
 				return
 			}
@@ -292,7 +283,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 		// Hello World container Task logs
 		//  {examples-hello-world 1512871250458 Hello from Docker!}
 		{
-			helloWorldLogs, exists := getLogsWithPrefix(logsByResource, "examples-hello-world-")
+			helloWorldLogs, exists := getLogsWithPrefix(logsByResource, "fargate-hello-world-")
 			if !assert.True(t, exists) {
 				return
 			}
@@ -305,7 +296,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 		// Cache Redis container  logs
 		//  {examples-mycache 1512870479441 1:C 10 Dec 01:47:59.440 # oO0OoO0OoO0Oo Redis is starting ...
 		{
-			redisLogs, exists := getLogsWithPrefix(logsByResource, "examples-mycache-")
+			redisLogs, exists := getLogsWithPrefix(logsByResource, "fargate-mycache-")
 			if !assert.True(t, exists) {
 				return
 			}
