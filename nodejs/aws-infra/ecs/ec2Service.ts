@@ -40,7 +40,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 
         super("awsinfra:x:ecs:EC2TaskDefinition", name, /*isFargate:*/ false, argsCopy, opts);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     /**
@@ -93,7 +93,7 @@ export class EC2Service extends ecs.Service {
             },
         }, /*isFargate:*/ false, opts);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 }
 

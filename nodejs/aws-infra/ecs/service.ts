@@ -52,8 +52,6 @@ export abstract class Service extends pulumi.ComponentResource {
         }, parentOpts);
 
         this.taskDefinition = args.taskDefinition;
-
-        this.registerOutputs();
     }
 }
 
