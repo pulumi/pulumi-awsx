@@ -90,20 +90,7 @@ func Test_Examples(t *testing.T) {
 				"--diff",
 			},
 			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
-				out1 := make(chan bool)
-				out2 := make(chan bool)
-				go func() {
-					containersRuntimeValidator(fargateRegion, true /*isFargate*/)(t, stackInfo)
-					out1 <- true
-				}()
-				go func() {
-					containersRuntimeValidator(fargateRegion, false /*isFargate*/)(t, stackInfo)
-					out2 <- true
-				}()
-				<-out1
-				<-out2
-				close(out1)
-				close(out2)
+				containersRuntimeValidator(fargateRegion, true /*isFargate*/)(t, stackInfo)
 			},
 		},
 	}
