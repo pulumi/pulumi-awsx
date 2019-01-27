@@ -84,6 +84,7 @@ func Test_Examples(t *testing.T) {
 			Dependencies: []string{
 				"@pulumi/aws-infra",
 			},
+			Quick: true,
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
@@ -103,6 +104,7 @@ func Test_Examples(t *testing.T) {
 			Dependencies: []string{
 				"@pulumi/aws-infra",
 			},
+			Quick: true,
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
