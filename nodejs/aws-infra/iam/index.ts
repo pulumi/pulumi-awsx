@@ -1,3 +1,17 @@
+// Copyright 2016-2018, Pulumi Corporation.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
@@ -6,22 +20,19 @@ import * as utils from "./../utils";
 export class User extends pulumi.ComponentResource {
     public readonly user: aws.iam.User;
     public readonly groupMembership?: aws.iam.UserGroupMembership;
-    public readonly accessKey?: aws.iam.AccessKey;
 
     constructor(name: string, args: UserArgs = {}, opts?: pulumi.CustomResourceOptions) {
         super(`awsinfra:x:iam:User`, name, args, opts);
 
         // Save group membership and access key args so we can define them inline.
         const groupMembership = args.groupMembership;
-        const accessKey = args.accessKey;
 
         // Explicitly delete these props so we do *not* pass them into the User created
         // below.
         delete args.groupMembership;
-        delete args.accessKey;
         delete args.user;
 
-        this.user = args.user || new aws.iam.User(name, args && args, { parent: this });
+        this.user = args.user || new aws.iam.User(name, args, { parent: this });
 
         if (groupMembership !== undefined) {
             this.groupMembership = new aws.iam.UserGroupMembership(
@@ -30,20 +41,27 @@ export class User extends pulumi.ComponentResource {
                 { parent: this }
             );
         }
+    }
 
-        if (accessKey == "create") {
-            this.accessKey = new aws.iam.AccessKey(
-                name,
-                { user: this.user.name },
-                { parent: this }
-            );
-        } else if (args && accessKey !== undefined && accessKey != "create") {
-            this.accessKey = new aws.iam.AccessKey(
-                name,
-                { ...accessKey, user: this.user.name },
-                { parent: this }
-            );
-        }
+    /**
+     * Create an AccessKey for the current `User`.
+     *
+     * @param name The _unique_ name of the resulting `AccessKey` resource.
+     * @param args The properties of the resulting `AccessKey` resource.
+     * @param opts A bag of options that control the resulting `AccessKey` resource's behavior.
+     * __NOTE__: the `parent` field is overridden and set to `this`, rather than the value (if any)
+     * in `opts`.
+     */
+    public createAccessKey(
+        name: string,
+        args: AccessKeyArgs,
+        opts?: pulumi.CustomResourceOptions
+    ): aws.iam.AccessKey {
+        return new aws.iam.AccessKey(
+            name,
+            { ...args, user: this.user.name },
+            { ...opts, parent: this }
+        );
     }
 
     public static fromExistingId(
@@ -56,14 +74,10 @@ export class User extends pulumi.ComponentResource {
     }
 }
 
-type OverwriteUserArgs = utils.Overwrite<
-    aws.iam.UserArgs,
-    {
-        accessKey?: "create" | AccessKeyArgs;
-        groupMembership?: UserGroupMembershipArgs;
-        user?: aws.iam.User;
-    }
->;
+type OverwriteUserArgs = utils.Overwrite<aws.iam.UserArgs, {
+    groupMembership?: UserGroupMembershipArgs;
+    user?: aws.iam.User;
+}>;
 
 /**
  * The set of arguments for constructing a User resource.
@@ -75,11 +89,6 @@ export interface UserArgs {
      * a user with non-Terraform-managed access keys and login profile will fail to be destroyed.
      */
     readonly forceDestroy?: pulumi.Input<boolean>;
-
-    /**
-     * Configuration for access keys for this IAM User.
-     */
-    accessKey?: "create" | AccessKeyArgs;
 
     /**
      * The IAM Groups this User belongs to.
@@ -118,10 +127,9 @@ export interface UserArgs {
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
 const test1: string = utils.checkCompat<OverwriteUserArgs, UserArgs>();
 
-type OverwriteUserGroupMembershipArgs = utils.Overwrite<
-    aws.iam.UserGroupMembershipArgs,
-    { user?: never }
->;
+type OverwriteUserGroupMembershipArgs = utils.Overwrite<aws.iam.UserGroupMembershipArgs, {
+    user?: never
+}>;
 
 /**
  * The set of arguments for constructing a UserGroupMembership resource.
@@ -154,60 +162,3 @@ export interface AccessKeyArgs {
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
 const test3: string = utils.checkCompat<OverwriteAccessKeyArgs, AccessKeyArgs>();
-
-/**
- * EmployeeUser represents an AWS IAM User that is a full-time employee. Because it is useful to
- * quickly distinguish between various types of users, all EmployeeUsers are allocated names of the
- * form `employee.${name}`.
- */
-export class EmployeeUser extends User {
-    /**
-     * Create a EmployeeUser resource with the given unique name, arguments, and options.
-     *
-     * @param name The _unique_ name of the resource. This name will be transformed into the form
-     * `employee.${name}`.
-     * @param args The arguments to use to populate this resource's properties.
-     * @param opts A bag of options that control this resource's behavior.
-     */
-    constructor(name: string, args?: UserArgs, opts?: pulumi.CustomResourceOptions) {
-        super(`employee.${name}`, args, opts);
-    }
-}
-
-/**
- * ContractorUser represents an AWS IAM User that is a contracting employee. Because it is useful to
- * quickly distinguish between various types of users, all ContractorUsers are allocated names of
- * the form `contractor.${name}`.
- */
-export class ContractorUser extends User {
-    /**
-     * Create a ContractorUser resource with the given unique name, arguments, and options.
-     *
-     * @param name The _unique_ name of the resource. This name will be transformed into the form
-     * `contractor.${name}`.
-     * @param args The arguments to use to populate this resource's properties.
-     * @param opts A bag of options that control this resource's behavior.
-     */
-    constructor(name: string, args?: UserArgs, opts?: pulumi.CustomResourceOptions) {
-        super(`contractor.${name}`, args, opts);
-    }
-}
-
-/**
- * BotUser represents an AWS IAM User that is a bot, such as a CI system. Because it is useful to
- * quickly distinguish between various types of users, all BotUsers are allocated names of the form
- * `bot.${name}`.
- */
-export class BotUser extends User {
-    /**
-     * Create a BotUser resource with the given unique name, arguments, and options.
-     *
-     * @param name The _unique_ name of the resource. This name will be transformed into the form
-     * `bot.${name}`.
-     * @param args The arguments to use to populate this resource's properties.
-     * @param opts A bag of options that control this resource's behavior.
-     */
-    constructor(name: string, args?: UserArgs, opts?: pulumi.CustomResourceOptions) {
-        super(`bot.${name}`, args, opts);
-    }
-}
