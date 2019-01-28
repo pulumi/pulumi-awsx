@@ -89,8 +89,13 @@ func Test_Examples(t *testing.T) {
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
-			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
-				containersRuntimeValidator(fargateRegion, true /*isFargate*/)(t, stackInfo)
+			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargate*/),
+			EditDirs: []integration.EditDir{
+				{
+					Additive:               true,
+					Dir:                    path.Join(cwd, "./examples/services/update1"),
+					ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, false /*isFargate*/),
+				},
 			},
 		},
 	}
