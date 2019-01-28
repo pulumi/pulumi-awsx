@@ -62,7 +62,7 @@ export class Cluster
         this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {
@@ -77,12 +77,12 @@ export class Cluster
      */
     public createAutoScalingGroup(
             name: string,
-            args?: x.autoscaling.AutoScalingGroupArgs,
+            args: x.autoscaling.AutoScalingGroupArgs = {},
             opts?: pulumi.ComponentResourceOptions) {
 
-        args = args || { vpc: this.vpc };
-
+        args.vpc = args.vpc || this.vpc;
         args.launchConfigurationArgs = args.launchConfigurationArgs || {};
+
         const launchConfigurationArgs = args.launchConfigurationArgs;
         launchConfigurationArgs.securityGroups = this.securityGroups;
         launchConfigurationArgs.userData = this;
