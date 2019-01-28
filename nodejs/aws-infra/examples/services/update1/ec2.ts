@@ -24,11 +24,13 @@ const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
 export const clusterId = cluster1.id;
 
 const autoScalingGroup = cluster1.createAutoScalingGroup("ec2-testing-1", {
+    subnetIds: vpc.publicSubnetIds,
     templateParameters: {
         minSize: 10,
     },
     launchConfigurationArgs: {
         instanceType: "t2.medium",
+        associatePublicIpAddress: true,
     },
 });
 
