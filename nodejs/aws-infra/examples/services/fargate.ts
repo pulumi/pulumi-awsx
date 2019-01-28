@@ -17,8 +17,7 @@ import * as awsx from "@pulumi/aws-infra";
 
 import { Config } from "@pulumi/pulumi";
 
-const vpc = awsx.ec2.Vpc.getDefault();
-const cluster = new awsx.ecs.Cluster("testing", { vpc });
+const cluster = new awsx.ecs.Cluster("testing");
 
 // A simple NGINX service, scaled out over two containers.
 const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("fargate-nginx", { port: 80 });
