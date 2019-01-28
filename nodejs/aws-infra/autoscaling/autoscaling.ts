@@ -277,6 +277,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         const parentOpts = { parent: this };
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
 
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
         if (args.launchConfiguration) {
@@ -295,7 +296,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             templateBody: getCloudFormationTemplate(
                 name,
                 this.launchConfiguration.id,
-                this.vpc.publicSubnetIds,
+                subnetIds,
                 utils.ifUndefined(args.templateParameters, {})),
         }, parentOpts);
 
@@ -383,6 +384,12 @@ export interface AutoScalingGroupArgs {
      * created for the default vpc.
      */
     vpc?: x.ec2.Vpc;
+
+    /**
+     * The subnets to use for the autoscaling group.  If not provided, the `private` subnets of
+     * the `vpc` will be used.
+     */
+    subnetIds?: pulumi.Input<string>[];
 
     /**
      * The config to use when creating the auto scaling group.
