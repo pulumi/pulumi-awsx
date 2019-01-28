@@ -92,8 +92,12 @@ func Test_Examples(t *testing.T) {
 			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargate*/),
 			EditDirs: []integration.EditDir{
 				{
+					Additive: true,
+					Dir:      path.Join(cwd, "./examples/services/update1"),
+				},
+				{
 					Additive:               true,
-					Dir:                    path.Join(cwd, "./examples/services/update1"),
+					Dir:                    path.Join(cwd, "./examples/services/update2"),
 					ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, false /*isFargate*/),
 				},
 			},
