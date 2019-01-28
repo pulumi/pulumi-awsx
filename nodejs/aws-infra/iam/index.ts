@@ -19,6 +19,7 @@ import * as utils from "./../utils";
 
 export class User extends pulumi.ComponentResource {
     public readonly user: aws.iam.User;
+    public readonly accessKeys: aws.iam.AccessKey[];
     public readonly groupMemberships: aws.iam.UserGroupMembership[];
 
     constructor(name: string, args: UserArgs = {}, opts?: pulumi.CustomResourceOptions) {
@@ -33,6 +34,8 @@ export class User extends pulumi.ComponentResource {
         delete args.user;
 
         this.user = args.user || new aws.iam.User(name, args, { parent: this });
+
+        this.accessKeys = [];
 
         this.groupMemberships = [];
         if (groupMembership !== undefined) {
@@ -57,14 +60,16 @@ export class User extends pulumi.ComponentResource {
      */
     public createAccessKey(
         name: string,
-        args: AccessKeyArgs,
+        args?: AccessKeyArgs,
         opts?: pulumi.CustomResourceOptions
     ): aws.iam.AccessKey {
-        return new aws.iam.AccessKey(
+        const key = new aws.iam.AccessKey(
             name,
             { ...args, user: this.user.name },
             { ...opts, parent: this }
         );
+        this.accessKeys.push(key);
+        return key;
     }
 
     /**
