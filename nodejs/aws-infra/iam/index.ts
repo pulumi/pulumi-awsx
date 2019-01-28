@@ -19,7 +19,7 @@ import * as utils from "./../utils";
 
 export class User extends pulumi.ComponentResource {
     public readonly user: aws.iam.User;
-    public readonly groupMembership?: aws.iam.UserGroupMembership;
+    public readonly groupMemberships: aws.iam.UserGroupMembership[];
 
     constructor(name: string, args: UserArgs = {}, opts?: pulumi.CustomResourceOptions) {
         super(`awsinfra:x:iam:User`, name, args, opts);
@@ -34,11 +34,14 @@ export class User extends pulumi.ComponentResource {
 
         this.user = args.user || new aws.iam.User(name, args, { parent: this });
 
+        this.groupMemberships = [];
         if (groupMembership !== undefined) {
-            this.groupMembership = new aws.iam.UserGroupMembership(
-                name,
-                { ...groupMembership, user: this.user.name },
-                { parent: this }
+            this.groupMemberships.push(
+                new aws.iam.UserGroupMembership(
+                    name,
+                    { ...groupMembership, user: this.user.name },
+                    { parent: this }
+                )
             );
         }
     }
@@ -62,6 +65,30 @@ export class User extends pulumi.ComponentResource {
             { ...args, user: this.user.name },
             { ...opts, parent: this }
         );
+    }
+
+    /**
+     * Add the current `User` to an arbitrary set of IAM Groups, returning the resulting
+     * `UserGroupMembership` resources.
+     *
+     * @param name The _unique_ name of the resulting `UserGroupMembership` resource.
+     * @param args The properties of the resulting `UserGroupMembership` resource.
+     * @param opts A bag of options that control the resulting `UserGroupMembership` resource's
+     * behavior. __NOTE__: the `parent` field is overridden and set to `this`, rather than the value
+     * (if any) in `opts`.
+     */
+    public addToGroups(
+        name: string,
+        args: UserGroupMembershipArgs,
+        opts?: pulumi.CustomResourceOptions
+    ): aws.iam.UserGroupMembership {
+        const membership = new aws.iam.UserGroupMembership(
+            name,
+            { ...args, user: this.user.name },
+            { ...opts, parent: this }
+        );
+        this.groupMemberships.push(membership);
+        return membership;
     }
 
     public static fromExistingId(
@@ -128,7 +155,7 @@ export interface UserArgs {
 const test1: string = utils.checkCompat<OverwriteUserArgs, UserArgs>();
 
 type OverwriteUserGroupMembershipArgs = utils.Overwrite<aws.iam.UserGroupMembershipArgs, {
-    user?: never
+    user?: never;
 }>;
 
 /**
