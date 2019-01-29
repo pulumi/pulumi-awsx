@@ -13,16 +13,16 @@
 // limitations under the License.
 
 import * as aws from "@pulumi/aws";
-import * as pulumi from "@pulumi/pulumi";
 import * as x from "@pulumi/aws-infra";
+import * as pulumi from "@pulumi/pulumi";
 
 const readOnlyUser = new x.iam.User("admin", {
-    groupMembership: { groups: [aws.iam.ReadOnlyAccess] }
+    groupMembership: { groups: [aws.iam.ReadOnlyAccess] },
 });
 const key = readOnlyUser.createAccessKey("readOnlyUser");
 
 export const readOnlyUserArn: pulumi.Output<string> = readOnlyUser.user.arn;
 export const readOnlyUserAccessKey: { [key: string]: pulumi.Output<string> } = {
     id: key.id,
-    encryptedSecret: key.encryptedSecret
+    encryptedSecret: key.encryptedSecret,
 };

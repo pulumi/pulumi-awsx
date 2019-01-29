@@ -14,8 +14,8 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-
 import * as utils from "./../utils";
+
 
 export class User extends pulumi.ComponentResource {
     public readonly user: aws.iam.User;
@@ -31,7 +31,6 @@ export class User extends pulumi.ComponentResource {
         // Explicitly delete these props so we do *not* pass them into the User created
         // below.
         delete args.groupMembership;
-        delete args.user;
 
         this.user = args.user || new aws.iam.User(name, args, { parent: this });
 
@@ -43,8 +42,8 @@ export class User extends pulumi.ComponentResource {
                 new aws.iam.UserGroupMembership(
                     name,
                     { ...groupMembership, user: this.user.name },
-                    { parent: this }
-                )
+                    { parent: this },
+                ),
             );
         }
     }
@@ -61,12 +60,12 @@ export class User extends pulumi.ComponentResource {
     public createAccessKey(
         name: string,
         args?: AccessKeyArgs,
-        opts?: pulumi.CustomResourceOptions
+        opts?: pulumi.CustomResourceOptions,
     ): aws.iam.AccessKey {
         const key = new aws.iam.AccessKey(
             name,
             { ...args, user: this.user.name },
-            { ...opts, parent: this }
+            { ...opts, parent: this },
         );
         this.accessKeys.push(key);
         return key;
@@ -85,12 +84,12 @@ export class User extends pulumi.ComponentResource {
     public addToGroups(
         name: string,
         args: UserGroupMembershipArgs,
-        opts?: pulumi.CustomResourceOptions
+        opts?: pulumi.CustomResourceOptions,
     ): aws.iam.UserGroupMembership {
         const membership = new aws.iam.UserGroupMembership(
             name,
             { ...args, user: this.user.name },
-            { ...opts, parent: this }
+            { ...opts, parent: this },
         );
         this.groupMemberships.push(membership);
         return membership;
@@ -100,7 +99,7 @@ export class User extends pulumi.ComponentResource {
         name: string,
         id: pulumi.Input<string>,
         args: UserArgs = {},
-        opts: pulumi.ComponentResourceOptions = {}
+        opts: pulumi.ComponentResourceOptions = {},
     ) {
         return new User(name, { ...args, user: aws.iam.User.get(name, id, {}, opts) }, opts);
     }
