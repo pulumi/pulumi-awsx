@@ -17,8 +17,21 @@ import * as awsx from "@pulumi/aws-infra";
 
 import { Config } from "@pulumi/pulumi";
 
-console.log("EC2: Original");
+console.log("EC2: Update1");
 
 const vpc = new awsx.ec2.Vpc("ec2-testing-1");
 const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
 export const clusterId = cluster1.id;
+
+const autoScalingGroup = cluster1.createAutoScalingGroup("ec2-testing-1", {
+    subnetIds: vpc.publicSubnetIds,
+    templateParameters: {
+        minSize: 10,
+    },
+    launchConfigurationArgs: {
+        instanceType: "t2.medium",
+        associatePublicIpAddress: true,
+    },
+});
+
+export const autoScalingGroupId = autoScalingGroup.stack.id;

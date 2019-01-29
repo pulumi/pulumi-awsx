@@ -48,9 +48,9 @@ export class Vpc extends pulumi.ComponentResource {
      */
     public readonly natGateways: aws.ec2.NatGateway[] = [];
 
-    constructor(name: string, args: VpcArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, args: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, args: VpcArgs | ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args?: VpcArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         super("awsinfra:x:ec2:Vpc", name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
