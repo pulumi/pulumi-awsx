@@ -1,0 +1,21 @@
+{
+    "name": "cluster",
+    "version": "0.0.1",
+    "license": "Apache-2.0",
+    "main": "bin/index.js",
+    "typings": "bin/index.d.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@pulumi/aws": "dev",
+        "@pulumi/pulumi": "dev"
+    },
+    "devDependencies": {
+        "@types/node": "^10.0.0",
+        "typescript": "^3.0.0"
+    },
+    "peerDependencies": {
+        "@pulumi/awsx": "latest"
+    }
+}

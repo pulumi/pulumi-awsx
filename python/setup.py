@@ -18,9 +18,9 @@ setup(
     name='pulumi_aws_infra',
     version='${VERSION}',
     description='Pulumi Amazon Web Services (AWS) infrastructure components.',
-    keywords='pulumi aws aws-infra',
-    url='https://github.com/pulumi/pulumi-aws-infra',
-    project_urls={'Repository': 'https://github.com/pulumi/pulumi-aws-infra'},
+    keywords='pulumi aws awsx',
+    url='https://github.com/pulumi/pulumi-awsx',
+    project_urls={'Repository': 'https://github.com/pulumi/pulumi-awsx'},
     packages=find_packages(),
     install_requires=[
         'pulumi>=0.14.0,<0.15.0', 'pulumi_aws>=0.14'
