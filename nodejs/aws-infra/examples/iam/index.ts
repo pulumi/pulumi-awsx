@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./cluster";
-export * from "./network";
+import * as aws from "@pulumi/aws";
+import * as x from "@pulumi/aws-infra";
 
-import * as autoscaling from "./autoscaling";
-import * as ec2 from "./ec2";
-import * as ecs from "./ecs";
-import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
-import * as iam from "./iam";
+const readOnlyUser = new x.iam.User("admin", {
+    groupMembership: { groups: [aws.iam.ReadOnlyAccess] }
+});
+const key = readOnlyUser.createAccessKey("readOnlyUser");
 
-export { autoscaling, ec2, ecs, elasticloadbalancingv2, iam };
+export const readOnlyUserArn = readOnlyUser.user.arn;
+export const readOnlyUserAccessKey = { id: key.id, encryptedSecret: key.encryptedSecret };

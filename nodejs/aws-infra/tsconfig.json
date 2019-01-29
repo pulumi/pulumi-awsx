@@ -44,6 +44,7 @@
         "elasticloadbalancingv2/loadBalancer.ts",
         "elasticloadbalancingv2/network.ts",
         "elasticloadbalancingv2/targetGroup.ts",
+        "iam/index.ts",
     ]
 }
 
