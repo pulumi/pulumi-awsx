@@ -38,8 +38,6 @@ import (
 	"github.com/pulumi/pulumi/pkg/util/contract"
 )
 
-const fargateRegion = "us-east-2"
-
 func Test_Examples(t *testing.T) {
 	region := os.Getenv("AWS_REGION")
 	if region == "" {
@@ -67,7 +65,7 @@ func Test_Examples(t *testing.T) {
 			Dir:       path.Join(cwd, "./examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
 			Config: map[string]string{
-				"aws:region": fargateRegion,
+				"aws:region": region,
 			},
 			Dependencies: []string{
 				"@pulumi/aws-infra",
@@ -77,7 +75,7 @@ func Test_Examples(t *testing.T) {
 			Dir:       path.Join(cwd, "./examples/services"),
 			StackName: addRandomSuffix("services"),
 			Config: map[string]string{
-				"aws:region":               fargateRegion,
+				"aws:region":               region,
 				"cloud:provider":           "aws",
 				"containers:redisPassword": "SECRETPASSWORD",
 			},
@@ -89,7 +87,7 @@ func Test_Examples(t *testing.T) {
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
-			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargate*/),
+			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
 			EditDirs: []integration.EditDir{
 				{
 					Additive: true,
@@ -98,7 +96,7 @@ func Test_Examples(t *testing.T) {
 				{
 					Additive:               true,
 					Dir:                    path.Join(cwd, "./examples/services/update2"),
-					ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, false /*isFargate*/),
+					ExtraRuntimeValidation: containersRuntimeValidator(region, false /*isFargate*/),
 				},
 			},
 		},
