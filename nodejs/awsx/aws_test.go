@@ -38,8 +38,6 @@ import (
 	"github.com/pulumi/pulumi/pkg/util/contract"
 )
 
-const fargateRegion = "us-east-2"
-
 func Test_Examples(t *testing.T) {
 	region := os.Getenv("AWS_REGION")
 	if region == "" {
@@ -67,17 +65,17 @@ func Test_Examples(t *testing.T) {
 			Dir:       path.Join(cwd, "./examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
 			Config: map[string]string{
-				"aws:region": fargateRegion,
+				"aws:region": region,
 			},
 			Dependencies: []string{
 				"@pulumi/awsx",
 			},
 		},
 		{
-			Dir:       path.Join(cwd, "./examples/services"),
-			StackName: addRandomSuffix("services"),
+			Dir:       path.Join(cwd, "./examples/fargate"),
+			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
-				"aws:region":               fargateRegion,
+				"aws:region":               region,
 				"cloud:provider":           "aws",
 				"containers:redisPassword": "SECRETPASSWORD",
 			},
@@ -89,22 +87,40 @@ func Test_Examples(t *testing.T) {
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
-			ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, true /*isFargate*/),
+			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
+		},
+	}
+
+	longTests := []integration.ProgramTestOptions{
+		{
+			Dir:       path.Join(cwd, "./examples/ec2"),
+			StackName: addRandomSuffix("ec2"),
+			Config: map[string]string{
+				"aws:region":               region,
+				"cloud:provider":           "aws",
+				"containers:redisPassword": "SECRETPASSWORD",
+			},
+			Dependencies: []string{
+				"@pulumi/awsx",
+			},
+			Quick:       true,
+			SkipRefresh: true,
+			PreviewCommandlineFlags: []string{
+				"--diff",
+			},
 			EditDirs: []integration.EditDir{
 				{
 					Additive: true,
-					Dir:      path.Join(cwd, "./examples/services/update1"),
+					Dir:      path.Join(cwd, "./examples/ec2/update1"),
 				},
 				{
 					Additive:               true,
-					Dir:                    path.Join(cwd, "./examples/services/update2"),
-					ExtraRuntimeValidation: containersRuntimeValidator(fargateRegion, false /*isFargate*/),
+					Dir:                    path.Join(cwd, "./examples/ec2/update2"),
+					ExtraRuntimeValidation: containersRuntimeValidator(region, false /*isFargate*/),
 				},
 			},
 		},
 	}
-
-	longTests := []integration.ProgramTestOptions{}
 
 	// Run the short or long tests depending on the config.  Note that we only run long tests on
 	// travis after already running short tests.  So no need to actually run both at the same time
