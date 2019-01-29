@@ -13,6 +13,8 @@ The AWS Infrastructure package undergoes constant improvements and additions.  W
 
 The AWS Infrastructure package exposes many high level abstractions.  Including, but not limited to:
 
+* [`apigateway`](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/apigateway). A module that makes creating API Gateway RestApis easily.  It includes native support to easily route incoming requests to AWS Lambdas, S3 buckets, or proxying requests to internal Load Balancer endpoints.
+
 * [`autoscaling`](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/autoscaling). A module that makes creating auto-scaling launch configurations and launch groups easier.   Note: given an awsx `ecs.Cluster`, the easiest way to create an auto-scaling group is to just call [`createAutoScalingGroup`](https://github.com/pulumi/pulumi-awsx/blob/0b432e320c6929866038507e997d55c8d8f62bc3/nodejs/awsx/ecs/cluster.ts#L78) on it.  This will produce an auto-scaling group already property configured for that cluster.
 
 * [`ec2`](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/ec2).  A module that makes it easier to work with your AWS network, subnets, and security groups.  By default, the resources in the package follow the [AWS Best Practices](
