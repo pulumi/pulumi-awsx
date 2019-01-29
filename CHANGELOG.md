@@ -1,5 +1,6 @@
 ## 0.16.4 (unreleased)
 
+- Renamed 'aws-infra' package to 'awsx'.
 
 ## 0.16.3 (Release January 25, 2019)
 
