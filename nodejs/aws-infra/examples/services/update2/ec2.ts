@@ -26,10 +26,10 @@ export const clusterId = cluster1.id;
 const autoScalingGroup = cluster1.createAutoScalingGroup("ec2-testing-1", {
     subnetIds: vpc.publicSubnetIds,
     templateParameters: {
-        minSize: 10,
+        minSize: 5,
     },
     launchConfigurationArgs: {
-        instanceType: "t2.medium",
+        instanceType: "t2.small",
         associatePublicIpAddress: true,
     },
 });
