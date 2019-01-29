@@ -1,5 +1,5 @@
 {
-    "name": "containers",
+    "name": "ec2",
     "version": "0.0.1",
     "license": "Apache-2.0",
     "main": "bin/index.js",

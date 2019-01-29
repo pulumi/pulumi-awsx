@@ -72,8 +72,8 @@ func Test_Examples(t *testing.T) {
 			},
 		},
 		{
-			Dir:       path.Join(cwd, "./examples/services"),
-			StackName: addRandomSuffix("services"),
+			Dir:       path.Join(cwd, "./examples/fargate"),
+			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
 				"aws:region":               region,
 				"cloud:provider":           "aws",
@@ -88,21 +88,40 @@ func Test_Examples(t *testing.T) {
 				"--diff",
 			},
 			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
+		},
+	}
+
+	longTests := []integration.ProgramTestOptions{
+
+		{
+			Dir:       path.Join(cwd, "./examples/ec2"),
+			StackName: addRandomSuffix("ec2"),
+			Config: map[string]string{
+				"aws:region":               region,
+				"cloud:provider":           "aws",
+				"containers:redisPassword": "SECRETPASSWORD",
+			},
+			Dependencies: []string{
+				"@pulumi/aws-infra",
+			},
+			Quick:       true,
+			SkipRefresh: true,
+			PreviewCommandlineFlags: []string{
+				"--diff",
+			},
 			EditDirs: []integration.EditDir{
 				{
 					Additive: true,
-					Dir:      path.Join(cwd, "./examples/services/update1"),
+					Dir:      path.Join(cwd, "./examples/ec2/update1"),
 				},
 				{
 					Additive:               true,
-					Dir:                    path.Join(cwd, "./examples/services/update2"),
+					Dir:                    path.Join(cwd, "./examples/ec2/update2"),
 					ExtraRuntimeValidation: containersRuntimeValidator(region, false /*isFargate*/),
 				},
 			},
 		},
 	}
-
-	longTests := []integration.ProgramTestOptions{}
 
 	// Run the short or long tests depending on the config.  Note that we only run long tests on
 	// travis after already running short tests.  So no need to actually run both at the same time
