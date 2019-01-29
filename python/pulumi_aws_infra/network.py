@@ -53,7 +53,7 @@ class Network(ComponentResource):
         :param opts General Pulumi resource options.
         """
         ComponentResource.__init__(
-            self, "aws-infra:network:Network", name, {
+            self, "awsx:network:Network", name, {
                 "number_of_availability_zones": number_of_availability_zones,
                 "use_private_subnets": use_private_subnets,
                 "vpc_id": vpc_id,

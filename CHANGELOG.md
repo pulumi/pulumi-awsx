@@ -1,6 +1,10 @@
-## 0.16.3 (unreleased)
+## 0.16.4 (unreleased)
 
-- experimental abstractions have been promoted to supported abstractions.  see new modules for:
+- Renamed 'awsx' package to 'awsx'.
+
+## 0.16.3 (Release January 25, 2019)
+
+- Experimental abstractions have been promoted to supported abstractions.  see new modules for:
   - autoscaling
   - ec2
   - ecs

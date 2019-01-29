@@ -15,23 +15,20 @@
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-import { Config } from "@pulumi/pulumi";
-
-console.log("EC2: Update1");
-
-const vpc = new awsx.ec2.Vpc("ec2-testing-1");
-const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
-export const clusterId = cluster1.id;
-
-const autoScalingGroup = cluster1.createAutoScalingGroup("ec2-testing-1", {
-    subnetIds: vpc.publicSubnetIds,
-    templateParameters: {
-        minSize: 10,
-    },
-    launchConfigurationArgs: {
-        instanceType: "t2.medium",
-        associatePublicIpAddress: true,
-    },
+const vpcWithDifferentCidrBlock = new awsx.ec2.Vpc("custom1", {
+    cidrBlock: "192.168.0.0/16",
 });
 
-export const autoScalingGroupId = autoScalingGroup.stack.id;
+const vpcWithOnlyPublicSubnets = new awsx.ec2.Vpc("custom2", {
+    cidrBlock: "193.168.0.0/16",
+    subnets: [{
+        type: "public"
+    }]
+});
+
+const vpcWithOnlyPrivateSubnets = new awsx.ec2.Vpc("custom3", {
+    cidrBlock: "194.168.0.0/16",
+    subnets: [{
+        type: "private"
+    }]
+});

@@ -19,6 +19,6 @@
         "typescript": "^3.0.0"
     },
     "peerDependencies": {
-        "@pulumi/aws-infra": "latest"
+        "@pulumi/awsx": "latest"
     }
 }
