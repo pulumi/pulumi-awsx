@@ -92,7 +92,6 @@ func Test_Examples(t *testing.T) {
 	}
 
 	longTests := []integration.ProgramTestOptions{
-
 		{
 			Dir:       path.Join(cwd, "./examples/ec2"),
 			StackName: addRandomSuffix("ec2"),
