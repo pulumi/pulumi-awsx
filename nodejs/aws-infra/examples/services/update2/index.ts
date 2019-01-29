@@ -13,12 +13,19 @@
 // limitations under the License.
 
 import * as aws from "@pulumi/aws";
-import * as awsx from "@pulumi/aws-infra";
 
-import { Config } from "@pulumi/pulumi";
+import * as ec2 from "./ec2";
+import * as fargate from "./fargate";
 
-console.log("EC2: Original");
+export let autoScalingGroupId = ec2.autoScalingGroupId;
+export let ec2FrontendURL = ec2.frontendURL;
+export let ec2VpcId = ec2.vpcId;
+export let ec2PublicSubnets = ec2.publicSubnetIds;
+export let ec2PrivateSubnets = ec2.privateSubnetIds;
+export let ec2IsolatedSubnets = ec2.isolatedSubnetIds;
 
-const vpc = new awsx.ec2.Vpc("ec2-testing-1");
-const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
-export const clusterId = cluster1.id;
+export let fargateFrontendURL = fargate.frontendURL;
+export let fargateVpcId = fargate.vpcId;
+export let fargatePublicSubnets = fargate.publicSubnetIds;
+export let fargatePrivateSubnets = fargate.privateSubnetIds;
+export let fargateIsolatedSubnets = fargate.isolatedSubnetIds;
