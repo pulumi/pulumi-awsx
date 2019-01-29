@@ -14,7 +14,6 @@
 
 import * as awsinfra from "@pulumi/aws-infra";
 import * as pulumi from "@pulumi/pulumi";
-import { Output } from "@pulumi/pulumi";
 
 const prefix = "infratest";
 const numAvailabilityZones = 2;
@@ -33,9 +32,9 @@ const cluster = new awsinfra.Cluster(prefix, {
 });
 
 // Export details of the network and cluster
-export let vpcId = network.vpcId;
+export let vpcId: pulumi.Output<string> = network.vpcId;
 export let privateSubnetIds = pulumi.all(network.subnetIds).apply(ids => ids.join(","));
 export let publicSubnetIds = pulumi.all(network.publicSubnetIds).apply(ids => ids.join(","));
 export let securityGroupIds = pulumi.all(network.securityGroupIds).apply(ids => ids.join(","));
-export let ecsClusterARN = cluster.ecsClusterARN;
-export let ecsClusterSecurityGroup = cluster.securityGroupId;
+export let ecsClusterARN: pulumi.Output<string> = cluster.ecsClusterARN;
+export let ecsClusterSecurityGroup: pulumi.Output<string> | undefined = cluster.securityGroupId;
