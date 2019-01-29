@@ -111,7 +111,7 @@ export type StaticRoute = {
      * To disable this set false or to supply a new index pass an appropriate name.
      */
     index?: boolean | string;
-}
+};
 
 function isStaticRoute(route: Route): route is StaticRoute {
     return (<StaticRoute>route).localPath !== undefined;
@@ -123,7 +123,7 @@ function isStaticRoute(route: Route): route is StaticRoute {
 export type ProxyRoute = {
     path: string;
     target: string | pulumi.Output<Endpoint>;
-}
+};
 
 function isProxyRoute(route: Route): route is ProxyRoute {
     return (<ProxyRoute>route).target !== undefined;
@@ -142,7 +142,7 @@ export type RawDataRoute = {
     path: string;
     method: Method;
     data: any;
-}
+};
 
 function isRawDataRoute(route: Route): route is RawDataRoute {
     return (<RawDataRoute>route).data !== undefined;
@@ -276,11 +276,11 @@ interface SwaggerLambdas {
 }
 
 interface SwaggerGatewayResponse {
-    statusCode: number,
+    statusCode: number;
     responseTemplates: {
         "application/json": string,
-    },
-};
+    };
+}
 
 interface SwaggerInfo {
     title: string;
@@ -383,7 +383,7 @@ function createSwaggerSpec(api: API, name: string, routes: Route[]) {
         }
         else {
             const exhaustiveMatch: never = route;
-            throw new Error('Non-exhaustive match for route');
+            throw new Error("Non-exhaustive match for route");
         }
     }
 
