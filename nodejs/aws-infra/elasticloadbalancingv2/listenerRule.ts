@@ -53,7 +53,7 @@ export class ListenerRule extends pulumi.ComponentResource {
             args.actions.registerListener(listener);
         }
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 }
 

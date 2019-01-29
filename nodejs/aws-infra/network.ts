@@ -112,6 +112,10 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
     public readonly publicSubnetIds: pulumi.Output<string>[];
 
     /**
+     * The public subnet route table for the VPC.
+     */
+    public readonly publicRouteTableId: pulumi.Output<string>;
+    /**
      * Gets the default VPC for the AWS account as a Network.  This first time this is called, the
      * default network will be lazily created, using whatever options are provided in opts. All
      * subsequent calls will return that same network even if different opts are provided.
@@ -216,6 +220,7 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
                 }],
             tags,
         }, parentOpts);
+        this.publicRouteTableId = publicRouteTable.id;
 
         for (let i = 0; i < numberOfAvailabilityZones; i++) {
             const subnetName = `${name}-${i}`;

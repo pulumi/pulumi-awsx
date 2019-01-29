@@ -86,8 +86,6 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         }, parentOpts);
 
         this.run = createRunFunction(isFargate, this.taskDefinition.arn);
-
-        this.registerOutputs();
     }
 
     /**

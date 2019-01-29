@@ -26,11 +26,11 @@ export function computeContainerDefinition(
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
     const image = isContainerImageProvider(container.image)
-        ? container.image.image(name, parent)
+        ? container.image.image(parent)
         : container.image;
 
     const environment = isContainerImageProvider(container.image)
-        ? utils.combineArrays(container.environment, container.image.environment(name, parent))
+        ? utils.combineArrays(container.environment, container.image.environment(parent))
         : container.environment;
 
     const portMappings = getPortMappings(container);
@@ -186,8 +186,8 @@ export interface Container {
 }
 
 export interface ContainerImageProvider {
-    image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
-    environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
+    image(parent: pulumi.Resource): pulumi.Input<string>;
+    environment(parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 }
 
 /** @internal */

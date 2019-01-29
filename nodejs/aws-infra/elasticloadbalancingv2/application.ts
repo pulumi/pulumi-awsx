@@ -46,7 +46,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
         this.listeners = [];
         this.targetGroups = [];
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     /**
@@ -85,7 +85,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     public readonly listeners: x.elasticloadbalancingv2.ApplicationListener[];
 
     constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
-        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {}, opts);
+        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, { vpc: args.vpc }, opts);
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
         super("awsinfra:x:elasticloadbalancingv2:ApplicationTargetGroup", name, {
@@ -98,7 +98,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     public createListener(name: string, args: ApplicationListenerArgs,
@@ -154,7 +154,7 @@ export class ApplicationListener extends mod.Listener {
                 args: ApplicationListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
-        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {}, opts);
+        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, { vpc: args.vpc }, opts);
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultAction, defaultListener } = getDefaultAction(
@@ -191,7 +191,7 @@ export class ApplicationListener extends mod.Listener {
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 }
 
@@ -281,6 +281,12 @@ export interface ApplicationLoadBalancerArgs {
 
 export interface ApplicationTargetGroupArgs {
     /**
+     * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
+     * unspecified.
+     */
+    vpc?: x.ec2.Vpc;
+
+    /**
      * The load balancer this target group is associated with.  If not provided, a new load balancer
      * will be automatically created.
      */
@@ -352,6 +358,12 @@ export interface ApplicationTargetGroupArgs {
 }
 
 export interface ApplicationListenerArgs {
+    /**
+     * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
+     * unspecified.
+     */
+    vpc?: x.ec2.Vpc;
+
     /**
      * The load balancer this listener is associated with.  If not provided, a new load balancer
      * will be automatically created.

@@ -17,85 +17,102 @@ import * as awsx from "@pulumi/aws-infra";
 
 import { Config } from "@pulumi/pulumi";
 
-const vpc = awsx.ec2.Vpc.getDefault();
-const cluster = new awsx.ecs.Cluster("testing", { vpc });
+console.log("EC2: Update2");
+
+const vpc = new awsx.ec2.Vpc("ec2-testing-1");
+const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
+export const clusterId = cluster1.id;
+
+const autoScalingGroup = cluster1.createAutoScalingGroup("ec2-testing-1", {
+    subnetIds: vpc.publicSubnetIds,
+    templateParameters: {
+        minSize: 10,
+    },
+    launchConfigurationArgs: {
+        instanceType: "t2.medium",
+        associatePublicIpAddress: true,
+    },
+});
+
+export const autoScalingGroupId = autoScalingGroup.stack.id;
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("examples-nginx", { port: 80 });
-const nginx = new awsx.ecs.FargateService("examples-nginx", {
-    cluster,
+const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2-nginx", { vpc, port: 80 });
+const nginx = new awsx.ecs.EC2Service("ec2-nginx", {
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
                 image: "nginx",
-                memory: 128,
+                memory: 64,
                 portMappings: [nginxListener],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const nginxEndpoint = nginxListener.endpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("examples-simple-nginx", { port: 80 });
-const simpleNginx = new awsx.ecs.FargateTaskDefinition("examples-simple-nginx", {
+const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2-simple-nginx", { vpc, port: 80 });
+const simpleNginx = new awsx.ecs.EC2TaskDefinition("ec2-simple-nginx", {
     container: {
         image: "nginx",
-        memory: 128,
+        memory: 64,
         portMappings: [simpleNginxListener],
     },
-}).createService("examples-simple-nginx", { cluster, desiredCount: 2});
+}).createService("examples-simple-nginx", { cluster: cluster1, desiredCount: 1});
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint();
 
-const cachedNginx = new awsx.ecs.FargateService("examples-cached-nginx", {
-    cluster,
+const cachedNginx = new awsx.ecs.EC2Service("ec2-cached-nginx", {
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsx.ecs.Image.fromDockerBuild({
+                image: awsx.ecs.Image.fromDockerBuild("ec2-cached-nginx", {
                     context: "./app",
                     cacheFrom: true,
                 }),
-                memory: 128,
-                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener("examples-cached-nginx", { port: 80 })],
+                memory: 64,
+                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
+                    "ec2-cached-nginx", { vpc, port: 80 })],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
-const multistageCachedNginx = new awsx.ecs.FargateService("examples-multistage-cached-nginx", {
-    cluster,
+const multistageCachedNginx = new awsx.ecs.EC2Service("ec2-multistage-cached-nginx", {
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsx.ecs.Image.fromDockerBuild({
+                image: awsx.ecs.Image.fromDockerBuild("ec2-multistage-cached-nginx", {
                     context: "./app",
                     dockerfile: "./app/Dockerfile-multistage",
                     cacheFrom: {stages: ["build"]},
                 }),
-                memory: 128,
+                memory: 64,
                 portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
-                    "examples-multistage-cached-nginx", { port: 80 })],
+                    "ec2-multistage-cached-nginx", { vpc, port: 80 })],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const customWebServerListener =
-    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { port: 8080 })
-         .createListener("custom", { port: 80 });
+    new awsx.elasticloadbalancingv2.NetworkTargetGroup("ec2-custom", { vpc, port: 8080 })
+         .createListener("ec2-custom", { port: 80 });
 
-const customWebServer = new awsx.ecs.FargateService("mycustomservice", {
-    cluster,
+const customWebServer = new awsx.ecs.EC2Service("ec2-custom", {
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             webserver: {
-                memory: 128,
+                memory: 64,
                 portMappings: [customWebServerListener],
                 image: awsx.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
@@ -107,7 +124,7 @@ const customWebServer = new awsx.ecs.FargateService("mycustomservice", {
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
 });
 
 const config = new Config("containers");
@@ -116,14 +133,14 @@ const redisPassword = config.require("redisPassword");
 /**
  * A simple Cache abstration, built on top of a Redis container Service.
  */
-class Cache {
+class Ec2Cache {
     get: (key: string) => Promise<string>;
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { port: 6379 });
-        const redis = new awsx.ecs.FargateService(name, {
-            cluster,
+        const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { vpc, port: 6379 });
+        const redis = new awsx.ecs.EC2Service(name, {
+            cluster: cluster1,
             taskDefinitionArgs: {
                 containers: {
                     redis: {
@@ -177,9 +194,9 @@ class Cache {
     }
 }
 
-const cache = new Cache("examples-mycache");
+const cache = new Ec2Cache("ec2-mycache");
 
-const helloTask = new awsx.ecs.FargateTaskDefinition("examples-hello-world", {
+const helloTask = new awsx.ecs.EC2TaskDefinition("ec2-hello-world", {
     container: {
         image: "hello-world",
         memory: 20,
@@ -187,26 +204,25 @@ const helloTask = new awsx.ecs.FargateTaskDefinition("examples-hello-world", {
 });
 
 // build an anonymous image:
-const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("examples-nginx2", { port: 80 });
-const builtService = new awsx.ecs.FargateService("examples-nginx2", {
-    cluster,
+const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2-nginx2", { vpc, port: 80 });
+const builtService = new awsx.ecs.EC2Service("ec2-nginx2", {
+    cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsx.ecs.Image.fromPath("./app"),
-                memory: 128,
+                image: awsx.ecs.Image.fromPath("ec2-nginx2", "./app"),
+                memory: 64,
                 portMappings: [builtServiceListener],
             },
         },
     },
-    desiredCount: 2,
+    desiredCount: 1,
     waitForSteadyState: false,
 });
 
 function errorJSON(err: any) {
     const result: any = Object.create(null);
     Object.getOwnPropertyNames(err).forEach(key => result[key] = err[key]);
-    result.florp = "blopr";
     return result;
 }
 
@@ -219,7 +235,7 @@ function handleError(err: Error) {
 }
 
 // expose some APIs meant for testing purposes.
-const api = new aws.apigateway.x.API("examples-containers", {
+const api = new aws.apigateway.x.API("ec2-containers", {
     routes: [{
         path: "/test",
         method: "GET",
@@ -272,11 +288,11 @@ const api = new aws.apigateway.x.API("examples-containers", {
     }, {
         path: "/run",
         method: "GET",
-        eventHandler: new aws.lambda.CallbackFunction("runRoute", {
+        eventHandler: new aws.lambda.CallbackFunction("ec2-runRoute", {
             policies: [...awsx.ecs.TaskDefinition.defaultTaskRolePolicyARNs()],
             callback: async (req) => {
                 try {
-                    const result = await helloTask.run({ cluster });
+                    const result = await helloTask.run({ cluster: cluster1 });
                     return {
                         statusCode: 200,
                         body: JSON.stringify({ success: true, tasks: result.tasks }),
@@ -290,7 +306,6 @@ const api = new aws.apigateway.x.API("examples-containers", {
         path: "/custom",
         method: "GET",
         eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
-            const endpoint = customWebServerListener.endpoint().get();
             try {
                 const fetch = (await import("node-fetch")).default;
                 const endpoint = customWebServerListener.endpoint().get();
@@ -317,6 +332,6 @@ const api = new aws.apigateway.x.API("examples-containers", {
 
 export let frontendURL = api.url;
 export let vpcId = vpc.id;
-export let publicSubnets = vpc.publicSubnetIds;
-export let privateSubnets = vpc.privateSubnetIds;
-export let isolatedSubnets = vpc.isolatedSubnetIds;
+export let publicSubnetIds = vpc.publicSubnetIds;
+export let privateSubnetIds = vpc.privateSubnetIds;
+export let isolatedSubnetIds = vpc.isolatedSubnetIds;

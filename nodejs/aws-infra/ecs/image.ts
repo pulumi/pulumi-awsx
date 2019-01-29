@@ -20,21 +20,33 @@ import * as ecs from ".";
 import * as utils from "../utils";
 
 export abstract class Image implements ecs.ContainerImageProvider {
-    public abstract image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
-    public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
+    public abstract image(parent: pulumi.Resource): pulumi.Input<string>;
+    public abstract environment(parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
 
     /**
      * Creates an [Image] given a path to a folder in which a Docker build should be run.
+     *
+     * Either a [name] or [repository] needs to be provided where the built image will be pushed
+     * to.  If [repository] is provided, it will be used as-is.  Otherwise, a new one will be
+     * created on-demand, using the [name] value.
      */
-    public static fromPath(path: string): Image {
-        return new AssetImage(path);
+    public static fromPath(name: string, path: pulumi.Input<string>): Image;
+    public static fromPath(repository: aws.ecr.Repository, path: pulumi.Input<string>): Image;
+    public static fromPath(nameOrRepository: string | aws.ecr.Repository, path: pulumi.Input<string>): Image {
+        return new AssetImage(nameOrRepository, path);
     }
 
     /**
-     *Creates an [Image] using the detailed build instructions provided in [build].
+     * Creates an [Image] using the detailed build instructions provided in [build].
+     *
+     * Either a [name] or [repository] needs to be provided where the built image will be pushed
+     * to.  If [repository] is provided, it will be used as-is.  Otherwise, a new one will be
+     * created on-demand, using the [name] value.
      */
-    public static fromDockerBuild(build: docker.DockerBuild): Image {
-        return new AssetImage(build);
+    public static fromDockerBuild(name: string, build: pulumi.Input<docker.DockerBuild>): Image;
+    public static fromDockerBuild(repository: aws.ecr.Repository, build: pulumi.Input<docker.DockerBuild>): Image;
+    public static fromDockerBuild(nameOrRepository: string | aws.ecr.Repository, build: pulumi.Input<docker.DockerBuild>): Image {
+        return new AssetImage(nameOrRepository, build);
     }
 
     /**
@@ -50,12 +62,12 @@ class FunctionImage extends Image {
         super();
     }
 
-    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
+    public image(parent: pulumi.Resource): pulumi.Input<string> {
         // TODO[pulumi/pulumi-cloud#85]: move this to a Pulumi Docker Hub account.
         return "lukehoban/nodejsrunner";
     }
 
-    public environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]> {
+    public environment(parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]> {
         const serialized = pulumi.runtime.serializeFunctionAsync(this.func);
         return serialized.then(value => [{
             name: "PULUMI_SRC",
@@ -65,48 +77,53 @@ class FunctionImage extends Image {
 }
 
 class AssetImage extends Image {
-    // repositories contains a cache of already created ECR repositories.
-    private static readonly repositories = new Map<string, aws.ecr.Repository>();
+    private readonly nameOrRepository: string | aws.ecr.Repository;
+    private readonly pathOrBuild: pulumi.Output<string | docker.DockerBuild>;
 
-    // buildImageCache remembers the digests for all past built images, keyed by image name.
-    private static buildImageCache = new Map<string, pulumi.Output<string>>();
+    // Computed and cached on demand.
+    private imageResult: pulumi.Output<string>;
 
-    constructor(private readonly pathOrBuild: string | docker.DockerBuild) {
+    constructor(nameOrRepository: string | aws.ecr.Repository, pathOrBuild: pulumi.Input<string | docker.DockerBuild>) {
         super();
+
+        this.nameOrRepository = nameOrRepository;
+        this.pathOrBuild = pulumi.output(pathOrBuild);
     }
 
-    public environment(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]> {
+    public environment(parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]> {
         return [];
     }
 
-    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
-        const imageName = this.getImageName();
-        const repository = this.getOrCreateRepository(imageName, { parent });
+    public image(parent: pulumi.Resource): pulumi.Input<string> {
+        if (!this.imageResult) {
+            const repository = typeof this.nameOrRepository === "string"
+                ? AssetImage.createRepository(this.nameOrRepository, { parent })
+                : this.nameOrRepository;
 
-        // This is a container to build; produce a name, either user-specified or auto-computed.
-        pulumi.log.debug(`Building container image at '${JSON.stringify(this.pathOrBuild)}'`, repository);
-        const { repositoryUrl, registryId } = repository;
+            const { repositoryUrl, registryId } = repository;
 
-        const image = pulumi.all([repositoryUrl, registryId]).apply(([repositoryUrl, registryId]) =>
-            this.computeImageFromAsset(imageName, repositoryUrl, registryId, parent));
+            this.imageResult = pulumi.all([this.pathOrBuild, repositoryUrl, registryId])
+                                     .apply(([pathOrBuild, repositoryUrl, registryId]) =>
+                AssetImage.computeImageFromAsset(pathOrBuild, repositoryUrl, registryId, parent));
+        }
 
-        return image;
+        return this.imageResult;
     }
 
-    private getImageName() {
+    private static getImageName(pathOrBuild: string | pulumi.Unwrap<docker.DockerBuild>) {
         // Produce a hash of the build context and use that for the image name.
         let buildSig: string;
-        if (typeof this.pathOrBuild === "string") {
-            buildSig = this.pathOrBuild;
+        if (typeof pathOrBuild === "string") {
+            buildSig = pathOrBuild;
         }
         else {
-            buildSig = this.pathOrBuild.context || ".";
-            if (this.pathOrBuild.dockerfile ) {
-                buildSig += `;dockerfile=${this.pathOrBuild.dockerfile}`;
+            buildSig = pathOrBuild.context || ".";
+            if (pathOrBuild.dockerfile ) {
+                buildSig += `;dockerfile=${pathOrBuild.dockerfile}`;
             }
-            if (this.pathOrBuild.args) {
-                for (const arg of Object.keys(this.pathOrBuild.args)) {
-                    buildSig += `;arg[${arg}]=${this.pathOrBuild.args[arg]}`;
+            if (pathOrBuild.args) {
+                for (const arg of Object.keys(pathOrBuild.args)) {
+                    buildSig += `;arg[${arg}]=${pathOrBuild.args[arg]}`;
                 }
             }
         }
@@ -116,80 +133,72 @@ class AssetImage extends Image {
     }
 
     // getOrCreateRepository returns the ECR repository for this image, lazily allocating if necessary.
-    private getOrCreateRepository(imageName: string, opts: pulumi.ComponentResourceOptions): aws.ecr.Repository {
-        let repository: aws.ecr.Repository | undefined = AssetImage.repositories.get(imageName);
-        if (!repository) {
-            repository = new aws.ecr.Repository(imageName.toLowerCase(), {}, opts);
-            AssetImage.repositories.set(imageName, repository);
+    private static createRepository(name: string, opts: pulumi.ComponentResourceOptions) {
+        const repository = new aws.ecr.Repository(name.toLowerCase(), {}, opts);
 
-            // Set a default lifecycle policy such that at most a single untagged image is retained.
-            // We tag all cached build layers as well as the final image, so those images will never expire.
-            const lifecyclePolicyDocument = {
-                rules: [{
-                    rulePriority: 10,
-                    description: "remove untagged images",
-                    selection: {
-                        tagStatus: "untagged",
-                        countType: "imageCountMoreThan",
-                        countNumber: 1,
-                    },
-                    action: {
-                        type: "expire",
-                    },
-                }],
-            };
-            const lifecyclePolicy = new aws.ecr.LifecyclePolicy(imageName.toLowerCase(), {
-                policy: JSON.stringify(lifecyclePolicyDocument),
-                repository: repository.name,
-            }, opts);
-        }
+        // Set a default lifecycle policy such that at most a single untagged image is retained.
+        // We tag all cached build layers as well as the final image, so those images will never expire.
+        const lifecyclePolicyDocument = {
+            rules: [{
+                rulePriority: 10,
+                description: "remove untagged images",
+                selection: {
+                    tagStatus: "untagged",
+                    countType: "imageCountMoreThan",
+                    countNumber: 1,
+                },
+                action: {
+                    type: "expire",
+                },
+            }],
+        };
+
+        const lifecyclePolicy = new aws.ecr.LifecyclePolicy(name.toLowerCase(), {
+            policy: JSON.stringify(lifecyclePolicyDocument),
+            repository: repository.name,
+        }, opts);
 
         return repository;
     }
 
-    private computeImageFromAsset(
-            imageName: string,
+    private static computeImageFromAsset(
+            pathOrBuild: string | pulumi.Unwrap<docker.DockerBuild>,
             repositoryUrl: string,
             registryId: string,
             logResource: pulumi.Resource) {
 
-        // See if we've already built this.
-        let uniqueImageName = AssetImage.buildImageCache.get(imageName);
-        if (uniqueImageName) {
-            uniqueImageName.apply(d =>
-                pulumi.log.debug(`    already built: ${imageName} (${d})`, logResource));
-        }
-        else {
-            // If we haven't, build and push the local build context to the ECR repository.  Then return
-            // the unique image name we pushed to.  The name will change if the image changes ensuring
-            // the TaskDefinition get's replaced IFF the built image changes.
-            uniqueImageName = docker.buildAndPushImage(
-                    imageName, this.pathOrBuild, repositoryUrl, logResource, async () => {
-                // Construct Docker registry auth data by getting the short-lived authorizationToken from ECR, and
-                // extracting the username/password pair after base64-decoding the token.
-                //
-                // See: http://docs.aws.amazon.com/cli/latest/reference/ecr/get-authorization-token.html
-                if (!registryId) {
-                    throw new Error("Expected registry ID to be defined during push");
-                }
-                const credentials = await aws.ecr.getCredentials({ registryId: registryId });
-                const decodedCredentials = Buffer.from(credentials.authorizationToken, "base64").toString();
-                const [username, password] = decodedCredentials.split(":");
-                if (!password || !username) {
-                    throw new Error("Invalid credentials");
-                }
-                return {
-                    registry: credentials.proxyEndpoint,
-                    username: username,
-                    password: password,
-                };
-            });
+        pulumi.log.debug(`Building container image at '${JSON.stringify(pathOrBuild)}'`, logResource);
 
-            AssetImage.buildImageCache.set(imageName, uniqueImageName);
+        const imageName = AssetImage.getImageName(pathOrBuild);
 
-            uniqueImageName.apply(d =>
-                pulumi.log.debug(`    build complete: ${imageName} (${d})`, logResource));
-        }
+        // If we haven't, build and push the local build context to the ECR repository.  Then return
+        // the unique image name we pushed to.  The name will change if the image changes ensuring
+        // the TaskDefinition get's replaced IFF the built image changes.
+
+        const uniqueImageName = docker.buildAndPushImage(
+                imageName, pathOrBuild, repositoryUrl, logResource, async () => {
+            // Construct Docker registry auth data by getting the short-lived authorizationToken from ECR, and
+            // extracting the username/password pair after base64-decoding the token.
+            //
+            // See: http://docs.aws.amazon.com/cli/latest/reference/ecr/get-authorization-token.html
+            if (!registryId) {
+                throw new Error("Expected registry ID to be defined during push");
+            }
+            const credentials = await aws.ecr.getCredentials({ registryId: registryId });
+            const decodedCredentials = Buffer.from(credentials.authorizationToken, "base64").toString();
+            const [username, password] = decodedCredentials.split(":");
+            if (!password || !username) {
+                throw new Error("Invalid credentials");
+            }
+            return {
+                registry: credentials.proxyEndpoint,
+                username: username,
+                password: password,
+            };
+        });
+
+        uniqueImageName.apply(d =>
+            pulumi.log.debug(`    build complete: ${imageName} (${d})`, logResource));
 
         return uniqueImageName;
     }

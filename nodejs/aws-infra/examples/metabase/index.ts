@@ -115,6 +115,7 @@ export class Metabase extends pulumi.ComponentResource {
         }
 
         const loadbalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer(`${name}metabase`, {
+            vpc,
             subnets: args.subnetIds,
             securityGroups: [loadbalancerSecurityGroup],
         }, { parent: this });
@@ -186,6 +187,7 @@ export class Metabase extends pulumi.ComponentResource {
         }, { parent: this });
 
         const metabaseService = metabaseTaskDefinition.createService(`${name}metabase`, {
+            
             cluster: metabaseCluster,
             // We want only one instance connected to our database...
             desiredCount: 1,

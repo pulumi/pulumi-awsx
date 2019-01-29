@@ -35,7 +35,7 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
         this.listeners = [];
         this.targetGroups = [];
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     public createListener(name: string, args: NetworkListenerArgs, opts?: pulumi.ComponentResourceOptions) {
@@ -76,7 +76,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     public readonly listeners: x.elasticloadbalancingv2.NetworkListener[];
 
     constructor(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
-        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {}, opts);
+        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
         super("awsinfra:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
             ...args,
             vpc: loadBalancer.vpc,
@@ -86,7 +86,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 
     public createListener(name: string, args: NetworkListenerArgs,
@@ -114,7 +114,7 @@ export class NetworkListener extends mod.Listener {
     constructor(name: string,
                 args: NetworkListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
-        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {}, opts);
+        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
         const { defaultAction, defaultListener } = getDefaultAction(name, loadBalancer, args, opts);
 
         super("awsinfra:x:elasticloadbalancingv2:NetworkListener", name, defaultListener, {
@@ -127,7 +127,7 @@ export class NetworkListener extends mod.Listener {
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
-        this.registerOutputs();
+        this.registerOutputs({});
     }
 }
 
@@ -200,6 +200,12 @@ export interface NetworkLoadBalancerArgs {
 
 export interface NetworkTargetGroupArgs {
     /**
+     * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
+     * unspecified.
+     */
+    vpc?: x.ec2.Vpc;
+
+    /**
      * The load balancer this target group is associated with.  If not provided, a new load balancer
      * will be automatically created.
      */
@@ -264,6 +270,12 @@ export interface NetworkTargetGroupArgs {
 }
 
 export interface NetworkListenerArgs {
+    /**
+     * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
+     * unspecified.
+     */
+    vpc?: x.ec2.Vpc;
+
     /**
      * The load balancer this listener is associated with.  If not provided, a new load balancer
      * will be automatically created.
