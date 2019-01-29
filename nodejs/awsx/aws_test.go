@@ -88,7 +88,7 @@ func Test_Examples(t *testing.T) {
 			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
 		},
 		{
-			Dir: path.Join(cwd, "api"),
+			Dir: path.Join(cwd, "./examples/api"),
 			Config: map[string]string{
 				"aws:region": region,
 			},
