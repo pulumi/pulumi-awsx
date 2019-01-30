@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./cluster";
-export * from "./network";
+import * as aws from "@pulumi/aws";
 
-import * as apigateway from "./apigateway";
-import * as autoscaling from "./autoscaling";
-import * as ec2 from "./ec2";
-import * as ecs from "./ecs";
-import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
+const api = new aws.apigateway.x.API("myapi", {
+    routes: [{
+        path: "/b",
+        method: "GET",
+        eventHandler: async (event) => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        }
+    }],
+});
 
-export { apigateway, autoscaling, ec2, ecs, elasticloadbalancingv2 };
+export const url = api.url;

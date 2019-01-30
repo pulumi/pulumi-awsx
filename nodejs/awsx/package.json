@@ -13,10 +13,12 @@
     "dependencies": {
         "@pulumi/pulumi": "^0.16.11",
         "@pulumi/aws": "^0.16.7",
-        "@pulumi/docker": "^0.16.4"
+        "@pulumi/docker": "^0.16.4",
+        "mime": "^2.0.0"
     },
     "devDependencies": {
         "@types/aws-sdk": "^2.7.0",
+        "@types/mime": "^2.0.0",
         "@types/node": "^10.0.0",
         "tslint": "^5.11.0",
         "typedoc": "^0.13.0",

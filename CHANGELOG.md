@@ -1,6 +1,7 @@
 ## 0.16.4 (unreleased)
 
 - Renamed 'aws-infra' package to 'awsx'.
+- Moved `aws.apigateway.x.Api` from `@pulumi/aws` into this package under the name `awsx.apigateway.Api`.
 
 ## 0.16.3 (Release January 25, 2019)
 

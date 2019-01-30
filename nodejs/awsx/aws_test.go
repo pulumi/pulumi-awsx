@@ -54,8 +54,7 @@ func Test_Examples(t *testing.T) {
 		{
 			Dir: path.Join(cwd, "./examples/cluster"),
 			Config: map[string]string{
-				"aws:region":     region,
-				"cloud:provider": "aws",
+				"aws:region": region,
 			},
 			Dependencies: []string{
 				"@pulumi/awsx",
@@ -76,7 +75,6 @@ func Test_Examples(t *testing.T) {
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
 				"aws:region":               region,
-				"cloud:provider":           "aws",
 				"containers:redisPassword": "SECRETPASSWORD",
 			},
 			Dependencies: []string{
@@ -88,6 +86,25 @@ func Test_Examples(t *testing.T) {
 				"--diff",
 			},
 			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
+		},
+		{
+			Dir: path.Join(cwd, "./examples/api"),
+			Config: map[string]string{
+				"aws:region": region,
+			},
+			Dependencies: []string{
+				"@pulumi/awsx",
+			},
+			ExtraRuntimeValidation: validateAPITest(func(body string) {
+				assert.Equal(t, "Hello, world!", body)
+			}),
+			EditDirs: []integration.EditDir{{
+				Dir:      "./examples/api/step2",
+				Additive: true,
+				ExtraRuntimeValidation: validateAPITest(func(body string) {
+					assert.Equal(t, "<h1>Hello world!</h1>", body)
+				}),
+			}},
 		},
 	}
 
@@ -348,4 +365,27 @@ func addRandomSuffix(s string) string {
 	_, err := rand.Read(b)
 	contract.AssertNoError(err)
 	return s + "-" + hex.EncodeToString(b)
+}
+
+func validateAPITest(isValid func(body string)) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
+	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
+		var resp *http.Response
+		var err error
+		url := stack.Outputs["url"].(string)
+		// Retry a couple times on 5xx
+		for i := 0; i < 2; i++ {
+			resp, err = http.Get(url + "/b")
+			if !assert.NoError(t, err) {
+				return
+			}
+			if resp.StatusCode < 500 {
+				break
+			}
+			time.Sleep(10 * time.Second)
+		}
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
+		assert.NoError(t, err)
+		isValid(string(body))
+	}
 }
