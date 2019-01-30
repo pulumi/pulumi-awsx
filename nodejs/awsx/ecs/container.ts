@@ -146,8 +146,16 @@ type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     environment?: pulumi.Input<KeyValuePair[]>;
 }>;
 
+/**
+ * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KeyValuePair.html
+ * for more details.
+ */
 export interface KeyValuePair {
+    /** The name of the key-value pair. For environment variables, this is the name of the
+     * environment variable. */
     name: pulumi.Input<string>;
+    /** The value of the key-value pair. For environment variables, this is the value of the
+     * environment variable. */
     value: pulumi.Input<string>;
 }
 
