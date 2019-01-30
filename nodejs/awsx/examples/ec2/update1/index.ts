@@ -15,12 +15,5 @@
 import * as aws from "@pulumi/aws";
 
 import * as ec2 from "./ec2";
-import * as fargate from "./fargate";
 
 export let clusterId = ec2.clusterId;
-
-export let fargateFrontendURL = fargate.frontendURL;
-export let fargateVpcId = fargate.vpcId;
-export let fargatePublicSubnets = fargate.publicSubnetIds;
-export let fargatePrivateSubnets = fargate.privateSubnetIds;
-export let fargateIsolatedSubnets = fargate.isolatedSubnetIds;
