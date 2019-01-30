@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 
 import * as fargate from "./fargate";
 
-export let fargateFrontendURL = fargate.frontendURL;
+export let frontendURL = fargate.frontendURL;
 export let fargateVpcId = fargate.vpcId;
 export let fargatePublicSubnets = fargate.publicSubnetIds;
 export let fargatePrivateSubnets = fargate.privateSubnetIds;
