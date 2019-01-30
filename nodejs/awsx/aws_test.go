@@ -99,7 +99,7 @@ func Test_Examples(t *testing.T) {
 				assert.Equal(t, "Hello, world!", body)
 			}),
 			EditDirs: []integration.EditDir{{
-				Dir:      "./api/step2",
+				Dir:      "./examples/api/step2",
 				Additive: true,
 				ExtraRuntimeValidation: validateAPITest(func(body string) {
 					assert.Equal(t, "<h1>Hello world!</h1>", body)
