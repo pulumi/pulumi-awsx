@@ -19,11 +19,11 @@ import { Config } from "@pulumi/pulumi";
 
 console.log("EC2: Update2");
 
-const vpc = new awsx.ec2.Vpc("ec2-testing-1");
-const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
+const vpc = new awsx.ec2.Vpc("testing-1");
+const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc });
 export const clusterId = cluster1.id;
 
-const autoScalingGroup = cluster1.createAutoScalingGroup("ec2-testing-1", {
+const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
     subnetIds: vpc.publicSubnetIds,
     templateParameters: {
         minSize: 10,
@@ -37,8 +37,8 @@ const autoScalingGroup = cluster1.createAutoScalingGroup("ec2-testing-1", {
 export const autoScalingGroupId = autoScalingGroup.stack.id;
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2-nginx", { vpc, port: 80 });
-const nginx = new awsx.ecs.EC2Service("ec2-nginx", {
+const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { vpc, port: 80 });
+const nginx = new awsx.ecs.EC2Service("nginx", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
@@ -55,8 +55,8 @@ const nginx = new awsx.ecs.EC2Service("ec2-nginx", {
 const nginxEndpoint = nginxListener.endpoint();
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2-simple-nginx", { vpc, port: 80 });
-const simpleNginx = new awsx.ecs.EC2TaskDefinition("ec2-simple-nginx", {
+const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("simple-nginx", { vpc, port: 80 });
+const simpleNginx = new awsx.ecs.EC2TaskDefinition("simple-nginx", {
     container: {
         image: "nginx",
         memory: 64,
@@ -66,37 +66,37 @@ const simpleNginx = new awsx.ecs.EC2TaskDefinition("ec2-simple-nginx", {
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint();
 
-const cachedNginx = new awsx.ecs.EC2Service("ec2-cached-nginx", {
+const cachedNginx = new awsx.ecs.EC2Service("cached-nginx", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsx.ecs.Image.fromDockerBuild("ec2-cached-nginx", {
+                image: awsx.ecs.Image.fromDockerBuild("cached-nginx", {
                     context: "./app",
                     cacheFrom: true,
                 }),
                 memory: 64,
                 portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
-                    "ec2-cached-nginx", { vpc, port: 80 })],
+                    "cached-nginx", { vpc, port: 80 })],
             },
         },
     },
     desiredCount: 1,
 });
 
-const multistageCachedNginx = new awsx.ecs.EC2Service("ec2-multistage-cached-nginx", {
+const multistageCachedNginx = new awsx.ecs.EC2Service("multistage-cached-nginx", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsx.ecs.Image.fromDockerBuild("ec2-multistage-cached-nginx", {
+                image: awsx.ecs.Image.fromDockerBuild("multistage-cached-nginx", {
                     context: "./app",
                     dockerfile: "./app/Dockerfile-multistage",
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 64,
                 portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
-                    "ec2-multistage-cached-nginx", { vpc, port: 80 })],
+                    "multistage-cached-nginx", { vpc, port: 80 })],
             },
         },
     },
@@ -104,10 +104,10 @@ const multistageCachedNginx = new awsx.ecs.EC2Service("ec2-multistage-cached-ngi
 });
 
 const customWebServerListener =
-    new awsx.elasticloadbalancingv2.NetworkTargetGroup("ec2-custom", { vpc, port: 8080 })
-         .createListener("ec2-custom", { port: 80 });
+    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { vpc, port: 8080 })
+         .createListener("custom", { port: 80 });
 
-const customWebServer = new awsx.ecs.EC2Service("ec2-custom", {
+const customWebServer = new awsx.ecs.EC2Service("custom", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
@@ -194,9 +194,9 @@ class Ec2Cache {
     }
 }
 
-const cache = new Ec2Cache("ec2-mycache");
+const cache = new Ec2Cache("mycache");
 
-const helloTask = new awsx.ecs.EC2TaskDefinition("ec2-hello-world", {
+const helloTask = new awsx.ecs.EC2TaskDefinition("hello-world", {
     container: {
         image: "hello-world",
         memory: 20,
@@ -204,13 +204,13 @@ const helloTask = new awsx.ecs.EC2TaskDefinition("ec2-hello-world", {
 });
 
 // build an anonymous image:
-const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("ec2-nginx2", { vpc, port: 80 });
-const builtService = new awsx.ecs.EC2Service("ec2-nginx2", {
+const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx2", { vpc, port: 80 });
+const builtService = new awsx.ecs.EC2Service("nginx2", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: awsx.ecs.Image.fromPath("ec2-nginx2", "./app"),
+                image: awsx.ecs.Image.fromPath("nginx2", "./app"),
                 memory: 64,
                 portMappings: [builtServiceListener],
             },
@@ -235,7 +235,7 @@ function handleError(err: Error) {
 }
 
 // expose some APIs meant for testing purposes.
-const api = new aws.apigateway.x.API("ec2-containers", {
+const api = new aws.apigateway.x.API("containers", {
     routes: [{
         path: "/test",
         method: "GET",
@@ -288,7 +288,7 @@ const api = new aws.apigateway.x.API("ec2-containers", {
     }, {
         path: "/run",
         method: "GET",
-        eventHandler: new aws.lambda.CallbackFunction("ec2-runRoute", {
+        eventHandler: new aws.lambda.CallbackFunction("runRoute", {
             policies: [...awsx.ecs.TaskDefinition.defaultTaskRolePolicyARNs()],
             callback: async (req) => {
                 try {

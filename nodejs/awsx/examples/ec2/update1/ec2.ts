@@ -19,11 +19,11 @@ import { Config } from "@pulumi/pulumi";
 
 console.log("EC2: Update1");
 
-const vpc = new awsx.ec2.Vpc("ec2-testing-1");
-const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
+const vpc = new awsx.ec2.Vpc("testing-1");
+const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc });
 export const clusterId = cluster1.id;
 
-const autoScalingGroup = cluster1.createAutoScalingGroup("ec2-testing-1", {
+const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
     subnetIds: vpc.publicSubnetIds,
     templateParameters: {
         minSize: 10,

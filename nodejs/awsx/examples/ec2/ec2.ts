@@ -19,6 +19,6 @@ import { Config } from "@pulumi/pulumi";
 
 console.log("EC2: Original");
 
-const vpc = new awsx.ec2.Vpc("ec2-testing-1");
-const cluster1 = new awsx.ecs.Cluster("ec2-testing-1", { vpc });
+const vpc = new awsx.ec2.Vpc("testing-1");
+const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc });
 export const clusterId = cluster1.id;

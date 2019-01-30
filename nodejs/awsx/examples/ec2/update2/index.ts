@@ -17,7 +17,7 @@ import * as aws from "@pulumi/aws";
 import * as ec2 from "./ec2";
 
 export let autoScalingGroupId = ec2.autoScalingGroupId;
-export let ec2FrontendURL = ec2.frontendURL;
+export let frontendURL = ec2.frontendURL;
 export let ec2VpcId = ec2.vpcId;
 export let ec2PublicSubnets = ec2.publicSubnetIds;
 export let ec2PrivateSubnets = ec2.privateSubnetIds;

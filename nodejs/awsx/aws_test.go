@@ -201,13 +201,7 @@ func getLogs(t *testing.T, region string, stackInfo integration.RuntimeValidatio
 
 func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
-		var baseURL string
-		var ok bool
-		if isFargate {
-			baseURL, ok = stackInfo.Outputs["fargateFrontendURL"].(string)
-		} else {
-			baseURL, ok = stackInfo.Outputs["ec2FrontendURL"].(string)
-		}
+		baseURL, ok := stackInfo.Outputs["frontendURL"].(string)
 
 		assert.True(t, ok, "expected a `frontendURL` output property of type string")
 
@@ -312,7 +306,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 		// https://github.com/pulumi/pulumi-cloud/issues/666
 		// We are only making the proxy route in fargate testing.
 		if isFargate {
-			nginxLogs, exists := getLogsWithPrefix(logsByResource, "fargate-nginx-")
+			nginxLogs, exists := getLogsWithPrefix(logsByResource, "nginx-")
 			if !assert.True(t, exists) {
 				return
 			}
@@ -325,7 +319,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 		// Hello World container Task logs
 		//  {examples-hello-world 1512871250458 Hello from Docker!}
 		{
-			helloWorldLogs, exists := getLogsWithPrefix(logsByResource, "fargate-hello-world-")
+			helloWorldLogs, exists := getLogsWithPrefix(logsByResource, "hello-world-")
 			if !assert.True(t, exists) {
 				return
 			}
@@ -338,7 +332,7 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 		// Cache Redis container  logs
 		//  {examples-mycache 1512870479441 1:C 10 Dec 01:47:59.440 # oO0OoO0OoO0Oo Redis is starting ...
 		{
-			redisLogs, exists := getLogsWithPrefix(logsByResource, "fargate-mycache-")
+			redisLogs, exists := getLogsWithPrefix(logsByResource, "mycache-")
 			if !assert.True(t, exists) {
 				return
 			}
