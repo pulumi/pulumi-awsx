@@ -143,7 +143,21 @@ type MakeInputs<T> = {
 type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     image: pulumi.Input<string> | ContainerImageProvider;
     portMappings?: (pulumi.Input<aws.ecs.PortMapping> | ContainerPortMappingProvider)[];
+    environment?: pulumi.Input<KeyValuePair[]>;
 }>;
+
+/**
+ * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KeyValuePair.html
+ * for more details.
+ */
+export interface KeyValuePair {
+    /** The name of the key-value pair. For environment variables, this is the name of the
+     * environment variable. */
+    name: pulumi.Input<string>;
+    /** The value of the key-value pair. For environment variables, this is the value of the
+     * environment variable. */
+    value: pulumi.Input<string>;
+}
 
 export interface Container {
     // Properties from aws.ecs.ContainerDefinition
@@ -155,7 +169,7 @@ export interface Container {
     dockerLabels?: pulumi.Input<{ [label: string]: string; }>;
     dockerSecurityOptions?: pulumi.Input<string[]>;
     entryPoint?: pulumi.Input<string[]>;
-    environment?: pulumi.Input<aws.ecs.KeyValuePair[]>;
+    environment?: pulumi.Input<KeyValuePair[]>;
     essential?: pulumi.Input<boolean>;
     extraHosts?: pulumi.Input<aws.ecs.HostEntry[]>;
     hostname?: pulumi.Input<string>;
@@ -187,7 +201,7 @@ export interface Container {
 
 export interface ContainerImageProvider {
     image(parent: pulumi.Resource): pulumi.Input<string>;
-    environment(parent: pulumi.Resource): pulumi.Input<aws.ecs.KeyValuePair[]>;
+    environment(parent: pulumi.Resource): pulumi.Input<KeyValuePair[]>;
 }
 
 /** @internal */
