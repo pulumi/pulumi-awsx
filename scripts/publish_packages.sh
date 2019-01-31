@@ -35,4 +35,4 @@ publish() {
     popd
 }
 
-publish aws-infra
+publish awsx

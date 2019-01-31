@@ -1,5 +1,5 @@
 PROJECT_NAME := Pulumi Infrastructure Components for AWS
-SUB_PROJECTS := nodejs/aws-infra
+SUB_PROJECTS := nodejs/awsx
 include build/common.mk
 
 .PHONY: publish_packages
