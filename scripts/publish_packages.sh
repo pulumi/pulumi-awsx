@@ -18,6 +18,13 @@ publish() {
 
     NPM_TAG="dev"
 
+    # We use the "features/" prefix on branches that we want to build and publish for doing
+    # cross repo work. But in this case, we don't want to publish over "dev", since the bits
+    # could be totally busted and the dev tag tracks master.
+    if [[ "${TRAVIS_BRANCH:-}" == features/* ]]; then
+        NPM_TAG=$(echo "${TRAVIS_BRANCH}" | sed -e 's|^features/|feature-|g')
+    fi
+
     # If the package doesn't have a pre-release tag, use the tag of latest instead of
     # dev. NPM uses this tag as the default version to add, so we want it to mean
     # the newest released version.
