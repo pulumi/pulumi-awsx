@@ -292,7 +292,6 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         this.stack = new aws.cloudformation.Stack(name, {
             ...args,
             name: this.launchConfiguration.stackName,
-            onFailure: "DO_NOTHING",
             templateBody: getCloudFormationTemplate(
                 name,
                 this.launchConfiguration.id,
