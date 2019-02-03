@@ -70,23 +70,23 @@ func Test_Examples(t *testing.T) {
 				"@pulumi/awsx",
 			},
 		},
-		{
-			Dir:       path.Join(cwd, "./examples/fargate"),
-			StackName: addRandomSuffix("fargate"),
-			Config: map[string]string{
-				"aws:region":               region,
-				"containers:redisPassword": "SECRETPASSWORD",
-			},
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
-			Quick:       true,
-			SkipRefresh: true,
-			PreviewCommandlineFlags: []string{
-				"--diff",
-			},
-			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
-		},
+		// {
+		// 	Dir:       path.Join(cwd, "./examples/fargate"),
+		// 	StackName: addRandomSuffix("fargate"),
+		// 	Config: map[string]string{
+		// 		"aws:region":               region,
+		// 		"containers:redisPassword": "SECRETPASSWORD",
+		// 	},
+		// 	Dependencies: []string{
+		// 		"@pulumi/awsx",
+		// 	},
+		// 	Quick:       true,
+		// 	SkipRefresh: true,
+		// 	PreviewCommandlineFlags: []string{
+		// 		"--diff",
+		// 	},
+		// 	ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
+		// },
 		{
 			Dir: path.Join(cwd, "./examples/api"),
 			Config: map[string]string{
@@ -106,9 +106,6 @@ func Test_Examples(t *testing.T) {
 				}),
 			}},
 		},
-	}
-
-	longTests := []integration.ProgramTestOptions{
 		{
 			Dir:       path.Join(cwd, "./examples/ec2"),
 			StackName: addRandomSuffix("ec2"),
@@ -138,6 +135,8 @@ func Test_Examples(t *testing.T) {
 			},
 		},
 	}
+
+	longTests := []integration.ProgramTestOptions{}
 
 	// Run the short or long tests depending on the config.  Note that we only run long tests on
 	// travis after already running short tests.  So no need to actually run both at the same time

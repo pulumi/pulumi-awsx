@@ -291,7 +291,6 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         this.stack = new aws.cloudformation.Stack(name, {
             ...args,
-            name: this.launchConfiguration.stackName,
             templateBody: getCloudFormationTemplate(
                 name,
                 this.launchConfiguration.id,
