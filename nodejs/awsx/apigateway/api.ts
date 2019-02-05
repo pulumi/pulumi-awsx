@@ -227,7 +227,7 @@ export class API extends pulumi.ComponentResource {
         const permissions = createLambdaPermissions(this, name, swaggerLambdas);
 
         // Expose the URL that the API is served at.
-        this.url = this.deployment.invokeUrl.apply(url => url + stageName + "/");
+        this.url = pulumi.interpolate `${this.deployment.invokeUrl}${stageName}/`;
 
         // Create a stage, which is an addressable instance of the Rest API. Set it to point at the latest deployment.
         this.stage = new aws.apigateway.Stage(name, {
@@ -255,7 +255,7 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
                 // path on the API. We allow any stage instead of encoding the one known stage that will be
                 // deployed by Pulumi because the API Gateway console "Test" feature invokes the route
                 // handler with the fake stage `test-invoke-stage`.
-                sourceArn: api.deployment.executionArn.apply(arn => arn + "*/" + methodAndPath),
+                sourceArn: pulumi.interpolate `${api.deployment.executionArn}*/${methodAndPath}`,
             }, { parent: api }));
         }
     }
@@ -423,8 +423,8 @@ function addEventHandlerRouteToSwaggerSpec(
 
     function createSwaggerOperationForLambda(): SwaggerOperation {
         const region = aws.config.requireRegion();
-        const uri = lambda.arn.apply(lambdaARN =>
-            `arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${lambdaARN}/invocations`);
+        const uri = pulumi.interpolate
+            `arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${lambda.arn}/invocations`;
 
         return {
             "x-amazon-apigateway-integration": {
