@@ -89,32 +89,54 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
             }
         }
 
+        // from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
+        // Supported task CPU and memory values for Fargate tasks are as follows.
+        //      CPU value           Memory value (MiB)
+        //      256 (.25 vCPU)      512 (0.5GB), 1024 (1GB), 2048 (2GB)
+        //      512 (.5 vCPU)       1024 (1GB), 2048 (2GB), 3072 (3GB), 4096 (4GB)
+        //      1024 (1 vCPU)       2048 (2GB), 3072 (3GB), 4096 (4GB), 5120 (5GB), 6144 (6GB), 7168 (7GB), 8192 (8GB)
+        //      2048 (2 vCPU)       Between 4096 (4GB) and 16384 (16GB) in increments of 1024 (1GB)
+        //      4096 (4 vCPU)       Between 8192 (8GB) and 30720 (30GB) in increments of 1024 (1GB)
+
         // Compute the smallest allowed Fargate memory value compatible with the requested minimum memory.
         let taskMemory: number;
         let taskMemoryString: string;
         if (minTaskMemory <= 512) {
+            // Memory must be a minimum of 0.5GB
             taskMemory = 512;
             taskMemoryString = "0.5GB";
         } else {
             const taskMemGB = minTaskMemory / 1024;
-            const taskMemWholeGB = Math.ceil(taskMemGB);
+
+            // Memory is only a max of 30GB.
+            const taskMemWholeGB = Math.min(30, Math.ceil(taskMemGB));
             taskMemory = taskMemWholeGB * 1024;
             taskMemoryString = `${taskMemWholeGB}GB`;
         }
 
-        // Allowed CPU values are powers of 2 between 256 and 4096.  We just ensure it's a power of 2 that is at least
-        // 256. We leave the error case for requiring more CPU than is supported to ECS.
-        let taskCPU = Math.pow(2, Math.ceil(Math.log2(Math.max(minTaskCPU, 256))));
+        // Allowed CPU values are powers of 2 between 256 and 4096.  We just ensure it's a power of
+        // 2 that is at least 256.
+        let taskCPU = Math.min(4096, Math.pow(2, Math.ceil(Math.log2(Math.max(minTaskCPU, 256)))));
 
-        // Make sure we select an allowed CPU value for the specified memory.
-        if (taskMemory > 16384) {
-            taskCPU = Math.max(taskCPU, 4096);
-        } else if (taskMemory > 8192) {
-            taskCPU = Math.max(taskCPU, 2048);
-        } else if (taskMemory > 4096) {
-            taskCPU = Math.max(taskCPU, 1024);
-        } else if (taskMemory > 2048) {
-            taskCPU = Math.max(taskCPU, 512);
+        if (taskMemory >= 8192) {
+            // If the memory is 8gb or above, only 1024-4096 CPU is supported
+            taskCPU = clamp(taskCPU, 1024, 4096);
+        }
+        else if (taskMemory >= 4096) {
+            // If the memory is above 4GB but less than 8gb or above, only 512-2048 CPU is supported
+            taskCPU = clamp(taskCPU, 512, 2048);
+        }
+        else if (taskMemory >= 2048) {
+            // If the memory is above 2GB but less than 4gb or above, only 256-1024 CPU is supported
+            taskCPU = clamp(taskCPU, 256, 1024);
+        }
+        else if (taskMemory >= 1024) {
+            // If the memory is above 1GB but less than 2gb or above, only 256-512 CPU is supported
+            taskCPU = clamp(taskCPU, 256, 512);
+        }
+        else {
+            // if the memory is lower than 1GB, only 256 cpu is supported
+            taskCPU = 256;
         }
 
         // Return the computed task memory and CPU values
@@ -123,6 +145,19 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
             cpu: `${taskCPU}`,
         };
     });
+}
+
+function clamp(value: number, min: number, max: number) {
+    if (min >= max) {
+        throw new Error(`Min '${min}' needs to be less than Max '${max}`);
+    }
+
+    const result = Math.min(Math.max(value, min), max);
+    if (result < min || result > max) {
+        throw new Error(`clamp(${value}, ${min}, ${max}) = ${result}`);
+    }
+
+    return result;
 }
 
 export class FargateService extends ecs.Service {
