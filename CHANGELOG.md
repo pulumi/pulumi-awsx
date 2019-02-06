@@ -1,3 +1,10 @@
+## 0.16.5 (unreleased)
+
+- Change awsx.elasticloadbalancingv2.Listener.endpoint from a method to a property.
+- Change awsx.apigateway.ProxyRoute.target to be a richer type to allow extensibility.
+- Allow awsx.elasticloadbalancingv2.NetworkListener to be used as ProxyRoute.target to simply
+  incoming APIGateway routes to a NetworkListener endpoint.
+
 ## 0.16.4 (Release February 5, 2019)
 
 - Renamed 'aws-infra' package to 'awsx'.
