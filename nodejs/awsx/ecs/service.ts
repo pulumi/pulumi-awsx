@@ -61,7 +61,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
     if (args.loadBalancers) {
         for (const obj of args.loadBalancers) {
             const loadBalancer = isServiceLoadBalancerProvider(obj)
-                ? obj.serviceLoadBalancer()
+                ? obj.serviceLoadBalancer(name, service)
                 : obj;
             result.push(pulumi.output(loadBalancer));
         }
@@ -77,7 +77,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
         for (const obj of container.portMappings) {
             if (x.ecs.isContainerLoadBalancerProvider(obj)) {
                 // Containers don't know their own name.  So we add the name in here on their behalf.
-                const containerLoadBalancer = obj.containerLoadBalancer();
+                const containerLoadBalancer = obj.containerLoadBalancer(name, service);
                 const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
                     lb => ({...lb, containerName}));
                 result.push(serviceLoadBalancer);
@@ -162,7 +162,7 @@ export interface ServiceLoadBalancer {
 }
 
 export interface ServiceLoadBalancerProvider {
-    serviceLoadBalancer(): pulumi.Input<ServiceLoadBalancer>;
+    serviceLoadBalancer(name: string, parent: pulumi.Resource): pulumi.Input<ServiceLoadBalancer>;
 }
 
 /** @internal */

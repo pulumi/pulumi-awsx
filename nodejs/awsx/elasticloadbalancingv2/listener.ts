@@ -71,20 +71,20 @@ export abstract class Listener
         this.endpoint = () => endpoint;
     }
 
-    public containerPortMapping() {
+    public containerPortMapping(name: string, parent: pulumi.Resource) {
         if (!x.ecs.isContainerPortMappingProvider(this.defaultListenerAction)) {
             throw new Error("[Listener] was not connected to a [defaultAction] that can provide [portMapping]s");
         }
 
-        return this.defaultListenerAction.containerPortMapping();
+        return this.defaultListenerAction.containerPortMapping(name, parent);
     }
 
-    public containerLoadBalancer() {
+    public containerLoadBalancer(name: string, parent: pulumi.Resource) {
         if (!x.ecs.isContainerLoadBalancerProvider(this.defaultListenerAction)) {
             throw new Error("[Listener] was not connected to a [defaultAction] that can provide [containerLoadBalancer]s");
         }
 
-        return this.defaultListenerAction.containerLoadBalancer();
+        return this.defaultListenerAction.containerLoadBalancer(name, parent);
     }
 
     public addListenerRule(name: string, args: x.elasticloadbalancingv2.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
