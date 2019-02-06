@@ -26,14 +26,14 @@ export function computeContainerDefinition(
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
 
     const image = isContainerImageProvider(container.image)
-        ? container.image.image(parent)
+        ? container.image.image(name, parent)
         : container.image;
 
     const environment = isContainerImageProvider(container.image)
-        ? utils.combineArrays(container.environment, container.image.environment(parent))
+        ? utils.combineArrays(container.environment, container.image.environment(name, parent))
         : container.environment;
 
-    const portMappings = getPortMappings(container);
+    const portMappings = getPortMappings(name, container, parent);
 
     return pulumi.all([container, logGroup.id, image, environment, portMappings])
                  .apply(([container, logGroupId, image, environment, portMappings]) => {
@@ -62,7 +62,7 @@ export function computeContainerDefinition(
     });
 }
 
-function getPortMappings(container: Container) {
+function getPortMappings(name: string, container: Container, parent: pulumi.Resource) {
     if (!container.portMappings) {
         return undefined;
     }
@@ -72,7 +72,7 @@ function getPortMappings(container: Container) {
     if (container.portMappings) {
         for (const obj of container.portMappings) {
             const portMapping = pulumi.output(isContainerPortMappingProvider(obj)
-                ? obj.containerPortMapping()
+                ? obj.containerPortMapping(name, parent)
                 : obj);
             result.push(pulumi.output(portMapping));
         }
@@ -108,7 +108,7 @@ function convertMappings(mappings: aws.ecs.PortMapping[]) {
 }
 
 export interface ContainerPortMappingProvider {
-    containerPortMapping(): pulumi.Input<aws.ecs.PortMapping>;
+    containerPortMapping(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping>;
 }
 
 export interface ContainerLoadBalancer {
@@ -118,7 +118,7 @@ export interface ContainerLoadBalancer {
 }
 
 export interface ContainerLoadBalancerProvider {
-    containerLoadBalancer(): pulumi.Input<ContainerLoadBalancer>;
+    containerLoadBalancer(name: string, parent: pulumi.Resource): pulumi.Input<ContainerLoadBalancer>;
 }
 
 /** @internal */
@@ -200,8 +200,8 @@ export interface Container {
 }
 
 export interface ContainerImageProvider {
-    image(parent: pulumi.Resource): pulumi.Input<string>;
-    environment(parent: pulumi.Resource): pulumi.Input<KeyValuePair[]>;
+    image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
+    environment(name: string, parent: pulumi.Resource): pulumi.Input<KeyValuePair[]>;
 }
 
 /** @internal */
