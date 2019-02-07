@@ -120,10 +120,29 @@ function isStaticRoute(route: Route): route is StaticRoute {
 /**
  * An apigateway route that maps to some target uri, or some elastic-load-balancer host/port.
  */
-export type ProxyRoute = {
+export interface ProxyRoute {
     path: string;
-    target: string | pulumi.Output<Endpoint>;
-};
+    target: pulumi.Input<ProxyTarget> | ProxyRouteTargetProvider;
+}
+
+export interface ProxyTarget {
+    /** The uri this route path will proxy to */
+    uri: pulumi.Input<string>;
+
+    /** Optional connection type for the proxy.  Generally only needed when making a VPC connection */
+    connectionType?: pulumi.Input<string>;
+
+    /** Optional connection id for the proxy.  Generally only needed when making a VPC connection */
+    connectionId?: pulumi.Input<string>;
+}
+
+export interface ProxyRouteTargetProvider {
+    target(name: string, parent: pulumi.Resource): pulumi.Input<ProxyTarget>;
+}
+
+function isProxyRouteTargetProvider(obj: any): obj is ProxyRouteTargetProvider {
+    return (<ProxyRouteTargetProvider>obj).target !== undefined;
+}
 
 function isProxyRoute(route: Route): route is ProxyRoute {
     return (<ProxyRoute>route).target !== undefined;
@@ -324,10 +343,10 @@ interface ApigatewayIntegration {
     httpMethod: string;
     type: string;
     responses?: { [pattern: string]: SwaggerAPIGatewayIntegrationResponse };
-    connectionType?: string;
     uri: pulumi.Output<string>;
+    connectionType?: pulumi.Output<string | undefined>;
+    connectionId?: pulumi.Output<string | undefined>;
     credentials?: pulumi.Output<string>;
-    connectionId?: pulumi.Output<string>;
 }
 
 function createSwaggerSpec(api: API, name: string, routes: Route[]) {
@@ -631,29 +650,9 @@ function addProxyRouteToSwaggerSpec(
 
     checkRoute(api, route, "target");
 
-    // If this is an Endpoint proxy, create a VpcLink to the load balancer in the VPC
-    let vpcLink: aws.apigateway.VpcLink | undefined = undefined;
-    if (typeof route.target !== "string") {
-        const targetArn = route.target.apply(endpoint => {
-            if (!endpoint.loadBalancer) {
-                throw new pulumi.ResourceError("AWS endpoint proxy requires an AWS Endpoint", api);
-            }
-            return endpoint.loadBalancer.loadBalancerType.apply(loadBalancerType => {
-                if (loadBalancerType === "application") {
-                    // We can only support proxying to an Endpoint if it is backed by an
-                    // NLB, which will only be the case for cloud.Service ports exposed as
-                    // type "tcp".
-                    throw new pulumi.ResourceError(
-                        "AWS endpoint proxy requires an Endpoint on a service port of type 'tcp'", api);
-                }
-                return endpoint.loadBalancer.arn;
-            });
-        });
-
-        vpcLink = new aws.apigateway.VpcLink(name + sha1hash(route.path), {
-            targetArn: targetArn,
-        }, { parent: api });
-    }
+    const target = isProxyRouteTargetProvider(route.target)
+        ? pulumi.output(route.target.target(name + sha1hash(route.path), api))
+        : pulumi.output(route.target);
 
     // Register two paths in the Swagger spec, for the root and for a catch all under the root
     const method = swaggerMethod("ANY");
@@ -661,39 +660,33 @@ function addProxyRouteToSwaggerSpec(
     const swaggerPathProxy = swaggerPath + "{proxy+}";
 
     addSwaggerOperation(swagger, swaggerPath, method,
-        createSwaggerOperationForProxy(route.target, vpcLink, /*useProxyPathParameter:*/ false));
+        createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ false));
 
     addSwaggerOperation(swagger, swaggerPathProxy, method,
-        createSwaggerOperationForProxy(route.target, vpcLink, /*useProxyPathParameter:*/ true));
+        createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ true));
 
     return;
 
     function createSwaggerOperationForProxy(
-        target: string | pulumi.Output<Endpoint>,
-        vpcLink: aws.apigateway.VpcLink | undefined,
+        target: pulumi.Output<pulumi.Unwrap<ProxyTarget>>,
         useProxyPathParameter: boolean): SwaggerOperation {
 
-        const uri =
-            pulumi.all([<string>target, <pulumi.Output<Endpoint>>target])
-                .apply(([targetStr, targetEndpoint]) => {
-                    let url = "";
-                    if (typeof targetStr === "string") {
-                        // For URL target, ensure there is a trailing `/`
-                        url = targetStr;
-                        if (!url.endsWith("/")) {
-                            url = url + "/";
-                        }
-                    } else {
-                        // For Endpoint target, construct an HTTP URL from the hostname and port
-                        url = `http://${targetEndpoint.hostname}:${targetEndpoint.port}/`;
-                    }
+        const uri = target.apply(t => {
+            let result = t.uri;
+            // ensure there is a trailing `/`
+            if (!result.endsWith("/")) {
+                result += "/";
+            }
 
-                    if (useProxyPathParameter) {
-                        return `${url}{proxy}`;
-                    } else {
-                        return url;
-                    }
-                });
+            if (useProxyPathParameter) {
+                result += "{proxy}";
+            }
+
+            return result;
+        });
+
+        const connectionType = target.apply(t => t.connectionType);
+        const connectionId = target.apply(t => t.connectionId);
 
         const result: SwaggerOperation = {
             "x-amazon-apigateway-integration": {
@@ -702,11 +695,11 @@ function addProxyRouteToSwaggerSpec(
                         statusCode: "200",
                     },
                 },
-                uri: uri,
+                uri,
+                connectionType,
+                connectionId,
                 passthroughBehavior: "when_no_match",
                 httpMethod: "ANY",
-                connectionType: vpcLink ? "VPC_LINK" : undefined,
-                connectionId: vpcLink ? vpcLink.id : undefined,
                 type: "http_proxy",
             },
         };

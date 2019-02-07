@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
 
-const api = new aws.apigateway.x.API("myapi", {
+const api = new awsx.apigateway.API("myapi", {
     routes: [{
         path: "/b",
         method: "GET",

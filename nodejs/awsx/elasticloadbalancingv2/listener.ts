@@ -20,6 +20,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import * as utils from "./../utils";
 
+export interface ListenerEndpoint {
+    hostname: string;
+    port: number;
+}
+
 export abstract class Listener
         extends pulumi.ComponentResource
         implements x.ecs.ContainerPortMappingProvider,
@@ -27,7 +32,7 @@ export abstract class Listener
     public readonly listener: aws.elasticloadbalancingv2.Listener;
     public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
 
-    public readonly endpoint: () => pulumi.Output<aws.apigateway.x.Endpoint>;
+    public readonly endpoint: pulumi.Output<ListenerEndpoint>;
 
     private readonly defaultListenerAction?: ListenerDefaultAction;
 
@@ -51,9 +56,8 @@ export abstract class Listener
         }, parentOpts);
 
         const loadBalancer = args.loadBalancer.loadBalancer;
-        const endpoint = this.listener.urn.apply(_ => pulumi.output({
+        this.endpoint = this.listener.urn.apply(_ => pulumi.output({
             hostname: loadBalancer.dnsName,
-            loadBalancer: loadBalancer,
             port: args.port,
         }));
 
@@ -67,8 +71,6 @@ export abstract class Listener
             // created.
             defaultListenerAction.registerListener(this);
         }
-
-        this.endpoint = () => endpoint;
     }
 
     public containerPortMapping(name: string, parent: pulumi.Resource) {
