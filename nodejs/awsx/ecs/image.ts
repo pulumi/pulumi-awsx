@@ -33,6 +33,10 @@ export abstract class Image implements ecs.ContainerImageProvider {
     public static fromPath(name: string, path: pulumi.Input<string>): Image;
     public static fromPath(repository: aws.ecr.Repository, path: pulumi.Input<string>): Image;
     public static fromPath(nameOrRepository: string | aws.ecr.Repository, path: pulumi.Input<string>): Image {
+        if (path === undefined) {
+            throw new Error("'build' was undefined");
+        }
+
         return new AssetImage(nameOrRepository, path);
     }
 
@@ -46,6 +50,10 @@ export abstract class Image implements ecs.ContainerImageProvider {
     public static fromDockerBuild(name: string, build: pulumi.Input<docker.DockerBuild>): Image;
     public static fromDockerBuild(repository: aws.ecr.Repository, build: pulumi.Input<docker.DockerBuild>): Image;
     public static fromDockerBuild(nameOrRepository: string | aws.ecr.Repository, build: pulumi.Input<docker.DockerBuild>): Image {
+        if (build === undefined) {
+            throw new Error("'path' was undefined");
+        }
+
         return new AssetImage(nameOrRepository, build);
     }
 
