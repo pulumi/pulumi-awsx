@@ -46,7 +46,7 @@ export class Vpc extends pulumi.ComponentResource {
      * The nat gateways created to allow private subnets access to the internet.
      * Only available if this was created using [VpcArgs].
      */
-    public readonly natGateways: aws.ec2.NatGateway[] = [];
+    public readonly natGateways: x.ec2.NatGateway[] = [];
 
     constructor(name: string, args?: VpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
@@ -173,8 +173,16 @@ export class Vpc extends pulumi.ComponentResource {
 
         if (idArgs.internetGatewayId) {
             vpc.internetGateway = new x.ec2.InternetGateway(name, vpc, {
-                internetGateway: aws.ec2.InternetGateway.get(name, idArgs.internetGatewayId)
+                internetGateway: aws.ec2.InternetGateway.get(name, idArgs.internetGatewayId),
             });
+        }
+
+        if (idArgs.natGatewayIds) {
+            for (const natGatewayId of idArgs.natGatewayIds) {
+                vpc.natGateways.push(new x.ec2.NatGateway(name, vpc, {
+                    natGateway: aws.ec2.NatGateway.get(name, natGatewayId),
+                }));
+            }
         }
 
         return vpc;
@@ -197,26 +205,8 @@ function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOf
         // this indexing is safe since we would have created the any subnet across all
         // availability zones.
         const publicSubnet = vpc.publicSubnets[availabilityZone];
-        const parentOpts = { parent: publicSubnet };
 
-        // from https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
-        //
-        // you must also specify an Elastic IP address to associate with the NAT gateway
-        // when you create it. After you've created a NAT gateway, you must update the route
-        // table associated with one or more of your private subnets to point Internet-bound
-        // traffic to the NAT gateway. This enables instances in your private subnets to
-        // communicate with the internet.
-        const natName = `nat-${i}`;
-        const elasticIP = new aws.ec2.Eip(natName, {
-            tags: { Name: natName },
-        }, parentOpts);
-
-        const natGateway = new aws.ec2.NatGateway(natName, {
-            subnetId: publicSubnet.id,
-            allocationId: elasticIP.id,
-        }, parentOpts);
-
-        vpc.natGateways.push(natGateway);
+        vpc.natGateways.push(publicSubnet.createNatGateway(`nat-${i}`));
     }
 
     let roundRobinIndex = 0;
@@ -236,12 +226,7 @@ function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOf
                 ? vpc.natGateways[j]
                 : vpc.natGateways[roundRobinIndex++];
 
-            privateSubnet.createRoute(`nat-${j}`, {
-                // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
-                // select the internet gateway ID in the Target list.
-                destinationCidrBlock: "0.0.0.0/0",
-                natGatewayId: natGateway.id,
-            });
+            privateSubnet.createRoute(`nat-${j}`, natGateway);
         }
     }
 }
@@ -322,6 +307,8 @@ export interface ExistingVpcIdArgs {
     isolatedSubnetIds?: pulumi.Input<string>[];
     /** The id of the internet gateway for this VPC */
     internetGatewayId?: pulumi.Input<string>;
+    /** The ids of the nat gateways for this VPC */
+    natGatewayIds?: pulumi.Input<string>[];
 }
 
 function isExistingVpcIdArgs(obj: any): obj is ExistingVpcIdArgs {

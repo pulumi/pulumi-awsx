@@ -19,6 +19,9 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class Subnet extends pulumi.ComponentResource {
+    // tslint:disable-next-line:variable-name
+    private readonly __isSubnetInstance = true;
+
     public readonly vpc: x.ec2.Vpc;
     public readonly subnetName: string;
 
@@ -70,6 +73,11 @@ export class Subnet extends pulumi.ComponentResource {
         this.registerOutputs({});
     }
 
+    /** @internal */
+    public static isSubnetInstance(obj: any): obj is Subnet {
+        return !!(<Subnet>obj).__isSubnetInstance;
+    }
+
     public createRoute(name: string, args: RouteArgs, opts?: pulumi.ComponentResourceOptions): void;
     public createRoute(name: string, provider: SubnetRouteProvider, opts?: pulumi.ComponentResourceOptions): void;
     public createRoute(name: string, argsOrProvider: RouteArgs | SubnetRouteProvider, opts: pulumi.ComponentResourceOptions = {}): void {
@@ -83,6 +91,13 @@ export class Subnet extends pulumi.ComponentResource {
             ...args,
             routeTableId: this.routeTable.id,
         }, opts));
+    }
+
+    public createNatGateway(name: string, args: x.ec2.NatGatewayArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        return new x.ec2.NatGateway(name, this.vpc, {
+            ...args,
+            subnet: this,
+        }, opts || { parent: this });
     }
 }
 
