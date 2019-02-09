@@ -73,7 +73,7 @@ export class Subnet extends pulumi.ComponentResource {
     public createRoute(name: string, args: RouteArgs, opts?: pulumi.ComponentResourceOptions): void;
     public createRoute(name: string, provider: SubnetRouteProvider, opts?: pulumi.ComponentResourceOptions): void;
     public createRoute(name: string, argsOrProvider: RouteArgs | SubnetRouteProvider, opts: pulumi.ComponentResourceOptions = {}): void {
-        opts.parent = opts.parent || this;
+        opts = opts || { parent: this };
 
         const args = isSubnetRouteProvider(argsOrProvider)
             ? argsOrProvider.route(name, opts)
