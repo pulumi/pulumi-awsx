@@ -92,13 +92,6 @@ export class Subnet extends pulumi.ComponentResource {
             routeTableId: this.routeTable.id,
         }, opts));
     }
-
-    public createNatGateway(name: string, args: x.ec2.NatGatewayArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        return new x.ec2.NatGateway(name, this.vpc, {
-            ...args,
-            subnet: this,
-        }, opts || { parent: this });
-    }
 }
 
 export interface SubnetRouteProvider {

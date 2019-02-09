@@ -38,10 +38,6 @@ export class NatGateway
             this.natGateway = args.natGateway;
         }
         else {
-            if (!args.subnet) {
-                throw new Error("[args.subnet] must be provided.");
-            }
-
             // from https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
             //
             // you must also specify an Elastic IP address to associate with the NAT gateway
@@ -83,7 +79,7 @@ export interface NatGatewayArgs {
     /**
      * The subnet the NatGateway should be placed in.
      */
-    subnet?: x.ec2.SubnetOrId;
+    subnet: x.ec2.SubnetOrId;
 
     /**
      * A mapping of tags to assign to the resource.

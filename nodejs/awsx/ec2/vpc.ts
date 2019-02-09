@@ -111,7 +111,7 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     /**
-     * Adds an [aws.ec2.InternetGateway] to this VPC.  Will fail if this Vpc already has an
+     * Adds an [awsx.ec2.InternetGateway] to this VPC.  Will fail if this Vpc already has an
      * InternetGateway.
      *
      * @param subnets The subnets to route the InternetGateway to.  Will default to the [public]
@@ -134,6 +134,22 @@ export class Vpc extends pulumi.ComponentResource {
         for (const subnet of subnets) {
             subnet.createRoute("ig", this.internetGateway);
         }
+
+        return this.internetGateway;
+    }
+
+    /**
+     * Adds an [awsx.ec2.NatGateway] to this VPC. The NatGateway must be supplied a subnet (normally
+     * public) to be placed in.  After adding the NatGateway you should update the route table
+     * associated with one or more of your private subnets to point Internet-bound traffic to the
+     * NAT gateway. This enables instances in your private subnets to communicate with the internet.
+     *
+     * This can be done by calling [subnet.createRoute] and passing in the newly created NatGateway.
+     */
+    public addNatGateway(name: string, args: x.ec2.NatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        const natGateway = new x.ec2.NatGateway(name, this, args, opts);
+        this.natGateways.push(natGateway);
+        return natGateway;
     }
 
     /**
@@ -206,7 +222,7 @@ function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOf
         // availability zones.
         const publicSubnet = vpc.publicSubnets[availabilityZone];
 
-        vpc.natGateways.push(publicSubnet.createNatGateway(`nat-${i}`));
+        vpc.addNatGateway(`nat-${i}`, { subnet: publicSubnet });
     }
 
     let roundRobinIndex = 0;
