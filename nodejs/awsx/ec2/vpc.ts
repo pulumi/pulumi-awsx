@@ -40,7 +40,7 @@ export class Vpc extends pulumi.ComponentResource {
      * The internet gateway created to allow traffic to/from the internet to the public subnets.
      * Only available if this was created using [VpcArgs].
      */
-    public readonly internetGateway: aws.ec2.InternetGateway;
+    public internetGateway?: x.ec2.InternetGateway;
 
     /**
      * The nat gateways created to allow private subnets access to the internet.
@@ -83,7 +83,7 @@ export class Vpc extends pulumi.ComponentResource {
             ]);
 
             // Create an internet gateway if we have public subnets.
-            this.internetGateway = createInternetGateway(this, name)!;
+            this.addInternetGateway(name, this.publicSubnets);
 
             // Create nat gateways if we have private subnets.
             createNatGateways(this, numberOfAvailabilityZones, numberOfNatGateways);
@@ -107,6 +107,32 @@ export class Vpc extends pulumi.ComponentResource {
             case "private": return this.privateSubnetIds;
             case "isolated": return this.isolatedSubnetIds;
             default: throw new Error("Unexpected subnet type: " + type);
+        }
+    }
+
+    /**
+     * Adds an [aws.ec2.InternetGateway] to this VPC.  Will fail if this Vpc already has an
+     * InternetGateway.
+     *
+     * @param subnets The subnets to route the InternetGateway to.  Will default to the [public]
+     *        subnets of this Vpc if not specified.
+     */
+    public addInternetGateway(name: string, subnets?: x.ec2.Subnet[],
+                              args: aws.ec2.InternetGatewayArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+
+        if (this.internetGateway) {
+            throw new Error("Cannot add InternetGateway to Vpc that already has one.");
+        }
+
+        opts.parent = opts.parent || this;
+
+        // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
+        // for more details.
+        this.internetGateway = new x.ec2.InternetGateway(name, this, args, opts);
+
+        subnets = subnets || this.publicSubnets;
+        for (const subnet of subnets) {
+            subnet.createRoute("ig", this.internetGateway);
         }
     }
 
@@ -145,32 +171,14 @@ export class Vpc extends pulumi.ComponentResource {
         createSubnets(vpc, name, "private", idArgs.privateSubnetIds);
         createSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
 
+        if (idArgs.internetGatewayId) {
+            vpc.internetGateway = new x.ec2.InternetGateway(name, vpc, {
+                internetGateway: aws.ec2.InternetGateway.get(name, idArgs.internetGatewayId)
+            });
+        }
+
         return vpc;
     }
-}
-
-function createInternetGateway(vpc: Vpc, name: string) {
-    if (vpc.publicSubnets.length === 0) {
-        return undefined;
-    }
-
-    // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
-    // for more details.
-    const internetGateway = new aws.ec2.InternetGateway(name, {
-        vpcId: vpc.id,
-    });
-
-    // Hook up all public subnets through that internet gateway.
-    for (const publicSubnet of vpc.publicSubnets) {
-        publicSubnet.createRoute("ig", {
-            // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
-            // select the internet gateway ID in the Target list.
-            destinationCidrBlock: "0.0.0.0/0",
-            gatewayId: internetGateway.id,
-        });
-    }
-
-    return internetGateway;
 }
 
 function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
@@ -312,6 +320,8 @@ export interface ExistingVpcIdArgs {
     privateSubnetIds?: pulumi.Input<string>[];
     /** The isolated subnets for the vpc. */
     isolatedSubnetIds?: pulumi.Input<string>[];
+    /** The id of the internet gateway for this VPC */
+    internetGatewayId?: pulumi.Input<string>;
 }
 
 function isExistingVpcIdArgs(obj: any): obj is ExistingVpcIdArgs {
