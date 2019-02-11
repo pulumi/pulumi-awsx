@@ -125,14 +125,44 @@ export interface ProxyRoute {
     target: pulumi.Input<ProxyTarget> | ProxyRouteTargetProvider;
 }
 
+/**
+ * See https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/ for more details.
+ */
 export interface ProxyTarget {
-    /** The uri this route path will proxy to */
+    /**
+     * Specifies Uniform Resource Identifier (URI) of the integration endpoint.
+     *
+     * For HTTP or HTTP_PROXY integrations, the URI must be a fully formed, encoded HTTP(S) URL
+     * according to the RFC-3986 specification, for either standard integration, where
+     * connectionType is not VPC_LINK, or private integration, where connectionType is VPC_LINK. For
+     * a private HTTP integration, the URI is not used for routing.
+     *
+     * For AWS or AWS_PROXY integrations, the URI is of the form
+     * arn:aws:apigateway:{region}:{subdomain.service|service}:path|action/{service_api}. Here,
+     * {Region} is the API Gateway region (e.g., us-east-1); {service} is the name of the integrated
+     * AWS service (e.g., s3); and {subdomain} is a designated subdomain supported by certain AWS
+     * service for fast host-name lookup. action can be used for an AWS service action-based API,
+     * using an Action={name}&{p1}={v1}&p2={v2}... query string. The ensuing {service_api} refers to
+     * a supported action {name} plus any required input parameters. Alternatively, path can be used
+     * for an AWS service path-based API. The ensuing service_api refers to the path to an AWS
+     * service resource, including the region of the integrated AWS service, if applicable. For
+     * example, for integration with the S3 API of GetObject, the uri can be either
+     * arn:aws:apigateway:us-west-2:s3:action/GetObject&Bucket={bucket}&Key={key} or
+     * arn:aws:apigateway:us-west-2:s3:path/{bucket}/{key}
+     */
     uri: pulumi.Input<string>;
 
-    /** Optional connection type for the proxy.  Generally only needed when making a VPC connection */
-    connectionType?: pulumi.Input<string>;
+    /**
+     * The type of the network connection to the integration endpoint. The valid value is INTERNET
+     * for connections through the public routable internet or VPC_LINK for private connections
+     * between API Gateway and a network load balancer in a VPC. The default value is INTERNET.
+     */
+    connectionType?: pulumi.Input<ApigatewayConnectionType>;
 
-    /** Optional connection id for the proxy.  Generally only needed when making a VPC connection */
+    /**
+     * The (id) of the VpcLink used for the integration when connectionType=VPC_LINK and undefined,
+     * otherwise.
+     */
     connectionId?: pulumi.Input<string>;
 
     /**
@@ -365,14 +395,15 @@ interface ApigatewayIntegration {
     requestParameters?: any;
     passthroughBehavior?: string;
     httpMethod: string;
-    type: pulumi.Output<ApigatewayIntegrationType>;
+    type: pulumi.Input<ApigatewayIntegrationType>;
     responses?: { [pattern: string]: SwaggerAPIGatewayIntegrationResponse };
     uri: pulumi.Output<string>;
-    connectionType?: pulumi.Output<string | undefined>;
+    connectionType?: pulumi.Input<ApigatewayConnectionType>;
     connectionId?: pulumi.Output<string | undefined>;
     credentials?: pulumi.Output<string>;
 }
 
+export type ApigatewayConnectionType = "INTERNET" | "VPC_LINK" | undefined;
 export type ApigatewayIntegrationType = "aws" | "aws_proxy" | "http" | "http_proxy" | "mock";
 
 function createSwaggerSpec(api: API, name: string, routes: Route[]) {
