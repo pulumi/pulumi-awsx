@@ -141,7 +141,8 @@ export class NetworkListener
 
         return this.endpoint.apply(ep => ({
             uri: `http://${ep.hostname}:${ep.port}/`,
-            connectionType: "VPC_LINK",
+            type: <x.apigateway.ApigatewayIntegrationType>"http_proxy",
+            connectionType: <x.apigateway.ApigatewayConnectionType>"VPC_LINK",
             connectionId: vpcLink.id,
         }));
     }
