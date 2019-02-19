@@ -4,6 +4,9 @@
 - Change awsx.apigateway.ProxyRoute.target to be a richer type to allow extensibility.
 - Allow awsx.elasticloadbalancingv2.NetworkListener to be used as ProxyRoute.target to simply
   incoming APIGateway routes to a NetworkListener endpoint.
+- Add support for arbitrary APIGateway integration routes (i.e. to any supported aws service).
+  Note: this comes with a small breaking change where the names of some apigateway types have
+  changed from ProxyXXX to IntegrationXXX.
 
 ## 0.16.4 (Release February 5, 2019)
 
