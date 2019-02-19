@@ -118,7 +118,7 @@ export class Vpc extends pulumi.ComponentResource {
      *        subnets of this Vpc if not specified.
      */
     public addInternetGateway(name: string, subnets?: x.ec2.Subnet[],
-                              args: aws.ec2.InternetGatewayArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+                              args: aws.ec2.InternetGatewayArgs = {}, opts?: pulumi.ComponentResourceOptions) {
 
         if (this.internetGateway) {
             throw new Error("Cannot add InternetGateway to Vpc that already has one.");
