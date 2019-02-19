@@ -109,7 +109,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
  */
 export class NetworkListener
         extends mod.Listener
-        implements x.apigateway.ProxyRouteTargetProvider {
+        implements x.apigateway.IntegrationRouteTargetProvider {
 
     public readonly loadBalancer: NetworkLoadBalancer;
     public readonly defaultTargetGroup?: x.elasticloadbalancingv2.NetworkTargetGroup;
@@ -133,7 +133,7 @@ export class NetworkListener
         this.registerOutputs({});
     }
 
-    public target(name: string, parent: pulumi.Resource): pulumi.Input<x.apigateway.ProxyTarget> {
+    public target(name: string, parent: pulumi.Resource): pulumi.Input<x.apigateway.IntegrationTarget> {
         // create a VpcLink to the load balancer in the VPC
         const vpcLink = new aws.apigateway.VpcLink(name, {
             targetArn: this.loadBalancer.loadBalancer.arn,
@@ -141,7 +141,8 @@ export class NetworkListener
 
         return this.endpoint.apply(ep => ({
             uri: `http://${ep.hostname}:${ep.port}/`,
-            connectionType: "VPC_LINK",
+            type: <x.apigateway.IntegrationType>"http_proxy",
+            connectionType: <x.apigateway.IntegrationConnectionType>"VPC_LINK",
             connectionId: vpcLink.id,
         }));
     }

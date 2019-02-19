@@ -76,7 +76,7 @@ export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH";
  * of the route.  See [EventHandlerRoute], [StaticRoute], [ProxyRoute] and [RawJsonRoute] for
  * additional details.
  */
-export type Route = EventHandlerRoute | StaticRoute | ProxyRoute | RawDataRoute;
+export type Route = EventHandlerRoute | StaticRoute | IntegrationRoute | RawDataRoute;
 
 export type EventHandlerRoute = {
     path: string;
@@ -118,34 +118,122 @@ function isStaticRoute(route: Route): route is StaticRoute {
 }
 
 /**
- * An apigateway route that maps to some target uri, or some elastic-load-balancer host/port.
+ * An apigateway route for an integration.
+ * https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/ for more details.
  */
-export interface ProxyRoute {
+export interface IntegrationRoute {
     path: string;
-    target: pulumi.Input<ProxyTarget> | ProxyRouteTargetProvider;
+    target: pulumi.Input<IntegrationTarget> | IntegrationRouteTargetProvider;
 }
 
-export interface ProxyTarget {
-    /** The uri this route path will proxy to */
+export type IntegrationConnectionType = "INTERNET" | "VPC_LINK";
+export type IntegrationType = "aws" | "aws_proxy" | "http" | "http_proxy" | "mock";
+export type IntegrationPassthroughBehavior = "when_no_match" | "when_no_templates" | "never";
+
+/**
+ * See https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/ for more details.
+ */
+export interface IntegrationTarget {
+    /**
+     * Specifies an API method integration type. The valid value is one of the following:
+     *
+     * aws: for integrating the API method request with an AWS service action, including the Lambda
+     * function-invoking action. With the Lambda function-invoking action, this is referred to as
+     * the Lambda custom integration. With any other AWS service action, this is known as AWS
+     * integration.
+     *
+     * aws_proxy: for integrating the API method request with the Lambda function-invoking action
+     * with the client request passed through as-is. This integration is also referred to as the
+     * Lambda proxy integration.
+     *
+     * http: for integrating the API method request with an HTTP endpoint, including a private HTTP
+     * endpoint within a VPC. This integration is also referred to as the HTTP custom integration.
+     *
+     * http_proxy: for integrating the API method request with an HTTP endpoint, including a private
+     * HTTP endpoint within a VPC, with the client request passed through as-is. This is also
+     * referred to as the HTTP proxy integration.
+     *
+     * mock: for integrating the API method request with API Gateway as a "loop-back" endpoint
+     * without invoking any backend.
+     */
+    type: pulumi.Input<IntegrationType>;
+
+    /**
+     * Specifies the integration's HTTP method type.  Currently, the only supported type is 'ANY'.
+     */
+    httpMethod?: "ANY";
+
+    /**
+     * Specifies Uniform Resource Identifier (URI) of the integration endpoint.
+     *
+     * For HTTP or HTTP_PROXY integrations, the URI must be a fully formed, encoded HTTP(S) URL
+     * according to the RFC-3986 specification, for either standard integration, where
+     * connectionType is not VPC_LINK, or private integration, where connectionType is VPC_LINK. For
+     * a private HTTP integration, the URI is not used for routing.
+     *
+     * For AWS or AWS_PROXY integrations, the URI is of the form
+     * arn:aws:apigateway:{region}:{subdomain.service|service}:path|action/{service_api}. Here,
+     * {Region} is the API Gateway region (e.g., us-east-1); {service} is the name of the integrated
+     * AWS service (e.g., s3); and {subdomain} is a designated subdomain supported by certain AWS
+     * service for fast host-name lookup. action can be used for an AWS service action-based API,
+     * using an Action={name}&{p1}={v1}&p2={v2}... query string. The ensuing {service_api} refers to
+     * a supported action {name} plus any required input parameters. Alternatively, path can be used
+     * for an AWS service path-based API. The ensuing service_api refers to the path to an AWS
+     * service resource, including the region of the integrated AWS service, if applicable. For
+     * example, for integration with the S3 API of GetObject, the uri can be either
+     * arn:aws:apigateway:us-west-2:s3:action/GetObject&Bucket={bucket}&Key={key} or
+     * arn:aws:apigateway:us-west-2:s3:path/{bucket}/{key}
+     */
     uri: pulumi.Input<string>;
 
-    /** Optional connection type for the proxy.  Generally only needed when making a VPC connection */
-    connectionType?: pulumi.Input<string>;
+    /**
+     * The type of the network connection to the integration endpoint. The valid value is INTERNET
+     * for connections through the public routable internet or VPC_LINK for private connections
+     * between API Gateway and a network load balancer in a VPC. The default value is INTERNET.
+     */
+    connectionType?: pulumi.Input<IntegrationConnectionType>;
 
-    /** Optional connection id for the proxy.  Generally only needed when making a VPC connection */
+    /**
+     * The (id) of the VpcLink used for the integration when connectionType=VPC_LINK and undefined,
+     * otherwise.
+     */
     connectionId?: pulumi.Input<string>;
+
+    /**
+     * Specifies how the method request body of an unmapped content type will be passed through the
+     * integration request to the back end without transformation.
+     *
+     * The valid value is one of the following:
+     *
+     * WHEN_NO_MATCH: passes the method request body through the integration request to the back end
+     * without transformation when the method request content type does not match any content type
+     * associated with the mapping templates defined in the integration request.
+     *
+     * WHEN_NO_TEMPLATES: passes the method request body through the integration request to the back
+     * end without transformation when no mapping template is defined in the integration request. If
+     * a template is defined when this option is selected, the method request of an unmapped
+     * content-type will be rejected with an HTTP 415 Unsupported Media Type response.
+     *
+     * NEVER: rejects the method request with an HTTP 415 Unsupported Media Type response when
+     * either the method request content type does not match any content type associated with the
+     * mapping templates defined in the integration request or no mapping template is defined in the
+     * integration request.
+     *
+     * Defaults to 'WHEN_NO_MATCH' if unspecified.
+     */
+    passthroughBehavior?: pulumi.Input<IntegrationPassthroughBehavior>;
 }
 
-export interface ProxyRouteTargetProvider {
-    target(name: string, parent: pulumi.Resource): pulumi.Input<ProxyTarget>;
+export interface IntegrationRouteTargetProvider {
+    target(name: string, parent: pulumi.Resource): pulumi.Input<IntegrationTarget>;
 }
 
-function isProxyRouteTargetProvider(obj: any): obj is ProxyRouteTargetProvider {
-    return (<ProxyRouteTargetProvider>obj).target !== undefined;
+function isIntegrationRouteTargetProvider(obj: any): obj is IntegrationRouteTargetProvider {
+    return (<IntegrationRouteTargetProvider>obj).target !== undefined;
 }
 
-function isProxyRoute(route: Route): route is ProxyRoute {
-    return (<ProxyRoute>route).target !== undefined;
+function isIntegrationRoute(route: Route): route is IntegrationRoute {
+    return (<IntegrationRoute>route).target !== undefined;
 }
 
 /**
@@ -339,13 +427,13 @@ interface SwaggerAPIGatewayIntegrationResponse {
 
 interface ApigatewayIntegration {
     requestParameters?: any;
-    passthroughBehavior?: string;
-    httpMethod: string;
-    type: string;
+    passthroughBehavior?: pulumi.Input<IntegrationPassthroughBehavior>;
+    httpMethod: pulumi.Input<Method>;
+    type: pulumi.Input<IntegrationType>;
     responses?: { [pattern: string]: SwaggerAPIGatewayIntegrationResponse };
-    uri: pulumi.Output<string>;
-    connectionType?: pulumi.Output<string | undefined>;
-    connectionId?: pulumi.Output<string | undefined>;
+    uri: pulumi.Input<string>;
+    connectionType?: pulumi.Input<IntegrationConnectionType | undefined>;
+    connectionId?: pulumi.Input<string | undefined>;
     credentials?: pulumi.Output<string>;
 }
 
@@ -394,8 +482,8 @@ function createSwaggerSpec(api: API, name: string, routes: Route[]) {
         else if (isStaticRoute(route)) {
             staticRouteBucket = addStaticRouteToSwaggerSpec(api, name, swagger, route, staticRouteBucket);
         }
-        else if (isProxyRoute(route)) {
-            addProxyRouteToSwaggerSpec(api, name, swagger, route);
+        else if (isIntegrationRoute(route)) {
+            addIntegrationRouteToSwaggerSpec(api, name, swagger, route);
         }
         else if (isRawDataRoute(route)) {
             addRawDataRouteToSwaggerSpec(api, name, swagger, route);
@@ -645,12 +733,12 @@ function addStaticRouteToSwaggerSpec(
     }
 }
 
-function addProxyRouteToSwaggerSpec(
-    api: API, name: string, swagger: SwaggerSpec, route: ProxyRoute) {
+function addIntegrationRouteToSwaggerSpec(
+    api: API, name: string, swagger: SwaggerSpec, route: IntegrationRoute) {
 
     checkRoute(api, route, "target");
 
-    const target = isProxyRouteTargetProvider(route.target)
+    const target = isIntegrationRouteTargetProvider(route.target)
         ? pulumi.output(route.target.target(name + sha1hash(route.path), api))
         : pulumi.output(route.target);
 
@@ -668,7 +756,7 @@ function addProxyRouteToSwaggerSpec(
     return;
 
     function createSwaggerOperationForProxy(
-        target: pulumi.Output<pulumi.Unwrap<ProxyTarget>>,
+        target: pulumi.Output<pulumi.Unwrap<IntegrationTarget>>,
         useProxyPathParameter: boolean): SwaggerOperation {
 
         const uri = target.apply(t => {
@@ -687,6 +775,8 @@ function addProxyRouteToSwaggerSpec(
 
         const connectionType = target.apply(t => t.connectionType);
         const connectionId = target.apply(t => t.connectionId);
+        const type = target.apply(t => t.type === undefined ? "http_proxy" : t.type);
+        const passthroughBehavior = target.apply(t => t.passthroughBehavior === undefined ? "when_no_match" : t.passthroughBehavior);
 
         const result: SwaggerOperation = {
             "x-amazon-apigateway-integration": {
@@ -696,11 +786,11 @@ function addProxyRouteToSwaggerSpec(
                     },
                 },
                 uri,
+                type,
                 connectionType,
                 connectionId,
-                passthroughBehavior: "when_no_match",
+                passthroughBehavior,
                 httpMethod: "ANY",
-                type: "http_proxy",
             },
         };
         if (useProxyPathParameter) {
