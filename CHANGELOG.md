@@ -1,5 +1,6 @@
 ## 0.16.5 (unreleased)
 
+- Supply easy mechanisms to add Internet and NAT gateways to a VPC.
 - Change awsx.elasticloadbalancingv2.Listener.endpoint from a method to a property.
 - Change awsx.apigateway.ProxyRoute.target to be a richer type to allow extensibility.
 - Allow awsx.elasticloadbalancingv2.NetworkListener to be used as ProxyRoute.target to simply
