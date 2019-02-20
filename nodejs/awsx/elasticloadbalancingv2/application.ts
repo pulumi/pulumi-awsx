@@ -127,7 +127,8 @@ function computePortInfo(
         switch (protocol) {
             case "HTTP": return 80;
             case "HTTPS": return 443;
-            default: throw new Error("Unknown protocol: " + JSON.stringify(protocol));
+            default: throw new Error(
+                `Could not automatically determine port for protocol ${JSON.stringify(protocol)}. Please provide an explicit port.`);
         }
     });
 
@@ -139,7 +140,8 @@ function computePortInfo(
         switch (port) {
             case 80: case 8000: case 8008: case 8080: return <ApplicationProtocol>"HTTP";
             case 443: case 8443: return <ApplicationProtocol>"HTTPS";
-            default: throw new Error("Invalid port: " + JSON.stringify(port));
+            default: throw new Error(
+                `Could not automatically determine protocol for port ${JSON.stringify(port)}. Please specify either "HTTP" or "HTTPS"`);
         }
     });
 
