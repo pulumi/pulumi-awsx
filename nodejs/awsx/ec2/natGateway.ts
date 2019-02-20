@@ -29,7 +29,7 @@ export class NatGateway
     constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, vpc: x.ec2.Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("awsx.x.ec2.NatGateway", name, {}, opts || { parent: vpc });
+        super("awsx:x:ec2:NatGateway", name, {}, opts || { parent: vpc });
 
         const parentOpts = { parent: this };
 

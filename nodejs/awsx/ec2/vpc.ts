@@ -86,7 +86,7 @@ export class Vpc extends pulumi.ComponentResource {
             this.addInternetGateway(name, this.publicSubnets);
 
             // Create nat gateways if we have private subnets.
-            createNatGateways(this, numberOfAvailabilityZones, numberOfNatGateways);
+            createNatGateways(name, this, numberOfAvailabilityZones, numberOfNatGateways);
         }
 
         this.registerOutputs({});
@@ -188,15 +188,18 @@ export class Vpc extends pulumi.ComponentResource {
         createSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
 
         if (idArgs.internetGatewayId) {
-            vpc.internetGateway = new x.ec2.InternetGateway(name, vpc, {
-                internetGateway: aws.ec2.InternetGateway.get(name, idArgs.internetGatewayId),
+            const igName = `${name}-ig`;
+            vpc.internetGateway = new x.ec2.InternetGateway(igName, vpc, {
+                internetGateway: aws.ec2.InternetGateway.get(igName, idArgs.internetGatewayId),
             });
         }
 
         if (idArgs.natGatewayIds) {
-            for (const natGatewayId of idArgs.natGatewayIds) {
-                vpc.natGateways.push(new x.ec2.NatGateway(name, vpc, {
-                    natGateway: aws.ec2.NatGateway.get(name, natGatewayId),
+            for (let i = 0, n = idArgs.natGatewayIds.length; i < n; i++) {
+                const natGatewayId = idArgs.natGatewayIds[i];
+                const natName = `${name}-nat-${i}`;
+                vpc.natGateways.push(new x.ec2.NatGateway(natName, vpc, {
+                    natGateway: aws.ec2.NatGateway.get(natName, natGatewayId),
                 }));
             }
         }
@@ -205,7 +208,7 @@ export class Vpc extends pulumi.ComponentResource {
     }
 }
 
-function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
+function createNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
     // Create nat gateways if we have private subnets and we have public subnets to place them in.
     if (vpc.privateSubnets.length === 0 || numberOfNatGateways === 0 || vpc.publicSubnets.length === 0) {
         return;
@@ -222,7 +225,7 @@ function createNatGateways(vpc: Vpc, numberOfAvailabilityZones: number, numberOf
         // availability zones.
         const publicSubnet = vpc.publicSubnets[availabilityZone];
 
-        vpc.addNatGateway(`nat-${i}`, { subnet: publicSubnet });
+        vpc.addNatGateway(`${vpcName}-${i}`, { subnet: publicSubnet });
     }
 
     let roundRobinIndex = 0;
