@@ -19,6 +19,9 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class Subnet extends pulumi.ComponentResource {
+    // tslint:disable-next-line:variable-name
+    private readonly __isSubnetInstance = true;
+
     public readonly vpc: x.ec2.Vpc;
     public readonly subnetName: string;
 
@@ -70,13 +73,36 @@ export class Subnet extends pulumi.ComponentResource {
         this.registerOutputs({});
     }
 
-    public createRoute(name: string, args: RouteArgs, opts?: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    public static isSubnetInstance(obj: any): obj is Subnet {
+        return !!(<Subnet>obj).__isSubnetInstance;
+    }
+
+    public createRoute(name: string, args: RouteArgs, opts?: pulumi.ComponentResourceOptions): void;
+    public createRoute(name: string, provider: SubnetRouteProvider, opts?: pulumi.ComponentResourceOptions): void;
+    public createRoute(name: string, argsOrProvider: RouteArgs | SubnetRouteProvider, opts: pulumi.ComponentResourceOptions = {}): void {
+        opts = opts || { parent: this };
+
+        const args = isSubnetRouteProvider(argsOrProvider)
+            ? argsOrProvider.route(name, opts)
+            : argsOrProvider;
+
         this.routes.push(new aws.ec2.Route(`${this.subnetName}-${name}`, {
             ...args,
             routeTableId: this.routeTable.id,
-        }, opts || { parent: this }));
+        }, opts));
     }
 }
+
+export interface SubnetRouteProvider {
+    route(name: string, opts: pulumi.ComponentResourceOptions): RouteArgs;
+}
+
+function isSubnetRouteProvider(obj: any): obj is SubnetRouteProvider {
+    return !!(<SubnetRouteProvider>obj).route;
+}
+
+export type SubnetOrId = Subnet | pulumi.Input<string>;
 
 (<any>Subnet.prototype.createRoute).doNotCapture = true;
 

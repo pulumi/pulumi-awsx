@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+export * from "./internetGateway";
+export * from "./natGateway";
 export * from "./securityGroup";
 export * from "./securityGroupRule";
 export * from "./subnet";
