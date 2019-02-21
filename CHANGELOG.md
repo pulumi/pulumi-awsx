@@ -9,6 +9,7 @@
   Note: this comes with a small breaking change where the names of some apigateway types have
   changed from ProxyXXX to IntegrationXXX.
 
+
 ## 0.16.4 (Release February 5, 2019)
 
 - Renamed 'aws-infra' package to 'awsx'.
