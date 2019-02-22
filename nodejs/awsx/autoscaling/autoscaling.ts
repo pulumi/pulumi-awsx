@@ -32,7 +32,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public readonly stackName: pulumi.Output<string>;
 
     constructor(name: string, vpc: x.ec2.Vpc,
-                args: AutoScalingLaunchConfigurationArgs = {},
+                args: pulumi.WrappedObject<AutoScalingLaunchConfigurationArgs> = {},
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingLaunchConfiguration", name, {}, opts);
 
@@ -43,6 +43,8 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         // TODO[pulumi/pulumi#381]: Creating an S3 bucket is an inelegant way to get a durable,
         // unique name.
         this.stackName = pulumi.output(args.stackName).apply(sn => sn || new aws.s3.Bucket(name, {}, parentOpts).id);
+
+        var v = args.instanceProfile;
 
         // Use the instance provided, or create a new one.
         this.instanceProfile = args.instanceProfile ||
@@ -388,7 +390,7 @@ export interface AutoScalingGroupArgs {
      * The subnets to use for the autoscaling group.  If not provided, the `private` subnets of
      * the `vpc` will be used.
      */
-    subnetIds?: pulumi.Input<string>[];
+    subnetIds?: string[];
 
     /**
      * The config to use when creating the auto scaling group.
@@ -416,7 +418,7 @@ export interface AutoScalingGroupArgs {
      * Parameters to control the cloud formation stack template that is created.  If not provided
      * the defaults specified in TemplateParameters will be used.
      */
-    templateParameters?: pulumi.Input<TemplateParameters>;
+    templateParameters?: TemplateParameters;
 }
 
 type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling.GroupArgs>, {
@@ -446,11 +448,11 @@ type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling
     /**
      * The maximum size of the auto scale group.  Defaults to 100 if unspecified.
      */
-    maxSize?: pulumi.Input<number>;
+    maxSize?: number;
     /**
      * The minimum size of the auto scale group.  Defaults to 2 if unspecified.
      */
-    minSize?: pulumi.Input<number>;
+    minSize?: number;
 }>;
 
 export interface TemplateParameters {
@@ -459,18 +461,18 @@ export interface TemplateParameters {
      * The amount of time, in seconds, after a scaling activity completes before another scaling
      * activity can start.  Defaults to 300 if unspecified.
      */
-    defaultCooldown?: pulumi.Input<number>;
+    defaultCooldown?: number;
 
     /**
      * Time (in seconds) after instance comes into service before checking health. Defaults to 120
      * if unspecified.
      */
-    healthCheckGracePeriod?: pulumi.Input<number>;
+    healthCheckGracePeriod?: number;
 
     /**
      * "EC2" or "ELB". Controls how health checking is done.  Defaults to "EC2" if unspecified.
      */
-    healthCheckType?: pulumi.Input<"EC2" | "ELB">;
+    healthCheckType?: "EC2" | "ELB";
 
     /**
      * A list of processes to suspend for the AutoScaling Group. The allowed values are `Launch`,
@@ -480,19 +482,19 @@ export interface TemplateParameters {
      *
      * Defaults to "ScheduledActions" if not specified
      */
-    suspendedProcesses?: pulumi.Input<pulumi.Input<
-        "Launch" | "Terminate" | "HealthCheck" | "ReplaceUnhealthy" |
-        "AZRebalance" | "AlarmNotification" | "ScheduledActions" | "AddToLoadBalancer">[]>;
+    suspendedProcesses?:
+        ("Launch" | "Terminate" | "HealthCheck" | "ReplaceUnhealthy" |
+         "AZRebalance" | "AlarmNotification" | "ScheduledActions" | "AddToLoadBalancer")[];
 
     /**
      * The maximum size of the auto scale group.  Defaults to 100 if unspecified.
      */
-    maxSize?: pulumi.Input<number>;
+    maxSize?: number;
 
     /**
      * The minimum size of the auto scale group.  Defaults to 100 if unspecified.
      */
-    minSize?: pulumi.Input<number>;
+    minSize?: number;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
@@ -503,13 +505,13 @@ const test1: string = utils.checkCompat<OverwriteTemplateParameters, TemplatePar
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
 type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable<aws.ec2.LaunchConfigurationArgs>, {
     imageId?: never;
-    stackName?: pulumi.Input<string>;
+    stackName?: string;
     instanceProfile?: aws.iam.InstanceProfile;
     ecsOptimizedAMIName?: string;
-    instanceType?: pulumi.Input<aws.ec2.InstanceType>;
-    placementTenancy?: pulumi.Input<"default" | "dedicated">;
+    instanceType?: aws.ec2.InstanceType;
+    placementTenancy?: "default" | "dedicated";
     securityGroups?: x.ec2.SecurityGroupOrId[];
-    userData?: pulumi.Input<string> | AutoScalingUserData;
+    userData?: string | AutoScalingUserData;
 }>;
 
 /**
@@ -521,17 +523,17 @@ export interface AutoScalingLaunchConfigurationArgs {
     /**
      * Associate a public ip address with an instance in a VPC.
      */
-    associatePublicIpAddress?: pulumi.Input<boolean>;
+    associatePublicIpAddress?: boolean;
 
     /**
      * If true, the launched EC2 instance will be EBS-optimized.
      */
-    ebsOptimized?: pulumi.Input<boolean>;
+    ebsOptimized?: boolean;
 
     /**
      * Enables/disables detailed monitoring. This is enabled by default.
      */
-    enableMonitoring?: pulumi.Input<boolean>;
+    enableMonitoring?: boolean;
 
     /**
      * Customize Ephemeral (also known as
@@ -543,29 +545,29 @@ export interface AutoScalingLaunchConfigurationArgs {
      * The name attribute of the IAM instance profile to associate
      * with launched instances.
      */
-    iamInstanceProfile?: pulumi.Input<string | aws.iam.InstanceProfile>;
+    iamInstanceProfile?: string | aws.iam.InstanceProfile;
 
     /**
      * The key name that should be used for the instance.
      */
-    keyName?: pulumi.Input<string>;
+    keyName?: string;
 
     /**
      * The name of the launch configuration. If you leave
      * this blank, Terraform will auto-generate a unique name.
      */
-    name?: pulumi.Input<string>;
+    name?: string;
 
     /**
      * Creates a unique name beginning with the specified
      * prefix. Conflicts with `name`.
      */
-    namePrefix?: pulumi.Input<string>;
+    namePrefix?: string;
 
     /**
      * The maximum price to use for reserving spot instances.
      */
-    spotPrice?: pulumi.Input<string>;
+    spotPrice?: string;
 
     /**
      * Can be used instead of `user_data` to pass base64-encoded binary data directly. Use this
@@ -573,24 +575,24 @@ export interface AutoScalingLaunchConfigurationArgs {
      * gzip-encoded user data must be base64-encoded and passed via this argument to avoid
      * corruption.
      */
-    userDataBase64?: pulumi.Input<string>;
+    userDataBase64?: string;
 
     /**
      * The ID of a ClassicLink-enabled VPC. Only applies to EC2-Classic instances. (eg. `vpc-2730681a`)
      */
-    vpcClassicLinkId?: pulumi.Input<string>;
+    vpcClassicLinkId?: string;
 
     /**
      * The IDs of one or more security groups for the specified ClassicLink-enabled VPC (eg. `sg-46ae3d11`).
      */
-    vpcClassicLinkSecurityGroups?: pulumi.Input<pulumi.Input<string>[]>;
+    vpcClassicLinkSecurityGroups?: string[];
 
     // Changes made to normal args type.
 
     /**
      * The name of the stack the launch configuration will signal.
      */
-    stackName?: pulumi.Input<string>;
+    stackName?: string;
 
     /**
      * The instance profile to use for the autoscaling group.  If not provided, a default one will
@@ -613,14 +615,14 @@ export interface AutoScalingLaunchConfigurationArgs {
     /**
      * The size of instance to launch.  Defaults to t2.micro if unspecified.
      */
-    instanceType?: pulumi.Input<aws.ec2.InstanceType>;
+    instanceType?: aws.ec2.InstanceType;
 
     /**
      * The tenancy of the instance. Valid values are `"default"` or `"dedicated"`, see
      * http://docs.aws.amazon.com/AutoScaling/latest/APIReference/API_CreateLaunchConfiguration.html
      * for more details.  Default is "default" if unspecified.
      */
-    placementTenancy?: pulumi.Input<"default" | "dedicated">;
+    placementTenancy?: "default" | "dedicated";
 
     /**
      * Customize details about the root block device of the instance. See Block Devices below for
@@ -649,7 +651,7 @@ export interface AutoScalingLaunchConfigurationArgs {
     /**
      * The user data to provide when launching the instance. Do not pass gzip-compressed data via this argument; see `user_data_base64` instead.
      */
-    userData?: pulumi.Input<string> | AutoScalingUserData;
+    userData?: string | AutoScalingUserData;
 }
 
 export interface AutoScalingUserData {
