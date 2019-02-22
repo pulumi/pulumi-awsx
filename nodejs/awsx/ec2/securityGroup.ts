@@ -29,7 +29,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
     // tslint:disable-next-line:variable-name
     private readonly __isSecurityGroupInstance = true;
 
-    constructor(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: pulumi.WrappedObject<SecurityGroupArgs> = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:SecurityGroup", name, {}, opts);
 
         // We allow egress/ingress rules to be defined in-line for SecurityGroup (like terraform
@@ -41,6 +41,12 @@ export class SecurityGroup extends pulumi.ComponentResource {
         // mix/match both styles if they prefer.
         const egressRules = args.egress || [];
         const ingressRules = args.ingress || [];
+        if (!Array.isArray(egressRules)) {
+            throw new Error("args.egress must be an array.");
+        }
+        if (!Array.isArray(ingressRules)) {
+            throw new Error("args.ingress must be an array.");
+        }
 
         // Explicitly delete these props so we do *not* pass them into the SecurityGroup created
         // below.
@@ -60,11 +66,11 @@ export class SecurityGroup extends pulumi.ComponentResource {
         this.registerOutputs({});
 
         for (let i = 0, n = egressRules.length; i < n; i++) {
-            this.createEgressRule(`${name}-egress-${i}`, egressRules[i], parentOpts);
+            this.createEgressRule(`${name}-egress-${i}`, <x.ec2.EgressSecurityGroupRuleArgs>egressRules[i], parentOpts);
         }
 
         for (let i = 0, n = ingressRules.length; i < n; i++) {
-            this.createEgressRule(`${name}-ingress-${i}`, ingressRules[i], parentOpts);
+            this.createEgressRule(`${name}-ingress-${i}`, <x.ec2.EgressSecurityGroupRuleArgs>ingressRules[i], parentOpts);
         }
     }
 
@@ -84,21 +90,21 @@ export class SecurityGroup extends pulumi.ComponentResource {
     }
 
     public createEgressRule(
-            name: string, args: x.ec2.EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+            name: string, args: pulumi.WrappedObject<x.ec2.EgressSecurityGroupRuleArgs>, opts?: pulumi.ComponentResourceOptions) {
         return new x.ec2.EgressSecurityGroupRule(name, this, args, opts);
     }
 
     public createIngressRule(
-            name: string, args: x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+            name: string, args: pulumi.WrappedObject<x.ec2.IngressSecurityGroupRuleArgs>, opts?: pulumi.ComponentResourceOptions) {
         return new x.ec2.IngressSecurityGroupRule(name, this, args, opts);
     }
 }
 
-export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
+export type SecurityGroupOrId = SecurityGroup | string;
 
 /** @internal */
 export function getSecurityGroups(
-        vpc: x.ec2.Vpc, name: string, args: SecurityGroupOrId[] | undefined,
+        vpc: x.ec2.Vpc, name: string, args: pulumi.Wrap<SecurityGroupOrId>[] | undefined,
         opts: pulumi.ResourceOptions | undefined) {
     if (!args) {
         return undefined;
@@ -147,7 +153,7 @@ export interface SecurityGroupArgs {
      * This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If
      * you'd like to classify your security groups in a way that can be updated, use `tags`.
      */
-    description?: pulumi.Input<string>;
+    description?: string;
 
     /**
      * Can be specified multiple times for each egress rule. Each egress block supports fields
@@ -168,9 +174,9 @@ export interface SecurityGroupArgs {
      * the service, and those rules may contain a cyclic dependency that prevent the security groups
      * from being destroyed without removing the dependency first. Default `false`
      */
-    revokeRulesOnDelete?: pulumi.Input<boolean>;
+    revokeRulesOnDelete?: boolean;
 
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

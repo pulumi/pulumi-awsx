@@ -36,6 +36,10 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingLaunchConfiguration", name, {}, opts);
 
+        if (!Array.isArray(args.securityGroups)) {
+            throw new Error("args.securityGroups must be an array.");
+        }
+
         const parentOpts = { parent: this };
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
@@ -56,7 +60,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             ...args,
             securityGroups: this.securityGroups.map(g => g.id),
-            imageId: getEcsAmiId(args.ecsOptimizedAMIName),
+            imageId: getEcsAmiIdOutput(args.ecsOptimizedAMIName),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: this.instanceProfile.id,
             enableMonitoring: utils.ifUndefined(args.enableMonitoring, true),
@@ -134,7 +138,11 @@ const defaultEbsBlockDevices = [{
 
 
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
-async function getEcsAmiId(name?: string): Promise<string> {
+function getEcsAmiIdOutput(name: pulumi.Input<string> | undefined): pulumi.Output<string> {
+    return pulumi.output(name).apply(n => getEcsAmiId(n));
+}
+
+async function getEcsAmiId(name: string | undefined): Promise<string> {
     // If a name was not provided, use the latest recommended version.
     if (!name) {
         // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/retrieve-ecs-optimized_AMI.html
@@ -167,12 +175,12 @@ async function getEcsAmiId(name?: string): Promise<string> {
 // https://github.com/convox/rack/blob/023831d8/provider/aws/dist/rack.json#L1669
 // https://github.com/awslabs/amazon-ecs-amazon-efs/blob/d92791f3/amazon-efs-ecs.json#L655
 function getInstanceUserData(
-    args: AutoScalingLaunchConfigurationArgs,
-    cloudFormationStackName: pulumi.Output<string>) {
+    args: pulumi.WrappedObject<AutoScalingLaunchConfigurationArgs>,
+    cloudFormationStackName: pulumi.Output<string>): pulumi.Input<string> {
 
     const autoScalingUserData = <AutoScalingUserData>args.userData;
     if (args.userData !== undefined && !isAutoScalingUserData(args.userData)) {
-        return args.userData;
+        return <pulumi.Input<string>>args.userData;
     }
 
     const additionalBootcmdLines = getAdditionalBootcmdLines(autoScalingUserData);
