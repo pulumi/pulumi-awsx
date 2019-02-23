@@ -35,8 +35,8 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: ApplicationListener[];
     public readonly targetGroups: ApplicationTargetGroup[];
 
-    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
-        const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
+    constructor(name: string, args: pulumi.WrappedObject<ApplicationLoadBalancerArgs> = {}, opts?: pulumi.ComponentResourceOptions) {
+        const argsCopy: pulumi.WrappedObject<x.elasticloadbalancingv2.LoadBalancerArgs> = {
             ...args,
             loadBalancerType: "application",
         };
@@ -53,7 +53,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
      * Creates a new listener for this [ApplicationLoadBalancer] see ApplicationListener for more
      * details.
      */
-    public createListener(name: string, args: ApplicationListenerArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createListener(name: string, args: pulumi.WrappedObject<ApplicationListenerArgs>, opts?: pulumi.ComponentResourceOptions) {
         return new ApplicationListener(name, {
             loadBalancer: this,
             ...args,
@@ -64,7 +64,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
      * Creates a target group for this [ApplicationLoadBalancer] see ApplicationTargetGroup for more
      * details.
      */
-    public createTargetGroup(name: string, args: ApplicationTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createTargetGroup(name: string, args: pulumi.WrappedObject<ApplicationTargetGroupArgs>, opts?: pulumi.ComponentResourceOptions) {
         return new ApplicationTargetGroup(name, {
             loadBalancer: this,
             ...args,
@@ -84,7 +84,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 
     public readonly listeners: x.elasticloadbalancingv2.ApplicationListener[];
 
-    constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: pulumi.WrappedObject<ApplicationTargetGroupArgs> = {}, opts?: pulumi.ComponentResourceOptions) {
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, { vpc: args.vpc }, opts);
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
@@ -101,7 +101,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
         this.registerOutputs({});
     }
 
-    public createListener(name: string, args: ApplicationListenerArgs,
+    public createListener(name: string, args: pulumi.WrappedObject<ApplicationListenerArgs>,
                           opts?: pulumi.ComponentResourceOptions): ApplicationListener {
         return new ApplicationListener(name, {
             defaultAction: this,
@@ -231,13 +231,13 @@ export interface ApplicationLoadBalancerArgs {
      * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent
      * Terraform from deleting the load balancer. Defaults to `false`.
      */
-    enableDeletionProtection?: pulumi.Input<boolean>;
+    enableDeletionProtection?: boolean;
 
     /**
      * The type of IP addresses used by the subnets for your load balancer. The possible values are
      * `ipv4` and `dualstack`
      */
-    ipAddressType?: pulumi.Input<"ipv4" | "dualstack">;
+    ipAddressType?: "ipv4" | "dualstack";
 
     /**
      * A subnet mapping block as documented below.
@@ -249,12 +249,12 @@ export interface ApplicationLoadBalancerArgs {
      * type `network`. Changing this value for load balancers of type `network` will force a
      * recreation of the resource.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.elasticloadbalancingv2.LoadBalancerSubnets;
+    subnets?: string[] | x.elasticloadbalancingv2.LoadBalancerSubnets;
 
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 
     // Properties added here.
 
@@ -266,12 +266,12 @@ export interface ApplicationLoadBalancerArgs {
     /**
      * Indicates whether HTTP/2 is enabled. Defaults to `true`.
      */
-    enableHttp2?: pulumi.Input<boolean>;
+    enableHttp2?: boolean;
 
     /**
      * The time in seconds that the connection is allowed to be idle. Default: 60.
      */
-    idleTimeout?: pulumi.Input<number>;
+    idleTimeout?: number;
 
     /**
      * A list of security group IDs to assign to the LB.
@@ -299,7 +299,7 @@ export interface ApplicationTargetGroupArgs {
      * deregistering target from draining to unused. The range is 0-3600 seconds. The default value
      * is 300 seconds.
      */
-    deregistrationDelay?: pulumi.Input<number>;
+    deregistrationDelay?: number;
 
     /**
      * A Health Check block. Health Check blocks are documented below.
@@ -311,13 +311,13 @@ export interface ApplicationTargetGroupArgs {
      * [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol)
      * for more information.
      */
-    proxyProtocolV2?: pulumi.Input<boolean>;
+    proxyProtocolV2?: boolean;
 
     /**
      * The amount time for targets to warm up before the load balancer sends them a full share of
      * requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
      */
-    slowStart?: pulumi.Input<number>;
+    slowStart?: number;
 
     /**
      * A Stickiness block. Stickiness blocks are documented below. `stickiness` is only valid if
@@ -328,7 +328,7 @@ export interface ApplicationTargetGroupArgs {
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 
     /**
      * The type of target that you must specify when registering targets with this target group. The
@@ -341,7 +341,7 @@ export interface ApplicationTargetGroupArgs {
      * 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable
      * IP addresses.
      */
-    targetType?: pulumi.Input<"instance" | "ip">;
+    targetType?: "instance" | "ip";
 
     // Changed by us:
 
@@ -349,12 +349,12 @@ export interface ApplicationTargetGroupArgs {
      * The port to use to connect with the target. Valid values are either ports 1-65536. If
      * unspecified will be inferred from the [protocol].
      */
-    port?: pulumi.Input<number>;
+    port?: number;
 
     /**
      * The protocol to use to connect with the target.  If unspecified will be inferred from [port].
      */
-    protocol?: pulumi.Input<ApplicationProtocol>;
+    protocol?: ApplicationProtocol;
 }
 
 export interface ApplicationListenerArgs {
@@ -373,12 +373,12 @@ export interface ApplicationListenerArgs {
     /**
      * The port. Specify a value from `1` to `65535`.  Computed from "protocol" if not provided.
      */
-    port?: pulumi.Input<number>;
+    port?: number;
 
     /**
      * The protocol. Valid values are `HTTP`, `HTTPS`.  Computed from "port" if not provided.
      */
-    protocol?: pulumi.Input<ApplicationProtocol>;
+    protocol?: ApplicationProtocol;
 
     /**
      * An Action block. Action blocks are documented below.  If not provided, a suitable
@@ -394,12 +394,12 @@ export interface ApplicationListenerArgs {
      * [`aws_lb_listener_certificate`
      * resource](https://www.terraform.io/docs/providers/aws/r/lb_listener_certificate.html).
      */
-    certificateArn?: pulumi.Input<string>;
+    certificateArn?: string;
 
     /**
      * The name of the SSL Policy for the listener. Required if `protocol` is `HTTPS`.
      */
-    sslPolicy?: pulumi.Input<string>;
+    sslPolicy?: string;
 
     /**
      * If the listener should be available externally.  If this is [true] and the LoadBalancer for

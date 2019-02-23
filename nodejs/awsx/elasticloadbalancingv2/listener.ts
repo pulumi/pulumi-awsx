@@ -116,12 +116,12 @@ export function isListenerActions(obj: any): obj is ListenerActions {
 
 type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
     loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
-    certificateArn?: pulumi.Input<string>;
+    certificateArn?: string;
     defaultAction: aws.elasticloadbalancingv2.ListenerArgs["defaultAction"];
     loadBalancerArn?: never;
-    port: pulumi.Input<number>;
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
-    sslPolicy?: pulumi.Input<string>;
+    port: number;
+    protocol: "HTTP" | "HTTPS" | "TCP";
+    sslPolicy?: string;
 }>;
 
 export interface ListenerArgs {
@@ -133,7 +133,7 @@ export interface ListenerArgs {
      * [`aws_lb_listener_certificate`
      * resource](https://www.terraform.io/docs/providers/aws/r/lb_listener_certificate.html).
      */
-    certificateArn?: pulumi.Input<string>;
+    certificateArn?: string;
 
     /**
      * An Action block. Action blocks are documented below.
@@ -143,17 +143,17 @@ export interface ListenerArgs {
     /**
      * The port. Specify a value from `1` to `65535`.
      */
-    port: pulumi.Input<number>;
+    port: number;
 
     /**
      * The protocol.
      */
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
+    protocol: "HTTP" | "HTTPS" | "TCP";
 
     /**
      * The name of the SSL Policy for the listener. Required if `protocol` is `HTTPS`.
      */
-    sslPolicy?: pulumi.Input<string>;
+    sslPolicy?: string;
 }
 
 const test1: string = utils.checkCompat<OverwriteShape, ListenerArgs>();

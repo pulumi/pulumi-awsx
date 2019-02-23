@@ -32,7 +32,7 @@ export class ListenerRule extends pulumi.ComponentResource {
     public readonly listenerRule: aws.elasticloadbalancingv2.ListenerRule;
 
     constructor(name: string, listener: x.elasticloadbalancingv2.Listener,
-                args: ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+                args: pulumi.WrappedObject<ListenerRuleArgs>, opts?: pulumi.ComponentResourceOptions) {
         super("awsx:x:elasticloadbalancingv2", name, {}, opts || { parent: listener });
 
         const parentOpts = { parent: this };
@@ -42,7 +42,7 @@ export class ListenerRule extends pulumi.ComponentResource {
 
         this.listenerRule = new aws.elasticloadbalancingv2.ListenerRule(name, {
             ...args,
-            actions,
+            actions: actions,
             listenerArn: listener.listener.arn,
         }, parentOpts);
 
@@ -74,7 +74,7 @@ export interface ListenerRuleArgs {
     /**
      * The priority for the rule between `1` and `50000`. Leaving it unset will automatically set the rule with next available priority after currently existing highest rule. A listener can't have multiple rules with the same priority.
      */
-    priority?: pulumi.Input<number>;
+    priority?: number;
 }
 
 const test1: string = utils.checkCompat<OverwriteShape, ListenerRuleArgs>();

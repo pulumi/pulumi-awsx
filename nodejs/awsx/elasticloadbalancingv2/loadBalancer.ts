@@ -23,7 +23,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly vpc: x.ec2.Vpc;
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
-    constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(type: string, name: string, args: pulumi.WrappedObject<LoadBalancerArgs>, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
         const longName = `${name}`;
@@ -32,6 +32,11 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         const parentOpts = { parent: this };
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+
+        if (args.securityGroups && !Array.isArray(args.securityGroups)) {
+            throw new Error("args.securityGroups must be an array");
+        }
+
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) || [];
 
         const external = utils.ifUndefined(args.external, true);
@@ -46,7 +51,8 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 }
 
 function getSubnets(
-    args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
+    args: pulumi.WrappedObject<LoadBalancerArgs>,
+    vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Wrap<string[]> {
 
     // console.log("Getting subnets for LB");
     if (!args.subnets) {
@@ -65,9 +71,11 @@ function getSubnets(
 
     // console.log("subnets provided");
 
-    return isLoadBalancerSubnets(args.subnets)
+    const subnets = isLoadBalancerSubnets(args.subnets)
         ? args.subnets.subnets()
-        : args.subnets;
+        : <pulumi.Wrap<string[]>>args.subnets;
+
+    return subnets;
 }
 
 export interface LoadBalancerArgs {
@@ -86,25 +94,25 @@ export interface LoadBalancerArgs {
     /**
      * The type of load balancer to create. Possible values are `application` or `network`.
      */
-    loadBalancerType: pulumi.Input<"application" | "network">;
+    loadBalancerType: "application" | "network";
 
     /**
      * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent
      * Terraform from deleting the load balancer. Defaults to `false`.
      */
-    enableDeletionProtection?: pulumi.Input<boolean>;
+    enableDeletionProtection?: boolean;
 
     /**
      * The type of IP addresses used by the subnets for your load balancer. The possible values are
      * `ipv4` and `dualstack`
      */
-    ipAddressType?: pulumi.Input<"ipv4" | "dualstack">;
+    ipAddressType?: "ipv4" | "dualstack";
 
     /**
      * The subnets to use for the load balancer.  If not provided, the appropriate external or
      * internal subnets of the [network] will be used.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]> | LoadBalancerSubnets;
+    subnets?: string[] | LoadBalancerSubnets;
 
     /**
      * A subnet mapping block as documented below.
@@ -114,7 +122,7 @@ export interface LoadBalancerArgs {
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 
     /**
      * A list of security group IDs to assign to the LB. Only valid for Load Balancers of type
@@ -124,7 +132,7 @@ export interface LoadBalancerArgs {
 }
 
 export interface LoadBalancerSubnets {
-    subnets(): pulumi.Input<pulumi.Input<string>[]>;
+    subnets(): pulumi.Wrap<string[]>;
 }
 
 function isLoadBalancerSubnets(obj: any): obj is LoadBalancerSubnets {

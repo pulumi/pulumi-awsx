@@ -31,7 +31,7 @@ export abstract class TargetGroup
 
     public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
 
-    constructor(type: string, name: string, args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(type: string, name: string, args: pulumi.WrappedObject<TargetGroupArgs>, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
         const parentOpts = { parent: this };
@@ -56,7 +56,7 @@ export abstract class TargetGroup
         return pulumi.output(this.listeners.map(r => r.listener.urn));
     }
 
-    public containerPortMapping(): pulumi.Input<aws.ecs.PortMapping> {
+    public containerPortMapping(): pulumi.Wrap<aws.ecs.PortMapping> {
         return pulumi.output([this.targetGroup.port, this.dependencies()]).apply(([port]) => ({
             containerPort: +port!,
         }));
@@ -93,7 +93,7 @@ export interface TargetGroupArgs {
      * deregistering target from draining to unused. The range is 0-3600 seconds. The default value
      * is 300 seconds.
      */
-    deregistrationDelay?: pulumi.Input<number>;
+    deregistrationDelay?: number;
 
     /**
      * A Health Check block. Health Check blocks are documented below.
@@ -104,25 +104,25 @@ export interface TargetGroupArgs {
      * The port to use to connect with the target. Valid values are either ports 1-65536, or
      * `traffic-port`. Defaults to `traffic-port`.
      */
-    port: pulumi.Input<number>;
+    port: number;
 
     /**
      * The protocol to use to connect with the target.
      */
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
+    protocol: "HTTP" | "HTTPS" | "TCP";
 
     /**
      * Boolean to enable / disable support for proxy protocol v2 on Network Load Balancers. See
      * [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol)
      * for more information.
      */
-    proxyProtocolV2?: pulumi.Input<boolean>;
+    proxyProtocolV2?: boolean;
 
     /**
      * The amount time for targets to warm up before the load balancer sends them a full share of
      * requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
      */
-    slowStart?: pulumi.Input<number>;
+    slowStart?: number;
 
     /**
      * A Stickiness block. Stickiness blocks are documented below. `stickiness` is only valid if
@@ -133,7 +133,7 @@ export interface TargetGroupArgs {
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 
     /**
      * The type of target that you must specify when registering targets with this target group. The
@@ -144,5 +144,5 @@ export interface TargetGroupArgs {
      * RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range
      * (100.64.0.0/10). You can't specify publicly routable IP addresses.
      */
-    targetType?: pulumi.Input<"instance" | "ip">;
+    targetType?: "instance" | "ip";
 }

@@ -68,8 +68,8 @@ export function checkCompat<T, U>(): Compatible<T, U> {
 }
 
 /** @internal */
-export function mergeTags(tags1: pulumi.Input<aws.Tags> | undefined,
-                          tags2: pulumi.Input<aws.Tags> | undefined): pulumi.Output<aws.Tags> {
+export function mergeTags(tags1: pulumi.Wrap<aws.Tags> | undefined,
+                          tags2: pulumi.Wrap<aws.Tags> | undefined): pulumi.Output<aws.Tags> {
     return pulumi.all([tags1, tags2]).apply(([tags1, tags2]) => ({
         ...(tags1 || {}),
         ...(tags2 || {}),
