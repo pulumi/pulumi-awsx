@@ -44,7 +44,7 @@ export class InternetGateway
         this.registerOutputs();
     }
 
-    public route(name: string, opts: pulumi.ComponentResourceOptions): x.ec2.RouteArgs {
+    public route(name: string, opts: pulumi.ComponentResourceOptions): pulumi.WrappedObject<x.ec2.RouteArgs> {
         return {
             // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
             // select the internet gateway ID in the Target list.

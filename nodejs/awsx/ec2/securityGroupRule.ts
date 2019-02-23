@@ -163,8 +163,8 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 
     public static ingress(
         name: string, securityGroup: x.ec2.SecurityGroup,
-        source: SecurityGroupRuleLocation,
-        ports: SecurityGroupRulePorts,
+        source: pulumi.WrappedObject<SecurityGroupRuleLocation>,
+        ports: pulumi.WrappedObject<SecurityGroupRulePorts>,
         description?: pulumi.Input<string>,
         opts?: pulumi.ComponentResourceOptions) {
 
