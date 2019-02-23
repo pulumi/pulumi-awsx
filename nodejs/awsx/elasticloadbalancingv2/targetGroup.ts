@@ -62,14 +62,14 @@ export abstract class TargetGroup
         }));
     }
 
-    public containerLoadBalancer(): pulumi.Input<x.ecs.ContainerLoadBalancer> {
+    public containerLoadBalancer(): pulumi.Wrap<x.ecs.ContainerLoadBalancer> {
         return this.dependencies().apply(_ => ({
             containerPort: this.targetGroup.port.apply(p => p!),
             targetGroupArn: this.targetGroup.arn,
         }));
     }
 
-    public listenerDefaultAction(): aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] {
+    public listenerDefaultAction(): pulumi.Wrap<aws.elasticloadbalancingv2.ListenerArgs["defaultAction"]> {
         return this.dependencies().apply(_ => ({
             targetGroupArn: this.targetGroup.arn,
             type: "forward",

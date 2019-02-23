@@ -26,8 +26,8 @@ export abstract class Service extends pulumi.ComponentResource {
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
     constructor(type: string, name: string,
-                args: ServiceArgs, isFargate: boolean,
-                opts: pulumi.ComponentResourceOptions = {}) {
+                args: pulumi.WrappedObject<ServiceArgs>,
+                isFargate: boolean, opts: pulumi.ComponentResourceOptions = {}) {
         super(type, name, args, opts);
 
         this.cluster = args.cluster || x.ecs.Cluster.getDefault();
@@ -54,38 +54,48 @@ export abstract class Service extends pulumi.ComponentResource {
     }
 }
 
-function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
-    const result: pulumi.Output<ServiceLoadBalancer>[] = [];
+function getLoadBalancers(service: ecs.Service, name: string, args: pulumi.WrappedObject<ServiceArgs>) {
+    return pulumi.output(args).apply(getLoadBalancersWorker);
 
-    // Get the initial set of load balancers if specified.
-    if (args.loadBalancers) {
-        for (const obj of args.loadBalancers) {
-            const loadBalancer = isServiceLoadBalancerProvider(obj)
-                ? obj.serviceLoadBalancer(name, service)
-                : obj;
-            result.push(pulumi.output(loadBalancer));
-        }
-    }
+    function getLoadBalancersWorker(args: ServiceArgs) {
+        const result: pulumi.Output<ServiceLoadBalancer>[] = [];
 
-    // Now walk each container and see if it wants to add load balancer information as well.
-    for (const containerName of Object.keys(args.taskDefinition.containers)) {
-        const container = args.taskDefinition.containers[containerName];
-        if (!container.portMappings) {
-            continue;
-        }
+        // Get the initial set of load balancers if specified.
+        if (args.loadBalancers) {
+            if (!Array.isArray(args.loadBalancers)) {
+                throw new Error("args.loadBalancers must be an array");
+            }
 
-        for (const obj of container.portMappings) {
-            if (x.ecs.isContainerLoadBalancerProvider(obj)) {
-                // Containers don't know their own name.  So we add the name in here on their behalf.
-                const containerLoadBalancer = obj.containerLoadBalancer(name, service);
-                const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
-                    lb => ({...lb, containerName}));
-                result.push(serviceLoadBalancer);
+            const loadBalancers = <(ServiceLoadBalancer | ServiceLoadBalancerProvider)[]>args.loadBalancers;
+
+            for (const obj of loadBalancers) {
+                const loadBalancer = isServiceLoadBalancerProvider(obj)
+                    ? obj.serviceLoadBalancer(name, service)
+                    : obj;
+                result.push(pulumi.output(loadBalancer));
             }
         }
-    }
 
-    return pulumi.output(result);
+        // Now walk each container and see if it wants to add load balancer information as well.
+        for (const containerName of Object.keys(args.taskDefinition.containers)) {
+            const container = args.taskDefinition.containers[containerName];
+            if (!container.portMappings) {
+                continue;
+            }
+
+            for (const obj of container.portMappings) {
+                if (x.ecs.isContainerLoadBalancerProvider(obj)) {
+                    // Containers don't know their own name.  So we add the name in here on their behalf.
+                    const containerLoadBalancer = obj.containerLoadBalancer(name, service);
+                    const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
+                        lb => ({...lb, containerName}));
+                    result.push(serviceLoadBalancer);
+                }
+            }
+        }
+
+        return pulumi.output(result);
+    }
 }
 
 // const volumeNames = new Set<string>();
@@ -155,14 +165,14 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 // }
 
 export interface ServiceLoadBalancer {
-    containerName: pulumi.Input<string>;
-    containerPort: pulumi.Input<number>;
-    elbName?: pulumi.Input<string>;
-    targetGroupArn?: pulumi.Input<string>;
+    containerName: string;
+    containerPort: number;
+    elbName?: string;
+    targetGroupArn?: string;
 }
 
 export interface ServiceLoadBalancerProvider {
-    serviceLoadBalancer(name: string, parent: pulumi.Resource): pulumi.Input<ServiceLoadBalancer>;
+    serviceLoadBalancer(name: string, parent: pulumi.Resource): pulumi.Wrap<ServiceLoadBalancer>;
 }
 
 /** @internal */
@@ -177,11 +187,11 @@ type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     cluster?: ecs.Cluster;
     taskDefinition: ecs.TaskDefinition;
     securityGroups: x.ec2.SecurityGroup[];
-    desiredCount?: pulumi.Input<number>;
-    launchType?: pulumi.Input<"EC2" | "FARGATE">;
-    os?: pulumi.Input<"linux" | "windows">;
-    waitForSteadyState?: pulumi.Input<boolean>;
-    loadBalancers?: (pulumi.Input<ServiceLoadBalancer> | ServiceLoadBalancerProvider)[];
+    desiredCount?: number;
+    launchType?: "EC2" | "FARGATE";
+    os?: "linux" | "windows";
+    waitForSteadyState?: boolean;
+    loadBalancers?: (ServiceLoadBalancer | ServiceLoadBalancerProvider)[];
 }>;
 
 export interface ServiceArgs {
@@ -192,19 +202,19 @@ export interface ServiceArgs {
      * tasks that can be running in a service during a deployment. Not valid when using the `DAEMON`
      * scheduling strategy.
      */
-    deploymentMaximumPercent?: pulumi.Input<number>;
+    deploymentMaximumPercent?: number;
 
     /**
      * The lower limit (as a percentage of the service's desiredCount) of the number of running
      * tasks that must remain running and healthy in a service during a deployment.
      */
-    deploymentMinimumHealthyPercent?: pulumi.Input<number>;
+    deploymentMinimumHealthyPercent?: number;
 
     /**
      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
      * premature shutdown, up to 7200. Only valid for services configured to use load balancers.
      */
-    healthCheckGracePeriodSeconds?: pulumi.Input<number>;
+    healthCheckGracePeriodSeconds?: number;
 
     /**
      * ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your
@@ -214,17 +224,17 @@ export interface ServiceArgs {
      * service-linked role, that role is used by default for your service unless you specify a role
      * here.
      */
-    iamRole?: pulumi.Input<string>;
+    iamRole?: string;
 
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: (pulumi.Input<ServiceLoadBalancer> | ServiceLoadBalancerProvider)[];
+    loadBalancers?: (ServiceLoadBalancer | ServiceLoadBalancerProvider)[];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
      */
-    name?: pulumi.Input<string>;
+    name?: string;
 
     /**
      * The network configuration for the service. This parameter is required for task definitions
@@ -256,7 +266,7 @@ export interface ServiceArgs {
      * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
      * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
      */
-    schedulingStrategy?: pulumi.Input<string>;
+    schedulingStrategy?: string;
 
     /**
      * The service discovery registries for the service. The maximum number of `service_registries` blocks is `1`.
@@ -284,20 +294,20 @@ export interface ServiceArgs {
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do
      * not specify if using the `DAEMON` scheduling strategy.
      */
-    desiredCount?: pulumi.Input<number>;
+    desiredCount?: number;
 
     /**
      * The launch type on which to run your service. The valid values are `EC2` and `FARGATE`.
      * Defaults to `EC2`.
      */
-    launchType?: pulumi.Input<"EC2" | "FARGATE">;
+    launchType?: "EC2" | "FARGATE";
 
     /**
      * Wait for the service to reach a steady state (like [`aws ecs wait
      * services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html))
      * before continuing. Defaults to `true`.
      */
-    waitForSteadyState?: pulumi.Input<boolean>;
+    waitForSteadyState?: boolean;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

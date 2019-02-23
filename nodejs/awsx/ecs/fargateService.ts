@@ -21,7 +21,7 @@ import * as utils from "./../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
-                args: ecs.FargateTaskDefinitionArgs,
+                args: pulumi.WrappedObject<ecs.FargateTaskDefinitionArgs>,
                 opts?: pulumi.ComponentResourceOptions) {
 
         if (!args.container && !args.containers) {
@@ -34,7 +34,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
         const computedMemory = computedMemoryAndCPU.apply(x => x.memory);
         const computedCPU = computedMemoryAndCPU.apply(x => x.cpu);
 
-        const argsCopy: ecs.TaskDefinitionArgs = {
+        const argsCopy: pulumi.WrappedObject<ecs.TaskDefinitionArgs> = {
             ...args,
             containers,
             requiresCompatibilities: ["FARGATE"],
@@ -122,7 +122,7 @@ function * getAllFargateConfigs() {
     }
 }
 
-function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
+function computeFargateMemoryAndCPU(containers: pulumi.Wrap<Record<string, ecs.Container>>) {
     return pulumi.output(containers).apply(containers => {
         // First, determine how much VCPU/GB that the user is asking for in their containers.
         let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory();
@@ -269,13 +269,13 @@ export interface FargateTaskDefinitionArgs {
      * The number of cpu units used by the task.  If not provided, a default will be computed
      * based on the cumulative needs specified by [containerDefinitions]
      */
-    cpu?: pulumi.Input<string>;
+    cpu?: string;
 
     /**
      * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
      * based on the cumulative needs specified by [containerDefinitions]
      */
-    memory?: pulumi.Input<string>;
+    memory?: string;
 
     /**
      * Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -310,19 +310,19 @@ export interface FargateServiceArgs {
      * tasks that can be running in a service during a deployment. Not valid when using the `DAEMON`
      * scheduling strategy.
      */
-    deploymentMaximumPercent?: pulumi.Input<number>;
+    deploymentMaximumPercent?: number;
 
     /**
      * The lower limit (as a percentage of the service's desiredCount) of the number of running
      * tasks that must remain running and healthy in a service during a deployment.
      */
-    deploymentMinimumHealthyPercent?: pulumi.Input<number>;
+    deploymentMinimumHealthyPercent?: number;
 
     /**
      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
      * premature shutdown, up to 7200. Only valid for services configured to use load balancers.
      */
-    healthCheckGracePeriodSeconds?: pulumi.Input<number>;
+    healthCheckGracePeriodSeconds?: number;
 
     /**
      * ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your
@@ -332,24 +332,24 @@ export interface FargateServiceArgs {
      * service-linked role, that role is used by default for your service unless you specify a role
      * here.
      */
-    iamRole?: pulumi.Input<string>;
+    iamRole?: string;
 
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: (pulumi.Input<x.ecs.ServiceLoadBalancer> | x.ecs.ServiceLoadBalancerProvider)[];
+    loadBalancers?: (x.ecs.ServiceLoadBalancer | x.ecs.ServiceLoadBalancerProvider)[];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
      */
-    name?: pulumi.Input<string>;
+    name?: string;
 
     /**
      * Whether or not public IPs should be provided for the instances.
      *
      * Defaults to [true] if unspecified.
      */
-    assignPublicIp?: pulumi.Input<boolean>;
+    assignPublicIp?: boolean;
 
     /**
      * The security groups to use for the instances.
@@ -363,7 +363,7 @@ export interface FargateServiceArgs {
      * these will be the public subnets of the cluster's vpc.  If unspecified and [assignPublicIp]
      * is false, then these will be the private subnets of the cluster's vpc.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]>;
+    subnets?: string[];
 
     /**
      * Service level strategy rules that are taken into consideration during task placement. List
@@ -388,7 +388,7 @@ export interface FargateServiceArgs {
      * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
      * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
      */
-    schedulingStrategy?: pulumi.Input<string>;
+    schedulingStrategy?: string;
 
     /**
      * The service discovery registries for the service. The maximum number of `service_registries` blocks is `1`.
@@ -406,16 +406,16 @@ export interface FargateServiceArgs {
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do
      * not specify if using the `DAEMON` scheduling strategy.
      */
-    desiredCount?: pulumi.Input<number>;
+    desiredCount?: number;
 
-    os?: pulumi.Input<"linux" | "windows">;
+    os?: "linux" | "windows";
 
     /**
      * Wait for the service to reach a steady state (like [`aws ecs wait
      * services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html))
      * before continuing. Defaults to `true`.
      */
-    waitForSteadyState?: pulumi.Input<boolean>;
+    waitForSteadyState?: boolean;
 
     // Properties we're adding.
 

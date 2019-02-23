@@ -22,9 +22,9 @@ import * as role from "../role";
 import * as utils from "../utils";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
+    public readonly containers: pulumi.WrappedObject<Record<string, ecs.Container>>;
     public readonly taskDefinition: aws.ecs.TaskDefinition;
     public readonly logGroup: aws.cloudwatch.LogGroup;
-    public readonly containers: Record<string, ecs.Container>;
     public readonly taskRole: aws.iam.Role;
     public readonly executionRole: aws.iam.Role;
 
@@ -40,7 +40,8 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     ) => Promise<awssdk.ECS.Types.RunTaskResponse>;
 
     constructor(type: string, name: string,
-                isFargate: boolean, args: TaskDefinitionArgs,
+                isFargate: boolean,
+                args: pulumi.WrappedObject<TaskDefinitionArgs>,
                 opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
@@ -72,8 +73,14 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 // //         }
 // //     }
 
+        if (args.containers instanceof Promise ||
+            pulumi.Output.isInstance(args.containers)) {
+
+            throw new Error("args.containers cannot be a Promise or an Output");
+        }
+
         this.containers = args.containers;
-        const containerDefinitions = computeContainerDefinitions(this, name, this.containers, this.logGroup);
+        const containerDefinitions = computeContainerDefinitions(this, name, args.containers, this.logGroup);
         const containerString = containerDefinitions.apply(JSON.stringify);
         const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
 
@@ -248,6 +255,16 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
+    containers: pulumi.Wrap<Record<string, ecs.Container>>,
+    logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
+
+    return pulumi.output(containers).apply(
+        cs => computeContainerDefinitionsWorker(parent, name, cs, logGroup));
+}
+
+function computeContainerDefinitionsWorker(
+    parent: pulumi.Resource,
+    name: string,
     containers: Record<string, ecs.Container>,
     logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
@@ -273,10 +290,10 @@ type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
     taskRole?: aws.iam.Role;
     executionRoleArn?: never;
     executionRole?: aws.iam.Role;
-    cpu?: pulumi.Input<string>;
-    memory?: pulumi.Input<string>;
-    requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
-    networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
+    cpu?: string;
+    memory?: string;
+    requiresCompatibilities: ["FARGATE"] | ["EC2"];
+    networkMode?: "none" | "bridge" | "awsvpc" | "host";
 
     containers: Record<string, ecs.Container>;
 }>;
@@ -320,24 +337,24 @@ export interface TaskDefinitionArgs {
      * The number of cpu units used by the task.  If not provided, a default will be computed
      * based on the cumulative needs specified by [containerDefinitions]
      */
-    cpu?: pulumi.Input<string>;
+    cpu?: string;
 
     /**
      * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
      * based on the cumulative needs specified by [containerDefinitions]
      */
-    memory?: pulumi.Input<string>;
+    memory?: string;
 
     /**
      * A set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
      */
-    requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
+    requiresCompatibilities: ["FARGATE"] | ["EC2"];
 
     /**
      * The Docker networking mode to use for the containers in the task. The valid values are
      * `none`, `bridge`, `awsvpc`, and `host`.
      */
-    networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
+    networkMode?: "none" | "bridge" | "awsvpc" | "host";
 
     /**
      * All the containers to make a ClusterTaskDefinition from.  Useful when creating a

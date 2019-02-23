@@ -20,8 +20,8 @@ import * as ecs from ".";
 import * as utils from "../utils";
 
 export abstract class Image implements ecs.ContainerImageProvider {
-    public abstract image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
-    public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<ecs.KeyValuePair[]>;
+    public abstract image(name: string, parent: pulumi.Resource): pulumi.Wrap<string>;
+    public abstract environment(name: string, parent: pulumi.Resource): pulumi.Wrap<aws.ecs.KeyValuePair[]>;
 
     /**
      * Creates an [Image] given a path to a folder in which a Docker build should be run.
@@ -47,14 +47,14 @@ export abstract class Image implements ecs.ContainerImageProvider {
      * to.  If [repository] is provided, it will be used as-is.  Otherwise, a new one will be
      * created on-demand, using the [name] value.
      */
-    public static fromDockerBuild(name: string, build: pulumi.Input<docker.DockerBuild>): Image;
-    public static fromDockerBuild(repository: aws.ecr.Repository, build: pulumi.Input<docker.DockerBuild>): Image;
-    public static fromDockerBuild(nameOrRepository: string | aws.ecr.Repository, build: pulumi.Input<docker.DockerBuild>): Image {
+    public static fromDockerBuild(name: string, build: pulumi.WrappedObject<docker.DockerBuild>): Image;
+    public static fromDockerBuild(repository: aws.ecr.Repository, build: pulumi.WrappedObject<docker.DockerBuild>): Image;
+    public static fromDockerBuild(nameOrRepository: string | aws.ecr.Repository, build: pulumi.WrappedObject<docker.DockerBuild>): Image {
         if (build === undefined) {
             throw new Error("'path' was undefined");
         }
 
-        return new AssetImage(nameOrRepository, build);
+        return new AssetImage(nameOrRepository, <pulumi.Input<docker.DockerBuild>>build);
     }
 
     /**
@@ -70,12 +70,12 @@ class FunctionImage extends Image {
         super();
     }
 
-    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
+    public image(name: string, parent: pulumi.Resource): pulumi.Wrap<string> {
         // TODO[pulumi/pulumi-cloud#85]: move this to a Pulumi Docker Hub account.
         return "lukehoban/nodejsrunner";
     }
 
-    public environment(name: string, parent: pulumi.Resource): pulumi.Input<ecs.KeyValuePair[]> {
+    public environment(name: string, parent: pulumi.Resource): pulumi.Wrap<aws.ecs.KeyValuePair[]> {
         const serialized = pulumi.runtime.serializeFunctionAsync(this.func);
         return serialized.then(value => [{
             name: "PULUMI_SRC",
@@ -98,11 +98,11 @@ class AssetImage extends Image {
         this.pathOrBuild = pulumi.output(pathOrBuild);
     }
 
-    public environment(name: string, parent: pulumi.Resource): pulumi.Input<ecs.KeyValuePair[]> {
+    public environment(name: string, parent: pulumi.Resource): pulumi.Wrap<aws.ecs.KeyValuePair[]> {
         return [];
     }
 
-    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
+    public image(name: string, parent: pulumi.Resource): pulumi.Wrap<string> {
         if (!this.imageResult) {
             const repository = typeof this.nameOrRepository === "string"
                 ? AssetImage.createRepository(this.nameOrRepository, { parent })

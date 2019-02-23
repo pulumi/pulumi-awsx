@@ -95,12 +95,12 @@ export abstract class Listener
 }
 
 export interface ListenerDefaultAction {
-    listenerDefaultAction(): aws.elasticloadbalancingv2.ListenerArgs["defaultAction"];
+    listenerDefaultAction(): pulumi.Wrap<aws.elasticloadbalancingv2.ListenerArgs["defaultAction"]>;
     registerListener(listener: Listener): void;
 }
 
 export interface ListenerActions {
-    actions(): aws.elasticloadbalancingv2.ListenerRuleArgs["actions"];
+    actions(): pulumi.Wrap<aws.elasticloadbalancingv2.ListenerRuleArgs["actions"]>;
     registerListener(listener: Listener): void;
 }
 

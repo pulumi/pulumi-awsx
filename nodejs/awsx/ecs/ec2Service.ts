@@ -21,7 +21,7 @@ import * as utils from "./../utils";
 
 export class EC2TaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
-                args: EC2TaskDefinitionArgs,
+                args: pulumi.WrappedObject<EC2TaskDefinitionArgs>,
                 opts?: pulumi.ComponentResourceOptions) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
@@ -29,11 +29,11 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 
         const containers = args.containers || { container: args.container! };
 
-        const argsCopy: ecs.TaskDefinitionArgs = {
+        const argsCopy: pulumi.WrappedObject<ecs.TaskDefinitionArgs> = {
             ...args,
             containers,
             requiresCompatibilities: ["EC2"],
-            networkMode: utils.ifUndefined(args.networkMode, "awsvpc"),
+            networkMode: <pulumi.Output<"awsvpc">>utils.ifUndefined(args.networkMode, "awsvpc"),
         };
 
         delete (<any>argsCopy).container;
@@ -66,11 +66,20 @@ export class EC2Service extends ecs.Service {
     public readonly taskDefinition: EC2TaskDefinition;
 
     constructor(name: string,
-                args: EC2ServiceArgs,
+                args: pulumi.WrappedObject<EC2ServiceArgs>,
                 opts?: pulumi.ComponentResourceOptions) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
+        }
+
+        if (args.taskDefinitionArgs instanceof Promise ||
+            pulumi.Output.isInstance(args.taskDefinitionArgs)) {
+            throw new Error("args.taskDefinitionArgs cannot be a Promise or an Output");
+        }
+
+        if (args.securityGroups && !Array.isArray(args.securityGroups)) {
+            throw new Error("args.securityGroups must be an array");
         }
 
         const taskDefinition = args.taskDefinition ||
@@ -144,7 +153,7 @@ export interface EC2TaskDefinitionArgs {
      * The Docker networking mode to use for the containers in the task. The valid values are
      * `none`, `bridge`, `awsvpc`, and `host`.
      */
-    networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
+    networkMode?: "none" | "bridge" | "awsvpc" | "host";
 
     // Properties we're adding.
 
@@ -181,19 +190,19 @@ export interface EC2ServiceArgs {
      * tasks that can be running in a service during a deployment. Not valid when using the `DAEMON`
      * scheduling strategy.
      */
-    deploymentMaximumPercent?: pulumi.Input<number>;
+    deploymentMaximumPercent?: number;
 
     /**
      * The lower limit (as a percentage of the service's desiredCount) of the number of running
      * tasks that must remain running and healthy in a service during a deployment.
      */
-    deploymentMinimumHealthyPercent?: pulumi.Input<number>;
+    deploymentMinimumHealthyPercent?: number;
 
     /**
      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
      * premature shutdown, up to 7200. Only valid for services configured to use load balancers.
      */
-    healthCheckGracePeriodSeconds?: pulumi.Input<number>;
+    healthCheckGracePeriodSeconds?: number;
 
     /**
      * ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your
@@ -203,17 +212,17 @@ export interface EC2ServiceArgs {
      * service-linked role, that role is used by default for your service unless you specify a role
      * here.
      */
-    iamRole?: pulumi.Input<string>;
+    iamRole?: string;
 
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: (pulumi.Input<x.ecs.ServiceLoadBalancer> | x.ecs.ServiceLoadBalancerProvider)[];
+    loadBalancers?: (x.ecs.ServiceLoadBalancer | x.ecs.ServiceLoadBalancerProvider)[];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
      */
-    name?: pulumi.Input<string>;
+    name?: string;
 
     /**
      * The security groups to use for the instances.
@@ -226,7 +235,7 @@ export interface EC2ServiceArgs {
      * The subnets to connect the instances to.  If unspecified then these will be the public
      * subnets of the cluster's vpc.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]>;
+    subnets?: string[];
 
     /**
      * Service level strategy rules that are taken into consideration during task placement. List
@@ -251,7 +260,7 @@ export interface EC2ServiceArgs {
      * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
      * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
      */
-    schedulingStrategy?: pulumi.Input<string>;
+    schedulingStrategy?: string;
 
     /**
      * The service discovery registries for the service. The maximum number of `service_registries` blocks is `1`.
@@ -267,16 +276,16 @@ export interface EC2ServiceArgs {
      * The number of instances of the task definition to place and keep running. Defaults to 1. Do
      * not specify if using the `DAEMON` scheduling strategy.
      */
-    desiredCount?: pulumi.Input<number>;
+    desiredCount?: number;
 
-    os?: pulumi.Input<"linux" | "windows">;
+    os?: "linux" | "windows";
 
     /**
      * Wait for the service to reach a steady state (like [`aws ecs wait
      * services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html))
      * before continuing. Defaults to `true`.
      */
-    waitForSteadyState?: pulumi.Input<boolean>;
+    waitForSteadyState?: boolean;
 
     // Properties we add.
 
