@@ -70,7 +70,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
         }
 
         for (let i = 0, n = ingressRules.length; i < n; i++) {
-            this.createEgressRule(`${name}-ingress-${i}`, <x.ec2.EgressSecurityGroupRuleArgs>ingressRules[i], parentOpts);
+            this.createIngressRule(`${name}-ingress-${i}`, <x.ec2.IngressSecurityGroupRuleArgs>ingressRules[i], parentOpts);
         }
     }
 
