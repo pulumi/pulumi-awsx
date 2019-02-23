@@ -64,8 +64,8 @@ export class AnyIPv6Location implements pulumi.UnwrappedObject<SecurityGroupRule
 
 export class TcpPorts implements pulumi.WrappedObject<SecurityGroupRulePorts> {
     public readonly protocol = "tcp";
-    constructor(public readonly fromPort: pulumi.Input<number>,
-                public readonly toPort?: pulumi.Input<number>) {
+    constructor(public readonly fromPort: pulumi.Wrap<number>,
+                public readonly toPort?: pulumi.Wrap<number>) {
     }
 }
 
@@ -79,8 +79,8 @@ export class AllTcpPorts extends TcpPorts {
 
 export class UdpPorts implements pulumi.WrappedObject<SecurityGroupRulePorts> {
     public readonly protocol = "udp";
-    constructor(public readonly fromPort: pulumi.Input<number>,
-                public readonly toPort?: pulumi.Input<number>) {
+    constructor(public readonly fromPort: pulumi.Wrap<number>,
+                public readonly toPort?: pulumi.Wrap<number>) {
     }
 }
 
@@ -92,8 +92,8 @@ export class AllUdpPorts extends UdpPorts {
 
 export class IcmpPorts implements pulumi.WrappedObject<SecurityGroupRulePorts> {
     public readonly protocol = "icmp";
-    constructor(public readonly fromPort: pulumi.Input<number>,
-                public readonly toPort?: pulumi.Input<number>) {
+    constructor(public readonly fromPort: pulumi.Wrap<number>,
+                public readonly toPort?: pulumi.Wrap<number>) {
     }
 }
 
@@ -152,7 +152,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
         name: string, securityGroup: x.ec2.SecurityGroup,
         destination: SecurityGroupRuleLocation,
         ports: SecurityGroupRulePorts,
-        description?: pulumi.Input<string>,
+        description?: pulumi.Wrap<string>,
         opts?: pulumi.ComponentResourceOptions) {
 
         return new EgressSecurityGroupRule(
@@ -165,7 +165,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
         name: string, securityGroup: x.ec2.SecurityGroup,
         source: pulumi.WrappedObject<SecurityGroupRuleLocation>,
         ports: pulumi.WrappedObject<SecurityGroupRulePorts>,
-        description?: pulumi.Input<string>,
+        description?: pulumi.Wrap<string>,
         opts?: pulumi.ComponentResourceOptions) {
 
         return new IngressSecurityGroupRule(

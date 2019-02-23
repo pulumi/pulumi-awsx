@@ -26,11 +26,11 @@ export interface ClusterNetworkArgs {
     /**
      * The VPC id of the network for the cluster
      */
-    vpcId: pulumi.Input<string>;
+    vpcId: pulumi.Wrap<string>;
     /**
      * The network subnets for the clusters
      */
-    subnetIds: pulumi.Input<string>[];
+    subnetIds: pulumi.Wrap<string>[];
 }
 
 /**
@@ -431,7 +431,7 @@ function getCloudFormationAsgTemplate(
     minSize: number,
     maxSize: number,
     instanceLaunchConfigurationId: pulumi.Output<string>,
-    subnetIds: pulumi.Input<string>[]): pulumi.Output<string> {
+    subnetIds: pulumi.Wrap<string>[]): pulumi.Output<string> {
 
     const subnetsIdsArray = pulumi.all(subnetIds);
     return pulumi.all([subnetsIdsArray, instanceLaunchConfigurationId])

@@ -38,7 +38,7 @@ export class Cluster
      */
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
-    public readonly extraBootcmdLines: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
+    public readonly extraBootcmdLines: () => pulumi.Wrap<x.autoscaling.UserDataLine[]>;
 
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 

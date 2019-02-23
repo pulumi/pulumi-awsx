@@ -108,17 +108,17 @@ function convertMappings(mappings: aws.ecs.PortMapping[]) {
 }
 
 export interface ContainerPortMappingProvider {
-    containerPortMapping(name: string, parent: pulumi.Resource): pulumi.Input<aws.ecs.PortMapping>;
+    containerPortMapping(name: string, parent: pulumi.Resource): pulumi.Wrap<aws.ecs.PortMapping>;
 }
 
 export interface ContainerLoadBalancer {
-    containerPort: pulumi.Input<number>;
-    elbName?: pulumi.Input<string>;
-    targetGroupArn?: pulumi.Input<string>;
+    containerPort: number;
+    elbName?: string;
+    targetGroupArn?: string;
 }
 
 export interface ContainerLoadBalancerProvider {
-    containerLoadBalancer(name: string, parent: pulumi.Resource): pulumi.Input<ContainerLoadBalancer>;
+    containerLoadBalancer(name: string, parent: pulumi.Resource): pulumi.Wrap<ContainerLoadBalancer>;
 }
 
 /** @internal */
@@ -131,60 +131,51 @@ export function isContainerLoadBalancerProvider(obj: any): obj is ContainerLoadB
     return obj && !!(<ContainerLoadBalancerProvider>obj).containerLoadBalancer;
 }
 
-type WithoutUndefined<T> = T extends undefined ? never : T;
+// type WithoutUndefined<T> = T extends undefined ? never : T;
 
-type MakeInputs<T> = {
-    [P in keyof T]?: pulumi.Input<WithoutUndefined<T[P]>>;
-};
+// type MakeInputs<T> = {
+//     [P in keyof T]?: pulumi.Input<WithoutUndefined<T[P]>>;
+// };
 
 // The shape we want for ContainerDefinitions.  We don't export this as 'Overwrite' types are not
 // pleasant to work with. However, they internally allow us to succinctly express the shape we're
 // trying to provide. Code later on will ensure these types are compatible.
-type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
-    image: pulumi.Input<string> | ContainerImageProvider;
-    portMappings?: (pulumi.Input<aws.ecs.PortMapping> | ContainerPortMappingProvider)[];
-    environment?: pulumi.Input<KeyValuePair[]>;
+type OverwriteShape = utils.Overwrite<aws.ecs.ContainerDefinition, {
+    name?: never;
+
+    image: string | ContainerImageProvider;
+    portMappings?: (aws.ecs.PortMapping | ContainerPortMappingProvider)[];
+    environment?: aws.ecs.KeyValuePair[];
 }>;
 
-/**
- * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KeyValuePair.html
- * for more details.
- */
-export interface KeyValuePair {
-    /** The name of the key-value pair. For environment variables, this is the name of the
-     * environment variable. */
-    name: pulumi.Input<string>;
-    /** The value of the key-value pair. For environment variables, this is the value of the
-     * environment variable. */
-    value: pulumi.Input<string>;
-}
-
 export interface Container {
+    name?: never;
+
     // Properties from aws.ecs.ContainerDefinition
-    command?: pulumi.Input<string[]>;
-    cpu?: pulumi.Input<number>;
-    disableNetworking?: pulumi.Input<boolean>;
-    dnsSearchDomains?: pulumi.Input<string[]>;
-    dnsServers?: pulumi.Input<string[]>;
-    dockerLabels?: pulumi.Input<{ [label: string]: string; }>;
-    dockerSecurityOptions?: pulumi.Input<string[]>;
-    entryPoint?: pulumi.Input<string[]>;
-    environment?: pulumi.Input<KeyValuePair[]>;
-    essential?: pulumi.Input<boolean>;
-    extraHosts?: pulumi.Input<aws.ecs.HostEntry[]>;
-    hostname?: pulumi.Input<string>;
-    links?: pulumi.Input<string[]>;
-    linuxParameters?: pulumi.Input<aws.ecs.LinuxParameters>;
-    logConfiguration?: pulumi.Input<aws.ecs.LogConfiguration>;
-    memory?: pulumi.Input<number>;
-    memoryReservation?: pulumi.Input<number>;
-    mountPoints?: pulumi.Input<aws.ecs.MountPoint[]>;
-    privileged?: pulumi.Input<boolean>;
-    readonlyRootFilesystem?: pulumi.Input<boolean>;
-    ulimits?: pulumi.Input<aws.ecs.Ulimit[]>;
-    user?: pulumi.Input<string>;
-    volumesFrom?: pulumi.Input<aws.ecs.VolumeFrom[]>;
-    workingDirectory?: pulumi.Input<string>;
+    command?: string[];
+    cpu?: number;
+    disableNetworking?: boolean;
+    dnsSearchDomains?: string[];
+    dnsServers?: string[];
+    dockerLabels?: { [label: string]: string; };
+    dockerSecurityOptions?: string[];
+    entryPoint?: string[];
+    environment?: aws.ecs.KeyValuePair[];
+    essential?: boolean;
+    extraHosts?: aws.ecs.HostEntry[];
+    hostname?: string;
+    links?: string[];
+    linuxParameters?: aws.ecs.LinuxParameters;
+    logConfiguration?: aws.ecs.LogConfiguration;
+    memory?: number;
+    memoryReservation?: number;
+    mountPoints?: aws.ecs.MountPoint[];
+    privileged?: boolean;
+    readonlyRootFilesystem?: boolean;
+    ulimits?: aws.ecs.Ulimit[];
+    user?: string;
+    volumesFrom?: aws.ecs.VolumeFrom[];
+    workingDirectory?: string;
 
     // Changes made to core args type
 
@@ -194,14 +185,14 @@ export interface Container {
      * which can do whatever custom work is necessary.  See [Image] for common ways to create an
      * image from a local docker build.
      */
-    image: pulumi.Input<string> | ContainerImageProvider;
+    image: string | ContainerImageProvider;
 
-    portMappings?: (pulumi.Input<aws.ecs.PortMapping> | ContainerPortMappingProvider)[];
+    portMappings?: (aws.ecs.PortMapping | ContainerPortMappingProvider)[];
 }
 
 export interface ContainerImageProvider {
-    image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
-    environment(name: string, parent: pulumi.Resource): pulumi.Input<KeyValuePair[]>;
+    image(name: string, parent: pulumi.Resource): pulumi.Wrap<string>;
+    environment(name: string, parent: pulumi.Resource): pulumi.Wrap<aws.ecs.KeyValuePair[]>;
 }
 
 /** @internal */

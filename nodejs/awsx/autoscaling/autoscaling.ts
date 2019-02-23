@@ -138,7 +138,7 @@ const defaultEbsBlockDevices = [{
 
 
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
-function getEcsAmiIdOutput(name: pulumi.Input<string> | undefined): pulumi.Output<string> {
+function getEcsAmiIdOutput(name: pulumi.Wrap<string> | undefined): pulumi.Output<string> {
     return pulumi.output(name).apply(n => getEcsAmiId(n));
 }
 
@@ -176,7 +176,7 @@ async function getEcsAmiId(name: string | undefined): Promise<string> {
 // https://github.com/awslabs/amazon-ecs-amazon-efs/blob/d92791f3/amazon-efs-ecs.json#L655
 function getInstanceUserData(
     args: pulumi.WrappedObject<AutoScalingLaunchConfigurationArgs>,
-    cloudFormationStackName: pulumi.Output<string>): pulumi.Input<string> {
+    cloudFormationStackName: pulumi.Output<string>): pulumi.Wrap<string> {
 
     const autoScalingUserData = <AutoScalingUserData>args.userData;
     if (args.userData !== undefined && !isAutoScalingUserData(args.userData)) {
@@ -322,7 +322,7 @@ function ifUndefined<T>(val: T | undefined, defVal: T) {
 function getCloudFormationTemplate(
     instanceName: string,
     instanceLaunchConfigurationId: pulumi.Output<string>,
-    subnetIds: pulumi.Input<string>[],
+    subnetIds: pulumi.Wrap<string>[],
     parameters: pulumi.Output<TemplateParameters>): pulumi.Output<string> {
 
     const subnetIdsArray = pulumi.all(subnetIds);
@@ -666,12 +666,12 @@ export interface AutoScalingUserData {
     /**
      * Additional lines to be placed in the `runcmd` section of the launch configuration.
      */
-    extraRuncmdLines?(): pulumi.Input<UserDataLine[]>;
+    extraRuncmdLines?(): pulumi.Wrap<UserDataLine[]>;
 
     /**
      * Additional lines to be placed in the `bootcmd` section of the launch configuration.
      */
-    extraBootcmdLines?(): pulumi.Input<UserDataLine[]>;
+    extraBootcmdLines?(): pulumi.Wrap<UserDataLine[]>;
 }
 
 function isAutoScalingUserData(obj: any): obj is AutoScalingUserData {
