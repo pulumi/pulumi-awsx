@@ -36,9 +36,9 @@ export class Subnet extends pulumi.ComponentResource {
 
     public readonly routes: aws.ec2.Route[] = [];
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, vpc: x.ec2.Vpc, args: pulumi.WrappedObject<SubnetArgs>, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: pulumi.WrappedObject<ExistingSubnetArgs>, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: pulumi.WrappedObject<SubnetArgs> | pulumi.WrappedObject<ExistingSubnetArgs>, opts?: pulumi.ComponentResourceOptions) {
         super("awsx:x:ec2:Subnet", name, {}, opts || { parent: vpc });
 
         this.vpc = vpc;
@@ -95,14 +95,14 @@ export class Subnet extends pulumi.ComponentResource {
 }
 
 export interface SubnetRouteProvider {
-    route(name: string, opts: pulumi.ComponentResourceOptions): RouteArgs;
+    route(name: string, opts: pulumi.ComponentResourceOptions): pulumi.WrappedObject<RouteArgs>;
 }
 
 function isSubnetRouteProvider(obj: any): obj is SubnetRouteProvider {
     return !!(<SubnetRouteProvider>obj).route;
 }
 
-export type SubnetOrId = Subnet | pulumi.Input<string>;
+export type SubnetOrId = Subnet | string;
 
 (<any>Subnet.prototype.createRoute).doNotCapture = true;
 
@@ -129,39 +129,39 @@ export interface RouteArgs {
     /**
      * The destination CIDR block.
      */
-    destinationCidrBlock?: pulumi.Input<string>;
+    destinationCidrBlock?: string;
     /**
      * The destination IPv6 CIDR block.
      */
-    destinationIpv6CidrBlock?: pulumi.Input<string>;
+    destinationIpv6CidrBlock?: string;
     /**
      * Identifier of a VPC Egress Only Internet Gateway.
      */
-    egressOnlyGatewayId?: pulumi.Input<string>;
+    egressOnlyGatewayId?: string;
     /**
      * Identifier of a VPC internet gateway or a virtual private gateway.
      */
-    gatewayId?: pulumi.Input<string>;
+    gatewayId?: string;
     /**
      * Identifier of an EC2 instance.
      */
-    instanceId?: pulumi.Input<string>;
+    instanceId?: string;
     /**
      * Identifier of a VPC NAT gateway.
      */
-    natGatewayId?: pulumi.Input<string>;
+    natGatewayId?: string;
     /**
      * Identifier of an EC2 network interface.
      */
-    networkInterfaceId?: pulumi.Input<string>;
+    networkInterfaceId?: string;
     /**
      * Identifier of an EC2 Transit Gateway.
      */
-    transitGatewayId?: pulumi.Input<string>;
+    transitGatewayId?: string;
     /**
      * Identifier of a VPC peering connection.
      */
-    vpcPeeringConnectionId?: pulumi.Input<string>;
+    vpcPeeringConnectionId?: string;
 }
 
 type SubnetArgsShape = utils.Overwrite<aws.ec2.SubnetArgs, {
@@ -172,36 +172,36 @@ export interface SubnetArgs {
     /**
      * The CIDR block for the subnet.
      */
-    cidrBlock: pulumi.Input<string>;
+    cidrBlock: string;
     /**
      * Specify true to indicate
      * that network interfaces created in the specified subnet should be
      * assigned an IPv6 address. Default is `false`
      */
-    assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
+    assignIpv6AddressOnCreation?: boolean;
     /**
      * The AZ for the subnet.
      */
-    availabilityZone?: pulumi.Input<string>;
+    availabilityZone?: string;
     /**
      * The AZ ID of the subnet.
      */
-    availabilityZoneId?: pulumi.Input<string>;
+    availabilityZoneId?: string;
     /**
      * The IPv6 network range for the subnet,
      * in CIDR notation. The subnet size must use a /64 prefix length.
      */
-    ipv6CidrBlock?: pulumi.Input<string>;
+    ipv6CidrBlock?: string;
     /**
      * Specify true to indicate
      * that instances launched into the subnet should be assigned
      * a public IP address. Default is `false`.
      */
-    mapPublicIpOnLaunch?: pulumi.Input<boolean>;
+    mapPublicIpOnLaunch?: boolean;
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

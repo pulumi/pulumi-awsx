@@ -48,9 +48,9 @@ export class Vpc extends pulumi.ComponentResource {
      */
     public readonly natGateways: x.ec2.NatGateway[] = [];
 
-    constructor(name: string, args?: VpcArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args?: pulumi.WrappedObject<VpcArgs>, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, args?: pulumi.WrappedObject<ExistingVpcArgs>, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, args: pulumi.WrappedObject<VpcArgs> | pulumi.WrappedObject<ExistingVpcArgs> = {}, opts?: pulumi.ComponentResourceOptions) {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
@@ -58,6 +58,19 @@ export class Vpc extends pulumi.ComponentResource {
             this.id = this.vpc.id;
         }
         else {
+            if (args.cidrBlock !== undefined && typeof args.cidrBlock !== "string") {
+                throw new Error("args.cidrBlock must be a string.");
+            }
+            if (args.numberOfAvailabilityZones !== undefined && typeof args.numberOfAvailabilityZones !== "number") {
+                throw new Error("args.numberOfAvailabilityZones must be a number.");
+            }
+            if (args.numberOfNatGateways !== undefined && typeof args.numberOfNatGateways !== "number") {
+                throw new Error("args.numberOfNatGateways must be a number.");
+            }
+            if (args.subnets && !Array.isArray(args.subnets)) {
+                throw new Error("args.subnets must be an array.");
+            }
+
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
             const numberOfAvailabilityZones = args.numberOfAvailabilityZones === undefined ? 2 : args.numberOfAvailabilityZones;
             const numberOfNatGateways = args.numberOfNatGateways === undefined ? numberOfAvailabilityZones : args.numberOfNatGateways;
@@ -77,7 +90,7 @@ export class Vpc extends pulumi.ComponentResource {
             // Create the appropriate subnets.  Default to a single public and private subnet for each
             // availability zone if none were specified.
             const topology = new VpcTopology(this, name, cidrBlock, numberOfAvailabilityZones, opts);
-            topology.createSubnets(args.subnets || [
+            topology.createSubnets(<x.ec2.VpcSubnetArgs[]>args.subnets || [
                 { type: "public" },
                 { type: "private" },
             ]);
@@ -178,7 +191,7 @@ export class Vpc extends pulumi.ComponentResource {
         return defaultVpc;
     }
 
-    public static fromExistingIds(name: string, idArgs: ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions) {
+    public static fromExistingIds(name: string, idArgs: pulumi.WrappedObject<ExistingVpcIdArgs>, opts?: pulumi.ComponentResourceOptions) {
         const vpc = new Vpc(name, {
             vpc: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
         }, opts);
@@ -195,6 +208,10 @@ export class Vpc extends pulumi.ComponentResource {
         }
 
         if (idArgs.natGatewayIds) {
+            if (!Array.isArray(idArgs.natGatewayIds)) {
+                throw new Error(`Provided natGatewayIds must be an array.`);
+            }
+
             for (let i = 0, n = idArgs.natGatewayIds.length; i < n; i++) {
                 const natGatewayId = idArgs.natGatewayIds[i];
                 const natName = `${name}-nat-${i}`;
@@ -250,7 +267,11 @@ function createNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones:
     }
 }
 
-function createSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
+function createSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Wrap<string[]> = []) {
+    if (!Array.isArray(inputs)) {
+        throw new Error(`Provided ${type} subnets must be an array.`);
+    }
+
     const parentOpts = { parent: vpc };
     const subnets = vpc.getSubnets(type);
     const subnetIds = vpc.getSubnetIds(type);
@@ -312,22 +333,22 @@ export interface VpcSubnetArgs {
      */
     cidrMask?: number;
 
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 }
 
 export interface ExistingVpcIdArgs {
     /** The id of the VPC. */
-    vpcId: pulumi.Input<string>;
+    vpcId: string;
     /** The public subnets for the vpc. */
-    publicSubnetIds?: pulumi.Input<string>[];
+    publicSubnetIds?: string[];
     /** The private subnets for the vpc. */
-    privateSubnetIds?: pulumi.Input<string>[];
+    privateSubnetIds?: string[];
     /** The isolated subnets for the vpc. */
-    isolatedSubnetIds?: pulumi.Input<string>[];
+    isolatedSubnetIds?: string[];
     /** The id of the internet gateway for this VPC */
-    internetGatewayId?: pulumi.Input<string>;
+    internetGatewayId?: string;
     /** The ids of the nat gateways for this VPC */
-    natGatewayIds?: pulumi.Input<string>[];
+    natGatewayIds?: string[];
 }
 
 function isExistingVpcIdArgs(obj: any): obj is ExistingVpcIdArgs {
@@ -385,7 +406,7 @@ export interface VpcArgs {
      * block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or
      * the size of the CIDR block. Default is `false`.
      */
-    assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
+    assignGeneratedIpv6CidrBlock?: boolean;
     /**
      * The CIDR block for the VPC.  Defaults to "10.0.0.0/16" if unspecified.
      */
@@ -395,28 +416,28 @@ export interface VpcArgs {
      * for the VPC. Only valid in regions and accounts that support EC2 Classic.
      * See the [ClassicLink documentation][1] for more information. Defaults false.
      */
-    enableClassiclink?: pulumi.Input<boolean>;
+    enableClassiclink?: boolean;
     /**
      * A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
      * Only valid in regions and accounts that support EC2 Classic.
      */
-    enableClassiclinkDnsSupport?: pulumi.Input<boolean>;
+    enableClassiclinkDnsSupport?: boolean;
     /**
      * A boolean flag to enable/disable DNS hostnames in the VPC. Defaults to true if unspecified.
      */
-    enableDnsHostnames?: pulumi.Input<boolean>;
+    enableDnsHostnames?: boolean;
     /**
      * A boolean flag to enable/disable DNS support in the VPC. Defaults true if unspecified.
      */
-    enableDnsSupport?: pulumi.Input<boolean>;
+    enableDnsSupport?: boolean;
     /**
      * A tenancy option for instances launched into the VPC.  Defaults to "default" if unspecified.
      */
-    instanceTenancy?: pulumi.Input<"default" | "dedicated">;
+    instanceTenancy?: "default" | "dedicated";
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

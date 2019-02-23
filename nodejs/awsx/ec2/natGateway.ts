@@ -26,9 +26,9 @@ export class NatGateway
     public readonly elasticIP: aws.ec2.Eip;
     public readonly natGateway: aws.ec2.NatGateway;
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, vpc: x.ec2.Vpc, args: pulumi.WrappedObject<NatGatewayArgs>, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: pulumi.WrappedObject<ExistingNatGatewayArgs>, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: pulumi.WrappedObject<NatGatewayArgs> | pulumi.WrappedObject<ExistingNatGatewayArgs>, opts?: pulumi.ComponentResourceOptions) {
         super("awsx:x:ec2:NatGateway", name, {}, opts || { parent: vpc });
 
         const parentOpts = { parent: this };
@@ -64,7 +64,7 @@ export class NatGateway
         this.registerOutputs();
     }
 
-    public route(name: string, opts: pulumi.ComponentResourceOptions): x.ec2.RouteArgs {
+    public route(name: string, opts: pulumi.ComponentResourceOptions): pulumi.WrappedObject<x.ec2.RouteArgs> {
         return {
             // From https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-create-route
             // Choose Add another route. For Destination, type 0.0.0.0/0. For Target, select the ID
@@ -84,7 +84,7 @@ export interface NatGatewayArgs {
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<{ [key: string]: any; }>;
+    tags?: { [key: string]: any; };
 }
 
 export interface ExistingNatGatewayArgs {
