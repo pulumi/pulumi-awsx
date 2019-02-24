@@ -92,7 +92,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             ...args,
             vpc: loadBalancer.vpc,
             port,
-            protocol: <pulumi.Output<"HTTP">>protocol,
+            protocol,
         }, opts);
 
         this.loadBalancer = loadBalancer;
@@ -170,7 +170,7 @@ export class ApplicationListener extends mod.Listener {
             defaultAction,
             loadBalancer,
             port,
-            protocol: <pulumi.Output<"HTTP">>protocol,
+            protocol,
         }, opts);
 
         const parentOpts = { parent: this };
@@ -205,14 +205,10 @@ function getDefaultAction(
     if (args.defaultAction) {
         return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
             ? { defaultAction: args.defaultAction.listenerDefaultAction(), defaultListener: args.defaultAction }
-            : { defaultAction: args.defaultAction, defaultListener: undefined };
+            : { defaultAction: <aws.elasticloadbalancingv2.ListenerArgs["defaultAction"]>args.defaultAction, defaultListener: undefined };
     }
 
-    const targetGroup = new ApplicationTargetGroup(name, {
-        loadBalancer,
-        port,
-        protocol: <pulumi.Output<
-    }, opts);
+    const targetGroup = new ApplicationTargetGroup(name, { loadBalancer, port, protocol }, opts);
     return { defaultAction: targetGroup.listenerDefaultAction(), defaultListener: targetGroup };
 }
 
