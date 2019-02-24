@@ -58,6 +58,8 @@ function getLoadBalancers(service: ecs.Service, name: string, args: pulumi.Wrapp
     function getLoadBalancersWorker(args: ServiceArgs) {
         const serviceLoadBalancers = getServiceLoadBalancers(args.loadBalancers);
         const containerLoadBalancers = pulumi.output(args.taskDefinition.containers).apply(getContainerLoadBalancers);
+
+        return utils.combineArrays(serviceLoadBalancers, containerLoadBalancers);
     }
 
     function getServiceLoadBalancers(loadBalancers?: (ServiceLoadBalancer | ServiceLoadBalancerProvider)[]) {

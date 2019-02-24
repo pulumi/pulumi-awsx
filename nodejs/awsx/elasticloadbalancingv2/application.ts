@@ -112,8 +112,8 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 }
 
 function computePortInfo(
-    port: pulumi.Input<number> | undefined,
-    protocol: pulumi.Input<ApplicationProtocol> | undefined) {
+    port: pulumi.Wrap<number> | undefined,
+    protocol: pulumi.Wrap<ApplicationProtocol> | undefined) {
 
     if (port === undefined && protocol === undefined) {
         throw new Error("At least one of [port] or [protocol] must be provided.");
@@ -198,8 +198,8 @@ export class ApplicationListener extends mod.Listener {
 function getDefaultAction(
         name: string, loadBalancer: ApplicationLoadBalancer,
         args: pulumi.WrappedObject<ApplicationListenerArgs>,
-        port: pulumi.Input<number>,
-        protocol: pulumi.Input<ApplicationProtocol>,
+        port: pulumi.Wrap<number>,
+        protocol: pulumi.Wrap<ApplicationProtocol>,
         opts: pulumi.ComponentResourceOptions | undefined) {
 
     if (args.defaultAction) {
