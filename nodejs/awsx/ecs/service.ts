@@ -56,15 +56,18 @@ function getLoadBalancers(service: ecs.Service, name: string, args: pulumi.Wrapp
     return pulumi.output(args).apply(getLoadBalancersWorker);
 
     function getLoadBalancersWorker(args: ServiceArgs) {
+        const serviceLoadBalancers = getServiceLoadBalancers(args.loadBalancers);
+        const containerLoadBalancers = pulumi.output(args.taskDefinition.containers).apply(getContainerLoadBalancers);
+    }
+
+    function getServiceLoadBalancers(loadBalancers?: (ServiceLoadBalancer | ServiceLoadBalancerProvider)[]) {
         const result: pulumi.Output<ServiceLoadBalancer>[] = [];
 
         // Get the initial set of load balancers if specified.
-        if (args.loadBalancers) {
-            if (!Array.isArray(args.loadBalancers)) {
+        if (loadBalancers) {
+            if (!Array.isArray(loadBalancers)) {
                 throw new Error("args.loadBalancers must be an array");
             }
-
-            const loadBalancers = <(ServiceLoadBalancer | ServiceLoadBalancerProvider)[]>args.loadBalancers;
 
             for (const obj of loadBalancers) {
                 const loadBalancer = isServiceLoadBalancerProvider(obj)
@@ -74,9 +77,15 @@ function getLoadBalancers(service: ecs.Service, name: string, args: pulumi.Wrapp
             }
         }
 
+        return pulumi.all(result);
+    }
+
+    function getContainerLoadBalancers(containers: Record<string, ecs.Container>) {
+        const result: pulumi.Output<ServiceLoadBalancer>[] = [];
+
         // Now walk each container and see if it wants to add load balancer information as well.
-        for (const containerName of Object.keys(args.taskDefinition.containers)) {
-            const container = args.taskDefinition.containers[containerName];
+        for (const containerName of Object.keys(containers)) {
+            const container = containers[containerName];
             if (!container.portMappings) {
                 continue;
             }
@@ -92,7 +101,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: pulumi.Wrapp
             }
         }
 
-        return pulumi.output(result);
+        return pulumi.all(result);
     }
 }
 

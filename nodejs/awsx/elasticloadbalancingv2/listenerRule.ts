@@ -38,11 +38,11 @@ export class ListenerRule extends pulumi.ComponentResource {
         const parentOpts = { parent: this };
         const actions = x.elasticloadbalancingv2.isListenerActions(args.actions)
             ? args.actions.actions()
-            : args.actions;
+            : <pulumi.Wrap<aws.elasticloadbalancingv2.ListenerRuleArgs["actions"]>>args.actions;
 
         this.listenerRule = new aws.elasticloadbalancingv2.ListenerRule(name, {
             ...args,
-            actions: actions,
+            actions,
             listenerArn: listener.listener.arn,
         }, parentOpts);
 

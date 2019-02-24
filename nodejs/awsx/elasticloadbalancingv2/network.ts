@@ -24,8 +24,8 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: NetworkListener[];
     public readonly targetGroups: NetworkTargetGroup[];
 
-    constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
-        const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
+    constructor(name: string, args: pulumi.WrappedObject<NetworkLoadBalancerArgs> = {}, opts?: pulumi.ComponentResourceOptions) {
+        const argsCopy: pulumi.WrappedObject<x.elasticloadbalancingv2.LoadBalancerArgs> = {
             ...args,
             loadBalancerType: "network",
         };
@@ -38,14 +38,14 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
         this.registerOutputs({});
     }
 
-    public createListener(name: string, args: NetworkListenerArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createListener(name: string, args: pulumi.WrappedObject<NetworkListenerArgs>, opts?: pulumi.ComponentResourceOptions) {
         return new NetworkListener(name, {
             loadBalancer: this,
             ...args,
         }, opts || { parent: this });
     }
 
-    public createTargetGroup(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createTargetGroup(name: string, args: pulumi.WrappedObject<NetworkTargetGroupArgs>, opts?: pulumi.ComponentResourceOptions) {
         return new NetworkTargetGroup(name, {
             loadBalancer: this,
             ...args,
@@ -75,7 +75,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
 
     public readonly listeners: x.elasticloadbalancingv2.NetworkListener[];
 
-    constructor(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: pulumi.WrappedObject<NetworkTargetGroupArgs>, opts?: pulumi.ComponentResourceOptions) {
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
         super("awsx:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
             ...args,
@@ -89,7 +89,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
         this.registerOutputs({});
     }
 
-    public createListener(name: string, args: NetworkListenerArgs,
+    public createListener(name: string, args: pulumi.WrappedObject<NetworkListenerArgs>,
                           opts?: pulumi.ComponentResourceOptions): NetworkListener {
         return new NetworkListener(name, {
             defaultAction: this,
@@ -115,7 +115,7 @@ export class NetworkListener
     public readonly defaultTargetGroup?: x.elasticloadbalancingv2.NetworkTargetGroup;
 
     constructor(name: string,
-                args: NetworkListenerArgs,
+                args: pulumi.WrappedObject<NetworkListenerArgs>,
                 opts?: pulumi.ComponentResourceOptions) {
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
         const { defaultAction, defaultListener } = getDefaultAction(name, loadBalancer, args, opts);
@@ -151,12 +151,12 @@ export class NetworkListener
 function getDefaultAction(
         name: string,
         loadBalancer: NetworkLoadBalancer,
-        args: NetworkListenerArgs,
+        args: pulumi.WrappedObject<NetworkListenerArgs>,
         opts: pulumi.ComponentResourceOptions | undefined) {
     if (args.defaultAction) {
         return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
             ? { defaultAction: args.defaultAction.listenerDefaultAction(), defaultListener: args.defaultAction }
-            : { defaultAction: args.defaultAction, defaultListener: undefined };
+            : { defaultAction: <pulumi.Wrap<aws.elasticloadbalancingv2.ListenerArgs["defaultAction"]>>args.defaultAction, defaultListener: undefined };
     }
 
     const targetGroup = new NetworkTargetGroup(name, { loadBalancer, port: args.port }, opts);
@@ -182,13 +182,13 @@ export interface NetworkLoadBalancerArgs {
      * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent
      * Terraform from deleting the load balancer. Defaults to `false`.
      */
-    enableDeletionProtection?: pulumi.Input<boolean>;
+    enableDeletionProtection?: boolean;
 
     /**
      * The type of IP addresses used by the subnets for your load balancer. The possible values are
      * `ipv4` and `dualstack`
      */
-    ipAddressType?: pulumi.Input<"ipv4" | "dualstack">;
+    ipAddressType?: "ipv4" | "dualstack";
 
     /**
      * A subnet mapping block as documented below.
@@ -200,19 +200,19 @@ export interface NetworkLoadBalancerArgs {
      * type `network`. Changing this value for load balancers of type `network` will force a
      * recreation of the resource.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.elasticloadbalancingv2.LoadBalancerSubnets;
+    subnets?: string[] | x.elasticloadbalancingv2.LoadBalancerSubnets;
 
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 
     // Properties added here.
 
     /**
      * If true, cross-zone load balancing of the load balancer will be enabled.  Defaults to `false`.
      */
-    enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
+    enableCrossZoneLoadBalancing?: boolean;
 }
 
 export interface NetworkTargetGroupArgs {
@@ -234,14 +234,14 @@ export interface NetworkTargetGroupArgs {
      * The port to use to connect with the target. Valid values are either ports 1-65536, or
      * `traffic-port`. Defaults to `traffic-port`.
      */
-    port: pulumi.Input<number>;
+    port: number;
 
     /**
      * The amount time for Elastic Load Balancing to wait before changing the state of a
      * deregistering target from draining to unused. The range is 0-3600 seconds. The default value
      * is 300 seconds.
      */
-    deregistrationDelay?: pulumi.Input<number>;
+    deregistrationDelay?: number;
 
     /**
      * A Health Check block. Health Check blocks are documented below.
@@ -253,13 +253,13 @@ export interface NetworkTargetGroupArgs {
      * [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol)
      * for more information.
      */
-    proxyProtocolV2?: pulumi.Input<boolean>;
+    proxyProtocolV2?: boolean;
 
     /**
      * The amount time for targets to warm up before the load balancer sends them a full share of
      * requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
      */
-    slowStart?: pulumi.Input<number>;
+    slowStart?: number;
 
     /**
      * A Stickiness block. Stickiness blocks are documented below. `stickiness` is only valid if
@@ -270,7 +270,7 @@ export interface NetworkTargetGroupArgs {
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<aws.Tags>;
+    tags?: aws.Tags;
 
     /**
      * The type of target that you must specify when registering targets with this target group. The
@@ -283,7 +283,7 @@ export interface NetworkTargetGroupArgs {
      * 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable
      * IP addresses.
      */
-    targetType?: pulumi.Input<"instance" | "ip">;
+    targetType?: "instance" | "ip";
 }
 
 export interface NetworkListenerArgs {
@@ -302,7 +302,7 @@ export interface NetworkListenerArgs {
     /**
      * The port. Specify a value from `1` to `65535`.
      */
-    port: pulumi.Input<number>;
+    port: number;
 
     /**
      * An Action block. Action blocks are documented below.  If not provided, a suitable
