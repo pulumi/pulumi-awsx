@@ -485,8 +485,7 @@ export interface TemplateParameters {
      * Defaults to "ScheduledActions" if not specified
      */
     suspendedProcesses?:
-        ("Launch" | "Terminate" | "HealthCheck" | "ReplaceUnhealthy" |
-         "AZRebalance" | "AlarmNotification" | "ScheduledActions" | "AddToLoadBalancer")[];
+        ("Launch" | "Terminate" | "HealthCheck" | "ReplaceUnhealthy" | "AZRebalance" | "AlarmNotification" | "ScheduledActions" | "AddToLoadBalancer")[];
 
     /**
      * The maximum size of the auto scale group.  Defaults to 100 if unspecified.
