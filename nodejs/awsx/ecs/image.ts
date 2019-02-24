@@ -20,6 +20,9 @@ import * as ecs from ".";
 import * as utils from "../utils";
 
 export abstract class Image implements ecs.ContainerImageProvider {
+    // tslint:disable-next-line:variable-name
+    private readonly __pulumiResource = true;
+
     public abstract image(name: string, parent: pulumi.Resource): pulumi.Wrap<string>;
     public abstract environment(name: string, parent: pulumi.Resource): pulumi.Wrap<aws.ecs.KeyValuePair[]>;
 
