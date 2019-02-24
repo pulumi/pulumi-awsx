@@ -92,7 +92,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             ...args,
             vpc: loadBalancer.vpc,
             port,
-            protocol,
+            protocol: <pulumi.Output<"HTTP">>protocol,
         }, opts);
 
         this.loadBalancer = loadBalancer;
@@ -153,7 +153,7 @@ export class ApplicationListener extends mod.Listener {
     public readonly defaultTargetGroup?: x.elasticloadbalancingv2.ApplicationTargetGroup;
 
     constructor(name: string,
-                args: ApplicationListenerArgs,
+                args: pulumi.WrappedObject<ApplicationListenerArgs>,
                 opts?: pulumi.ComponentResourceOptions) {
 
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, { vpc: args.vpc }, opts);
@@ -170,7 +170,7 @@ export class ApplicationListener extends mod.Listener {
             defaultAction,
             loadBalancer,
             port,
-            protocol,
+            protocol: <pulumi.Output<"HTTP">>protocol,
         }, opts);
 
         const parentOpts = { parent: this };
@@ -197,7 +197,7 @@ export class ApplicationListener extends mod.Listener {
 
 function getDefaultAction(
         name: string, loadBalancer: ApplicationLoadBalancer,
-        args: ApplicationListenerArgs,
+        args: pulumi.WrappedObject<ApplicationListenerArgs>,
         port: pulumi.Input<number>,
         protocol: pulumi.Input<ApplicationProtocol>,
         opts: pulumi.ComponentResourceOptions | undefined) {
@@ -208,7 +208,11 @@ function getDefaultAction(
             : { defaultAction: args.defaultAction, defaultListener: undefined };
     }
 
-    const targetGroup = new ApplicationTargetGroup(name, { loadBalancer, port, protocol }, opts);
+    const targetGroup = new ApplicationTargetGroup(name, {
+        loadBalancer,
+        port,
+        protocol: <pulumi.Output<
+    }, opts);
     return { defaultAction: targetGroup.listenerDefaultAction(), defaultListener: targetGroup };
 }
 

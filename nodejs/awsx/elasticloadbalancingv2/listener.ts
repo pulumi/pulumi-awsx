@@ -38,7 +38,7 @@ export abstract class Listener
 
     constructor(type: string, name: string,
                 defaultListenerAction: ListenerDefaultAction | undefined,
-                args: ListenerArgs, opts?: pulumi.ComponentResourceOptions) {
+                args: pulumi.WrappedObject<ListenerArgs>, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, args, opts);
 
         const parentOpts = { parent: this };
