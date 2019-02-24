@@ -48,8 +48,6 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         // unique name.
         this.stackName = pulumi.output(args.stackName).apply(sn => sn || new aws.s3.Bucket(name, {}, parentOpts).id);
 
-        var v = args.instanceProfile;
-
         // Use the instance provided, or create a new one.
         this.instanceProfile = args.instanceProfile ||
             AutoScalingLaunchConfiguration.createInstanceProfile(
