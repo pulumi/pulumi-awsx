@@ -24,9 +24,9 @@ export class InternetGateway
     public readonly vpc: x.ec2.Vpc;
     public readonly internetGateway: aws.ec2.InternetGateway;
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingInternetGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, vpc: x.ec2.Vpc, args: pulumi.WrappedObject<aws.ec2.InternetGatewayArgs>, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: pulumi.WrappedObject<ExistingInternetGatewayArgs>, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: pulumi.WrappedObject<aws.ec2.InternetGatewayArgs> | pulumi.WrappedObject<ExistingInternetGatewayArgs>, opts?: pulumi.ComponentResourceOptions) {
         super("awsx:x:ec2:InternetGateway", name, {}, opts || { parent: vpc });
 
         this.vpc = vpc;

@@ -42,7 +42,7 @@ export class Cluster
 
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 
-    constructor(name: string, args: ClusterArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: pulumi.WrappedObject<ClusterArgs> = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ecs:Cluster", name, {}, opts);
 
         // First create an ECS cluster.
@@ -52,6 +52,10 @@ export class Cluster
         this.id = cluster.id;
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+
+        if (args.securityGroups !== undefined && !Array.isArray(args.securityGroups)) {
+            throw new Error("args.securityGroups must be an array");
+        }
 
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group

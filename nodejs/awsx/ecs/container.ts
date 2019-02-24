@@ -131,12 +131,6 @@ export function isContainerLoadBalancerProvider(obj: any): obj is ContainerLoadB
     return obj && !!(<ContainerLoadBalancerProvider>obj).containerLoadBalancer;
 }
 
-// type WithoutUndefined<T> = T extends undefined ? never : T;
-
-// type MakeInputs<T> = {
-//     [P in keyof T]?: pulumi.Input<WithoutUndefined<T[P]>>;
-// };
-
 // The shape we want for ContainerDefinitions.  We don't export this as 'Overwrite' types are not
 // pleasant to work with. However, they internally allow us to succinctly express the shape we're
 // trying to provide. Code later on will ensure these types are compatible.

@@ -191,11 +191,24 @@ export class FargateService extends ecs.Service {
     public readonly taskDefinition: FargateTaskDefinition;
 
     constructor(name: string,
-                args: FargateServiceArgs,
+                args: pulumi.WrappedObject<FargateServiceArgs>,
                 opts?: pulumi.ComponentResourceOptions) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
+        }
+
+        if (!args.taskDefinition && !args.taskDefinitionArgs) {
+            throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
+        }
+
+        if (args.taskDefinitionArgs instanceof Promise ||
+            pulumi.Output.isInstance(args.taskDefinitionArgs)) {
+            throw new Error("args.taskDefinitionArgs cannot be a Promise or an Output");
+        }
+
+        if (args.securityGroups && !Array.isArray(args.securityGroups)) {
+            throw new Error("args.securityGroups must be an array");
         }
 
         const taskDefinition = args.taskDefinition ||

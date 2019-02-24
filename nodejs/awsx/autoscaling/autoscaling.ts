@@ -274,7 +274,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     public readonly launchConfiguration: AutoScalingLaunchConfiguration;
 
     constructor(name: string,
-                args: AutoScalingGroupArgs,
+                args: pulumi.WrappedObject<AutoScalingGroupArgs>,
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingGroup", name, {}, opts);
 
@@ -288,6 +288,11 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             this.launchConfiguration = args.launchConfiguration;
         }
         else {
+            if (args.launchConfigurationArgs instanceof Promise ||
+                pulumi.Output.isInstance(args.launchConfigurationArgs)) {
+                throw new Error("args.launchConfigurationArgs cannot be a Promise or an Output");
+            }
+
             this.launchConfiguration = new AutoScalingLaunchConfiguration(
                 name, this.vpc, args.launchConfigurationArgs, parentOpts);
         }
@@ -316,10 +321,10 @@ function ifUndefined<T>(val: T | undefined, defVal: T) {
 function getCloudFormationTemplate(
     instanceName: string,
     instanceLaunchConfigurationId: pulumi.Output<string>,
-    subnetIds: pulumi.Wrap<string>[],
+    subnetIds: pulumi.Wrap<string[]>,
     parameters: pulumi.Output<TemplateParameters>): pulumi.Output<string> {
 
-    const subnetIdsArray = pulumi.all(subnetIds);
+    const subnetIdsArray: pulumi.Output<string[]> = pulumi.output(subnetIds);
     return pulumi.all([subnetIdsArray, instanceLaunchConfigurationId, parameters])
                  .apply(([subnetIdsArray, instanceLaunchConfigurationId, parameters]) => {
 
