@@ -58,7 +58,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             ...args,
             securityGroups: this.securityGroups.map(g => g.id),
-            imageId: getEcsAmiIdOutput(args.ecsOptimizedAMIName),
+            imageId: pulumi.output(args.ecsOptimizedAMIName).apply(getEcsAmiId),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: this.instanceProfile.id,
             enableMonitoring: utils.ifUndefined(args.enableMonitoring, true),
@@ -136,10 +136,6 @@ const defaultEbsBlockDevices = [{
 
 
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
-function getEcsAmiIdOutput(name: pulumi.Wrap<string> | undefined): pulumi.Output<string> {
-    return pulumi.output(name).apply(n => getEcsAmiId(n));
-}
-
 async function getEcsAmiId(name: string | undefined): Promise<string> {
     // If a name was not provided, use the latest recommended version.
     if (!name) {
