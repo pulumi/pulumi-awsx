@@ -34,7 +34,10 @@ export abstract class Service extends pulumi.ComponentResource {
 
         // If the cluster has any autoscaling groups, ensure the service depends on it being
         // created.
-        const parentOpts = { parent: this, dependsOn: this.cluster.autoScalingGroups };
+        const parentOpts = {
+            parent: this,
+            dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
+        };
 
         const loadBalancers = getLoadBalancers(this, name, args);
 
