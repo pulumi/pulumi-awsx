@@ -42,7 +42,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         // references the launch configuration and vice-versa, we use this to break the cycle.
         // TODO[pulumi/pulumi#381]: Creating an S3 bucket is an inelegant way to get a durable,
         // unique name.
-        this.stackName = pulumi.output(args.stackName).apply(sn => sn || new aws.s3.Bucket(name, {}, parentOpts).id);
+        this.stackName = pulumi.output(args.stackName).apply(sn => sn ? pulumi.output(sn) : new aws.s3.Bucket(name, {}, parentOpts).id);
 
         // Use the instance provided, or create a new one.
         this.instanceProfile = args.instanceProfile ||
