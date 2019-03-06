@@ -43,10 +43,8 @@ As such, we are rev'ing the minor version of the package from 0.16 to 0.17.  Rec
 
 - Add some experimental abstractions for Services and Tasks in the `experimental` module.
 
-## 0.16.1 (Released Novemeber 13th, 2018)
+## 0.16.1 (Released November 13th, 2018)
 
 ### Improvements
 
 - Fix an issue where passing a cluster to another component would fail in some cases.
-
-
