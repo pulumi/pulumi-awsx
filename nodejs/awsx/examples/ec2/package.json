@@ -8,8 +8,8 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@pulumi/pulumi": "feature-seventeen",
-        "@pulumi/aws": "feature-seventeen",
+        "@pulumi/pulumi": "^v0.17.0",
+        "@pulumi/aws": "^v0.17.0",
         "node-fetch": "^1.7.3",
         "redis": "^2.8.0"
     },
