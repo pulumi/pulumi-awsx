@@ -31,8 +31,8 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
         const containers = args.containers || { container: args.container! };
 
         const computedMemoryAndCPU = computeFargateMemoryAndCPU(containers);
-        const computedMemory = computedMemoryAndCPU.apply(x => x.memory);
-        const computedCPU = computedMemoryAndCPU.apply(x => x.cpu);
+        const computedMemory = computedMemoryAndCPU.memory;
+        const computedCPU = computedMemoryAndCPU.cpu;
 
         const argsCopy: ecs.TaskDefinitionArgs = {
             ...args,
