@@ -8,8 +8,8 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@pulumi/aws": "dev",
-        "@pulumi/pulumi": "dev"
+        "@pulumi/pulumi": "^v0.17.0",
+        "@pulumi/aws": "^v0.17.0"
     },
     "devDependencies": {
         "@types/node": "^10.0.0",
