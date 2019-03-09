@@ -62,6 +62,8 @@
 - Fixes issue where creating an ApplicationListener would fail with an error of:
     "description" cannot be longer than 255 characters
 
+- Add support for custom aws providers (use case: providers that assume a different role than the default one)
+
 ## 0.17.0 (Released March 5, 2019)
 
 ### Important
