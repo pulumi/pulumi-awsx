@@ -1,4 +1,9 @@
-## 0.16.6 (Unreleased)
+## 0.16.7 (Unreleased)
+
+## 0.16.6 (Released March 13, 2019)
+
+- Fixes issue where creating an ApplicationListener would fail with an error of:
+    "description" cannot be longer than 255 characters
 
 ## 0.16.5 (Released February 22nd, 2019)
 
