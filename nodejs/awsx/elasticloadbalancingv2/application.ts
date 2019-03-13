@@ -180,7 +180,7 @@ export class ApplicationListener extends mod.Listener {
         if (args.external !== false) {
             const args = x.ec2.SecurityGroupRule.ingressArgs(
                 new x.ec2.AnyIPv4Location(), new x.ec2.TcpPorts(port),
-                `Externally available at port ${port}`);
+                pulumi.interpolate`Externally available at port ${port}`);
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
