@@ -183,9 +183,7 @@ export interface ClusterArgs {
     /**
      * Key-value mapping of resource tags
      */
-    readonly tags?: pulumi.Input<{
-        [key: string]: any;
-    }>;
+    tags?: pulumi.Input<aws.Tags>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
