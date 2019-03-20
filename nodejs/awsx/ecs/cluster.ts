@@ -179,6 +179,13 @@ export interface ClusterArgs {
      * created.
      */
     securityGroups?: x.ec2.SecurityGroupOrId[];
+
+    /**
+     * Key-value mapping of resource tags
+     */
+    readonly tags?: pulumi.Input<{
+        [key: string]: any;
+    }>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
