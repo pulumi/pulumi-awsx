@@ -151,6 +151,7 @@ export class Cluster
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     vpc?: x.ec2.Vpc;
     securityGroups?: x.ec2.SecurityGroupOrId[];
+    tags?: pulumi.Input<aws.Tags>;
 }>;
 
 /**
