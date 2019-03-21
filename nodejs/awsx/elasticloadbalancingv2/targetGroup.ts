@@ -109,7 +109,7 @@ export interface TargetGroupArgs {
     /**
      * The protocol to use to connect with the target.
      */
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
+    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS">;
 
     /**
      * Boolean to enable / disable support for proxy protocol v2 on Network Load Balancers. See

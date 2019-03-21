@@ -148,7 +148,7 @@ export interface ListenerArgs {
     /**
      * The protocol.
      */
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
+    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS">;
 
     /**
      * The name of the SSL Policy for the listener. Required if `protocol` is `HTTPS`.
