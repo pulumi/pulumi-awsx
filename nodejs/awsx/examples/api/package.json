@@ -9,7 +9,7 @@
     },
     "dependencies": {
         "@pulumi/pulumi": "dev",
-        "@pulumi/aws": "dev"
+        "@pulumi/aws": "^0.17.1"
     },
     "devDependencies": {
         "@types/aws-sdk": "^2.7.0",
