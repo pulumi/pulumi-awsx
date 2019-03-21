@@ -151,6 +151,7 @@ export class Cluster
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     vpc?: x.ec2.Vpc;
     securityGroups?: x.ec2.SecurityGroupOrId[];
+    tags?: pulumi.Input<aws.Tags>;
 }>;
 
 /**
@@ -179,6 +180,11 @@ export interface ClusterArgs {
      * created.
      */
     securityGroups?: x.ec2.SecurityGroupOrId[];
+
+    /**
+     * Key-value mapping of resource tags
+     */
+    tags?: pulumi.Input<aws.Tags>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

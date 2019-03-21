@@ -183,6 +183,7 @@ type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     os?: pulumi.Input<"linux" | "windows">;
     waitForSteadyState?: pulumi.Input<boolean>;
     loadBalancers?: (pulumi.Input<ServiceLoadBalancer> | ServiceLoadBalancerProvider)[];
+    tags?: pulumi.Input<aws.Tags>;
 }>;
 
 export interface ServiceArgs {
@@ -299,6 +300,11 @@ export interface ServiceArgs {
      * before continuing. Defaults to `true`.
      */
     waitForSteadyState?: pulumi.Input<boolean>;
+
+    /**
+     * Key-value mapping of resource tags
+     */
+    tags?: pulumi.Input<aws.Tags>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
