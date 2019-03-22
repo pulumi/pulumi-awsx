@@ -20,6 +20,10 @@ import * as pulumi from "@pulumi/pulumi";
 import * as mod from ".";
 import * as x from "..";
 
+import * as utils from "./../utils";
+
+export type NetworkProtocol = "TCP" | "TLS" | "HTTP" | "HTTPS";
+
 export class NetworkLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: NetworkListener[];
     public readonly targetGroups: NetworkTargetGroup[];
@@ -77,10 +81,12 @@ export class NetworkTargetGroup extends mod.TargetGroup {
 
     constructor(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
+        const protocol = utils.ifUndefined(args.protocol, "TCP");
+
         super("awsx:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
             ...args,
+            protocol,
             vpc: loadBalancer.vpc,
-            protocol: "TCP",
         }, opts || { parent: loadBalancer });
 
         this.loadBalancer = loadBalancer;
@@ -119,12 +125,13 @@ export class NetworkListener
                 opts?: pulumi.ComponentResourceOptions) {
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
         const { defaultAction, defaultListener } = getDefaultAction(name, loadBalancer, args, opts);
+        const protocol = utils.ifUndefined(args.protocol, "TCP");
 
         super("awsx:x:elasticloadbalancingv2:NetworkListener", name, defaultListener, {
             ...args,
-            defaultAction,
+            protocol,
             loadBalancer,
-            protocol: "TCP",
+            defaultAction,
         }, opts || { parent: loadBalancer });
 
         this.loadBalancer = loadBalancer;
@@ -237,6 +244,12 @@ export interface NetworkTargetGroupArgs {
     port: pulumi.Input<number>;
 
     /**
+     * The protocol for connections from clients to the load balancer. Valid values are TCP, TLS,
+     * HTTP and HTTPS. Defaults to TCP.
+     */
+    protocol?: pulumi.Input<NetworkProtocol>;
+
+    /**
      * The amount time for Elastic Load Balancing to wait before changing the state of a
      * deregistering target from draining to unused. The range is 0-3600 seconds. The default value
      * is 300 seconds.
@@ -303,6 +316,12 @@ export interface NetworkListenerArgs {
      * The port. Specify a value from `1` to `65535`.
      */
     port: pulumi.Input<number>;
+
+    /**
+     * The protocol for connections from clients to the load balancer. Valid values are TCP, TLS,
+     * HTTP and HTTPS. Defaults to TCP.
+     */
+    protocol?: pulumi.Input<NetworkProtocol>;
 
     /**
      * An Action block. Action blocks are documented below.  If not provided, a suitable

@@ -120,7 +120,7 @@ type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
     defaultAction: aws.elasticloadbalancingv2.ListenerArgs["defaultAction"];
     loadBalancerArn?: never;
     port: pulumi.Input<number>;
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
+    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS">;
     sslPolicy?: pulumi.Input<string>;
 }>;
 
@@ -148,7 +148,7 @@ export interface ListenerArgs {
     /**
      * The protocol.
      */
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
+    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS">;
 
     /**
      * The name of the SSL Policy for the listener. Required if `protocol` is `HTTPS`.
