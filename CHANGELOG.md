@@ -1,7 +1,8 @@
 ## 0.17.2 (Unreleased)
 
-- Fixes issue where creating an ApplicationListener would fail with an error of:
-    "description" cannot be longer than 255 characters
+- awsx.ec2.Subnets created for a VPC will have a unique `name: VpcName-SubnetType-Index` entry
+  provided for them in their tags.  This can help distinguish things when there are many subnets
+  created in a vpc.
 
 ## 0.17.1 (Released March 21, 2019)
 
