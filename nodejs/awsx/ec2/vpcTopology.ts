@@ -115,7 +115,9 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                 availabilityZone: getAvailabilityZone(i),
                 cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
                 mapPublicIpOnLaunch: type === "public",
-                tags: utils.mergeTags(subnetArgs.tags, { type }),
+                // merge some good default tags, with whatever the user wants.  Their choices should
+                // always win out over any defaults we pick.
+                tags: utils.mergeTags({ type, name: subnetName }, subnetArgs.tags),
             }, this.opts);
 
             subnets.push(subnet);
