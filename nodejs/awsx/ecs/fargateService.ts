@@ -54,7 +54,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
      * Creates a service with this as its task definition.
      */
     public createService(
-            name: string, args: ecs.FargateServiceArgs, opts?: pulumi.ComponentResourceOptions) {
+            name: string, args: ecs.FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -66,7 +66,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
         return new ecs.FargateService(name, {
             ...args,
             taskDefinition: this,
-        }, opts || { parent: this });
+        }, { parent: this, ...opts });
     }
 }
 

@@ -78,7 +78,7 @@ export class Cluster
     public createAutoScalingGroup(
             name: string,
             args: x.autoscaling.AutoScalingGroupArgs = {},
-            opts?: pulumi.ComponentResourceOptions) {
+            opts: pulumi.ComponentResourceOptions = {}) {
 
         args.vpc = args.vpc || this.vpc;
         args.launchConfigurationArgs = args.launchConfigurationArgs || {};
@@ -87,7 +87,7 @@ export class Cluster
         launchConfigurationArgs.securityGroups = this.securityGroups;
         launchConfigurationArgs.userData = this;
 
-        const group = new x.autoscaling.AutoScalingGroup(name, args, opts || { parent: this });
+        const group = new x.autoscaling.AutoScalingGroup(name, args, { parent: this, ...opts });
         this.addAutoScalingGroup(group);
 
         return group;
