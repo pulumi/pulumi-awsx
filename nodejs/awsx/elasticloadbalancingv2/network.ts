@@ -328,4 +328,17 @@ export interface NetworkListenerArgs {
      * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
      */
     defaultAction?: aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] | x.elasticloadbalancingv2.ListenerDefaultAction;
+
+    /**
+     * The ARN of the default SSL server certificate. Exactly one certificate is required if the
+     * protocol is HTTPS. For adding additional SSL certificates, see the
+     * [`aws_lb_listener_certificate`
+     * resource](https://www.terraform.io/docs/providers/aws/r/lb_listener_certificate.html).
+     */
+    certificateArn?: pulumi.Input<string>;
+
+    /**
+     * The name of the SSL Policy for the listener. Required if `protocol` is `HTTPS`.
+     */
+    sslPolicy?: pulumi.Input<string>;
 }
