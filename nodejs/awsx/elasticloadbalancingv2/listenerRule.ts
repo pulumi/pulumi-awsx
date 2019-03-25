@@ -32,8 +32,8 @@ export class ListenerRule extends pulumi.ComponentResource {
     public readonly listenerRule: aws.elasticloadbalancingv2.ListenerRule;
 
     constructor(name: string, listener: x.elasticloadbalancingv2.Listener,
-                args: ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("awsx:x:elasticloadbalancingv2", name, {}, opts || { parent: listener });
+                args: ListenerRuleArgs, opts: pulumi.ComponentResourceOptions {}) {
+        super("awsx:x:elasticloadbalancingv2", name, {}, { parent: listener, ...opts });
 
         const parentOpts = { parent: this };
         const actions = x.elasticloadbalancingv2.isListenerActions(args.actions)

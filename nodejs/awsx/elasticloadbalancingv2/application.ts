@@ -53,22 +53,22 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
      * Creates a new listener for this [ApplicationLoadBalancer] see ApplicationListener for more
      * details.
      */
-    public createListener(name: string, args: ApplicationListenerArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createListener(name: string, args: ApplicationListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
         return new ApplicationListener(name, {
             loadBalancer: this,
             ...args,
-        }, opts || { parent: this });
+        }, { parent: this, ...opts });
     }
 
     /**
      * Creates a target group for this [ApplicationLoadBalancer] see ApplicationTargetGroup for more
      * details.
      */
-    public createTargetGroup(name: string, args: ApplicationTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createTargetGroup(name: string, args: ApplicationTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
         return new ApplicationTargetGroup(name, {
             loadBalancer: this,
             ...args,
-        }, opts || { parent: this });
+        }, { parent: this, ...opts });
     }
 }
 

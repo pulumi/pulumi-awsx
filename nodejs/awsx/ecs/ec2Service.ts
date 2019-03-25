@@ -46,7 +46,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
     /**
      * Creates a service with this as its task definition.
      */
-    public createService(name: string, args: ecs.EC2ServiceArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createService(name: string, args: ecs.EC2ServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -58,7 +58,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
         return new ecs.EC2Service(name, {
             ...args,
             taskDefinition: this,
-        }, opts || { parent: this });
+        }, { parent: this, ...opts });
     }
 }
 
