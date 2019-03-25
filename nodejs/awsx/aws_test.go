@@ -109,34 +109,34 @@ func Test_Examples(t *testing.T) {
 	}
 
 	longTests := []integration.ProgramTestOptions{
-		{
-			Dir:       path.Join(cwd, "./examples/ec2"),
-			StackName: addRandomSuffix("ec2"),
-			Config: map[string]string{
-				"aws:region":               region,
-				"cloud:provider":           "aws",
-				"containers:redisPassword": "SECRETPASSWORD",
-			},
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
-			Quick:       true,
-			SkipRefresh: true,
-			PreviewCommandlineFlags: []string{
-				"--diff",
-			},
-			EditDirs: []integration.EditDir{
-				{
-					Additive: true,
-					Dir:      path.Join(cwd, "./examples/ec2/update1"),
-				},
-				{
-					Additive:               true,
-					Dir:                    path.Join(cwd, "./examples/ec2/update2"),
-					ExtraRuntimeValidation: containersRuntimeValidator(region, false /*isFargate*/),
-				},
-			},
-		},
+		// {
+		// 	Dir:       path.Join(cwd, "./examples/ec2"),
+		// 	StackName: addRandomSuffix("ec2"),
+		// 	Config: map[string]string{
+		// 		"aws:region":               region,
+		// 		"cloud:provider":           "aws",
+		// 		"containers:redisPassword": "SECRETPASSWORD",
+		// 	},
+		// 	Dependencies: []string{
+		// 		"@pulumi/awsx",
+		// 	},
+		// 	Quick:       true,
+		// 	SkipRefresh: true,
+		// 	PreviewCommandlineFlags: []string{
+		// 		"--diff",
+		// 	},
+		// 	EditDirs: []integration.EditDir{
+		// 		{
+		// 			Additive: true,
+		// 			Dir:      path.Join(cwd, "./examples/ec2/update1"),
+		// 		},
+		// 		{
+		// 			Additive:               true,
+		// 			Dir:                    path.Join(cwd, "./examples/ec2/update2"),
+		// 			ExtraRuntimeValidation: containersRuntimeValidator(region, false /*isFargate*/),
+		// 		},
+		// 	},
+		// },
 	}
 
 	tests := shortTests
