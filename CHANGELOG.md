@@ -5,6 +5,7 @@
   created in a vpc.
 - NatGateways created as part of creating private subnets in an awsx.ec2.VPC will now be parented
   by the VPC.
+- Fixes issue where computation of Fargate Memory/CPU requirements was not being done properly.
 
 ## 0.17.1 (Released March 21, 2019)
 
