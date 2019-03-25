@@ -38,8 +38,8 @@ export class Subnet extends pulumi.ComponentResource {
 
     constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, vpc: x.ec2.Vpc, args: ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("awsx:x:ec2:Subnet", name, {}, opts || { parent: vpc });
+    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:x:ec2:Subnet", name, {}, { parent: vpc, ...opts });
 
         this.vpc = vpc;
         this.subnetName = name;
@@ -81,7 +81,7 @@ export class Subnet extends pulumi.ComponentResource {
     public createRoute(name: string, args: RouteArgs, opts?: pulumi.ComponentResourceOptions): void;
     public createRoute(name: string, provider: SubnetRouteProvider, opts?: pulumi.ComponentResourceOptions): void;
     public createRoute(name: string, argsOrProvider: RouteArgs | SubnetRouteProvider, opts: pulumi.ComponentResourceOptions = {}): void {
-        opts = opts || { parent: this };
+        opts = { parent: this, ...opts };
 
         const args = isSubnetRouteProvider(argsOrProvider)
             ? argsOrProvider.route(name, opts)

@@ -42,11 +42,11 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
         this.registerOutputs({});
     }
 
-    public createListener(name: string, args: NetworkListenerArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createListener(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
         return new NetworkListener(name, {
             loadBalancer: this,
             ...args,
-        }, opts || { parent: this });
+        }, { parent: this, ...opts });
     }
 
     public createTargetGroup(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
