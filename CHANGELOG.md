@@ -3,6 +3,8 @@
 - awsx.ec2.Subnets created for a VPC will have a unique `name: VpcName-SubnetType-Index` entry
   provided for them in their tags.  This can help distinguish things when there are many subnets
   created in a vpc.
+- NatGateways created as part of creating private subnets in an awsx.ec2.VPC will now be parented
+  by the VPC.
 
 ## 0.17.1 (Released March 21, 2019)
 
