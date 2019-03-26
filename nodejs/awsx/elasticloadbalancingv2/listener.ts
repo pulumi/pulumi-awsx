@@ -276,8 +276,7 @@ export function isListenerActions(obj: any): obj is ListenerActions {
 type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
     loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
     certificateArn?: pulumi.Input<string>;
-    defaultAction?: pulumi.Input<ListenerDefaultActionArgs>;
-    defaultActions?: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
+    defaultActions: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
     loadBalancerArn?: never;
     port: pulumi.Input<number>;
     protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS">;
@@ -296,17 +295,9 @@ export interface ListenerArgs {
     certificateArn?: pulumi.Input<string>;
 
     /**
-     * An Action block. See [ListenerDefaultActionArgs] for more information.  Either [defaultAction]
-     * or [defaultActions] must be provided.  If this is provided, it is equivalent to providing
-     * [defaultActions] with a single element in it equal to this property.
+     * An list of Action blocks. See [ListenerDefaultActionArgs] for more information.
      */
-    defaultAction?: pulumi.Input<ListenerDefaultActionArgs>;
-
-    /**
-     * An list of Action blocks. See [ListenerDefaultActionArgs] for more information.  Either
-     * [defaultAction] or [defaultActions] must be provided.
-     */
-    defaultActions?: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
+    defaultActions: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
 
     /**
      * The port. Specify a value from `1` to `65535`.
