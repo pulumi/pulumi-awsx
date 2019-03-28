@@ -95,14 +95,25 @@ func Test_Examples(t *testing.T) {
 			Dependencies: []string{
 				"@pulumi/awsx",
 			},
-			ExtraRuntimeValidation: validateAPITest(func(body string) {
-				assert.Equal(t, "Hello, world!", body)
+			ExtraRuntimeValidation: validateAPITest([]apiTest{
+				{
+					urlPath:      "/b",
+					expectedBody: "Hello, world!",
+				},
+				{
+					urlPath:       "/a",
+					requiredParam: "key",
+					expectedBody:  "<h1>Hello world!</h1>",
+				},
 			}),
 			EditDirs: []integration.EditDir{{
 				Dir:      "./examples/api/step2",
 				Additive: true,
-				ExtraRuntimeValidation: validateAPITest(func(body string) {
-					assert.Equal(t, "<h1>Hello world!</h1>", body)
+				ExtraRuntimeValidation: validateAPITest([]apiTest{
+					{
+						urlPath:      "/b",
+						expectedBody: "<h1>Hello world!</h1>",
+					},
 				}),
 			}},
 		},
@@ -356,25 +367,54 @@ func addRandomSuffix(s string) string {
 	return s + "-" + hex.EncodeToString(b)
 }
 
-func validateAPITest(isValid func(body string)) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
+type apiTest struct {
+	urlPath       string
+	requiredParam string
+	expectedBody  string
+}
+
+func validateAPITest(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
-		var resp *http.Response
-		var err error
-		url := stack.Outputs["url"].(string)
-		// Retry a couple times on 5xx
-		for i := 0; i < 2; i++ {
-			resp, err = http.Get(url + "/b")
+		for _, tt := range apiTests {
+			url := stack.Outputs["url"].(string) + tt.urlPath
+
+			req, err := http.NewRequest(http.MethodGet, url, nil)
 			if !assert.NoError(t, err) {
 				return
 			}
-			if resp.StatusCode < 500 {
-				break
+
+			if tt.requiredParam != "" {
+				msg := fmt.Sprintf(`{"message": "Missing required request parameters: [%s]"}`, tt.requiredParam)
+				apiCall(t, req, msg, 400)
+				q := req.URL.Query()
+				q.Add(tt.requiredParam, "test")
+				req.URL.RawQuery = q.Encode()
 			}
-			time.Sleep(10 * time.Second)
+
+			apiCall(t, req, tt.expectedBody, 200)
 		}
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		assert.NoError(t, err)
-		isValid(string(body))
 	}
+}
+
+func apiCall(t *testing.T, req *http.Request, expectedBody string, expectedStatusCode int) {
+	var resp *http.Response
+	var err error
+	client := http.Client{}
+
+	// Retry a couple times on 5xx
+	for i := 0; i < 2; i++ {
+		resp, err := client.Do(req)
+		if !assert.NoError(t, err) {
+			return
+		}
+		if resp.StatusCode < 500 {
+			break
+		}
+		time.Sleep(10 * time.Second)
+	}
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedBody, string(body))
+	assert.Equal(t, expectedStatusCode, resp.StatusCode)
 }
