@@ -22,6 +22,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import { sha1hash } from "../utils";
+import * as reqvalidation from "./requestValidator";
 
 export interface Request {
     resource: string;
@@ -82,6 +83,12 @@ export type EventHandlerRoute = {
     path: string;
     method: Method;
     eventHandler: aws.lambda.EventHandler<Request, Response>;
+
+    /**
+     * Required Parameters to validate. If the request validator is set to ALL or PARAMS_ONLY, api
+     * gateway will validate these before sending traffic to the event handler.
+     */
+    requiredParameters?: reqvalidation.Parameter[];
 };
 
 function isEventHandler(route: Route): route is EventHandlerRoute {
@@ -111,6 +118,12 @@ export type StaticRoute = {
      * To disable this set false or to supply a new index pass an appropriate name.
      */
     index?: boolean | string;
+
+    /**
+     * Required Parameters to validate. If the request validator is set to ALL or PARAMS_ONLY, api
+     * gateway will validate these before sending traffic to the event handler.
+     */
+    requiredParameters?: reqvalidation.Parameter[];
 };
 
 function isStaticRoute(route: Route): route is StaticRoute {
@@ -278,7 +291,16 @@ export interface APIArgs {
      */
     swaggerString?: pulumi.Input<string>;
 
+    /**
+     * The stage name for your API. This will get added as a base path to your API url.
+     */
     stageName?: pulumi.Input<string>;
+
+    /**
+    * Request Validator specifies the validator to use at the API level. Note method level validators
+    * override this.
+    */
+    requestValidator?: reqvalidation.RequestValidator;
 }
 
 export class API extends pulumi.ComponentResource {
@@ -298,7 +320,7 @@ export class API extends pulumi.ComponentResource {
             swaggerString = pulumi.output(args.swaggerString);
         }
         else if (args.routes) {
-            const result = createSwaggerSpec(this, name, args.routes);
+            const result = createSwaggerSpec(this, name, args.routes, args.requestValidator);
             swaggerSpec = result.swagger;
             swaggerLambdas = result.swaggerLambdas;
             swaggerString = pulumi.output(swaggerSpec).apply(JSON.stringify);
@@ -376,6 +398,8 @@ interface SwaggerSpec {
     paths: { [path: string]: { [method: string]: SwaggerOperation; }; };
     "x-amazon-apigateway-binary-media-types"?: string[];
     "x-amazon-apigateway-gateway-responses": Record<string, SwaggerGatewayResponse>;
+    "x-amazon-apigateway-request-validators"?: reqvalidation.Validators;
+    "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
 }
 
 interface SwaggerLambdas {
@@ -395,9 +419,16 @@ interface SwaggerInfo {
 }
 
 interface SwaggerOperation {
-    parameters?: any[];
+    parameters?: SwaggerParameter[];
     responses?: { [code: string]: SwaggerResponse };
     "x-amazon-apigateway-integration": ApigatewayIntegration;
+}
+
+interface SwaggerParameter {
+    name: string;
+    in: reqvalidation.Location;
+    required: boolean;
+    type?: string;
 }
 
 interface SwaggerResponse {
@@ -437,8 +468,13 @@ interface ApigatewayIntegration {
     credentials?: pulumi.Output<string>;
 }
 
-function createSwaggerSpec(api: API, name: string, routes: Route[]) {
+function addValidators(swagger: SwaggerSpec, requestValidator: reqvalidation.RequestValidator) {
+    swagger["x-amazon-apigateway-request-validators"] = reqvalidation.getValidators(requestValidator);
+    swagger["x-amazon-apigateway-request-validator"] = requestValidator;
+}
 
+
+function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator?: reqvalidation.RequestValidator) {
     // Set up the initial swagger spec.
     const swagger: SwaggerSpec = {
         swagger: "2.0",
@@ -463,7 +499,11 @@ function createSwaggerSpec(api: API, name: string, routes: Route[]) {
         },
     };
 
-    const swaggerLambdas: SwaggerLambdas = { };
+    if (requestValidator) {
+        addValidators(swagger, requestValidator);
+    }
+
+    const swaggerLambdas: SwaggerLambdas = {};
 
     // Now add all the routes to it.
 
@@ -524,7 +564,11 @@ function addEventHandlerRouteToSwaggerSpec(
     const lambda = aws.lambda.createFunctionFromEventHandler(
         name + sha1hash(method + ":" + route.path), route.eventHandler, { parent: api });
 
-    addSwaggerOperation(swagger, route.path, method, createSwaggerOperationForLambda());
+    let swaggerOperation = createSwaggerOperationForLambda();
+    if (route.requiredParameters) {
+        addRequiredParametersToSwaggerOperation(swaggerOperation, route.requiredParameters);
+    }
+    addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     swaggerLambdas[route.path][method] = lambda;
     return;
 
@@ -542,6 +586,22 @@ function addEventHandlerRouteToSwaggerSpec(
             },
         };
     }
+}
+
+function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperation, requiredParameters: reqvalidation.Parameter[]) {
+    requiredParameters.forEach(requiredParam => {
+        let param = {
+            name: requiredParam.name,
+            in: requiredParam.in,
+            required: true,
+        };
+
+        if (swaggerOperation['parameters']) {
+            swaggerOperation['parameters'].push(param);
+        } else {
+            swaggerOperation['parameters'] = [param];
+        }
+    });
 }
 
 function addStaticRouteToSwaggerSpec(
@@ -593,13 +653,17 @@ function addStaticRouteToSwaggerSpec(
         }, parentOpts);
     }
 
-    function processFile(route: StaticRoute) {
+    function processFile(route: StaticRoute, requiredParams?: reqvalidation.Parameter[]) {
         const key = name + sha1hash(method + ":" + route.path);
         const role = createRole(key);
 
         createBucketObject(key, route.localPath, route.contentType);
 
-        addSwaggerOperation(swagger, route.path, method, createSwaggerOperationForObjectKey(key, role));
+        let swaggerOperation = createSwaggerOperationForObjectKey(key, role);
+        if (route.requiredParameters) {
+            addRequiredParametersToSwaggerOperation(swaggerOperation, route.requiredParameters);
+        }
+        addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
 
     function processDirectory(directory: StaticRoute) {
@@ -649,8 +713,12 @@ function addStaticRouteToSwaggerSpec(
                     if (childPath === indexPath) {
                         // We hit the file that we also want to serve as the index file. Create
                         // a specific swagger path from the server root path to it.
+                        let swaggerOperation = createSwaggerOperationForObjectKey(childUrn, role);
+                        if (directory.requiredParameters) {
+                            addRequiredParametersToSwaggerOperation(swaggerOperation, directory.requiredParameters);
+                        }
                         swagger.paths[directoryServerPath] = {
-                            [method]: createSwaggerOperationForObjectKey(childUrn, role),
+                            [method]: swaggerOperation,
                         };
                     }
                 }
@@ -662,13 +730,17 @@ function addStaticRouteToSwaggerSpec(
         // Take whatever path the client wants to host this folder at, and add the
         // greedy matching predicate to the end.
         const proxyPath = directoryServerPath + "{proxy+}";
-        addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), createSwaggerOperationForObjectKey(directoryKey, role, "proxy"));
+        let swaggerOperation = createSwaggerOperationForObjectKey(directoryKey, role, "proxy");
+        if (directory.requiredParameters) {
+            addRequiredParametersToSwaggerOperation(swaggerOperation, directory.requiredParameters);
+        }
+        addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);
     }
 
     function createSwaggerOperationForObjectKey(
-            objectKey: string,
-            role: aws.iam.Role,
-            pathParameter?: string): SwaggerOperation {
+        objectKey: string,
+        role: aws.iam.Role,
+        pathParameter?: string): SwaggerOperation {
 
         const region = aws.config.requireRegion();
 

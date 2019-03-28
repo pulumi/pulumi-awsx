@@ -53,17 +53,26 @@ const api = new awsx.apigateway.API("myapi", {
                 body: "<h1>Hello world!</h1>",
             };
         },
+        requiredParameters: [{
+            name: "key",
+            in: "query",
+        }],
     }, {
         path: "/b",
         method: "GET",
         eventHandler: lambda,
     }, {
         path: "/www",
-        localPath: "www"
+        localPath: "www",
+        requiredParameters: [{
+            name: "key",
+            in: "query",
+        }],
     }, {
         path: "/www_old",
-        localPath: "www"
+        localPath: "www",
     }],
+    requestValidator: "ALL",
 });
 
 export const url = api.url;

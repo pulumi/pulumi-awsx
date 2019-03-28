@@ -57,48 +57,47 @@ A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blo
 
 #### Integration Route
 
-An Integration Route is a route that will map to an HTTP, HTTP_PROXY, AWS, AWS_PROXY, or Mock integration.
-
-```ts
-import * as aws from "@pulumi/aws";
-import * as awsx from "@pulumi/awsx";
-
-let endpoint = new awsx.apigateway.API("example", {
-    routes: [{
-        path: "/",
-        target: // [TODO] add target here
-    }],
-})
-```
+[TODO]
 
 #### Raw Data Route
 
-A Raw Data Route is a route that maps to static content defined by a data variable.
-
-```ts
-import * as aws from "@pulumi/aws";
-import * as awsx from "@pulumi/awsx";
-
-let myData = {
-    message: "hello",
-};
-
-let endpoint = new awsx.apigateway.API("example", {
-    routes: [{
-        path: "/",
-        method: "GET",
-        data: myData,
-    }],
-})
-```
-
-[TODO] this isnt working
+[TODO]
 
 ### Request Validation
 
 API Gateway can perform basic validations against request parameters, a request payload or both. When a validation fails, a 400 error is returned immediately.
 
+#### Validators
+
 Validators can be assigned at the API level or at the method level. The validators defined at a method level override any validator set at the API level.
+
+You must specify one of the following validators:
+
+* "ALL" - validate both the request body and request parameters
+* "BODY_ONLY" - validate only the request body
+* "PARAMS_ONLY" - validate only the request parameters
+
+```ts
+import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+
+let endpoint = new awsx.apigateway.API("example", {
+    routes: [{
+        path: "/www",
+        localPath: "www",
+        index: false,
+        requestValidator: "PARAMS_ONLY",
+    }],
+    requestValidator: "ALL",
+})
+
+#### Request Parameters
+
+For each required request parameter, you must define the name and where the parameter is expected (i.e. "path", "query", or "header").
+
+#### Request Body
+
+[TODO]
 
 ### Swagger String
 
