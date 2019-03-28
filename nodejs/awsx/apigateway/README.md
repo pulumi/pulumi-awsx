@@ -90,10 +90,29 @@ let endpoint = new awsx.apigateway.API("example", {
     }],
     requestValidator: "ALL",
 })
+```
 
 #### Request Parameters
 
 For each required request parameter, you must define the name and where the parameter is expected (i.e. "path", "query", or "header").
+
+```ts
+import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+
+let endpoint = new awsx.apigateway.API("example", {
+    routes: [{
+        path: "/www",
+        localPath: "www",
+        index: false,
+        requestValidator: "PARAMS_ONLY",
+        requiredParams: [{
+            name: "key",
+            in: "query",
+        }]
+    }],
+})
+```
 
 #### Request Body
 
