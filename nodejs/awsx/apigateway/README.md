@@ -1,18 +1,20 @@
 # Pulumi API Gateway Components
 
-Pulumi's API for simplifying working with [API Gateway](https://aws.amazon.com/api-gateway/). The API currently provides ways to define a route that accepts and forwards traffic to a specified destination.
+Pulumi's API for simplifying working with [API Gateway](https://aws.amazon.com/api-gateway/). The API currently provides ways to define routes that accepts and forwards traffic to a specified destination. A
+route is a publicly accessible URI that supports the defined HTTP methods and responds according to the
+route definition. The
 
 ## Defining an Endpoint
 
-To define an endpoint you will either need to specify the routes or a swagger string. You can also define the stage name (else it will default to "stage"). A `stage` is an addressable instance of the Rest API.
+To define an endpoint you will either need to specify a route. You can also define the stage name (else it will default to "stage"). A `stage` is an addressable instance of the Rest API.
 
 ### Routes
 
-The destination is determined by the route, which can be an Event Handler Route, a Static Route, an Integration Route or a Raw Data Route.
+The destination is determined by the route, which can be an [Event Handler Route](#Event-Handler-Route), a [Static Route](#Static-Route), an [Integration Route](#Integration-Route) or a [Raw Data Route](#Raw-Data-Route).
 
 #### Event Handler Route
 
-An Event Handler Route is a route that will map to a [Lambda](https://aws.amazon.com/lambda/). You will need to specify the path, method and the lambda. Pulumi allows you to define the lambda inline with your Pulumi code & provisions that appropriate permissions.
+An Event Handler Route is a route that will map to a [Lambda](https://aws.amazon.com/lambda/). You will need to specify the path, method and the Lambda. Pulumi allows you to define the Lambda inline with your application code and provisions the appropriate permissions on your behalf so that API Gateway can communicate with your Lambda.
 
 ```ts
 import * as aws from "@pulumi/aws";
@@ -34,11 +36,48 @@ let endpoint = new awsx.apigateway.API("example", {
 
 A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
 
+You can also link a route to an existing Lambda using `aws.lambda.Function.get`.
+
+```ts
+import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+
+let endpoint = new awsx.apigateway.API("example", {
+    routes: [{
+        path: "/",
+        method: "GET",
+        eventHandler: aws.lambda.getFunction({functionName: "myLambda"}),
+    }],
+})
+```
+
+Additionally, you can control the Lambda that is created by calling `new aws.lambda.CallbackFunction`.
+
+```ts
+import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+
+let endpoint = new awsx.apigateway.API("example", {
+    routes: [{
+        path: "/",
+        method: "GET",
+        eventHandler: new aws.lambda.CallbackFunction("test", {
+            callback: async (event) => {
+                return {
+                    statusCode: 200,
+                    body: "<h1>Hello world!</h1>",
+                };
+            },
+        }),
+    }],
+})
+```
+
 #### Static Route
 
-A Static Route is a route that will map to static content in files/directories. You will need to define the local path & then the files (and subdirectories) will be uploaded into S3 objects. If the local path points to a file, you can specify the content-type. Else, the content types for all files in a directory are inferred.
+A Static Route is a route that will map to static content in files/directories. You will need to define the local path and then the files (and subdirectories) will be uploaded into S3 objects. If the local path points to a file, you can specify the content-type. Else, the content types for all files in a directory are inferred.
 
-By default, any request on directory will serve index.html. This behavior can be disabled, by setting the index field to false.
+By default, any request on directory will serve index.html. This behavior can be disabled by setting the index field to false.
 
 ```ts
 import * as aws from "@pulumi/aws";

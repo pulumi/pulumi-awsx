@@ -91,7 +91,7 @@ export type EventHandlerRoute = {
     requiredParameters?: reqvalidation.Parameter[];
 
     /**
-    * Request Validator specifies the validator to use at the method leve. This will override anything
+    * Request Validator specifies the validator to use at the method level. This will override anything
     * defined at the API level.
     */
     requestValidator?: reqvalidation.RequestValidator;
@@ -127,7 +127,8 @@ export type StaticRoute = {
 
     /**
      * Required Parameters to validate. If the request validator is set to ALL or PARAMS_ONLY, api
-     * gateway will validate these before sending traffic to the event handler.
+     * gateway will validate these before sending traffic to the event handler. Parameter validation
+     * will get applied to all static resources defined by the localPath.
      */
     requiredParameters?: reqvalidation.Parameter[];
 
@@ -410,7 +411,12 @@ interface SwaggerSpec {
     paths: { [path: string]: { [method: string]: SwaggerOperation; }; };
     "x-amazon-apigateway-binary-media-types"?: string[];
     "x-amazon-apigateway-gateway-responses": Record<string, SwaggerGatewayResponse>;
-    "x-amazon-apigateway-request-validators"?: reqvalidation.Validators;
+    "x-amazon-apigateway-request-validators"?: {
+        [validatorName: string]: {
+            validateRequestBody: boolean;
+            validateRequestParameters: boolean;
+        };
+    };
     "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
 }
 
@@ -481,12 +487,6 @@ interface ApigatewayIntegration {
     credentials?: pulumi.Output<string>;
 }
 
-function addValidators(swagger: SwaggerSpec, requestValidator: reqvalidation.RequestValidator) {
-    swagger["x-amazon-apigateway-request-validators"] = reqvalidation.allValidators;
-    swagger["x-amazon-apigateway-request-validator"] = requestValidator;
-}
-
-
 function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator?: reqvalidation.RequestValidator) {
     // Set up the initial swagger spec.
     const swagger: SwaggerSpec = {
@@ -513,7 +513,21 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
     };
 
     if (requestValidator) {
-        addValidators(swagger, requestValidator);
+        swagger["x-amazon-apigateway-request-validators"] = {
+            ALL: {
+                validateRequestBody: true,
+                validateRequestParameters: true,
+            },
+            BODY_ONLY: {
+                validateRequestBody: true,
+                validateRequestParameters: false,
+            },
+            PARAMS_ONLY: {
+                validateRequestBody: false,
+                validateRequestParameters: true,
+            },
+        };
+        swagger["x-amazon-apigateway-request-validator"] = requestValidator;
     }
 
     const swaggerLambdas: SwaggerLambdas = {};
@@ -577,7 +591,7 @@ function addEventHandlerRouteToSwaggerSpec(
     const lambda = aws.lambda.createFunctionFromEventHandler(
         name + sha1hash(method + ":" + route.path), route.eventHandler, { parent: api });
 
-    let swaggerOperation = createSwaggerOperationForLambda();
+    const swaggerOperation = createSwaggerOperationForLambda();
     if (route.requiredParameters) {
         addRequiredParametersToSwaggerOperation(swaggerOperation, route.requiredParameters);
     }
@@ -605,19 +619,19 @@ function addEventHandlerRouteToSwaggerSpec(
 }
 
 function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperation, requiredParameters: reqvalidation.Parameter[]) {
-    requiredParameters.forEach(requiredParam => {
-        let param = {
+    for (const requiredParam of requiredParameters) {
+        const param = {
             name: requiredParam.name,
             in: requiredParam.in,
             required: true,
         };
 
-        if (swaggerOperation['parameters']) {
-            swaggerOperation['parameters'].push(param);
+        if (swaggerOperation["parameters"]) {
+            swaggerOperation["parameters"].push(param);
         } else {
-            swaggerOperation['parameters'] = [param];
+            swaggerOperation["parameters"] = [param];
         }
-    });
+    }
 }
 
 function addStaticRouteToSwaggerSpec(
@@ -669,18 +683,18 @@ function addStaticRouteToSwaggerSpec(
         }, parentOpts);
     }
 
-    function processFile(route: StaticRoute, requiredParams?: reqvalidation.Parameter[]) {
+    function processFile(route: StaticRoute) {
         const key = name + sha1hash(method + ":" + route.path);
         const role = createRole(key);
 
         createBucketObject(key, route.localPath, route.contentType);
 
-        let swaggerOperation = createSwaggerOperationForObjectKey(key, role);
+        const swaggerOperation = createSwaggerOperationForObjectKey(key, role);
         if (route.requiredParameters) {
             addRequiredParametersToSwaggerOperation(swaggerOperation, route.requiredParameters);
         }
         if (route.requestValidator) {
-            swaggerOperation['x-amazon-apigateway-request-validator'] = route.requestValidator;
+            swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
         }
         addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
@@ -732,12 +746,12 @@ function addStaticRouteToSwaggerSpec(
                     if (childPath === indexPath) {
                         // We hit the file that we also want to serve as the index file. Create
                         // a specific swagger path from the server root path to it.
-                        let swaggerOperation = createSwaggerOperationForObjectKey(childUrn, role);
+                        const swaggerOperation = createSwaggerOperationForObjectKey(childUrn, role);
                         if (directory.requiredParameters) {
                             addRequiredParametersToSwaggerOperation(swaggerOperation, directory.requiredParameters);
                         }
                         if (directory.requestValidator) {
-                            swaggerOperation['x-amazon-apigateway-request-validator'] = directory.requestValidator;
+                            swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
                         }
                         swagger.paths[directoryServerPath] = {
                             [method]: swaggerOperation,
@@ -752,12 +766,12 @@ function addStaticRouteToSwaggerSpec(
         // Take whatever path the client wants to host this folder at, and add the
         // greedy matching predicate to the end.
         const proxyPath = directoryServerPath + "{proxy+}";
-        let swaggerOperation = createSwaggerOperationForObjectKey(directoryKey, role, "proxy");
+        const swaggerOperation = createSwaggerOperationForObjectKey(directoryKey, role, "proxy");
         if (directory.requiredParameters) {
             addRequiredParametersToSwaggerOperation(swaggerOperation, directory.requiredParameters);
         }
         if (directory.requestValidator) {
-            swaggerOperation['x-amazon-apigateway-request-validator'] = directory.requestValidator;
+            swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
         }
         addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);
     }

@@ -16,30 +16,29 @@
 
 export type RequestValidator = "ALL" | "PARAMS_ONLY" | "BODY_ONLY";
 
-export interface Validators {
-    [name: string]: {
-        validateRequestBody: boolean;
-        validateRequestParameters: boolean;
-    };
-}
-
+/** Parameter is used to define required path, query or header parameters for
+ * API Gateway. If "ALL" or "PARAMS_ONLY" validator is set then, api gateway
+ * will validate the parameter is included and non-blank for incoming requests.
+*/
 export interface Parameter {
+    // name is the specific key of the parameter that is required.
     name: string;
+
+    /**
+     * in is where the parameter is expected to appear. API Gateway can validate
+     * parameters expected in the path, query or header.
+     */
     in: Location;
 }
 export type Location = "path" | "query" | "header";
 
-export const allValidators = {
-    "ALL": {
-        validateRequestBody: true,
-        validateRequestParameters: true,
-    },
-    "BODY_ONLY": {
-        validateRequestBody: true,
-        validateRequestParameters: false,
-    },
-    "PARAMS_ONLY": {
-        validateRequestBody: false,
-        validateRequestParameters: true,
-    },
-};
+export interface RequestBody {
+    required: boolean;
+    content: { [contentType: string]: Media };
+}
+
+export interface Media {
+    schema: {
+
+    };
+}
