@@ -482,7 +482,7 @@ interface ApigatewayIntegration {
 }
 
 function addValidators(swagger: SwaggerSpec, requestValidator: reqvalidation.RequestValidator) {
-    swagger["x-amazon-apigateway-request-validators"] = reqvalidation.getValidators(requestValidator);
+    swagger["x-amazon-apigateway-request-validators"] = reqvalidation.allValidators;
     swagger["x-amazon-apigateway-request-validator"] = requestValidator;
 }
 

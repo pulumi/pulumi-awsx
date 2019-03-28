@@ -29,19 +29,17 @@ export interface Parameter {
 }
 export type Location = "path" | "query" | "header";
 
-export function getValidators(requestValidator: RequestValidator): Validators {
-    return {
-        "ALL": {
-            validateRequestBody: true,
-            validateRequestParameters: true,
-        },
-        "BODY_ONLY": {
-            validateRequestBody: true,
-            validateRequestParameters: false,
-        },
-        "PARAMS_ONLY": {
-            validateRequestBody: false,
-            validateRequestParameters: true,
-        },
-    };
-}
+export const allValidators = {
+    "ALL": {
+        validateRequestBody: true,
+        validateRequestParameters: true,
+    },
+    "BODY_ONLY": {
+        validateRequestBody: true,
+        validateRequestParameters: false,
+    },
+    "PARAMS_ONLY": {
+        validateRequestBody: false,
+        validateRequestParameters: true,
+    },
+};
