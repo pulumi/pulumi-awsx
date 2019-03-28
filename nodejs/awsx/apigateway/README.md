@@ -1,8 +1,6 @@
 # Pulumi API Gateway Components
 
-Pulumi's API for simplifying working with [API Gateway](https://aws.amazon.com/api-gateway/). The API currently provides ways to define routes that accepts and forwards traffic to a specified destination. A
-route is a publicly accessible URI that supports the defined HTTP methods and responds according to the
-route definition. The
+Pulumi's API for simplifying working with [API Gateway](https://aws.amazon.com/api-gateway/). The API currently provides ways to define routes that accepts and forwards traffic to a specified destination. A route is a publicly accessible URI that supports the defined HTTP methods and responds according to the route definition.
 
 ## Defining an Endpoint
 
