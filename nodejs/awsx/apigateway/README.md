@@ -23,7 +23,6 @@ let endpoint = new awsx.apigateway.API("example", {
         path: "/",
         method: "GET",
         eventHandler: async (event) => {
-            ...
             return {
                 statusCode: 200,
                 body: "hello",
@@ -33,9 +32,7 @@ let endpoint = new awsx.apigateway.API("example", {
 })
 ```
 
-A complete example can be found [here](https://github.com/pulumi/examples/blob/master/aws-ts-apigateway/index.ts).
-
-[TODO] the example above needs to be fixes
+A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
 
 #### Static Route
 
@@ -55,6 +52,8 @@ let endpoint = new awsx.apigateway.API("example", {
     }],
 })
 ```
+
+A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
 
 #### Integration Route
 
@@ -93,25 +92,30 @@ let endpoint = new awsx.apigateway.API("example", {
 })
 ```
 
+[TODO] this isnt working
+
+### Request Validation
+
+API Gateway can perform basic validations against request parameters, a request payload or both. When a validation fails, a 400 error is returned immediately.
+
+Validators can be assigned at the API level or at the method level. The validators defined at a method level override any validator set at the API level.
+
 ### Swagger String
 
-You can use a OpenAPI specification that is in string form to initialize the API Gateway. You must manually provide permission for any route targets to be invoked by API Gateway when using this option.
+You can use a OpenAPI specification that is in string form to initialize the API Gateway. This in a way is an escape hatch for implementing featured not yet supported by Pulumi. You must manually provide permission for any route targets to be invoked by API Gateway when using this option.
 
 ```ts
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-function swaggerSpec(lambdaArn: string): string {
-    let swaggerSpec = {
-        swagger: "2.0",
-        info: { title: "api", version: "1.0" },
-        ...
-    };
-    return JSON.stringify(swaggerSpec);
-}
+const swaggerSpec = {
+    swagger: "2.0",
+    info: { title: "api", version: "1.0" },
+    ...
+};
 
 let endpoint = new awsx.apigateway.API("example", {
-    swaggerString: swaggerSpec(), // [TODO] what should this line be?
+    swaggerString: JSON.stringify(swaggerSpec),
     stageName: "dev",
 })
 ```
