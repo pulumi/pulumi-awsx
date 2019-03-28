@@ -4,7 +4,7 @@ Pulumi's API for simplifying working with [API Gateway](https://aws.amazon.com/a
 
 ## Defining an Endpoint
 
-To define an endpoint you will either need to specify a route. You can also define the stage name (else it will default to "stage"). A `stage` is an addressable instance of the Rest API.
+To define an endpoint you will need to specify a route. You can also define the stage name (else it will default to "stage"). A `stage` is an addressable instance of the Rest API.
 
 ### Routes
 
@@ -44,7 +44,7 @@ let endpoint = new awsx.apigateway.API("example", {
     routes: [{
         path: "/",
         method: "GET",
-        eventHandler: aws.lambda.getFunction({functionName: "myLambda"}),
+        eventHandler: aws.lambda.Function.get("example", "your_lambda_id"),
     }],
 })
 ```
@@ -60,6 +60,7 @@ let endpoint = new awsx.apigateway.API("example", {
         path: "/",
         method: "GET",
         eventHandler: new aws.lambda.CallbackFunction("test", {
+            memorySize: 256,
             callback: async (event) => {
                 return {
                     statusCode: 200,
