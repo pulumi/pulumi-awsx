@@ -68,6 +68,7 @@ const api = new awsx.apigateway.API("myapi", {
             name: "key",
             in: "query",
         }],
+        requestValidator: "BODY_ONLY",
     }, {
         path: "/www_old",
         localPath: "www",

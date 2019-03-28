@@ -30,29 +30,18 @@ export interface Parameter {
 export type Location = "path" | "query" | "header";
 
 export function getValidators(requestValidator: RequestValidator): Validators {
-    switch (requestValidator) {
-        case "ALL":
-            return {
-                "ALL": {
-                    validateRequestBody: true,
-                    validateRequestParameters: true,
-                },
-            };
-        case "BODY_ONLY":
-            return {
-                "BODY_ONLY": {
-                    validateRequestBody: true,
-                    validateRequestParameters: false,
-                },
-            };
-        case "PARAMS_ONLY":
-            return {
-                "PARAMS_ONLY": {
-                    validateRequestBody: false,
-                    validateRequestParameters: true,
-                },
-            };
-        default:
-            return {};
-    }
+    return {
+        "ALL": {
+            validateRequestBody: true,
+            validateRequestParameters: true,
+        },
+        "BODY_ONLY": {
+            validateRequestBody: true,
+            validateRequestParameters: false,
+        },
+        "PARAMS_ONLY": {
+            validateRequestBody: false,
+            validateRequestParameters: true,
+        },
+    };
 }
