@@ -31,14 +31,3 @@ export interface Parameter {
     in: Location;
 }
 export type Location = "path" | "query" | "header";
-
-export interface RequestBody {
-    required: boolean;
-    content: { [contentType: string]: Media };
-}
-
-export interface Media {
-    schema: {
-
-    };
-}
