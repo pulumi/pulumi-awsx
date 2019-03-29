@@ -93,14 +93,6 @@ let endpoint = new awsx.apigateway.API("example", {
 
 A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
 
-#### Integration Route
-
-[TODO]
-
-#### Raw Data Route
-
-[TODO]
-
 ### Request Validation
 
 API Gateway can perform basic validations against request parameters, a request payload or both. When a validation fails, a 400 error is returned immediately.
@@ -154,7 +146,7 @@ let endpoint = new awsx.apigateway.API("example", {
 
 #### Request Body
 
-[TODO]
+Request body validation is currently not supported. If you have a strong use case, please comment on this [open issue](https://github.com/pulumi/pulumi-awsx/issues/198).
 
 ### Swagger String
 
