@@ -1,4 +1,6 @@
-## 0.17.2 (Unreleased)
+## 0.17.4 (Unreleased)
+
+## 0.17.3 (Released March 25, 2019)
 
 - awsx.ec2.Subnets created for a VPC will have a unique `name: VpcName-SubnetType-Index` entry
   provided for them in their tags.  This can help distinguish things when there are many subnets
