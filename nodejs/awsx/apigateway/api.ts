@@ -487,7 +487,7 @@ interface ApigatewayIntegration {
     credentials?: pulumi.Output<string>;
 }
 
-function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator?: reqvalidation.RequestValidator) {
+function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator: reqvalidation.RequestValidator | undefined) {
     // Set up the initial swagger spec.
     const swagger: SwaggerSpec = {
         swagger: "2.0",
