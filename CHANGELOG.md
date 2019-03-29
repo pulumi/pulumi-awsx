@@ -1,4 +1,12 @@
-## 0.17.4 (Unreleased)
+## 0.18.1 (Unreleased)
+
+## 0.18.0 (Release March 29, 2019)
+
+### Important
+
+- Moves to the new 0.18.0 version of `@pulumi/aws`.  Version 0.18.0 of `pulumi-aws` is now based on
+  v2.2.0 of the AWS Terraform Provider, which has a variety of breaking changes from the previous
+  version. See documentation in `@pulumi/aws` repo for more details.
 
 ## 0.17.3 (Released March 25, 2019)
 
