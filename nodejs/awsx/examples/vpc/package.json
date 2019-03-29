@@ -9,14 +9,14 @@
     },
     "dependencies": {
         "@pulumi/pulumi": "dev",
-        "@pulumi/aws": "^0.17.1",
+        "@pulumi/aws": "^0.18.0",
         "node-fetch": "^1.7.3",
         "redis": "^2.8.0"
     },
     "devDependencies": {
         "@types/node": "^10.0.0",
         "@types/node-fetch": "^1.6.7",
-        "typescript": "^3.0.0"
+        "typescript": "^3.4.1"
     },
     "peerDependencies": {
         "@pulumi/awsx": "latest"
