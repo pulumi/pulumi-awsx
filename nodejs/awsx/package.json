@@ -20,6 +20,7 @@
         "@types/aws-sdk": "^2.7.0",
         "@types/mime": "^2.0.0",
         "@types/node": "^10.0.0",
+        "@types/aws-lambda": "^8.10.23",
         "tslint": "^5.11.0",
         "typedoc": "^0.13.0",
         "typescript": "^3.4.1"

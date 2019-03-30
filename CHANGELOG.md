@@ -1,5 +1,7 @@
 ## 0.18.1 (Unreleased)
 
+- TypeScript typings for awsx.apigateway.API have been updated to be more accurate.
+
 ## 0.18.0 (Release March 29, 2019)
 
 ### Important

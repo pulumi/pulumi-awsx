@@ -21,59 +21,22 @@ import * as fspath from "path";
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as awslambda from "aws-lambda";
+
 import { sha1hash } from "../utils";
 
-export interface Request {
-    resource: string;
-    path: string;
-    httpMethod: string;
-    headers: { [header: string]: string; };
-    queryStringParameters: { [param: string]: string; };
-    pathParameters: { [param: string]: string; };
-    stageVariables: { [name: string]: string; };
-    requestContext: RequestContext;
-    body: string;
-    isBase64Encoded: boolean;
-}
+export type Request = awslambda.APIGatewayProxyEvent;
 
-export interface RequestContext {
-    accountId: string;
-    resourceId: string;
-    stage: string;
-    requestId: string;
-    identity: RequestIdentity;
-    resourcePath: string;
-    httpMethod: string;
-    apiId: string;
-}
+export type RequestContext = awslambda.APIGatewayEventRequestContext;
 
-export interface RequestIdentity {
-    cognitoIdentityPoolId?: string;
-    accountId?: string;
-    cognitoIdentityId?: string;
-    caller?: string;
-    apiKey?: string;
-    sourceIp?: string;
-    cognitoAuthenticationType?: string;
-    cognitoAuthenticationProvider?: string;
-    userArn?: string;
-    userAgent?: string;
-    user?: string;
-}
-
-export interface Response {
-    isBase64Encoded?: boolean;
-    statusCode: number;
-    headers?: { [header: string]: string; };
-    body: string;
-}
+export type Response = awslambda.APIGatewayProxyResult;
 
 export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH";
 
 /**
  * A route that that APIGateway should accept and forward to some type of destination. All routes
  * have an incoming path that they match against.  However, destinations are determined by the kind
- * of the route.  See [EventHandlerRoute], [StaticRoute], [ProxyRoute] and [RawJsonRoute] for
+ * of the route.  See [EventHandlerRoute], [StaticRoute], [IntegrationRoute] and [RawJsonRoute] for
  * additional details.
  */
 export type Route = EventHandlerRoute | StaticRoute | IntegrationRoute | RawDataRoute;
