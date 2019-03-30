@@ -50,51 +50,39 @@ func Test_Examples(t *testing.T) {
 		return
 	}
 
-	shortTests := []integration.ProgramTestOptions{
-		{
-			Dir: path.Join(cwd, "./examples/cluster"),
-			Config: map[string]string{
-				"aws:region": region,
-			},
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
+	testBase := integration.ProgramTestOptions{
+		Config: map[string]string{
+			"aws:region": region,
 		},
-		{
+		Dependencies: []string{
+			"@pulumi/awsx",
+		},
+		Quick:       true,
+		SkipRefresh: true,
+	}
+
+	shortTests := []integration.ProgramTestOptions{
+		testBase.With(integration.ProgramTestOptions{
+			Dir: path.Join(cwd, "./examples/cluster"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "./examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
-			Config: map[string]string{
-				"aws:region": region,
-			},
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
-		},
-		{
+		}),
+		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "./examples/fargate"),
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
 				"aws:region":               region,
 				"containers:redisPassword": "SECRETPASSWORD",
 			},
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
-			Quick:       true,
-			SkipRefresh: true,
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
 			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
-		},
-		{
+		}),
+		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "./examples/api"),
-			Config: map[string]string{
-				"aws:region": region,
-			},
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
 			ExtraRuntimeValidation: validateAPITest(func(body string) {
 				assert.Equal(t, "Hello, world!", body)
 			}),
@@ -105,7 +93,7 @@ func Test_Examples(t *testing.T) {
 					assert.Equal(t, "<h1>Hello world!</h1>", body)
 				}),
 			}},
-		},
+		}),
 	}
 
 	longTests := []integration.ProgramTestOptions{
