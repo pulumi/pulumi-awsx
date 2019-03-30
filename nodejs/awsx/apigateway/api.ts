@@ -29,8 +29,6 @@ export type Request = awslambda.APIGatewayProxyEvent;
 
 export type RequestContext = awslambda.APIGatewayEventRequestContext;
 
-export type RequestIdentity = Partial<awslambda.APIGatewayEventRequestContext["identity"]>;
-
 export type Response = awslambda.APIGatewayProxyResult;
 
 export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH";
