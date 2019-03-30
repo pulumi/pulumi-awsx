@@ -1,5 +1,7 @@
 ## 0.17.4 (Unreleased)
 
+- Add support for request parameter validation to API Gateway as well as documentation
+
 ## 0.17.3 (Released March 25, 2019)
 
 - awsx.ec2.Subnets created for a VPC will have a unique `name: VpcName-SubnetType-Index` entry
