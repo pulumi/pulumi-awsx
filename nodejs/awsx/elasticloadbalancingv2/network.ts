@@ -123,15 +123,20 @@ export class NetworkListener
     constructor(name: string,
                 args: NetworkListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
+
+        if (args.defaultAction && args.defaultActions) {
+            throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
+        }
+
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
-        const { defaultAction, defaultListener } = getDefaultAction(name, loadBalancer, args, opts);
+        const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP");
 
         super("awsx:x:elasticloadbalancingv2:NetworkListener", name, defaultListener, {
             ...args,
             protocol,
             loadBalancer,
-            defaultAction,
+            defaultActions,
         }, opts || { parent: loadBalancer });
 
         this.loadBalancer = loadBalancer;
@@ -155,19 +160,24 @@ export class NetworkListener
     }
 }
 
-function getDefaultAction(
+function getDefaultActions(
         name: string,
         loadBalancer: NetworkLoadBalancer,
         args: NetworkListenerArgs,
         opts: pulumi.ComponentResourceOptions | undefined) {
+
+    if (args.defaultActions) {
+        return { defaultActions: args.defaultActions, defaultListener: undefined };
+    }
+
     if (args.defaultAction) {
         return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
-            ? { defaultAction: args.defaultAction.listenerDefaultAction(), defaultListener: args.defaultAction }
-            : { defaultAction: args.defaultAction, defaultListener: undefined };
+            ? { defaultActions: [args.defaultAction.listenerDefaultAction()], defaultListener: args.defaultAction }
+            : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
     const targetGroup = new NetworkTargetGroup(name, { loadBalancer, port: args.port }, opts);
-    return { defaultAction: targetGroup.listenerDefaultAction(), defaultListener: targetGroup };
+    return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 }
 
 export interface NetworkLoadBalancerArgs {
@@ -324,10 +334,21 @@ export interface NetworkListenerArgs {
     protocol?: pulumi.Input<NetworkProtocol>;
 
     /**
-     * An Action block. Action blocks are documented below.  If not provided, a suitable
-     * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
+     * An Action block. If neither this nor [defaultActions] is provided, a suitable defaultAction
+     * will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
+     *
+     * Do not provide both [defaultAction] and [defaultActions].
      */
-    defaultAction?: aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] | x.elasticloadbalancingv2.ListenerDefaultAction;
+    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.elasticloadbalancingv2.ListenerDefaultAction;
+
+    /**
+     * An list of Action blocks. If neither this nor [defaultAction] is provided, a suitable
+     * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from
+     * [port].
+     *
+     * Do not provide both [defaultAction] and [defaultActions].
+     */
+    defaultActions?: pulumi.Input<pulumi.Input<mod.ListenerDefaultActionArgs>[]>;
 
     /**
      * The ARN of the default SSL server certificate. Exactly one certificate is required if the

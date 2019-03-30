@@ -144,14 +144,13 @@ async function getEcsAmiId(name?: string): Promise<string> {
 
     // Else, if a name was provided, look it up and use that imageId.
     const result: aws.GetAmiResult = await aws.getAmi({
+        owners: [
+            "591542846629", // Amazon
+        ],
         filters: [
             {
                 name: "name",
                 values: [ name ],
-            },
-            {
-                name: "owner-id",
-                values: [ "591542846629" ], // Amazon
             },
         ],
         mostRecent: true,

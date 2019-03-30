@@ -50,7 +50,7 @@ export function combineArrays<T>(
         return [...e1, ...e2];
     });
 
-    return <pulumi.Output<T[]>>result;
+    return <pulumi.Output<T[]>><unknown>result;
 }
 
 /** @internal */
