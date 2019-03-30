@@ -183,6 +183,7 @@ type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     os?: pulumi.Input<"linux" | "windows">;
     waitForSteadyState?: pulumi.Input<boolean>;
     loadBalancers?: (pulumi.Input<ServiceLoadBalancer> | ServiceLoadBalancerProvider)[];
+    tags?: pulumi.Input<aws.Tags>;
 }>;
 
 export interface ServiceArgs {
@@ -248,11 +249,6 @@ export interface ServiceArgs {
     placementConstraints?: aws.ecs.ServiceArgs["placementConstraints"];
 
     /**
-     * **Deprecated**, use `ordered_placement_strategy` instead.
-     */
-    placementStrategies?: aws.ecs.ServiceArgs["placementStrategies"];
-
-    /**
      * The scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`.
      * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
      * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
@@ -299,6 +295,11 @@ export interface ServiceArgs {
      * before continuing. Defaults to `true`.
      */
     waitForSteadyState?: pulumi.Input<boolean>;
+
+    /**
+     * Key-value mapping of resource tags
+     */
+    tags?: pulumi.Input<aws.Tags>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

@@ -305,7 +305,7 @@ const api = new awsx.apigateway.API("containers", {
     }, {
         path: "/custom",
         method: "GET",
-        eventHandler: async (req): Promise<aws.apigateway.x.Response> => {
+        eventHandler: async (req): Promise<awsx.apigateway.Response> => {
             try {
                 const fetch = (await import("node-fetch")).default;
                 const endpoint = customWebServerListener.endpoint.get();

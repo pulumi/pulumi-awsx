@@ -301,7 +301,7 @@ export class API extends pulumi.ComponentResource {
             const result = createSwaggerSpec(this, name, args.routes);
             swaggerSpec = result.swagger;
             swaggerLambdas = result.swaggerLambdas;
-            swaggerString = pulumi.output(swaggerSpec).apply(JSON.stringify);
+            swaggerString = pulumi.output<any>(swaggerSpec).apply(JSON.stringify);
         }
         else {
             throw new pulumi.ResourceError(

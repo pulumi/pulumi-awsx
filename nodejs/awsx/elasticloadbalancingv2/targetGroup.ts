@@ -17,6 +17,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as mod from ".";
 import * as x from "..";
 import * as utils from "./../utils";
 
@@ -69,7 +70,7 @@ export abstract class TargetGroup
         }));
     }
 
-    public listenerDefaultAction(): aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] {
+    public listenerDefaultAction(): pulumi.Input<mod.ListenerDefaultActionArgs> {
         return this.dependencies().apply(_ => ({
             targetGroupArn: this.targetGroup.arn,
             type: "forward",
@@ -109,7 +110,7 @@ export interface TargetGroupArgs {
     /**
      * The protocol to use to connect with the target.
      */
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP">;
+    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS">;
 
     /**
      * Boolean to enable / disable support for proxy protocol v2 on Network Load Balancers. See

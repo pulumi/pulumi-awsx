@@ -78,7 +78,7 @@ export class Cluster
     public createAutoScalingGroup(
             name: string,
             args: x.autoscaling.AutoScalingGroupArgs = {},
-            opts?: pulumi.ComponentResourceOptions) {
+            opts: pulumi.ComponentResourceOptions = {}) {
 
         args.vpc = args.vpc || this.vpc;
         args.launchConfigurationArgs = args.launchConfigurationArgs || {};
@@ -87,7 +87,7 @@ export class Cluster
         launchConfigurationArgs.securityGroups = this.securityGroups;
         launchConfigurationArgs.userData = this;
 
-        const group = new x.autoscaling.AutoScalingGroup(name, args, opts || { parent: this });
+        const group = new x.autoscaling.AutoScalingGroup(name, args, { parent: this, ...opts });
         this.addAutoScalingGroup(group);
 
         return group;
@@ -151,6 +151,7 @@ export class Cluster
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     vpc?: x.ec2.Vpc;
     securityGroups?: x.ec2.SecurityGroupOrId[];
+    tags?: pulumi.Input<aws.Tags>;
 }>;
 
 /**
@@ -179,6 +180,11 @@ export interface ClusterArgs {
      * created.
      */
     securityGroups?: x.ec2.SecurityGroupOrId[];
+
+    /**
+     * Key-value mapping of resource tags
+     */
+    tags?: pulumi.Input<aws.Tags>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

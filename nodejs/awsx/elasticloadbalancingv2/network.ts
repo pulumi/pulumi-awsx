@@ -20,6 +20,10 @@ import * as pulumi from "@pulumi/pulumi";
 import * as mod from ".";
 import * as x from "..";
 
+import * as utils from "./../utils";
+
+export type NetworkProtocol = "TCP" | "TLS" | "HTTP" | "HTTPS";
+
 export class NetworkLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: NetworkListener[];
     public readonly targetGroups: NetworkTargetGroup[];
@@ -38,11 +42,11 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
         this.registerOutputs({});
     }
 
-    public createListener(name: string, args: NetworkListenerArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createListener(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
         return new NetworkListener(name, {
             loadBalancer: this,
             ...args,
-        }, opts || { parent: this });
+        }, { parent: this, ...opts });
     }
 
     public createTargetGroup(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
@@ -77,10 +81,12 @@ export class NetworkTargetGroup extends mod.TargetGroup {
 
     constructor(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
+        const protocol = utils.ifUndefined(args.protocol, "TCP");
+
         super("awsx:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
             ...args,
+            protocol,
             vpc: loadBalancer.vpc,
-            protocol: "TCP",
         }, opts || { parent: loadBalancer });
 
         this.loadBalancer = loadBalancer;
@@ -117,14 +123,20 @@ export class NetworkListener
     constructor(name: string,
                 args: NetworkListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
+
+        if (args.defaultAction && args.defaultActions) {
+            throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
+        }
+
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
-        const { defaultAction, defaultListener } = getDefaultAction(name, loadBalancer, args, opts);
+        const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
+        const protocol = utils.ifUndefined(args.protocol, "TCP");
 
         super("awsx:x:elasticloadbalancingv2:NetworkListener", name, defaultListener, {
             ...args,
-            defaultAction,
+            protocol,
             loadBalancer,
-            protocol: "TCP",
+            defaultActions,
         }, opts || { parent: loadBalancer });
 
         this.loadBalancer = loadBalancer;
@@ -148,19 +160,24 @@ export class NetworkListener
     }
 }
 
-function getDefaultAction(
+function getDefaultActions(
         name: string,
         loadBalancer: NetworkLoadBalancer,
         args: NetworkListenerArgs,
         opts: pulumi.ComponentResourceOptions | undefined) {
+
+    if (args.defaultActions) {
+        return { defaultActions: args.defaultActions, defaultListener: undefined };
+    }
+
     if (args.defaultAction) {
         return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
-            ? { defaultAction: args.defaultAction.listenerDefaultAction(), defaultListener: args.defaultAction }
-            : { defaultAction: args.defaultAction, defaultListener: undefined };
+            ? { defaultActions: [args.defaultAction.listenerDefaultAction()], defaultListener: args.defaultAction }
+            : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
     const targetGroup = new NetworkTargetGroup(name, { loadBalancer, port: args.port }, opts);
-    return { defaultAction: targetGroup.listenerDefaultAction(), defaultListener: targetGroup };
+    return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 }
 
 export interface NetworkLoadBalancerArgs {
@@ -237,6 +254,12 @@ export interface NetworkTargetGroupArgs {
     port: pulumi.Input<number>;
 
     /**
+     * The protocol for connections from clients to the load balancer. Valid values are TCP, TLS,
+     * HTTP and HTTPS. Defaults to TCP.
+     */
+    protocol?: pulumi.Input<NetworkProtocol>;
+
+    /**
      * The amount time for Elastic Load Balancing to wait before changing the state of a
      * deregistering target from draining to unused. The range is 0-3600 seconds. The default value
      * is 300 seconds.
@@ -305,8 +328,38 @@ export interface NetworkListenerArgs {
     port: pulumi.Input<number>;
 
     /**
-     * An Action block. Action blocks are documented below.  If not provided, a suitable
-     * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
+     * The protocol for connections from clients to the load balancer. Valid values are TCP, TLS,
+     * HTTP and HTTPS. Defaults to TCP.
      */
-    defaultAction?: aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] | x.elasticloadbalancingv2.ListenerDefaultAction;
+    protocol?: pulumi.Input<NetworkProtocol>;
+
+    /**
+     * An Action block. If neither this nor [defaultActions] is provided, a suitable defaultAction
+     * will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
+     *
+     * Do not provide both [defaultAction] and [defaultActions].
+     */
+    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.elasticloadbalancingv2.ListenerDefaultAction;
+
+    /**
+     * An list of Action blocks. If neither this nor [defaultAction] is provided, a suitable
+     * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from
+     * [port].
+     *
+     * Do not provide both [defaultAction] and [defaultActions].
+     */
+    defaultActions?: pulumi.Input<pulumi.Input<mod.ListenerDefaultActionArgs>[]>;
+
+    /**
+     * The ARN of the default SSL server certificate. Exactly one certificate is required if the
+     * protocol is HTTPS. For adding additional SSL certificates, see the
+     * [`aws_lb_listener_certificate`
+     * resource](https://www.terraform.io/docs/providers/aws/r/lb_listener_certificate.html).
+     */
+    certificateArn?: pulumi.Input<string>;
+
+    /**
+     * The name of the SSL Policy for the listener. Required if `protocol` is `HTTPS`.
+     */
+    sslPolicy?: pulumi.Input<string>;
 }

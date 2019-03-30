@@ -1,4 +1,27 @@
-## 0.17.1 (Unreleased)
+## 0.18.1 (Unreleased)
+
+## 0.18.0 (Release March 29, 2019)
+
+### Important
+
+- Moves to the new 0.18.0 version of `@pulumi/aws`.  Version 0.18.0 of `pulumi-aws` is now based on
+  v2.2.0 of the AWS Terraform Provider, which has a variety of breaking changes from the previous
+  version. See documentation in `@pulumi/aws` repo for more details.
+
+## 0.17.3 (Released March 25, 2019)
+
+- awsx.ec2.Subnets created for a VPC will have a unique `name: VpcName-SubnetType-Index` entry
+  provided for them in their tags.  This can help distinguish things when there are many subnets
+  created in a vpc.
+- NatGateways created as part of creating private subnets in an awsx.ec2.VPC will now be parented
+  by the VPC.
+- Fixes issue where computation of Fargate Memory/CPU requirements was not being done properly.
+- Fixes issue where VPC might fail to create because tags could not be set on its EIPs.
+
+## 0.17.1 (Released March 21, 2019)
+
+- Fixes issue where creating an ApplicationListener would fail with an error of:
+    "description" cannot be longer than 255 characters
 
 ## 0.17.0 (Released March 5, 2019)
 

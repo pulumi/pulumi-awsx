@@ -54,7 +54,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
      * Creates a service with this as its task definition.
      */
     public createService(
-            name: string, args: ecs.FargateServiceArgs, opts?: pulumi.ComponentResourceOptions) {
+            name: string, args: ecs.FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -66,7 +66,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
         return new ecs.FargateService(name, {
             ...args,
             taskDefinition: this,
-        }, opts || { parent: this });
+        }, { parent: this, ...opts });
     }
 }
 
@@ -127,13 +127,13 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
         // First, determine how much VCPU/GB that the user is asking for in their containers.
         let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory();
 
-        // Max CPU requestable is only 4.  Don't exceed that.  No need to worry about a min as we're
-        // finding the first config that provides *at least* this amount.
+        // Max CPU that can be requested is only 4.  Don't exceed that.  No need to worry about a
+        // min as we're finding the first config that provides *at least* this amount.
         requestedVCPU = Math.min(requestedVCPU, 4);
 
-        // Max memory requestable is only 30.  Don't exceed that.  No need to worry about a min as
-        // we're finding the first config that provides *at least* this amount.
-        requestedGB = Math.min(requestedGB / 1024, 30);
+        // Max memory that can be requested is only 30.  Don't exceed that.  No need to worry about
+        // a min as we're finding the first config that provides *at least* this amount.
+        requestedGB = Math.min(requestedGB, 30);
 
         // Get all configs that can at least satisfy this pair of cpu/memory needs.
         const configs = [...getAllFargateConfigs()];
@@ -377,11 +377,6 @@ export interface FargateServiceArgs {
      * `placement_constraints` is `10`. Defined below.
      */
     placementConstraints?: aws.ecs.ServiceArgs["placementConstraints"];
-
-    /**
-     * **Deprecated**, use `ordered_placement_strategy` instead.
-     */
-    placementStrategies?: aws.ecs.ServiceArgs["placementStrategies"];
 
     /**
      * The scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`.

@@ -28,8 +28,8 @@ export class NatGateway
 
     constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, vpc: x.ec2.Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("awsx:x:ec2:NatGateway", name, {}, opts || { parent: vpc });
+    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:x:ec2:NatGateway", name, {}, { parent: vpc, ...opts });
 
         const parentOpts = { parent: this };
 
@@ -47,6 +47,7 @@ export class NatGateway
             // communicate with the internet.
 
             this.elasticIP = new aws.ec2.Eip(name, {
+                vpc: true,
                 tags: { Name: name },
             }, parentOpts);
 
