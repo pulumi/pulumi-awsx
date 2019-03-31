@@ -107,7 +107,7 @@ func Test_Examples(t *testing.T) {
 				},
 				{
 					urlPath:      "/www/file1.txt",
-					expectedBody: "contents1",
+					expectedBody: "contents1\n",
 				},
 			}),
 			EditDirs: []integration.EditDir{{
@@ -382,41 +382,23 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 		for _, tt := range apiTests {
 			url := stack.Outputs["url"].(string) + tt.urlPath
 
-			req, err := http.NewRequest(http.MethodGet, url, nil)
-			if !assert.NoError(t, err) {
-				return
-			}
-
 			if tt.requiredParam != "" {
 				msg := fmt.Sprintf(`{"message": "Missing required request parameters: [%s]"}`, tt.requiredParam)
-				validateAPITest(t, req, msg, 400)
-				q := req.URL.Query()
-				q.Add(tt.requiredParam, "test")
-				req.URL.RawQuery = q.Encode()
+				resp := examples.GetHTTP(t, url, 400)
+				assertRequestBody(t, msg, resp)
+
+				url = fmt.Sprintf("%s?%s=test", url, tt.requiredParam)
 			}
 
-			validateAPITest(t, req, tt.expectedBody, 200)
+			resp := examples.GetHTTP(t, url, 200)
+			assertRequestBody(t, tt.expectedBody, resp)
 		}
 	}
 }
 
-func validateAPITest(t *testing.T, req *http.Request, expectedBody string, expectedStatusCode int) {
-	client := http.Client{}
-
-	// Retry a couple times on 5xx
-	for i := 0; i < 2; i++ {
-		resp, err := client.Do(req)
-		if !assert.NoError(t, err) {
-			return
-		}
-		if resp.StatusCode < 500 {
-			break
-		}
-		time.Sleep(10 * time.Second)
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		assert.NoError(t, err)
-		assert.Equal(t, expectedBody, string(body))
-		assert.Equal(t, expectedStatusCode, resp.StatusCode)
-	}
+func assertRequestBody(t *testing.T, expectedBody string, resp *http.Response) {
+	defer resp.Body.Close()
+	bytes, err := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedBody, string(bytes))
 }
