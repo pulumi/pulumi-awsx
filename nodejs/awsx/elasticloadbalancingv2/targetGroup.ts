@@ -17,6 +17,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as mod from ".";
 import * as x from "..";
 import * as utils from "./../utils";
 
@@ -69,7 +70,7 @@ export abstract class TargetGroup
         }));
     }
 
-    public listenerDefaultAction(): aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] {
+    public listenerDefaultAction(): pulumi.Input<mod.ListenerDefaultActionArgs> {
         return this.dependencies().apply(_ => ({
             targetGroupArn: this.targetGroup.arn,
             type: "forward",

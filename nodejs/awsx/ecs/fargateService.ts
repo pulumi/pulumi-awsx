@@ -379,11 +379,6 @@ export interface FargateServiceArgs {
     placementConstraints?: aws.ecs.ServiceArgs["placementConstraints"];
 
     /**
-     * **Deprecated**, use `ordered_placement_strategy` instead.
-     */
-    placementStrategies?: aws.ecs.ServiceArgs["placementStrategies"];
-
-    /**
      * The scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`.
      * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
      * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
