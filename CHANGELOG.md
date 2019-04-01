@@ -10,6 +10,8 @@
   v2.2.0 of the AWS Terraform Provider, which has a variety of breaking changes from the previous
   version. See documentation in `@pulumi/aws` repo for more details.
 
+- Add support for request parameter validation to API Gateway as well as documentation
+
 ## 0.17.3 (Released March 25, 2019)
 
 - awsx.ec2.Subnets created for a VPC will have a unique `name: VpcName-SubnetType-Index` entry

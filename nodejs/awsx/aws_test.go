@@ -83,14 +83,35 @@ func Test_Examples(t *testing.T) {
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "./examples/api"),
-			ExtraRuntimeValidation: validateAPITest(func(body string) {
-				assert.Equal(t, "Hello, world!", body)
+			Config: map[string]string{
+				"aws:region": region,
+			},
+			Dependencies: []string{
+				"@pulumi/awsx",
+			},
+			ExtraRuntimeValidation: validateAPITests([]apiTest{
+				{
+					urlPath:      "/b",
+					expectedBody: "Hello, world!",
+				},
+				{
+					urlPath:       "/a",
+					requiredParam: "key",
+					expectedBody:  "<h1>Hello world!</h1>",
+				},
+				{
+					urlPath:      "/www/file1.txt",
+					expectedBody: "contents1\n",
+				},
 			}),
 			EditDirs: []integration.EditDir{{
 				Dir:      "./examples/api/step2",
 				Additive: true,
-				ExtraRuntimeValidation: validateAPITest(func(body string) {
-					assert.Equal(t, "<h1>Hello world!</h1>", body)
+				ExtraRuntimeValidation: validateAPITests([]apiTest{
+					{
+						urlPath:      "/b",
+						expectedBody: "<h1>Hello world!</h1>",
+					},
 				}),
 			}},
 		}),
@@ -344,25 +365,34 @@ func addRandomSuffix(s string) string {
 	return s + "-" + hex.EncodeToString(b)
 }
 
-func validateAPITest(isValid func(body string)) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
+type apiTest struct {
+	urlPath       string
+	requiredParam string
+	expectedBody  string
+}
+
+func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
-		var resp *http.Response
-		var err error
-		url := stack.Outputs["url"].(string)
-		// Retry a couple times on 5xx
-		for i := 0; i < 2; i++ {
-			resp, err = http.Get(url + "/b")
-			if !assert.NoError(t, err) {
-				return
+		for _, tt := range apiTests {
+			url := stack.Outputs["url"].(string) + tt.urlPath
+
+			if tt.requiredParam != "" {
+				msg := fmt.Sprintf(`{"message": "Missing required request parameters: [%s]"}`, tt.requiredParam)
+				resp := examples.GetHTTP(t, url, 400)
+				assertRequestBody(t, msg, resp)
+
+				url = fmt.Sprintf("%s?%s=test", url, tt.requiredParam)
 			}
-			if resp.StatusCode < 500 {
-				break
-			}
-			time.Sleep(10 * time.Second)
+
+			resp := examples.GetHTTP(t, url, 200)
+			assertRequestBody(t, tt.expectedBody, resp)
 		}
-		defer resp.Body.Close()
-		body, err := ioutil.ReadAll(resp.Body)
-		assert.NoError(t, err)
-		isValid(string(body))
 	}
+}
+
+func assertRequestBody(t *testing.T, expectedBody string, resp *http.Response) {
+	defer resp.Body.Close()
+	bytes, err := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, expectedBody, string(bytes))
 }

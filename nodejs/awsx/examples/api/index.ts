@@ -43,6 +43,12 @@ const lambda = new aws.lambda.Function("myfunction", {
     runtime: aws.lambda.NodeJS8d10Runtime,
 });
 
+/**
+ * In the following example, parameter validation is required for the `/a` route.
+ * `curl $(pulumi stack output url)/a?key=hello` would return a 200, whereas
+ * `curl $(url)/a` would return a 400, since the required key query parameter is
+ * missing.
+ */
 const api = new awsx.apigateway.API("myapi", {
     routes: [{
         path: "/a",
@@ -53,17 +59,31 @@ const api = new awsx.apigateway.API("myapi", {
                 body: "<h1>Hello world!</h1>",
             };
         },
+        requiredParameters: [{
+            name: "key",
+            in: "query",
+        }],
     }, {
         path: "/b",
         method: "GET",
         eventHandler: lambda,
     }, {
         path: "/www",
-        localPath: "www"
+        localPath: "www",
+        requiredParameters: [{
+            name: "key",
+            in: "query",
+        }],
+        /**
+         * These parameters will not actually be required since the method level validator is
+         * set to only validate the body.
+         */
+        requestValidator: "BODY_ONLY", // This will override the API level requestValidator.
     }, {
         path: "/www_old",
-        localPath: "www"
+        localPath: "www",
     }],
+    requestValidator: "ALL",
 });
 
 export const url = api.url;
