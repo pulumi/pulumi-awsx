@@ -23,6 +23,7 @@ let endpoint = new awsx.apigateway.API("example", {
         path: "/",
         method: "GET",
         eventHandler: async (event) => {
+            // This code runs in an AWS Lambda and will be invoked any time `/` is hit.
             return {
                 statusCode: 200,
                 body: "hello",
@@ -76,7 +77,7 @@ let endpoint = new awsx.apigateway.API("example", {
 
 A Static Route is a route that will map to static content in files/directories. You will need to define the local path and then the files (and subdirectories) will be uploaded into S3 objects. If the local path points to a file, you can specify the content-type. Else, the content types for all files in a directory are inferred.
 
-By default, any request on directory will serve index.html. This behavior can be disabled by setting the index field to false.
+By default, any request on directory will serve index.html. This behavior can be disabled by setting the `index` field to false.
 
 ```ts
 import * as aws from "@pulumi/aws";

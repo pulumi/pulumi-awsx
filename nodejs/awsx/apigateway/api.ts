@@ -96,7 +96,7 @@ export type StaticRoute = {
     requiredParameters?: reqvalidation.Parameter[];
 
     /**
-    * Request Validator specifies the validator to use at the method leve. This will override anything
+    * Request Validator specifies the validator to use at the method level. This will override anything
     * defined at the API level.
     */
     requestValidator?: reqvalidation.RequestValidator;
@@ -408,7 +408,7 @@ interface SwaggerOperation {
 
 interface SwaggerParameter {
     name: string;
-    in: reqvalidation.Location;
+    in: string;
     required: boolean;
     type?: string;
 }
@@ -589,11 +589,8 @@ function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperat
             required: true,
         };
 
-        if (swaggerOperation["parameters"]) {
-            swaggerOperation["parameters"].push(param);
-        } else {
-            swaggerOperation["parameters"] = [param];
-        }
+        swaggerOperation["parameters"] = swaggerOperation["parameters"] || [];
+        swaggerOperation["parameters"].push(param);
     }
 }
 
@@ -740,9 +737,9 @@ function addStaticRouteToSwaggerSpec(
     }
 
     function createSwaggerOperationForObjectKey(
-        objectKey: string,
-        role: aws.iam.Role,
-        pathParameter?: string): SwaggerOperation {
+            objectKey: string,
+            role: aws.iam.Role,
+            pathParameter?: string): SwaggerOperation {
 
         const region = aws.config.requireRegion();
 

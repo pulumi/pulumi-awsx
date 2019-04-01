@@ -28,6 +28,5 @@ export interface Parameter {
      * in is where the parameter is expected to appear. API Gateway can validate
      * parameters expected in the path, query or header.
      */
-    in: Location;
+    in: "path" | "query" | "header";
 }
-export type Location = "path" | "query" | "header";
