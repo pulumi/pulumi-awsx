@@ -22,7 +22,7 @@ const policy: aws.iam.PolicyDocument = {
         {
             "Action": "sts:AssumeRole",
             "Principal": {
-                "Service": "lambda.amazonaws.com",
+                "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"],
             },
             "Effect": "Allow",
             "Sid": "",
@@ -32,10 +32,30 @@ const policy: aws.iam.PolicyDocument = {
 const role = new aws.iam.Role("mylambda-role", {
     assumeRolePolicy: JSON.stringify(policy),
 });
-const fullAccess = new aws.iam.RolePolicyAttachment("mylambda-access", {
-    role: role,
-    policyArn: aws.iam.AWSLambdaFullAccess,
+
+const authorizerPolicy: aws.iam.PolicyDocument = {
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": "sts:AssumeRole",
+            "Principal": {
+                "Service": ["lambda.amazonaws.com"],
+            },
+            "Effect": "Allow",
+            "Sid": "",
+        },
+    ],
+};
+const authorizerRole = new aws.iam.Role("myauthorizer-role", {
+    assumeRolePolicy: JSON.stringify(authorizerPolicy),
 });
+
+// TODO: is this needed?
+// const fullAccess = new aws.iam.RolePolicyAttachment("mylambda-access", {
+//     role: role,
+//     policyArn: aws.iam.AWSLambdaFullAccess,
+// });
+
 const lambda = new aws.lambda.Function("myfunction", {
     code: new pulumi.asset.FileArchive("./afunction"),
     role: role.arn,
@@ -43,11 +63,36 @@ const lambda = new aws.lambda.Function("myfunction", {
     runtime: aws.lambda.NodeJS8d10Runtime,
 });
 
+const region = aws.config.requireRegion();
+
+const authorizerLambda = new aws.lambda.Function("ekrengel-authorizerLambda", {
+    code: new pulumi.asset.FileArchive("./authfunction"),
+    role: authorizerRole.arn,
+    handler: "index.handler",
+    runtime: aws.lambda.NodeJS8d10Runtime,
+});
+
+// Give the lambda role permission to invoke the Authorizer
+const invocationPolicy = new aws.iam.RolePolicy("invocation_policy", {
+    policy: authorizerLambda.arn.apply(arn => `{
+     "Version": "2012-10-17",
+       "Statement": [
+         {
+           "Action": "lambda:InvokeFunction",
+           "Effect": "Allow",
+           "Resource": "${arn}"
+         }
+       ]
+     }
+     `),
+    role: role.id,
+});
+
 const api = new awsx.apigateway.API("myapi", {
     routes: [{
         path: "/a",
         method: "GET",
-        eventHandler: async (event) => {
+        eventHandler: async () => {
             return {
                 statusCode: 200,
                 body: "<h1>Hello world!</h1>",
@@ -57,12 +102,25 @@ const api = new awsx.apigateway.API("myapi", {
         path: "/b",
         method: "GET",
         eventHandler: lambda,
+        authorizers: [{
+            authorizerName: "testauthorizer1",
+            type: "apiKey",
+            parameterName: "auth",
+            in: "header",
+            "x-amazon-apigateway-authtype": "custom",
+            "x-amazon-apigateway-authorizer": {
+                type: "request",
+                authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+                authorizerCredentials: role.arn,
+                identitySource: "method.request.header.auth",
+            },
+        }],
     }, {
         path: "/www",
-        localPath: "www"
+        localPath: "www",
     }, {
         path: "/www_old",
-        localPath: "www"
+        localPath: "www",
     }],
 });
 

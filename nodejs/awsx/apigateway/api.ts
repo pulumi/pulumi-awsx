@@ -20,6 +20,7 @@ import * as fspath from "path";
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as authorizer from "./authorizer";
 
 import { sha1hash } from "../utils";
 
@@ -82,6 +83,7 @@ export type EventHandlerRoute = {
     path: string;
     method: Method;
     eventHandler: aws.lambda.EventHandler<Request, Response>;
+    authorizers?: authorizer.SecurityDefinition[];
 };
 
 function isEventHandler(route: Route): route is EventHandlerRoute {
@@ -376,6 +378,7 @@ interface SwaggerSpec {
     paths: { [path: string]: { [method: string]: SwaggerOperation; }; };
     "x-amazon-apigateway-binary-media-types"?: string[];
     "x-amazon-apigateway-gateway-responses": Record<string, SwaggerGatewayResponse>;
+    securityDefinitions?: { [authorizerName: string]: SecurityDefinition };
 }
 
 interface SwaggerLambdas {
@@ -398,6 +401,36 @@ interface SwaggerOperation {
     parameters?: any[];
     responses?: { [code: string]: SwaggerResponse };
     "x-amazon-apigateway-integration": ApigatewayIntegration;
+
+    // security maps to the authorizerName defined in the top level securityDefinitions
+    security?: { [authorizerName: string]: string[] }[];
+}
+
+interface SecurityDefinition {
+    /**
+     * The type is required and the value must be "apiKey" for an API Gateway API.
+     */
+    type: "apiKey";
+
+    /**
+     * name is the name of the header or query parameter containing the authorization token.
+     * */
+    name: string;
+
+    /**
+     * Required and the value must be "header" or "query" for an API Gateway API.
+     */
+    in: "header" | "query";
+
+    /**
+     * Specifies the authorization mechanism for the client.
+     */
+    "x-amazon-apigateway-authtype": authorizer.AuthType;
+
+    /**
+     * Defines a Lambda authorizer to be applied for authorization of method invocations in API Gateway.
+     */
+    "x-amazon-apigateway-authorizer": authorizer.Authorizer;
 }
 
 interface SwaggerResponse {
@@ -524,7 +557,12 @@ function addEventHandlerRouteToSwaggerSpec(
     const lambda = aws.lambda.createFunctionFromEventHandler(
         name + sha1hash(method + ":" + route.path), route.eventHandler, { parent: api });
 
-    addSwaggerOperation(swagger, route.path, method, createSwaggerOperationForLambda());
+    const swaggerOperation = createSwaggerOperationForLambda();
+    if (route.authorizers) {
+        addAuthorizersToSwaggerOperation(swaggerOperation, route.authorizers);
+        addAuthorizersToSwagger(swagger, route.authorizers);
+    }
+    addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     swaggerLambdas[route.path][method] = lambda;
     return;
 
@@ -542,6 +580,30 @@ function addEventHandlerRouteToSwaggerSpec(
             },
         };
     }
+}
+
+function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.SecurityDefinition[]) {
+    for (const auth of authorizers) {
+        const securityDef = {
+            type: auth.type,
+            name: auth.parameterName,
+            in: auth.parameterLocation,
+            "x-amazon-apigateway-authtype": auth["x-amazon-apigateway-authtype"],
+            "x-amazon-apigateway-authorizer": auth["x-amazon-apigateway-authorizer"],
+        };
+        swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
+        swagger["securityDefinitions"][auth.authorizerName] = securityDef;
+    }
+}
+
+function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authorizers: authorizer.SecurityDefinition[]) {
+    const security = [];
+    for (const auth of authorizers) {
+        security.push({
+            [auth.authorizerName]: [],
+        });
+    }
+    swaggerOperation["security"] = security;
 }
 
 function addStaticRouteToSwaggerSpec(
