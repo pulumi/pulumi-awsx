@@ -156,10 +156,14 @@ export class ApplicationListener extends mod.Listener {
                 args: ApplicationListenerArgs,
                 opts?: pulumi.ComponentResourceOptions) {
 
+        if (args.defaultAction && args.defaultActions) {
+            throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
+        }
+
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, { vpc: args.vpc }, opts);
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
-        const { defaultAction, defaultListener } = getDefaultAction(
+        const { defaultActions, defaultListener } = getDefaultActions(
             name, loadBalancer, args, port, protocol, opts);
 
         // Pass along the target as the defaultTarget for this listener.  This allows this listener
@@ -167,7 +171,7 @@ export class ApplicationListener extends mod.Listener {
         // passed in as the portMappings information needed for a Service.
         super("awsx:x:elasticloadbalancingv2:ApplicationListener", name, defaultListener, {
             ...args,
-            defaultAction,
+            defaultActions,
             loadBalancer,
             port,
             protocol,
@@ -195,21 +199,25 @@ export class ApplicationListener extends mod.Listener {
     }
 }
 
-function getDefaultAction(
+function getDefaultActions(
         name: string, loadBalancer: ApplicationLoadBalancer,
         args: ApplicationListenerArgs,
         port: pulumi.Input<number>,
         protocol: pulumi.Input<ApplicationProtocol>,
         opts: pulumi.ComponentResourceOptions | undefined) {
 
+    if (args.defaultActions) {
+        return { defaultActions: args.defaultActions, defaultListener: undefined };
+    }
+
     if (args.defaultAction) {
         return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
-            ? { defaultAction: args.defaultAction.listenerDefaultAction(), defaultListener: args.defaultAction }
-            : { defaultAction: args.defaultAction, defaultListener: undefined };
+            ? { defaultActions: [args.defaultAction.listenerDefaultAction()], defaultListener: args.defaultAction }
+            : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
     const targetGroup = new ApplicationTargetGroup(name, { loadBalancer, port, protocol }, opts);
-    return { defaultAction: targetGroup.listenerDefaultAction(), defaultListener: targetGroup };
+    return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 }
 
 export interface ApplicationLoadBalancerArgs {
@@ -381,10 +389,21 @@ export interface ApplicationListenerArgs {
     protocol?: pulumi.Input<ApplicationProtocol>;
 
     /**
-     * An Action block. Action blocks are documented below.  If not provided, a suitable
-     * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
+     * An Action block. If neither this nor [defaultActions] is provided, a suitable defaultAction
+     * will be chosen that forwards to a new [ApplicationTargetGroup] created from [port].
+     *
+     * Do not provide both [defaultAction] and [defaultActions].
      */
-    defaultAction?: aws.elasticloadbalancingv2.ListenerArgs["defaultAction"] | x.elasticloadbalancingv2.ListenerDefaultAction;
+    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.elasticloadbalancingv2.ListenerDefaultAction;
+
+    /**
+     * An list of Action blocks. If neither this nor [defaultActions] is provided, a suitable
+     * defaultAction will be chosen that forwards to a new [ApplicationTargetGroup] created from
+     * [port].
+     *
+     * Do not provide both [defaultAction] and [defaultActions].
+     */
+    defaultActions?: pulumi.Input<pulumi.Input<mod.ListenerDefaultActionArgs>[]>;
 
     // TODO: consider extracting out an HttpsApplicationListener.
 
