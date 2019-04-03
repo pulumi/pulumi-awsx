@@ -4,13 +4,10 @@ exports.handler = function (event, context, callback) {
 
     // A simple REQUEST authorizer example to demonstrate how to use request 
     // parameters to allow or deny a request. In this example, a request is  
-    // authorized if the client-supplied HeaderAuth1 header, QueryString1 query parameter,
-    // stage variable of StageVar1 and the accountId in the request context all match
-    // specified values of 'headerValue1', 'queryValue1', 'stageValue1', and
-    // '123456789012', respectively.
+    // authorized if the client-supplied `auth` query parameter equals `password`.
 
     // Retrieve request parameters from the Lambda function input:
-    var headers = event.headers;
+    var queryParams = event.queryStringParameters;
 
     // Parse the input for the parameter values
     var tmp = event.methodArn.split(':');
@@ -31,7 +28,7 @@ exports.handler = function (event, context, callback) {
     var condition = {};
     condition.IpAddress = {};
 
-    if (headers.auth === "password") {
+    if (queryParams.auth === "password") {
         callback(null, generateAllow('me', event.methodArn));
     } else {
         callback("Unauthorized");

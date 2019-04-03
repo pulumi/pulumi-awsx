@@ -18,15 +18,12 @@ import * as pulumi from "@pulumi/pulumi";
 
 export interface SecurityDefinition {
     /**
-     * Pretty name for the security definition to be referenced as. This is only
-     * used w/in the swagger. If not defined, we will create a name for you.
+     * Pretty name for the security definition to be referenced as. This is only used within the
+     * swagger and must be unique for each unique authorizer within the API. If you want
+     * to share an authorizer across routes, provide the same name for them. If not defined, a unique
+     * name for you.
      */
-    authorizerName: string;
-
-    /**
-     * The type is required and the value must be "apiKey" for an API Gateway API.
-     */
-    type: "apiKey";
+    authorizerName?: string;
 
     /**
      * parameterName is the name of the header or query parameter containing the authorization token.

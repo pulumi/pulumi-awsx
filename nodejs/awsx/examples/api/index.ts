@@ -113,16 +113,14 @@ const api = new awsx.apigateway.API("myapi", {
         method: "GET",
         eventHandler: lambda,
         authorizers: [{
-            authorizerName: "testauthorizer1",
-            type: "apiKey",
             parameterName: "auth",
-            in: "header",
+            parameterLocation: "query",
             "x-amazon-apigateway-authtype": "custom",
             "x-amazon-apigateway-authorizer": {
                 type: "request",
                 authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
                 authorizerCredentials: role.arn,
-                identitySource: "method.request.header.auth",
+                identitySource: "method.request.querystring.auth",
             },
         }],
     }, {
@@ -140,6 +138,17 @@ const api = new awsx.apigateway.API("myapi", {
     }, {
         path: "/www_old",
         localPath: "www",
+        authorizers: [{
+            parameterName: "auth",
+            parameterLocation: "query",
+            "x-amazon-apigateway-authtype": "custom",
+            "x-amazon-apigateway-authorizer": {
+                type: "request",
+                authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+                authorizerCredentials: role.arn,
+                identitySource: "method.request.querystring.auth",
+            },
+        }],
     }],
     requestValidator: "ALL",
 });

@@ -91,8 +91,10 @@ func Test_Examples(t *testing.T) {
 			},
 			ExtraRuntimeValidation: validateAPITests([]apiTest{
 				{
-					urlPath:      "/b",
-					expectedBody: "Hello, world!",
+					urlPath:           "/b",
+					requiredAuthKey:   "auth",
+					requiredAuthValue: "password",
+					expectedBody:      "Hello, world!",
 				},
 				{
 					urlPath:       "/a",
@@ -102,6 +104,12 @@ func Test_Examples(t *testing.T) {
 				{
 					urlPath:      "/www/file1.txt",
 					expectedBody: "contents1\n",
+				},
+				{
+					urlPath:           "/www_old/file1.txt",
+					requiredAuthKey:   "auth",
+					requiredAuthValue: "password",
+					expectedBody:      "contents1\n",
 				},
 			}),
 			EditDirs: []integration.EditDir{{
@@ -366,9 +374,11 @@ func addRandomSuffix(s string) string {
 }
 
 type apiTest struct {
-	urlPath       string
-	requiredParam string
-	expectedBody  string
+	urlPath           string
+	requiredParam     string
+	requiredAuthKey   string
+	requiredAuthValue string
+	expectedBody      string
 }
 
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
@@ -382,6 +392,14 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 				assertRequestBody(t, msg, resp)
 
 				url = fmt.Sprintf("%s?%s=test", url, tt.requiredParam)
+			}
+
+			if tt.requiredAuthKey != "" {
+				msg := `{"message":"Unauthorized"}`
+				resp := examples.GetHTTP(t, url, 401)
+				assertRequestBody(t, msg, resp)
+
+				url = fmt.Sprintf("%s?%s=%s", url, tt.requiredAuthKey, tt.requiredAuthValue)
 			}
 
 			resp := examples.GetHTTP(t, url, 200)
