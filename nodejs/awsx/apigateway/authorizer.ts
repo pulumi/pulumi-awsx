@@ -14,7 +14,13 @@
 
 // These APIs are currently experimental and may change.
 
+import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as api from "./api";
+
+import * as awslambda from "aws-lambda";
+
+export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
 
 export interface SecurityDefinition {
     /**
@@ -26,40 +32,30 @@ export interface SecurityDefinition {
     authorizerName?: string;
 
     /**
-     * parameterName is the name of the header or query parameter containing the authorization token.
+     * parameterName is the name of the header or query parameter containing the authorization token. Must be
+     * "Unused" for multiple identity sources or non header or query type of request parameters.
      * */
     parameterName: string;
 
     /**
-     * Required and the value must be "header" or "query" for an API Gateway API.
+     * Required and the value must be "header" or "query" for an API Gateway API. Must be "header" for multiple
+     * identity sources or non header or query type of request parameters.
      */
     parameterLocation: "header" | "query";
 
     /**
-     * Specifies the authorization mechanism for the client.
+     * Specifies the authorization mechanism for the client. Typical values are "oauth2" or
+     * "custom".
      */
-    "x-amazon-apigateway-authtype": AuthType;
+    authType: string;
 
     /**
      * Defines a Lambda authorizer to be applied for authorization of method invocations in API Gateway.
      */
-    "x-amazon-apigateway-authorizer": Authorizer;
+    authorizer: LambdaAuthorizer;
 }
 
-export type AuthType = "oauth2" | "custom";
-
-/**
- * Defines a Lambda authorizer (the x-amazon-apigateway-authorizer object) to be applied for authorization of
- * method invocations in API Gateway.
- */
-export interface Authorizer {
-    /**
-     * The type of the authorizer. This is a required property and the value must be "token", for an authorizer
-     * with the caller identity embedded in an authorization token, or "request", for an authorizer with the
-     * caller identity contained in request parameters.
-     */
-    type: AuthorizerType;
-
+export interface LambdaInfo {
     /**
      * The Uniform Resource Identifier (URI) of the authorizer Lambda function.
      */
@@ -70,15 +66,40 @@ export interface Authorizer {
      * For example, "arn:aws:iam::account-id:IAM_role".
      */
     authorizerCredentials: pulumi.Input<string>;
+}
+
+export function isLambdaInfo(info: LambdaInfo | aws.lambda.EventHandler<api.Request, AuthorizerResponse>): info is LambdaInfo {
+    return (<LambdaInfo>info).authorizerUri !== undefined;
+}
+
+/**
+ * Defines a Lambda authorizer (the x-amazon-apigateway-authorizer object) to be applied for authorization of
+ * method invocations in API Gateway.
+ */
+export interface LambdaAuthorizer {
+    /**
+     * The type of the authorizer. This is a required property and the value must be one of the following:
+     *      - "token", for an authorizer with the caller identity embedded in an authorization token
+     *      - "request", for an authorizer with the caller identity contained in request parameters
+     */
+    type: "token" | "request";
+
+    /**
+     * The authorizer specifies information about the authorizing Lambda. You can either set up the Lambda
+     * separately and just provide the required information or you can define the Lambda inline.
+     */
+    authorizer: LambdaInfo | aws.lambda.EventHandler<api.Request, AuthorizerResponse>;
 
     /**
      * Comma-separated list of mapping expressions of the request parameters as the identity source. Applicable
      * for the authorizer of the "request" type only.
+     * Example: "method.request.header.HeaderAuth1, method.request.querystring.QueryString1"
      */
     identitySource?: string;
 
     /**
-     * A regular expression for validating the token as the incoming identity. For example, "^x-[a-z]+".
+     * A regular expression for validating the token as the incoming identity.
+     * Example: "^x-[a-z]+"
      */
     identityValidationExpression?: string;
 
@@ -89,4 +110,17 @@ export interface Authorizer {
     authorizerResultTtlInSeconds?: number;
 }
 
-export type AuthorizerType = "token" | "request";
+export interface CognitoPoolAuthorizer {
+    type: "cognito_user_pools";
+
+    /**
+     * List of the Amazon Cognito user pool ARNs for the "cognito_user_pools" authorizer. Each element is of this format:
+     * arn:aws:cognito-idp:{region}:{account_id}:userpool/{user_pool_id}.
+     * Not defined for a "token" or "request" authorizers.
+     */
+    providerARNs: string[];
+}
+
+export function isCognitoPoolAuthorizer(auth: CognitoPoolAuthorizer | LambdaAuthorizer): auth is CognitoPoolAuthorizer {
+    return (<CognitoPoolAuthorizer>auth).providerARNs !== undefined;
+}

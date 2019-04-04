@@ -98,6 +98,10 @@ A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blo
 
 API Gateway can perform basic validations against request parameters, a request payload or both. When a validation fails, a 400 error is returned immediately.
 
+### Lambda Authorizers
+
+Lambda Authorizers are AWS Lambda functions that provide control access to an API.
+
 #### Validators
 
 Validators can be assigned at the API level or at the method level. The validators defined at a method level override any validator set at the API level.

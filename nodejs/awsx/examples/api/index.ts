@@ -15,6 +15,11 @@
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
+import * as awslambda from "aws-lambda";
+
+export type Request = awslambda.APIGatewayProxyEvent;
+
+export type Response = awslambda.APIGatewayProxyResult;
 
 const policy: aws.iam.PolicyDocument = {
     "Version": "2012-10-17",
@@ -88,6 +93,22 @@ const invocationPolicy = new aws.iam.RolePolicy("invocation_policy", {
     role: role.id,
 });
 
+const authFunction: aws.lambda.EventHandler<Request, awsx.apigateway.AuthorizerResponse> = async (event, context, callback) => {
+    console.log("Received event:", JSON.stringify(event, null, 2));
+    const policy: awsx.apigateway.AuthorizerResponse = {
+        principalId: "principalId",
+        policyDocument: {
+            Version: "2012-10-17",
+            Statement: [{
+                Action: "execute-api:Invoke",
+                Effect: "Allow",
+                Resource: "/",
+            }],
+        },
+    };
+    return policy;
+};
+
 /**
  * In the following example, parameter validation is required for the `/a` route.
  * `curl $(pulumi stack output url)/a?key=hello` would return a 200, whereas
@@ -108,18 +129,31 @@ const api = new awsx.apigateway.API("myapi", {
             name: "key",
             in: "query",
         }],
+        authorizers: [{
+            parameterName: "auth",
+            parameterLocation: "query",
+            authType: "custom",
+            authorizer: {
+                type: "request",
+                authorizer: authFunction,
+                identitySource: "method.request.querystring.auth",
+            },
+        }],
     }, {
         path: "/b",
         method: "GET",
         eventHandler: lambda,
         authorizers: [{
+            authorizerName: "testing",
             parameterName: "auth",
             parameterLocation: "query",
-            "x-amazon-apigateway-authtype": "custom",
-            "x-amazon-apigateway-authorizer": {
+            authType: "custom",
+            authorizer: {
                 type: "request",
-                authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
-                authorizerCredentials: role.arn,
+                authorizer: {
+                    authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+                    authorizerCredentials: role.arn,
+                },
                 identitySource: "method.request.querystring.auth",
             },
         }],
@@ -138,17 +172,6 @@ const api = new awsx.apigateway.API("myapi", {
     }, {
         path: "/www_old",
         localPath: "www",
-        authorizers: [{
-            parameterName: "auth",
-            parameterLocation: "query",
-            "x-amazon-apigateway-authtype": "custom",
-            "x-amazon-apigateway-authorizer": {
-                type: "request",
-                authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
-                authorizerCredentials: role.arn,
-                identitySource: "method.request.querystring.auth",
-            },
-        }],
     }],
     requestValidator: "ALL",
 });
