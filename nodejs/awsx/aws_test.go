@@ -91,21 +91,25 @@ func Test_Examples(t *testing.T) {
 			},
 			ExtraRuntimeValidation: validateAPITests([]apiTest{
 				{
+					urlOutputKey:  "url",
+					urlPath:       "/a",
+					requiredParam: "key",
+					expectedBody:  "<h1>Hello world!</h1>",
+				},
+				{
+					urlOutputKey:      "url",
 					urlPath:           "/b",
 					requiredAuthKey:   "auth",
 					requiredAuthValue: "password",
 					expectedBody:      "Hello, world!",
 				},
 				{
-					urlPath:       "/a",
-					requiredParam: "key",
-					expectedBody:  "<h1>Hello world!</h1>",
-				},
-				{
+					urlOutputKey: "url",
 					urlPath:      "/www/file1.txt",
 					expectedBody: "contents1\n",
 				},
 				{
+					urlOutputKey:      "authorizerUrl",
 					urlPath:           "/www_old/file1.txt",
 					requiredAuthKey:   "auth",
 					requiredAuthValue: "password",
@@ -117,6 +121,7 @@ func Test_Examples(t *testing.T) {
 				Additive: true,
 				ExtraRuntimeValidation: validateAPITests([]apiTest{
 					{
+						urlOutputKey: "url",
 						urlPath:      "/b",
 						expectedBody: "<h1>Hello world!</h1>",
 					},
@@ -374,6 +379,7 @@ func addRandomSuffix(s string) string {
 }
 
 type apiTest struct {
+	urlOutputKey      string
 	urlPath           string
 	requiredParam     string
 	requiredAuthKey   string
@@ -384,7 +390,7 @@ type apiTest struct {
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 		for _, tt := range apiTests {
-			url := stack.Outputs["url"].(string) + tt.urlPath
+			url := stack.Outputs[tt.urlOutputKey].(string) + tt.urlPath
 
 			if tt.requiredParam != "" {
 				msg := fmt.Sprintf(`{"message": "Missing required request parameters: [%s]"}`, tt.requiredParam)

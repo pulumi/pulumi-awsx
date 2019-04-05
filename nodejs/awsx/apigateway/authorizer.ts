@@ -20,6 +20,7 @@ import * as api from "./api";
 
 import * as awslambda from "aws-lambda";
 
+export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
 
 export interface SecurityDefinition {
@@ -68,7 +69,7 @@ export interface LambdaInfo {
     authorizerCredentials: pulumi.Input<string>;
 }
 
-export function isLambdaInfo(info: LambdaInfo | aws.lambda.EventHandler<api.Request, AuthorizerResponse>): info is LambdaInfo {
+export function isLambdaInfo(info: LambdaInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaInfo {
     return (<LambdaInfo>info).authorizerUri !== undefined;
 }
 
@@ -88,7 +89,7 @@ export interface LambdaAuthorizer {
      * The authorizer specifies information about the authorizing Lambda. You can either set up the Lambda
      * separately and just provide the required information or you can define the Lambda inline.
      */
-    authorizer: LambdaInfo | aws.lambda.EventHandler<api.Request, AuthorizerResponse>;
+    authorizer: LambdaInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>;
 
     /**
      * Comma-separated list of mapping expressions of the request parameters as the identity source. Applicable

@@ -100,7 +100,79 @@ API Gateway can perform basic validations against request parameters, a request 
 
 ### Lambda Authorizers
 
-Lambda Authorizers are AWS Lambda functions that provide control access to an API.
+[Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) are AWS Lambda functions that provide control access to an API. You can define a Lambda Authorizer for an Event Handler Route or a Static Route.
+
+You can define the Authorizer Lambda directly inline as shown in the example below.
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/b",
+        method: "GET",
+        eventHandler: async () => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        },
+        authorizers: [{
+            authorizerName: "prettyAuthorizer",
+            parameterName: "auth",
+            parameterLocation: "query",
+            authType: "custom",
+            authorizer: {
+                type: "request",
+                authorizer: (event, context, callback) => {
+                    console.log("Received event:", JSON.stringify(event, null, 2));
+                    const policy: awsx.apigateway.AuthorizerResponse = {
+                        principalId: "me",
+                        policyDocument: {
+                            Version: "2012-10-17",
+                            Statement: [{
+                                Action: "execute-api:Invoke",
+                                Effect: "Allow",
+                                Resource: event.methodArn,
+                            }],
+                        },
+                    };
+                    callback(null, policy);
+                },
+                identitySource: "method.request.querystring.auth",
+            },
+        }],
+    }],
+});
+```
+
+You can also define the Lambda Authorizer elsewhere and then reference the required values.
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
+    routes: [{
+        ...
+        authorizers: [{
+            authorizerName: "testing",
+            parameterName: "auth",
+            parameterLocation: "query",
+            authType: "custom",
+            authorizer: {
+                type: "request",
+                authorizer: {
+                    authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+                    authorizerCredentials: gatewayRole.arn,
+                },
+                identitySource: "method.request.querystring.auth",
+            },
+        }],
+    }],
+});
+```
+
+A complete example of defining the Lambda Authorizer elsewhere can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
 
 #### Validators
 

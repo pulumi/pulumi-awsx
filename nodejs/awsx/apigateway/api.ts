@@ -593,7 +593,7 @@ function addEventHandlerRouteToSwaggerSpec(
 
     const swaggerOperation = createSwaggerOperationForLambda();
     if (route.authorizers) {
-        const authNames = addAuthorizersToSwagger(swagger, route.authorizers, lambda.roleInstance);
+        const authNames = addAuthorizersToSwagger(swagger, route.authorizers);
         addAuthorizersToSwaggerOperation(swaggerOperation, authNames);
     }
     if (route.requiredParameters) {
@@ -622,7 +622,7 @@ function addEventHandlerRouteToSwaggerSpec(
     }
 }
 
-function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.SecurityDefinition[], lambdaRole: aws.iam.Role | undefined): string[] {
+function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.SecurityDefinition[]): string[] {
     const authNames: string[] = [];
     for (const auth of authorizers) {
         swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
@@ -635,7 +635,7 @@ function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.S
             name: auth.parameterName,
             in: auth.parameterLocation,
             "x-amazon-apigateway-authtype": auth.authType,
-            "x-amazon-apigateway-authorizer": getLambdaAuthorizer(authName, auth.authorizer, lambdaRole),
+            "x-amazon-apigateway-authorizer": getLambdaAuthorizer(authName, auth.authorizer),
         };
 
         // Add security definition if it's a new authorizer
@@ -651,7 +651,7 @@ function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.S
     return authNames;
 }
 
-function getLambdaAuthorizer(name: string, lambdaAuthorizer: authorizer.LambdaAuthorizer, lambdaRole: aws.iam.Role | undefined): LambdaAuthorizer {
+function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.LambdaAuthorizer): LambdaAuthorizer {
     if (authorizer.isLambdaInfo(lambdaAuthorizer.authorizer)) {
         return {
             type: lambdaAuthorizer.type,
@@ -663,31 +663,17 @@ function getLambdaAuthorizer(name: string, lambdaAuthorizer: authorizer.LambdaAu
         };
     }
 
-    // TODO: not sure if this name is going to be unique enough
-    const authorizerLambda = aws.lambda.createFunctionFromEventHandler<Request, authorizer.AuthorizerResponse>(
-        name, lambdaAuthorizer.authorizer);
+    const authorizerLambda = aws.lambda.createFunctionFromEventHandler<authorizer.AuthorizerEvent, authorizer.AuthorizerResponse>(
+        authorizerName, lambdaAuthorizer.authorizer);
 
-    // if (authorizerLambda.roleInstance) {
-    //     console.log("******************");
-    //     const apigatewayPolicy = new aws.iam.RolePolicy("apigatewayPolicy2", {
-    //         policy: apigatewayLambdaAssumeRolePolicyDocument,
-    //         role: authorizerLambda.roleInstance.id,
-    //     });
-    // } else {
-    //     throw new Error("Providing role for Authorizer not currently supported");
-    // }
+    const policy = aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] });
+    const role = new aws.iam.Role(authorizerName + "-authorizer-role", {
+        assumeRolePolicy: JSON.stringify(policy),
+    });
 
-    if (lambdaRole) {
-        // Attach API Gateway permissions to lambda role
-
-        const apigatewayPolicyAttachment = new aws.iam.RolePolicy("apigatewayPolicy", {
-            policy: JSON.stringify(apigatewayLambdaAssumeRolePolicyDocument),
-            role: lambdaRole.id,
-        });
-
-        // Add invocation policy to lambda role
-        const invocationPolicy = new aws.iam.RolePolicy("invocationPolicy", {
-            policy: authorizerLambda.arn.apply(arn => `{
+    // Add invocation policy to lambda role
+    const invocationPolicy = new aws.iam.RolePolicy("invocationPolicy", {
+        policy: authorizerLambda.arn.apply(arn => `{
                 "Version": "2012-10-17",
                 "Statement": [
                     {
@@ -698,15 +684,14 @@ function getLambdaAuthorizer(name: string, lambdaAuthorizer: authorizer.LambdaAu
                 ]
             }
                 `),
-            role: lambdaRole.id,
-        });
-    }
+        role: role.id,
+    });
 
     const region = aws.config.requireRegion();
     return {
         type: lambdaAuthorizer.type,
-        authorizerUri: pulumi.interpolate`arn: aws: apigateway: ${region}: lambda: path / 2015 - 03 - 31 / functions / ${authorizerLambda.arn} / invocations`,
-        authorizerCredentials: authorizerLambda.role,
+        authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+        authorizerCredentials: role.arn,
         identitySource: lambdaAuthorizer.identitySource,
         identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
         authorizerResultTtlInSeconds: lambdaAuthorizer.authorizerResultTtlInSeconds,
@@ -751,7 +736,7 @@ function addStaticRouteToSwaggerSpec(
     // Lazily initialize auth names
     let authNames: string[] | undefined;
     if (route.authorizers) {
-        authNames = addAuthorizersToSwagger(swagger, route.authorizers, undefined);
+        authNames = addAuthorizersToSwagger(swagger, route.authorizers);
     }
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
@@ -1078,19 +1063,6 @@ const apigatewayAssumeRolePolicyDocument = {
     ],
 };
 
-const apigatewayLambdaAssumeRolePolicyDocument = {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Principal": {
-                "AWS": ["apigateway.amazonaws.com", "lambda.amazonaws.com"],
-            },
-            "Action": "sts:AssumeRole",
-        },
-    ],
-};
 
 function safeS3BucketName(apiName: string): string {
     return apiName.toLowerCase().replace(/[^a-z0-9\-]/g, "");
