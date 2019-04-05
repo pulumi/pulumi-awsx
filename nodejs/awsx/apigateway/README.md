@@ -100,9 +100,9 @@ API Gateway can perform basic validations against request parameters, a request 
 
 ### Lambda Authorizers
 
-[Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) are AWS Lambda functions that provide control access to an API. You can define a Lambda Authorizer for an Event Handler Route or a Static Route.
+[Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) are AWS Lambda functions that provide control access to an API. You can define a Lambda Authorizer for an Event Handler Route or a Static Route. API Gateway supports "request" or "token" type Lambda authorizers.
 
-To define an Authorizer, you provide a Lambda that fulfills `aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>` or you provide information on a pre-existing Lambda authorizer. The exmaple below shows defining the Authorizer Lambda directly inline. See the [Event Handler Route](#Event-Handler-Route) section on other ways you can define a Lambda for the Authorizer.
+To define an Authorizer, you provide a Lambda that fulfills `aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>` or you provide information on a pre-existing Lambda authorizer. The example below shows defining the Authorizer Lambda directly inline. See the [Event Handler Route](#Event-Handler-Route) section for other ways you can define a Lambda for the Authorizer.
 
 ```ts
 import * as awsx from "@pulumi/awsx";
