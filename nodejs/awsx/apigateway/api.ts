@@ -431,7 +431,7 @@ interface SecurityDefinition {
     name: string;
     in: "header" | "query";
     "x-amazon-apigateway-authtype": string;
-    "x-amazon-apigateway-authorizer": LambdaAuthorizer | authorizer.CognitoPoolAuthorizer;
+    "x-amazon-apigateway-authorizer": LambdaAuthorizer;
 }
 
 interface LambdaAuthorizer {

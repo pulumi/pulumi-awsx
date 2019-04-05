@@ -23,6 +23,9 @@ import * as awslambda from "aws-lambda";
 export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
 
+/**
+ * SecurityDefinition provides the definition for a custom Authorizer for API Gateway.
+ */
 export interface SecurityDefinition {
     /**
      * Pretty name for the security definition to be referenced as. This is only used within the
@@ -54,23 +57,6 @@ export interface SecurityDefinition {
      * Defines a Lambda authorizer to be applied for authorization of method invocations in API Gateway.
      */
     authorizer: LambdaAuthorizer;
-}
-
-export interface LambdaInfo {
-    /**
-     * The Uniform Resource Identifier (URI) of the authorizer Lambda function.
-     */
-    authorizerUri: pulumi.Input<string>;
-
-    /**
-     * Credentials required for invoking the authorizer, if any, in the form of an ARN of an IAM execution role.
-     * For example, "arn:aws:iam::account-id:IAM_role".
-     */
-    authorizerCredentials: pulumi.Input<string>;
-}
-
-export function isLambdaInfo(info: LambdaInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaInfo {
-    return (<LambdaInfo>info).authorizerUri !== undefined;
 }
 
 /**
@@ -111,17 +97,19 @@ export interface LambdaAuthorizer {
     authorizerResultTtlInSeconds?: number;
 }
 
-export interface CognitoPoolAuthorizer {
-    type: "cognito_user_pools";
+export interface LambdaInfo {
+    /**
+     * The Uniform Resource Identifier (URI) of the authorizer Lambda function.
+     */
+    authorizerUri: pulumi.Input<string>;
 
     /**
-     * List of the Amazon Cognito user pool ARNs for the "cognito_user_pools" authorizer. Each element is of this format:
-     * arn:aws:cognito-idp:{region}:{account_id}:userpool/{user_pool_id}.
-     * Not defined for a "token" or "request" authorizers.
+     * Credentials required for invoking the authorizer, if any, in the form of an ARN of an IAM execution role.
+     * For example, "arn:aws:iam::account-id:IAM_role".
      */
-    providerARNs: string[];
+    authorizerCredentials: pulumi.Input<string>;
 }
 
-export function isCognitoPoolAuthorizer(auth: CognitoPoolAuthorizer | LambdaAuthorizer): auth is CognitoPoolAuthorizer {
-    return (<CognitoPoolAuthorizer>auth).providerARNs !== undefined;
+export function isLambdaInfo(info: LambdaInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaInfo {
+    return (<LambdaInfo>info).authorizerUri !== undefined;
 }
