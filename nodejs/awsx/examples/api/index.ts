@@ -87,11 +87,6 @@ const api = new awsx.apigateway.API("myapi", {
             name: "key",
             in: "query",
         }],
-        /**
-         * These parameters will not actually be required since the method level validator is
-         * set to only validate the body.
-         */
-        requestValidator: "BODY_ONLY", // This will override the API level requestValidator.
     }],
     requestValidator: "ALL",
 });

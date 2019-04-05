@@ -91,29 +91,44 @@ func Test_Examples(t *testing.T) {
 			},
 			ExtraRuntimeValidation: validateAPITests([]apiTest{
 				{
-					urlOutputKey:  "url",
-					urlPath:       "/a",
-					requiredParam: "key",
-					expectedBody:  "<h1>Hello world!</h1>",
+					urlStackOutputKey: "url",
+					urlPath:           "/a",
+					queryTest: &queryTest{
+						requiredQueryStr:              "?key=test",
+						expectedStatusWithoutQueryStr: 400,
+						expectedBodyWithoutQueryStr:   `{"message": "Missing required request parameters: [key]"}`,
+					},
+					expectedBody: "<h1>Hello world!</h1>",
 				},
 				{
-					urlOutputKey:      "url",
+					urlStackOutputKey: "url",
 					urlPath:           "/b",
-					requiredAuthKey:   "auth",
-					requiredAuthValue: "password",
-					expectedBody:      "Hello, world!",
+					queryTest: &queryTest{
+						requiredQueryStr:              "?auth=password",
+						expectedStatusWithoutQueryStr: 401,
+						expectedBodyWithoutQueryStr:   `{"message":"Unauthorized"}`,
+					},
+					expectedBody: "Hello, world!",
 				},
 				{
-					urlOutputKey: "url",
-					urlPath:      "/www/file1.txt",
+					urlStackOutputKey: "url",
+					urlPath:           "/www/file1.txt",
+					queryTest: &queryTest{
+						requiredQueryStr:              "?key=test",
+						expectedStatusWithoutQueryStr: 400,
+						expectedBodyWithoutQueryStr:   `{"message": "Missing required request parameters: [key]"}`,
+					},
 					expectedBody: "contents1\n",
 				},
 				{
-					urlOutputKey:      "authorizerUrl",
+					urlStackOutputKey: "authorizerUrl",
 					urlPath:           "/www_old/file1.txt",
-					requiredAuthKey:   "auth",
-					requiredAuthValue: "password",
-					expectedBody:      "contents1\n",
+					queryTest: &queryTest{
+						requiredQueryStr:              "?auth=password",
+						expectedStatusWithoutQueryStr: 401,
+						expectedBodyWithoutQueryStr:   `{"message":"Unauthorized"}`,
+					},
+					expectedBody: "contents1\n",
 				},
 			}),
 			EditDirs: []integration.EditDir{{
@@ -121,9 +136,9 @@ func Test_Examples(t *testing.T) {
 				Additive: true,
 				ExtraRuntimeValidation: validateAPITests([]apiTest{
 					{
-						urlOutputKey: "url",
-						urlPath:      "/b",
-						expectedBody: "<h1>Hello world!</h1>",
+						urlStackOutputKey: "url",
+						urlPath:           "/b",
+						expectedBody:      "<h1>Hello world!</h1>",
 					},
 				}),
 			}},
@@ -379,35 +394,29 @@ func addRandomSuffix(s string) string {
 }
 
 type apiTest struct {
-	urlOutputKey      string
+	urlStackOutputKey string
 	urlPath           string
-	requiredParam     string
-	requiredAuthKey   string
-	requiredAuthValue string
+	queryTest         *queryTest
 	expectedBody      string
+}
+
+type queryTest struct {
+	requiredQueryStr              string
+	expectedStatusWithoutQueryStr int
+	expectedBodyWithoutQueryStr   string
 }
 
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 		for _, tt := range apiTests {
-			url := stack.Outputs[tt.urlOutputKey].(string) + tt.urlPath
+			url := stack.Outputs[tt.urlStackOutputKey].(string) + tt.urlPath
 
-			if tt.requiredParam != "" {
-				msg := fmt.Sprintf(`{"message": "Missing required request parameters: [%s]"}`, tt.requiredParam)
-				resp := examples.GetHTTP(t, url, 400)
-				assertRequestBody(t, msg, resp)
+			if tt.queryTest != nil {
+				resp := examples.GetHTTP(t, url, tt.queryTest.expectedStatusWithoutQueryStr)
+				assertRequestBody(t, tt.queryTest.expectedBodyWithoutQueryStr, resp)
 
-				url = fmt.Sprintf("%s?%s=test", url, tt.requiredParam)
+				url = fmt.Sprintf("%s%s", url, tt.queryTest.requiredQueryStr)
 			}
-
-			if tt.requiredAuthKey != "" {
-				msg := `{"message":"Unauthorized"}`
-				resp := examples.GetHTTP(t, url, 401)
-				assertRequestBody(t, msg, resp)
-
-				url = fmt.Sprintf("%s?%s=%s", url, tt.requiredAuthKey, tt.requiredAuthValue)
-			}
-
 			resp := examples.GetHTTP(t, url, 200)
 			assertRequestBody(t, tt.expectedBody, resp)
 		}
