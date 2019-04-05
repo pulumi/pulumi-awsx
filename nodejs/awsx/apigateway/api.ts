@@ -666,6 +666,20 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorize
     const authorizerLambda = aws.lambda.createFunctionFromEventHandler<authorizer.AuthorizerEvent, authorizer.AuthorizerResponse>(
         authorizerName, lambdaAuthorizer.authorizer);
 
+    const role = createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
+
+    const region = aws.config.requireRegion();
+    return {
+        type: lambdaAuthorizer.type,
+        authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+        authorizerCredentials: role.arn,
+        identitySource: lambdaAuthorizer.identitySource,
+        identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
+        authorizerResultTtlInSeconds: lambdaAuthorizer.authorizerResultTtlInSeconds,
+    };
+}
+
+function createRoleWithAuthorizerInvocationPolicy(authorizerName: string, authorizerLambda: aws.lambda.Function): aws.iam.Role {
     const policy = aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] });
     const role = new aws.iam.Role(authorizerName + "-authorizer-role", {
         assumeRolePolicy: JSON.stringify(policy),
@@ -686,16 +700,7 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorize
                 `),
         role: role.id,
     });
-
-    const region = aws.config.requireRegion();
-    return {
-        type: lambdaAuthorizer.type,
-        authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
-        authorizerCredentials: role.arn,
-        identitySource: lambdaAuthorizer.identitySource,
-        identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
-        authorizerResultTtlInSeconds: lambdaAuthorizer.authorizerResultTtlInSeconds,
-    };
+    return role;
 }
 
 function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authorizerNames: string[]) {
