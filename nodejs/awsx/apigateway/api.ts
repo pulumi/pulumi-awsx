@@ -589,7 +589,7 @@ function addEventHandlerRouteToSwaggerSpec(
 
     const method = swaggerMethod(route.method);
     const lambda = aws.lambda.createFunctionFromEventHandler(
-        name, route.eventHandler, { parent: api });
+        name + sha1hash(method + ":" + route.path), route.eventHandler, { parent: api });
 
     const swaggerOperation = createSwaggerOperationForLambda();
     if (route.authorizers) {
