@@ -9,25 +9,6 @@ exports.handler = function (event, context, callback) {
     // Retrieve request parameters from the Lambda function input:
     var queryParams = event.queryStringParameters;
 
-    // Parse the input for the parameter values
-    var tmp = event.methodArn.split(':');
-    var apiGatewayArnTmp = tmp[5].split('/');
-    var awsAccountId = tmp[4];
-    var region = tmp[3];
-    var restApiId = apiGatewayArnTmp[0];
-    var stage = apiGatewayArnTmp[1];
-    var method = apiGatewayArnTmp[2];
-    var resource = '/'; // root resource
-    if (apiGatewayArnTmp[3]) {
-        resource += apiGatewayArnTmp[3];
-    }
-
-    // Perform authorization to return the Allow policy for correct parameters and 
-    // the 'Unauthorized' error, otherwise.
-    var authResponse = {};
-    var condition = {};
-    condition.IpAddress = {};
-
     if (queryParams.auth === "password") {
         callback(null, generateAllow('me', event.methodArn));
     } else {
@@ -51,12 +32,6 @@ var generatePolicy = function (principalId, effect, resource) {
         policyDocument.Statement[0] = statementOne;
         authResponse.policyDocument = policyDocument;
     }
-    // Optional output with custom properties of the String, Number or Boolean type.
-    authResponse.context = {
-        "stringKey": "stringval",
-        "numberKey": 123,
-        "booleanKey": true
-    };
     return authResponse;
 }
 
