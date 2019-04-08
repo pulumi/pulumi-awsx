@@ -37,16 +37,24 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
 
     constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
+            vpc: args.vpc || x.ec2.Vpc.getDefault(),
             ...args,
             loadBalancerType: "application",
         };
+
+        if (!args.securityGroups) {
+            args.securityGroups = [new x.ec2.SecurityGroup(name, {
+                description: `Default security group for ALB "${name}"`,
+                vpc: args.vpc,
+            })];
+        }
 
         super("awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer", name, argsCopy, opts);
 
         this.listeners = [];
         this.targetGroups = [];
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     /**
@@ -98,7 +106,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     public createListener(name: string, args: ApplicationListenerArgs,
@@ -195,7 +203,7 @@ export class ApplicationListener extends mod.Listener {
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 }
 
@@ -282,7 +290,9 @@ export interface ApplicationLoadBalancerArgs {
     idleTimeout?: pulumi.Input<number>;
 
     /**
-     * A list of security group IDs to assign to the LB.
+     * A list of security group IDs to assign to the ALB.  If not provided, a default instance will
+     * be created for the ALB.  To prevent a default instance from being created, pass in an empty
+     * array here.
      */
     securityGroups?: x.ec2.SecurityGroupOrId[];
 }
@@ -423,7 +433,7 @@ export interface ApplicationListenerArgs {
     /**
      * If the listener should be available externally.  If this is [true] and the LoadBalancer for
      * this Listener is [external=true], then this listener is available to the entire internet.  If
-     * this is [tru]e and the LoadBalancer is [external=false], then this listener is available to
+     * this is [true] and the LoadBalancer is [external=false], then this listener is available to
      * everything in the LoadBalancer's VPC.
      *
      * If this is [false] then access will controlled entirely by the egress an ingress rules of the
