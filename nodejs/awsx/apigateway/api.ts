@@ -655,7 +655,7 @@ function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.C
 
 function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.CustomLambdaAuthorizer): LambdaAuthorizer {
     if (authorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.authorizerHandler)) {
-        const identitySource = getIdentitySource(lambdaAuthorizer.identitySource);
+        const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
         return {
             type: lambdaAuthorizer.type,
             authorizerUri: lambdaAuthorizer.authorizerHandler.uri,
@@ -669,10 +669,10 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorize
     const authorizerLambda = aws.lambda.createFunctionFromEventHandler<authorizer.AuthorizerEvent, authorizer.AuthorizerResponse>(
         authorizerName, lambdaAuthorizer.authorizerHandler);
 
-    const role = createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
+    const role = authorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
 
     const region = aws.config.requireRegion();
-    const identitySource = getIdentitySource(lambdaAuthorizer.identitySource);
+    const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
     return {
         type: lambdaAuthorizer.type,
         authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
@@ -681,36 +681,6 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorize
         identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
         authorizerResultTtlInSeconds: lambdaAuthorizer.authorizerResultTtlInSeconds,
     };
-}
-
-function getIdentitySource(identitySources: string[] | undefined): string {
-    if (identitySources) {
-        return identitySources.join(", ");
-    }
-    return "";
-}
-
-function createRoleWithAuthorizerInvocationPolicy(authorizerName: string, authorizerLambda: aws.lambda.Function): aws.iam.Role {
-    const policy = aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] });
-    const role = new aws.iam.Role(authorizerName + "-authorizer-role", {
-        assumeRolePolicy: JSON.stringify(policy),
-    });
-
-    // Add invocation policy to lambda role
-    const invocationPolicy = new aws.iam.RolePolicy("invocationPolicy", {
-        policy: pulumi.interpolate`{
-                "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Action": "lambda:InvokeFunction",
-                        "Effect": "Allow",
-                        "Resource": "${authorizerLambda.arn}"
-                    }
-                ]
-            }`,
-        role: role.id,
-    });
-    return role;
 }
 
 function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authorizerNames: string[]) {

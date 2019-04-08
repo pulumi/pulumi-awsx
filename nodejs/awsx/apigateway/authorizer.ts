@@ -112,3 +112,35 @@ export interface LambdaAuthorizerInfo {
 export function isLambdaAuthorizerInfo(info: LambdaAuthorizerInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaAuthorizerInfo {
     return (<LambdaAuthorizerInfo>info).uri !== undefined;
 }
+
+/** @internal */
+export function getIdentitySource(identitySources: string[] | undefined): string {
+    if (identitySources) {
+        return identitySources.join(", ");
+    }
+    return "";
+}
+
+/** @internal */
+export function createRoleWithAuthorizerInvocationPolicy(authorizerName: string, authorizerLambda: aws.lambda.Function): aws.iam.Role {
+    const policy = aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] });
+    const role = new aws.iam.Role(authorizerName + "-authorizer-role", {
+        assumeRolePolicy: JSON.stringify(policy),
+    });
+
+    // Add invocation policy to lambda role
+    const invocationPolicy = new aws.iam.RolePolicy("invocationPolicy", {
+        policy: pulumi.interpolate`{
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": "lambda:InvokeFunction",
+                        "Effect": "Allow",
+                        "Resource": "${authorizerLambda.arn}"
+                    }
+                ]
+            }`,
+        role: role.id,
+    });
+    return role;
+}
