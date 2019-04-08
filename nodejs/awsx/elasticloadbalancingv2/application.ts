@@ -431,13 +431,17 @@ export interface ApplicationListenerArgs {
     sslPolicy?: pulumi.Input<string>;
 
     /**
-     * If the listener should be available externally.  If this is [true] and the LoadBalancer for
-     * this Listener is [external=true], then this listener is available to the entire internet.  If
-     * this is [true] and the LoadBalancer is [external=false], then this listener is available to
-     * everything in the LoadBalancer's VPC.
+     * If the listener should be available externally.
      *
-     * If this is [false] then access will controlled entirely by the egress an ingress rules of the
-     * security groups of the LoadBalancer.
+     * If this is [true] and the LoadBalancer for this Listener is [external=true], then this
+     * listener is available to the entire internet.  If this is [true] and the LoadBalancer is
+     * [external=false], then this listener is available to everything in the LoadBalancer's VPC. In
+     * both cases, the security groups for the ALB will all get ingress rules to the port for this
+     * listener from any IPv4 location.
+     *
+     * If this is [false] then access will controlled entirely by the egress and ingress rules of
+     * the security groups of the LoadBalancer.  No changes will be made to the security groups of
+     * the ALB.
      *
      * Defaults to [true].
      */
