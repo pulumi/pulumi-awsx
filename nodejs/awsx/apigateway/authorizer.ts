@@ -23,65 +23,64 @@ export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
 
 /**
- * SecurityDefinition provides the definition for a custom Authorizer for API Gateway.
+ * CustomAuthorizerDefinition provides the definition for a custom Authorizer for API Gateway.
  */
-export interface SecurityDefinition {
+export interface CustomAuthorizerDefinition {
     /**
-     * Pretty name for the security definition to be referenced as. This is only used within the
-     * swagger and must be unique for each unique authorizer within the API. If you want
-     * to share an authorizer across routes, provide the same name for them. If not defined, a unique
-     * name for you.
+     * Pretty name for the Authorizer to be referenced as. This must be unique for each unique authorizer
+     * within the API. If you want to share an authorizer across routes, provide the same name for them. If
+     * not defined, a unique name will be generated for you.
      */
     authorizerName?: string;
 
     /**
      * parameterName is the name of the header or query parameter containing the authorization token. Must be
-     * "Unused" for multiple identity sources or non header or query type of request parameters.
+     * "Unused" for multiple identity sources.
      * */
     parameterName: string;
 
     /**
-     * Required and the value must be "header" or "query" for an API Gateway API. Must be "header" for multiple
-     * identity sources or non header or query type of request parameters.
+     * Defines where in the request API Gateway should look for identity information. The value must be
+     * "header" or "query". If there are multiple identity sources, the value must be "header".
      */
     parameterLocation: "header" | "query";
 
     /**
-     * Specifies the authorization mechanism for the client. Typical values are "oauth2" or
-     * "custom".
+     * Specifies the authorization mechanism for the client. Typical values are "oauth2" or "custom".
      */
     authType: string;
 
     /**
-     * Defines a Lambda authorizer to be applied for authorization of method invocations in API Gateway.
+     * Defines an authorizer to be applied for authorization of method invocations in API Gateway.
      */
-    authorizer: LambdaAuthorizer;
+    authorizer: CustomLambdaAuthorizer;
 }
 
 /**
- * Defines a Lambda authorizer (the x-amazon-apigateway-authorizer object) to be applied for authorization of
- * method invocations in API Gateway.
+ * Defines a custom Lambda authorizer (the x-amazon-apigateway-authorizer object) to be applied for authorization
+ * of method invocations in API Gateway.
  */
-export interface LambdaAuthorizer {
+export interface CustomLambdaAuthorizer {
     /**
-     * The type of the authorizer. This is a required property and the value must be one of the following:
+     * The type of the authorizer. This value must be one of the following:
      *      - "token", for an authorizer with the caller identity embedded in an authorization token
      *      - "request", for an authorizer with the caller identity contained in request parameters
      */
     type: "token" | "request";
 
     /**
-     * The authorizer specifies information about the authorizing Lambda. You can either set up the Lambda
-     * separately and just provide the required information or you can define the Lambda inline.
+     * The authorizerHandler specifies information about the authorizing Lambda. You can either set up the
+     * Lambda separately and just provide the required information or you can define the Lambda inline using a
+     * JavaScript function.
      */
-    authorizer: LambdaInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>;
+    authorizerHandler: LambdaInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>;
 
     /**
-     * Comma-separated list of mapping expressions of the request parameters as the identity source. Applicable
-     * for the authorizer of the "request" type only.
-     * Example: "method.request.header.HeaderAuth1, method.request.querystring.QueryString1"
+     * List of mapping expressions of the request parameters as the identity source. This indicates where in
+     * the request identity information is expected. Applicable for the authorizer of the "request" type only.
+     * Example: ["method.request.header.HeaderAuth1", "method.request.querystring.QueryString1"]
      */
-    identitySource?: string;
+    identitySource?: string[];
 
     /**
      * A regular expression for validating the token as the incoming identity.
@@ -103,12 +102,13 @@ export interface LambdaInfo {
     authorizerUri: pulumi.Input<string>;
 
     /**
-     * Credentials required for invoking the authorizer, if any, in the form of an ARN of an IAM execution role.
+     * Credentials required for invoking the authorizer in the form of an ARN of an IAM execution role.
      * For example, "arn:aws:iam::account-id:IAM_role".
      */
     authorizerCredentials: pulumi.Input<string>;
 }
 
+/** @internal */
 export function isLambdaInfo(info: LambdaInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaInfo {
     return (<LambdaInfo>info).authorizerUri !== undefined;
 }

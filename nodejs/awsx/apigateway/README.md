@@ -125,9 +125,10 @@ const api = new awsx.apigateway.API("myapi", {
             authorizer: {
                 type: "request",
                  authorizer: async (event) => {
+                    // Add your own custom authorization logic here.
                     console.log("Received event:", JSON.stringify(event, null, 2));
-                    const policy: awsx.apigateway.AuthorizerResponse = {
-                        principalId: "me",
+                    return {
+                        principalId: "user",
                         policyDocument: {
                             Version: "2012-10-17",
                             Statement: [{
@@ -137,7 +138,6 @@ const api = new awsx.apigateway.API("myapi", {
                             }],
                         },
                     };
-                    return policy;
                 },
                 identitySource: "method.request.querystring.auth",
             },

@@ -10,7 +10,10 @@ exports.handler = function (event, context, callback) {
     var queryParams = event.queryStringParameters;
 
     if (queryParams.auth === "password") {
-        callback(null, generateAllow('me', event.methodArn));
+        // Here we pass "user" as the principalId, but in reality we would set this
+        // to a user id associated with the request. For more information, see:
+        // https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
+        callback(null, generateAllow('user', event.methodArn));
     } else {
         callback("Unauthorized");
     }
