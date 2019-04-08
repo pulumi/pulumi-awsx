@@ -73,7 +73,7 @@ export interface CustomLambdaAuthorizer {
      * Lambda separately and just provide the required information or you can define the Lambda inline using a
      * JavaScript function.
      */
-    authorizerHandler: LambdaInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>;
+    authorizerHandler: LambdaAuthorizerInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>;
 
     /**
      * List of mapping expressions of the request parameters as the identity source. This indicates where in
@@ -95,20 +95,20 @@ export interface CustomLambdaAuthorizer {
     authorizerResultTtlInSeconds?: number;
 }
 
-export interface LambdaInfo {
+export interface LambdaAuthorizerInfo {
     /**
      * The Uniform Resource Identifier (URI) of the authorizer Lambda function.
      */
-    authorizerUri: pulumi.Input<string>;
+    uri: pulumi.Input<string>;
 
     /**
      * Credentials required for invoking the authorizer in the form of an ARN of an IAM execution role.
      * For example, "arn:aws:iam::account-id:IAM_role".
      */
-    authorizerCredentials: pulumi.Input<string>;
+    credentials: pulumi.Input<string>;
 }
 
 /** @internal */
-export function isLambdaInfo(info: LambdaInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaInfo {
-    return (<LambdaInfo>info).authorizerUri !== undefined;
+export function isLambdaAuthorizerInfo(info: LambdaAuthorizerInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaAuthorizerInfo {
+    return (<LambdaAuthorizerInfo>info).uri !== undefined;
 }

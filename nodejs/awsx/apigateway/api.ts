@@ -654,12 +654,12 @@ function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.C
 }
 
 function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.CustomLambdaAuthorizer): LambdaAuthorizer {
-    if (authorizer.isLambdaInfo(lambdaAuthorizer.authorizerHandler)) {
+    if (authorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.authorizerHandler)) {
         const identitySource = getIdentitySource(lambdaAuthorizer.identitySource);
         return {
             type: lambdaAuthorizer.type,
-            authorizerUri: lambdaAuthorizer.authorizerHandler.authorizerUri,
-            authorizerCredentials: lambdaAuthorizer.authorizerHandler.authorizerCredentials,
+            authorizerUri: lambdaAuthorizer.authorizerHandler.uri,
+            authorizerCredentials: lambdaAuthorizer.authorizerHandler.credentials,
             identitySource: identitySource,
             identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
             authorizerResultTtlInSeconds: lambdaAuthorizer.authorizerResultTtlInSeconds,
