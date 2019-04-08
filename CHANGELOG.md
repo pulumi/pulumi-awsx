@@ -1,6 +1,8 @@
 ## 0.18.1 (Unreleased)
 
 - TypeScript typings for awsx.apigateway.API have been updated to be more accurate.
+- Application LoadBalancers/Listeners/TargetGroups will now create a default SecurityGroup for their
+  LoadBalancer if none is provided.
 
 ## 0.18.0 (Release March 29, 2019)
 
