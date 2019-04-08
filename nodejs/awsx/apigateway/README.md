@@ -104,6 +104,8 @@ API Gateway can perform basic validations against request parameters, a request 
 
 To define an Authorizer, you provide a Lambda that fulfills `aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>` or you provide information on a pre-existing Lambda authorizer. The example below shows defining the Authorizer Lambda directly inline. See the [Event Handler Route](#Event-Handler-Route) section for other ways you can define a Lambda for the Authorizer.
 
+Below is an example of a custom "request" Lambda Authorizer.
+
 ```ts
 import * as awsx from "@pulumi/awsx";
 
@@ -118,7 +120,7 @@ const api = new awsx.apigateway.API("myapi", {
             };
         },
         authorizers: [{
-            authorizerName: "prettyAuthorizer",
+            authorizerName: "myAuthorizer",
             parameterName: "auth",
             parameterLocation: "query",
             authType: "custom",
@@ -140,6 +142,49 @@ const api = new awsx.apigateway.API("myapi", {
                     };
                 },
                 identitySource: "method.request.querystring.auth",
+            },
+        }],
+    }],
+});
+```
+
+Below is an example of a custom "token" Lambda Authorizer.
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/b",
+        method: "GET",
+        eventHandler: async () => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        },
+        authorizers: [{
+            parameterName: "Authorization",
+            parameterLocation: "header",
+            authType: "oauth2",
+            authorizer: {
+                type: "token",
+                 authorizer: async (event) => {
+                    // Add your own custom authorization logic here.
+                    // Access the token using event.authorizationToken
+                    console.log("Received event:", JSON.stringify(event, null, 2));
+                    return {
+                        principalId: "user",
+                        policyDocument: {
+                            Version: "2012-10-17",
+                            Statement: [{
+                                Action: "execute-api:Invoke",
+                                Effect: "Allow",
+                                Resource: event.methodArn,
+                            }],
+                        },
+                    };
+                },
             },
         }],
     }],
