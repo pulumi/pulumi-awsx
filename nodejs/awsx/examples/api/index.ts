@@ -62,7 +62,7 @@ const api = new awsx.apigateway.API("myapi", {
             authType: "custom",
             authorizer: {
                 type: "request",
-                authorizer: async (event) => {
+                authorizerHandler: async (event: awsx.apigateway.AuthorizerEvent) => {
                     console.log("Received event:", JSON.stringify(event, null, 2));
                     return {
                         principalId: "user",
@@ -76,7 +76,7 @@ const api = new awsx.apigateway.API("myapi", {
                         },
                     };
                 },
-                identitySource: "method.request.querystring.auth",
+                identitySource: ["method.request.querystring.auth"],
             },
         }],
     }, {
@@ -143,11 +143,11 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
             authType: "custom",
             authorizer: {
                 type: "request",
-                authorizer: {
-                    authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
-                    authorizerCredentials: gatewayRole.arn,
+                authorizerHandler: {
+                    uri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+                    credentials: gatewayRole.arn,
                 },
-                identitySource: "method.request.querystring.auth",
+                identitySource: ["method.request.querystring.auth"],
             },
         }],
     }],
