@@ -42,11 +42,11 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
             loadBalancerType: "application",
         };
 
-        if (!args.securityGroups) {
-            args.securityGroups = [new x.ec2.SecurityGroup(name, {
-                description: `Default security group for ALB "${name}"`,
-                vpc: args.vpc,
-            })];
+        if (!argsCopy.securityGroups) {
+            argsCopy.securityGroups = [new x.ec2.SecurityGroup(name, {
+                description: `Default security group for ALB: ${name}`,
+                vpc: argsCopy.vpc,
+            }, opts)];
         }
 
         super("awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer", name, argsCopy, opts);
