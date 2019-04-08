@@ -261,8 +261,26 @@ export interface SecurityGroupRuleArgs {
 }
 
 export interface SimpleSecurityGroupRuleArgs {
+    /**
+     * The destination of the rule.  This allows controlling of the ipv4 or ipv6 cidr blocks for the
+     * rule, or the source security group.
+     *
+     * There are easy ways to provide ingress or egress to the entirety of the ipv4 or ipv6 space by
+     * using the AnyIPv4Location and AnyIPv6Location types.
+     */
     destination: SecurityGroupRuleLocation;
+
+    /**
+     * The ports and protocol this rule allows access to/from.  There are easy ways to open anything
+     * from a single port, to a wide set of ports, to all ports and all protocols using:
+     *
+     * [TcpPorts], [AllTcpPorts], [UdpPorts], [AllUdpPorts], [IcmpPorts], [AllTraffic]
+     */
     ports: SecurityGroupRulePorts;
+
+    /**
+     * Optional description for the rule to make it easier to document in the AWS console.
+     */
     description?: pulumi.Input<string>;
 }
 
