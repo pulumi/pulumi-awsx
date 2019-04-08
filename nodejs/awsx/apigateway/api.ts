@@ -684,13 +684,12 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorize
 }
 
 function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authorizerNames: string[]) {
-    const security = [];
+    swaggerOperation["security"] = swaggerOperation["security"] || [];
     for (const authName of authorizerNames) {
-        security.push({
+        swaggerOperation["security"].push({
             [authName]: [],
         });
     }
-    swaggerOperation["security"] = security;
 }
 
 function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperation, requiredParameters: reqvalidation.Parameter[]) {
