@@ -260,6 +260,18 @@ export interface SecurityGroupRuleArgs {
     type: pulumi.Input<"ingress" | "egress">;
 }
 
+export interface SimpleSecurityGroupRuleArgs {
+    destination: SecurityGroupRuleLocation;
+    ports: SecurityGroupRulePorts;
+    description?: pulumi.Input<string>;
+}
+
+/** @internal */
+export function isSimpleSecurityGroupRuleArgs(obj: any): obj is SimpleSecurityGroupRuleArgs {
+    const args = <SimpleSecurityGroupRuleArgs>obj;
+    return args && args.destination !== undefined && args.ports !== undefined;
+}
+
 type OverwriteEgressSecurityGroupRuleArgs = utils.Overwrite<SecurityGroupRuleArgs, {
     type?: never;
 }>;
