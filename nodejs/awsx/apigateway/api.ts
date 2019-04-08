@@ -64,7 +64,7 @@ export type EventHandlerRoute = {
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
      * the route is called.
      */
-    authorizers?: authorizer.CustomAuthorizerDefinition[];
+    authorizers?: authorizer.LambdaAuthorizerDefinition[];
 };
 
 function isEventHandler(route: Route): route is EventHandlerRoute {
@@ -113,7 +113,7 @@ export type StaticRoute = {
      * the route is called. The authorizer will get applied to all static resources defined by the
      * localPath.
      */
-    authorizers?: authorizer.CustomAuthorizerDefinition[];
+    authorizers?: authorizer.LambdaAuthorizerDefinition[];
 };
 
 function isStaticRoute(route: Route): route is StaticRoute {
@@ -624,7 +624,7 @@ function addEventHandlerRouteToSwaggerSpec(
     }
 }
 
-function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.CustomAuthorizerDefinition[]): string[] {
+function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.LambdaAuthorizerDefinition[]): string[] {
     const authNames: string[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
 
@@ -637,7 +637,7 @@ function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.C
             name: auth.parameterName,
             in: auth.parameterLocation,
             "x-amazon-apigateway-authtype": auth.authType,
-            "x-amazon-apigateway-authorizer": getLambdaAuthorizer(authName, auth.authorizer),
+            "x-amazon-apigateway-authorizer": getLambdaAuthorizer(authName, auth),
         };
 
         // Add security definition if it's a new authorizer
@@ -653,13 +653,13 @@ function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.C
     return authNames;
 }
 
-function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.CustomLambdaAuthorizer): LambdaAuthorizer {
-    if (authorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.authorizerHandler)) {
+function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.LambdaAuthorizerDefinition): LambdaAuthorizer {
+    if (authorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.handler)) {
         const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
         return {
             type: lambdaAuthorizer.type,
-            authorizerUri: lambdaAuthorizer.authorizerHandler.uri,
-            authorizerCredentials: lambdaAuthorizer.authorizerHandler.credentials,
+            authorizerUri: lambdaAuthorizer.handler.uri,
+            authorizerCredentials: lambdaAuthorizer.handler.credentials,
             identitySource: identitySource,
             identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
             authorizerResultTtlInSeconds: lambdaAuthorizer.authorizerResultTtlInSeconds,
@@ -667,7 +667,7 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorize
     }
 
     const authorizerLambda = aws.lambda.createFunctionFromEventHandler<authorizer.AuthorizerEvent, authorizer.AuthorizerResponse>(
-        authorizerName, lambdaAuthorizer.authorizerHandler);
+        authorizerName, lambdaAuthorizer.handler);
 
     const role = authorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
 

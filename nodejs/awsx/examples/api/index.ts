@@ -60,24 +60,22 @@ const api = new awsx.apigateway.API("myapi", {
             parameterName: "auth",
             parameterLocation: "query",
             authType: "custom",
-            authorizer: {
-                type: "request",
-                authorizerHandler: async (event: awsx.apigateway.AuthorizerEvent) => {
-                    console.log("Received event:", JSON.stringify(event, null, 2));
-                    return {
-                        principalId: "user",
-                        policyDocument: {
-                            Version: "2012-10-17",
-                            Statement: [{
-                                Action: "execute-api:Invoke",
-                                Effect: "Allow",
-                                Resource: event.methodArn,
-                            }],
-                        },
-                    };
-                },
-                identitySource: ["method.request.querystring.auth"],
+            type: "request",
+            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+                console.log("Received event:", JSON.stringify(event, null, 2));
+                return {
+                    principalId: "user",
+                    policyDocument: {
+                        Version: "2012-10-17",
+                        Statement: [{
+                            Action: "execute-api:Invoke",
+                            Effect: "Allow",
+                            Resource: event.methodArn,
+                        }],
+                    },
+                };
             },
+            identitySource: ["method.request.querystring.auth"],
         }],
     }, {
         path: "/www",
@@ -141,14 +139,12 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
             parameterName: "auth",
             parameterLocation: "query",
             authType: "custom",
-            authorizer: {
-                type: "request",
-                authorizerHandler: {
-                    uri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
-                    credentials: gatewayRole.arn,
-                },
-                identitySource: ["method.request.querystring.auth"],
+            type: "request",
+            handler: {
+                uri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+                credentials: gatewayRole.arn,
             },
+            identitySource: ["method.request.querystring.auth"],
         }],
     }],
 });
