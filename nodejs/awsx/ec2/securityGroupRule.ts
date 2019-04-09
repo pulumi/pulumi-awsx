@@ -180,7 +180,7 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
                 opts?: pulumi.ComponentResourceOptions) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
-            args = x.ec2.SecurityGroupRule.egressArgs(args.destination, args.ports, args.description);
+            args = x.ec2.SecurityGroupRule.egressArgs(args.location, args.ports, args.description);
         }
 
         super("awsx:x:ec2:EgressSecurityGroupRule", name, securityGroup, {
@@ -198,7 +198,7 @@ export class IngressSecurityGroupRule extends SecurityGroupRule {
                 opts?: pulumi.ComponentResourceOptions) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
-            args = x.ec2.SecurityGroupRule.ingressArgs(args.destination, args.ports, args.description);
+            args = x.ec2.SecurityGroupRule.ingressArgs(args.location, args.ports, args.description);
         }
 
         super("awsx:x:ec2:IngressSecurityGroupRule", name, securityGroup, {
@@ -273,13 +273,13 @@ export interface SecurityGroupRuleArgs {
 
 export interface SimpleSecurityGroupRuleArgs {
     /**
-     * The destination of the rule.  This allows controlling of the ipv4 or ipv6 cidr blocks for the
-     * rule, or the source security group.
+     * The source or destination location of the rule.  This allows controlling of the ipv4 or ipv6
+     * cidr blocks for the rule, or the source security group.
      *
      * There are easy ways to provide ingress or egress to the entirety of the ipv4 or ipv6 space by
      * using the AnyIPv4Location and AnyIPv6Location types.
      */
-    destination: SecurityGroupRuleLocation;
+    location: SecurityGroupRuleLocation;
 
     /**
      * The ports and protocol this rule allows access to/from.  There are easy ways to open anything
@@ -298,7 +298,7 @@ export interface SimpleSecurityGroupRuleArgs {
 /** @internal */
 export function isSimpleSecurityGroupRuleArgs(obj: any): obj is SimpleSecurityGroupRuleArgs {
     const args = <SimpleSecurityGroupRuleArgs>obj;
-    return args && args.destination !== undefined && args.ports !== undefined;
+    return args && args.location !== undefined && args.ports !== undefined;
 }
 
 type OverwriteEgressSecurityGroupRuleArgs = utils.Overwrite<SecurityGroupRuleArgs, {
