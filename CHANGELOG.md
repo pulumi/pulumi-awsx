@@ -5,6 +5,7 @@
   LoadBalancer if none is provided.
 - Added easier convenience methods overloads on an awsx.ec2.SecurityGroup to make ingress/egress
   rules.
+- Add TypeScript documentation on API Gateway's Integration Route and Raw Data Route
 
 ## 0.18.0 (Release March 29, 2019)
 

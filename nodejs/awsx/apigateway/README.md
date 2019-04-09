@@ -94,6 +94,59 @@ let endpoint = new awsx.apigateway.API("example", {
 
 A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
 
+#### Integration Route
+
+An Integration Route is a route that will map an endpoint to a specified backend. The supported types are:
+
+    * `http` or `http_proxy`: integration with an HTTP backend
+    * `aws_proxy`: integration with AWS Lambda functions
+    * `aws`: integration with AWS Lambda functions or other AWS services, such as Amazon DynamoDB, Amazon Simple Notification Service or Amazon Simple Queue Service
+    * `mock`: integration with API Gateway without invoking any backend
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+let endpoint = new awsx.apigateway.API("example", {
+    routes: [{
+        path: "/integration",
+        target: {
+            uri: "https://www.google.com",
+            type: "http_proxy",
+        },
+    }],
+})
+```
+
+For more information API Integrations, visit the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-integration-types.html).
+
+#### Raw Data Route
+
+A Raw Data Route is a fallback route for when raw swagger control is desired.  The `data` field should be an object that will be then included in the final swagger specification. For more information on the `x-amazon-apigateway-integration` swagger object, visit the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-integration.html).
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+let endpoint = new awsx.apigateway.API("example", {
+    routes: [{
+        path: "/rawdata",
+        method: "GET",
+        data: {
+            "x-amazon-apigateway-integration": {
+                "uri": "https://www.google.com/",
+                "responses": {
+                    "default": {
+                        "statusCode": "200",
+                    },
+                },
+                "passthroughBehavior": "when_no_match",
+                "httpMethod": "GET",
+                "type": "http_proxy",
+            },
+        },
+    }],
+})
+```
+
 ### Request Validation
 
 API Gateway can perform basic validations against request parameters, a request payload or both. When a validation fails, a 400 error is returned immediately.
