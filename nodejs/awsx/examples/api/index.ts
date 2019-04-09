@@ -16,8 +16,6 @@ import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
 
-const region = aws.config.requireRegion();
-
 // Create role for our lambda
 const role = new aws.iam.Role("mylambda-role", {
     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] }),
@@ -141,7 +139,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
             authType: "custom",
             type: "request",
             handler: {
-                uri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+                uri: authorizerLambda,
                 credentials: gatewayRole.arn,
             },
             identitySource: ["method.request.querystring.auth"],

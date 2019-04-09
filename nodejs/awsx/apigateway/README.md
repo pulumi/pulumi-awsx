@@ -202,7 +202,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
             authType: "custom",
             type: "request",
             handler: {
-                uri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+                uri: authorizerLambda,
                 credentials: gatewayRole.arn,
             },
             identitySource: ["method.request.querystring.auth"],

@@ -86,9 +86,10 @@ export interface LambdaAuthorizerDefinition {
 
 export interface LambdaAuthorizerInfo {
     /**
-     * The Uniform Resource Identifier (URI) of the authorizer Lambda function.
+     * The Uniform Resource Identifier (URI) of the authorizer Lambda function. The Lambda may also be passed directly,
+     * in which cases the URI will be obtained for you.
      */
-    uri: pulumi.Input<string>;
+    uri: pulumi.Input<string> | aws.lambda.Function;
 
     /**
      * Credentials required for invoking the authorizer in the form of an ARN of an IAM execution role.
@@ -100,6 +101,11 @@ export interface LambdaAuthorizerInfo {
 /** @internal */
 export function isLambdaAuthorizerInfo(info: LambdaAuthorizerInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaAuthorizerInfo {
     return (<LambdaAuthorizerInfo>info).uri !== undefined;
+}
+
+/** @internal */
+export function isLambdaFunction(uri: pulumi.Input<string> | aws.lambda.Function): uri is aws.lambda.Function {
+    return (<aws.lambda.Function>uri).invokeArn !== undefined;
 }
 
 /** @internal */

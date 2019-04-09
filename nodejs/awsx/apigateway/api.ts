@@ -629,8 +629,7 @@ function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.L
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
 
     for (const auth of authorizers) {
-        const suffix = Object.keys(swagger["securityDefinitions"]).length;
-        const authName = auth.authorizerName || `authorizer-${suffix}`;
+        const authName = auth.authorizerName || `authorizer-${Math.random().toString(36).substr(2, 5)}`;
 
         const securityDef: SecurityDefinition = {
             type: "apiKey",
@@ -656,9 +655,16 @@ function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.L
 function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.LambdaAuthorizerDefinition): LambdaAuthorizer {
     if (authorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.handler)) {
         const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
+        let uri: pulumi.Input<string>;
+        if (authorizer.isLambdaFunction(lambdaAuthorizer.handler.uri)) {
+            uri = lambdaAuthorizer.handler.uri.invokeArn;
+        } else {
+            uri = pulumi.output(lambdaAuthorizer.handler.uri);
+        }
+
         return {
             type: lambdaAuthorizer.type,
-            authorizerUri: lambdaAuthorizer.handler.uri,
+            authorizerUri: uri,
             authorizerCredentials: lambdaAuthorizer.handler.credentials,
             identitySource: identitySource,
             identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
@@ -671,11 +677,10 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorize
 
     const role = authorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
 
-    const region = aws.config.requireRegion();
     const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
     return {
         type: lambdaAuthorizer.type,
-        authorizerUri: pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${authorizerLambda.arn}/invocations`,
+        authorizerUri: authorizerLambda.invokeArn,
         authorizerCredentials: role.arn,
         identitySource: identitySource,
         identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
