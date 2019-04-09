@@ -91,8 +91,9 @@ func Test_Examples(t *testing.T) {
 			},
 			ExtraRuntimeValidation: validateAPITests([]apiTest{
 				{
-					urlPath:      "/b",
-					expectedBody: "Hello, world!",
+					urlPath:       "/b",
+					expectedBody:  "Hello, world!",
+					requireAPIKey: true,
 				},
 				{
 					urlPath:       "/a",
@@ -369,6 +370,7 @@ type apiTest struct {
 	urlPath       string
 	requiredParam string
 	expectedBody  string
+	requireAPIKey bool
 }
 
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
@@ -376,15 +378,24 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 		for _, tt := range apiTests {
 			url := stack.Outputs["url"].(string) + tt.urlPath
 
+			headers := make(map[string]string)
+
 			if tt.requiredParam != "" {
 				msg := fmt.Sprintf(`{"message": "Missing required request parameters: [%s]"}`, tt.requiredParam)
-				resp := examples.GetHTTP(t, url, 400)
+				resp := GetHTTP(t, url, nil, 400)
 				assertRequestBody(t, msg, resp)
 
 				url = fmt.Sprintf("%s?%s=test", url, tt.requiredParam)
 			}
 
-			resp := examples.GetHTTP(t, url, 200)
+			if tt.requireAPIKey {
+				msg := `{"message":"Forbidden"}`
+				resp := examples.GetHTTP(t, url, 403)
+				assertRequestBody(t, msg, resp)
+				headers["x-api-key"] = stack.Outputs["apiKeyValue"].(string)
+			}
+
+			resp := GetHTTP(t, url, headers, 200)
 			assertRequestBody(t, tt.expectedBody, resp)
 		}
 	}
@@ -395,4 +406,43 @@ func assertRequestBody(t *testing.T, expectedBody string, resp *http.Response) {
 	bytes, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedBody, string(bytes))
+}
+
+func GetHTTP(t *testing.T, url string, headers map[string]string, statusCode int) *http.Response {
+	var resp *http.Response
+	var err error
+	var httpClient http.Client
+	for i := 0; i <= 3; i++ {
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		if err != nil {
+			t.Logf("Got error trying to create request for %v", url)
+		}
+
+		for key, value := range headers {
+			req.Header.Add(key, value)
+		}
+
+		resp, err = httpClient.Do(req)
+		if err == nil && resp.StatusCode == statusCode {
+			return resp
+		}
+
+		if err != nil {
+			t.Logf("Got error trying to get %v. %v", url, err.Error())
+		}
+
+		if resp != nil && resp.StatusCode != statusCode {
+			t.Logf("Expected to get status code %v for %v. Got: %v", statusCode, url, resp.StatusCode)
+		}
+
+		time.Sleep(1 * time.Minute)
+	}
+
+	if !assert.NoError(t, err, "expected to be able to GET "+url) ||
+		!assert.Equal(t, statusCode, resp.StatusCode, "Got unexpected status code") {
+
+		t.FailNow()
+	}
+
+	return nil
 }

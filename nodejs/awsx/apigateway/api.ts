@@ -58,6 +58,11 @@ export type EventHandlerRoute = {
     * defined at the API level.
     */
     requestValidator?: reqvalidation.RequestValidator;
+
+    /**
+     * If true, an API Key will be required by the API Gateway. Defaults to false.
+     */
+    requireAPIKey?: boolean;
 };
 
 function isEventHandler(route: Route): route is EventHandlerRoute {
@@ -100,6 +105,12 @@ export type StaticRoute = {
     * defined at the API level.
     */
     requestValidator?: reqvalidation.RequestValidator;
+
+    /**
+     * If true, an API Key will be required by the API Gateway. Defaults to false. This will be applied to
+     * all static resources defined by localPath.
+     */
+    requireAPIKey?: boolean;
 };
 
 function isStaticRoute(route: Route): route is StaticRoute {
@@ -332,7 +343,7 @@ export class API extends pulumi.ComponentResource {
         const permissions = createLambdaPermissions(this, name, swaggerLambdas);
 
         // Expose the URL that the API is served at.
-        this.url = pulumi.interpolate `${this.deployment.invokeUrl}${stageName}/`;
+        this.url = pulumi.interpolate`${this.deployment.invokeUrl}${stageName}/`;
 
         // Create a stage, which is an addressable instance of the Rest API. Set it to point at the latest deployment.
         this.stage = new aws.apigateway.Stage(name, {
@@ -360,7 +371,7 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
                 // path on the API. We allow any stage instead of encoding the one known stage that will be
                 // deployed by Pulumi because the API Gateway console "Test" feature invokes the route
                 // handler with the fake stage `test-invoke-stage`.
-                sourceArn: pulumi.interpolate `${api.deployment.executionArn}*/${methodAndPath}`,
+                sourceArn: pulumi.interpolate`${api.deployment.executionArn}*/${methodAndPath}`,
             }, { parent: api }));
         }
     }
@@ -374,6 +385,7 @@ interface SwaggerSpec {
     paths: { [path: string]: { [method: string]: SwaggerOperation; }; };
     "x-amazon-apigateway-binary-media-types"?: string[];
     "x-amazon-apigateway-gateway-responses": Record<string, SwaggerGatewayResponse>;
+    securityDefinitions?: { [securityDefinitionName: string]: SecurityDefinition };
     "x-amazon-apigateway-request-validators"?: {
         [validatorName: string]: {
             validateRequestBody: boolean;
@@ -381,6 +393,7 @@ interface SwaggerSpec {
         };
     };
     "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
+    "x-amazon-apigateway-api-key-source"?: "HEADER";
 }
 
 interface SwaggerLambdas {
@@ -404,6 +417,19 @@ interface SwaggerOperation {
     responses?: { [code: string]: SwaggerResponse };
     "x-amazon-apigateway-integration": ApigatewayIntegration;
     "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
+
+    /**
+    * security is an object whose properties are securityDefinitionName. Each securityDefinitionName
+    * refers to a SecurityDefinition, defined at the top level of the swagger definition, by matching
+    * a Security Definition's name property. The securityDefinitionNames' values are empty arrays.
+    */
+    security?: { [securityDefinitionName: string]: string[] }[];
+}
+
+interface SecurityDefinition {
+    type: "apiKey";
+    name: string;
+    in: "header" | "query";
 }
 
 interface SwaggerParameter {
@@ -561,6 +587,10 @@ function addEventHandlerRouteToSwaggerSpec(
     if (route.requestValidator) {
         swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
     }
+    if (route.requireAPIKey) {
+        addAPIkeyToSecurityDefinitions(swagger);
+        addAPIkeyToSwaggerOperation(swaggerOperation);
+    }
     addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     swaggerLambdas[route.path][method] = lambda;
     return;
@@ -579,6 +609,28 @@ function addEventHandlerRouteToSwaggerSpec(
             },
         };
     }
+}
+
+function addAPIkeyToSecurityDefinitions(swagger: SwaggerSpec) {
+    swagger["x-amazon-apigateway-api-key-source"] = "HEADER";
+    swagger.securityDefinitions = swagger.securityDefinitions || {};
+    const apiKeySecurityDefinition: SecurityDefinition = {
+        type: "apiKey",
+        name: "x-api-key",
+        in: "header",
+    };
+
+    if (swagger.securityDefinitions["api_key"] && swagger.securityDefinitions["api_key"] !== apiKeySecurityDefinition) {
+        throw new Error("Defined a none apikey security definition with the name api_key");
+    }
+    swagger.securityDefinitions["api_key"] = apiKeySecurityDefinition;
+}
+
+function addAPIkeyToSwaggerOperation(swaggerOperation: SwaggerOperation) {
+    swaggerOperation["security"] = swaggerOperation["security"] || [];
+    swaggerOperation["security"].push({
+        ["api_key"]: [],
+    });
 }
 
 function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperation, requiredParameters: reqvalidation.Parameter[]) {
@@ -605,6 +657,10 @@ function addStaticRouteToSwaggerSpec(
     const parentOpts = { parent: api };
     // Create a bucket to place all the static data under.
     bucket = bucket || new aws.s3.Bucket(safeS3BucketName(name), undefined, parentOpts);
+
+    if (route.requireAPIKey) {
+        addAPIkeyToSecurityDefinitions(swagger);
+    }
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
     // that routes from the file path to the arn for the bucket object.
@@ -655,6 +711,9 @@ function addStaticRouteToSwaggerSpec(
         }
         if (route.requestValidator) {
             swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
+        }
+        if (route.requireAPIKey) {
+            addAPIkeyToSwaggerOperation(swaggerOperation);
         }
         addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
@@ -713,6 +772,9 @@ function addStaticRouteToSwaggerSpec(
                         if (directory.requestValidator) {
                             swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
                         }
+                        if (directory.requireAPIKey) {
+                            addAPIkeyToSwaggerOperation(swaggerOperation);
+                        }
                         swagger.paths[directoryServerPath] = {
                             [method]: swaggerOperation,
                         };
@@ -732,6 +794,9 @@ function addStaticRouteToSwaggerSpec(
         }
         if (directory.requestValidator) {
             swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
+        }
+        if (directory.requireAPIKey) {
+            addAPIkeyToSwaggerOperation(swaggerOperation);
         }
         addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);
     }

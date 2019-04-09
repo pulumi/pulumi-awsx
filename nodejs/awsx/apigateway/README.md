@@ -15,7 +15,6 @@ The destination is determined by the route, which can be an [Event Handler Route
 An Event Handler Route is a route that will map to a [Lambda](https://aws.amazon.com/lambda/). You will need to specify the path, method and the Lambda. Pulumi allows you to define the Lambda inline with your application code and provisions the appropriate permissions on your behalf so that API Gateway can communicate with your Lambda.
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 let endpoint = new awsx.apigateway.API("example", {
@@ -80,7 +79,6 @@ A Static Route is a route that will map to static content in files/directories. 
 By default, any request on directory will serve index.html. This behavior can be disabled by setting the `index` field to false.
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 let endpoint = new awsx.apigateway.API("example", {
@@ -109,7 +107,6 @@ You must specify one of the following validators:
 * "PARAMS_ONLY" - validate only the request parameters
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 let endpoint = new awsx.apigateway.API("example", {
@@ -128,7 +125,6 @@ let endpoint = new awsx.apigateway.API("example", {
 For each required request parameter, you must define the name and where the parameter is expected (i.e. "path", "query", or "header").
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 let endpoint = new awsx.apigateway.API("example", {
@@ -149,12 +145,32 @@ let endpoint = new awsx.apigateway.API("example", {
 
 Request body validation is currently not supported. If you have a strong use case, please comment on this [open issue](https://github.com/pulumi/pulumi-awsx/issues/198).
 
+### API Keys
+
+To require an API Key for an API Gateway route you set the `requiredAPIKey` property equal to `true`. You will also need to create a usage plan (`new aws.apigateway.UsagePlan`) and an API key (`new aws.apigateway.ApiKey`) and then associate the key with the usage plan (`new aws.apigateway.UsagePlanKey`).
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/a",
+        method: "GET",
+        eventHandler: async (event) => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        requireAPIKey: true,
+    }],
+});
+```
+
 ### Swagger String
 
 You can use a OpenAPI specification that is in string form to initialize the API Gateway. This in a way is an escape hatch for implementing featured not yet supported by Pulumi. You must manually provide permission for any route targets to be invoked by API Gateway when using this option.
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 const swaggerSpec = {
