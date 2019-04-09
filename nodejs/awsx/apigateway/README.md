@@ -117,9 +117,11 @@ let endpoint = new awsx.apigateway.API("example", {
 })
 ```
 
+For more information API Integrations, visit the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-integration-types.html).
+
 #### Raw Data Route
 
-A Raw Data Route is a fallback route for when raw swagger control is desired.  The `data` field should be an object that will be then included in the final swagger specification.
+A Raw Data Route is a fallback route for when raw swagger control is desired.  The `data` field should be an object that will be then included in the final swagger specification. For more information on the `x-amazon-apigateway-integration` swagger object, visit the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-integration.html).
 
 ```ts
 import * as awsx from "@pulumi/awsx";
