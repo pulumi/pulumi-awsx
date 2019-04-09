@@ -100,11 +100,11 @@ API Gateway can perform basic validations against request parameters, a request 
 
 ### Lambda Authorizers
 
-[Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) are AWS Lambda functions that provide control access to an API. You can define a Lambda Authorizer for an Event Handler Route or a Static Route. API Gateway supports "request" or "token" type Lambda authorizers.
+[Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) are AWS Lambda functions that provide control access to an API. You can define a Lambda Authorizer for an Event Handler Route or a Static Route. API Gateway supports `request` or `token` type Lambda authorizers. A `token` Lambda Authorizer uses an authorization token (i.e. a header in the form `Authorization: Token <token>`) to authorize the user, whereas a `request` Lambda Authorizer uses the request parameters (i.e. headers, path parameter or query parameters).
 
 To define an Authorizer, you provide a Lambda that fulfills `aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>` or you provide information on a pre-existing Lambda authorizer. The example below shows defining the Authorizer Lambda directly inline. See the [Event Handler Route](#Event-Handler-Route) section for other ways you can define a Lambda for the Authorizer.
 
-Below is an example of a custom "request" Lambda Authorizer.
+Below is an example of a custom `request` Lambda Authorizer.
 
 ```ts
 import * as awsx from "@pulumi/awsx";
@@ -126,7 +126,9 @@ const api = new awsx.apigateway.API("myapi", {
             authType: "custom",
             type: "request",
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
-                console.log("Received event:", JSON.stringify(event, null, 2));
+                // Add your own custom authorization logic here.
+                // Access the headers using event.headers, the query parameters using
+                // event.queryStringParameters or path parameters using event.pathParameters
                 return {
                     principalId: "user",
                     policyDocument: {
@@ -145,7 +147,7 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
-Below is an example of a custom "token" Lambda Authorizer.
+Below is an example of a custom `token` Lambda Authorizer.
 
 ```ts
 import * as awsx from "@pulumi/awsx";
@@ -168,7 +170,6 @@ const api = new awsx.apigateway.API("myapi", {
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
                 // Add your own custom authorization logic here.
                 // Access the token using event.authorizationToken
-                console.log("Received event:", JSON.stringify(event, null, 2));
                 return {
                     principalId: "user",
                     policyDocument: {
@@ -181,7 +182,6 @@ const api = new awsx.apigateway.API("myapi", {
                     },
                 };
             },
-            identitySource: ["method.request.querystring.auth"],
         }],
     }],
 });
@@ -211,7 +211,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
 });
 ```
 
-A complete example of defining the Lambda Authorizer elsewhere can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
+A complete example of defining the Lambda Authorizer elsewhere can be found [here](https://github.com/pulumi/pulumi-awsx/blob/61d2996b8bdb20ea625e66e17ebbaa7b62f9c163/nodejs/awsx/examples/api/index.ts#L94-L152).
 
 #### Validators
 

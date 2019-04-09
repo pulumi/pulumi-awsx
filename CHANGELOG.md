@@ -5,7 +5,7 @@
   LoadBalancer if none is provided.
 - Added easier convenience methods overloads on an awsx.ec2.SecurityGroup to make ingress/egress
   rules.
-- Add support for Lambda Authorizers for API Gateway in TypeScript
+- Add support for [Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) for API Gateway in TypeScript
 
 ## 0.18.0 (Release March 29, 2019)
 

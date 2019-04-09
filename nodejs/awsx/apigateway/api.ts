@@ -717,7 +717,6 @@ function addStaticRouteToSwaggerSpec(
     // Create a bucket to place all the static data under.
     bucket = bucket || new aws.s3.Bucket(safeS3BucketName(name), undefined, parentOpts);
 
-    // Lazily initialize auth names
     let authNames: string[] | undefined;
     if (route.authorizers) {
         authNames = addAuthorizersToSwagger(swagger, route.authorizers);
