@@ -176,7 +176,13 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 
 export class EgressSecurityGroupRule extends SecurityGroupRule {
     constructor(name: string, securityGroup: x.ec2.SecurityGroup,
-                args: EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+                args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs,
+                opts?: pulumi.ComponentResourceOptions) {
+
+        if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
+            args = x.ec2.SecurityGroupRule.egressArgs(args.destination, args.ports, args.description);
+        }
+
         super("awsx:x:ec2:EgressSecurityGroupRule", name, securityGroup, {
             ...args,
             type: "egress",
@@ -188,7 +194,12 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
 
 export class IngressSecurityGroupRule extends SecurityGroupRule {
     constructor(name: string, securityGroup: x.ec2.SecurityGroup,
-                args: IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+                args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs,
+                opts?: pulumi.ComponentResourceOptions) {
+
+        if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
+            args = x.ec2.SecurityGroupRule.ingressArgs(args.destination, args.ports, args.description);
+        }
 
         super("awsx:x:ec2:IngressSecurityGroupRule", name, securityGroup, {
             ...args,
