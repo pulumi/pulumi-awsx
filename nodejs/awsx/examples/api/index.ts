@@ -60,18 +60,10 @@ const api = new awsx.apigateway.API("myapi", {
             authType: "custom",
             type: "request",
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
-                console.log("Received event:", JSON.stringify(event, null, 2));
-                return {
-                    principalId: "user",
-                    policyDocument: {
-                        Version: "2012-10-17",
-                        Statement: [{
-                            Action: "execute-api:Invoke",
-                            Effect: "Allow",
-                            Resource: event.methodArn,
-                        }],
-                    },
-                };
+                return awsx.apigateway.AuthorizerResponse(
+                    "user",
+                    "Allow",
+                    event.methodArn);
             },
             identitySource: ["method.request.querystring.auth"],
         }],

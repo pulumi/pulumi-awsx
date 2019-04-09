@@ -21,6 +21,7 @@ import * as awslambda from "aws-lambda";
 
 export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
+export type AuthResponseContext = awslambda.AuthResponseContext;
 
 /**
  * LambdaAuthorizerDefinition provides the definition for a custom Authorizer for API Gateway.
@@ -139,3 +140,36 @@ export function createRoleWithAuthorizerInvocationPolicy(authorizerName: string,
     });
     return role;
 }
+
+/**
+ * AuthorizerResponse simplifies creating an AuthorizerResponse.
+ * @param principalId - unique identifier for the user
+ * @param effect - whether to "Allow" or "Deny" the request
+ * @param resource - the API method to be invoked (typically event.methodArn)
+ * @param context - key-value pairs that are passed from the authorizer to the backend Lambda
+ * @param apiKey - if the API uses a usage plan, this must be set to one of the usage plan's API keys
+ */
+export function AuthorizerResponse(principalId: string, effect: Effect, resource: string, context?: AuthResponseContext, apiKey?: string): AuthorizerResponse {
+    const response: AuthorizerResponse = {
+        principalId: principalId,
+        policyDocument: {
+            Version: "2012-10-17",
+            Statement: [{
+                Action: "execute-api:Invoke",
+                Effect: effect,
+                Resource: resource,
+            }],
+        },
+    };
+
+    if (context) {
+        response.context = context;
+    }
+
+    if (apiKey) {
+        response.usageIdentifierKey = apiKey;
+    }
+    return response;
+}
+
+export type Effect = "Allow" | "Deny";

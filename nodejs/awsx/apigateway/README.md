@@ -129,17 +129,10 @@ const api = new awsx.apigateway.API("myapi", {
                 // Add your own custom authorization logic here.
                 // Access the headers using event.headers, the query parameters using
                 // event.queryStringParameters or path parameters using event.pathParameters
-                return {
-                    principalId: "user",
-                    policyDocument: {
-                        Version: "2012-10-17",
-                        Statement: [{
-                            Action: "execute-api:Invoke",
-                            Effect: "Allow",
-                            Resource: event.methodArn,
-                        }],
-                    },
-                };
+                return awsx.apigateway.AuthorizerResponse(
+                    "user",
+                    "Allow",
+                    event.methodArn);
             },
             identitySource: ["method.request.querystring.auth"],
         }],
@@ -170,17 +163,10 @@ const api = new awsx.apigateway.API("myapi", {
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
                 // Add your own custom authorization logic here.
                 // Access the token using event.authorizationToken
-                return {
-                    principalId: "user",
-                    policyDocument: {
-                        Version: "2012-10-17",
-                        Statement: [{
-                            Action: "execute-api:Invoke",
-                            Effect: "Allow",
-                            Resource: event.methodArn,
-                        }],
-                    },
-                };
+                 return awsx.apigateway.AuthorizerResponse(
+                    "user",
+                    "Allow",
+                    event.methodArn);
             },
         }],
     }],
