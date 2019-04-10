@@ -65,14 +65,11 @@ const api = new awsx.apigateway.API("myapi", {
             name: "key",
             in: "query",
         }],
+        authorizers: authorizers,
     }, {
         path: "/b",
         method: "GET",
         eventHandler: lambda,
-        authorizers: authorizers,
-    }, {
-        path: "/anotherauthorizedpath",
-        localPath: "www",
         authorizers: authorizers,
     }, {
         path: "/www",
@@ -81,30 +78,22 @@ const api = new awsx.apigateway.API("myapi", {
             name: "key",
             in: "query",
         }],
-        // TODO - add this test
-        // }, {
-        //     path: "/wwwauthorized",
-        //     localPath: "www",
-        //     requiredParameters: [{
-        //         name: "key",
-        //         in: "query",
-        //     }],
-        //     authorizers: [awsx.apigateway.getTokenLambdaAuthorizerDefinition({
-        //         header: "Authorization",
-        //         handler: async (event: awsx.apigateway.AuthorizerEvent) => {
-        //             const token = event.authorizationToken;
-        //             if (token === "Allow") {
-        //                 return awsx.apigateway.AuthorizerResponse(
-        //                     "user",
-        //                     "Allow",
-        //                     event.methodArn);
-        //             }
-        //             return awsx.apigateway.AuthorizerResponse(
-        //                 "user",
-        //                 "Deny",
-        //                 event.methodArn);
-        //         },
-        //     })],
+        authorizers: [awsx.apigateway.getTokenLambdaAuthorizerDefinition({
+            header: "Authorization",
+            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+                const token = event.authorizationToken;
+                if (token === "Allow") {
+                    return awsx.apigateway.AuthorizerResponse(
+                        "user",
+                        "Allow",
+                        event.methodArn);
+                }
+                return awsx.apigateway.AuthorizerResponse(
+                    "user",
+                    "Deny",
+                    event.methodArn);
+            },
+        })],
     }],
     requestValidator: "ALL",
 });
@@ -157,6 +146,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
         localPath: "www",
         authorizers: [awsx.apigateway.getRequestLambdaAuthorizerDefinition({
             queryParameters: ["auth"],
+            headers: ["secret"],
             handler: authorizerLambda,
         })],
     }],

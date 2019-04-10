@@ -93,50 +93,61 @@ func Test_Examples(t *testing.T) {
 				{
 					urlStackOutputKey: "url",
 					urlPath:           "/a",
-					queryTest: &queryTest{
-						requiredQueryStr:              "?key=test",
-						expectedStatusWithoutQueryStr: 400,
-						expectedBodyWithoutQueryStr:   `{"message": "Missing required request parameters: [key]"}`,
+					requiredParameters: &requiredParameters{
+						queryParameters:             []string{"key"},
+						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+					},
+					requiredAuth: &requiredAuth{
+						queryParameters: map[string]string{
+							"auth": "password",
+						},
 					},
 					expectedBody: "<h1>Hello world!</h1>",
 				},
 				{
 					urlStackOutputKey: "url",
 					urlPath:           "/b",
-					queryTest: &queryTest{
-						requiredQueryStr:              "?auth=password",
-						expectedStatusWithoutQueryStr: 401,
-						expectedBodyWithoutQueryStr:   `{"message":"Unauthorized"}`,
+					requiredAuth: &requiredAuth{
+						queryParameters: map[string]string{
+							"auth": "password",
+						},
 					},
 					expectedBody: "Hello, world!",
 				},
 				{
 					urlStackOutputKey: "url",
-					urlPath:           "/anotherauthorizedpath/file1.txt",
-					queryTest: &queryTest{
-						requiredQueryStr:              "?auth=password",
-						expectedStatusWithoutQueryStr: 401,
-						expectedBodyWithoutQueryStr:   `{"message":"Unauthorized"}`,
+					urlPath:           "/c",
+					requiredAuth: &requiredAuth{
+						queryParameters: map[string]string{
+							"auth": "password",
+						},
 					},
-					expectedBody: "contents1\n",
+					expectedBody: "Hello, world!",
 				},
 				{
 					urlStackOutputKey: "url",
 					urlPath:           "/www/file1.txt",
-					queryTest: &queryTest{
-						requiredQueryStr:              "?key=test",
-						expectedStatusWithoutQueryStr: 400,
-						expectedBodyWithoutQueryStr:   `{"message": "Missing required request parameters: [key]"}`,
+					requiredParameters: &requiredParameters{
+						queryParameters:             []string{"key"},
+						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+					},
+					requiredAuth: &requiredAuth{
+						headers: map[string]string{
+							"Authorization": "Allow",
+						},
 					},
 					expectedBody: "contents1\n",
 				},
 				{
 					urlStackOutputKey: "authorizerUrl",
 					urlPath:           "/www_old/file1.txt",
-					queryTest: &queryTest{
-						requiredQueryStr:              "?auth=password",
-						expectedStatusWithoutQueryStr: 401,
-						expectedBodyWithoutQueryStr:   `{"message":"Unauthorized"}`,
+					requiredAuth: &requiredAuth{
+						queryParameters: map[string]string{
+							"auth": "password",
+						},
+						headers: map[string]string{
+							"secret": "test",
+						},
 					},
 					expectedBody: "contents1\n",
 				},
@@ -404,16 +415,21 @@ func addRandomSuffix(s string) string {
 }
 
 type apiTest struct {
-	urlStackOutputKey string
-	urlPath           string
-	queryTest         *queryTest
-	expectedBody      string
+	urlStackOutputKey  string
+	urlPath            string
+	requiredParameters *requiredParameters
+	requiredAuth       *requiredAuth
+	expectedBody       string
 }
 
-type queryTest struct {
-	requiredQueryStr              string
-	expectedStatusWithoutQueryStr int
-	expectedBodyWithoutQueryStr   string
+type requiredAuth struct {
+	headers         map[string]string
+	queryParameters map[string]string
+}
+
+type requiredParameters struct {
+	queryParameters             []string
+	expectedBodyWithoutQueryStr string
 }
 
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
@@ -421,13 +437,38 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 		for _, tt := range apiTests {
 			url := stack.Outputs[tt.urlStackOutputKey].(string) + tt.urlPath
 
-			if tt.queryTest != nil {
-				resp := examples.GetHTTP(t, url, tt.queryTest.expectedStatusWithoutQueryStr)
-				assertRequestBody(t, tt.queryTest.expectedBodyWithoutQueryStr, resp)
-
-				url = fmt.Sprintf("%s%s", url, tt.queryTest.requiredQueryStr)
+			req, err := http.NewRequest(http.MethodGet, url, nil)
+			if err != nil {
+				t.Logf("Got error trying to create request for %v", url)
 			}
-			resp := examples.GetHTTP(t, url, 200)
+
+			if tt.requiredAuth != nil {
+				resp := GetHTTP(t, req, 401)
+				assertRequestBody(t, `{"message":"Unauthorized"}`, resp)
+
+				for header, val := range tt.requiredAuth.headers {
+					req.Header.Add(header, val)
+				}
+
+				q := req.URL.Query()
+				for param, val := range tt.requiredAuth.queryParameters {
+					q.Add(param, val)
+				}
+				req.URL.RawQuery = q.Encode()
+			}
+
+			if tt.requiredParameters != nil {
+				resp := GetHTTP(t, req, 400)
+				assertRequestBody(t, tt.requiredParameters.expectedBodyWithoutQueryStr, resp)
+
+				q := req.URL.Query()
+				for _, param := range tt.requiredParameters.queryParameters {
+					q.Add(param, "test")
+				}
+				req.URL.RawQuery = q.Encode()
+			}
+
+			resp := GetHTTP(t, req, 200)
 			assertRequestBody(t, tt.expectedBody, resp)
 		}
 	}
@@ -438,4 +479,36 @@ func assertRequestBody(t *testing.T, expectedBody string, resp *http.Response) {
 	bytes, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	assert.Equal(t, expectedBody, string(bytes))
+}
+
+func GetHTTP(t *testing.T, req *http.Request, statusCode int) *http.Response {
+	var resp *http.Response
+	var err error
+	var httpClient http.Client
+	url := req.URL.String()
+	for i := 0; i <= 3; i++ {
+
+		resp, err = httpClient.Do(req)
+		if err == nil && resp.StatusCode == statusCode {
+			return resp
+		}
+
+		if err != nil {
+			t.Logf("Got error trying to get %v. %v", url, err.Error())
+		}
+
+		if resp != nil && resp.StatusCode != statusCode {
+			t.Logf("Expected to get status code %v for %v. Got: %v", statusCode, url, resp.StatusCode)
+		}
+
+		time.Sleep(1 * time.Minute)
+	}
+
+	if !assert.NoError(t, err, "expected to be able to GET "+url) ||
+		!assert.Equal(t, statusCode, resp.StatusCode, "Got unexpected status code") {
+
+		t.FailNow()
+	}
+
+	return nil
 }
