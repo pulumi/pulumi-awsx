@@ -116,16 +116,6 @@ func Test_Examples(t *testing.T) {
 				},
 				{
 					urlStackOutputKey: "url",
-					urlPath:           "/c",
-					requiredAuth: &requiredAuth{
-						queryParameters: map[string]string{
-							"auth": "password",
-						},
-					},
-					expectedBody: "Hello, world!",
-				},
-				{
-					urlStackOutputKey: "url",
 					urlPath:           "/www/file1.txt",
 					requiredParameters: &requiredParameters{
 						queryParameters:             []string{"key"},
