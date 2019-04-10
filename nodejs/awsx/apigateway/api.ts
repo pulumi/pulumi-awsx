@@ -540,16 +540,17 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
     // this once.  So have a value here that can be lazily initialized the first route we hit, which
     // can then be used for all successive static routes.
     let staticRouteBucket: aws.s3.Bucket | undefined;
+    const apiAuthorizers: Record<string, authorizer.LambdaAuthorizerDefinition> = {};
 
     for (const route of routes) {
         checkRoute(api, route, "path");
         swaggerLambdas[route.path] = swaggerLambdas[route.path] || {};
 
         if (isEventHandler(route)) {
-            addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route);
+            addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
         }
         else if (isStaticRoute(route)) {
-            staticRouteBucket = addStaticRouteToSwaggerSpec(api, name, swagger, route, staticRouteBucket);
+            staticRouteBucket = addStaticRouteToSwaggerSpec(api, name, swagger, route, staticRouteBucket, apiAuthorizers);
         }
         else if (isIntegrationRoute(route)) {
             addIntegrationRouteToSwaggerSpec(api, name, swagger, route);
@@ -584,7 +585,8 @@ function addEventHandlerRouteToSwaggerSpec(
     api: API, name: string,
     swagger: SwaggerSpec,
     swaggerLambdas: SwaggerLambdas,
-    route: EventHandlerRoute) {
+    route: EventHandlerRoute,
+    apiAuthorizers: Record<string, authorizer.LambdaAuthorizerDefinition>) {
 
     checkRoute(api, route, "eventHandler");
     checkRoute(api, route, "method");
@@ -595,7 +597,7 @@ function addEventHandlerRouteToSwaggerSpec(
 
     const swaggerOperation = createSwaggerOperationForLambda();
     if (route.authorizers) {
-        const authNames = addAuthorizersToSwagger(swagger, route.authorizers);
+        const authNames = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
         addAuthorizersToSwaggerOperation(swaggerOperation, authNames);
     }
     if (route.requiredParameters) {
@@ -624,30 +626,38 @@ function addEventHandlerRouteToSwaggerSpec(
     }
 }
 
-function addAuthorizersToSwagger(swagger: SwaggerSpec, authorizers: authorizer.LambdaAuthorizerDefinition[]): string[] {
+function addAuthorizersToSwagger(
+    swagger: SwaggerSpec,
+    authorizers: authorizer.LambdaAuthorizerDefinition[],
+    apiAuthorizers: Record<string, authorizer.LambdaAuthorizerDefinition>): string[] {
+
     const authNames: string[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
 
     for (const auth of authorizers) {
-        const authName = auth.authorizerName || `authorizer-${Math.random().toString(36).substr(2, 5)}`;
+        const suffix = Object.keys(swagger["securityDefinitions"]).length;
+        auth.authorizerName = auth.authorizerName || `authorizer-${suffix}`;
 
-        const securityDef: SecurityDefinition = {
-            type: "apiKey",
-            name: auth.parameterName,
-            in: auth.parameterLocation,
-            "x-amazon-apigateway-authtype": auth.authType,
-            "x-amazon-apigateway-authorizer": getLambdaAuthorizer(authName, auth),
-        };
+        // Check API authorizers - if its a new authorizer add it to the apiAuthorizers
+        // if the name already exists, we check that the authorizer references the same authorizer
+        if (!apiAuthorizers[auth.authorizerName]) {
+            apiAuthorizers[auth.authorizerName] = auth;
+        } else if (apiAuthorizers[auth.authorizerName] !== auth) {
+            throw new Error("Two different authorizers using the same name: " + auth.authorizerName);
+        }
 
         // Add security definition if it's a new authorizer
-        if (!swagger["securityDefinitions"][authName]) {
-            authNames.push(authName);
-            swagger["securityDefinitions"][authName] = securityDef;
-        } else if (swagger["securityDefinitions"][authName] !== securityDef) {
-
-            // Error if security definition with the name already exists and its different from the existing definition
-            throw new Error("Different authorizers with same name " + authName);
+        if (!swagger["securityDefinitions"][auth.authorizerName]) {
+            const securityDef: SecurityDefinition = {
+                type: "apiKey",
+                name: auth.parameterName,
+                in: auth.parameterLocation,
+                "x-amazon-apigateway-authtype": auth.authType,
+                "x-amazon-apigateway-authorizer": getLambdaAuthorizer(auth.authorizerName, auth),
+            };
+            swagger["securityDefinitions"][auth.authorizerName] = securityDef;
         }
+        authNames.push(auth.authorizerName);
     }
     return authNames;
 }
@@ -712,7 +722,8 @@ function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperat
 
 function addStaticRouteToSwaggerSpec(
     api: API, name: string, swagger: SwaggerSpec, route: StaticRoute,
-    bucket: aws.s3.Bucket | undefined) {
+    bucket: aws.s3.Bucket | undefined,
+    apiAuthorizers: Record<string, authorizer.LambdaAuthorizerDefinition>) {
 
     checkRoute(api, route, "localPath");
 
@@ -724,7 +735,7 @@ function addStaticRouteToSwaggerSpec(
 
     let authNames: string[] | undefined;
     if (route.authorizers) {
-        authNames = addAuthorizersToSwagger(swagger, route.authorizers);
+        authNames = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
     }
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path

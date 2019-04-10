@@ -29,6 +29,22 @@ const lambda = new aws.lambda.Function("myfunction", {
     runtime: aws.lambda.NodeJS8d10Runtime,
 });
 
+// Define the Authorizers up here so we can use it for two routes
+const authorizers: awsx.apigateway.LambdaAuthorizerDefinition[] = [{
+    authorizerName: "prettyAuthorizer",
+    parameterName: "auth",
+    parameterLocation: "query",
+    authType: "custom",
+    type: "request",
+    handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+        return awsx.apigateway.AuthorizerResponse(
+            "user",
+            "Allow",
+            event.methodArn);
+    },
+    identitySource: ["method.request.querystring.auth"],
+}];
+
 /**
  * In the following example, parameter validation is required for the `/a` route.
  * `curl $(pulumi stack output url)/a?key=hello` would return a 200, whereas
@@ -53,20 +69,11 @@ const api = new awsx.apigateway.API("myapi", {
         path: "/b",
         method: "GET",
         eventHandler: lambda,
-        authorizers: [{
-            authorizerName: "prettyAuthorizer",
-            parameterName: "auth",
-            parameterLocation: "query",
-            authType: "custom",
-            type: "request",
-            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
-                return awsx.apigateway.AuthorizerResponse(
-                    "user",
-                    "Allow",
-                    event.methodArn);
-            },
-            identitySource: ["method.request.querystring.auth"],
-        }],
+        authorizers: authorizers,
+    }, {
+        path: "/anotherauthorizedpath",
+        localPath: "www",
+        authorizers: authorizers,
     }, {
         path: "/www",
         localPath: "www",
@@ -74,6 +81,30 @@ const api = new awsx.apigateway.API("myapi", {
             name: "key",
             in: "query",
         }],
+        // TODO - add this test
+        // }, {
+        //     path: "/wwwauthorized",
+        //     localPath: "www",
+        //     requiredParameters: [{
+        //         name: "key",
+        //         in: "query",
+        //     }],
+        //     authorizers: [awsx.apigateway.getTokenLambdaAuthorizerDefinition({
+        //         header: "Authorization",
+        //         handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+        //             const token = event.authorizationToken;
+        //             if (token === "Allow") {
+        //                 return awsx.apigateway.AuthorizerResponse(
+        //                     "user",
+        //                     "Allow",
+        //                     event.methodArn);
+        //             }
+        //             return awsx.apigateway.AuthorizerResponse(
+        //                 "user",
+        //                 "Deny",
+        //                 event.methodArn);
+        //         },
+        //     })],
     }],
     requestValidator: "ALL",
 });
@@ -124,18 +155,12 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
     routes: [{
         path: "/www_old",
         localPath: "www",
-        authorizers: [{
-            authorizerName: "testing",
-            parameterName: "auth",
-            parameterLocation: "query",
-            authType: "custom",
-            type: "request",
-            handler: {
-                uri: authorizerLambda,
-                credentials: gatewayRole.arn,
+        authorizers: [awsx.apigateway.getRequestLambdaAuthorizerDefinition({
+            parameters: {
+                "auth": "query",
             },
-            identitySource: ["method.request.querystring.auth"],
-        }],
+            handler: authorizerLambda,
+        })],
     }],
 });
 

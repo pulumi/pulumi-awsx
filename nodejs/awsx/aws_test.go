@@ -112,6 +112,16 @@ func Test_Examples(t *testing.T) {
 				},
 				{
 					urlStackOutputKey: "url",
+					urlPath:           "/anotherauthorizedpath/file1.txt",
+					queryTest: &queryTest{
+						requiredQueryStr:              "?auth=password",
+						expectedStatusWithoutQueryStr: 401,
+						expectedBodyWithoutQueryStr:   `{"message":"Unauthorized"}`,
+					},
+					expectedBody: "contents1\n",
+				},
+				{
+					urlStackOutputKey: "url",
 					urlPath:           "/www/file1.txt",
 					queryTest: &queryTest{
 						requiredQueryStr:              "?key=test",
