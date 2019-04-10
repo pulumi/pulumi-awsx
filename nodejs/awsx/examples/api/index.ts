@@ -94,6 +94,30 @@ const api = new awsx.apigateway.API("myapi", {
                     event.methodArn);
             },
         })],
+    }, {
+        path: "/rawdata",
+        method: "GET",
+        data: {
+            "responses": {},
+            "x-amazon-apigateway-request-validator": "ALL",
+            "x-amazon-apigateway-integration": {
+                "uri": "https://www.google.com/",
+                "responses": {
+                    "default": {
+                        "statusCode": "200",
+                    },
+                },
+                "passthroughBehavior": "when_no_match",
+                "httpMethod": "GET",
+                "type": "http_proxy",
+            },
+        },
+    }, {
+        path: "/integration",
+        target: {
+            uri: "https://www.google.com",
+            type: "http_proxy",
+        },
     }],
     requestValidator: "ALL",
 });
