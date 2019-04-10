@@ -173,9 +173,7 @@ const api = new awsx.apigateway.API("myapi", {
             };
         },
         authorizers: [awsx.apigateway.getRequestLambdaAuthorizerDefinition({
-            parameters: {
-                "auth": "query",
-            },
+            queryParameters: ["auth"],
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
                 // Add your own custom authorization logic here.
                 // Access the headers using event.headers, the query parameters using
@@ -235,7 +233,6 @@ const api = new awsx.apigateway.API("myapi", {
             };
         },
         authorizers: [awsx.apigateway.getTokenLambdaAuthorizerDefinition({
-            header: "Authorization",
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
                 // Add your own custom authorization logic here.
                 // Access the token using event.authorizationToken

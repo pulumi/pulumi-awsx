@@ -187,9 +187,10 @@ export interface TokenAuthorizerArgs {
     authorizerName?: string;
 
     /**
-     * The request header for the authorization token.
+     * The request header for the authorization token. If not set, this defaults to
+     * Authorization.
      */
-    header: string;
+    header?: string;
 
     /**
      * The authorizerHandler specifies information about the authorizing Lambda. You can either set
@@ -219,7 +220,7 @@ export interface TokenAuthorizerArgs {
 export function getTokenLambdaAuthorizerDefinition(args: TokenAuthorizerArgs): LambdaAuthorizerDefinition {
     return {
         authorizerName: args.authorizerName,
-        parameterName: args.header,
+        parameterName: args.header || "Authorization",
         parameterLocation: "header",
         authType: "oauth2",
         type: "token",
@@ -241,10 +242,16 @@ export interface RequestAuthorizerArgs {
     authorizerName?: string;
 
     /**
-     * parameters is a object of the parameter keys whose values are their expected location
-     * ("header" or "query") used to authorizing an identity.
+     * queryParameters is an array of the expected query parameter keys used to authorize a request.
+     * While this argument is optional, at least one queryParameter or one header must be defined.
      * */
-    parameters: Record<string, "header" | "query">;
+    queryParameters?: string[];
+
+    /**
+     * headers is an array of the expected header keys used to authorize a request.
+     *  While this argument is optional, at least one queryParameter or one header must be defined.
+     * */
+    headers?: string[];
 
     /**
      * The authorizerHandler specifies information about the authorizing Lambda. You can either set
@@ -271,18 +278,16 @@ export function getRequestLambdaAuthorizerDefinition(args: RequestAuthorizerArgs
     let parameterName: string;
     let location: "header" | "query";
 
-    const parameterLen = Object.keys(args.parameters).length;
-    if (parameterLen < 1) {
-        throw new Error("Must specify at least one parameter");
-    } else if (parameterLen === 1) {
-        parameterName = Object.keys(args.parameters)[0];
-        location = getLocation(args.parameters);
+    const numQueryParams = getLength(args.queryParameters);
+    const numHeaders = getLength(args.headers);
 
+    if (numQueryParams === 0 && numHeaders === 0) {
+        throw new Error("Must specify at least one parameter");
     } else {
-        parameterName = "Unused";
-        // TODO: determine location for multiple parameters
-        location = "header";
+        location = getLocation(numHeaders, numQueryParams);
+        parameterName = getParameterName(args, numHeaders, numQueryParams);
     }
+
     return {
         authorizerName: args.authorizerName,
         parameterName: parameterName,
@@ -290,52 +295,55 @@ export function getRequestLambdaAuthorizerDefinition(args: RequestAuthorizerArgs
         authType: "custom",
         type: "request",
         handler: args.handler,
-        identitySource: parametersToIdentitySources(args.parameters),
+        identitySource: parametersToIdentitySources(args),
         authorizerResultTtlInSeconds: args.authorizerResultTtlInSeconds,
     };
 }
 
 /** @internal */
-function getLocation(parameters: Record<string, "header" | "query">): "header" | "query" {
-    let location: "header" | "query" | undefined;
-    for (const parameterKey in parameters) {
-        if (parameters.hasOwnProperty(parameterKey)) {
-            const currLocation = parameters[parameterKey];
-            // Set location on first parameter
-            if (!location) {
-                location = currLocation;
-                continue;
-            } else if (location === currLocation) {
-                continue;
-            } else {
-                // If there is both "header" and "query" parameters, this must be "header"
-                return "header";
-            }
-        }
+function getLength(params: string[] | undefined): number {
+    if (!params) {
+        return 0;
     }
-    if (!location) {
-        throw new Error("Could not determine parameter location");
-    }
-    return location;
+    return params.length;
 }
 
 /** @internal */
-function parametersToIdentitySources(parameters: Record<string, "header" | "query">): string[] {
+function getParameterName(args: RequestAuthorizerArgs, numHeaders: number, numQueryParameters: number): string {
+    if (numQueryParameters + numHeaders === 1) {
+        if (args.queryParameters) {
+            return args.queryParameters[0];
+        } else if (args.headers) {
+            return args.headers[0];
+        }
+    }
+    return "Unused";
+}
+
+/** @internal */
+function getLocation(numHeaders: number, numQueryParameters: number): "header" | "query" {
+    if (numHeaders > 0) {
+        return "header";
+    } else if (numQueryParameters > 0) {
+        return "query";
+    } else {
+        throw new Error("Could not determine parameter location");
+    }
+}
+
+/** @internal */
+function parametersToIdentitySources(args: RequestAuthorizerArgs): string[] {
     const identitySource: string[] = [];
-    for (const parameterKey in parameters) {
-        if (parameters.hasOwnProperty(parameterKey)) {
-            const identitySourceStr = parameterToIdentitySource(parameterKey, parameters[parameterKey]);
-            identitySource.push(identitySourceStr);
+    if (args.headers) {
+        for (const header of args.headers) {
+            identitySource.push("method.request.header." + header);
+        }
+    }
+
+    if (args.queryParameters) {
+        for (const param of args.queryParameters) {
+            identitySource.push("method.request.querystring." + param);
         }
     }
     return identitySource;
-}
-
-
-/** @internal */
-function parameterToIdentitySource(parameterKey: string, location: "header" | "query"): string {
-    if (location === "header") {
-        return "method.request.header." + parameterKey;
-    }
-    return "method.request.querystring." + parameterKey;
 }

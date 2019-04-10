@@ -156,9 +156,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
         path: "/www_old",
         localPath: "www",
         authorizers: [awsx.apigateway.getRequestLambdaAuthorizerDefinition({
-            parameters: {
-                "auth": "query",
-            },
+            queryParameters: ["auth"],
             handler: authorizerLambda,
         })],
     }],
