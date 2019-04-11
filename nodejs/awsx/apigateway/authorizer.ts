@@ -99,7 +99,7 @@ export interface LambdaAuthorizerInfo {
      * Credentials required for invoking the authorizer in the form of an ARN of an IAM execution role.
      * For example, "arn:aws:iam::account-id:IAM_role".
      */
-    credentials: pulumi.Input<string>;
+    credentials: pulumi.Input<string> | aws.iam.Role;
 }
 
 /** @internal */
@@ -110,6 +110,11 @@ export function isLambdaAuthorizerInfo(info: LambdaAuthorizerInfo | aws.lambda.E
 /** @internal */
 export function isLambdaFunction(uri: pulumi.Input<string> | aws.lambda.Function): uri is aws.lambda.Function {
     return (<aws.lambda.Function>uri).invokeArn !== undefined;
+}
+
+/** @internal */
+export function isIAMRole(creds: pulumi.Input<string> | aws.iam.Role): creds is aws.iam.Role {
+    return (<aws.iam.Role>creds).assumeRolePolicy !== undefined;
 }
 
 /** @internal */
@@ -165,14 +170,8 @@ export function authorizerResponse(principalId: string, effect: Effect, resource
             }],
         },
     };
-
-    if (context) {
-        response.context = context;
-    }
-
-    if (apiKey) {
-        response.usageIdentifierKey = apiKey;
-    }
+    response.context = context;
+    response.usageIdentifierKey = apiKey;
     return response;
 }
 

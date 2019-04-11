@@ -665,17 +665,16 @@ function addAuthorizersToSwagger(
 function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.LambdaAuthorizer): LambdaAuthorizer {
     if (authorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.handler)) {
         const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
-        let uri: pulumi.Input<string>;
-        if (authorizer.isLambdaFunction(lambdaAuthorizer.handler.uri)) {
-            uri = lambdaAuthorizer.handler.uri.invokeArn;
-        } else {
-            uri = pulumi.output(lambdaAuthorizer.handler.uri);
-        }
 
+        const uri = authorizer.isLambdaFunction(lambdaAuthorizer.handler.uri) ?
+            lambdaAuthorizer.handler.uri.invokeArn : pulumi.output(lambdaAuthorizer.handler.uri);
+
+        const credentials = authorizer.isIAMRole(lambdaAuthorizer.handler.credentials) ?
+            lambdaAuthorizer.handler.credentials.arn : lambdaAuthorizer.handler.credentials;
         return {
             type: lambdaAuthorizer.type,
             authorizerUri: uri,
-            authorizerCredentials: lambdaAuthorizer.handler.credentials,
+            authorizerCredentials: credentials,
             identitySource: identitySource,
             identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
             authorizerResultTtlInSeconds: lambdaAuthorizer.authorizerResultTtlInSeconds,
