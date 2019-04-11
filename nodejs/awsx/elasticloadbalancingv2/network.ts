@@ -49,11 +49,11 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
         }, { parent: this, ...opts });
     }
 
-    public createTargetGroup(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    public createTargetGroup(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
         return new NetworkTargetGroup(name, {
             loadBalancer: this,
             ...args,
-        }, opts || { parent: this });
+        }, { parent: this, ...opts });
     }
 }
 
@@ -79,7 +79,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
 
     public readonly listeners: x.elasticloadbalancingv2.NetworkListener[];
 
-    constructor(name: string, args: NetworkTargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP");
 
@@ -87,7 +87,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
             ...args,
             protocol,
             vpc: loadBalancer.vpc,
-        }, opts || { parent: loadBalancer });
+        }, { parent: loadBalancer, ...opts });
 
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
@@ -96,12 +96,12 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     }
 
     public createListener(name: string, args: NetworkListenerArgs,
-                          opts?: pulumi.ComponentResourceOptions): NetworkListener {
+                          opts: pulumi.ComponentResourceOptions = {}): NetworkListener {
         return new NetworkListener(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
             ...args,
-        }, opts || { parent: this });
+        }, { parent: this, ...opts });
     }
 }
 
@@ -122,7 +122,7 @@ export class NetworkListener
 
     constructor(name: string,
                 args: NetworkListenerArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (args.defaultAction && args.defaultActions) {
             throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
@@ -137,7 +137,7 @@ export class NetworkListener
             protocol,
             loadBalancer,
             defaultActions,
-        }, opts || { parent: loadBalancer });
+        }, { parent: loadBalancer, ...opts });
 
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);

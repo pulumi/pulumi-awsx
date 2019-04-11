@@ -92,6 +92,59 @@ let endpoint = new awsx.apigateway.API("example", {
 
 A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
 
+#### Integration Route
+
+An Integration Route is a route that will map an endpoint to a specified backend. The supported types are:
+
+    * `http` or `http_proxy`: integration with an HTTP backend
+    * `aws_proxy`: integration with AWS Lambda functions
+    * `aws`: integration with AWS Lambda functions or other AWS services, such as Amazon DynamoDB, Amazon Simple Notification Service or Amazon Simple Queue Service
+    * `mock`: integration with API Gateway without invoking any backend
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+let endpoint = new awsx.apigateway.API("example", {
+    routes: [{
+        path: "/integration",
+        target: {
+            uri: "https://www.google.com",
+            type: "http_proxy",
+        },
+    }],
+})
+```
+
+For more information API Integrations, visit the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-integration-types.html).
+
+#### Raw Data Route
+
+A Raw Data Route is a fallback route for when raw swagger control is desired.  The `data` field should be an object that will be then included in the final swagger specification. For more information on the `x-amazon-apigateway-integration` swagger object, visit the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-integration.html).
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+let endpoint = new awsx.apigateway.API("example", {
+    routes: [{
+        path: "/rawdata",
+        method: "GET",
+        data: {
+            "x-amazon-apigateway-integration": {
+                "uri": "https://www.google.com/",
+                "responses": {
+                    "default": {
+                        "statusCode": "200",
+                    },
+                },
+                "passthroughBehavior": "when_no_match",
+                "httpMethod": "GET",
+                "type": "http_proxy",
+            },
+        },
+    }],
+})
+```
+
 ### Request Validation
 
 API Gateway can perform basic validations against request parameters, a request payload or both. When a validation fails, a 400 error is returned immediately.
@@ -149,19 +202,240 @@ Request body validation is currently not supported. If you have a strong use cas
 
 To require an API Key for an API Gateway route you set the `requiredAPIKey` property equal to `true`. You will also need to create a usage plan (`new aws.apigateway.UsagePlan`) and an API key (`new aws.apigateway.ApiKey`) and then associate the key with the usage plan (`new aws.apigateway.UsagePlanKey`).
 
+TODO - add example
+
+### Lambda Authorizers
+
+[Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) are AWS Lambda functions that provide control access to an API. You can define a Lambda Authorizer for an Event Handler Route or a Static Route. API Gateway supports `request` or `token` type Lambda authorizers. A `token` Lambda Authorizer uses an authorization token (i.e. a header in the form `Authorization: Token <token>`) to authorize the user, whereas a `request` Lambda Authorizer uses the request parameters (i.e. headers, path parameter or query parameters).
+
+To define an Authorizer, you provide a Lambda that fulfills `aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>` or you provide information on a pre-existing Lambda authorizer. The example below shows defining the Authorizer Lambda directly inline. See the [Event Handler Route](#Event-Handler-Route) section for other ways you can define a Lambda for the Authorizer.
+
+#### Token Authorizer
+
+Below is an example of a custom `request` Lambda Authorizer that uses `awsx.apigateway.getRequestLambdaAuthorizerDefinition` to simplify defining the authorizer.
+
 ```ts
 import * as awsx from "@pulumi/awsx";
 
 const api = new awsx.apigateway.API("myapi", {
     routes: [{
-        path: "/a",
+        path: "/b",
         method: "GET",
-        eventHandler: async (event) => {
+        eventHandler: async () => {
             return {
                 statusCode: 200,
                 body: "<h1>Hello world!</h1>",
             };
-        requireAPIKey: true,
+        },
+        authorizers: [awsx.apigateway.getRequestLambdaAuthorizerDefinition({
+            queryParameters: ["auth"],
+            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+                // Add your own custom authorization logic here.
+                // Access the headers using event.headers, the query parameters using
+                // event.queryStringParameters or path parameters using event.pathParameters
+                return awsx.apigateway.AuthorizerResponse(
+                    "user",
+                    "Allow",
+                    event.methodArn);
+            },
+        })],
+    }],
+});
+```
+
+You may also define the authorizer by specifying all the values. As seen below:
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        ...
+        authorizers: [{
+            authorizerName: "prettyAuthorizer",
+            parameterName: "auth",
+            parameterLocation: "query",
+            authType: "custom",
+            type: "request",
+            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+                // Add your own custom authorization logic here.
+                return awsx.apigateway.AuthorizerResponse(
+                    "user",
+                    "Allow",
+                    event.methodArn);
+            },
+            identitySource: ["method.request.querystring.auth"],
+        }],
+    }],
+});
+```
+
+#### Request Authorizer
+
+Below is an example of a custom `token` Lambda Authorizer that uses `awsx.apigateway.` to simplify the creation of the authorizer.
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/b",
+        method: "GET",
+        eventHandler: async () => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        },
+        authorizers: [awsx.apigateway.getTokenLambdaAuthorizerDefinition({
+            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+                // Add your own custom authorization logic here.
+                // Access the token using event.authorizationToken
+                const token = event.authorizationToken;
+                if (token === "Allow") {
+                    return awsx.apigateway.AuthorizerResponse(
+                        "user",
+                        "Allow",
+                        event.methodArn);
+                }
+                return awsx.apigateway.AuthorizerResponse(
+                    "user",
+                    "Deny",
+                    event.methodArn);
+            },
+        })],
+    }],
+});
+```
+
+You may also define the authorizer by specifying all the values. As seen below:
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/b",
+        method: "GET",
+        eventHandler: async () => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        },
+        authorizers: [{
+            parameterName: "Authorization",
+            parameterLocation: "header",
+            authType: "oauth2",
+            type: "request",
+            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+                // Add your own custom authorization logic here.
+                 return awsx.apigateway.AuthorizerResponse(
+                    "user",
+                    "Allow",
+                    event.methodArn);
+            },
+        }],
+    }],
+});
+```
+
+#### Specifying the Role
+
+If your Authorizer requires access to other AWS resources, you will need to provision the appropriate role. You can do so by using `new aws.lambda.CallbackFunction`.
+
+```ts
+import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+
+const callbackFxn = new aws.lambda.CallbackFunction("callbackFxn", {
+    callback: async (event: awsx.apigateway.AuthorizerEvent) => {
+        // Add custom authorization logic here
+        return awsx.apigateway.AuthorizerResponse(
+            "user",
+            "Allow",
+            event.methodArn);
+    },
+    role: role, // Specify role with appropriate AWS permissions.
+});
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/b",
+        method: "GET",
+        eventHandler: async () => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        },
+        authorizers: [{
+            parameterName: "Authorization",
+            parameterLocation: "header",
+            authType: "oauth2",
+            type: "request",
+            handler: callbackFxn,
+        }],
+    }],
+});
+```
+
+#### Using a Lambda Predefined Lambda
+
+You can also define the Lambda Authorizer elsewhere and then reference the required values.
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
+    routes: [{
+        ...
+        authorizers: [{
+            authorizerName: "testing",
+            parameterName: "auth",
+            parameterLocation: "query",
+            authType: "custom",
+            type: "request",
+            handler: {
+                // Either specify the aws.lambda.Function or provide the invoke URI
+                uri: authorizerLambda,
+                credentials: gatewayRole.arn,
+            },
+            identitySource: ["method.request.querystring.auth"],
+        }],
+    }],
+});
+```
+
+A complete example of defining the Lambda Authorizer elsewhere can be found [here](https://github.com/pulumi/pulumi-awsx/blob/61d2996b8bdb20ea625e66e17ebbaa7b62f9c163/nodejs/awsx/examples/api/index.ts#L94-L152).
+
+#### Authorizer Response
+
+A helper function `awsx.apigateway.AuthorizerResponse` has been created to simplify generating the authorizer response. This can be used when defining the authorizer handler as follows:
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        ...
+        authorizers: [{
+            header: "Authorization",
+            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+                // Add your own custom authorization logic here.
+                const token = event.authorizationToken;
+                if (token === "Allow") {
+                    return awsx.apigateway.AuthorizerResponse(
+                        "user",
+                        "Allow",
+                        event.methodArn);
+                }
+                return awsx.apigateway.AuthorizerResponse(
+                    "user",
+                    "Deny",
+                    event.methodArn);
+            },
+        }],
     }],
 });
 ```

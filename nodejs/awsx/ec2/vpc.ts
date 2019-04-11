@@ -208,6 +208,9 @@ export class Vpc extends pulumi.ComponentResource {
     }
 }
 
+(<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
+(<any>Vpc.prototype.addNatGateway).doNotCapture = true;
+
 function createNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
     // Create nat gateways if we have private subnets and we have public subnets to place them in.
     if (vpc.privateSubnets.length === 0 || numberOfNatGateways === 0 || vpc.publicSubnets.length === 0) {

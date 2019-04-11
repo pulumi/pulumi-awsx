@@ -85,32 +85,19 @@ export class SecurityGroup extends pulumi.ComponentResource {
 
     public createEgressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.EgressSecurityGroupRule;
     public createEgressRule(name: string, args: x.ec2.EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.EgressSecurityGroupRule;
-    public createEgressRule(
-        name: string,
-        args: x.ec2.SimpleSecurityGroupRuleArgs | x.ec2.EgressSecurityGroupRuleArgs,
-        opts?: pulumi.ComponentResourceOptions) {
-
-        if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
-            args = x.ec2.SecurityGroupRule.egressArgs(args.destination, args.ports, args.description);
-        }
-
+    public createEgressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs | x.ec2.EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
         return new x.ec2.EgressSecurityGroupRule(name, this, args, opts);
     }
 
     public createIngressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.IngressSecurityGroupRule;
     public createIngressRule(name: string, args: x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.IngressSecurityGroupRule;
-    public createIngressRule(
-        name: string,
-        args: x.ec2.SimpleSecurityGroupRuleArgs | x.ec2.IngressSecurityGroupRuleArgs,
-        opts?: pulumi.ComponentResourceOptions) {
-
-        if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
-            args = x.ec2.SecurityGroupRule.ingressArgs(args.destination, args.ports, args.description);
-        }
-
+    public createIngressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs | x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
         return new x.ec2.IngressSecurityGroupRule(name, this, args, opts);
     }
 }
+
+(<any>SecurityGroup.prototype.createEgressRule).doNotCapture = true;
+(<any>SecurityGroup.prototype.createIngressRule).doNotCapture = true;
 
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 
