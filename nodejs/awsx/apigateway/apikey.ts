@@ -15,15 +15,23 @@
 // These APIs are currently experimental and may change.
 
 import * as aws from "@pulumi/aws";
+import * as api from "./api";
 
 /**
  * Input properties for creating a UsagePlan and associated API Keys.
  */
 export interface APIKeyArgs {
+
+    /**
+     * Define the api you would like to associate the usage plan with. If used
+     * this will override any apiStages defined in the [usagePlan].
+     */
+    api?: api.API;
+
     /**
      * Define the usage plan to create.
      */
-    usagePlan: aws.apigateway.UsagePlanArgs;
+    usagePlan?: aws.apigateway.UsagePlanArgs;
 
     /**
      * The API keys you would like to create & associate with the usage plan.
@@ -33,12 +41,12 @@ export interface APIKeyArgs {
 
 export interface AssociatedAPIKeys {
     readonly usagePlan: aws.apigateway.UsagePlan;
-    readonly keys: Key[] | undefined;
+    readonly keys: Key[];
 }
 
 export interface Key {
-    apikey: aws.apigateway.ApiKeyArgs,
-    usagePlanKey: aws.apigateway.UsagePlanKey,
+    apikey: aws.apigateway.ApiKey;
+    usagePlanKey: aws.apigateway.UsagePlanKey;
 }
 
 /**
@@ -48,8 +56,36 @@ export interface Key {
  * @param args The arguments to use to populate this resource's properties.
  */
 export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): AssociatedAPIKeys {
-    const usagePlan = new aws.apigateway.UsagePlan(name, args.usagePlan);
-    let keys: Key[] | undefined;
+    let usagePlanArgs: aws.apigateway.UsagePlanArgs | undefined = args.usagePlan;
+
+    if (args.api) {
+        const stages = [{
+            apiId: args.api.restAPI.id,
+            stage: args.api.stage.stageName,
+        }];
+
+        if (args.usagePlan) {
+            if (args.usagePlan.apiStages) {
+                throw new Error("[args.api] and [args.usagePlan.apiStages] cannot both be defined");
+            }
+
+            usagePlanArgs = {
+                apiStages: stages,
+                description: args.usagePlan.description,
+                name: args.usagePlan.name,
+                productCode: args.usagePlan.productCode,
+                quotaSettings: args.usagePlan.quotaSettings,
+                throttleSettings: args.usagePlan.throttleSettings,
+            };
+        } else {
+            usagePlanArgs = {
+                apiStages: stages,
+            };
+        }
+    }
+
+    const usagePlan = new aws.apigateway.UsagePlan(name, usagePlanArgs);
+    let keys: Key[] = [];
 
     if (args.apiKeys) {
         keys = [];

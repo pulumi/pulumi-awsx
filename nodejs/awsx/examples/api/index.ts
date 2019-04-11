@@ -129,30 +129,17 @@ export const url = api.url;
  * ----------------------------------------------------------------------------
  */
 
-/**
- * Set up the Usage Plan for the API.
- */
-const usagePlan = new aws.apigateway.UsagePlan("my-usage-plan", {
-    apiStages: [{
-        apiId: api.restAPI.id,
-        stage: api.stage.stageName,
+const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
+    api: api,
+    apiKeys: [{
+        name: "test-key",
     }],
-});
-
-/**
- * Create an API Key for testing purposes.
- */
-const apikey = new aws.apigateway.ApiKey("my-key", {});
-const usagePlanKey = new aws.apigateway.UsagePlanKey("my-key", {
-    keyId: apikey.id,
-    keyType: "API_KEY",
-    usagePlanId: usagePlan.id,
 });
 
 /**
  * Export the API Key of the API for testing.
  */
-export const apiKeyValue = apikey.value;
+export const apiKeyValue = apikeys.keys[0].apikey.value;
 
 /**
  * ----------------------------------------------------------------------------
