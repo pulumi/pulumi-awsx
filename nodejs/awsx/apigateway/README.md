@@ -210,7 +210,7 @@ To define an Authorizer, you provide a Lambda that fulfills `aws.lambda.EventHan
 
 #### Token Authorizer
 
-Below is an example of a custom `request` Lambda Authorizer that uses `awsx.apigateway.getRequestLambdaAuthorizerDefinition` to simplify defining the authorizer.
+Below is an example of a custom `request` Lambda Authorizer that uses `awsx.apigateway.getRequestLambdaAuthorizer` to simplify defining the authorizer.
 
 ```ts
 import * as awsx from "@pulumi/awsx";
@@ -225,16 +225,13 @@ const api = new awsx.apigateway.API("myapi", {
                 body: "<h1>Hello world!</h1>",
             };
         },
-        authorizers: [awsx.apigateway.getRequestLambdaAuthorizerDefinition({
+        authorizers: [awsx.apigateway.getRequestLambdaAuthorizer({
             queryParameters: ["auth"],
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
                 // Add your own custom authorization logic here.
                 // Access the headers using event.headers, the query parameters using
                 // event.queryStringParameters or path parameters using event.pathParameters
-                return awsx.apigateway.AuthorizerResponse(
-                    "user",
-                    "Allow",
-                    event.methodArn);
+                return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
             },
         })],
     }],
@@ -257,7 +254,7 @@ const api = new awsx.apigateway.API("myapi", {
             type: "request",
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
                 // Add your own custom authorization logic here.
-                return awsx.apigateway.AuthorizerResponse(
+                return awsx.apigateway.authorizerResponse(
                     "user",
                     "Allow",
                     event.methodArn);
@@ -285,21 +282,14 @@ const api = new awsx.apigateway.API("myapi", {
                 body: "<h1>Hello world!</h1>",
             };
         },
-        authorizers: [awsx.apigateway.getTokenLambdaAuthorizerDefinition({
+        authorizers: [awsx.apigateway.getTokenLambdaAuthorizer({
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
                 // Add your own custom authorization logic here.
-                // Access the token using event.authorizationToken
                 const token = event.authorizationToken;
                 if (token === "Allow") {
-                    return awsx.apigateway.AuthorizerResponse(
-                        "user",
-                        "Allow",
-                        event.methodArn);
+                    return awsx.apigateway.authorizerResponse("user","Allow", event.methodArn);
                 }
-                return awsx.apigateway.AuthorizerResponse(
-                    "user",
-                    "Deny",
-                    event.methodArn);
+                return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
             },
         })],
     }],
@@ -328,10 +318,7 @@ const api = new awsx.apigateway.API("myapi", {
             type: "request",
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
                 // Add your own custom authorization logic here.
-                 return awsx.apigateway.AuthorizerResponse(
-                    "user",
-                    "Allow",
-                    event.methodArn);
+                 return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
             },
         }],
     }],
@@ -349,10 +336,7 @@ import * as awsx from "@pulumi/awsx";
 const callbackFxn = new aws.lambda.CallbackFunction("callbackFxn", {
     callback: async (event: awsx.apigateway.AuthorizerEvent) => {
         // Add custom authorization logic here
-        return awsx.apigateway.AuthorizerResponse(
-            "user",
-            "Allow",
-            event.methodArn);
+        return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
     },
     role: role, // Specify role with appropriate AWS permissions.
 });
@@ -378,7 +362,7 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
-#### Using a Lambda Predefined Lambda
+#### Using a Pre-existing AWS Lambda
 
 You can also define the Lambda Authorizer elsewhere and then reference the required values.
 
@@ -409,7 +393,7 @@ A complete example of defining the Lambda Authorizer elsewhere can be found [her
 
 #### Authorizer Response
 
-A helper function `awsx.apigateway.AuthorizerResponse` has been created to simplify generating the authorizer response. This can be used when defining the authorizer handler as follows:
+A helper function `awsx.apigateway.authorizerResponse` has been created to simplify generating the authorizer response. This can be used when defining the authorizer handler as follows:
 
 ```ts
 import * as awsx from "@pulumi/awsx";
@@ -423,15 +407,9 @@ const api = new awsx.apigateway.API("myapi", {
                 // Add your own custom authorization logic here.
                 const token = event.authorizationToken;
                 if (token === "Allow") {
-                    return awsx.apigateway.AuthorizerResponse(
-                        "user",
-                        "Allow",
-                        event.methodArn);
+                    return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
                 }
-                return awsx.apigateway.AuthorizerResponse(
-                    "user",
-                    "Deny",
-                    event.methodArn);
+                return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
             },
         }],
     }],

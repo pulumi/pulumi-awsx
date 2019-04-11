@@ -24,9 +24,9 @@ export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
 export type AuthResponseContext = awslambda.AuthResponseContext;
 
 /**
- * LambdaAuthorizerDefinition provides the definition for a custom Authorizer for API Gateway.
+ * LambdaAuthorizer provides the definition for a custom Authorizer for API Gateway.
  */
-export interface LambdaAuthorizerDefinition {
+export interface LambdaAuthorizer {
     /**
      * The name for the Authorizer to be referenced as. This must be unique for each unique
      * authorizer within the API. If no name if specified, a name will be generated for you.
@@ -145,14 +145,15 @@ export function createRoleWithAuthorizerInvocationPolicy(authorizerName: string,
 }
 
 /**
- * AuthorizerResponse simplifies creating an AuthorizerResponse.
+ * Simplifies creating an AuthorizerResponse.
+ *
  * @param principalId - unique identifier for the user
  * @param effect - whether to "Allow" or "Deny" the request
  * @param resource - the API method to be invoked (typically event.methodArn)
  * @param context - key-value pairs that are passed from the authorizer to the backend Lambda
  * @param apiKey - if the API uses a usage plan, this must be set to one of the usage plan's API keys
  */
-export function AuthorizerResponse(principalId: string, effect: Effect, resource: string, context?: AuthResponseContext, apiKey?: string): AuthorizerResponse {
+export function authorizerResponse(principalId: string, effect: Effect, resource: string, context?: AuthResponseContext, apiKey?: string): AuthorizerResponse {
     const response: AuthorizerResponse = {
         principalId: principalId,
         policyDocument: {
@@ -178,7 +179,7 @@ export function AuthorizerResponse(principalId: string, effect: Effect, resource
 export type Effect = "Allow" | "Deny";
 
 /**
- * The set of arguments for constructing a token LambdaAuthorizerDefinition resource.
+ * The set of arguments for constructing a token LambdaAuthorizer resource.
  */
 export interface TokenAuthorizerArgs {
 
@@ -217,11 +218,11 @@ export interface TokenAuthorizerArgs {
 }
 
 /**
- * getTokenLambdaAuthorizerDefinition is a helper function to generate a token LambdaAuthorizerDefinition.
+ * getTokenLambdaAuthorizer is a helper function to generate a token LambdaAuthorizer.
  * @param name - the name for the authorizer. This must be unique for each unique authorizer in the API.
  * @param args - configuration information for the token Lambda.
  */
-export function getTokenLambdaAuthorizerDefinition(args: TokenAuthorizerArgs): LambdaAuthorizerDefinition {
+export function getTokenLambdaAuthorizer(args: TokenAuthorizerArgs): LambdaAuthorizer {
     return {
         authorizerName: args.authorizerName,
         parameterName: args.header || "Authorization",
@@ -235,7 +236,7 @@ export function getTokenLambdaAuthorizerDefinition(args: TokenAuthorizerArgs): L
 }
 
 /**
- * The set of arguments for constructing a request LambdaAuthorizerDefinition resource.
+ * The set of arguments for constructing a request LambdaAuthorizer resource.
  */
 export interface RequestAuthorizerArgs {
 
@@ -274,13 +275,13 @@ export interface RequestAuthorizerArgs {
 }
 
 /**
- * getRequestLambdaAuthorizerDefinition is a helper function to generate a request
- * LambdaAuthorizerDefinition.
+ * getRequestLambdaAuthorizer is a helper function to generate a request LambdaAuthorizer.
+ *
  * @param name - the name for the authorizer. This must be unique for each unique authorizer in the
  * API.
  * @param args - configuration information for the token Lambda.
  */
-export function getRequestLambdaAuthorizerDefinition(args: RequestAuthorizerArgs): LambdaAuthorizerDefinition {
+export function getRequestLambdaAuthorizer(args: RequestAuthorizerArgs): LambdaAuthorizer {
     let parameterName: string;
     let location: "header" | "query";
 
@@ -288,7 +289,7 @@ export function getRequestLambdaAuthorizerDefinition(args: RequestAuthorizerArgs
     const numHeaders = getLength(args.headers);
 
     if (numQueryParams === 0 && numHeaders === 0) {
-        throw new Error("Must specify at least one parameter");
+        throw new Error("[args.queryParameters] and [args.headers] were both empty. At least one query parameter or header must be specified");
     } else {
         location = getLocation(numHeaders, numQueryParams);
         parameterName = getParameterName(args, numHeaders, numQueryParams);

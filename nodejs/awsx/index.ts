@@ -25,7 +25,7 @@ export { apigateway, autoscaling, ec2, ecs, elasticloadbalancingv2 };
 
 // @pulumi/awsx is a deployment-only module.  If someone tries to capture it, and we fail for some
 // reason we want to give a good message about what the problem likely is.  Note that capturing a
-// deployment time module can be ok in some cases.  For example, using "awsx.apigateway.AuthorizerResponse"
+// deployment time module can be ok in some cases.  For example, using "awsx.apigateway.authorizerResponse"
 // as a helper function is fine. However, in general, the majority of this API is not safe to use
 // at 'run time' and will fail.
 export const deploymentOnlyModule = true;
