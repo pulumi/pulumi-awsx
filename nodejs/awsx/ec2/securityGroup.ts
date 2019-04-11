@@ -96,6 +96,9 @@ export class SecurityGroup extends pulumi.ComponentResource {
     }
 }
 
+(<any>SecurityGroup.prototype.createEgressRule).doNotCapture = true;
+(<any>SecurityGroup.prototype.createIngressRule).doNotCapture = true;
+
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 
 /** @internal */
