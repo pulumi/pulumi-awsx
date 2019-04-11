@@ -32,17 +32,14 @@ const lambda = new aws.lambda.Function("myfunction", {
 // Define the Authorizers up here so we can use it for two routes. Note - if you are sharing an
 // authorizer you will want to set the authorizerResultTtlInSeconds to 0 seconds or else it will
 // cause problems for you.
-const authorizers: awsx.apigateway.LambdaAuthorizerDefinition[] = [{
+const authorizers: awsx.apigateway.LambdaAuthorizer[] = [{
     authorizerName: "prettyAuthorizer",
     parameterName: "auth",
     parameterLocation: "query",
     authType: "custom",
     type: "request",
     handler: async (event: awsx.apigateway.AuthorizerEvent) => {
-        return awsx.apigateway.AuthorizerResponse(
-            "user",
-            "Allow",
-            event.methodArn);
+        return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
     },
     identitySource: ["method.request.querystring.auth"],
     authorizerResultTtlInSeconds: 0,
@@ -83,20 +80,14 @@ const api = new awsx.apigateway.API("myapi", {
             in: "query",
         }],
         requireAPIKey: true,
-        authorizers: [awsx.apigateway.getTokenLambdaAuthorizerDefinition({
+        authorizers: [awsx.apigateway.getTokenLambdaAuthorizer({
             header: "Authorization",
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
                 const token = event.authorizationToken;
                 if (token === "Allow") {
-                    return awsx.apigateway.AuthorizerResponse(
-                        "user",
-                        "Allow",
-                        event.methodArn);
+                    return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
                 }
-                return awsx.apigateway.AuthorizerResponse(
-                    "user",
-                    "Deny",
-                    event.methodArn);
+                return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
             },
         })],
     }, {
@@ -208,7 +199,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
     routes: [{
         path: "/www_old",
         localPath: "www",
-        authorizers: [awsx.apigateway.getRequestLambdaAuthorizerDefinition({
+        authorizers: [awsx.apigateway.getRequestLambdaAuthorizer({
             queryParameters: ["auth"],
             headers: ["secret"],
             handler: authorizerLambda,
