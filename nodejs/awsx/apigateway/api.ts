@@ -901,7 +901,6 @@ function addStaticRouteToSwaggerSpec(
             }
         }
 
-
         walk(startDir);
 
         // Take whatever path the client wants to host this folder at, and add the
@@ -924,9 +923,9 @@ function addStaticRouteToSwaggerSpec(
     }
 
     function createSwaggerOperationForObjectKey(
-        objectKey: string,
-        role: aws.iam.Role,
-        pathParameter?: string): SwaggerOperation {
+            objectKey: string,
+            role: aws.iam.Role,
+            pathParameter?: string): SwaggerOperation {
 
         const region = aws.config.requireRegion();
 
