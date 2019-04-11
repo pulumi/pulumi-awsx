@@ -645,11 +645,6 @@ function addEventHandlerRouteToSwaggerSpec(
 function addAPIkeyToSecurityDefinitions(swagger: SwaggerSpec) {
     swagger["x-amazon-apigateway-api-key-source"] = "HEADER";
     swagger.securityDefinitions = swagger.securityDefinitions || {};
-    const apiKeySecurityDefinition: SecurityDefinition = {
-        type: "apiKey",
-        name: "x-api-key",
-        in: "header",
-    };
 
     if (swagger.securityDefinitions["api_key"] && swagger.securityDefinitions["api_key"] !== apiKeySecurityDefinition) {
         throw new Error("Defined a none apikey security definition with the name api_key");
@@ -1112,3 +1107,9 @@ const apigatewayAssumeRolePolicyDocument = {
 function safeS3BucketName(apiName: string): string {
     return apiName.toLowerCase().replace(/[^a-z0-9\-]/g, "");
 }
+
+const apiKeySecurityDefinition: SecurityDefinition = {
+    type: "apiKey",
+    name: "x-api-key",
+    in: "header",
+};
