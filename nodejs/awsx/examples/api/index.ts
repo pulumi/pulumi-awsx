@@ -29,7 +29,9 @@ const lambda = new aws.lambda.Function("myfunction", {
     runtime: aws.lambda.NodeJS8d10Runtime,
 });
 
-// Define the Authorizers up here so we can use it for two routes
+// Define the Authorizers up here so we can use it for two routes. Note - if you are sharing an
+// authorizer you will want to set the authorizerResultTtlInSeconds to 0 seconds or else it will
+// cause problems for you.
 const authorizers: awsx.apigateway.LambdaAuthorizerDefinition[] = [{
     authorizerName: "prettyAuthorizer",
     parameterName: "auth",
@@ -43,6 +45,7 @@ const authorizers: awsx.apigateway.LambdaAuthorizerDefinition[] = [{
             event.methodArn);
     },
     identitySource: ["method.request.querystring.auth"],
+    authorizerResultTtlInSeconds: 0,
 }];
 
 /**

@@ -476,6 +476,7 @@ func GetHTTP(t *testing.T, req *http.Request, statusCode int) *http.Response {
 	var err error
 	var httpClient http.Client
 	url := req.URL.String()
+
 	for i := 0; i <= 3; i++ {
 
 		resp, err = httpClient.Do(req)

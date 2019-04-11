@@ -636,7 +636,7 @@ function addAuthorizersToSwagger(
 
     for (const auth of authorizers) {
         const suffix = Object.keys(swagger["securityDefinitions"]).length;
-        auth.authorizerName = auth.authorizerName || `authorizer-${suffix}`;
+        auth.authorizerName = auth.authorizerName || `${swagger.info.title}-authorizer-${suffix}`;
 
         // Check API authorizers - if its a new authorizer add it to the apiAuthorizers
         // if the name already exists, we check that the authorizer references the same authorizer

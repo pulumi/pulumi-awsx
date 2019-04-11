@@ -80,8 +80,10 @@ export interface LambdaAuthorizerDefinition {
     identityValidationExpression?: string;
 
     /**
-     * The number of seconds during which the resulting IAM policy is cached. Default is 300s.
-     * You can set this value to 0 to disable caching. Max value is 3600s.
+     * The number of seconds during which the resulting IAM policy is cached. Default is 300s. You
+     * can set this value to 0 to disable caching. Max value is 3600s. Note - if you are sharing an
+     * authorizer across more than one route you will want to disable the cache or else it will
+     * cause problems for you.
      */
     authorizerResultTtlInSeconds?: number;
 }
@@ -126,7 +128,7 @@ export function createRoleWithAuthorizerInvocationPolicy(authorizerName: string,
     });
 
     // Add invocation policy to lambda role
-    const invocationPolicy = new aws.iam.RolePolicy(authorizerName + "invocation-policy", {
+    const invocationPolicy = new aws.iam.RolePolicy(authorizerName + "-invocation-policy", {
         policy: pulumi.interpolate`{
                 "Version": "2012-10-17",
                 "Statement": [
@@ -206,8 +208,10 @@ export interface TokenAuthorizerArgs {
     identityValidationExpression?: string;
 
     /**
-     * The number of seconds during which the resulting IAM policy is cached. Default is 300s.
-     * You can set this value to 0 to disable caching. Max value is 3600s.
+     * The number of seconds during which the resulting IAM policy is cached. Default is 300s. You
+     * can set this value to 0 to disable caching. Max value is 3600s. Note - if you are sharing an
+     * authorizer across more than one route you will want to disable the cache or else it will
+     * cause problems for you.
      */
     authorizerResultTtlInSeconds?: number;
 }
@@ -261,8 +265,10 @@ export interface RequestAuthorizerArgs {
     handler: LambdaAuthorizerInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>;
 
     /**
-     * The number of seconds during which the resulting IAM policy is cached. Default is 300s.
-     * You can set this value to 0 to disable caching. Max value is 3600s.
+     * The number of seconds during which the resulting IAM policy is cached. Default is 300s. You
+     * can set this value to 0 to disable caching. Max value is 3600s. Note - if you are sharing an
+     * authorizer across more than one route you will want to disable the cache or else it will
+     * cause problems for you.
      */
     authorizerResultTtlInSeconds?: number;
 }
