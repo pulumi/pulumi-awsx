@@ -338,6 +338,46 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
+#### Specifying the Role
+
+If your Authorizer requires access to other AWS resources, you will need to provision the appropriate role. You can do so by using `new aws.lambda.CallbackFunction`.
+
+```ts
+import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+
+const callbackFxn = new aws.lambda.CallbackFunction("callbackFxn", {
+    callback: async (event: awsx.apigateway.AuthorizerEvent) => {
+        // Add custom authorization logic here
+        return awsx.apigateway.AuthorizerResponse(
+            "user",
+            "Allow",
+            event.methodArn);
+    },
+    role: role, // Specify role with appropriate AWS permissions.
+});
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/b",
+        method: "GET",
+        eventHandler: async () => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        },
+        authorizers: [{
+            parameterName: "Authorization",
+            parameterLocation: "header",
+            authType: "oauth2",
+            type: "request",
+            handler: callbackFxn,
+        }],
+    }],
+});
+```
+
 #### Using a Lambda Predefined Lambda
 
 You can also define the Lambda Authorizer elsewhere and then reference the required values.
