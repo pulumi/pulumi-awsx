@@ -766,12 +766,12 @@ function addStaticRouteToSwaggerSpec(
     // Create a bucket to place all the static data under.
     bucket = bucket || new aws.s3.Bucket(safeS3BucketName(name), undefined, parentOpts);
 
-    if (route.requireAPIKey) {
-        addAPIkeyToSecurityDefinitions(swagger);
-    }
     let authNames: string[] | undefined;
     if (route.authorizers) {
         authNames = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
+    }
+    if (route.requireAPIKey) {
+        addAPIkeyToSecurityDefinitions(swagger);
     }
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
@@ -826,11 +826,11 @@ function addStaticRouteToSwaggerSpec(
         }
         if (route.requireAPIKey) {
             addAPIkeyToSwaggerOperation(swaggerOperation);
-            if (authorizerNames) {
-                addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
-            }
-            addSwaggerOperation(swagger, route.path, method, swaggerOperation);
         }
+        if (authorizerNames) {
+            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+        }
+        addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
 
     function processDirectory(directory: StaticRoute, authorizerNames: string[] | undefined) {
@@ -887,36 +887,40 @@ function addStaticRouteToSwaggerSpec(
                         if (directory.requestValidator) {
                             swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
                         }
+                        if (authorizerNames) {
+                            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+                        }
                         if (directory.requireAPIKey) {
                             addAPIkeyToSwaggerOperation(swaggerOperation);
-                            if (authorizerNames) {
-                                addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
-                            }
-                            swagger.paths[directoryServerPath] = {
-                                [method]: swaggerOperation,
-                            };
                         }
+                        swagger.paths[directoryServerPath] = {
+                            [method]: swaggerOperation,
+                        };
                     }
                 }
             }
-
-            walk(startDir);
-
-            // Take whatever path the client wants to host this folder at, and add the
-            // greedy matching predicate to the end.
-            const proxyPath = directoryServerPath + "{proxy+}";
-            const swaggerOperation = createSwaggerOperationForObjectKey(directoryKey, role, "proxy");
-            if (directory.requiredParameters) {
-                addRequiredParametersToSwaggerOperation(swaggerOperation, directory.requiredParameters);
-            }
-            if (directory.requestValidator) {
-                swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
-            }
-            if (authorizerNames) {
-                addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
-            }
-            addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);
         }
+
+
+        walk(startDir);
+
+        // Take whatever path the client wants to host this folder at, and add the
+        // greedy matching predicate to the end.
+        const proxyPath = directoryServerPath + "{proxy+}";
+        const swaggerOperation = createSwaggerOperationForObjectKey(directoryKey, role, "proxy");
+        if (directory.requiredParameters) {
+            addRequiredParametersToSwaggerOperation(swaggerOperation, directory.requiredParameters);
+        }
+        if (directory.requestValidator) {
+            swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
+        }
+        if (authorizerNames) {
+            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+        }
+        if (directory.requireAPIKey) {
+            addAPIkeyToSwaggerOperation(swaggerOperation);
+        }
+        addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);
     }
 
     function createSwaggerOperationForObjectKey(
