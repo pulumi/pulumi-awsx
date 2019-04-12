@@ -130,7 +130,7 @@ export const url = api.url;
  */
 
 const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
-    api: api,
+    apis: [api],
     apiKeys: [{
         name: "test-key",
     }],

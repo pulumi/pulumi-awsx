@@ -636,7 +636,7 @@ function addEventHandlerRouteToSwaggerSpec(
     }
     if (route.apiKeyRequired) {
         addAPIkeyToSecurityDefinitions(swagger);
-        addAPIkeyToSwaggerOperation(swaggerOperation);
+        addAPIKeyToSwaggerOperation(swaggerOperation);
     }
     addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     swaggerLambdas[route.path][method] = lambda;
@@ -667,7 +667,7 @@ function addAPIkeyToSecurityDefinitions(swagger: SwaggerSpec) {
     swagger.securityDefinitions["api_key"] = apiKeySecurityDefinition;
 }
 
-function addAPIkeyToSwaggerOperation(swaggerOperation: SwaggerOperation) {
+function addAPIKeyToSwaggerOperation(swaggerOperation: SwaggerOperation) {
     swaggerOperation["security"] = swaggerOperation["security"] || [];
     swaggerOperation["security"].push({
         ["api_key"]: [],
@@ -839,7 +839,7 @@ function addStaticRouteToSwaggerSpec(
             swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
         }
         if (route.apiKeyRequired) {
-            addAPIkeyToSwaggerOperation(swaggerOperation);
+            addAPIKeyToSwaggerOperation(swaggerOperation);
         }
         if (authorizerNames) {
             addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
@@ -905,7 +905,7 @@ function addStaticRouteToSwaggerSpec(
                             addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
                         }
                         if (directory.apiKeyRequired) {
-                            addAPIkeyToSwaggerOperation(swaggerOperation);
+                            addAPIKeyToSwaggerOperation(swaggerOperation);
                         }
                         swagger.paths[directoryServerPath] = {
                             [method]: swaggerOperation,
@@ -931,7 +931,7 @@ function addStaticRouteToSwaggerSpec(
             addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
         }
         if (directory.apiKeyRequired) {
-            addAPIkeyToSwaggerOperation(swaggerOperation);
+            addAPIKeyToSwaggerOperation(swaggerOperation);
         }
         addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);
     }

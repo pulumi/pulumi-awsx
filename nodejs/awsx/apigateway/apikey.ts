@@ -25,10 +25,10 @@ export type APIKeySource = "HEADER" | "AUTHORIZER";
 export interface APIKeyArgs {
 
     /**
-     * Define the api you would like to associate the usage plan with. If used
+     * Define the apis you would like to associate the usage plan with. If used
      * this will override any apiStages defined in the [usagePlan].
      */
-    api?: api.API;
+    apis?: api.API[];
 
     /**
      * Define the usage plan to create.
@@ -60,11 +60,15 @@ export interface Key {
 export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): AssociatedAPIKeys {
     let usagePlanArgs: aws.apigateway.UsagePlanArgs | undefined = args.usagePlan;
 
-    if (args.api) {
-        const stages = [{
-            apiId: args.api.restAPI.id,
-            stage: args.api.stage.stageName,
-        }];
+    if (args.apis) {
+        const stages = [];
+
+        for (const a of args.apis) {
+            stages.push({
+                apiId: a.restAPI.id,
+                stage: a.stage.stageName,
+            });
+        }
 
         if (args.usagePlan) {
             if (args.usagePlan.apiStages) {

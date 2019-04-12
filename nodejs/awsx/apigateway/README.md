@@ -223,7 +223,7 @@ You will also need to create a usage plan (`new aws.apigateway.UsagePlan`) and a
 
 ```ts
 const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
-    api: api,
+    apis: [api],
     apiKeys: [{
         name: "test-key",
     }],
@@ -233,7 +233,7 @@ const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
 export const apiKeyValue = apikeys.keys[0].apikey.value;
 ```
 
-`awsx.apigateway.createAssociatedAPIKeys` will return an object that contains the Usage Plan, API Keys and Usage Plan Keys. Instead of providing the API, you can also specify the Usage Plan as follows:
+`awsx.apigateway.createAssociatedAPIKeys` will return an object that contains the Usage Plan, API Keys and Usage Plan Keys. Instead of providing the APIs, you can also specify the api stages for the Usage Plan as follows:
 
 ```ts
 const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
@@ -249,7 +249,7 @@ const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
 });
 ```
 
-Note that currently `awsx.apigateway.createAssociatedAPIKeys` does not allow you to define a `api` and `usagePlan.apiStages`.
+Note that currently `awsx.apigateway.createAssociatedAPIKeys` does not allow you to define a `apis` and `usagePlan.apiStages`.
 
 ### Lambda Authorizers
 
