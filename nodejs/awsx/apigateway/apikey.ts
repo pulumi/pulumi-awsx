@@ -33,12 +33,12 @@ export interface APIKeyArgs {
     /**
      * Define the usage plan to create.
      */
-    usagePlan?: aws.apigateway.UsagePlanArgs;
+    usagePlan?: aws.apigateway.UsagePlanArgs | aws.apigateway.UsagePlan;
 
     /**
      * The API keys you would like to create & associate with the usage plan.
      */
-    apiKeys?: aws.apigateway.ApiKeyArgs[];
+    apiKeys?: Array<aws.apigateway.ApiKeyArgs | aws.apigateway.ApiKey>;
 }
 
 export interface AssociatedAPIKeys {
@@ -58,39 +58,47 @@ export interface Key {
  * @param args The arguments to use to populate this resource's properties.
  */
 export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): AssociatedAPIKeys {
-    let usagePlanArgs: aws.apigateway.UsagePlanArgs | undefined = args.usagePlan;
+    let usagePlan: aws.apigateway.UsagePlan;
 
-    if (args.apis) {
-        const stages = [];
+    if (args.usagePlan && isUsagePlan(args.usagePlan)) {
+        usagePlan = args.usagePlan;
+    } else {
+        let usagePlanArgs: aws.apigateway.UsagePlanArgs | undefined = args.usagePlan;
 
-        for (const a of args.apis) {
-            stages.push({
-                apiId: a.restAPI.id,
-                stage: a.stage.stageName,
-            });
-        }
 
-        if (args.usagePlan) {
-            if (args.usagePlan.apiStages) {
-                throw new Error("[args.api] and [args.usagePlan.apiStages] cannot both be defined");
+        if (args.apis) {
+            const stages = [];
+
+            for (const a of args.apis) {
+                stages.push({
+                    apiId: a.restAPI.id,
+                    stage: a.stage.stageName,
+                });
             }
 
-            usagePlanArgs = {
-                apiStages: stages,
-                description: args.usagePlan.description,
-                name: args.usagePlan.name,
-                productCode: args.usagePlan.productCode,
-                quotaSettings: args.usagePlan.quotaSettings,
-                throttleSettings: args.usagePlan.throttleSettings,
-            };
-        } else {
-            usagePlanArgs = {
-                apiStages: stages,
-            };
+            if (args.usagePlan) {
+                if (args.usagePlan.apiStages) {
+                    throw new Error("[args.api] and [args.usagePlan.apiStages] cannot both be defined");
+                }
+
+                usagePlanArgs = {
+                    apiStages: stages,
+                    description: args.usagePlan.description,
+                    name: args.usagePlan.name,
+                    productCode: args.usagePlan.productCode,
+                    quotaSettings: args.usagePlan.quotaSettings,
+                    throttleSettings: args.usagePlan.throttleSettings,
+                };
+            } else {
+                usagePlanArgs = {
+                    apiStages: stages,
+                };
+            }
         }
+
+        usagePlan = new aws.apigateway.UsagePlan(name, usagePlanArgs);
     }
 
-    const usagePlan = new aws.apigateway.UsagePlan(name, usagePlanArgs);
     let keys: Key[] = [];
 
     if (args.apiKeys) {
@@ -98,7 +106,12 @@ export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): Associa
 
         for (let i = 0; i < args.apiKeys.length; i++) {
             const currKey = args.apiKeys[i];
-            const apikey = new aws.apigateway.ApiKey(name + "-apikey-" + i, currKey);
+            let apikey: aws.apigateway.ApiKey;
+            if (isAPIKey(currKey)) {
+                apikey = currKey;
+            } else {
+                apikey = new aws.apigateway.ApiKey(name + "-apikey-" + i, currKey);
+            }
 
             const usagePlanKey = new aws.apigateway.UsagePlanKey(name + "-usage-plan-key-" + i, {
                 keyId: apikey.id,
@@ -116,4 +129,14 @@ export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): Associa
         usagePlan: usagePlan,
         keys: keys,
     };
+}
+
+/** @internal */
+export function isAPIKey(key: aws.apigateway.ApiKeyArgs | aws.apigateway.ApiKey): key is aws.apigateway.ApiKey {
+    return (<aws.apigateway.ApiKey>key).value !== undefined;
+}
+
+/** @internal */
+export function isUsagePlan(plan: aws.apigateway.UsagePlanArgs | aws.apigateway.UsagePlan): plan is aws.apigateway.UsagePlan {
+    return (<aws.apigateway.UsagePlan>plan).id !== undefined;
 }

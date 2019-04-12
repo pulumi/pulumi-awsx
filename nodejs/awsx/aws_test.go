@@ -139,7 +139,7 @@ func Test_Examples(t *testing.T) {
 					urlPath:           "/www_old/file1.txt",
 					requiredAuth: &requiredAuth{
 						queryParameters: map[string]string{
-							"auth": "password",
+							"auth": "Allow",
 						},
 						headers: map[string]string{
 							"secret": "test",
