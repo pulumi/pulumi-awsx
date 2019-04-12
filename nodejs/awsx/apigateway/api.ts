@@ -25,6 +25,8 @@ import * as authorizer from "./authorizer";
 import * as awslambda from "aws-lambda";
 
 import { sha1hash } from "../utils";
+
+import * as apikey from "./apikey";
 import * as reqvalidation from "./requestValidator";
 
 export type Request = awslambda.APIGatewayProxyEvent;
@@ -61,9 +63,10 @@ export type EventHandlerRoute = {
     requestValidator?: reqvalidation.RequestValidator;
 
     /**
-     * If true, an API Key will be required by the API Gateway. Defaults to false.
+     * If true, an API key will be required for this route. The source for the API Key can be set at
+     * the API level and by default, the source will be the HEADER.
      */
-    requireAPIKey?: boolean;
+    apiKeyRequired?: boolean;
 
     /**
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
@@ -114,10 +117,10 @@ export type StaticRoute = {
     requestValidator?: reqvalidation.RequestValidator;
 
     /**
-     * If true, an API Key will be required by the API Gateway. Defaults to false. This will be applied to
-     * all static resources defined by localPath.
+     * If true, an API key will be required for this route. The source for the API Key can be set at
+     * the API level and by default, the source will be the HEADER.
      */
-    requireAPIKey?: boolean;
+    apiKeyRequired?: boolean;
 
     /**
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
@@ -302,6 +305,12 @@ export interface APIArgs {
     * override this.
     */
     requestValidator?: reqvalidation.RequestValidator;
+
+    /**
+     * The source for the apikey. This can either be a HEADER or AUTHORIZER. If [apiKeyRequired] is
+     * set to true on a route, and this is not defined the value will default to HEADER.
+     */
+    apiKeySource?: apikey.APIKeySource;
 }
 
 export class API extends pulumi.ComponentResource {
@@ -321,7 +330,7 @@ export class API extends pulumi.ComponentResource {
             swaggerString = pulumi.output(args.swaggerString);
         }
         else if (args.routes) {
-            const result = createSwaggerSpec(this, name, args.routes, args.requestValidator);
+            const result = createSwaggerSpec(this, name, args.routes, args.requestValidator, args.apiKeySource);
             swaggerSpec = result.swagger;
             swaggerLambdas = result.swaggerLambdas;
             swaggerString = pulumi.output<any>(swaggerSpec).apply(JSON.stringify);
@@ -407,7 +416,7 @@ interface SwaggerSpec {
         };
     };
     "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
-    "x-amazon-apigateway-api-key-source"?: "HEADER";
+    "x-amazon-apigateway-api-key-source"?: apikey.APIKeySource;
 }
 
 interface SwaggerLambdas {
@@ -501,7 +510,10 @@ interface ApigatewayIntegration {
     credentials?: pulumi.Output<string>;
 }
 
-function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator: reqvalidation.RequestValidator | undefined) {
+function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator: reqvalidation.RequestValidator | undefined, apikeySource: apikey.APIKeySource | undefined) {
+    // Default API Key source to "HEADER"
+    apikeySource = apikeySource || "HEADER";
+
     // Set up the initial swagger spec.
     const swagger: SwaggerSpec = {
         swagger: "2.0",
@@ -524,6 +536,7 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
                 },
             },
         },
+        "x-amazon-apigateway-api-key-source": apikeySource,
     };
 
     if (requestValidator) {
@@ -552,6 +565,9 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
     // this once.  So have a value here that can be lazily initialized the first route we hit, which
     // can then be used for all successive static routes.
     let staticRouteBucket: aws.s3.Bucket | undefined;
+
+    // Use this to track the API's authorizers and ensure any authorizers with the same name
+    // reference the same authorizer.
     const apiAuthorizers: Record<string, authorizer.LambdaAuthorizer> = {};
 
     for (const route of routes) {
@@ -618,7 +634,7 @@ function addEventHandlerRouteToSwaggerSpec(
     if (route.requestValidator) {
         swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
     }
-    if (route.requireAPIKey) {
+    if (route.apiKeyRequired) {
         addAPIkeyToSecurityDefinitions(swagger);
         addAPIkeyToSwaggerOperation(swaggerOperation);
     }
@@ -643,7 +659,6 @@ function addEventHandlerRouteToSwaggerSpec(
 }
 
 function addAPIkeyToSecurityDefinitions(swagger: SwaggerSpec) {
-    swagger["x-amazon-apigateway-api-key-source"] = "HEADER";
     swagger.securityDefinitions = swagger.securityDefinitions || {};
 
     if (swagger.securityDefinitions["api_key"] && swagger.securityDefinitions["api_key"] !== apiKeySecurityDefinition) {
@@ -769,7 +784,7 @@ function addStaticRouteToSwaggerSpec(
     if (route.authorizers) {
         authNames = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
     }
-    if (route.requireAPIKey) {
+    if (route.apiKeyRequired) {
         addAPIkeyToSecurityDefinitions(swagger);
     }
 
@@ -823,7 +838,7 @@ function addStaticRouteToSwaggerSpec(
         if (route.requestValidator) {
             swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
         }
-        if (route.requireAPIKey) {
+        if (route.apiKeyRequired) {
             addAPIkeyToSwaggerOperation(swaggerOperation);
         }
         if (authorizerNames) {
@@ -889,7 +904,7 @@ function addStaticRouteToSwaggerSpec(
                         if (authorizerNames) {
                             addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
                         }
-                        if (directory.requireAPIKey) {
+                        if (directory.apiKeyRequired) {
                             addAPIkeyToSwaggerOperation(swaggerOperation);
                         }
                         swagger.paths[directoryServerPath] = {
@@ -915,7 +930,7 @@ function addStaticRouteToSwaggerSpec(
         if (authorizerNames) {
             addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
         }
-        if (directory.requireAPIKey) {
+        if (directory.apiKeyRequired) {
             addAPIkeyToSwaggerOperation(swaggerOperation);
         }
         addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);

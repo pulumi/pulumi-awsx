@@ -70,7 +70,7 @@ const api = new awsx.apigateway.API("myapi", {
         path: "/b",
         method: "GET",
         eventHandler: lambda,
-        requireAPIKey: true,
+        apiKeyRequired: true,
         authorizers: authorizers,
     }, {
         path: "/www",
@@ -79,7 +79,7 @@ const api = new awsx.apigateway.API("myapi", {
             name: "key",
             in: "query",
         }],
-        requireAPIKey: true,
+        apiKeyRequired: true,
         authorizers: [awsx.apigateway.getTokenLambdaAuthorizer({
             header: "Authorization",
             handler: async (event: awsx.apigateway.AuthorizerEvent) => {

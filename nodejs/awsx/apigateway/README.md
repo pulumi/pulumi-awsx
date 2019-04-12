@@ -200,9 +200,56 @@ Request body validation is currently not supported. If you have a strong use cas
 
 ### API Keys
 
-To require an API Key for an API Gateway route you set the `requiredAPIKey` property equal to `true`. You will also need to create a usage plan (`new aws.apigateway.UsagePlan`) and an API key (`new aws.apigateway.ApiKey`) and then associate the key with the usage plan (`new aws.apigateway.UsagePlanKey`).
+To require an API Key for an API Gateway route you set the `apiKeyRequired` property equal to `true`. At the API level, you can choose if you want the API Key source to be `HEADER` (i.e. client includes a `x-api-key` header with the API Key) or `AUTHORIZER` (i.e. a Lambda authorizer sends the API Key as part of the authorization response). If the API Key source is not set, then the source will default to `HEADER`.
 
-TODO - add example
+```ts
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/a",
+        method: "GET",
+        eventHandler: async () => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        },
+        apiKeyRequired: true,
+    }],
+    apikeySource: "AUTHORIZER",
+});
+```
+
+You will also need to create a usage plan (`new aws.apigateway.UsagePlan`) and an API key (`new aws.apigateway.ApiKey`) and then associate the key with the usage plan (`new aws.apigateway.UsagePlanKey`). To simplify the creation of API Keys associated with your API you can use `awsx.apigateway.createAssociatedAPIKeys`, which create a Usage Plan, API Keys and associates the API Keys by creating a UsagePlanKey. Below is an example of using this helper function:
+
+```ts
+const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
+    api: api,
+    apiKeys: [{
+        name: "test-key",
+    }],
+});
+
+ // Export the API Key if desired
+export const apiKeyValue = apikeys.keys[0].apikey.value;
+```
+
+`awsx.apigateway.createAssociatedAPIKeys` will return an object that contains the Usage Plan, API Keys and Usage Plan Keys. Instead of providing the API, you can also specify the Usage Plan as follows:
+
+```ts
+const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
+    usagePlan: {
+        apiStages: [{
+            apiId: api.restAPI.id,
+            stage: api.stage.stageName,
+        }],
+    },
+    apiKeys: [{
+        name: "test-key",
+    }],
+});
+```
+
+Note that currently `awsx.apigateway.createAssociatedAPIKeys` does not allow you to define a `api` and `usagePlan.apiStages`.
 
 ### Lambda Authorizers
 

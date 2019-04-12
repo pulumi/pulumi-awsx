@@ -17,6 +17,8 @@
 import * as aws from "@pulumi/aws";
 import * as api from "./api";
 
+export type APIKeySource = "HEADER" | "AUTHORIZER";
+
 /**
  * Input properties for creating a UsagePlan and associated API Keys.
  */
