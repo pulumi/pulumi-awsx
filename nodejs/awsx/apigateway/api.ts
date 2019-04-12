@@ -20,12 +20,14 @@ import * as fspath from "path";
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import * as authorizer from "./authorizer";
+
+import * as cognitoauthorizer from "./cognitoauthorizer";
+import * as lambdaauthorizer from "./lambdaauthorizer";
+import * as reqvalidation from "./requestValidator";
 
 import * as awslambda from "aws-lambda";
 
 import { sha1hash } from "../utils";
-import * as reqvalidation from "./requestValidator";
 
 export type Request = awslambda.APIGatewayProxyEvent;
 
@@ -64,8 +66,10 @@ export type EventHandlerRoute = {
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
      * the route is called.
      */
-    authorizers?: authorizer.LambdaAuthorizer[];
+    authorizers?: Authorizers[];
 };
+
+type Authorizers = lambdaauthorizer.LambdaAuthorizer | cognitoauthorizer.CognitoAuthorizer;
 
 function isEventHandler(route: Route): route is EventHandlerRoute {
     return (<EventHandlerRoute>route).eventHandler !== undefined;
@@ -113,7 +117,7 @@ export type StaticRoute = {
      * the route is called. The authorizer will get applied to all static resources defined by the
      * localPath.
      */
-    authorizers?: authorizer.LambdaAuthorizer[];
+    authorizers?: Authorizers[];
 };
 
 function isStaticRoute(route: Route): route is StaticRoute {
@@ -433,7 +437,7 @@ interface SecurityDefinition {
     name: string;
     in: "header" | "query";
     "x-amazon-apigateway-authtype": string;
-    "x-amazon-apigateway-authorizer": LambdaAuthorizer;
+    "x-amazon-apigateway-authorizer": LambdaAuthorizer | CognitoAuthorizer;
 }
 
 interface LambdaAuthorizer {
@@ -442,6 +446,13 @@ interface LambdaAuthorizer {
     authorizerCredentials: pulumi.Input<string>;
     identitySource?: string;
     identityValidationExpression?: string;
+    authorizerResultTtlInSeconds?: number;
+}
+
+interface CognitoAuthorizer {
+    type: "cognito_user_pools";
+    identitySource: string;
+    providerARNs: pulumi.Input<string>[];
     authorizerResultTtlInSeconds?: number;
 }
 
@@ -540,7 +551,7 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
     // this once.  So have a value here that can be lazily initialized the first route we hit, which
     // can then be used for all successive static routes.
     let staticRouteBucket: aws.s3.Bucket | undefined;
-    const apiAuthorizers: Record<string, authorizer.LambdaAuthorizer> = {};
+    const apiAuthorizers: Record<string, Authorizers> = {};
 
     for (const route of routes) {
         checkRoute(api, route, "path");
@@ -586,7 +597,7 @@ function addEventHandlerRouteToSwaggerSpec(
     swagger: SwaggerSpec,
     swaggerLambdas: SwaggerLambdas,
     route: EventHandlerRoute,
-    apiAuthorizers: Record<string, authorizer.LambdaAuthorizer>) {
+    apiAuthorizers: Record<string, Authorizers>) {
 
     checkRoute(api, route, "eventHandler");
     checkRoute(api, route, "method");
@@ -628,48 +639,78 @@ function addEventHandlerRouteToSwaggerSpec(
 
 function addAuthorizersToSwagger(
     swagger: SwaggerSpec,
-    authorizers: authorizer.LambdaAuthorizer[],
-    apiAuthorizers: Record<string, authorizer.LambdaAuthorizer>): string[] {
+    authorizers: Authorizers[],
+    apiAuthorizers: Record<string, Authorizers>): string[] {
 
     const authNames: string[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
 
     for (const auth of authorizers) {
         const suffix = Object.keys(swagger["securityDefinitions"]).length;
-        auth.authorizerName = auth.authorizerName || `${swagger.info.title}-authorizer-${suffix}`;
+        const authName = auth.authorizerName || `${swagger.info.title}-authorizer-${suffix}`;
+        auth.authorizerName = authName;
 
         // Check API authorizers - if its a new authorizer add it to the apiAuthorizers
         // if the name already exists, we check that the authorizer references the same authorizer
-        if (!apiAuthorizers[auth.authorizerName]) {
-            apiAuthorizers[auth.authorizerName] = auth;
-        } else if (apiAuthorizers[auth.authorizerName] !== auth) {
-            throw new Error("Two different authorizers using the same name: " + auth.authorizerName);
+        if (!apiAuthorizers[authName]) {
+            apiAuthorizers[authName] = auth;
+        } else if (apiAuthorizers[authName] !== auth) {
+            throw new Error("Two different authorizers using the same name: " + authName);
         }
 
         // Add security definition if it's a new authorizer
         if (!swagger["securityDefinitions"][auth.authorizerName]) {
-            const securityDef: SecurityDefinition = {
-                type: "apiKey",
-                name: auth.parameterName,
-                in: auth.parameterLocation,
-                "x-amazon-apigateway-authtype": auth.authType,
-                "x-amazon-apigateway-authorizer": getLambdaAuthorizer(auth.authorizerName, auth),
-            };
-            swagger["securityDefinitions"][auth.authorizerName] = securityDef;
+            let securityDef: SecurityDefinition;
+
+            if (lambdaauthorizer.isLambdaAuthorizer(auth)) {
+                securityDef = {
+                    type: "apiKey",
+                    name: auth.parameterName,
+                    in: auth.parameterLocation,
+                    "x-amazon-apigateway-authtype": auth.authType,
+                    "x-amazon-apigateway-authorizer": getLambdaAuthorizer(authName, auth),
+                };
+            } else {
+                securityDef = {
+                    type: "apiKey",
+                    name: auth.parameterName,
+                    in: auth.parameterLocation,
+                    "x-amazon-apigateway-authtype": auth.authType,
+                    "x-amazon-apigateway-authorizer": {
+                        type: auth.authType,
+                        identitySource: lambdaauthorizer.getIdentitySource(auth.identitySource),
+                        providerARNs: getCognitoPoolARNs(auth.providerARNs),
+                    },
+                };
+            }
+            swagger["securityDefinitions"][authName] = securityDef;
         }
-        authNames.push(auth.authorizerName);
+        authNames.push(authName);
     }
     return authNames;
 }
 
-function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.LambdaAuthorizer): LambdaAuthorizer {
-    if (authorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.handler)) {
-        const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
+function getCognitoPoolARNs(pools: Array<pulumi.Input<string> | aws.cognito.UserPool>): pulumi.Input<string>[] {
+    const arns: pulumi.Input<string>[] = [];
 
-        const uri = authorizer.isLambdaFunction(lambdaAuthorizer.handler.uri) ?
+    for (const pool of pools) {
+        if (cognitoauthorizer.isCognitoUserPool(pool)) {
+            arns.push(pool.arn);
+        } else {
+            arns.push(pool);
+        }
+    }
+    return arns;
+}
+
+function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: lambdaauthorizer.LambdaAuthorizer): LambdaAuthorizer {
+    if (lambdaauthorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.handler)) {
+        const identitySource = lambdaauthorizer.getIdentitySource(lambdaAuthorizer.identitySource);
+
+        const uri = lambdaauthorizer.isLambdaFunction(lambdaAuthorizer.handler.uri) ?
             lambdaAuthorizer.handler.uri.invokeArn : pulumi.output(lambdaAuthorizer.handler.uri);
 
-        const credentials = authorizer.isIAMRole(lambdaAuthorizer.handler.credentials) ?
+        const credentials = lambdaauthorizer.isIAMRole(lambdaAuthorizer.handler.credentials) ?
             lambdaAuthorizer.handler.credentials.arn : lambdaAuthorizer.handler.credentials;
         return {
             type: lambdaAuthorizer.type,
@@ -681,12 +722,12 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorize
         };
     }
 
-    const authorizerLambda = aws.lambda.createFunctionFromEventHandler<authorizer.AuthorizerEvent, authorizer.AuthorizerResponse>(
+    const authorizerLambda = aws.lambda.createFunctionFromEventHandler<lambdaauthorizer.AuthorizerEvent, lambdaauthorizer.AuthorizerResponse>(
         authorizerName, lambdaAuthorizer.handler);
 
-    const role = authorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
+    const role = lambdaauthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
 
-    const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
+    const identitySource = lambdaauthorizer.getIdentitySource(lambdaAuthorizer.identitySource);
     return {
         type: lambdaAuthorizer.type,
         authorizerUri: authorizerLambda.invokeArn,
@@ -722,7 +763,7 @@ function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperat
 function addStaticRouteToSwaggerSpec(
     api: API, name: string, swagger: SwaggerSpec, route: StaticRoute,
     bucket: aws.s3.Bucket | undefined,
-    apiAuthorizers: Record<string, authorizer.LambdaAuthorizer>) {
+    apiAuthorizers: Record<string, Authorizers>) {
 
     checkRoute(api, route, "localPath");
 

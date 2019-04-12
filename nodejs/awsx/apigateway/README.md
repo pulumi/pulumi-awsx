@@ -416,6 +416,10 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
+### Cognito Authorizers
+
+[Cognito Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) allow you to use Amazon Cognito User Pools as an Authorizer for API Gateway. This will require users to sign in to the user pool, obtain an identity/access token and then call your API with said token.
+
 ### Swagger String
 
 You can use a OpenAPI specification that is in string form to initialize the API Gateway. This in a way is an escape hatch for implementing featured not yet supported by Pulumi. You must manually provide permission for any route targets to be invoked by API Gateway when using this option.

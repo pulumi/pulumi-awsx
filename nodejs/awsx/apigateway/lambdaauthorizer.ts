@@ -19,6 +19,8 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as awslambda from "aws-lambda";
 
+import * as cognitoauthorizer from "./cognitoauthorizer";
+
 export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
 export type AuthResponseContext = awslambda.AuthResponseContext;
@@ -35,7 +37,7 @@ export interface LambdaAuthorizer {
 
     /**
      * parameterName is the name of the header or query parameter containing the authorization
-     * token. Must be "Unused" for multiple identity sources.
+     * information. Must be "Unused" for multiple identity sources.
      * */
     parameterName: string;
 
@@ -66,9 +68,9 @@ export interface LambdaAuthorizer {
 
     /**
      * List of mapping expressions of the request parameters as the identity source. This indicates
-     * where in the request identity information is expected. Applicable for the authorizer of the
-     * "request" type only. Example: ["method.request.header.HeaderAuth1",
-     * "method.request.querystring.QueryString1"]
+     * where in the request identity information is expected. Required for "TOKEN" authorizers.
+     * Required for "REQUEST" authorizers when caching is enabled. Example:
+     * ["method.request.header.HeaderAuth1", "method.request.querystring.QueryString1"]
      */
     identitySource?: string[];
 
@@ -100,6 +102,11 @@ export interface LambdaAuthorizerInfo {
      * For example, "arn:aws:iam::account-id:IAM_role".
      */
     credentials: pulumi.Input<string> | aws.iam.Role;
+}
+
+/** @internal */
+export function isLambdaAuthorizer(authorizer: LambdaAuthorizer | cognitoauthorizer.CognitoAuthorizer): authorizer is LambdaAuthorizer {
+    return (<LambdaAuthorizer>authorizer).handler !== undefined;
 }
 
 /** @internal */
@@ -222,13 +229,15 @@ export interface TokenAuthorizerArgs {
  * @param args - configuration information for the token Lambda.
  */
 export function getTokenLambdaAuthorizer(args: TokenAuthorizerArgs): LambdaAuthorizer {
+    const parameterName = args.header || "Authorization";
     return {
         authorizerName: args.authorizerName,
-        parameterName: args.header || "Authorization",
+        parameterName: parameterName,
         parameterLocation: "header",
         authType: "oauth2",
         type: "token",
         handler: args.handler,
+        identitySource: ["method.request.header." + parameterName],
         identityValidationExpression: args.identityValidationExpression,
         authorizerResultTtlInSeconds: args.authorizerResultTtlInSeconds,
     };
