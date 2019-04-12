@@ -510,7 +510,13 @@ interface ApigatewayIntegration {
     credentials?: pulumi.Output<string>;
 }
 
-function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator: reqvalidation.RequestValidator | undefined, apikeySource: apikey.APIKeySource | undefined) {
+function createSwaggerSpec(
+    api: API,
+    name: string,
+    routes: Route[],
+    requestValidator: reqvalidation.RequestValidator | undefined,
+    apikeySource: apikey.APIKeySource | undefined) {
+
     // Default API Key source to "HEADER"
     apikeySource = apikeySource || "HEADER";
 

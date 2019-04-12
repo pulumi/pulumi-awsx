@@ -203,6 +203,8 @@ Request body validation is currently not supported. If you have a strong use cas
 To require an API Key for an API Gateway route you set the `apiKeyRequired` property equal to `true`. At the API level, you can choose if you want the API Key source to be `HEADER` (i.e. client includes a `x-api-key` header with the API Key) or `AUTHORIZER` (i.e. a Lambda authorizer sends the API Key as part of the authorization response). If the API Key source is not set, then the source will default to `HEADER`.
 
 ```ts
+import * as awsx from "@pulumi/awsx";
+
 const api = new awsx.apigateway.API("myapi", {
     routes: [{
         path: "/a",
@@ -222,6 +224,8 @@ const api = new awsx.apigateway.API("myapi", {
 You will also need to create a usage plan (`new aws.apigateway.UsagePlan`) and an API key (`new aws.apigateway.ApiKey`) and then associate the key with the usage plan (`new aws.apigateway.UsagePlanKey`). To simplify the creation of API Keys associated with your API you can use `awsx.apigateway.createAssociatedAPIKeys`, which create a Usage Plan, API Keys and associates the API Keys by creating a UsagePlanKey. Below is an example of using this helper function:
 
 ```ts
+import * as awsx from "@pulumi/awsx";
+
 const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
     apis: [api],
     apiKeys: [{
@@ -236,6 +240,8 @@ export const apiKeyValue = apikeys.keys[0].apikey.value;
 `awsx.apigateway.createAssociatedAPIKeys` will return an object that contains the Usage Plan, API Keys and Usage Plan Keys. Instead of providing the APIs, you can also specify the api stages for the Usage Plan as follows:
 
 ```ts
+import * as awsx from "@pulumi/awsx";
+
 const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
     usagePlan: {
         apiStages: [{
