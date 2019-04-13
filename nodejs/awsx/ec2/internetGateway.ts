@@ -30,6 +30,7 @@ export class InternetGateway
         super("awsx:x:ec2:InternetGateway", name, {}, { parent: vpc, ...opts });
 
         this.vpc = vpc;
+        const parentOpts = { parent: this };
 
         if (isExistingInternetGatewayArgs(args)) {
             this.internetGateway = args.internetGateway;
@@ -38,7 +39,7 @@ export class InternetGateway
             this.internetGateway = new aws.ec2.InternetGateway(name, {
                 ...args,
                 vpcId: vpc.vpc.id,
-            }, { parent: this });
+            }, parentOpts);
         }
 
         this.registerOutputs();
