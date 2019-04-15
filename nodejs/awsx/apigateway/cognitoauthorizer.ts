@@ -123,7 +123,7 @@ export interface CognitoAuthorizerArgs {
 }
 
 /**
- * getCognitoAuthorizer is a helper function to generate a token CognitoAuthorizer.
+ * getCognitoAuthorizer is a helper function to generate a CognitoAuthorizer.
  * @param name - the name for the authorizer. This must be unique for each unique authorizer in the API.
  * @param args - configuration information for the Cognito Authorizer.
  */
@@ -141,9 +141,4 @@ export function getCognitoAuthorizer(args: CognitoAuthorizerArgs): CognitoAuthor
         authorizerResultTtlInSeconds: args.authorizerResultTtlInSeconds,
         methodsToAuthorize: args.methodsToAuthorize,
     };
-}
-
-/** @internal */
-export function isCognitoUserPool(pool: pulumi.Input<string> | aws.cognito.UserPool): pool is aws.cognito.UserPool {
-    return (<aws.cognito.UserPool>pool).name !== undefined;
 }

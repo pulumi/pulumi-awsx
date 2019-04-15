@@ -694,7 +694,7 @@ function getCognitoPoolARNs(pools: Array<pulumi.Input<string> | aws.cognito.User
     const arns: pulumi.Input<string>[] = [];
 
     for (const pool of pools) {
-        if (cognitoauthorizer.isCognitoUserPool(pool)) {
+        if (pool instanceof aws.cognito.UserPool) {
             arns.push(pool.arn);
         } else {
             arns.push(pool);
