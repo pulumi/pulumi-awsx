@@ -26,7 +26,7 @@ export interface APIKeyArgs {
 
     /**
      * Define the apis you would like to associate the usage plan with. This can be used in place of
-     * defining the apiStages defined in the [usagePlan].
+     * defining the apiStages defined in the [usagePlan]. You cannot define [apis] and [usagePlan.apiStages].
      */
     apis?: api.API[];
 
@@ -59,16 +59,24 @@ export interface Key {
  * @param args The arguments to use to populate this resource's properties.
  */
 export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): AssociatedAPIKeys {
-    let usagePlan: aws.apigateway.UsagePlan;
+    const usagePlan = getUsagePlan(args);
+    const keys = getKeys(name, args, usagePlan);
 
-    if (args.usagePlan && isUsagePlan(args.usagePlan)) {
-        usagePlan = args.usagePlan;
+    return {
+        usagePlan: usagePlan,
+        keys: keys,
+    };
+}
+
+/** @internal */
+function getUsagePlan(args: APIKeyArgs): aws.apigateway.UsagePlan {
+    if (args.usagePlan && args.usagePlan instanceof aws.apigateway.UsagePlan) {
         if (args.apis) {
-            throw new Error("cannot add [args.apis] to an existing [args.usagePlan]");
+            throw new Error("cannot define both [args.apis] and an existing usagePlan [args.usagePlan]");
         }
+        return args.usagePlan;
     } else {
         let usagePlanArgs: aws.apigateway.UsagePlanArgs | undefined = args.usagePlan;
-
 
         if (args.apis) {
             const stages = [];
@@ -82,7 +90,7 @@ export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): Associa
 
             if (args.usagePlan) {
                 if (args.usagePlan.apiStages) {
-                    throw new Error("[args.apis] and [args.usagePlan.apiStages] cannot both be defined");
+                    throw new Error("cannot define both [args.apis] and [args.usagePlan.apiStages]");
                 }
 
                 usagePlanArgs = {
@@ -99,19 +107,20 @@ export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): Associa
                 };
             }
         }
-
-        usagePlan = new aws.apigateway.UsagePlan(name, usagePlanArgs);
+        return new aws.apigateway.UsagePlan(name, usagePlanArgs);
     }
+}
 
-    let keys: Key[] = [];
+/** @internal */
+function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.UsagePlan): Key[] {
+    const keys: Key[] = [];
 
     if (args.apiKeys) {
-        keys = [];
-
         for (let i = 0; i < args.apiKeys.length; i++) {
             const currKey = args.apiKeys[i];
             let apikey: aws.apigateway.ApiKey;
-            if (isAPIKey(currKey)) {
+
+            if (currKey instanceof aws.apigateway.ApiKey) {
                 apikey = currKey;
             } else {
                 apikey = new aws.apigateway.ApiKey(name + "-apikey-" + i, currKey);
@@ -129,18 +138,5 @@ export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): Associa
             });
         }
     }
-    return {
-        usagePlan: usagePlan,
-        keys: keys,
-    };
-}
-
-/** @internal */
-export function isAPIKey(key: aws.apigateway.ApiKeyArgs | aws.apigateway.ApiKey): key is aws.apigateway.ApiKey {
-    return (<aws.apigateway.ApiKey>key).value !== undefined;
-}
-
-/** @internal */
-export function isUsagePlan(plan: aws.apigateway.UsagePlanArgs | aws.apigateway.UsagePlan): plan is aws.apigateway.UsagePlan {
-    return (<aws.apigateway.UsagePlan>plan).id !== undefined;
+    return keys;
 }
