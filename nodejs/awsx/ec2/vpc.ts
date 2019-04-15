@@ -53,8 +53,6 @@ export class Vpc extends pulumi.ComponentResource {
     constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
-        const parentOpts = { parent: this };
-
         if (isExistingVpcArgs(args)) {
             this.vpc = args.vpc;
             this.id = this.vpc.id;
@@ -73,12 +71,12 @@ export class Vpc extends pulumi.ComponentResource {
                 enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
                 enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
-            }, parentOpts);
+            });
             this.id = this.vpc.id;
 
             // Create the appropriate subnets.  Default to a single public and private subnet for each
             // availability zone if none were specified.
-            const topology = new VpcTopology(this, name, cidrBlock, numberOfAvailabilityZones);
+            const topology = new VpcTopology(this, name, cidrBlock, numberOfAvailabilityZones, opts);
             topology.createSubnets(args.subnets || [
                 { type: "public" },
                 { type: "private" },
@@ -125,6 +123,8 @@ export class Vpc extends pulumi.ComponentResource {
         if (this.internetGateway) {
             throw new Error("Cannot add InternetGateway to Vpc that already has one.");
         }
+
+        opts = { parent: this, ...opts };
 
         // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
         // for more details.
