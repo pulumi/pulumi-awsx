@@ -28,7 +28,8 @@ export class VpcTopology {
     constructor(private readonly vpc: x.ec2.Vpc,
                 private readonly vpcName: string,
                 vpcCidr: string,
-                private readonly numberOfAvailabilityZones: number) {
+                private readonly numberOfAvailabilityZones: number,
+                private readonly opts: pulumi.ComponentResourceOptions | undefined) {
 
         this.vpcCidrBlock = Cidr32Block.fromCidrNotation(vpcCidr);
     }
@@ -106,7 +107,6 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
         const type = subnetArgs.type;
         const subnets = this.vpc.getSubnets(type);
         const subnetIds = this.vpc.getSubnetIds(type);
-        const parentOpts = { parent: this.vpc };
 
         for (let i = 0; i < this.numberOfAvailabilityZones; i++) {
             const subnetName = getSubnetName(this.vpcName, subnetArgs, i);
@@ -118,7 +118,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                 // merge some good default tags, with whatever the user wants.  Their choices should
                 // always win out over any defaults we pick.
                 tags: utils.mergeTags({ type, Name: subnetName }, subnetArgs.tags),
-            }, parentOpts);
+            }, this.opts);
 
             subnets.push(subnet);
             subnetIds.push(subnet.id);
