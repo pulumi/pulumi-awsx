@@ -145,5 +145,5 @@ export function getCognitoAuthorizer(args: CognitoAuthorizerArgs): CognitoAuthor
 
 /** @internal */
 export function isCognitoUserPool(pool: pulumi.Input<string> | aws.cognito.UserPool): pool is aws.cognito.UserPool {
-    return (<aws.cognito.UserPool>pool).arn !== undefined;
+    return (<aws.cognito.UserPool>pool).name !== undefined;
 }

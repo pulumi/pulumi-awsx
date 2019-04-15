@@ -172,63 +172,74 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
 
 export const authorizerUrl = apiWithAuthorizer.url;
 
-
-
 /**
  *The example below shows using a Cognito Authorizer.
  */
 
-const cognitoUserPool = new aws.cognito.UserPool("pool", {});
-const cognitoClient = new aws.cognito.UserPoolClient("poolClient", {
-    userPoolId: cognitoUserPool.id,
-});
+// const cognitoUserPool = new aws.cognito.UserPool("pool", {});
+// const cognitoClient = new aws.cognito.UserPoolClient("poolClient", {
+//     userPoolId: cognitoUserPool.id,
+// });
 
-import AWS = require("aws-sdk");
-const cognito = new AWS.CognitoIdentityServiceProvider();
+// // import AWS = require("aws-sdk");
+// // const cognito = new AWS.CognitoIdentityServiceProvider();
 
+// const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-api", {
+//     routes: [{
+//         path: "/www_old",
+//         localPath: "www",
+//         authorizers: [awsx.apigateway.getCognitoAuthorizer({
+//             providerARNs: [cognitoUserPool.arn],
+//         })],
+//     }],
+// });
 
-const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-api", {
-    routes: [{
-        path: "/www_old",
-        localPath: "www",
-        authorizers: [awsx.apigateway.getCognitoAuthorizer({
-            providerARNs: [cognitoUserPool.arn],
-        })],
-    }],
-});
+// export const cognitoUrl = apiWithCognitoAuthorizer.url;
+// export const cognitoClientId = cognitoClient.id;
 
-export const cognitoUrl = apiWithCognitoAuthorizer.url;
+// function createCognitoUser(userName: string, password: string) {
+//     const user = pulumi.all([cognitoUserPool.id, cognitoClient.id]).apply(([poolId, clientId]) => {
+//         const user = cognito.adminCreateUser({
+//             UserPoolId: poolId,
+//             Username: userName,
+//             MessageAction: "SUPPRESS", // Do not send welcome email
+//             TemporaryPassword: password,
+//             UserAttributes: [
+//                 {
+//                     Name: "email",
+//                     Value: "test@pulumi.com",
+//                 },
+//                 {
+//                     // Don't verify email addresses
+//                     Name: "email_verified",
+//                     Value: "true",
+//                 },
+//             ],
+//         });
 
+//         // Initiate Auth Challenge to start setting permanent password
+//         const initiateAuthData = cognito.adminInitiateAuth({
+//             AuthFlow: "ADMIN_NO_SRP_AUTH",
+//             ClientId: clientId, // From Cognito dashboard, generated app client id
+//             UserPoolId: poolId,
+//             AuthParameters: {
+//                 USERNAME: userName,
+//                 PASSWORD: password,
+//             },
+//         });
 
-function createCognitoUser() {
-    const user = [cognitoUserPool.id, cognitoClient.id].apply([id, clientId] => {
-        const params = {
-            UserPoolId: id,
-            Username: "userId",
-            MessageAction: "SUPPRESS", // Do not send welcome email
-            TemporaryPassword: "p@ssword1",
-            UserAttributes: [
-                {
-                    Name: "email",
-                    Value: "test@pulumi.com",
-                },
-                {
-                    // Don't verify email addresses
-                    Name: "email_verified",
-                    Value: "true",
-                },
-            ],
-        };
-        const user = cognito.adminCreateUser(params);
-        cognito.adminInitiateAuth({
-            AuthFlow: "ADMIN_NO_SRP_AUTH",
-            ClientId: USER_POOL_CLIENT_ID, // From Cognito dashboard, generated app client id
-            UserPoolId: id,
-            AuthParameters: {
-                USERNAME: "userId",
-                PASSWORD: "p@ssword2",
-            }
-        })
-    });
-    user.
-}
+//         // check if response is an error or not
+
+//         cognito.adminRespondToAuthChallenge({
+//             ChallengeName: "NEW_PASSWORD_REQUIRED",
+//             ClientId: clientId,
+//             UserPoolId: poolId,
+//             ChallengeResponses: {
+//                 USERNAME: userName,
+//                 NEW_PASSWORD: password,
+//             },
+//             Session: initiateAuthData.Session,
+//         });
+//     });
+
+// }
