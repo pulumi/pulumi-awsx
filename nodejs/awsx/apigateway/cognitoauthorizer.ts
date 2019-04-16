@@ -46,7 +46,7 @@ export interface CognitoAuthorizer {
     /**
      * The ARNs of the Cognito User Pools to use.
      */
-    providerARNs: Array<pulumi.Input<string> | aws.cognito.UserPool>;
+    providerARNs: pulumi.Input<string>[];
 
     /**
      * List containing the request header that holds the authorization token. Example: if the token
@@ -98,7 +98,7 @@ export interface CognitoAuthorizerArgs {
     /**
      * The ARNs of the Cognito User Pools to use.
      */
-    providerARNs: Array<pulumi.Input<string> | aws.cognito.UserPool>;
+    providerARNs: pulumi.Input<string>[];
 
     /**
      * A regular expression for validating the token as the incoming identity. It only invokes the

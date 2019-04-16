@@ -145,12 +145,12 @@ func Test_Examples(t *testing.T) {
 				},
 				{
 					urlStackOutputKey: "cognitoUrl",
-					urlPath:           "/www_old",
+					urlPath:           "/www_old/sub/file1.txt",
 					requiredToken: &requiredToken{
 						header:       "Authorization",
 						getAuthToken: GetCognitoUserToken,
 					},
-					expectedBody: "<html></html>\n",
+					expectedBody: "othercontents1\n",
 				},
 			}),
 			EditDirs: []integration.EditDir{{
