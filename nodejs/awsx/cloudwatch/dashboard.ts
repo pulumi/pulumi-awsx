@@ -82,7 +82,7 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
      * then these will be treated as a sequence of rows to add to the grid.  Otherwise, this will
      * be treated as a single row to add to the grid.
      */
-    constructor(args: DashboardArgs, opts?: pulumi.CustomResourceOptions) {
+    constructor(name: string, args: DashboardArgs, opts?: pulumi.CustomResourceOptions) {
         const widgets = args.widgets;
         if (widgets.length < 1 || widgets.length > 100) {
             throw new Error("Must supply between 1 and 100 widgets.");

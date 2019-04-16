@@ -47,7 +47,7 @@ const funcAlarm1 = funcMetric.with({ unit: "Milliseconds", period: 600 })
                              .createAlarm("SlowUrlProcessing", { threshold: 1000, evaluationPeriods: 5 });
 
 // Also create a dashboard to track this.
-const dashboard = awsx.cloudwatch.Dashboard("TopicData", {
+const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
     widgets: [
         new awsx.cloudwatch.SingleNumberMetricWidget({
             title: "Requests/Minute",
@@ -64,7 +64,7 @@ const dashboard = awsx.cloudwatch.Dashboard("TopicData", {
             width: 14,
 
             // Place a line on the graph to indicate where our alarm will be triggered.
-            annotations: funcAlarm1,
+            annotations: new awsx.cloudwatch.HorizontalAnnotation(funcAlarm1),
 
             // Log our different p90/p95/p99 latencies
             metrics: [

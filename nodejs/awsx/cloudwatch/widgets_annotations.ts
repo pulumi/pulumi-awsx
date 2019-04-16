@@ -46,6 +46,15 @@ export class AlarmAnnotation implements WidgetAnnotation {
     }
 }
 
+export interface HorizontalAlarmAnnotationArgs {
+    alarmDescription: pulumi.Input<string | undefined>;
+    threshold: pulumi.Input<number>;
+}
+
+function isHorizontalAlarmAnnotationArgs(obj: any): obj is HorizontalAlarmAnnotationArgs {
+    return (<HorizontalAlarmAnnotationArgs>obj).threshold !== undefined;
+}
+
 export interface HorizontalAnnotationArgs {
     /**
      * The metric value in the graph where the horizontal annotation line is to appear.  If
@@ -102,7 +111,7 @@ export interface HorizontalEdge {
     /**
      * A string that appears on the graph next to the annotation.
      */
-    label?: pulumi.Input<string>;
+    label?: pulumi.Input<string | undefined>;
 }
 
 /**
@@ -111,8 +120,21 @@ export interface HorizontalEdge {
  * linked annotation lines as part of a single band annotation
  */
 export class HorizontalAnnotation implements WidgetAnnotation {
-    constructor(private readonly args: HorizontalAnnotationArgs) {
-        if (args.fill && args.belowEdge) {
+    private readonly args: HorizontalAnnotationArgs;
+
+    constructor(args: HorizontalAnnotationArgs);
+    constructor(args: HorizontalAlarmAnnotationArgs);
+    constructor(args: HorizontalAnnotationArgs | HorizontalAlarmAnnotationArgs) {
+        if (isHorizontalAlarmAnnotationArgs(args)) {
+            this.args = {
+                aboveEdge: { label: pulumi.output(args.alarmDescription), value: args.threshold },
+            };
+        }
+        else {
+            this.args = args;
+        }
+
+        if (this.args.fill && this.args.belowEdge) {
             throw new Error(`[args.fill] should not be provided if [args.belowEdge] is provided.`);
         }
     }
