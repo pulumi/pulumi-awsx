@@ -21,6 +21,7 @@ import * as cloudwatch from "./cloudwatch";
 import * as ec2 from "./ec2";
 import * as ecs from "./ecs";
 import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
+import * as lambda from "./lambda";
 
 export {
     apigateway,
@@ -29,6 +30,7 @@ export {
     ec2,
     ecs,
     elasticloadbalancingv2,
+    lambda,
 };
 
 // @pulumi/awsx is a deployment-only module.  If someone tries to capture it, and we fail for some

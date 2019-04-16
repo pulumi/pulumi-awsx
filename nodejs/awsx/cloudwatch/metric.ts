@@ -206,9 +206,10 @@ export class Metric {
     }
 }
 
-function mergeDimensions(
-        oldDimensions: pulumi.Output<Record<string, any> | undefined>,
-        newDimensions: pulumi.Output<Record<string, any> | undefined>) {
+/** @internal */
+export function mergeDimensions(
+        oldDimensions: pulumi.Input<Record<string, any> | undefined> | undefined,
+        newDimensions: pulumi.Input<Record<string, any> | undefined> | undefined) {
 
     return pulumi.all([oldDimensions, newDimensions]).apply(([oldDimensions, newDimensions]) => {
         if (!newDimensions) {

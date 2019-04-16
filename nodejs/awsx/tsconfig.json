@@ -49,6 +49,8 @@
         "elasticloadbalancingv2/loadBalancer.ts",
         "elasticloadbalancingv2/network.ts",
         "elasticloadbalancingv2/targetGroup.ts",
+        "lambda/index.ts",
+        "lambda/metrics.ts",
     ]
 }
 
