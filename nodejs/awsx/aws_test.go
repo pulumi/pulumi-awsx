@@ -15,11 +15,11 @@
 package examples
 
 import (
-	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
 	"path"
@@ -148,7 +148,7 @@ func Test_Examples(t *testing.T) {
 					urlPath:           "/www_old/sub/file1.txt",
 					requiredToken: &requiredToken{
 						header:       "Authorization",
-						getAuthToken: GetCognitoUserToken,
+						getAuthToken: getCognitoUserToken,
 					},
 					expectedBody: "othercontents1\n",
 				},
@@ -529,12 +529,12 @@ func GetHTTP(t *testing.T, req *http.Request, statusCode int) *http.Response {
 	return nil
 }
 
-func GetCognitoUserToken(t *testing.T, stack integration.RuntimeValidationStackInfo) string {
+func getCognitoUserToken(t *testing.T, stack integration.RuntimeValidationStackInfo) string {
 	userPoolID := stack.Outputs["cognitoPoolId"].(string)
 	clientID := stack.Outputs["cognitoClientId"].(string)
 	userName := "testing"
-	tempPassword := "Passw0rd$"
-	password := "T@sting1"
+	tempPassword := randPassword(8)
+	password := randPassword(8)
 
 	client := cognito.New(session.Must(session.NewSession()))
 	createUser(t, client, userPoolID, userName, tempPassword)
@@ -546,6 +546,15 @@ func GetCognitoUserToken(t *testing.T, stack integration.RuntimeValidationStackI
 	adminInitAuth = initiateAuth(t, client, clientID, userPoolID, userName, password)
 
 	return *adminInitAuth.AuthenticationResult.IdToken
+}
+
+func randPassword(n int) string {
+	letters := []rune("abcdefghijklmnopqrstuvwxyz")
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b) + "A$1"
 }
 
 func createUser(t *testing.T, client *cognito.CognitoIdentityProvider, userPoolID, userName, tempPassword string) {
