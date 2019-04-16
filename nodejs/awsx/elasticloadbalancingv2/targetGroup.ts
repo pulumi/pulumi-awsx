@@ -27,6 +27,7 @@ export abstract class TargetGroup
                    x.ecs.ContainerLoadBalancerProvider,
                    x.elasticloadbalancingv2.ListenerDefaultAction {
 
+    public readonly loadBalancer: mod.LoadBalancer;
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
     public readonly vpc: x.ec2.Vpc;
 

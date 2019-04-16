@@ -1,5 +1,9 @@
 ## 0.18.2 (Unreleased)
 
+- Adds a new set of APIs for defining and CloudWatch metrics and creating alarms from them. See
+  [awsx.cloudwatch.Metric] for more details, and see [awsx.lambda.metrics.duration] as an example of
+  a newly exposed easy-to-use metric.
+
 ## 0.18.1 (Released 4/14/2019)
 
 - TypeScript typings for awsx.apigateway.API have been updated to be more accurate.
