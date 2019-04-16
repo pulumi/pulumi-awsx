@@ -38,6 +38,8 @@
         "cloudfront/metrics.ts",
         "dynamodb/index.ts",
         "dynamodb/metrics.ts",
+        "ebs/index.ts",
+        "ebs/metrics.ts",
         "ec2/cidr.ts",
         "ec2/index.ts",
         "ec2/securityGroup.ts",

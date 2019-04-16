@@ -23,6 +23,7 @@ import * as cloudwatch from "./cloudwatch";
 import * as codebuild from "./codebuild";
 import * as cognito from "./cognito";
 import * as dynamodb from "./dynamodb";
+import * as ebs from "./ebs";
 import * as ec2 from "./ec2";
 import * as ecs from "./ecs";
 import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
@@ -38,6 +39,7 @@ export {
     cognito,
     dynamodb,
     ec2,
+    ebs,
     ecs,
     elasticloadbalancingv2,
     lambda,
