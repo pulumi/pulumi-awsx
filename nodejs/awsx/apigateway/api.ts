@@ -429,7 +429,7 @@ interface SwaggerOperation {
      * SecurityDefinition, defined at the top level of the swagger definition, by matching a Security
      * Definition's name property. The authorizerNames' values are empty arrays.
      */
-    security?: { [authorizerName: string]: string[] }[];
+    security?: Record<string, string[]>[];
 }
 
 interface SecurityDefinition {
@@ -640,9 +640,9 @@ function addEventHandlerRouteToSwaggerSpec(
 function addAuthorizersToSwagger(
     swagger: SwaggerSpec,
     authorizers: Authorizers[],
-    apiAuthorizers: Record<string, Authorizers>): string[] {
+    apiAuthorizers: Record<string, Authorizers>): Record<string, string[]>[] {
 
-    const authNames: string[] = [];
+    const authNames: Record<string, string[]>[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
 
     for (const auth of authorizers) {
@@ -658,6 +658,7 @@ function addAuthorizersToSwagger(
             throw new Error("Two different authorizers using the same name: " + authName);
         }
 
+        let methods: string[] = [];
         // Add security definition if it's a new authorizer
         if (!swagger["securityDefinitions"][auth.authorizerName]) {
             let securityDef: SecurityDefinition;
@@ -682,10 +683,11 @@ function addAuthorizersToSwagger(
                         providerARNs: getCognitoPoolARNs(auth.providerARNs),
                     },
                 };
+                methods = auth.methodsToAuthorize || methods;
             }
             swagger["securityDefinitions"][authName] = securityDef;
         }
-        authNames.push(authName);
+        authNames.push({ [authName]: methods });
     }
     return authNames;
 }
@@ -738,12 +740,10 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: lambdaaut
     };
 }
 
-function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authorizerNames: string[]) {
+function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authorizerNames: Record<string, string[]>[]) {
     swaggerOperation["security"] = swaggerOperation["security"] || [];
     for (const authName of authorizerNames) {
-        swaggerOperation["security"].push({
-            [authName]: [],
-        });
+        swaggerOperation["security"].push(authName);
     }
 }
 
@@ -773,7 +773,7 @@ function addStaticRouteToSwaggerSpec(
     // Create a bucket to place all the static data under.
     bucket = bucket || new aws.s3.Bucket(safeS3BucketName(name), undefined, parentOpts);
 
-    let authNames: string[] | undefined;
+    let authNames: Record<string, string[]>[] | undefined;
     if (route.authorizers) {
         authNames = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
     }
@@ -815,7 +815,7 @@ function addStaticRouteToSwaggerSpec(
         }, parentOpts);
     }
 
-    function processFile(route: StaticRoute, authorizerNames: string[] | undefined) {
+    function processFile(route: StaticRoute, authorizerNames: Record<string, string[]>[] | undefined) {
         const key = name + sha1hash(method + ":" + route.path);
         const role = createRole(key);
 
@@ -834,7 +834,7 @@ function addStaticRouteToSwaggerSpec(
         addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
 
-    function processDirectory(directory: StaticRoute, authorizerNames: string[] | undefined) {
+    function processDirectory(directory: StaticRoute, authorizerNames: Record<string, string[]>[] | undefined) {
         const directoryServerPath = route.path.endsWith("/") ? route.path : route.path + "/";
 
         const directoryKey = name + sha1hash(method + ":" + directoryServerPath);

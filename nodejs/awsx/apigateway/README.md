@@ -418,7 +418,26 @@ const api = new awsx.apigateway.API("myapi", {
 
 ### Cognito Authorizers
 
-[Cognito Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) allow you to use Amazon Cognito User Pools as an Authorizer for API Gateway. This will require users to sign in to the user pool, obtain an identity/access token and then call your API with said token.
+[Cognito Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) allow you to use [Amazon Cognito User Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html) as an Authorizer for API Gateway. This will require users to sign in to the user pool, obtain an identity/access token and then call your API with said token.
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+// Create an AWS Cognito User Pool
+const cognitoUserPool = new aws.cognito.UserPool("pool", {});
+
+// Create an API that requires authorizes against the User Pool
+const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-protected-api", {
+    routes: [{
+        path: "/www_old",
+        localPath: "www",
+        authorizers: [awsx.apigateway.getCognitoAuthorizer({
+            providerARNs: [cognitoUserPool],
+            methodsToAuthorize: ["www_old/sub"],
+        })],
+    }],
+});
+```
 
 ### Swagger String
 
