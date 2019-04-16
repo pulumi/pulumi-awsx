@@ -28,17 +28,6 @@ export namespace metrics {
         userPool?: aws.cognito.UserPool;
     }
 
-    function mergeChanges(
-        resourceOrChange1: aws.cognito.UserPool | CognitoMetricChange | undefined,
-        change2: cloudwatch.MetricChange) {
-
-        const change1 = resourceOrChange1 instanceof aws.cognito.UserPool
-            ? { dimensions: { UserPoolId: resourceOrChange1.id } }
-            : resourceOrChange1;
-
-        return cloudwatch.mergeDimensions(change1, change2);
-    }
-
     /**
      * Creates an AWS/Cognito metric with the requested [metricName]. See
      * https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-viewing-advanced-security-metrics.html
@@ -51,84 +40,51 @@ export namespace metrics {
      * CloudWatch. The advanced security metrics are grouped together by risk level and also by request
      * level.
      */
-    function metric(metricName: CognitoMetricName, resourceOrChange: aws.cognito.UserPool | CognitoMetricChange | undefined, change: cloudwatch.MetricChange) {
+    function metric(metricName: CognitoMetricName, change: CognitoMetricChange = {}) {
+        const dimensions: Record<string, any> = {};
+        if (change.userPool !== undefined) {
+            dimensions.UserPoolId = change.userPool.id;
+        }
+
         return new cloudwatch.Metric({
             namespace: "AWS/Cognito",
             name: metricName,
-            ...mergeChanges(resourceOrChange, change),
-        });
+            ...change,
+        }).withDimensions(dimensions);
     }
 
     /**
      * Requests where Amazon Cognito detected compromised credentials.
      */
-    export function compromisedCredentialsRisk(change: cloudwatch.MetricChange = {}) {
+    export function compromisedCredentialsRisk(change?: CognitoMetricChange) {
         return metric("CompromisedCredentialsRisk", change);
     }
 
     /**
      * Requests where Amazon Cognito detected account take-over risk.
      */
-    export function accountTakeOverRisk(change: cloudwatch.MetricChange = {}) {
+    export function accountTakeOverRisk(change?: CognitoMetricChange) {
         return metric("AccountTakeOverRisk", change);
     }
 
     /**
      * Requests that Amazon Cognito blocked because of the configuration provided by the developer.
      */
-    export function overrideBlock(change: cloudwatch.MetricChange = {}) {
+    export function overrideBlock(change?: CognitoMetricChange) {
         return metric("OverrideBlock", change);
     }
 
     /**
      * Requests that Amazon Cognito marked as risky.
      */
-    export function risk(change: cloudwatch.MetricChange = {}) {
+    export function risk(change?: CognitoMetricChange) {
         return metric("Risk", change);
     }
 
     /**
      * Requests where Amazon Cognito did not identify any risk.
      */
-    export function noRisk(change: cloudwatch.MetricChange = {}) {
+    export function noRisk(change?: CognitoMetricChange) {
         return metric("NoRisk", change);
     }
 }
-
-declare module "./userPool" {
-    interface UserPool {
-        /**
-         * Direct access to create metrics for this specific [cognito.UserPool].
-         */
-        metrics: {
-            /**
-             * Requests where Amazon Cognito detected compromised credentials.
-             */
-            compromisedCredentialsRisk(change?: cloudwatch.MetricChange): cloudwatch.Metric;
-
-            /**
-             * Requests that Amazon Cognito marked as risky.
-             */
-            risk(change?: cloudwatch.MetricChange): cloudwatch.Metric;
-
-            /**
-             * Requests where Amazon Cognito did not identify any risk.
-             */
-            noRisk(change?: cloudwatch.MetricChange): cloudwatch.Metric;
-        }
-    }
-}
-
-// All instance metrics just make a normal AWS/Cognito metric, except with the UserPoolId set
-// correctly.
-
-Object.defineProperty(UserPool.prototype, "metrics", {
-    get: function (this: UserPool) {
-        const dimensions = { dimensions: { UserPoolId: this.id } };
-        const result = {};
-        for (const name in metrics) {
-            result[name] = (change: cloudwatch.MetricChange) => metrics[name](dimensions).with(change);
-        }
-        return result;
-    }
-});

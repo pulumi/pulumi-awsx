@@ -61,7 +61,7 @@ export namespace metrics {
      * "ProjectName" is the only AWS CodeBuild metrics dimension. If it is specified, then the metrics
      * are for that project. If it is not specified, then the metrics are for the current AWS account.
      */
-    function metric(metricName: CodebuildMetricName, change: CodebuildMetricChange) {
+    function metric(metricName: CodebuildMetricName, change: CodebuildMetricChange = {}) {
         const dimensions: Record<string, any> = {};
         if (change.project !== undefined) {
             dimensions.ProjectName = change.project.name;
