@@ -27,17 +27,17 @@ export namespace metrics {
          * Optional Function this metric should be filtered down to.
          */
         function?: aws.lambda.Function;
-    }
 
-    function mergeChanges(
-        resourceOrChange1: aws.lambda.Function | LambdaMetricChange | undefined,
-        change2: cloudwatch.MetricChange) {
+        /**
+         * Filters the metric data by Lambda function resource, such as function version or alias.
+         */
+        resource?: string;
 
-        const change1 = resourceOrChange1 instanceof aws.lambda.Function
-            ? { dimensions: { FunctionName: resourceOrChange1.name } }
-            : resourceOrChange1;
-
-        return cloudwatch.mergeDimensions(change1, change2);
+        /**
+         * Filters the metric data by Lambda function versions. This only applies to alias
+         * invocations.
+         */
+        executedVersion?: string;
     }
 
     /**
@@ -57,12 +57,25 @@ export namespace metrics {
      * 3. "ExecutedVersion". Filters the metric data by Lambda function versions. This only applies
      *    to alias invocations.
      */
-    function metric(metricName: LambdaMetricName, resourceOrChange: aws.lambda.Function | LambdaMetricChange | undefined, change: cloudwatch.MetricChange) {
+    function metric(metricName: LambdaMetricName, change: LambdaMetricChange = {}) {
+        const dimensions: Record<string, any> = {};
+        if (change.function !== undefined) {
+            dimensions.FunctionName = change.function.name;
+        }
+
+        if (change.resource !== undefined) {
+            dimensions.Resource = change.resource;
+        }
+
+        if (change.executedVersion !== undefined) {
+            dimensions.ExecutedVersion = change.executedVersion;
+        }
+
         return new cloudwatch.Metric({
             namespace: "AWS/Lambda",
             name: metricName,
-            ...mergeChanges(resourceOrChange, change),
-        });
+            ...change,
+        }).withDimensions(dimensions);
     }
 
     /**
@@ -74,10 +87,8 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function invocations(func: aws.lambda.Function, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function invocations(change?: LambdaMetricChange): cloudwatch.Metric;
-    export function invocations(funcOrChange?: aws.lambda.Function | LambdaMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("Invocations", funcOrChange, { unit: "Count", ...change });
+    export function invocations(change?: LambdaMetricChange): cloudwatch.Metric {
+        return metric("Invocations", { unit: "Count", ...change });
     }
 
     /**
@@ -97,10 +108,8 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function errors(func: aws.lambda.Function, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function errors(change?: LambdaMetricChange): cloudwatch.Metric;
-    export function errors(funcOrChange?: aws.lambda.Function | LambdaMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("Errors", funcOrChange, { unit: "Count", ...change });
+    export function errors(change?: LambdaMetricChange): cloudwatch.Metric {
+        return metric("Errors", { unit: "Count", ...change });
     }
 
     /**
@@ -114,10 +123,8 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function deadLetterErrors(func: aws.lambda.Function, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function deadLetterErrors(change?: LambdaMetricChange): cloudwatch.Metric;
-    export function deadLetterErrors(funcOrChange?: aws.lambda.Function | LambdaMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("DeadLetterErrors", funcOrChange, { unit: "Count", ...change });
+    export function deadLetterErrors(change?: LambdaMetricChange): cloudwatch.Metric {
+        return metric("DeadLetterErrors", { unit: "Count", ...change });
     }
 
     /**
@@ -129,10 +136,8 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function duration(func: aws.lambda.Function, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function duration(change?: LambdaMetricChange): cloudwatch.Metric;
-    export function duration(funcOrChange?: aws.lambda.Function | LambdaMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("Duration", funcOrChange, { unit: "Milliseconds", ...change });
+    export function duration(change?: LambdaMetricChange): cloudwatch.Metric {
+        return metric("Duration", { unit: "Milliseconds", ...change });
     }
 
     /**
@@ -142,10 +147,8 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function throttles(func: aws.lambda.Function, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function throttles(change?: LambdaMetricChange): cloudwatch.Metric;
-    export function throttles(funcOrChange?: aws.lambda.Function | LambdaMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("Throttles", funcOrChange, { unit: "Count", ...change });
+    export function throttles(change?: LambdaMetricChange): cloudwatch.Metric {
+        return metric("Throttles", { unit: "Count", ...change });
     }
 
     /**
@@ -156,10 +159,8 @@ export namespace metrics {
      *
      * Units: Milliseconds
      */
-    export function iteratorAge(func: aws.lambda.Function, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function iteratorAge(change?: LambdaMetricChange): cloudwatch.Metric;
-    export function iteratorAge(funcOrChange?: aws.lambda.Function | LambdaMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("IteratorAge", funcOrChange, { unit: "Milliseconds", ...change });
+    export function iteratorAge(change?: LambdaMetricChange): cloudwatch.Metric {
+        return metric("IteratorAge", { unit: "Milliseconds", ...change });
     }
 
     /**
@@ -170,10 +171,8 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function concurrentExecutions(func: aws.lambda.Function, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function concurrentExecutions(change?: LambdaMetricChange): cloudwatch.Metric;
-    export function concurrentExecutions(funcOrChange?: aws.lambda.Function | LambdaMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("ConcurrentExecutions", funcOrChange, { unit: "Count", ...change });
+    export function concurrentExecutions(change?: LambdaMetricChange): cloudwatch.Metric {
+        return metric("ConcurrentExecutions", { unit: "Count", ...change });
     }
 
     /**
@@ -184,7 +183,7 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function unreservedConcurrentExecutions(change: cloudwatch.MetricChange = {}) {
-        return metric("UnreservedConcurrentExecutions", undefined, { unit: "Count", ...change });
+    export function unreservedConcurrentExecutions(change?: LambdaMetricChange): cloudwatch.Metric {
+        return metric("UnreservedConcurrentExecutions", { unit: "Count", ...change });
     }
 }

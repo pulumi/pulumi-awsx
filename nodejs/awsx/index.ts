@@ -19,6 +19,7 @@ import * as apigateway from "./apigateway";
 import * as autoscaling from "./autoscaling";
 import * as cloudwatch from "./cloudwatch";
 import * as codebuild from "./codebuild";
+import * as cognito from "./cognito";
 import * as ec2 from "./ec2";
 import * as ecs from "./ecs";
 import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
@@ -28,6 +29,8 @@ export {
     apigateway,
     autoscaling,
     cloudwatch,
+    codebuild,
+    cognito,
     ec2,
     ecs,
     elasticloadbalancingv2,
