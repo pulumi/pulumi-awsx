@@ -70,9 +70,10 @@ export interface CognitoAuthorizer {
 
     /**
      * For method authorization, you can define resource servers and custom scopes by specifying the
-     * "resource-server/scope". If not specified it defaults to [], which means it will grant
-     * authorization to any method. TODO check this. e.g. ["com.hamuta.movies/drama.view",
-     * "http://my.resource.com/file.read"]
+     * "resource-server/scope". e.g. ["com.hamuta.movies/drama.view",
+     * "http://my.resource.com/file.read"] For more information on resource servers and custom
+     * scopes visit the AWS documentation -
+     * https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-define-resource-servers.html
      */
     methodsToAuthorize?: string[];
 }
@@ -115,9 +116,10 @@ export interface CognitoAuthorizerArgs {
 
     /**
      * For method authorization, you can define resource servers and custom scopes by specifying the
-     * "resource-server/scope". If not specified it defaults to [], which means it will grant
-     * authorization to any method. TODO check this. e.g. ["com.hamuta.movies/drama.view",
-     * "http://my.resource.com/file.read"]
+     * "resource-server/scope". e.g. ["com.hamuta.movies/drama.view",
+     * "http://my.resource.com/file.read"] For more information on resource servers and custom
+     * scopes visit the AWS documentation -
+     * https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-define-resource-servers.html
      */
     methodsToAuthorize?: string[];
 }
