@@ -17,7 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as cloudwatch from "../cloudwatch";
 
 export namespace metrics {
-    export type EbsMetricName =
+    type EbsMetricName =
         "VolumeReadBytes" | "VolumeWriteBytes" | "VolumeReadOps" | "VolumeWriteOps" |
         "VolumeTotalReadTime" | "VolumeTotalWriteTime" | "VolumeIdleTime" |
         "VolumeQueueLength" | "VolumeThroughputPercentage" | "VolumeConsumedReadWriteOps" |

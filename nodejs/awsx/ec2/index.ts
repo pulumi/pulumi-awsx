@@ -13,6 +13,7 @@
 // limitations under the License.
 
 export * from "./internetGateway";
+export * from "./metrics";
 export * from "./natGateway";
 export * from "./securityGroup";
 export * from "./securityGroupRule";
