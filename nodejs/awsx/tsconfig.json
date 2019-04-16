@@ -27,6 +27,8 @@
         "cloudwatch/index.ts",
         "cloudwatch/metric.ts",
         "cloudwatch/metrics.ts",
+        "codebuild/index.ts",
+        "codebuild/metrics.ts",
         "ec2/cidr.ts",
         "ec2/index.ts",
         "ec2/securityGroup.ts",

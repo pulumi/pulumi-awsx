@@ -29,13 +29,13 @@ export namespace metrics {
         function?: aws.lambda.Function;
     }
 
-    function getCombinedChange(
-        funcOrChange1: aws.lambda.Function | LambdaMetricChange | undefined,
+    function mergeChanges(
+        resourceOrChange1: aws.lambda.Function | LambdaMetricChange | undefined,
         change2: cloudwatch.MetricChange) {
 
-        const change1 = funcOrChange1 instanceof aws.lambda.Function
-            ? { dimensions: { FunctionName: funcOrChange1.name } }
-            : funcOrChange1;
+        const change1 = resourceOrChange1 instanceof aws.lambda.Function
+            ? { dimensions: { FunctionName: resourceOrChange1.name } }
+            : resourceOrChange1;
 
         return cloudwatch.mergeDimensions(change1, change2);
     }
@@ -57,11 +57,11 @@ export namespace metrics {
      * 3. "ExecutedVersion". Filters the metric data by Lambda function versions. This only applies
      *    to alias invocations.
      */
-    function metric(metricName: LambdaMetricName, funcOrChange: aws.lambda.Function | LambdaMetricChange | undefined, change: cloudwatch.MetricChange) {
+    function metric(metricName: LambdaMetricName, resourceOrChange: aws.lambda.Function | LambdaMetricChange | undefined, change: cloudwatch.MetricChange) {
         return new cloudwatch.Metric({
             namespace: "AWS/Lambda",
             name: metricName,
-            ...getCombinedChange(funcOrChange, change),
+            ...mergeChanges(resourceOrChange, change),
         });
     }
 
