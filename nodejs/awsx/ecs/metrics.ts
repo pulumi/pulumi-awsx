@@ -77,7 +77,7 @@ export namespace metrics {
             }
             else {
                 if (!change.cluster) {
-                    throw new Error("[change.cluster] must be provided if [change.service] is an [aws.ecs.Service]")
+                    throw new Error("[change.cluster] must be provided if [change.service] is an [aws.ecs.Service]");
                 }
 
                 dimensions.ServiceName = change.service.name;
