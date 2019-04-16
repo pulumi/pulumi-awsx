@@ -45,7 +45,7 @@ export namespace metrics {
          * determine which has the better business value for your application. Available for
          * instances with Detailed Monitoring enabled.
          */
-        instanceType?: string;
+        instanceType?: aws.ec2.InstanceType;
     }
 
     /**
