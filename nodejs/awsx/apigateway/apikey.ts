@@ -59,7 +59,7 @@ export interface Key {
  * @param args The arguments to use to populate this resource's properties.
  */
 export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): AssociatedAPIKeys {
-    const usagePlan = getUsagePlan(args);
+    const usagePlan = getUsagePlan(name, args);
     const keys = getKeys(name, args, usagePlan);
 
     return {
@@ -69,7 +69,7 @@ export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): Associa
 }
 
 /** @internal */
-function getUsagePlan(args: APIKeyArgs): aws.apigateway.UsagePlan {
+function getUsagePlan(name: string, args: APIKeyArgs): aws.apigateway.UsagePlan {
     if (args.usagePlan && args.usagePlan instanceof aws.apigateway.UsagePlan) {
         if (args.apis) {
             throw new Error("cannot define both [args.apis] and an existing usagePlan [args.usagePlan]");
@@ -120,7 +120,7 @@ function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.Usage
             const currKey = args.apiKeys[i];
             let apikey: aws.apigateway.ApiKey;
 
-            if (currKey instanceof aws.apigateway.ApiKey) {
+            if (isAPIKey(currKey)) {
                 apikey = currKey;
             } else {
                 apikey = new aws.apigateway.ApiKey(name + "-apikey-" + i, currKey);
@@ -139,4 +139,9 @@ function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.Usage
         }
     }
     return keys;
+}
+
+/** @internal */
+export function isAPIKey(apikey: aws.apigateway.ApiKey | aws.apigateway.ApiKeyArgs): apikey is aws.apigateway.ApiKey {
+    return (<aws.apigateway.ApiKey>apikey).value !== undefined;
 }
