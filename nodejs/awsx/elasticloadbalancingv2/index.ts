@@ -13,6 +13,7 @@
 // limitations under the License.
 
 export * from "./loadBalancer";
+export * from "./metrics";
 export * from "./targetGroup";
 export * from "./listener";
 export * from "./listenerRule";

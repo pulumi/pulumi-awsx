@@ -74,6 +74,7 @@ export namespace metrics {
         if (change.service !== undefined) {
             if (change.service instanceof Service) {
                 dimensions.ServiceName = change.service.service.name;
+                dimensions.ClusterName = change.service.cluster.cluster.name;
             }
             else {
                 if (!change.cluster) {
