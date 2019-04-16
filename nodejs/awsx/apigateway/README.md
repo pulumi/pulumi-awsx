@@ -255,8 +255,6 @@ const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
 });
 ```
 
-Note that currently `awsx.apigateway.createAssociatedAPIKeys` does not allow you to define a `apis` and `usagePlan.apiStages`.
-
 ### Lambda Authorizers
 
 [Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) are AWS Lambda functions that provide control access to an API. You can define a Lambda Authorizer for an Event Handler Route or a Static Route. API Gateway supports `request` or `token` type Lambda authorizers. A `token` Lambda Authorizer uses an authorization token (i.e. a header in the form `Authorization: Token <token>`) to authorize the user, whereas a `request` Lambda Authorizer uses the request parameters (i.e. headers, path parameter or query parameters).

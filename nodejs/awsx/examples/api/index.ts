@@ -118,17 +118,10 @@ const api = new awsx.apigateway.API("myapi", {
     requestValidator: "ALL",
 });
 
-/**
- * Export the url of the API.
- */
+// Export the url of the API.
 export const url = api.url;
 
-/**
- * ----------------------------------------------------------------------------
- * Example of setting up usage plan.
- * ----------------------------------------------------------------------------
- */
-
+// Set up a usage plan and an associated api key
 const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
     apis: [api],
     apiKeys: [{
@@ -136,9 +129,7 @@ const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
     }],
 });
 
-/**
- * Export the API Key of the API for testing.
- */
+// Export the API Key of the API for testing.
 export const apiKeyValue = apikeys.keys[0].apikey.value;
 
 /**

@@ -844,11 +844,11 @@ function addStaticRouteToSwaggerSpec(
         if (route.requestValidator) {
             swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
         }
-        if (route.apiKeyRequired) {
-            addAPIKeyToSwaggerOperation(swaggerOperation);
-        }
         if (authorizerNames) {
             addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+        }
+        if (route.apiKeyRequired) {
+            addAPIKeyToSwaggerOperation(swaggerOperation);
         }
         addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
