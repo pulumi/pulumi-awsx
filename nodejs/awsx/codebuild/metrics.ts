@@ -31,17 +31,6 @@ export namespace metrics {
         project?: aws.codebuild.Project;
     }
 
-    function mergeChanges(
-        resourceOrChange1: aws.codebuild.Project | CodebuildMetricChange | undefined,
-        change2: cloudwatch.MetricChange) {
-
-        const change1 = resourceOrChange1 instanceof aws.codebuild.Project
-            ? { dimensions: { ProjectName: resourceOrChange1.name } }
-            : resourceOrChange1;
-
-        return cloudwatch.mergeDimensions(change1, change2);
-    }
-
     /**
      * Creates an AWS/CodeBuild metric with the requested [metricName]. See
      * https://docs.aws.amazon.com/codebuild/latest/userguide/monitoring-builds.html for list of all
@@ -72,12 +61,17 @@ export namespace metrics {
      * "ProjectName" is the only AWS CodeBuild metrics dimension. If it is specified, then the metrics
      * are for that project. If it is not specified, then the metrics are for the current AWS account.
      */
-    function metric(metricName: CodebuildMetricName, resourceOrChange: aws.codebuild.Project | CodebuildMetricChange | undefined, change: cloudwatch.MetricChange) {
+    function metric(metricName: CodebuildMetricName, change: CodebuildMetricChange) {
+        const dimensions: Record<string, any> = {};
+        if (change.project !== undefined) {
+            dimensions.ProjectName = change.project.name;
+        }
+
         return new cloudwatch.Metric({
             namespace: "AWS/CodeBuild",
             name: metricName,
-            ...mergeChanges(resourceOrChange, change),
-        });
+            ...change,
+        }).withDimensions(dimensions);
     }
 
     /**
@@ -86,10 +80,8 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function buildDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function buildDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function buildDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("BuildDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function buildDuration(change?: CodebuildMetricChange) {
+        return metric("BuildDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -98,10 +90,8 @@ export namespace metrics {
      * Units: Count
      * Valid CloudWatch statistics: Sum
      */
-    export function builds(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function builds(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function builds(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("Builds", resourceOrChange, { statistic: "Sum", unit: "Count", ...change });
+    export function builds(change?: CodebuildMetricChange) {
+        return metric("Builds", { statistic: "Sum", unit: "Count", ...change });
     }
 
     /**
@@ -110,10 +100,8 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function downloadSourceDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function downloadSourceDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function downloadSourceDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("DownloadSourceDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function downloadSourceDuration(change?: CodebuildMetricChange) {
+        return metric("DownloadSourceDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -122,10 +110,8 @@ export namespace metrics {
      * Units: Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function duration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function duration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function duration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("Duration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function duration(change?: CodebuildMetricChange) {
+        return metric("Duration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -134,10 +120,8 @@ export namespace metrics {
      * Units: Count
      * Valid CloudWatch statistics: Sum
      */
-    export function failedBuilds(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function failedBuilds(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function failedBuilds(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("FailedBuilds", resourceOrChange, { statistic: "Sum", unit: "Count", ...change });
+    export function failedBuilds(change?: CodebuildMetricChange) {
+        return metric("FailedBuilds", { statistic: "Sum", unit: "Count", ...change });
     }
 
     /**
@@ -146,10 +130,8 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function finalizingDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function finalizingDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function finalizingDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("FinalizingDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function finalizingDuration(change?: CodebuildMetricChange) {
+        return metric("FinalizingDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -158,10 +140,8 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function installDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function installDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function installDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("InstallDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function installDuration(change?: CodebuildMetricChange) {
+        return metric("InstallDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -170,10 +150,8 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function postBuildDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function postBuildDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function postBuildDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("PostBuildDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function postBuildDuration(change?: CodebuildMetricChange) {
+        return metric("PostBuildDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -182,10 +160,8 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function preBuildDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function preBuildDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function preBuildDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("PreBuildDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function preBuildDuration(change?: CodebuildMetricChange) {
+        return metric("PreBuildDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -194,10 +170,8 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function provisioningDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function provisioningDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function provisioningDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("ProvisioningDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function provisioningDuration(change?: CodebuildMetricChange) {
+        return metric("ProvisioningDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -206,10 +180,8 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function queuedDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function queuedDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function queuedDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("QueuedDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function queuedDuration(change?: CodebuildMetricChange) {
+        return metric("QueuedDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -218,10 +190,8 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function submittedDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function submittedDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function submittedDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("SubmittedDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function submittedDuration(change?: CodebuildMetricChange) {
+        return metric("SubmittedDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 
     /**
@@ -230,10 +200,8 @@ export namespace metrics {
      * Units: Count
      * Valid CloudWatch statistics: Sum
      */
-    export function succeededBuilds(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function succeededBuilds(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function succeededBuilds(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("SucceededBuilds", resourceOrChange, { statistic: "Sum", unit: "Count", ...change });
+    export function succeededBuilds(change?: CodebuildMetricChange) {
+        return metric("SucceededBuilds", { statistic: "Sum", unit: "Count", ...change });
     }
 
     /**
@@ -242,9 +210,7 @@ export namespace metrics {
      * Units:Seconds
      * Valid CloudWatch statistics: Average (recommended), Maximum, Minimum
      */
-    export function uploadArtifactsDuration(project: aws.codebuild.Project, change?: cloudwatch.MetricChange): cloudwatch.Metric;
-    export function uploadArtifactsDuration(change?: CodebuildMetricChange): cloudwatch.Metric;
-    export function uploadArtifactsDuration(resourceOrChange?: aws.codebuild.Project | CodebuildMetricChange, change?: cloudwatch.MetricChange) {
-        return metric("UploadArtifactsDuration", resourceOrChange, { statistic: "Average", unit: "Seconds", ...change });
+    export function uploadArtifactsDuration(change?: CodebuildMetricChange) {
+        return metric("UploadArtifactsDuration", { statistic: "Average", unit: "Seconds", ...change });
     }
 }
