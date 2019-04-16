@@ -15,22 +15,28 @@
 export * from "./cluster";
 export * from "./network";
 
+import * as acmpca from "./acmpca";
 import * as apigateway from "./apigateway";
 import * as autoscaling from "./autoscaling";
+import * as cloudfront from "./cloudfront";
 import * as cloudwatch from "./cloudwatch";
 import * as codebuild from "./codebuild";
 import * as cognito from "./cognito";
+import * as dynamodb from "./dynamodb";
 import * as ec2 from "./ec2";
 import * as ecs from "./ecs";
 import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
 import * as lambda from "./lambda";
 
 export {
+    acmpca,
     apigateway,
     autoscaling,
+    cloudfront,
     cloudwatch,
     codebuild,
     cognito,
+    dynamodb,
     ec2,
     ecs,
     elasticloadbalancingv2,

@@ -36,6 +36,8 @@
         "cognito/metrics.ts",
         "cloudfront/index.ts",
         "cloudfront/metrics.ts",
+        "dynamodb/index.ts",
+        "dynamodb/metrics.ts",
         "ec2/cidr.ts",
         "ec2/index.ts",
         "ec2/securityGroup.ts",
