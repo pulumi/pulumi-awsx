@@ -1,428 +1,264 @@
-// // Copyright 2016-2018, Pulumi Corporation.
-// //
-// // Licensed under the Apache License, Version 2.0 (the "License");
-// // you may not use this file except in compliance with the License.
-// // You may obtain a copy of the License at
-// //
-// //     http://www.apache.org/licenses/LICENSE-2.0
-// //
-// // Unless required by applicable law or agreed to in writing, software
-// // distributed under the License is distributed on an "AS IS" BASIS,
-// // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// // See the License for the specific language governing permissions and
-// // limitations under the License.
+// Copyright 2016-2018, Pulumi Corporation.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-// import * as aws from "@pulumi/aws";
-// import * as pulumi from "@pulumi/pulumi";
+import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 
-// import { Metric, MetricChange } from "./metric";
+import { Metric, MetricChange } from "./metric";
 
-// export namespace metrics {
-//     export namespace events {
-//         export type CloudwatchEventMetricName =
-//             "DeadLetterInvocations" | "Invocations" | "FailedInvocations" | "TriggeredRules" |
-//             "MatchedEvents" | "ThrottledRules";
+export namespace metrics {
+    export namespace events {
+        type CloudWatchEventMetricName =
+            "DeadLetterInvocations" | "Invocations" | "FailedInvocations" | "TriggeredRules" |
+            "MatchedEvents" | "ThrottledRules";
 
-//         /**
-//          * CloudWatch Events sends metrics to Amazon CloudWatch every minute.
-//          *
-//          * Creates an AWS/Events metric with the requested [metricName]. See
-//          * https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatch-Events-Monitoring-CloudWatch-Metrics.html
-//          * for list of all metric-names.
-//          *
-//          * Note, individual metrics can easily be obtained without supplying the name using the other
-//          * [metricXXX] functions.
-//          *
-//          * All of these metrics use Count as the unit, so Sum and SampleCount are the most useful
-//          * statistics.
-//          *
-//          * CloudWatch Events metrics have one dimension:
-//          * 1. "RuleName": Filters the available metrics by rule name.
-//          */
-//         function metric(metricName: CloudwatchEventMetricName, change: MetricChange = {} = {}) {
-//             return new Metric({
-//                 namespace: "AWS/Events",
-//                 name: metricName,
-//                 ...change,
-//             });
-//         }
+        export interface CloudWatchMetricChange extends MetricChange {
+            /**
+             * Filters down events to those from the specified [EventRule].
+             */
+            eventRule?: aws.cloudwatch.EventRule;
+        }
 
-//         /**
-//          * Measures the number of times a rule’s target is not invoked in response to an event. This
-//          * includes invocations that would result in triggering the same rule again, causing an
-//          * infinite loop.
-//          *
-//          * Valid Dimensions: RuleName
-//          * Units: Count
-//          */
-//         export function deadLetterInvocations(change: MetricChange = {}) {
-//             return metric("DeadLetterInvocations", { unit: "Count", ...change });
-//         }
+        /**
+         * CloudWatch Events sends metrics to Amazon CloudWatch every minute.
+         *
+         * Creates an AWS/Events metric with the requested [metricName]. See
+         * https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatch-Events-Monitoring-CloudWatch-Metrics.html
+         * for list of all metric-names.
+         *
+         * Note, individual metrics can easily be obtained without supplying the name using the other
+         * [metricXXX] functions.
+         *
+         * All of these metrics use Count as the unit, so Sum and SampleCount are the most useful
+         * statistics.
+         *
+         * CloudWatch Events metrics have one dimension:
+         * 1. "RuleName": Filters the available metrics by rule name.
+         */
+        function metric(metricName: CloudWatchEventMetricName, change: CloudWatchMetricChange = {}) {
+            const dimensions: Record<string, any> = {};
+            if (change.eventRule !== undefined) {
+                dimensions.RuleName = change.eventRule.name;
+            }
 
-//         /**
-//          * Measures the number of times a target is invoked for a rule in response to an event. This
-//          * includes successful and failed invocations, but does not include throttled or retried attempts
-//          * until they fail permanently. It does not include DeadLetterInvocations.
-//          *
-//          * Note: CloudWatch Events only sends this metric to CloudWatch if it has a non-zero value.
-//          *
-//          * Valid Dimensions: RuleName
-//          * Units: Count
-//          */
-//         export function invocations(change: MetricChange = {}) {
-//             return metric("Invocations", { unit: "Count", ...change });
-//         }
+            return new Metric({
+                namespace: "AWS/Events",
+                name: metricName,
+                ...change,
+            }).withDimensions(dimensions);
+        }
 
-//         /**
-//          * Measures the number of invocations that failed permanently. This does not include invocations
-//          * that are retried, or that succeeded after a retry attempt. It also does not count failed
-//          * invocations that are counted in DeadLetterInvocations.
-//          *
-//          * Valid Dimensions: RuleName
-//          * Units: Count
-//          */
-//         export function failedInvocations(change: MetricChange = {}) {
-//             return metric("FailedInvocations", { unit: "Count", ...change });
-//         }
+        /**
+         * Measures the number of times a rule’s target is not invoked in response to an event. This
+         * includes invocations that would result in triggering the same rule again, causing an
+         * infinite loop.
+         *
+         * Valid Dimensions: RuleName
+         * Units: Count
+         */
+        export function deadLetterInvocations(change?: CloudWatchMetricChange) {
+            return metric("DeadLetterInvocations", { unit: "Count", ...change });
+        }
 
-//         /**
-//          * Measures the number of triggered rules that matched with any event.
-//          *
-//          * Valid Dimensions: RuleName
-//          * Units: Count
-//          */
-//         export function triggeredRules(change: MetricChange = {}) {
-//             return metric("TriggeredRules", { unit: "Count", ...change });
-//         }
+        /**
+         * Measures the number of times a target is invoked for a rule in response to an event. This
+         * includes successful and failed invocations, but does not include throttled or retried attempts
+         * until they fail permanently. It does not include DeadLetterInvocations.
+         *
+         * Note: CloudWatch Events only sends this metric to CloudWatch if it has a non-zero value.
+         *
+         * Valid Dimensions: RuleName
+         * Units: Count
+         */
+        export function invocations(change?: CloudWatchMetricChange) {
+            return metric("Invocations", { unit: "Count", ...change });
+        }
 
-//         /**
-//          * Measures the number of events that matched with any rule.
-//          *
-//          * Valid Dimensions: None
-//          * Units: Count
-//          */
-//         export function matchedEvents(change: MetricChange = {}) {
-//             return metric("MatchedEvents", { unit: "Count", ...change });
-//         }
+        /**
+         * Measures the number of invocations that failed permanently. This does not include invocations
+         * that are retried, or that succeeded after a retry attempt. It also does not count failed
+         * invocations that are counted in DeadLetterInvocations.
+         *
+         * Valid Dimensions: RuleName
+         * Units: Count
+         */
+        export function failedInvocations(change?: CloudWatchMetricChange) {
+            return metric("FailedInvocations", { unit: "Count", ...change });
+        }
 
-//         /**
-//          * Measures the number of triggered rules that are being throttled.
-//          *
-//          * Valid Dimensions: RuleName
-//          * Units: Count
-//          */
-//         export function throttledRules(change: MetricChange = {}) {
-//             return metric("ThrottledRules", { unit: "Count", ...change });
-//         }
-//     }
+        /**
+         * Measures the number of triggered rules that matched with any event.
+         *
+         * Valid Dimensions: RuleName
+         * Units: Count
+         */
+        export function triggeredRules(change?: CloudWatchMetricChange) {
+            return metric("TriggeredRules", { unit: "Count", ...change });
+        }
 
-//     export namespace logs {
-//         export type CloudwatchLogMetricName =
-//             "IncomingBytes" | "IncomingLogEvents" | "ForwardedBytes" | "ForwardedLogEvents" |
-//             "DeliveryErrors" | "DeliveryThrottling";
+        /**
+         * Measures the number of events that matched with any rule.
+         *
+         * Valid Dimensions: None
+         * Units: Count
+         */
+        export function matchedEvents(change?: CloudWatchMetricChange) {
+            return metric("MatchedEvents", { unit: "Count", ...change });
+        }
 
-//         /**
-//          * CloudWatch Logs sends metrics to Amazon CloudWatch every minute.
-//          *
-//          * Creates an AWS/Logs metric with the requested [metricName]. See
-//          * https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Monitoring-CloudWatch-Metrics.html
-//          * for list of all metric-names.
-//          *
-//          * Note, individual metrics can easily be obtained without supplying the name using the other
-//          * [metricXXX] functions.
-//          *
-//          * The dimensions that you can use with CloudWatch Logs metrics are:
-//          * 1. "LogGroupName": The name of the CloudWatch Logs log group for which to display metrics.
-//          * 2. "DestinationType": The subscription destination for the CloudWatch Logs data, which can be AWS
-//          *    Lambda, Amazon Kinesis Data Streams, or Amazon Kinesis Data Firehose.
-//          * 3. "FilterName": The name of the subscription filter that is forwarding data from the log group
-//          *    to the destination. The subscription filter name is automatically converted by CloudWatch to
-//          *    ASCII and any unsupported characters get replaced with a question mark (?).
-//          */
-//         function metric(metricName: CloudwatchLogMetricName, change: MetricChange = {} = {}) {
-//             return new Metric({
-//                 namespace: "AWS/Logs",
-//                 name: metricName,
-//                 ...change,
-//             });
-//         }
+        /**
+         * Measures the number of triggered rules that are being throttled.
+         *
+         * Valid Dimensions: RuleName
+         * Units: Count
+         */
+        export function throttledRules(change?: CloudWatchMetricChange) {
+            return metric("ThrottledRules", { unit: "Count", ...change });
+        }
+    }
 
-//         /**
-//          * The volume of log events in uncompressed bytes uploaded to CloudWatch Logs. When used
-//          * with the LogGroupName dimension, this is the volume of log events in uncompressed bytes
-//          * uploaded to the log group.
-//          *
-//          * Valid Dimensions: LogGroupName
-//          * Valid Statistic: Sum
-//          * Units: Bytes
-//          */
-//         export function incomingBytes(change: MetricChange = {}) {
-//             return metric("IncomingBytes", { statistic: "Sum", unit: "Bytes", ...change });
-//         }
+    export namespace logs {
+        export type CloudWatchLogMetricName =
+            "IncomingBytes" | "IncomingLogEvents" | "ForwardedBytes" | "ForwardedLogEvents" |
+            "DeliveryErrors" | "DeliveryThrottling";
 
-//         /**
-//          * The number of log events uploaded to CloudWatch Logs. When used with the LogGroupName dimension,
-//          * this is the number of log events uploaded to the log group.
-//          *
-//          * Valid Dimensions: LogGroupName
-//          * Valid Statistic: Sum
-//          * Units: None
-//          */
-//         export function incomingLogEvents(change: MetricChange = {}) {
-//             return metric("IncomingLogEvents", { statistic: "Sum", unit: "None", ...change });
-//         }
+        export interface CloudWatchMetricChange extends MetricChange {
+            /**
+             * Filters down events to those from the specified [LogGroup].
+             */
+            logGroup?: aws.cloudwatch.LogGroup;
 
-//         /**
-//          * The volume of log events in compressed bytes forwarded to the subscription destination.
-//          *
-//          * Valid Dimensions: LogGroupName, DestinationType, FilterName
-//          * Valid Statistic: Sum
-//          * Units: Bytes
-//          */
-//         export function forwardedBytes(change: MetricChange = {}) {
-//             return metric("ForwardedBytes", { statistic: "Sum", unit: "Bytes", ...change });
-//         }
+            /**
+             * The subscription destination for the CloudWatch Logs data, which can be AWS Lambda,
+             * Amazon Kinesis Data Streams, or Amazon Kinesis Data Firehose.
+             */
+            destinationType?: string;
 
-//         /**
-//          * The number of log events forwarded to the subscription destination.
-//          *
-//          * Valid Dimensions: LogGroupName, DestinationType, FilterName
-//          * Valid Statistic: Sum
-//          * Units: None
-//          */
-//         export function forwardedLogEvents(change: MetricChange = {}) {
-//             return metric("ForwardedLogEvents", { statistic: "Sum", unit: "None", ...change });
-//         }
+            /**
+             * The name of the subscription filter that is forwarding data from the log group to the
+             * destination. The subscription filter name is automatically converted by CloudWatch to
+             * ASCII and any unsupported characters get replaced with a question mark (?).
+             */
+            filterName?: string;
+        }
 
-//         /**
-//          * The number of log events for which CloudWatch Logs received an error when forwarding data to the
-//          * subscription destination.
-//          *
-//          * Valid Dimensions: LogGroupName, DestinationType, FilterName
-//          * Valid Statistic: Sum
-//          * Units: None
-//          */
-//         export function deliveryErrors(change: MetricChange = {}) {
-//             return metric("DeliveryErrors", { statistic: "Sum", unit: "None", ...change });
-//         }
+        /**
+         * CloudWatch Logs sends metrics to Amazon CloudWatch every minute.
+         *
+         * Creates an AWS/Logs metric with the requested [metricName]. See
+         * https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Monitoring-CloudWatch-Metrics.html
+         * for list of all metric-names.
+         *
+         * Note, individual metrics can easily be obtained without supplying the name using the other
+         * [metricXXX] functions.
+         *
+         * The dimensions that you can use with CloudWatch Logs metrics are:
+         * 1. "LogGroupName": The name of the CloudWatch Logs log group for which to display metrics.
+         * 2. "DestinationType": The subscription destination for the CloudWatch Logs data, which can be AWS
+         *    Lambda, Amazon Kinesis Data Streams, or Amazon Kinesis Data Firehose.
+         * 3. "FilterName": The name of the subscription filter that is forwarding data from the log group
+         *    to the destination. The subscription filter name is automatically converted by CloudWatch to
+         *    ASCII and any unsupported characters get replaced with a question mark (?).
+         */
+        function metric(metricName: CloudWatchLogMetricName, change: CloudWatchMetricChange = {}) {
+            const dimensions: Record<string, any> = {};
+            if (change.logGroup !== undefined) {
+                dimensions.LogGroupName = change.logGroup.name;
+            }
+            if (change.destinationType !== undefined) {
+                dimensions.DestinationType = change.destinationType;
+            }
+            if (change.filterName !== undefined) {
+                dimensions.FilterName = change.filterName;
+            }
 
-//         /**
-//          * The number of log events for which CloudWatch Logs was throttled when forwarding data to the
-//          * subscription destination.
-//          *
-//          * Valid Dimensions: LogGroupName, DestinationType, FilterName
-//          * Valid Statistic: Sum
-//          * Units: None
-//          */
-//         export function deliveryThrottling(change: MetricChange = {}) {
-//             return metric("DeliveryThrottling", { statistic: "Sum", unit: "None", ...change });
-//         }
-//     }
-// }
+            return new Metric({
+                namespace: "AWS/Logs",
+                name: metricName,
+                ...change,
+            }).withDimensions(dimensions);
+        }
 
-// declare module "./eventRule" {
-//     interface EventRule {
-//         /**
-//          * Direct access to create metrics for this specific [cloudwatch.EventRule].
-//          */
-//         metrics: {
-//             /**
-//              * Measures the number of times a rule’s target is not invoked in response to an event. This
-//              * includes invocations that would result in triggering the same rule again, causing an
-//              * infinite loop.
-//              *
-//              * Units: Count
-//              */
-//             deadLetterInvocations(change?: MetricChange): Metric;
+        /**
+         * The volume of log events in uncompressed bytes uploaded to CloudWatch Logs. When used
+         * with the LogGroupName dimension, this is the volume of log events in uncompressed bytes
+         * uploaded to the log group.
+         *
+         * Valid Dimensions: LogGroupName
+         * Valid Statistic: Sum
+         * Units: Bytes
+         */
+        export function incomingBytes(change?: CloudWatchMetricChange) {
+            return metric("IncomingBytes", { statistic: "Sum", unit: "Bytes", ...change });
+        }
 
-//             /**
-//              * Measures the number of times a target is invoked for a rule in response to an event. This
-//              * includes successful and failed invocations, but does not include throttled or retried attempts
-//              * until they fail permanently. It does not include DeadLetterInvocations.
-//              *
-//              * Note: CloudWatch Events only sends this metric to CloudWatch if it has a non-zero value.
-//              *
-//              * Units: Count
-//              */
-//             invocations(change?: MetricChange): Metric;
+        /**
+         * The number of log events uploaded to CloudWatch Logs. When used with the LogGroupName dimension,
+         * this is the number of log events uploaded to the log group.
+         *
+         * Valid Dimensions: LogGroupName
+         * Valid Statistic: Sum
+         * Units: None
+         */
+        export function incomingLogEvents(change?: CloudWatchMetricChange) {
+            return metric("IncomingLogEvents", { statistic: "Sum", unit: "None", ...change });
+        }
 
-//             /**
-//              * Measures the number of invocations that failed permanently. This does not include invocations
-//              * that are retried, or that succeeded after a retry attempt. It also does not count failed
-//              * invocations that are counted in DeadLetterInvocations.
-//              *
-//              * Units: Count
-//              */
-//             failedInvocations(change?: MetricChange): Metric;
+        /**
+         * The volume of log events in compressed bytes forwarded to the subscription destination.
+         *
+         * Valid Dimensions: LogGroupName, DestinationType, FilterName
+         * Valid Statistic: Sum
+         * Units: Bytes
+         */
+        export function forwardedBytes(change?: CloudWatchMetricChange) {
+            return metric("ForwardedBytes", { statistic: "Sum", unit: "Bytes", ...change });
+        }
 
-//             /**
-//              * Measures the number of triggered rules that matched with any event.
-//              *
-//              * Units: Count
-//              */
-//             triggeredRules(change?: MetricChange): Metric;
+        /**
+         * The number of log events forwarded to the subscription destination.
+         *
+         * Valid Dimensions: LogGroupName, DestinationType, FilterName
+         * Valid Statistic: Sum
+         * Units: None
+         */
+        export function forwardedLogEvents(change?: CloudWatchMetricChange) {
+            return metric("ForwardedLogEvents", { statistic: "Sum", unit: "None", ...change });
+        }
 
-//             /**
-//              * Measures the number of triggered rules that are being throttled.
-//              *
-//              * Units: Count
-//              */
-//             throttledRules(change?: MetricChange): Metric;
-//         }
-//     }
-// }
+        /**
+         * The number of log events for which CloudWatch Logs received an error when forwarding data to the
+         * subscription destination.
+         *
+         * Valid Dimensions: LogGroupName, DestinationType, FilterName
+         * Valid Statistic: Sum
+         * Units: None
+         */
+        export function deliveryErrors(change?: CloudWatchMetricChange) {
+            return metric("DeliveryErrors", { statistic: "Sum", unit: "None", ...change });
+        }
 
-// // All instance metrics just make a normal AWS/Events metric, except with the RuleName set
-// // appropriately.
-
-// Object.defineProperty(EventRule.prototype, "metrics", {
-//     get: function (this: EventRule) {
-//         const dimensions = { dimensions: { RuleName: this.name } };
-//         const result = {};
-//         for (const name in metrics.events) {
-//             result[name] = (change: MetricChange) => metrics.events[name](dimensions).with(change);
-//         }
-//         return result;
-//     }
-// });
-
-// declare module "./logGroup" {
-//     interface LogGroup {
-//         /**
-//          * Direct access to create metrics for this specific [cloudwatch.LogGroup].
-//          */
-//         metrics: {
-//             /**
-//              * The volume of log events in uncompressed bytes uploaded to CloudWatch Logs. When used
-//              * with the LogGroupName dimension, this is the volume of log events in uncompressed bytes
-//              * uploaded to the log group.
-//              *
-//              * Valid Statistic: Sum
-//              * Units: Bytes
-//              */
-//             incomingBytes(change?: MetricChange): Metric;
-
-//             /**
-//              * The number of log events uploaded to CloudWatch Logs. When used with the LogGroupName dimension,
-//              * this is the number of log events uploaded to the log group.
-//              *
-//              * Valid Statistic: Sum
-//              * Units: None
-//              */
-//             incomingLogEvents(change?: MetricChange): Metric;
-
-//             /**
-//              * The volume of log events in compressed bytes forwarded to the subscription destination.
-//              *
-//              * Additional Dimensions: DestinationType, FilterName
-//              * Valid Statistic: Sum
-//              * Units: Bytes
-//              */
-//             forwardedBytes(change?: MetricChange): Metric;
-
-//             /**
-//              * The number of log events forwarded to the subscription destination.
-//              *
-//              * Additional Dimensions: DestinationType, FilterName
-//              * Valid Statistic: Sum
-//              * Units: None
-//              */
-//             forwardedLogEvents(change?: MetricChange): Metric;
-
-//             /**
-//              * The number of log events for which CloudWatch Logs received an error when forwarding data to the
-//              * subscription destination.
-//              *
-//              * Additional Dimensions: DestinationType, FilterName
-//              * Valid Statistic: Sum
-//              * Units: None
-//              */
-//             deliveryErrors(change?: MetricChange): Metric;
-
-//             /**
-//              * The number of log events for which CloudWatch Logs was throttled when forwarding data to the
-//              * subscription destination.
-//              *
-//              * Additional Dimensions: DestinationType, FilterName
-//              * Valid Statistic: Sum
-//              * Units: None
-//              */
-//             deliveryThrottling(change?: MetricChange): Metric;
-//         }
-//     }
-// }
-
-// // All instance metrics just make a normal AWS/Logs metric, except with the LogGroupName set
-// // appropriately.
-
-// Object.defineProperty(LogGroup.prototype, "metrics", {
-//     get: function (this: LogGroup) {
-//         const dimensions = { dimensions: { LogGroupName: this.name } };
-//         const result = {};
-//         for (const name in metrics.logs) {
-//             result[name] = (change: MetricChange) => metrics.logs[name](dimensions).with(change);
-//         }
-//         return result;
-//     }
-// });
-
-// declare module "./logSubscriptionFilter" {
-//     interface LogSubscriptionFilter {
-//         /**
-//          * Direct access to create metrics for this specific [cloudwatch.LogSubscriptionFilter].
-//          */
-//         metrics: {
-//             /**
-//              * The volume of log events in compressed bytes forwarded to the subscription destination.
-//              *
-//              * Additional Dimensions: LogGroupName, DestinationType
-//              * Valid Statistic: Sum
-//              * Units: Bytes
-//              */
-//             forwardedBytes(change?: MetricChange): Metric;
-
-//             /**
-//              * The number of log events forwarded to the subscription destination.
-//              *
-//              * Additional Dimensions: LogGroupName, DestinationType
-//              * Valid Statistic: Sum
-//              * Units: None
-//              */
-//             forwardedLogEvents(change?: MetricChange): Metric;
-
-//             /**
-//              * The number of log events for which CloudWatch Logs received an error when forwarding data to the
-//              * subscription destination.
-//              *
-//              * Additional Dimensions: LogGroupName, DestinationType
-//              * Valid Statistic: Sum
-//              * Units: None
-//              */
-//             deliveryErrors(change?: MetricChange): Metric;
-
-//             /**
-//              * The number of log events for which CloudWatch Logs was throttled when forwarding data to the
-//              * subscription destination.
-//              *
-//              * Additional Dimensions: LogGroupName, DestinationType
-//              * Valid Statistic: Sum
-//              * Units: None
-//              */
-//             deliveryThrottling(change?: MetricChange): Metric;
-//         }
-//     }
-// }
-
-// // All instance metrics just make a normal AWS/Logs metric, except with the FilterName set
-// // appropriately.
-
-// Object.defineProperty(LogSubscriptionFilter.prototype, "metrics", {
-//     get: function (this: LogSubscriptionFilter) {
-//         const dimensions = { dimensions: { FilterName: this.name } };
-//         const result = {};
-//         for (const name in metrics.logs) {
-//             result[name] = (change: MetricChange) => metrics.logs[name](dimensions).with(change);
-//         }
-//         return result;
-//     }
-// });
+        /**
+         * The number of log events for which CloudWatch Logs was throttled when forwarding data to the
+         * subscription destination.
+         *
+         * Valid Dimensions: LogGroupName, DestinationType, FilterName
+         * Valid Statistic: Sum
+         * Units: None
+         */
+        export function deliveryThrottling(change?: CloudWatchMetricChange) {
+            return metric("DeliveryThrottling", { statistic: "Sum", unit: "None", ...change });
+        }
+    }
+}

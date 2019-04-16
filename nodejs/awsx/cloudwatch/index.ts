@@ -13,4 +13,4 @@
 // limitations under the License.
 
 export * from "./metric";
-// export * from "./metrics";
+export * from "./metrics";
