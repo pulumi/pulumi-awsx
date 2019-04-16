@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
+import * as pulumi from "@pulumi/pulumi";
 import * as fetch from "node-fetch";
 
 // Examples of different types of metrics and alarms that can be set.
@@ -40,10 +40,10 @@ const subscription = topic.onEvent("for-each-url", async (event) => {
 
 let alarmIndex = 0;
 
-const funcMetric = subscription.func.metrics.duration({ unit: "Seconds" });
+const funcMetric = awsx.lambda.metrics.duration({ function: subscription.func, unit: "Seconds" });
 const funcAlarm = funcMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
-const topicMetric = topic.metrics.numberOfMessagesPublished();
+const topicMetric = awsx.sns.metrics.numberOfMessagesPublished({ topic });
 const topicAlarm = topicMetric.createAlarm("alarm" + alarmIndex++, { threshold: 1000, evaluationPeriods: 2 });
 
 const queue = new aws.sqs.Queue("terraform_queue", {
@@ -56,14 +56,14 @@ const queue = new aws.sqs.Queue("terraform_queue", {
     },
 });
 
-const queueMetric = queue.metrics.sentMessageSize();
+const queueMetric = awsx.sqs.metrics.sentMessageSize({ queue });
 const queueAlarm = queueMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const restApi = new aws.apigateway.RestApi("MyDemoAPI", {
     description: "This is my API for demonstration purposes",
   });
 
-const restApiMetric = restApi.metrics.error5XX();
+const restApiMetric = awsx.apigateway.metrics.error5XX({ restApi });
 const restApiAlarm = restApiMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 });
 
 const table = new aws.dynamodb.Table("testtable", {
@@ -78,7 +78,7 @@ const table = new aws.dynamodb.Table("testtable", {
     streamViewType: "NEW_AND_OLD_IMAGES",
 });
 
-const tableMetric = table.metrics.throttledRequests();
+const tableMetric = awsx.dynamodb.metrics.throttledRequests({ table });
 const tableAlarm = tableMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const bucket = new aws.s3.Bucket("b", {
@@ -89,7 +89,7 @@ const bucket = new aws.s3.Bucket("b", {
     },
 });
 
-const bucketMetric = bucket.metrics.firstByteLatency({ unit: "Seconds" });
+const bucketMetric = awsx.s3.metrics.firstByteLatency({ bucket, unit: "Seconds" });
 const bucketAlarm = bucketMetric.createAlarm("alarm" + alarmIndex++, { threshold: 30 , evaluationPeriods: 2 });
 
 const ubuntu = pulumi.output(aws.getAmi({
@@ -108,15 +108,15 @@ const instance = new aws.ec2.Instance("web", {
     },
 });
 
-const instanceMetric = instance.metrics.cpuUtilization();
+const instanceMetric = awsx.ec2.metrics.cpuUtilization({ instance });
 const instanceAlarm = instanceMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const cluster = new aws.ecs.Cluster("foo", {});
-const clusterMetric = cluster.metrics.cpuUtilization({ unit: "Percent" });
+const clusterMetric = awsx.ecs.metrics.cpuUtilization({ cluster, unit: "Percent" });
 const clusterAlarm = clusterMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 });
 
 const userPool = new aws.cognito.UserPool("pool", {});
-const userPoolMetric = userPool.metrics.compromisedCredentialsRisk();
+const userPoolMetric = awsx.cognito.metrics.compromisedCredentialsRisk({ userPool });
 const userPoolAlarm = userPoolMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const eventRule = new aws.cloudwatch.EventRule("console", {
@@ -128,7 +128,7 @@ const eventRule = new aws.cloudwatch.EventRule("console", {
 }
 `,
 });
-const eventRuleMetric = eventRule.metrics.deadLetterInvocations();
+const eventRuleMetric = awsx.cloudwatch.metrics.events.deadLetterInvocations({ eventRule });
 const eventRuleAlarm = eventRuleMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const logGroup = new aws.cloudwatch.LogGroup("yada", {
@@ -137,5 +137,5 @@ const logGroup = new aws.cloudwatch.LogGroup("yada", {
         Environment: "production",
     },
 });
-const logGroupMetric = logGroup.metrics.incomingBytes({ unit: "Megabytes" });
+const logGroupMetric = awsx.cloudwatch.metrics.logs.incomingBytes({ logGroup, unit: "Megabytes" });
 const logGroupAlarm = logGroupMetric.createAlarm("alarm" + alarmIndex++, { threshold: 512, evaluationPeriods: 2 });

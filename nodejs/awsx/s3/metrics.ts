@@ -151,7 +151,7 @@ export namespace metrics {
             namespace: "AWS/S3",
             name: metricName,
             ...change,
-        });
+        }).withDimensions(dimensions);
     }
 
     /**
