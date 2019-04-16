@@ -57,6 +57,8 @@
         "ecs/metrics.ts",
         "ecs/service.ts",
         "ecs/taskDefinition.ts",
+        "efs/index.ts",
+        "efs/metrics.ts",
         "elasticloadbalancingv2/application.ts",
         "elasticloadbalancingv2/index.ts",
         "elasticloadbalancingv2/listener.ts",

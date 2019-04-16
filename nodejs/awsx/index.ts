@@ -26,6 +26,7 @@ import * as dynamodb from "./dynamodb";
 import * as ebs from "./ebs";
 import * as ec2 from "./ec2";
 import * as ecs from "./ecs";
+import * as efs from "./efs";
 import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
 import * as lambda from "./lambda";
 
@@ -41,6 +42,7 @@ export {
     ec2,
     ebs,
     ecs,
+    efs,
     elasticloadbalancingv2,
     lambda,
 };

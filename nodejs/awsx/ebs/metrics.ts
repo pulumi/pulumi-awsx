@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as cloudwatch from "../cloudwatch";
@@ -22,6 +23,14 @@ export namespace metrics {
         "VolumeTotalReadTime" | "VolumeTotalWriteTime" | "VolumeIdleTime" |
         "VolumeQueueLength" | "VolumeThroughputPercentage" | "VolumeConsumedReadWriteOps" |
         "BurstBalance";
+
+    export interface EbsMetricChange extends cloudwatch.MetricChange {
+        /**
+         * The only dimension that Amazon EBS sends to CloudWatch is the volume ID. This means that
+         * all available statistics are filtered by volume ID.
+         */
+        volume?: aws.ebs.Volume;
+    }
 
     /**
      * Creates an AWS/EBS metric with the requested [metricName]. See
@@ -69,12 +78,17 @@ export namespace metrics {
      * The only dimension that Amazon EBS sends to CloudWatch is the volume ID. This means that all
      * available statistics are filtered by volume ID.
      */
-    function metric(metricName: EbsMetricName, change: cloudwatch.MetricChange = {}) {
+    function metric(metricName: EbsMetricName, change: EbsMetricChange = {}) {
+        const dimensions: Record<string, any> = {};
+        if (change.volume !== undefined) {
+            dimensions.VolumeId = change.volume.id;
+        }
+
         return new cloudwatch.Metric({
             namespace: "AWS/EBS",
             name: metricName,
             ...change,
-        });
+        }).withDimensions(dimensions);
     }
 
     /**
@@ -92,7 +106,7 @@ export namespace metrics {
      *
      * Units: Bytes
      */
-    export function volumeReadBytes(change: cloudwatch.MetricChange = {}) {
+    export function volumeReadBytes(change?: EbsMetricChange) {
         return metric("VolumeReadBytes", { unit: "Bytes", ...change });
     }
 
@@ -111,7 +125,7 @@ export namespace metrics {
      *
      * Units: Bytes
      */
-    export function volumeWriteBytes(change: cloudwatch.MetricChange = {}) {
+    export function volumeWriteBytes(change?: EbsMetricChange) {
         return metric("VolumeWriteBytes", { unit: "Bytes", ...change });
     }
 
@@ -126,7 +140,7 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function volumeReadOps(change: cloudwatch.MetricChange = {}) {
+    export function volumeReadOps(change?: EbsMetricChange) {
         return metric("VolumeReadOps", { unit: "Count", ...change });
     }
 
@@ -141,7 +155,7 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function volumeWriteOps(change: cloudwatch.MetricChange = {}) {
+    export function volumeWriteOps(change?: EbsMetricChange) {
         return metric("VolumeWriteOps", { unit: "Count", ...change });
     }
 
@@ -161,7 +175,7 @@ export namespace metrics {
      *
      * Units: Seconds
      */
-    export function volumeTotalReadTime(change: cloudwatch.MetricChange = {}) {
+    export function volumeTotalReadTime(change?: EbsMetricChange) {
         return metric("VolumeTotalReadTime", { unit: "Seconds", ...change });
     }
 
@@ -181,7 +195,7 @@ export namespace metrics {
      *
      * Units: Seconds
      */
-    export function volumeTotalWriteTime(change: cloudwatch.MetricChange = {}) {
+    export function volumeTotalWriteTime(change?: EbsMetricChange) {
         return metric("VolumeTotalWriteTime", { unit: "Seconds", ...change });
     }
 
@@ -197,7 +211,7 @@ export namespace metrics {
      *
      * Units: Seconds
      */
-    export function volumeIdleTime(change: cloudwatch.MetricChange = {}) {
+    export function volumeIdleTime(change?: EbsMetricChange) {
         return metric("VolumeIdleTime", { unit: "Seconds", ...change });
     }
 
@@ -213,7 +227,7 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function volumeQueueLength(change: cloudwatch.MetricChange = {}) {
+    export function volumeQueueLength(change?: EbsMetricChange) {
         return metric("VolumeQueueLength", { unit: "Count", ...change });
     }
 
@@ -231,7 +245,7 @@ export namespace metrics {
      *
      * Units: Percent
      */
-    export function volumeThroughputPercentage(change: cloudwatch.MetricChange = {}) {
+    export function volumeThroughputPercentage(change?: EbsMetricChange) {
         return metric("VolumeThroughputPercentage", { unit: "Percent", ...change });
     }
 
@@ -245,7 +259,7 @@ export namespace metrics {
      *
      * Units: Count
      */
-    export function volumeConsumedReadWriteOps(change: cloudwatch.MetricChange = {}) {
+    export function volumeConsumedReadWriteOps(change?: EbsMetricChange) {
         return metric("VolumeConsumedReadWriteOps", { unit: "Count", ...change });
     }
 
@@ -266,7 +280,7 @@ export namespace metrics {
      *
      * Units: Percent
      */
-    export function burstBalance(change: cloudwatch.MetricChange = {}) {
+    export function burstBalance(change?: EbsMetricChange) {
         return metric("BurstBalance", { unit: "Percent", ...change });
     }
 }
