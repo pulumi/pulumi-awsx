@@ -48,9 +48,10 @@ export interface Widget {
     height(): number;
 
     /**
-     * @internal
      * Converts this widget to an appropriate JSON pojo.  The [xOffset] and [yOffset] parameters
      * specify where in the final [Dashboard] grid this [Widget] should be placed.
+     *
+     * For internal use only.
      */
     addWidgetJson(widgetJsons: WidgetJson[], xOffset: number, yOffset: number): void;
 }

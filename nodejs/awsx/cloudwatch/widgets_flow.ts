@@ -75,7 +75,7 @@ export abstract class FlowWidget implements Widget {
         return height;
     }
 
-    /** @internal */
+    /** For internal use only. */
     public addWidgetJson(widgetJsons: WidgetJson[], xOffset: number, yOffset: number) {
         for (const [widget, dimension] of this.getWidgetRelativePositions()) {
             // Recurse into each of our children, asking them to add themselves into [widgetJsons].
@@ -163,7 +163,7 @@ export class RowWidget extends FlowWidget {
         return result;
     }
 
-    /** @internal */
+    /** For internal use only. */
     public addWidgetJson(widgetJsons: WidgetJson[], xOffset: number, yOffset: number) {
         if (xOffset !== 0) {
             throw new Error(`A RowWidget must be placed in the leftmost grid column: ${xOffset}`);

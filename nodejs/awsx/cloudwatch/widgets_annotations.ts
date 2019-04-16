@@ -36,7 +36,7 @@ export class AlarmAnnotation implements WidgetAnnotation {
     constructor(private readonly alarmArn: pulumi.Input<string>) {
     }
 
-    /** @internal */
+    /** For internal use only. */
     public addWidgetJson(annotations: wjson.MetricWidgetAnnotationsJson) {
         if (annotations.alarms && annotations.alarms.length >= 1) {
             throw new Error("Widget can only have a maximum of one alarm annotation.");
@@ -117,7 +117,7 @@ export class HorizontalAnnotation implements WidgetAnnotation {
         }
     }
 
-    /** @internal */
+    /** For internal use only. */
     public addWidgetJson(annotations: wjson.MetricWidgetAnnotationsJson) {
         annotations.horizontal = annotations.horizontal || [];
 
@@ -211,7 +211,7 @@ export class VerticalAnnotation implements WidgetAnnotation {
         }
     }
 
-    /** @internal */
+    /** For internal use only. */
     public addWidgetJson(annotations: wjson.MetricWidgetAnnotationsJson) {
         annotations.vertical = annotations.vertical || [];
 

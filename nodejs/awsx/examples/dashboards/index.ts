@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+import * as pulumi from "@pulumi/pulumi";
 import * as fetch from "node-fetch";
 
 // Examples of different types of metrics and alarms that can be set.
@@ -38,7 +39,7 @@ const subscription = topic.onEvent("for-each-url", async (event) => {
 });
 
 // Get the metric for the lambda that processing our topic requests.
-const funcMetric = subscription.func.metrics.duration();
+const funcMetric = awsx.lambda.metrics.duration({ function: subscription.func });
 
 // Create an alarm if this lambda takes more than 1000ms to complete in a period of 10 minutes over
 // at least five periods in a row.
@@ -46,18 +47,19 @@ const funcAlarm1 = funcMetric.with({ unit: "Milliseconds", period: 600 })
                              .createAlarm("SlowUrlProcessing", { threshold: 1000, evaluationPeriods: 5 });
 
 // Also create a dashboard to track this.
-const dashboard = aws.cloudwatch.Dashboard.fromDescription("TopicData", new aws.cloudwatch.DashboardDescription({
+const dashboard = awsx.cloudwatch.Dashboard("TopicData", {
     widgets: [
-        new aws.cloudwatch.SingleNumberMetricWidget({
+        new awsx.cloudwatch.SingleNumberMetricWidget({
             title: "Requests/Minute",
             width: 10,
-            metrics: subscription.func.metrics.invocations({
+            metrics: awsx.lambda.metrics.invocations({
+                function: subscription.func,
                 unit: "Count",
                 statistic: "Average",
                 period: 60,
             }),
         }),
-        new aws.cloudwatch.LineGraphMetricWidget({
+        new awsx.cloudwatch.LineGraphMetricWidget({
             title: "Lambda duration",
             width: 14,
 
@@ -70,6 +72,6 @@ const dashboard = aws.cloudwatch.Dashboard.fromDescription("TopicData", new aws.
                 funcMetric.with({ extendedStatistic: 95, label: "Duration p95" }),
                 funcMetric.with({ extendedStatistic: 98, label: "Duration p99" }),
             ],
-        })
+        }),
     ],
-}));
+});

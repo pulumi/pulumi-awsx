@@ -71,7 +71,7 @@ export abstract class SimpleWidget implements Widget {
     /** @internal */
     protected abstract computeProperties(): wjson.WidgetJson["properties"];
 
-    /** @internal */
+    /** For internal use only. */
     public addWidgetJson(widgetJsons: wjson.WidgetJson[], xOffset: number, yOffset: number) {
         // Build the structure common to all simple widgets.  Defer to our subclasses for
         // details only they can fill in.
@@ -298,7 +298,7 @@ export class ExpressionWidgetMetric implements WidgetMetric {
                 private readonly id?: pulumi.Input<string>) {
     }
 
-    /** @internal */
+    /** For internal use only. */
     addWidgetJson(metrics: wjson.MetricJson[]): void {
         const json: wjson.ExpressionMetricJson = [{
             expression: this.expression,
