@@ -608,8 +608,8 @@ function addEventHandlerRouteToSwaggerSpec(
 
     const swaggerOperation = createSwaggerOperationForLambda();
     if (route.authorizers) {
-        const authNames = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
-        addAuthorizersToSwaggerOperation(swaggerOperation, authNames);
+        const authRecords = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
+        addAuthorizersToSwaggerOperation(swaggerOperation, authRecords);
     }
     if (route.requiredParameters) {
         addRequiredParametersToSwaggerOperation(swaggerOperation, route.requiredParameters);
@@ -642,7 +642,7 @@ function addAuthorizersToSwagger(
     authorizers: Authorizers[],
     apiAuthorizers: Record<string, Authorizers>): Record<string, string[]>[] {
 
-    const authNames: Record<string, string[]>[] = [];
+    const authRecords: Record<string, string[]>[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
 
     for (const auth of authorizers) {
@@ -687,9 +687,9 @@ function addAuthorizersToSwagger(
             }
             swagger["securityDefinitions"][authName] = securityDef;
         }
-        authNames.push({ [authName]: methods });
+        authRecords.push({ [authName]: methods });
     }
-    return authNames;
+    return authRecords;
 }
 
 function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: lambdaauthorizer.LambdaAuthorizer): LambdaAuthorizer {
@@ -760,9 +760,9 @@ function addStaticRouteToSwaggerSpec(
     // Create a bucket to place all the static data under.
     bucket = bucket || new aws.s3.Bucket(safeS3BucketName(name), undefined, parentOpts);
 
-    let authNames: Record<string, string[]>[] | undefined;
+    let authRecords: Record<string, string[]>[] | undefined;
     if (route.authorizers) {
-        authNames = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
+        authRecords = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
     }
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
@@ -772,10 +772,10 @@ function addStaticRouteToSwaggerSpec(
     // gateway route to all the s3 bucket objects we create for the files in these directories.
     const stat = fs.statSync(route.localPath);
     if (stat.isFile()) {
-        processFile(route, authNames);
+        processFile(route, authRecords);
     }
     else if (stat.isDirectory()) {
-        processDirectory(route, authNames);
+        processDirectory(route, authRecords);
     }
 
     return bucket;
