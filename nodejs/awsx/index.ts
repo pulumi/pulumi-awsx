@@ -29,6 +29,7 @@ import * as ecs from "./ecs";
 import * as efs from "./efs";
 import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
 import * as lambda from "./lambda";
+import * as rds from "./rds";
 import * as s3 from "./s3";
 import * as sns from "./sns";
 import * as sqs from "./sqs";
@@ -48,6 +49,7 @@ export {
     efs,
     elasticloadbalancingv2,
     lambda,
+    rds,
     s3,
     sns,
     sqs,
