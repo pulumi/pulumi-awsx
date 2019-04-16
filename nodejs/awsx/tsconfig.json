@@ -72,6 +72,8 @@
         "s3/metrics.ts",
         "sns/index.ts",
         "sns/metrics.ts",
+        "sqs/index.ts",
+        "sqs/metrics.ts",
     ]
 }
 

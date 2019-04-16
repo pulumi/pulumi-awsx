@@ -31,6 +31,7 @@ import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
 import * as lambda from "./lambda";
 import * as s3 from "./s3";
 import * as sns from "./sns";
+import * as sqs from "./sqs";
 
 export {
     acmpca,
@@ -49,6 +50,7 @@ export {
     lambda,
     s3,
     sns,
+    sqs,
 };
 
 // @pulumi/awsx is a deployment-only module.  If someone tries to capture it, and we fail for some
