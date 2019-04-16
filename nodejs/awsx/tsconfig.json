@@ -20,6 +20,8 @@
         "cluster.ts",
         "network.ts",
         "utils.ts",
+        "acmpca/index.ts",
+        "acmpca/metrics.ts",
         "apigateway/api.ts",
         "apigateway/index.ts",
         "autoscaling/autoscaling.ts",
