@@ -68,6 +68,8 @@
         "elasticloadbalancingv2/targetGroup.ts",
         "lambda/index.ts",
         "lambda/metrics.ts",
+        "s3/index.ts",
+        "s3/metrics.ts",
     ]
 }
 
