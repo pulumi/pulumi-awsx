@@ -666,11 +666,20 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorize
     if (authorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.handler)) {
         const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
 
-        const uri = authorizer.isLambdaFunction(lambdaAuthorizer.handler.uri) ?
-            lambdaAuthorizer.handler.uri.invokeArn : pulumi.output(lambdaAuthorizer.handler.uri);
+        let uri: pulumi.Input<string>;
+        if (pulumi.CustomResource.isInstance(lambdaAuthorizer.handler.uri)) {
+            uri = lambdaAuthorizer.handler.uri.invokeArn;
+        } else {
+            uri = lambdaAuthorizer.handler.uri;
+        }
 
-        const credentials = authorizer.isIAMRole(lambdaAuthorizer.handler.credentials) ?
-            lambdaAuthorizer.handler.credentials.arn : lambdaAuthorizer.handler.credentials;
+        let credentials: pulumi.Input<string>;
+        if (pulumi.CustomResource.isInstance(lambdaAuthorizer.handler.credentials)) {
+            credentials = lambdaAuthorizer.handler.credentials.arn;
+        } else {
+            credentials = lambdaAuthorizer.handler.credentials;
+        }
+
         return {
             type: lambdaAuthorizer.type,
             authorizerUri: uri,
