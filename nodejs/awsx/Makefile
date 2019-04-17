@@ -22,8 +22,12 @@ docs::
 lint::
 	tslint -c ../tslint.json -p tsconfig.json
 
-test_fast::
+istanbul_tests::
+	cd tests && yarn && yarn run build
+	cd tests && yarn run mocha $$(find bin -name '*.spec.js')
+
+test_fast:: istanbul_tests
 	$(GO_TEST_FAST) .
 
-test_all::
+test_all:: istanbul_tests
 	$(GO_TEST) .

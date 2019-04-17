@@ -15,13 +15,45 @@
 export * from "./cluster";
 export * from "./network";
 
+import * as acmpca from "./acmpca";
 import * as apigateway from "./apigateway";
 import * as autoscaling from "./autoscaling";
+import * as cloudfront from "./cloudfront";
+import * as cloudwatch from "./cloudwatch";
+import * as codebuild from "./codebuild";
+import * as cognito from "./cognito";
+import * as dynamodb from "./dynamodb";
+import * as ebs from "./ebs";
 import * as ec2 from "./ec2";
 import * as ecs from "./ecs";
+import * as efs from "./efs";
 import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
+import * as lambda from "./lambda";
+import * as rds from "./rds";
+import * as s3 from "./s3";
+import * as sns from "./sns";
+import * as sqs from "./sqs";
 
-export { apigateway, autoscaling, ec2, ecs, elasticloadbalancingv2 };
+export {
+    acmpca,
+    apigateway,
+    autoscaling,
+    cloudfront,
+    cloudwatch,
+    codebuild,
+    cognito,
+    dynamodb,
+    ec2,
+    ebs,
+    ecs,
+    efs,
+    elasticloadbalancingv2,
+    lambda,
+    rds,
+    s3,
+    sns,
+    sqs,
+};
 
 // @pulumi/awsx is a deployment-only module.  If someone tries to capture it, and we fail for some
 // reason we want to give a good message about what the problem likely is.  Note that capturing a
