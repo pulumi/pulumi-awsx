@@ -208,7 +208,7 @@ Request body validation is currently not supported. If you have a strong use cas
 
 To define an Authorizer, you provide a Lambda that fulfills `aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>` or you provide information on a pre-existing Lambda authorizer. The example below shows defining the Authorizer Lambda directly inline. See the [Event Handler Route](#Event-Handler-Route) section for other ways you can define a Lambda for the Authorizer.
 
-#### Token Authorizer
+#### Request Authorizer
 
 Below is an example of a custom `request` Lambda Authorizer that uses `awsx.apigateway.getRequestLambdaAuthorizer` to simplify defining the authorizer.
 
@@ -265,7 +265,7 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
-#### Request Authorizer
+#### Token Authorizer
 
 Below is an example of a custom `token` Lambda Authorizer that uses `awsx.apigateway.` to simplify the creation of the authorizer.
 
