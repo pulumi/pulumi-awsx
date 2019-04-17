@@ -20,20 +20,29 @@ import * as fspath from "path";
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import * as authorizer from "./authorizer";
 
 import * as awslambda from "aws-lambda";
 
 import { sha1hash } from "../utils";
+import * as authorizer from "./authorizer";
 import * as reqvalidation from "./requestValidator";
+import {
+    IntegrationConnectionType,
+    IntegrationPassthroughBehavior,
+    IntegrationType,
+    Method,
+    RequestValidator,
+    SecurityDefinition,
+    SwaggerLambdaAuthorizer,
+    SwaggerOperation,
+    SwaggerSpec,
+} from "./swagger_json";
 
 export type Request = awslambda.APIGatewayProxyEvent;
 
 export type RequestContext = awslambda.APIGatewayEventRequestContext;
 
 export type Response = awslambda.APIGatewayProxyResult;
-
-export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH";
 
 /**
  * A route that that APIGateway should accept and forward to some type of destination. All routes
@@ -58,7 +67,7 @@ export type EventHandlerRoute = {
     * Request Validator specifies the validator to use at the method level. This will override anything
     * defined at the API level.
     */
-    requestValidator?: reqvalidation.RequestValidator;
+    requestValidator?: RequestValidator;
 
     /**
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
@@ -106,7 +115,7 @@ export type StaticRoute = {
     * Request Validator specifies the validator to use at the method level. This will override anything
     * defined at the API level.
     */
-    requestValidator?: reqvalidation.RequestValidator;
+    requestValidator?: RequestValidator;
 
     /**
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
@@ -128,10 +137,6 @@ export interface IntegrationRoute {
     path: string;
     target: pulumi.Input<IntegrationTarget> | IntegrationRouteTargetProvider;
 }
-
-export type IntegrationConnectionType = "INTERNET" | "VPC_LINK";
-export type IntegrationType = "aws" | "aws_proxy" | "http" | "http_proxy" | "mock";
-export type IntegrationPassthroughBehavior = "when_no_match" | "when_no_templates" | "never";
 
 /**
  * See https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/ for more details.
@@ -290,7 +295,7 @@ export interface APIArgs {
     * Request Validator specifies the validator to use at the API level. Note method level validators
     * override this.
     */
-    requestValidator?: reqvalidation.RequestValidator;
+    requestValidator?: RequestValidator;
 }
 
 export class API extends pulumi.ComponentResource {
@@ -382,114 +387,11 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
     return permissions;
 }
 
-interface SwaggerSpec {
-    swagger: string;
-    info: SwaggerInfo;
-    paths: { [path: string]: { [method: string]: SwaggerOperation; }; };
-    "x-amazon-apigateway-binary-media-types"?: string[];
-    "x-amazon-apigateway-gateway-responses": Record<string, SwaggerGatewayResponse>;
-    securityDefinitions?: { [authorizerName: string]: SecurityDefinition };
-    "x-amazon-apigateway-request-validators"?: {
-        [validatorName: string]: {
-            validateRequestBody: boolean;
-            validateRequestParameters: boolean;
-        };
-    };
-    "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
-}
-
 interface SwaggerLambdas {
     [path: string]: { [method: string]: aws.lambda.Function };
 }
 
-interface SwaggerGatewayResponse {
-    statusCode: number;
-    responseTemplates: {
-        "application/json": string,
-    };
-}
-
-interface SwaggerInfo {
-    title: string;
-    version: string;
-}
-
-interface SwaggerOperation {
-    parameters?: SwaggerParameter[];
-    responses?: { [code: string]: SwaggerResponse };
-    "x-amazon-apigateway-integration": ApigatewayIntegration;
-    "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
-
-    /**
-     * security is an object whose properties are authorizerNames. Each authorizerName refers to a
-     * SecurityDefinition, defined at the top level of the swagger definition, by matching a Security
-     * Definition's name property. The authorizerNames' values are empty arrays.
-     */
-    security?: { [authorizerName: string]: string[] }[];
-}
-
-interface SecurityDefinition {
-    type: "apiKey";
-    name: string;
-    in: "header" | "query";
-    "x-amazon-apigateway-authtype": string;
-    "x-amazon-apigateway-authorizer": LambdaAuthorizer;
-}
-
-interface LambdaAuthorizer {
-    type: "token" | "request";
-    authorizerUri: pulumi.Input<string>;
-    authorizerCredentials: pulumi.Input<string>;
-    identitySource?: string;
-    identityValidationExpression?: string;
-    authorizerResultTtlInSeconds?: number;
-}
-
-interface SwaggerParameter {
-    name: string;
-    in: string;
-    required: boolean;
-    type?: string;
-}
-
-interface SwaggerResponse {
-    description: string;
-    schema?: SwaggerSchema;
-    headers?: { [header: string]: SwaggerHeader };
-}
-
-interface SwaggerSchema {
-    type: string;
-}
-
-interface SwaggerHeader {
-    type: "string" | "number" | "integer" | "boolean" | "array";
-    items?: SwaggerItems;
-}
-
-interface SwaggerItems {
-    type: "string" | "number" | "integer" | "boolean" | "array";
-    items?: SwaggerItems;
-}
-
-interface SwaggerAPIGatewayIntegrationResponse {
-    statusCode: string;
-    responseParameters?: { [key: string]: string };
-}
-
-interface ApigatewayIntegration {
-    requestParameters?: any;
-    passthroughBehavior?: pulumi.Input<IntegrationPassthroughBehavior>;
-    httpMethod: pulumi.Input<Method>;
-    type: pulumi.Input<IntegrationType>;
-    responses?: { [pattern: string]: SwaggerAPIGatewayIntegrationResponse };
-    uri: pulumi.Input<string>;
-    connectionType?: pulumi.Input<IntegrationConnectionType | undefined>;
-    connectionId?: pulumi.Input<string | undefined>;
-    credentials?: pulumi.Output<string>;
-}
-
-function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator: reqvalidation.RequestValidator | undefined) {
+function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator: RequestValidator | undefined) {
     // Set up the initial swagger spec.
     const swagger: SwaggerSpec = {
         swagger: "2.0",
@@ -662,7 +564,7 @@ function addAuthorizersToSwagger(
     return authNames;
 }
 
-function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.LambdaAuthorizer): LambdaAuthorizer {
+function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: authorizer.LambdaAuthorizer): SwaggerLambdaAuthorizer {
     if (authorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.handler)) {
         const identitySource = authorizer.getIdentitySource(lambdaAuthorizer.identitySource);
 
