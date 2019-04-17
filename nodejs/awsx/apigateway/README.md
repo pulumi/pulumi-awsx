@@ -433,7 +433,6 @@ const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-protected-api"
         localPath: "www",
         authorizers: [awsx.apigateway.getCognitoAuthorizer({
             providerARNs: [cognitoUserPool],
-            methodsToAuthorize: ["www_old/sub"],
         })],
     }],
 });
