@@ -66,6 +66,9 @@ func Test_Examples(t *testing.T) {
 			Dir: path.Join(cwd, "./examples/cluster"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
+			Dir: path.Join(cwd, "./examples/metrics"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "./examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
 		}),
