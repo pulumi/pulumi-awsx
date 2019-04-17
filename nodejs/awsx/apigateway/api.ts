@@ -683,7 +683,7 @@ function addAuthorizersToSwagger(
                     "x-amazon-apigateway-authorizer": {
                         type: auth.authType,
                         identitySource: lambdaauthorizer.getIdentitySource(auth.identitySource),
-                        providerARNs: auth.providerARNs,
+                        providerARNs: getCognitoPoolARNs(auth.providerARNs),
                     },
                 };
                 methods = auth.methodsToAuthorize || methods;
@@ -693,6 +693,19 @@ function addAuthorizersToSwagger(
         authRecords.push({ [authName]: methods });
     }
     return authRecords;
+}
+
+function getCognitoPoolARNs(pools: Array<pulumi.Input<string> | aws.cognito.UserPool>): pulumi.Input<string>[] {
+    const arns: pulumi.Input<string>[] = [];
+
+    for (const pool of pools) {
+        if (pulumi.CustomResource.isInstance(pool)) {
+            arns.push(pool.arn);
+        } else {
+            arns.push(pool);
+        }
+    }
+    return arns;
 }
 
 function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: lambdaauthorizer.LambdaAuthorizer): LambdaAuthorizer {
