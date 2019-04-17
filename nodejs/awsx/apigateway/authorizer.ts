@@ -90,31 +90,21 @@ export interface LambdaAuthorizer {
 
 export interface LambdaAuthorizerInfo {
     /**
-     * The Uniform Resource Identifier (URI) of the authorizer Lambda function. The Lambda may also
-     * be passed directly, in which cases the URI will be obtained for you.
+     * The Uniform Resource Identifier (URI) of the authorizer Lambda function. You can access this
+     * via the invokeArn property of an AWS Lambda
      */
-    uri: pulumi.Input<string> | aws.lambda.Function;
+    uri: pulumi.Input<string>;
 
     /**
      * Credentials required for invoking the authorizer in the form of an ARN of an IAM execution role.
      * For example, "arn:aws:iam::account-id:IAM_role".
      */
-    credentials: pulumi.Input<string> | aws.iam.Role;
+    credentials: pulumi.Input<string>;
 }
 
 /** @internal */
 export function isLambdaAuthorizerInfo(info: LambdaAuthorizerInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaAuthorizerInfo {
     return (<LambdaAuthorizerInfo>info).uri !== undefined;
-}
-
-/** @internal */
-export function isLambdaFunction(uri: pulumi.Input<string> | aws.lambda.Function): uri is aws.lambda.Function {
-    return (<aws.lambda.Function>uri).invokeArn !== undefined;
-}
-
-/** @internal */
-export function isIAMRole(creds: pulumi.Input<string> | aws.iam.Role): creds is aws.iam.Role {
-    return (<aws.iam.Role>creds).assumeRolePolicy !== undefined;
 }
 
 /** @internal */

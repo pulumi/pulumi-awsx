@@ -12,7 +12,7 @@
 - Added easier convenience methods overloads on an awsx.ec2.SecurityGroup to make ingress/egress
   rules.
 - Add TypeScript documentation on API Gateway's Integration Route and Raw Data Route
-- Add support for [Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) for API Gateway in TypeScript
+- Add support for [Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) for API Gateway in TypeScript - accept arns for pre-defined Lambda
 
 ## 0.18.0 (Release March 29, 2019)
 
