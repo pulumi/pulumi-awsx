@@ -64,7 +64,7 @@ export interface DashboardArgs {
      * this will be treated as a sequence of rows.  If not, then this will be treated as a sequence
      * of widgets to make a single row out of.
      */
-    widgets: Widget[];
+    widgets?: Widget[];
 }
 
 /**
@@ -83,41 +83,41 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
      * be treated as a single row to add to the grid.
      */
     constructor(name: string, args: DashboardArgs, opts?: pulumi.CustomResourceOptions) {
-        const widgets = args.widgets;
-        if (widgets.length < 1 || widgets.length > 100) {
-            throw new Error("Must supply between 1 and 100 widgets.");
-        }
-
-        const firstWidgetIsRow = widgets[0] instanceof RowWidget;
-        for (let i = 1; i < widgets.length; i++) {
-            const currentWidgetIsRow = widgets[i] instanceof RowWidget;
-            if (firstWidgetIsRow !== currentWidgetIsRow) {
-                throw new Error("All widgets must either be RowWidgets or none of them must be.");
-            }
-        }
-
-        const rows = firstWidgetIsRow
-            ? <RowWidget[]>widgets
-            : [new RowWidget(...widgets)];
-
-        const column = new ColumnWidget(...rows);
-
-        const widgetJsons: WidgetJson[] = [];
-        column.addWidgetJson(widgetJsons, /*xOffset:*/ 0, /*yOffset:*/0);
-
-        const op = pulumi.output({
-            start: args.start,
-            end: args.end,
-            periodOverride: args.periodOverride,
-            widgets: widgetJsons,
-        });
-
         super(name, {
             dashboardName: utils.ifUndefined(args.name, name),
-            dashboardBody: op.apply(j => {
-                const result = JSON.stringify(j, null, 2);
-                return result;
-            }),
+            dashboardBody: getDashboardBody(args).apply(JSON.stringify),
         }, opts);
     }
+}
+
+/** @internal */
+export function getDashboardBody(args: DashboardArgs) {
+    const widgets = args.widgets || [];
+    if (widgets.length < 0 || widgets.length > 100) {
+        throw new Error("Must supply between 0 and 100 widgets.");
+    }
+
+    const firstWidgetIsRow = widgets[0] instanceof RowWidget;
+    for (let i = 1; i < widgets.length; i++) {
+        const currentWidgetIsRow = widgets[i] instanceof RowWidget;
+        if (firstWidgetIsRow !== currentWidgetIsRow) {
+            throw new Error("All widgets must either be RowWidgets or none of them must be.");
+        }
+    }
+
+    const rows = firstWidgetIsRow
+        ? <RowWidget[]>widgets
+        : [new RowWidget(...widgets)];
+
+    const column = new ColumnWidget(...rows);
+
+    const widgetJsons: WidgetJson[] = [];
+    column.addWidgetJson(widgetJsons, /*xOffset:*/ 0, /*yOffset:*/0);
+
+    return pulumi.output({
+        start: args.start,
+        end: args.end,
+        periodOverride: args.periodOverride,
+        widgets: widgetJsons,
+    });
 }

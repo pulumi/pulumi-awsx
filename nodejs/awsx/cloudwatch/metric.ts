@@ -136,7 +136,7 @@ export class Metric {
         this.name = pulumi.output(args.name);
         this.dimensions = pulumi.output(args.dimensions);
         this.namespace = pulumi.output(args.namespace);
-        this.period = utils.ifUndefined(args.period, 60).apply(validatePeriod);
+        this.period = utils.ifUndefined(args.period, 300).apply(validatePeriod);
         this.statistic = pulumi.all([args.statistic, args.extendedStatistic])
                                .apply(([statistic, extendedStatistic]) => validateStatistics(statistic, extendedStatistic));
         this.extendedStatistic = pulumi.output(args.extendedStatistic).apply(validateExtendedStatistic);
@@ -342,9 +342,29 @@ function computeDescription(metric: Metric, args: AlarmArgs, comparisonOperator:
             return args.alarmDescription;
         }
 
+        const name = metric.label || metric.name;
+        const op = operatorDescription(comparisonOperator);
+        const period = args.evaluationPeriods === 1
+            ? `for 1 datapoint`
+            : `for ${args.evaluationPeriods} datapoints`;
+
         const time = args.evaluationPeriods * metric.period;
-        return `${metric.name} ${comparisonOperator} ${args.threshold} in the last ${time}s`;
+        const timeDesc = time % 60 === 0
+            ? `within ${time / 60} minutes`
+            : `within ${time} seconds`;
+
+        return `${name} ${op} ${args.threshold} ${period} ${timeDesc}`;
     });
+}
+
+function operatorDescription(op: AlarmComparisonOperator) {
+    switch (op) {
+        case "GreaterThanOrEqualToThreshold": return ">=";
+        case "GreaterThanThreshold": return ">";
+        case "LessThanThreshold": return "<";
+        case "LessThanOrEqualToThreshold": return "<=";
+        default: throw new Error(`Unexpected comparison operator: ${op}`);
+    }
 }
 
 function validatePeriod(period: number) {
@@ -391,7 +411,7 @@ export interface MetricChange {
     /**
      * The new period in seconds over which the specified `stat` is applied.  If this object is
      * missing this property, then no change will be made.  However, if the property is there by set
-     * to [undefined] then the value will be set to the default.
+     * to [undefined] then the value will be set to the default (300s).
      */
     period?: pulumi.Input<number>;
     /**
