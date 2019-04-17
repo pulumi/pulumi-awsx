@@ -67,6 +67,7 @@
     "private/protocol/restxml",
     "private/protocol/xml/xmlutil",
     "service/cloudwatchlogs",
+    "service/cognitoidentityprovider",
     "service/s3",
     "service/sts",
   ]
@@ -705,6 +706,8 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/aws/aws-sdk-go/aws/session",
+    "github.com/aws/aws-sdk-go/service/cognitoidentityprovider",
     "github.com/pulumi/pulumi-cloud/examples",
     "github.com/pulumi/pulumi/pkg/operations",
     "github.com/pulumi/pulumi/pkg/resource",
