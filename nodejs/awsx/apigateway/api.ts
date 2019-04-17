@@ -425,9 +425,12 @@ interface SwaggerOperation {
     "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
 
     /**
-     * security is an object whose properties are authorizerNames. Each authorizerName refers to a
-     * SecurityDefinition, defined at the top level of the swagger definition, by matching a Security
-     * Definition's name property. The authorizerNames' values are empty arrays.
+     * security a list of objects whose keys are the names of the authorizer. Each authorizer name
+     * refers to a SecurityDefinition, defined at the top level of the swagger definition, by
+     * matching a Security Definition's name property. For Cognito User Pool Authorizers, the value
+     * of these object can be left as an empty array or used to define the resource servers and
+     * custom scopes (e.g. "resource-server/scope"). For lambda authorizers, the value of the
+     * objects is an empty array.
      */
     security?: Record<string, string[]>[];
 }
@@ -727,10 +730,10 @@ function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: lambdaaut
     };
 }
 
-function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authorizerNames: Record<string, string[]>[]) {
+function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authRecords: Record<string, string[]>[]) {
     swaggerOperation["security"] = swaggerOperation["security"] || [];
-    for (const authName of authorizerNames) {
-        swaggerOperation["security"].push(authName);
+    for (const record of authRecords) {
+        swaggerOperation["security"].push(record);
     }
 }
 
@@ -802,7 +805,7 @@ function addStaticRouteToSwaggerSpec(
         }, parentOpts);
     }
 
-    function processFile(route: StaticRoute, authorizerNames: Record<string, string[]>[] | undefined) {
+    function processFile(route: StaticRoute, authorizerRecords: Record<string, string[]>[] | undefined) {
         const key = name + sha1hash(method + ":" + route.path);
         const role = createRole(key);
 
@@ -815,13 +818,13 @@ function addStaticRouteToSwaggerSpec(
         if (route.requestValidator) {
             swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
         }
-        if (authorizerNames) {
-            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+        if (authorizerRecords) {
+            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerRecords);
         }
         addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
 
-    function processDirectory(directory: StaticRoute, authorizerNames: Record<string, string[]>[] | undefined) {
+    function processDirectory(directory: StaticRoute, authorizerRecords: Record<string, string[]>[] | undefined) {
         const directoryServerPath = route.path.endsWith("/") ? route.path : route.path + "/";
 
         const directoryKey = name + sha1hash(method + ":" + directoryServerPath);
@@ -875,8 +878,8 @@ function addStaticRouteToSwaggerSpec(
                         if (directory.requestValidator) {
                             swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
                         }
-                        if (authorizerNames) {
-                            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+                        if (authorizerRecords) {
+                            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerRecords);
                         }
                         swagger.paths[directoryServerPath] = {
                             [method]: swaggerOperation,
@@ -898,8 +901,8 @@ function addStaticRouteToSwaggerSpec(
         if (directory.requestValidator) {
             swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
         }
-        if (authorizerNames) {
-            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+        if (authorizerRecords) {
+            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerRecords);
         }
         addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);
     }
