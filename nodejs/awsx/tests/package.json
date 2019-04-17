@@ -1,0 +1,37 @@
+{
+    "name": "@pulumi/aws",
+    "version": "${VERSION}",
+    "description": "A Pulumi package for creating and managing Amazon Web Services (AWS) cloud resources.",
+    "keywords": [
+        "pulumi",
+        "aws"
+    ],
+    "homepage": "https://pulumi.io",
+    "repository": "https://github.com/pulumi/pulumi-aws",
+    "license": "Apache-2.0",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@pulumi/pulumi": "^0.17.6",
+        "@pulumi/aws": "^0.18.1",
+        "aws-sdk": "^2.0.0",
+        "builtin-modules": "3.0.0",
+        "mime": "^2.0.0",
+        "read-package-tree": "^5.2.1",
+        "resolve": "^1.7.1",
+        "mocha": "^3.5.0",
+        "typescript": "^3.0.0",
+        "chai": "^4.2.0",
+        "proxyquire": "^2.1.0",
+        "semver": "^6.0.0"
+    },
+    "devDependencies": {
+        "@types/mime": "^2.0.0",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^10.0.0"
+    },
+    "pulumi": {
+        "resource": true
+    }
+}
