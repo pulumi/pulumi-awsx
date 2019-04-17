@@ -27,9 +27,17 @@
         "apigateway/metrics.ts",
         "autoscaling/autoscaling.ts",
         "autoscaling/index.ts",
+
         "cloudwatch/index.ts",
+        "cloudwatch/dashboard.ts",
         "cloudwatch/metric.ts",
         "cloudwatch/metrics.ts",
+        "cloudwatch/widget.ts",
+        "cloudwatch/widgets_annotations.ts",
+        "cloudwatch/widgets_flow.ts",
+        "cloudwatch/widgets_graph.ts",
+        "cloudwatch/widgets_simple.ts",
+
         "codebuild/index.ts",
         "codebuild/metrics.ts",
         "cognito/index.ts",
