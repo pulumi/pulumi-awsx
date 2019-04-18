@@ -213,7 +213,7 @@ export class Cluster extends pulumi.ComponentResource {
                 this, name, args, instanceSecurityGroup, cluster, filesystem);
         }
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 }
 

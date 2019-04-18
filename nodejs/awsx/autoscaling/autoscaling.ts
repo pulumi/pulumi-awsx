@@ -65,7 +65,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         }, parentOpts);
         this.id = this.launchConfiguration.id;
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     public static defaultInstanceProfilePolicyDocument(): aws.iam.PolicyDocument {
@@ -261,12 +261,23 @@ function getAdditionalRuncmdLines(args: AutoScalingUserData | undefined): pulumi
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
     public readonly vpc: x.ec2.Vpc;
+
+    /**
+     * The [cloudformation.Stack] that was used to create this [AutoScalingGroup].  [CloudFormation]
+     * is used here as the existing AWS apis for creating [AutoScalingGroup]s are not rich enough to
+     * express everything that can be configured through [CloudFormation] itself.
+     */
     public readonly stack: aws.cloudformation.Stack;
 
     /**
      * The launch configuration for this auto scaling group.
      */
     public readonly launchConfiguration: AutoScalingLaunchConfiguration;
+
+    /**
+     * Underlying [autoscaling.Group] that is created by cloudformation.
+     */
+    public readonly group: aws.autoscaling.Group;
 
     constructor(name: string,
                 args: AutoScalingGroupArgs,
@@ -288,6 +299,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         }
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+
+        // Use cloudformation to actually construct the autoscaling group.
         this.stack = new aws.cloudformation.Stack(name, {
             ...args,
             name: this.launchConfiguration.stackName,
@@ -298,7 +311,11 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 utils.ifUndefined(args.templateParameters, {})),
         }, parentOpts);
 
-        this.registerOutputs({});
+        // Now go and actually find the group created by cloudformation.  The id for the group will
+        // be stored in `stack.outputs.Instances`.
+        this.group = aws.autoscaling.Group.get(name, this.stack.outputs["Instances"], undefined, parentOpts);
+
+        this.registerOutputs();
     }
 }
 
