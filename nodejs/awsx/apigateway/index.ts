@@ -13,7 +13,7 @@
 // limitations under the License.
 
 export * from "./api";
-export * from "./authorizer";
+export * from "./lambdaAuthorizer";
 export * from "./metrics";
 export * from "./swagger_json";
 
