@@ -388,7 +388,7 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
 
             permissions.push(new aws.lambda.Permission(name + "-" + sha1hash(methodAndPath), {
                 action: "lambda:invokeFunction",
-                function: swaggerLambdas[path][method]!,
+                function: swaggerLambdas[path][method],
                 principal: "apigateway.amazonaws.com",
                 // We give permission for this function to be invoked by any stage at the given method and
                 // path on the API. We allow any stage instead of encoding the one known stage that will be
@@ -403,7 +403,7 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
 }
 
 interface SwaggerLambdas {
-    [path: string]: { [m in Method]?: aws.lambda.Function; };
+    [path: string]: { [m in Method]: aws.lambda.Function; };
 }
 
 function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator: RequestValidator | undefined) {
