@@ -90,8 +90,8 @@ export abstract class SimpleWidget implements Widget {
  * Simple [Widget] that can be used for putting space between other widgets in the [Dashboard].
  */
 export class SpaceWidget implements Widget {
-    private _width: number;
-    private _height: number;
+    private readonly _width: number;
+    private readonly _height: number;
 
     constructor(width: number, height: number);
     constructor(args: SimpleWidgetArgs);
