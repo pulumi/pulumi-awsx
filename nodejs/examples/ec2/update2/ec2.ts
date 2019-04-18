@@ -35,16 +35,14 @@ const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
 });
 
 // Schedule the ASG to go up to 20 instances at 6am, and back down to 10 at 10pm.
-autoScalingGroup.createSchedule("scaleUpAt6amUTC", {
+autoScalingGroup.scaleOnSchedule("scaleUpAt6amUTC", {
     minSize: 20,
     recurrence: { hour: 6 },
 });
-autoScalingGroup.createSchedule("scaleUpAt6amUTC", {
+autoScalingGroup.scaleOnSchedule("scaleUpAt6amUTC", {
     minSize: 10,
     recurrence: { hour: 22 },
 });
-
-
 
 export const autoScalingGroupId = autoScalingGroup.stack.id;
 

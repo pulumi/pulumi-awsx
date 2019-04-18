@@ -320,7 +320,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         this.registerOutputs();
     }
 
-    public createSchedule(name: string, args: ScheduleArgs, opts: pulumi.CustomResourceOptions = {}) {
+    public scaleOnSchedule(name: string, args: ScheduleArgs, opts: pulumi.CustomResourceOptions = {}) {
         const recurrence = args.recurrence === undefined
             ? undefined
             : pulumi.output(args.recurrence).apply(
