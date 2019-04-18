@@ -297,6 +297,33 @@ export interface ApplicationLoadBalancerArgs {
     securityGroups?: x.ec2.SecurityGroupOrId[];
 }
 
+/**
+ * A Health Check block.
+ *
+ * The Health Check parameters you can set vary by the protocol of the Target Group. See
+ * http://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html
+ * for a complete reference. Keep in mind, that health checks produce actual requests to the
+ * backend. The underlying function is invoked when target_type is set to lambda.
+ */
+export interface ApplicationTargetGroupHealthCheck extends mod.TargetGroupHealthCheck {
+    /**
+     * (Required for HTTP/HTTPS ALB) The destination for the health check request.
+     */
+    path: pulumi.Input<string>;
+
+    /**
+     * The amount of time, in seconds, during which no response means a failed health check. For
+     * Application Load Balancers, the range is 2 to 60 seconds and the default is 5 seconds.
+     */
+    timeout?: pulumi.Input<number>;
+
+    /**
+     * The number of consecutive health check failures required before considering the target
+     * unhealthy. Defaults to 3.
+     */
+    unhealthyThreshold?: pulumi.Input<number>;
+}
+
 export interface ApplicationTargetGroupArgs {
     /**
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
@@ -320,9 +347,9 @@ export interface ApplicationTargetGroupArgs {
     deregistrationDelay?: pulumi.Input<number>;
 
     /**
-     * A Health Check block. Health Check blocks are documented below.
+     * A Health Check block.
      */
-    healthCheck?: aws.elasticloadbalancingv2.TargetGroupArgs["healthCheck"];
+    healthCheck?: pulumi.Input<ApplicationTargetGroupHealthCheck>;
 
     /**
      * Boolean to enable / disable support for proxy protocol v2 on Network Load Balancers. See

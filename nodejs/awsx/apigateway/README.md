@@ -15,7 +15,6 @@ The destination is determined by the route, which can be an [Event Handler Route
 An Event Handler Route is a route that will map to a [Lambda](https://aws.amazon.com/lambda/). You will need to specify the path, method and the Lambda. Pulumi allows you to define the Lambda inline with your application code and provisions the appropriate permissions on your behalf so that API Gateway can communicate with your Lambda.
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 let endpoint = new awsx.apigateway.API("example", {
@@ -80,7 +79,6 @@ A Static Route is a route that will map to static content in files/directories. 
 By default, any request on directory will serve index.html. This behavior can be disabled by setting the `index` field to false.
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 let endpoint = new awsx.apigateway.API("example", {
@@ -162,7 +160,6 @@ You must specify one of the following validators:
 * "PARAMS_ONLY" - validate only the request parameters
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 let endpoint = new awsx.apigateway.API("example", {
@@ -181,7 +178,6 @@ let endpoint = new awsx.apigateway.API("example", {
 For each required request parameter, you must define the name and where the parameter is expected (i.e. "path", "query", or "header").
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 let endpoint = new awsx.apigateway.API("example", {
@@ -202,13 +198,70 @@ let endpoint = new awsx.apigateway.API("example", {
 
 Request body validation is currently not supported. If you have a strong use case, please comment on this [open issue](https://github.com/pulumi/pulumi-awsx/issues/198).
 
+### API Keys
+
+To require an API Key for an API Gateway route you set the `apiKeyRequired` property equal to `true`. At the API level, you can choose if you want the API Key source to be `HEADER` (i.e. client includes a `x-api-key` header with the API Key) or `AUTHORIZER` (i.e. a Lambda authorizer sends the API Key as part of the authorization response). If the API Key source is not set, then the source will default to `HEADER`.
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/a",
+        method: "GET",
+        eventHandler: async () => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        },
+        apiKeyRequired: true,
+    }],
+    apikeySource: "AUTHORIZER",
+});
+```
+
+You will also need to create a usage plan (`new aws.apigateway.UsagePlan`) and an API key (`new aws.apigateway.ApiKey`) and then associate the key with the usage plan (`new aws.apigateway.UsagePlanKey`). To simplify the creation of API Keys associated with your API you can use `awsx.apigateway.createAssociatedAPIKeys`, which create a Usage Plan, API Keys and associates the API Keys by creating a UsagePlanKey. Below is an example of using this helper function:
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
+    apis: [api],
+    apiKeys: [{
+        name: "test-key",
+    }],
+});
+
+ // Export the API Key if desired
+export const apiKeyValue = apikeys.keys[0].apikey.value;
+```
+
+`awsx.apigateway.createAssociatedAPIKeys` will return an object that contains the Usage Plan, API Keys and Usage Plan Keys. Instead of providing the APIs, you can also specify the api stages for the Usage Plan as follows:
+
+```ts
+import * as awsx from "@pulumi/awsx";
+
+const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
+    usagePlan: {
+        apiStages: [{
+            apiId: api.restAPI.id,
+            stage: api.stage.stageName,
+        }],
+    },
+    apiKeys: [{
+        name: "test-key",
+    }],
+});
+```
+
 ### Lambda Authorizers
 
 [Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) are AWS Lambda functions that provide control access to an API. You can define a Lambda Authorizer for an Event Handler Route or a Static Route. API Gateway supports `request` or `token` type Lambda authorizers. A `token` Lambda Authorizer uses an authorization token (i.e. a header in the form `Authorization: Token <token>`) to authorize the user, whereas a `request` Lambda Authorizer uses the request parameters (i.e. headers, path parameter or query parameters).
 
 To define an Authorizer, you provide a Lambda that fulfills `aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>` or you provide information on a pre-existing Lambda authorizer. The example below shows defining the Authorizer Lambda directly inline. See the [Event Handler Route](#Event-Handler-Route) section for other ways you can define a Lambda for the Authorizer.
 
-#### Token Authorizer
+#### Request Authorizer
 
 Below is an example of a custom `request` Lambda Authorizer that uses `awsx.apigateway.getRequestLambdaAuthorizer` to simplify defining the authorizer.
 
@@ -265,7 +318,7 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
-#### Request Authorizer
+#### Token Authorizer
 
 Below is an example of a custom `token` Lambda Authorizer that uses `awsx.apigateway.` to simplify the creation of the authorizer.
 
@@ -443,7 +496,6 @@ const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-protected-api"
 You can use a OpenAPI specification that is in string form to initialize the API Gateway. This in a way is an escape hatch for implementing featured not yet supported by Pulumi. You must manually provide permission for any route targets to be invoked by API Gateway when using this option.
 
 ```ts
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 const swaggerSpec = {

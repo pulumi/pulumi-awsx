@@ -21,21 +21,32 @@ import * as fspath from "path";
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as cognitoauthorizer from "./cognitoauthorizer";
-import * as lambdaauthorizer from "./lambdaauthorizer";
-import * as reqvalidation from "./requestValidator";
-
 import * as awslambda from "aws-lambda";
 
 import { sha1hash } from "../utils";
+
+import { apiKeySecurityDefinition } from "./apikey";
+import * as cognitoauthorizer from "./cognitoauthorizer";
+import * as lambdaAuthorizer from "./lambdaAuthorizer";
+import * as reqvalidation from "./requestValidator";
+import {
+    APIKeySource,
+    IntegrationConnectionType,
+    IntegrationPassthroughBehavior,
+    IntegrationType,
+    Method,
+    RequestValidator,
+    SecurityDefinition,
+    SwaggerLambdaAuthorizer,
+    SwaggerOperation,
+    SwaggerSpec,
+} from "./swagger_json";
 
 export type Request = awslambda.APIGatewayProxyEvent;
 
 export type RequestContext = awslambda.APIGatewayEventRequestContext;
 
 export type Response = awslambda.APIGatewayProxyResult;
-
-export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH";
 
 /**
  * A route that that APIGateway should accept and forward to some type of destination. All routes
@@ -60,16 +71,22 @@ export type EventHandlerRoute = {
     * Request Validator specifies the validator to use at the method level. This will override anything
     * defined at the API level.
     */
-    requestValidator?: reqvalidation.RequestValidator;
+    requestValidator?: RequestValidator;
+
+    /**
+     * If true, an API key will be required for this route. The source for the API Key can be set at
+     * the API level and by default, the source will be the HEADER.
+     */
+    apiKeyRequired?: boolean;
 
     /**
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
      * the route is called.
      */
-    authorizers?: Authorizers[];
+    authorizers?: Authorizer[];
 };
 
-type Authorizers = lambdaauthorizer.LambdaAuthorizer | cognitoauthorizer.CognitoAuthorizer;
+type Authorizer = lambdaAuthorizer.LambdaAuthorizer | cognitoauthorizer.CognitoAuthorizer;
 
 function isEventHandler(route: Route): route is EventHandlerRoute {
     return (<EventHandlerRoute>route).eventHandler !== undefined;
@@ -110,14 +127,20 @@ export type StaticRoute = {
     * Request Validator specifies the validator to use at the method level. This will override anything
     * defined at the API level.
     */
-    requestValidator?: reqvalidation.RequestValidator;
+    requestValidator?: RequestValidator;
+
+    /**
+     * If true, an API key will be required for this route. The source for the API Key can be set at
+     * the API level and by default, the source will be the HEADER.
+     */
+    apiKeyRequired?: boolean;
 
     /**
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
      * the route is called. The authorizer will get applied to all static resources defined by the
      * localPath.
      */
-    authorizers?: Authorizers[];
+    authorizers?: Authorizer[];
 };
 
 function isStaticRoute(route: Route): route is StaticRoute {
@@ -132,10 +155,6 @@ export interface IntegrationRoute {
     path: string;
     target: pulumi.Input<IntegrationTarget> | IntegrationRouteTargetProvider;
 }
-
-export type IntegrationConnectionType = "INTERNET" | "VPC_LINK";
-export type IntegrationType = "aws" | "aws_proxy" | "http" | "http_proxy" | "mock";
-export type IntegrationPassthroughBehavior = "when_no_match" | "when_no_templates" | "never";
 
 /**
  * See https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/ for more details.
@@ -294,15 +313,23 @@ export interface APIArgs {
     * Request Validator specifies the validator to use at the API level. Note method level validators
     * override this.
     */
-    requestValidator?: reqvalidation.RequestValidator;
+    requestValidator?: RequestValidator;
+
+    /**
+     * The source for the apikey. This can either be a HEADER or AUTHORIZER. If [apiKeyRequired] is
+     * set to true on a route, and this is not defined the value will default to HEADER.
+     */
+    apiKeySource?: APIKeySource;
 }
 
 export class API extends pulumi.ComponentResource {
-    public restAPI: aws.apigateway.RestApi;
-    public deployment: aws.apigateway.Deployment;
-    public stage: aws.apigateway.Stage;
+    public readonly restAPI: aws.apigateway.RestApi;
+    public readonly deployment: aws.apigateway.Deployment;
+    public readonly stage: aws.apigateway.Stage;
 
-    public url: pulumi.Output<string>;
+    public readonly url: pulumi.Output<string>;
+
+    private readonly swaggerLambdas: SwaggerLambdas;
 
     constructor(name: string, args: APIArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("aws:apigateway:x:API", name, {}, opts);
@@ -314,7 +341,7 @@ export class API extends pulumi.ComponentResource {
             swaggerString = pulumi.output(args.swaggerString);
         }
         else if (args.routes) {
-            const result = createSwaggerSpec(this, name, args.routes, args.requestValidator);
+            const result = createSwaggerSpec(this, name, args.routes, args.requestValidator, args.apiKeySource);
             swaggerSpec = result.swagger;
             swaggerLambdas = result.swaggerLambdas;
             swaggerString = pulumi.output<any>(swaggerSpec).apply(JSON.stringify);
@@ -347,7 +374,8 @@ export class API extends pulumi.ComponentResource {
             },
         }, { parent: this });
 
-        const permissions = createLambdaPermissions(this, name, swaggerLambdas);
+        this.swaggerLambdas = swaggerLambdas || new Map();
+        const permissions = createLambdaPermissions(this, name, this.swaggerLambdas);
 
         // Expose the URL that the API is served at.
         this.url = pulumi.interpolate`${this.deployment.invokeUrl}${stageName}/`;
@@ -359,20 +387,31 @@ export class API extends pulumi.ComponentResource {
             stageName: stageName,
         }, { parent: this, dependsOn: permissions });
 
-        this.registerOutputs({});
+
+        this.registerOutputs();
+    }
+
+    /**
+     * Returns the [aws.lambda.Function] an [EventHandlerRoute] points to.  This will either be for
+     * the aws.lambda.Function created on your behalf if the route was passed a normal
+     * JavaScript/Typescript function, or it will be the [aws.lambda.Function] that was explicitly
+     * passed in. Returns [undefined] if this route/method wasn't an [EventHandlerRoute].
+     */
+    public getFunction(route: string, method: Method) {
+        const methods = this.swaggerLambdas.get(route);
+        return methods ? methods.get(method) : undefined;
     }
 }
 
-function createLambdaPermissions(api: API, name: string, swaggerLambdas: SwaggerLambdas = {}) {
+function createLambdaPermissions(api: API, name: string, swaggerLambdas: SwaggerLambdas) {
     const permissions: aws.lambda.Permission[] = [];
-    for (const path of Object.keys(swaggerLambdas)) {
-        for (const method of Object.keys(swaggerLambdas[path])) {
-            const methodAndPath =
-                `${method === "x-amazon-apigateway-any-method" ? "*" : method.toUpperCase()}${path}`;
+    for (const [path, lambdas] of swaggerLambdas) {
+        for (const [method, lambda] of lambdas) {
+            const methodAndPath = `${method === "ANY" ? "*" : method}${path}`;
 
             permissions.push(new aws.lambda.Permission(name + "-" + sha1hash(methodAndPath), {
                 action: "lambda:invokeFunction",
-                function: swaggerLambdas[path][method],
+                function: lambda,
                 principal: "apigateway.amazonaws.com",
                 // We give permission for this function to be invoked by any stage at the given method and
                 // path on the API. We allow any stage instead of encoding the one known stage that will be
@@ -386,124 +425,18 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
     return permissions;
 }
 
-interface SwaggerSpec {
-    swagger: string;
-    info: SwaggerInfo;
-    paths: { [path: string]: { [method: string]: SwaggerOperation; }; };
-    "x-amazon-apigateway-binary-media-types"?: string[];
-    "x-amazon-apigateway-gateway-responses": Record<string, SwaggerGatewayResponse>;
-    securityDefinitions?: { [authorizerName: string]: SecurityDefinition };
-    "x-amazon-apigateway-request-validators"?: {
-        [validatorName: string]: {
-            validateRequestBody: boolean;
-            validateRequestParameters: boolean;
-        };
-    };
-    "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
-}
+type SwaggerLambdas = Map<string, Map<Method, aws.lambda.Function>>;
 
-interface SwaggerLambdas {
-    [path: string]: { [method: string]: aws.lambda.Function };
-}
+function createSwaggerSpec(
+    api: API,
+    name: string,
+    routes: Route[],
+    requestValidator: RequestValidator | undefined,
+    apikeySource: APIKeySource | undefined) {
 
-interface SwaggerGatewayResponse {
-    statusCode: number;
-    responseTemplates: {
-        "application/json": string,
-    };
-}
+    // Default API Key source to "HEADER"
+    apikeySource = apikeySource || "HEADER";
 
-interface SwaggerInfo {
-    title: string;
-    version: string;
-}
-
-interface SwaggerOperation {
-    parameters?: SwaggerParameter[];
-    responses?: { [code: string]: SwaggerResponse };
-    "x-amazon-apigateway-integration": ApigatewayIntegration;
-    "x-amazon-apigateway-request-validator"?: reqvalidation.RequestValidator;
-
-    /**
-     * security a list of objects whose keys are the names of the authorizer. Each authorizer name
-     * refers to a SecurityDefinition, defined at the top level of the swagger definition, by
-     * matching a Security Definition's name property. For Cognito User Pool Authorizers, the value
-     * of these object can be left as an empty array or used to define the resource servers and
-     * custom scopes (e.g. "resource-server/scope"). For lambda authorizers, the value of the
-     * objects is an empty array.
-     */
-    security?: Record<string, string[]>[];
-}
-
-interface SecurityDefinition {
-    type: "apiKey";
-    name: string;
-    in: "header" | "query";
-    "x-amazon-apigateway-authtype": string;
-    "x-amazon-apigateway-authorizer": LambdaAuthorizer | CognitoAuthorizer;
-}
-
-interface LambdaAuthorizer {
-    type: "token" | "request";
-    authorizerUri: pulumi.Input<string>;
-    authorizerCredentials: pulumi.Input<string>;
-    identitySource?: string;
-    identityValidationExpression?: string;
-    authorizerResultTtlInSeconds?: number;
-}
-
-interface CognitoAuthorizer {
-    type: "cognito_user_pools";
-    identitySource: string;
-    providerARNs: pulumi.Input<string>[];
-    authorizerResultTtlInSeconds?: number;
-}
-
-interface SwaggerParameter {
-    name: string;
-    in: string;
-    required: boolean;
-    type?: string;
-}
-
-interface SwaggerResponse {
-    description: string;
-    schema?: SwaggerSchema;
-    headers?: { [header: string]: SwaggerHeader };
-}
-
-interface SwaggerSchema {
-    type: string;
-}
-
-interface SwaggerHeader {
-    type: "string" | "number" | "integer" | "boolean" | "array";
-    items?: SwaggerItems;
-}
-
-interface SwaggerItems {
-    type: "string" | "number" | "integer" | "boolean" | "array";
-    items?: SwaggerItems;
-}
-
-interface SwaggerAPIGatewayIntegrationResponse {
-    statusCode: string;
-    responseParameters?: { [key: string]: string };
-}
-
-interface ApigatewayIntegration {
-    requestParameters?: any;
-    passthroughBehavior?: pulumi.Input<IntegrationPassthroughBehavior>;
-    httpMethod: pulumi.Input<Method>;
-    type: pulumi.Input<IntegrationType>;
-    responses?: { [pattern: string]: SwaggerAPIGatewayIntegrationResponse };
-    uri: pulumi.Input<string>;
-    connectionType?: pulumi.Input<IntegrationConnectionType | undefined>;
-    connectionId?: pulumi.Input<string | undefined>;
-    credentials?: pulumi.Output<string>;
-}
-
-function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator: reqvalidation.RequestValidator | undefined) {
     // Set up the initial swagger spec.
     const swagger: SwaggerSpec = {
         swagger: "2.0",
@@ -526,6 +459,7 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
                 },
             },
         },
+        "x-amazon-apigateway-api-key-source": apikeySource,
     };
 
     if (requestValidator) {
@@ -546,7 +480,7 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
         swagger["x-amazon-apigateway-request-validator"] = requestValidator;
     }
 
-    const swaggerLambdas: SwaggerLambdas = {};
+    const swaggerLambdas: SwaggerLambdas = new Map();
 
     // Now add all the routes to it.
 
@@ -554,11 +488,13 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
     // this once.  So have a value here that can be lazily initialized the first route we hit, which
     // can then be used for all successive static routes.
     let staticRouteBucket: aws.s3.Bucket | undefined;
-    const apiAuthorizers: Record<string, Authorizers> = {};
+
+    // Use this to track the API's authorizers and ensure any authorizers with the same name
+    // reference the same authorizer.
+    const apiAuthorizers: Record<string, Authorizer> = {};
 
     for (const route of routes) {
         checkRoute(api, route, "path");
-        swaggerLambdas[route.path] = swaggerLambdas[route.path] || {};
 
         if (isEventHandler(route)) {
             addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
@@ -600,7 +536,7 @@ function addEventHandlerRouteToSwaggerSpec(
     swagger: SwaggerSpec,
     swaggerLambdas: SwaggerLambdas,
     route: EventHandlerRoute,
-    apiAuthorizers: Record<string, Authorizers>) {
+    apiAuthorizers: Record<string, Authorizer>) {
 
     checkRoute(api, route, "eventHandler");
     checkRoute(api, route, "method");
@@ -620,8 +556,19 @@ function addEventHandlerRouteToSwaggerSpec(
     if (route.requestValidator) {
         swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
     }
+    if (route.apiKeyRequired) {
+        addAPIkeyToSecurityDefinitions(swagger);
+        addAPIKeyToSwaggerOperation(swaggerOperation);
+    }
     addSwaggerOperation(swagger, route.path, method, swaggerOperation);
-    swaggerLambdas[route.path][method] = lambda;
+
+    let lambdas = swaggerLambdas.get(route.path);
+    if (!lambdas) {
+        lambdas = new Map();
+        swaggerLambdas.set(route.path, lambdas);
+    }
+
+    lambdas.set(route.method, lambda);
     return;
 
     function createSwaggerOperationForLambda(): SwaggerOperation {
@@ -640,10 +587,26 @@ function addEventHandlerRouteToSwaggerSpec(
     }
 }
 
+function addAPIkeyToSecurityDefinitions(swagger: SwaggerSpec) {
+    swagger.securityDefinitions = swagger.securityDefinitions || {};
+
+    if (swagger.securityDefinitions["api_key"] && swagger.securityDefinitions["api_key"] !== apiKeySecurityDefinition) {
+        throw new Error("Defined a non-apikey security definition with the name api_key");
+    }
+    swagger.securityDefinitions["api_key"] = apiKeySecurityDefinition;
+}
+
+function addAPIKeyToSwaggerOperation(swaggerOperation: SwaggerOperation) {
+    swaggerOperation["security"] = swaggerOperation["security"] || [];
+    swaggerOperation["security"].push({
+        ["api_key"]: [],
+    });
+}
+
 function addAuthorizersToSwagger(
     swagger: SwaggerSpec,
-    authorizers: Authorizers[],
-    apiAuthorizers: Record<string, Authorizers>): Record<string, string[]>[] {
+    authorizers: Authorizer[],
+    apiAuthorizers: Record<string, Authorizer>): Record<string, string[]>[] {
 
     const authRecords: Record<string, string[]>[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
@@ -666,7 +629,7 @@ function addAuthorizersToSwagger(
         if (!swagger["securityDefinitions"][auth.authorizerName]) {
             let securityDef: SecurityDefinition;
 
-            if (lambdaauthorizer.isLambdaAuthorizer(auth)) {
+            if (lambdaAuthorizer.isLambdaAuthorizer(auth)) {
                 securityDef = {
                     type: "apiKey",
                     name: auth.parameterName,
@@ -682,7 +645,7 @@ function addAuthorizersToSwagger(
                     "x-amazon-apigateway-authtype": auth.authType,
                     "x-amazon-apigateway-authorizer": {
                         type: auth.authType,
-                        identitySource: lambdaauthorizer.getIdentitySource(auth.identitySource),
+                        identitySource: lambdaAuthorizer.getIdentitySource(auth.identitySource),
                         providerARNs: getCognitoPoolARNs(auth.providerARNs),
                     },
                 };
@@ -708,38 +671,47 @@ function getCognitoPoolARNs(pools: Array<pulumi.Input<string> | aws.cognito.User
     return arns;
 }
 
-function getLambdaAuthorizer(authorizerName: string, lambdaAuthorizer: lambdaauthorizer.LambdaAuthorizer): LambdaAuthorizer {
-    if (lambdaauthorizer.isLambdaAuthorizerInfo(lambdaAuthorizer.handler)) {
-        const identitySource = lambdaauthorizer.getIdentitySource(lambdaAuthorizer.identitySource);
+function getLambdaAuthorizer(authorizerName: string, authorizer: lambdaAuthorizer.LambdaAuthorizer): SwaggerLambdaAuthorizer {
+    if (lambdaAuthorizer.isLambdaAuthorizerInfo(authorizer.handler)) {
+        const identitySource = lambdaAuthorizer.getIdentitySource(authorizer.identitySource);
 
-        const uri = lambdaauthorizer.isLambdaFunction(lambdaAuthorizer.handler.uri) ?
-            lambdaAuthorizer.handler.uri.invokeArn : pulumi.output(lambdaAuthorizer.handler.uri);
+        let uri: pulumi.Input<string>;
+        if (pulumi.CustomResource.isInstance(authorizer.handler.uri)) {
+            uri = authorizer.handler.uri.invokeArn;
+        } else {
+            uri = authorizer.handler.uri;
+        }
 
-        const credentials = lambdaauthorizer.isIAMRole(lambdaAuthorizer.handler.credentials) ?
-            lambdaAuthorizer.handler.credentials.arn : lambdaAuthorizer.handler.credentials;
+        let credentials: pulumi.Input<string>;
+        if (pulumi.CustomResource.isInstance(authorizer.handler.credentials)) {
+            credentials = authorizer.handler.credentials.arn;
+        } else {
+            credentials = authorizer.handler.credentials;
+        }
+
         return {
-            type: lambdaAuthorizer.type,
+            type: authorizer.type,
             authorizerUri: uri,
             authorizerCredentials: credentials,
             identitySource: identitySource,
-            identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
-            authorizerResultTtlInSeconds: lambdaAuthorizer.authorizerResultTtlInSeconds,
+            identityValidationExpression: authorizer.identityValidationExpression,
+            authorizerResultTtlInSeconds: authorizer.authorizerResultTtlInSeconds,
         };
     }
 
-    const authorizerLambda = aws.lambda.createFunctionFromEventHandler<lambdaauthorizer.AuthorizerEvent, lambdaauthorizer.AuthorizerResponse>(
-        authorizerName, lambdaAuthorizer.handler);
+    const authorizerLambda = aws.lambda.createFunctionFromEventHandler<lambdaAuthorizer.AuthorizerEvent, lambdaAuthorizer.AuthorizerResponse>(
+        authorizerName, authorizer.handler);
 
-    const role = lambdaauthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
+    const role = lambdaAuthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
 
-    const identitySource = lambdaauthorizer.getIdentitySource(lambdaAuthorizer.identitySource);
+    const identitySource = lambdaAuthorizer.getIdentitySource(authorizer.identitySource);
     return {
-        type: lambdaAuthorizer.type,
+        type: authorizer.type,
         authorizerUri: authorizerLambda.invokeArn,
         authorizerCredentials: role.arn,
         identitySource: identitySource,
-        identityValidationExpression: lambdaAuthorizer.identityValidationExpression,
-        authorizerResultTtlInSeconds: lambdaAuthorizer.authorizerResultTtlInSeconds,
+        identityValidationExpression: authorizer.identityValidationExpression,
+        authorizerResultTtlInSeconds: authorizer.authorizerResultTtlInSeconds,
     };
 }
 
@@ -766,7 +738,7 @@ function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperat
 function addStaticRouteToSwaggerSpec(
     api: API, name: string, swagger: SwaggerSpec, route: StaticRoute,
     bucket: aws.s3.Bucket | undefined,
-    apiAuthorizers: Record<string, Authorizers>) {
+    apiAuthorizers: Record<string, Authorizer>) {
 
     checkRoute(api, route, "localPath");
 
@@ -779,6 +751,9 @@ function addStaticRouteToSwaggerSpec(
     let authRecords: Record<string, string[]>[] | undefined;
     if (route.authorizers) {
         authRecords = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
+    }
+    if (route.apiKeyRequired) {
+        addAPIkeyToSecurityDefinitions(swagger);
     }
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
@@ -833,6 +808,9 @@ function addStaticRouteToSwaggerSpec(
         }
         if (authorizerRecords) {
             addAuthorizersToSwaggerOperation(swaggerOperation, authorizerRecords);
+        }
+        if (route.apiKeyRequired) {
+            addAPIKeyToSwaggerOperation(swaggerOperation);
         }
         addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
@@ -894,6 +872,9 @@ function addStaticRouteToSwaggerSpec(
                         if (authorizerRecords) {
                             addAuthorizersToSwaggerOperation(swaggerOperation, authorizerRecords);
                         }
+                        if (directory.apiKeyRequired) {
+                            addAPIKeyToSwaggerOperation(swaggerOperation);
+                        }
                         swagger.paths[directoryServerPath] = {
                             [method]: swaggerOperation,
                         };
@@ -917,13 +898,16 @@ function addStaticRouteToSwaggerSpec(
         if (authorizerRecords) {
             addAuthorizersToSwaggerOperation(swaggerOperation, authorizerRecords);
         }
+        if (directory.apiKeyRequired) {
+            addAPIKeyToSwaggerOperation(swaggerOperation);
+        }
         addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);
     }
 
     function createSwaggerOperationForObjectKey(
-            objectKey: string,
-            role: aws.iam.Role,
-            pathParameter?: string): SwaggerOperation {
+        objectKey: string,
+        role: aws.iam.Role,
+        pathParameter?: string): SwaggerOperation {
 
         const region = aws.config.requireRegion();
 

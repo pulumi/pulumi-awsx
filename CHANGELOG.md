@@ -16,7 +16,7 @@
 - Added easier convenience methods overloads on an awsx.ec2.SecurityGroup to make ingress/egress
   rules.
 - Add TypeScript documentation on API Gateway's Integration Route and Raw Data Route
-- Add support for [Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) and [Cognito Authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) for API Gateway in TypeScript
+- Add support for [Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) and [Cognito Authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) and [API Keys](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-setup-api-key-with-restapi.html) for API Gateway in TypeScripts
 
 ## 0.18.0 (Release March 29, 2019)
 

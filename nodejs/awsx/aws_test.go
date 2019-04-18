@@ -63,20 +63,20 @@ func Test_Examples(t *testing.T) {
 
 	shortTests := []integration.ProgramTestOptions{
 		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "./examples/cluster"),
+			Dir: path.Join(cwd, "../examples/cluster"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "./examples/dashboards"),
+			Dir: path.Join(cwd, "../examples/dashboards"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "./examples/metrics"),
+			Dir: path.Join(cwd, "../examples/metrics"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "./examples/vpc"),
+			Dir:       path.Join(cwd, "../examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "./examples/fargate"),
+			Dir:       path.Join(cwd, "../examples/fargate"),
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
 				"aws:region":               region,
@@ -88,7 +88,7 @@ func Test_Examples(t *testing.T) {
 			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "./examples/api"),
+			Dir: path.Join(cwd, "../examples/api"),
 			Config: map[string]string{
 				"aws:region": region,
 			},
@@ -118,6 +118,9 @@ func Test_Examples(t *testing.T) {
 							"auth": "password",
 						},
 					},
+					requiredAPIKey: &requiredAPIKey{
+						stackOutput: "apiKeyValue",
+					},
 					expectedBody: "Hello, world!",
 				},
 				{
@@ -132,6 +135,9 @@ func Test_Examples(t *testing.T) {
 							"Authorization": "Allow",
 						},
 					},
+					requiredAPIKey: &requiredAPIKey{
+						stackOutput: "apiKeyValue",
+					},
 					expectedBody: "contents1\n",
 				},
 				{
@@ -139,7 +145,7 @@ func Test_Examples(t *testing.T) {
 					urlPath:           "/www_old/file1.txt",
 					requiredAuth: &requiredAuth{
 						queryParameters: map[string]string{
-							"auth": "password",
+							"auth": "Allow",
 						},
 						headers: map[string]string{
 							"secret": "test",
@@ -158,7 +164,7 @@ func Test_Examples(t *testing.T) {
 				},
 			}),
 			EditDirs: []integration.EditDir{{
-				Dir:      "./examples/api/step2",
+				Dir:      "../examples/api/step2",
 				Additive: true,
 				ExtraRuntimeValidation: validateAPITests([]apiTest{
 					{
@@ -173,7 +179,7 @@ func Test_Examples(t *testing.T) {
 
 	longTests := []integration.ProgramTestOptions{
 		// {
-		// 	Dir:       path.Join(cwd, "./examples/ec2"),
+		// 	Dir:       path.Join(cwd, "../examples/ec2"),
 		// 	StackName: addRandomSuffix("ec2"),
 		// 	Config: map[string]string{
 		// 		"aws:region":               region,
@@ -191,11 +197,11 @@ func Test_Examples(t *testing.T) {
 		// 	EditDirs: []integration.EditDir{
 		// 		{
 		// 			Additive: true,
-		// 			Dir:      path.Join(cwd, "./examples/ec2/update1"),
+		// 			Dir:      path.Join(cwd, "../examples/ec2/update1"),
 		// 		},
 		// 		{
 		// 			Additive:               true,
-		// 			Dir:                    path.Join(cwd, "./examples/ec2/update2"),
+		// 			Dir:                    path.Join(cwd, "../examples/ec2/update2"),
 		// 			ExtraRuntimeValidation: containersRuntimeValidator(region, false /*isFargate*/),
 		// 		},
 		// 	},
@@ -425,6 +431,7 @@ type apiTest struct {
 	requiredParameters *requiredParameters
 	requiredAuth       *requiredAuth
 	requiredToken      *requiredToken
+	requiredAPIKey     *requiredAPIKey
 	expectedBody       string
 }
 
@@ -436,6 +443,10 @@ type requiredAuth struct {
 type requiredToken struct {
 	header       string
 	getAuthToken func(t *testing.T, stack integration.RuntimeValidationStackInfo) string
+}
+
+type requiredAPIKey struct {
+	stackOutput string
 }
 
 type requiredParameters struct {
@@ -474,6 +485,14 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 
 				token := tt.requiredToken.getAuthToken(t, stack)
 				req.Header.Add(tt.requiredToken.header, token)
+			}
+
+			if tt.requiredAPIKey != nil {
+				resp := GetHTTP(t, req, 403)
+				assertRequestBody(t, `{"message":"Forbidden"}`, resp)
+
+				apikey := stack.Outputs[tt.requiredAPIKey.stackOutput].(string)
+				req.Header.Add("x-api-key", apikey)
 			}
 
 			if tt.requiredParameters != nil {
