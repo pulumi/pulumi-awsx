@@ -26,7 +26,7 @@ import * as awslambda from "aws-lambda";
 import { sha1hash } from "../utils";
 
 import { apiKeySecurityDefinition } from "./apikey";
-import * as cognitoauthorizer from "./cognitoauthorizer";
+import * as cognitoAuthorizer from "./cognitoAuthorizer";
 import * as lambdaAuthorizer from "./lambdaAuthorizer";
 import * as reqvalidation from "./requestValidator";
 import {
@@ -86,7 +86,7 @@ export type EventHandlerRoute = {
     authorizers?: Authorizer[];
 };
 
-type Authorizer = lambdaAuthorizer.LambdaAuthorizer | cognitoauthorizer.CognitoAuthorizer;
+type Authorizer = lambdaAuthorizer.LambdaAuthorizer | cognitoAuthorizer.CognitoAuthorizer;
 
 function isEventHandler(route: Route): route is EventHandlerRoute {
     return (<EventHandlerRoute>route).eventHandler !== undefined;

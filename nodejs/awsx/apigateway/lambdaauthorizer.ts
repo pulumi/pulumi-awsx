@@ -19,7 +19,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as awslambda from "aws-lambda";
 
-import * as cognitoauthorizer from "./cognitoauthorizer";
+import { CognitoAuthorizer } from "./cognitoAuthorizer";
 
 export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
@@ -105,7 +105,7 @@ export interface LambdaAuthorizerInfo {
 }
 
 /** @internal */
-export function isLambdaAuthorizer(authorizer: LambdaAuthorizer | cognitoauthorizer.CognitoAuthorizer): authorizer is LambdaAuthorizer {
+export function isLambdaAuthorizer(authorizer: LambdaAuthorizer | CognitoAuthorizer): authorizer is LambdaAuthorizer {
     return (<LambdaAuthorizer>authorizer).handler !== undefined;
 }
 

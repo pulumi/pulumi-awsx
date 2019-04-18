@@ -29,7 +29,7 @@ export interface CognitoAuthorizer {
 
     /**
      * parameterName is the name of the header containing the authorization token.
-     * */
+     */
     parameterName: string;
 
     /**
