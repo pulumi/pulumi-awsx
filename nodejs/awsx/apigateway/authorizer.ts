@@ -108,16 +108,6 @@ export function isLambdaAuthorizerInfo(info: LambdaAuthorizerInfo | aws.lambda.E
 }
 
 /** @internal */
-export function isLambdaFunction(uri: pulumi.Input<string> | aws.lambda.Function): uri is aws.lambda.Function {
-    return (<aws.lambda.Function>uri).invokeArn !== undefined;
-}
-
-/** @internal */
-export function isIAMRole(creds: pulumi.Input<string> | aws.iam.Role): creds is aws.iam.Role {
-    return (<aws.iam.Role>creds).assumeRolePolicy !== undefined;
-}
-
-/** @internal */
 export function getIdentitySource(identitySources: string[] | undefined): string {
     if (identitySources) {
         return identitySources.join(", ");
