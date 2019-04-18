@@ -14,8 +14,6 @@
 
 // These APIs are currently experimental and may change.
 
-export type RequestValidator = "ALL" | "PARAMS_ONLY" | "BODY_ONLY";
-
 /** Parameter is used to define required path, query or header parameters for
  * API Gateway. If "ALL" or "PARAMS_ONLY" validator is set then, api gateway
  * will validate the parameter is included and non-blank for incoming requests.

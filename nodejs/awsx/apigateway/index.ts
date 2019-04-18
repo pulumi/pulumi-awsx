@@ -16,6 +16,7 @@ export * from "./api";
 export * from "./authorizer";
 export * from "./apikey";
 export * from "./metrics";
+export * from "./swagger_json";
 
 // @pulumi/awsx is a deployment-only module.  If someone tries to capture it, and we fail for some
 // reason we want to give a good message about what the problem likely is.  Note that capturing a

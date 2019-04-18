@@ -655,7 +655,7 @@ export namespace metrics {
      *
      * Applies to: Aurora MySQL
      */
-    export function dmdLatency(change?: RdsMetricChange) {
+    export function dmlLatency(change?: RdsMetricChange) {
         return metric("DMLLatency", { unit: "Milliseconds", ...change });
     }
 
