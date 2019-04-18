@@ -19,6 +19,8 @@ import * as x from "..";
 import * as roleUtils from "../role";
 import * as utils from "./../utils";
 
+import { cronExpression, ScheduleArgs } from "./schedule";
+
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public readonly launchConfiguration: aws.ec2.LaunchConfiguration;
     public readonly id: pulumi.Output<string>;
@@ -316,6 +318,25 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         this.group = aws.autoscaling.Group.get(name, this.stack.outputs["Instances"], undefined, parentOpts);
 
         this.registerOutputs();
+    }
+
+    public createSchedule(name: string, args: ScheduleArgs, opts: pulumi.CustomResourceOptions = {}) {
+        const recurrence = args.recurrence === undefined
+            ? undefined
+            : pulumi.output(args.recurrence).apply(
+                x => typeof x === "string" ? x : cronExpression(x));
+
+        return new aws.autoscaling.Schedule(name, {
+            ...args,
+            recurrence,
+            autoscalingGroupName: this.group.name,
+            scheduledActionName: args.scheduledActionName || name,
+            // Have to explicitly set these to -1.  If we pass 'undefined' through these will become
+            // 0, which will actually set the size/capcity to that.
+            minSize: utils.ifUndefined(args.minSize, -1),
+            maxSize: utils.ifUndefined(args.maxSize, -1),
+            desiredCapacity: utils.ifUndefined(args.desiredCapacity, -1),
+        }, { parent: this, ...opts });
     }
 }
 
