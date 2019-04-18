@@ -22,10 +22,10 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export abstract class TargetGroup
-        extends pulumi.ComponentResource
-        implements x.ecs.ContainerPortMappingProvider,
-                   x.ecs.ContainerLoadBalancerProvider,
-                   x.elasticloadbalancingv2.ListenerDefaultAction {
+    extends pulumi.ComponentResource
+    implements x.ecs.ContainerPortMappingProvider,
+    x.ecs.ContainerLoadBalancerProvider,
+    x.elasticloadbalancingv2.ListenerDefaultAction {
 
     public readonly loadBalancer: mod.LoadBalancer;
     public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
@@ -84,6 +84,69 @@ export abstract class TargetGroup
     }
 }
 
+/**
+ * A Health Check block.
+ *
+ * The Health Check parameters you can set vary by the protocol of the Target Group. Many
+ * parameters cannot be set to custom values for network load balancers at this time. See
+ * http://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html
+ * for a complete reference. Keep in mind, that health checks produce actual requests to the
+ * backend. The underlying function is invoked when target_type is set to lambda.
+ */
+export interface TargetGroupHealthCheck {
+    /**
+     * The approximate amount of time, in seconds, between health checks of an individual
+     * target. Minimum value 5 seconds, Maximum value 300 seconds. For lambda target groups, it
+     * needs to be greater as the [timeout] of the underlying [lambda]. Default 30 seconds.
+     */
+    interval?: pulumi.Input<number>;
+
+    /**
+     * The HTTP codes to use when checking for a successful response from a target. You can specify
+     * multiple values (for example, "200,202") or a range of values (for example, "200-299").
+     * Applies to Application Load Balancers only (HTTP/HTTPS), not Network Load Balancers (TCP)
+     */
+    matcher?: pulumi.Input<string>;
+
+    /**
+     * (Required for HTTP/HTTPS ALB) The destination for the health check request. Applies to
+     * Application Load Balancers only (HTTP/HTTPS), not Network Load Balancers (TCP).
+     */
+    path?: pulumi.Input<string>;
+
+    /**
+     * The port to use to connect with the target.
+     */
+    port?: pulumi.Input<string>;
+
+    /**
+     * The protocol to use to connect with the target. Defaults to HTTP. Not applicable when
+     * target_type is [lambda].
+     */
+    protocol?: pulumi.Input<string>;
+
+    /**
+     * The amount of time, in seconds, during which no response means a failed health check. For
+     * Application Load Balancers, the range is 2 to 60 seconds and the default is 5 seconds.
+     * For Network Load Balancers, you cannot set a custom value, and the default is 10 seconds
+     * for TCP and HTTPS health checks and 6 seconds for HTTP health checks.
+     */
+    timeout?: pulumi.Input<number>;
+
+    /**
+    * The number of consecutive health checks successes required before considering an
+    * unhealthy target healthy. Defaults to 3.
+    */
+    healthyThreshold?: pulumi.Input<number>;
+
+    /**
+     * The number of consecutive health check failures required before considering the target
+     * unhealthy . For Network Load Balancers, this value must be the same as the
+     * healthy_threshold. Defaults to 3.
+     */
+    unhealthyThreshold?: pulumi.Input<number>;
+}
+
 export interface TargetGroupArgs {
     /**
      * The vpc for this target group.
@@ -98,9 +161,9 @@ export interface TargetGroupArgs {
     deregistrationDelay?: pulumi.Input<number>;
 
     /**
-     * A Health Check block. Health Check blocks are documented below.
+     * Health check parameters for this target group.
      */
-    healthCheck?: aws.elasticloadbalancingv2.TargetGroupArgs["healthCheck"];
+    healthCheck?: pulumi.Input<TargetGroupHealthCheck>;
 
     /**
      * The port to use to connect with the target. Valid values are either ports 1-65536, or

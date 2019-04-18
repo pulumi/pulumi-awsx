@@ -232,6 +232,40 @@ export interface NetworkLoadBalancerArgs {
     enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
 }
 
+/**
+ * A Health Check block.
+ *
+ * The Health Check parameters you can set vary by the protocol of the Target Group. Many
+ * parameters cannot be set to custom values for network load balancers at this time. See
+ * http://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html
+ * for a complete reference. Keep in mind, that health checks produce actual requests to the
+ * backend. The underlying function is invoked when target_type is set to lambda.
+ */
+export interface NetworkTargetGroupHealthCheck extends mod.TargetGroupHealthCheck {
+    /**
+     * Applies to Application Load Balancers only (HTTP/HTTPS), not Network Load Balancers (TCP)
+     */
+    matcher?: never;
+
+    /**
+     * Applies to Application Load Balancers only (HTTP/HTTPS), not Network Load Balancers (TCP).
+     */
+    path?: never;
+
+    /**
+     * For Network Load Balancers, you cannot set a custom value, and the default is 10 seconds
+     * for TCP and HTTPS health checks and 6 seconds for HTTP health checks.
+     */
+    timeout?: never;
+
+    /**
+     * The number of consecutive health check failures required before considering the target
+     * unhealthy . For Network Load Balancers, this value must be the same as the
+     * healthy_threshold.
+     */
+    unhealthyThreshold?: pulumi.Input<number>;
+}
+
 export interface NetworkTargetGroupArgs {
     /**
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
@@ -269,7 +303,7 @@ export interface NetworkTargetGroupArgs {
     /**
      * A Health Check block. Health Check blocks are documented below.
      */
-    healthCheck?: aws.elasticloadbalancingv2.TargetGroupArgs["healthCheck"];
+    healthCheck?: pulumi.Input<NetworkTargetGroupHealthCheck>;
 
     /**
      * Boolean to enable / disable support for proxy protocol v2 on Network Load Balancers. See
