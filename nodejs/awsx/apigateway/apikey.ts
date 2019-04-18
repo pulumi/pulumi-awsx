@@ -127,10 +127,10 @@ function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.Usage
             if (pulumi.CustomResource.isInstance(currKey)) {
                 apikey = currKey;
             } else {
-                apikey = new aws.apigateway.ApiKey("${name}-${i}", currKey);
+                apikey = new aws.apigateway.ApiKey(`${name}-${i}`, currKey);
             }
 
-            const usagePlanKey = new aws.apigateway.UsagePlanKey("${name}-${i}", {
+            const usagePlanKey = new aws.apigateway.UsagePlanKey(`${name}-${i}`, {
                 keyId: apikey.id,
                 keyType: "API_KEY",
                 usagePlanId: usagePlan.id,
