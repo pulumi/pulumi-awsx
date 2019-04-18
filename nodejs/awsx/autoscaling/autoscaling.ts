@@ -332,7 +332,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             autoscalingGroupName: this.group.name,
             scheduledActionName: args.scheduledActionName || name,
             // Have to explicitly set these to -1.  If we pass 'undefined' through these will become
-            // 0, which will actually set the size/capcity to that.
+            // 0, which will actually set the size/capacity to that.
             minSize: utils.ifUndefined(args.minSize, -1),
             maxSize: utils.ifUndefined(args.maxSize, -1),
             desiredCapacity: utils.ifUndefined(args.desiredCapacity, -1),
