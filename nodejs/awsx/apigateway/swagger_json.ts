@@ -26,7 +26,7 @@ export interface SwaggerSpec {
     paths: { [path: string]: { [method: string]: SwaggerOperation; }; };
     "x-amazon-apigateway-binary-media-types"?: string[];
     "x-amazon-apigateway-gateway-responses": Record<string, SwaggerGatewayResponse>;
-    securityDefinitions?: { [authorizerName: string]: SecurityDefinition };
+    securityDefinitions?: { [securityDefinitionName: string]: SecurityDefinition };
     "x-amazon-apigateway-request-validators"?: {
         [validatorName: string]: {
             validateRequestBody: boolean;
@@ -34,6 +34,7 @@ export interface SwaggerSpec {
         };
     };
     "x-amazon-apigateway-request-validator"?: RequestValidator;
+    "x-amazon-apigateway-api-key-source"?: APIKeySource;
 }
 
 export interface SwaggerGatewayResponse {
@@ -55,19 +56,19 @@ export interface SwaggerOperation {
     "x-amazon-apigateway-request-validator"?: RequestValidator;
 
     /**
-     * security is an object whose properties are authorizerNames. Each authorizerName refers to a
-     * SecurityDefinition, defined at the top level of the swagger definition, by matching a Security
-     * Definition's name property. The authorizerNames' values are empty arrays.
-     */
-    security?: { [authorizerName: string]: string[] }[];
+    * security is an object whose properties are securityDefinitionName. Each securityDefinitionName
+    * refers to a SecurityDefinition, defined at the top level of the swagger definition, by matching
+    * a Security Definition's name property. The securityDefinitionNames' values are empty arrays.
+    */
+    security?: { [securityDefinitionName: string]: string[] }[];
 }
 
 export interface SecurityDefinition {
     type: "apiKey";
     name: string;
     in: "header" | "query";
-    "x-amazon-apigateway-authtype": string;
-    "x-amazon-apigateway-authorizer": SwaggerLambdaAuthorizer;
+    "x-amazon-apigateway-authtype"?: string;
+    "x-amazon-apigateway-authorizer"?: SwaggerLambdaAuthorizer;
 }
 
 export interface SwaggerLambdaAuthorizer {
@@ -128,3 +129,4 @@ export type IntegrationConnectionType = "INTERNET" | "VPC_LINK";
 export type IntegrationType = "aws" | "aws_proxy" | "http" | "http_proxy" | "mock";
 export type IntegrationPassthroughBehavior = "when_no_match" | "when_no_templates" | "never";
 export type RequestValidator = "ALL" | "PARAMS_ONLY" | "BODY_ONLY";
+export type APIKeySource = "HEADER" | "AUTHORIZER";

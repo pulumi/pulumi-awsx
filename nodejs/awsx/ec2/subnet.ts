@@ -70,7 +70,7 @@ export class Subnet extends pulumi.ComponentResource {
                             .apply(([id]) => id);
         }
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     /** @internal */

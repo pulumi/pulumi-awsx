@@ -70,6 +70,7 @@ const api = new awsx.apigateway.API("myapi", {
         path: "/b",
         method: "GET",
         eventHandler: lambda,
+        apiKeyRequired: true,
         authorizers: authorizers,
     }, {
         path: "/www",
@@ -78,6 +79,7 @@ const api = new awsx.apigateway.API("myapi", {
             name: "key",
             in: "query",
         }],
+        apiKeyRequired: true,
         authorizers: [awsx.apigateway.getTokenLambdaAuthorizer({
             header: "Authorization",
             handler: async (event: awsx.apigateway.AuthorizerEvent, context: aws.lambda.Context, callback) => {
@@ -117,11 +119,24 @@ const api = new awsx.apigateway.API("myapi", {
     requestValidator: "ALL",
 });
 
+// Export the url of the API.
 export const url = api.url;
 
+// Set up a usage plan and an associated api key
+const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
+    apis: [api],
+    apiKeys: [{
+        name: "test-key",
+    }],
+});
+
+// Export the API Key of the API for testing.
+export const apiKeyValue = apikeys.keys[0].apikey.value;
 
 /**
- *The example below shows using a Lambda Authorizer that is created elsewhere.
+ * ----------------------------------------------------------------------------
+ * The example below shows how to use a pre-existing Lambda as an Authorizer.
+ * ----------------------------------------------------------------------------
  */
 
 // Create a role for the authorizer lambda
@@ -129,12 +144,23 @@ const authorizerRole = new aws.iam.Role("myauthorizer-role", {
     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com"] }),
 });
 
-// Create the Authorizer Lambda
-const authorizerLambda = new aws.lambda.Function("authorizer-lambda", {
-    code: new pulumi.asset.FileArchive("./authfunction"),
-    role: authorizerRole.arn,
-    handler: "index.handler",
-    runtime: aws.lambda.NodeJS8d10Runtime,
+// Create API Key for Lambda Authorizer to use
+const apikey = new aws.apigateway.ApiKey("apikey-test");
+
+// Create Authorizer Lambda
+const authorizerLambda = new aws.lambda.CallbackFunction("authorizer-lambda2", {
+    role: authorizerRole,
+    callback: async (event: awsx.apigateway.AuthorizerEvent) => {
+        console.log(event);
+        if (event.queryStringParameters) {
+            const token = event.queryStringParameters.auth;
+            if (token === "Allow") {
+                // use .get() to get the apikey value at Pulumi runtime
+                return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn, undefined, apikey.id.get());
+            }
+        }
+        return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
+    },
 });
 
 // Create a role for the gateway to use to invoke the Authorizer Lambda
@@ -169,6 +195,12 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
             handler: authorizerLambda,
         })],
     }],
+});
+
+// Create a usage plan + associate the apikey with it
+const associateKeys = awsx.apigateway.createAssociatedAPIKeys("authorizer-api", {
+    apis: [apiWithAuthorizer],
+    apiKeys: [apikey],
 });
 
 export const authorizerUrl = apiWithAuthorizer.url;
