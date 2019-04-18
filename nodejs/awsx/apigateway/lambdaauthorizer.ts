@@ -197,7 +197,7 @@ export interface TokenAuthorizerArgs {
 
     /**
      * The request header for the authorization token. If not set, this defaults to
-     * Authorization.
+     * "Authorization".
      */
     header?: string;
 

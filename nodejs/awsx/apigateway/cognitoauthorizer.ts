@@ -33,17 +33,6 @@ export interface CognitoAuthorizer {
     parameterName: string;
 
     /**
-     * Defines where in the request API Gateway should look for identity information. The value must
-     * be "header" for a Cognito Authorizer.
-     */
-    parameterLocation: "header";
-
-    /**
-     * Specifies the authorization mechanism for the client.
-     */
-    authType: "cognito_user_pools";
-
-    /**
      * The ARNs of the Cognito User Pools to use.
      */
     providerARNs: Array<pulumi.Input<string> | aws.cognito.UserPool>;
@@ -91,7 +80,7 @@ export interface CognitoAuthorizerArgs {
 
     /**
      * The request header for the authorization token. If not set, this defaults to
-     * Authorization.
+     * "Authorization".
      */
     header?: string;
 
@@ -135,8 +124,6 @@ export function getCognitoAuthorizer(args: CognitoAuthorizerArgs): CognitoAuthor
     return {
         authorizerName: args.authorizerName,
         parameterName: parameterName,
-        parameterLocation: "header",
-        authType: "cognito_user_pools",
         providerARNs: args.providerARNs,
         identitySource: ["method.request.header." + parameterName],
         identityValidationExpression: args.identityValidationExpression,

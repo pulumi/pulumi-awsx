@@ -638,13 +638,14 @@ function addAuthorizersToSwagger(
                     "x-amazon-apigateway-authorizer": getLambdaAuthorizer(authName, auth),
                 };
             } else {
+                // Cognito Authorizer
                 securityDef = {
                     type: "apiKey",
                     name: auth.parameterName,
-                    in: auth.parameterLocation,
-                    "x-amazon-apigateway-authtype": auth.authType,
+                    in: "header",
+                    "x-amazon-apigateway-authtype": "cognito_user_pools",
                     "x-amazon-apigateway-authorizer": {
-                        type: auth.authType,
+                        type: "cognito_user_pools",
                         identitySource: lambdaAuthorizer.getIdentitySource(auth.identitySource),
                         providerARNs: getCognitoPoolARNs(auth.providerARNs),
                     },
