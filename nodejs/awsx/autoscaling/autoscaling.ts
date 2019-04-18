@@ -65,7 +65,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         }, parentOpts);
         this.id = this.launchConfiguration.id;
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     public static defaultInstanceProfilePolicyDocument(): aws.iam.PolicyDocument {
@@ -315,7 +315,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         // be stored in `stack.outputs.Instances`.
         this.group = aws.autoscaling.Group.get(name, this.stack.outputs["Instances"], undefined, parentOpts);
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 }
 

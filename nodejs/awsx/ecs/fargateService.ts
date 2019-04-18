@@ -47,7 +47,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
 
         super("awsx:x:ecs:FargateTaskDefinition", name, /*isFargate:*/ true, argsCopy, opts);
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     /**
@@ -219,7 +219,7 @@ export class FargateService extends ecs.Service {
             },
         },  /*isFargate:*/ true, opts);
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 }
 
