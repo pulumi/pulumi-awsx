@@ -369,7 +369,7 @@ export class API extends pulumi.ComponentResource {
 
     /**
      * Returns the [aws.lambda.Function] an [EventHandlerRoute] points to.  This will either be for
-     * the aws.lambda.Function created on your behalff if the route was passed a normal
+     * the aws.lambda.Function created on your behalf if the route was passed a normal
      * JavaScript/Typescript function, or it will be the [aws.lambda.Function] that was explicitly
      * passed in. Returns [undefined] if this route/method wasn't an [EventHandlerRoute].
      */
