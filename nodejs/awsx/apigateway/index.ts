@@ -14,6 +14,7 @@
 
 export * from "./api";
 export * from "./authorizer";
+export * from "./apikey";
 export * from "./metrics";
 export * from "./swagger_json";
 
