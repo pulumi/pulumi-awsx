@@ -63,20 +63,20 @@ func Test_Examples(t *testing.T) {
 
 	shortTests := []integration.ProgramTestOptions{
 		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "./cluster"),
+			Dir: path.Join(cwd, "../examples/cluster"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "./dashboards"),
+			Dir: path.Join(cwd, "../examples/dashboards"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "./metrics"),
+			Dir: path.Join(cwd, "../examples/metrics"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "./vpc"),
+			Dir:       path.Join(cwd, "../examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "./fargate"),
+			Dir:       path.Join(cwd, "../examples/fargate"),
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
 				"aws:region":               region,
@@ -88,7 +88,7 @@ func Test_Examples(t *testing.T) {
 			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "./api"),
+			Dir: path.Join(cwd, "../examples/api"),
 			Config: map[string]string{
 				"aws:region": region,
 			},
@@ -149,7 +149,7 @@ func Test_Examples(t *testing.T) {
 				},
 			}),
 			EditDirs: []integration.EditDir{{
-				Dir:      "./api/step2",
+				Dir:      "../examples/api/step2",
 				Additive: true,
 				ExtraRuntimeValidation: validateAPITests([]apiTest{
 					{
@@ -164,7 +164,7 @@ func Test_Examples(t *testing.T) {
 
 	longTests := []integration.ProgramTestOptions{
 		// {
-		// 	Dir:       path.Join(cwd, "./ec2"),
+		// 	Dir:       path.Join(cwd, "../examples/ec2"),
 		// 	StackName: addRandomSuffix("ec2"),
 		// 	Config: map[string]string{
 		// 		"aws:region":               region,
@@ -182,11 +182,11 @@ func Test_Examples(t *testing.T) {
 		// 	EditDirs: []integration.EditDir{
 		// 		{
 		// 			Additive: true,
-		// 			Dir:      path.Join(cwd, "./ec2/update1"),
+		// 			Dir:      path.Join(cwd, "../examples/ec2/update1"),
 		// 		},
 		// 		{
 		// 			Additive:               true,
-		// 			Dir:                    path.Join(cwd, "./ec2/update2"),
+		// 			Dir:                    path.Join(cwd, "../examples/ec2/update2"),
 		// 			ExtraRuntimeValidation: containersRuntimeValidator(region, false /*isFargate*/),
 		// 		},
 		// 	},
