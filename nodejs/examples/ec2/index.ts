@@ -16,4 +16,5 @@ import * as aws from "@pulumi/aws";
 
 import * as ec2 from "./ec2";
 
-export let clusterId = ec2.clusterId;
+export const stackId = ec2.stackId;
+export const groupId = ec2.groupId;

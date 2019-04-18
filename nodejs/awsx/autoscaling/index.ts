@@ -14,4 +14,6 @@
 
 export * from "./autoscaling";
 export * from "./metrics";
+export * from "./policy";
 export * from "./schedule";
+

@@ -19,6 +19,7 @@ import * as x from "..";
 import * as roleUtils from "../role";
 import * as utils from "./../utils";
 
+import * as policy from "./policy";
 import { cronExpression, ScheduleArgs } from "./schedule";
 
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
@@ -320,7 +321,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         this.registerOutputs();
     }
 
-    public createSchedule(name: string, args: ScheduleArgs, opts: pulumi.CustomResourceOptions = {}) {
+    public scaleOnSchedule(name: string, args: ScheduleArgs, opts: pulumi.CustomResourceOptions = {}) {
         const recurrence = args.recurrence === undefined
             ? undefined
             : pulumi.output(args.recurrence).apply(
@@ -338,6 +339,30 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             desiredCapacity: utils.ifUndefined(args.desiredCapacity, -1),
         }, { parent: this, ...opts });
     }
+
+    private policy(name: string, type: policy.PolicyType, args: policy.PolicyArgs, opts: pulumi.CustomResourceOptions = {}) {
+        const awsArgs: aws.autoscaling.PolicyArgs = {
+            autoscalingGroupName: this.group.name,
+            policyType: type,
+            ...args,
+        };
+
+        return new aws.autoscaling.Policy(name, awsArgs, { parent: this, ...opts });
+    }
+
+    public simpleScalingPolicy(name: string, args: policy.SimpleScalingPolicyArgs, opts?: pulumi.CustomResourceOptions) {
+        return this.createPolicy(name, "SimpleScaling", args, opts);
+    }
+
+    public stepScalingPolicy(name: string, args: policy.StepScalingPolicyArgs, opts?: pulumi.CustomResourceOptions) {
+        return this.createPolicy(name, "StepScaling", args, opts);
+    }
+
+    public trackingScalingPolicy(name: string, args: policy.TargetTrackingScalingPolicyArgs, opts?: pulumi.CustomResourceOptions) {
+        return this.createPolicy(name, "TargetTrackingScaling", args, opts);
+    }
+
+    public create
 }
 
 function ifUndefined<T>(val: T | undefined, defVal: T) {

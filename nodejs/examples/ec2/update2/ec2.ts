@@ -44,8 +44,6 @@ autoScalingGroup.createSchedule("scaleUpAt6amUTC", {
     recurrence: { hour: 22 },
 });
 
-
-
 export const autoScalingGroupId = autoScalingGroup.stack.id;
 
 // A simple NGINX service, scaled out over two containers.

@@ -28,7 +28,11 @@
 
         "autoscaling/index.ts",
         "autoscaling/autoscaling.ts",
+<<<<<<< Updated upstream
         "autoscaling/schedule.ts",
+=======
+        "autoscaling/policy.ts",
+>>>>>>> Stashed changes
 
         "cloudwatch/index.ts",
         "cloudwatch/dashboard.ts",
