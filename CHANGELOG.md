@@ -7,6 +7,8 @@
   [awsx.cloudwatch.Dashboard] helper.  See
   [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/dashboards/index.ts)
   for an example.
+- [awsx.autoscaling.AutoScalingGroup]s can now easily have a scheduling action provided by using the
+  new [createSchedule] instance method.
 
 ## 0.18.1 (Released 4/14/2019)
 
