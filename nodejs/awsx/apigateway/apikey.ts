@@ -15,7 +15,9 @@
 // These APIs are currently experimental and may change.
 
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 import * as api from "./api";
+import { SecurityDefinition } from "./swagger_json";
 
 /**
  * Input properties for creating a UsagePlan and associated API Keys.
@@ -24,20 +26,27 @@ export interface APIKeyArgs {
 
     /**
      * Define the apis you would like to associate the usage plan with. This can be used in place of
-     * defining the apiStages defined in the [usagePlan]. You cannot define [apis] and [usagePlan.apiStages].
+     * defining the apiStages defined in the [usagePlan]. You cannot define both [apis] and
+     * [usagePlan.apiStages].
      */
     apis?: api.API[];
 
     /**
-     * Define the usage plan to create. If an existing Usage Plan is passed in, then the API Keys
-     * will be associated with the usage plan and no [apis] can be added.
+     * Define the usage plan to create. You can either define:
+     *  1 - an existing Usage Plan - the API Keys will be associated with the usage plan
+     *  2 - UsagePlanArgs with [usagePlan.apiStages] defined to define a new Usage Plan
+     *  3 - UsagePlanArgs with [apis] defined and [usagePlan.apiStages] NOT defined to define a new
+     *      Usage Plan
      */
-    usagePlan?: aws.apigateway.UsagePlanArgs | aws.apigateway.UsagePlan;
+    usagePlan?: aws.apigateway.UsagePlan | aws.apigateway.UsagePlanArgs;
 
     /**
-     * The API keys you would like to create & associate with the usage plan.
+     * The API keys you would like to create & associate with the usage plan. You can pass an array
+     *  that has a combination of:
+     *  1 - an existing APIKey
+     *  2 - ApiKeyArgs for a new APIKey
      */
-    apiKeys?: Array<aws.apigateway.ApiKeyArgs | aws.apigateway.ApiKey>;
+    apiKeys?: Array<aws.apigateway.ApiKey | aws.apigateway.ApiKeyArgs>;
 }
 
 export interface AssociatedAPIKeys {
@@ -60,15 +69,12 @@ export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): Associa
     const usagePlan = getUsagePlan(name, args);
     const keys = getKeys(name, args, usagePlan);
 
-    return {
-        usagePlan: usagePlan,
-        keys: keys,
-    };
+    return { usagePlan, keys };
 }
 
 /** @internal */
 function getUsagePlan(name: string, args: APIKeyArgs): aws.apigateway.UsagePlan {
-    if (args.usagePlan && args.usagePlan instanceof aws.apigateway.UsagePlan) {
+    if (args.usagePlan && pulumi.CustomResource.isInstance(args.usagePlan)) {
         if (args.apis) {
             throw new Error("cannot define both [args.apis] and an existing usagePlan [args.usagePlan]");
         }
@@ -118,28 +124,26 @@ function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.Usage
             const currKey = args.apiKeys[i];
             let apikey: aws.apigateway.ApiKey;
 
-            if (isAPIKey(currKey)) {
+            if (pulumi.CustomResource.isInstance(currKey)) {
                 apikey = currKey;
             } else {
-                apikey = new aws.apigateway.ApiKey(name + "-apikey-" + i, currKey);
+                apikey = new aws.apigateway.ApiKey("${name}-${i}", currKey);
             }
 
-            const usagePlanKey = new aws.apigateway.UsagePlanKey(name + "-usage-plan-key-" + i, {
+            const usagePlanKey = new aws.apigateway.UsagePlanKey("${name}-${i}", {
                 keyId: apikey.id,
                 keyType: "API_KEY",
                 usagePlanId: usagePlan.id,
             });
 
-            keys.push({
-                apikey: apikey,
-                usagePlanKey: usagePlanKey,
-            });
+            keys.push({ apikey, usagePlanKey });
         }
     }
     return keys;
 }
 
-/** @internal */
-export function isAPIKey(apikey: aws.apigateway.ApiKey | aws.apigateway.ApiKeyArgs): apikey is aws.apigateway.ApiKey {
-    return (<aws.apigateway.ApiKey>apikey).value !== undefined;
-}
+export const apiKeySecurityDefinition: SecurityDefinition = {
+    type: "apiKey",
+    name: "x-api-key",
+    in: "header",
+};

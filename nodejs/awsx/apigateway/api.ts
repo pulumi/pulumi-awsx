@@ -25,7 +25,7 @@ import * as awslambda from "aws-lambda";
 
 import { sha1hash } from "../utils";
 
-import * as apikey from "./apikey";
+import { apiKeySecurityDefinition } from "./apikey";
 import * as authorizer from "./authorizer";
 import * as reqvalidation from "./requestValidator";
 import {
@@ -570,7 +570,7 @@ function addAPIkeyToSecurityDefinitions(swagger: SwaggerSpec) {
     swagger.securityDefinitions = swagger.securityDefinitions || {};
 
     if (swagger.securityDefinitions["api_key"] && swagger.securityDefinitions["api_key"] !== apiKeySecurityDefinition) {
-        throw new Error("Defined a none apikey security definition with the name api_key");
+        throw new Error("Defined a non-apikey security definition with the name api_key");
     }
     swagger.securityDefinitions["api_key"] = apiKeySecurityDefinition;
 }
@@ -1041,9 +1041,3 @@ const apigatewayAssumeRolePolicyDocument = {
 function safeS3BucketName(apiName: string): string {
     return apiName.toLowerCase().replace(/[^a-z0-9\-]/g, "");
 }
-
-const apiKeySecurityDefinition: SecurityDefinition = {
-    type: "apiKey",
-    name: "x-api-key",
-    in: "header",
-};
