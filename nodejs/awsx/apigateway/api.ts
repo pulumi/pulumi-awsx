@@ -458,7 +458,6 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
 
     for (const route of routes) {
         checkRoute(api, route, "path");
-        swaggerLambdas.set(route.path, swaggerLambdas.get(route.path) || new Map());
 
         if (isEventHandler(route)) {
             addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
@@ -521,7 +520,14 @@ function addEventHandlerRouteToSwaggerSpec(
         swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
     }
     addSwaggerOperation(swagger, route.path, method, swaggerOperation);
-    swaggerLambdas.get(route.path)!.set(route.method, lambda);
+
+    let lambdas = swaggerLambdas.get(route.path);
+    if (!lambdas) {
+        lambdas = new Map();
+        swaggerLambdas.set(route.path, lambdas);
+    }
+
+    lambdas.set(route.method, lambda);
     return;
 
     function createSwaggerOperationForLambda(): SwaggerOperation {
