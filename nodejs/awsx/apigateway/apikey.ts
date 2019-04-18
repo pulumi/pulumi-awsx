@@ -33,29 +33,55 @@ export interface APIKeyArgs {
 
     /**
      * Define the usage plan to create. You can either define:
-     *  1 - an existing Usage Plan - the API Keys will be associated with the usage plan
-     *  2 - UsagePlanArgs with [usagePlan.apiStages] defined to define a new Usage Plan
-     *  3 - UsagePlanArgs with [apis] defined and [usagePlan.apiStages] NOT defined to define a new
+     *  1. an existing Usage Plan - the API Keys will be associated with the usage plan
+     *  2. UsagePlanArgs with [usagePlan.apiStages] defined to define a new Usage Plan
+     *  3. UsagePlanArgs with [apis] defined and [usagePlan.apiStages] NOT defined to define a new
      *      Usage Plan
+     *  4. Nothing - if you do not specify [apis] and pass in an empty object, a new usage plan will
+     *     be created on your behalf with the all the default values.
      */
     usagePlan?: aws.apigateway.UsagePlan | aws.apigateway.UsagePlanArgs;
 
     /**
      * The API keys you would like to create & associate with the usage plan. You can pass an array
      *  that has a combination of:
-     *  1 - an existing APIKey
-     *  2 - ApiKeyArgs for a new APIKey
+     *  1. an existing APIKey
+     *  2. ApiKeyArgs for a new APIKey
      */
     apiKeys?: Array<aws.apigateway.ApiKey | aws.apigateway.ApiKeyArgs>;
 }
 
+/**
+ * The associate api keys and the usage plan as created by the `createAssociatedAPIKeys` function.
+ */
 export interface AssociatedAPIKeys {
+    /**
+     * Either the `aws.apigateway.UsagePlan` created for you, or the usage plan passed to as part of
+     * the `APIKeyArgs`.
+     */
     readonly usagePlan: aws.apigateway.UsagePlan;
+
+    /**
+     * The keys that were associated with the usage plan.
+     */
     readonly keys: Key[];
 }
 
+/**
+ * A key represents an `aws.apigateway.ApiKey` and the `aws.apigateway.UsagePlanKey` that ties it to
+ * a usage plan.
+ */
 export interface Key {
+
+    /**
+     * apikey is either a `aws.apigateway.ApiKey` passed in or the `aws.apigateway.ApiKey` created
+     * on your behalf using the `ApiKeyArgs`
+     */
     apikey: aws.apigateway.ApiKey;
+
+    /**
+     * usagePlanKey is created on your behalf to associate the apikey with the usage plan.
+     */
     usagePlanKey: aws.apigateway.UsagePlanKey;
 }
 
@@ -122,13 +148,10 @@ function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.Usage
     if (args.apiKeys) {
         for (let i = 0; i < args.apiKeys.length; i++) {
             const currKey = args.apiKeys[i];
-            let apikey: aws.apigateway.ApiKey;
 
-            if (pulumi.CustomResource.isInstance(currKey)) {
-                apikey = currKey;
-            } else {
-                apikey = new aws.apigateway.ApiKey(`${name}-${i}`, currKey);
-            }
+            const apikey = pulumi.CustomResource.isInstance(currKey)
+                ? currKey
+                : new aws.apigateway.ApiKey(`${name}-${i}`, currKey);
 
             const usagePlanKey = new aws.apigateway.UsagePlanKey(`${name}-${i}`, {
                 keyId: apikey.id,
