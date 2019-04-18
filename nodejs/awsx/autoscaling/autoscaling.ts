@@ -340,7 +340,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         }, { parent: this, ...opts });
     }
 
-    private policy(name: string, type: policy.PolicyType, args: policy.PolicyArgs, opts: pulumi.CustomResourceOptions = {}) {
+    private scaleOnPolicy(name: string, type: policy.PolicyType, args: policy.PolicyArgs, opts: pulumi.CustomResourceOptions = {}) {
         const awsArgs: aws.autoscaling.PolicyArgs = {
             autoscalingGroupName: this.group.name,
             policyType: type,

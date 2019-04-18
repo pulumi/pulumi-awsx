@@ -18,6 +18,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import * as utils from "./../utils";
 
+import { AutoScalingGroup } from "./autoscaling";
+
 // export class Policy extends pulumi.ComponentResource {
 //     constructor(name: string, args: PolicyArgs, opts: pulumi.ComponentResourceOptions = {});
 //         super
@@ -27,6 +29,20 @@ import * as utils from "./../utils";
 export type AdjustmentType = "ChangeInCapacity" | "ExactCapacity" | "PercentChangeInCapacity";
 export type PolicyType = "SimpleScaling" | "StepScaling" | "TargetTrackingScaling";
 export type MetricAggregationType = "Minimum" | "Maximum" | "Average";
+
+/**
+ * See https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_PredefinedMetricSpecification.html
+ * for full details.
+ */
+export type PredefinedMetricType =
+    /** Average CPU utilization of the Auto Scaling group.  */
+    "ASGAverageCPUUtilization" |
+    /** Average number of bytes received on all network interfaces by the Auto Scaling group. */
+    "ASGAverageNetworkIn " |
+    /** Average number of bytes sent out on all network interfaces by the Auto Scaling group. */
+    "ASGAverageNetworkOut" |
+    /** Number of requests completed per target in an Application Load Balancer or a Network Load Balancer target group */
+    "ALBRequestCountPerTarget";
 
 export interface StepAdjustment {
     /**
@@ -88,7 +104,7 @@ export interface TargetTrackingConfiguration {
         /**
          * The metric type.
          */
-        predefinedMetricType: pulumi.Input<string>;
+        predefinedMetricType: pulumi.Input<PredefinedMetricType>;
 
         /**
          * Identifies the resource associated with the metric type.
@@ -153,4 +169,21 @@ export interface TargetTrackingScalingPolicyArgs extends PolicyArgs {
      * A target tracking policy.
      */
     targetTrackingConfiguration?: pulumi.Input<TargetTrackingConfiguration>;
+}
+
+export abstract class Policy extends pulumi.ComponentResource {
+    public readonly policy: aws.autoscaling.Policy;
+
+    constructor(
+        type: string, name: string, group: AutoScalingGroup,
+        args: PolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
+
+        super(type, name, undefined, { parent: group, ...opts });
+    }
+}
+
+export class SimpleScalingPolicy extends Policy {
+    constructor(name: string, group: AutoScalingGroup, args: SimpleScalingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+        super("awsx:autoscaling:SimpleScalingPolicy", name, group, args, opts);
+    }
 }
