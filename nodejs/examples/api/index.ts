@@ -80,12 +80,13 @@ const api = new awsx.apigateway.API("myapi", {
         }],
         authorizers: [awsx.apigateway.getTokenLambdaAuthorizer({
             header: "Authorization",
-            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+            handler: async (event: awsx.apigateway.AuthorizerEvent, context: aws.lambda.Context, callback) => {
                 const token = event.authorizationToken;
                 if (token === "Allow") {
                     return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
                 }
-                return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
+                callback("Unauthorized");
+                return;
             },
         })],
     }, {

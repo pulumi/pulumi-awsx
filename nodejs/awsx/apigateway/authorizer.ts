@@ -20,7 +20,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as awslambda from "aws-lambda";
 
 export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
-export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
+export type AuthorizerResponse = awslambda.CustomAuthorizerResult | void;
 export type AuthResponseContext = awslambda.AuthResponseContext;
 
 /**
