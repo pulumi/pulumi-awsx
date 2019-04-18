@@ -86,6 +86,34 @@ export abstract class SimpleWidget implements Widget {
     }
 }
 
+/**
+ * Simple [Widget] that can be used for putting space between other widgets in the [Dashboard].
+ */
+export class SpaceWidget implements Widget {
+    private readonly _width: number;
+    private readonly _height: number;
+
+    constructor(width: number, height: number);
+    constructor(args: SimpleWidgetArgs);
+    constructor(widthOrArgs: number | SimpleWidgetArgs, height?: number) {
+        if (typeof widthOrArgs === "number") {
+            this._width = widthOrArgs;
+            this._height = height!;
+        }
+        else {
+            this._width = widthOrArgs.width !== undefined ? widthOrArgs.width : 6;
+            this._height = widthOrArgs.height !== undefined ? widthOrArgs.height : 6;
+        }
+    }
+
+    public width() { return this._width; }
+    public height() { return this._height; }
+
+    public addWidgetJson(widgetJsons: wjson.WidgetJson[], xOffset: number, yOffset: number): void {
+        // Nothing to do.  This Widget exists just to ensure proper placement of other real widgets.
+    }
+}
+
 export interface TextWidgetArgs extends SimpleWidgetArgs {
     /**
      * The text to be displayed by the widget.
