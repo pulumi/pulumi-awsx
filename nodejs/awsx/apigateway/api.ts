@@ -364,7 +364,7 @@ export class API extends pulumi.ComponentResource {
         }, { parent: this, dependsOn: permissions });
 
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     /**

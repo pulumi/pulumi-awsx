@@ -39,7 +39,7 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
         this.listeners = [];
         this.targetGroups = [];
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     public createListener(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
@@ -92,7 +92,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     public createListener(name: string, args: NetworkListenerArgs,
@@ -142,7 +142,7 @@ export class NetworkListener
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
-        this.registerOutputs({});
+        this.registerOutputs();
     }
 
     public target(name: string, parent: pulumi.Resource): pulumi.Input<x.apigateway.IntegrationTarget> {
