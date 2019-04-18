@@ -16,6 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as wjson from "./widgets_json";
+import { statisticString } from "./widgets_simple";
 
 import * as utils from "../utils";
 
@@ -264,7 +265,7 @@ export class Metric {
         // [Namespace, MetricName, [{DimensionName,DimensionValue}...] [Rendering Properties Object] ]
         // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Dashboard-Body-Structure.html#CloudWatch-Dashboard-Properties-Metrics-Array-Format
 
-        const op = pulumi.output(this).apply(uw => {
+        const op = pulumi.all([this, statisticString(this)]).apply(([uw, stat]) => {
             const result: (string | wjson.RenderingPropertiesJson)[] = [];
 
             if (uw.period % 60 !== 0) {
@@ -283,9 +284,6 @@ export class Metric {
                 }
             }
 
-            const stat = uw.extendedStatistic !== undefined
-                ? `p${uw.extendedStatistic}`
-                : uw.statistic;
             const renderingProps: wjson.RenderingPropertiesJson = {
                 stat,
                 color: uw.color,

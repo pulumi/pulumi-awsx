@@ -118,6 +118,9 @@ func Test_Examples(t *testing.T) {
 							"auth": "password",
 						},
 					},
+					requiredAPIKey: &requiredAPIKey{
+						stackOutput: "apiKeyValue",
+					},
 					expectedBody: "Hello, world!",
 				},
 				{
@@ -132,6 +135,9 @@ func Test_Examples(t *testing.T) {
 							"Authorization": "Allow",
 						},
 					},
+					requiredAPIKey: &requiredAPIKey{
+						stackOutput: "apiKeyValue",
+					},
 					expectedBody: "contents1\n",
 				},
 				{
@@ -139,7 +145,7 @@ func Test_Examples(t *testing.T) {
 					urlPath:           "/www_old/file1.txt",
 					requiredAuth: &requiredAuth{
 						queryParameters: map[string]string{
-							"auth": "password",
+							"auth": "Allow",
 						},
 						headers: map[string]string{
 							"secret": "test",
@@ -415,12 +421,17 @@ type apiTest struct {
 	urlPath            string
 	requiredParameters *requiredParameters
 	requiredAuth       *requiredAuth
+	requiredAPIKey     *requiredAPIKey
 	expectedBody       string
 }
 
 type requiredAuth struct {
 	headers         map[string]string
 	queryParameters map[string]string
+}
+
+type requiredAPIKey struct {
+	stackOutput string
 }
 
 type requiredParameters struct {
@@ -451,6 +462,14 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 					q.Add(param, val)
 				}
 				req.URL.RawQuery = q.Encode()
+			}
+
+			if tt.requiredAPIKey != nil {
+				resp := GetHTTP(t, req, 403)
+				assertRequestBody(t, `{"message":"Forbidden"}`, resp)
+
+				apikey := stack.Outputs[tt.requiredAPIKey.stackOutput].(string)
+				req.Header.Add("x-api-key", apikey)
 			}
 
 			if tt.requiredParameters != nil {
