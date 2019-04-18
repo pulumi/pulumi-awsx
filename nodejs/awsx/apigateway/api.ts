@@ -299,11 +299,13 @@ export interface APIArgs {
 }
 
 export class API extends pulumi.ComponentResource {
-    public restAPI: aws.apigateway.RestApi;
-    public deployment: aws.apigateway.Deployment;
-    public stage: aws.apigateway.Stage;
+    public readonly restAPI: aws.apigateway.RestApi;
+    public readonly deployment: aws.apigateway.Deployment;
+    public readonly stage: aws.apigateway.Stage;
 
-    public url: pulumi.Output<string>;
+    public readonly url: pulumi.Output<string>;
+
+    private readonly swaggerLambdas: SwaggerLambdas;
 
     constructor(name: string, args: APIArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("aws:apigateway:x:API", name, {}, opts);
@@ -360,20 +362,33 @@ export class API extends pulumi.ComponentResource {
             stageName: stageName,
         }, { parent: this, dependsOn: permissions });
 
+        this.swaggerLambdas = swaggerLambdas || {};
+
         this.registerOutputs({});
+    }
+
+    /**
+     * Returns the [aws.lambda.Function] an [EventHandlerRoute] points to.  This will either be for
+     * the aws.lambda.Function created on your behalff if the route was passed a normal
+     * JavaScript/Typescript function, or it will be the [aws.lambda.Function] that was explicitly
+     * passed in. Returns [undefined] if this route/method wasn't an [EventHandlerRoute].
+     */
+    public getFunction(route: string, method: Method) {
+        const methods = this.swaggerLambdas[route];
+        return methods ? methods[method] : undefined;
     }
 }
 
 function createLambdaPermissions(api: API, name: string, swaggerLambdas: SwaggerLambdas = {}) {
     const permissions: aws.lambda.Permission[] = [];
     for (const path of Object.keys(swaggerLambdas)) {
-        for (const method of Object.keys(swaggerLambdas[path])) {
-            const methodAndPath =
-                `${method === "x-amazon-apigateway-any-method" ? "*" : method.toUpperCase()}${path}`;
+        for (const m of Object.keys(swaggerLambdas[path])) {
+            const method = <Method>m;
+            const methodAndPath = `${method === "ANY" ? "*" : method}${path}`;
 
             permissions.push(new aws.lambda.Permission(name + "-" + sha1hash(methodAndPath), {
                 action: "lambda:invokeFunction",
-                function: swaggerLambdas[path][method],
+                function: swaggerLambdas[path][method]!,
                 principal: "apigateway.amazonaws.com",
                 // We give permission for this function to be invoked by any stage at the given method and
                 // path on the API. We allow any stage instead of encoding the one known stage that will be
@@ -388,7 +403,7 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
 }
 
 interface SwaggerLambdas {
-    [path: string]: { [method: string]: aws.lambda.Function };
+    [path: string]: { [m in Method]?: aws.lambda.Function; };
 }
 
 function createSwaggerSpec(api: API, name: string, routes: Route[], requestValidator: RequestValidator | undefined) {
@@ -509,7 +524,7 @@ function addEventHandlerRouteToSwaggerSpec(
         swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
     }
     addSwaggerOperation(swagger, route.path, method, swaggerOperation);
-    swaggerLambdas[route.path][method] = lambda;
+    swaggerLambdas[route.path][route.method] = lambda;
     return;
 
     function createSwaggerOperationForLambda(): SwaggerOperation {
