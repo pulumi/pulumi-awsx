@@ -73,8 +73,10 @@ export type EventHandlerRoute = {
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
      * the route is called.
      */
-    authorizers?: lambdaAuthorizer.LambdaAuthorizer[];
+    authorizers?: Authorizer[];
 };
+
+type Authorizer = lambdaAuthorizer.LambdaAuthorizer;
 
 function isEventHandler(route: Route): route is EventHandlerRoute {
     return (<EventHandlerRoute>route).eventHandler !== undefined;
@@ -122,7 +124,7 @@ export type StaticRoute = {
      * the route is called. The authorizer will get applied to all static resources defined by the
      * localPath.
      */
-    authorizers?: lambdaAuthorizer.LambdaAuthorizer[];
+    authorizers?: Authorizer[];
 };
 
 function isStaticRoute(route: Route): route is StaticRoute {
@@ -442,7 +444,7 @@ function createSwaggerSpec(api: API, name: string, routes: Route[], requestValid
     // this once.  So have a value here that can be lazily initialized the first route we hit, which
     // can then be used for all successive static routes.
     let staticRouteBucket: aws.s3.Bucket | undefined;
-    const apiAuthorizers: Record<string, lambdaAuthorizer.LambdaAuthorizer> = {};
+    const apiAuthorizers: Record<string, Authorizer> = {};
 
     for (const route of routes) {
         checkRoute(api, route, "path");
@@ -488,7 +490,7 @@ function addEventHandlerRouteToSwaggerSpec(
     swagger: SwaggerSpec,
     swaggerLambdas: SwaggerLambdas,
     route: EventHandlerRoute,
-    apiAuthorizers: Record<string, lambdaAuthorizer.LambdaAuthorizer>) {
+    apiAuthorizers: Record<string, Authorizer>) {
 
     checkRoute(api, route, "eventHandler");
     checkRoute(api, route, "method");
@@ -530,8 +532,8 @@ function addEventHandlerRouteToSwaggerSpec(
 
 function addAuthorizersToSwagger(
     swagger: SwaggerSpec,
-    authorizers: lambdaAuthorizer.LambdaAuthorizer[],
-    apiAuthorizers: Record<string, lambdaAuthorizer.LambdaAuthorizer>): string[] {
+    authorizers: Authorizer[],
+    apiAuthorizers: Record<string, Authorizer>): string[] {
 
     const authNames: string[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
@@ -633,7 +635,7 @@ function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperat
 function addStaticRouteToSwaggerSpec(
     api: API, name: string, swagger: SwaggerSpec, route: StaticRoute,
     bucket: aws.s3.Bucket | undefined,
-    apiAuthorizers: Record<string, lambdaAuthorizer.LambdaAuthorizer>) {
+    apiAuthorizers: Record<string, Authorizer>) {
 
     checkRoute(api, route, "localPath");
 
