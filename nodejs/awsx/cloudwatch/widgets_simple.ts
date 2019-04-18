@@ -251,7 +251,7 @@ export abstract class MetricWidget extends SimpleWidget {
     protected computeType = (): wjson.MetricWidgetJson["type"] => "metric";
 
     protected computeProperties(): wjson.MetricWidgetJson["properties"] {
-        const stat = pulumi.all([this.metricArgs.extendedStatistic, this.metricArgs.statistic])
+        const stat =  pulumi.all([this.metricArgs.extendedStatistic, this.metricArgs.statistic])
                            .apply(([extendedStatistic, statistic]) => {
             if (statistic !== undefined && extendedStatistic !== undefined) {
                 throw new Error("[args.statistic] and [args.extendedStatistic] cannot both be provided.");
@@ -295,6 +295,18 @@ export abstract class MetricWidget extends SimpleWidget {
             yAxis: this.computeYAxis(),
         };
     }
+}
+
+
+/** @internal */
+export function statisticString(obj: { extendedStatistic: pulumi.Input<number | undefined>, statistic: pulumi.Input<MetricStatistic> }) {
+    return pulumi.output(obj).apply(obj => {
+        if (obj.statistic !== undefined && obj.extendedStatistic !== undefined) {
+            throw new Error("[args.statistic] and [args.extendedStatistic] cannot both be provided.");
+        }
+
+        return obj.extendedStatistic !== undefined ? `p${obj.extendedStatistic}` : obj.statistic;
+    });
 }
 
 /**
