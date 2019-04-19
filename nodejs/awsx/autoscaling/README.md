@@ -10,12 +10,8 @@ AutoScalingGroups are created for a corresponding `awsx.ecs.Cluster`.  This can 
 const cluster = new awsx.ecs.Cluster("testing", { vpc });
 
 const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
-    templateParameters: {
-        minSize: 10,
-    },
-    launchConfigurationArgs: {
-        instanceType: "t2.medium",
-    },
+    templateParameters: { minSize: 10 },
+    launchConfigurationArgs: { instanceType: "t2.medium" },
 });
 ```
 
@@ -26,13 +22,8 @@ const cluster = new awsx.ecs.Cluster("testing", { vpc });
 
 const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     subnetIds: vpc.publicSubnetIds,
-    templateParameters: {
-        minSize: 10,
-    },
-    launchConfigurationArgs: {
-        instanceType: "t2.medium",
-        associatePublicIpAddress: true,
-    },
+    templateParameters: { minSize: 10 },
+    launchConfigurationArgs: { instanceType: "t2.medium", associatePublicIpAddress: true },
 });
 ```
 
@@ -114,13 +105,50 @@ AutoScalingGroups provide several predefined scaling metrics.
 1. Scaling based on cpu utilization:
 
 ```ts
-// Schedule the ASG to go up to 20 instances at 6am, and back down to 10 at 10pm.
-autoScalingGroup.scaleOnSchedule("scaleUpOnFriday", {
-    minSize: 20,
-    recurrence: { dayOfWeek: 5 /*friday*/ },
+// Try to keep the ASG using around 50% CPU.
+autoScalingGroup.scaleToTrackAverageCPUUtilization("keepAround50Percent", {
+    targetValue: 50,
 });
-autoScalingGroup.scaleOnSchedule("scaleDownOnMonday", {
-    minSize: 10,
-    recurrence: { dayOfWeek: 1 /*monday*/ },
+```
+
+If you only want the ASG to scale up by adding instances, and not have it remove instances when usage falls, you can pass `disableScaleIn: true`.
+
+```ts
+autoScalingGroup.scaleToTrackAverageCPUUtilization("scaleDownOnMonday", {
+    targetValue: 50,
+    disableScaleIn: true,
+});
+```
+
+2. Scaling based on the average number of bytes sent/received on all network interfaces in this ASG.
+
+```ts
+autoScalingGroup.scaleToTrackAverageNetworkIn("scaleDownOnMonday", {
+    targetValue: 100000000,
+});
+autoScalingGroup.scaleToTrackAverageNetworkOut("scaleDownOnMonday", {
+    targetValue: 100000000,
+});
+```
+
+3. Scaling based on the average number of requests completed per `awsx.elasticloadbalancinv2.ApplicationTargetGroup` in the ASG.  In order to do this, the ASG must be informed of that particular `TargetGroup` at creation time. Scaling for `TargetGroup`s is only supported if the `TargetGroup.targetType` is set to `"instance"`.
+
+```ts
+const cluster = new awsx.ecs.Cluster("testing");
+const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("testing", { external: true });
+
+// A simple NGINX service, scaled out over two containers.
+const targetGroup = loadBalancer.createTargetGroup("testing", { port: 80, targetType: "instance" });
+
+const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
+    targetGroups: [targetGroup],
+    subnetIds: awsx.ec2.Vpc.getDefault().publicSubnetIds,
+    templateParameters: { minSize: 10 },
+    launchConfigurationArgs: { instanceType: "t2.medium", associatePublicIpAddress: true },
+});
+
+const policy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
+    targetValue: 1000,
+    targetGroup: targetGroup,
 });
 ```
