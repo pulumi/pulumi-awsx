@@ -110,7 +110,21 @@ export interface StepAdjustment {
     scalingAdjustment: pulumi.Input<number>;
 }
 
-export interface StepPolicyArgs {
+export interface StepScalingPolicyArgs {
+    /**
+     * The metric to use to watch for changes.  An alarm will be created from this using
+     * [alarmArgs], which will invoke the actual autoscaling policy when triggered.
+     *
+     * Note: the `period` of this metric will be set to `60s` from the default of `300s` to ensure
+     * events come in in a timely enough manner to allow the ASG to respond accordingly.
+     */
+    metric: x.cloudwatch.Metric;
+
+    /**
+     * The arguments controlling the alarm that gets created.
+     */
+    alarmArgs: x.cloudwatch.AlarmArgs;
+
     /**
      * When a step scaling or simple scaling policy is executed, it changes the current capacity of
      * your Auto Scaling group using the scaling adjustment specified in the policy. A scaling
@@ -152,32 +166,45 @@ export interface StepPolicyArgs {
     stepAdjustments: pulumi.Input<pulumi.Input<StepAdjustment>[]>;
 }
 
+export class StepScalingPolicy extends pulumi.ComponentResource {
+    /**
+     * Underlying [Policy] created to define the scaling strategy.
+     */
+    public readonly policy: aws.autoscaling.Policy;
 
-/** @internal */
-export function createStepPolicy(
-    name: string, group: AutoScalingGroup,
-    args: StepPolicyArgs,
-    opts?: pulumi.ComponentResourceOptions) {
+    /**
+     * Alarm that invokes the policy when triggered.
+     */
+    public readonly alarm: aws.cloudwatch.MetricAlarm;
 
-    return new aws.autoscaling.Policy(name, {
-        autoscalingGroupName: group.group.name,
-        policyType: "StepScaling",
-        cooldown: undefined,
-        adjustmentType: args.adjustmentType,
-        estimatedInstanceWarmup: args.estimatedInstanceWarmup,
-        minAdjustmentMagnitude: args.minAdjustmentMagnitude,
-        metricAggregationType: args.metricAggregationType,
-        scalingAdjustment: undefined,
-        targetTrackingConfiguration: undefined,
-        stepAdjustments: pulumi.output(args.stepAdjustments).apply(
-            steps => steps.map(({ scalingAdjustment, metricIntervalLowerBound, metricIntervalUpperBound })  => ({
-                scalingAdjustment,
-                metricIntervalLowerBound: toString(metricIntervalLowerBound),
-                metricIntervalUpperBound: toString(metricIntervalUpperBound),
-            }))),
-    });
+    constructor(name: string, group: AutoScalingGroup,
+                args: StepScalingPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:autoscaling:StepScalingPolicy", name, undefined, { parent: group, ...opts });
 
-    function toString(v: number | undefined) {
-        return v === undefined ? undefined! : v.toString();
+        const parentOpts = { parent: this };
+        this.policy = new aws.autoscaling.Policy(name, {
+            autoscalingGroupName: group.group.name,
+            policyType: "StepScaling",
+            ...args,
+            stepAdjustments: pulumi.output(args.stepAdjustments).apply(
+                steps => steps.map(({ scalingAdjustment, metricIntervalLowerBound, metricIntervalUpperBound })  => ({
+                    scalingAdjustment,
+                    metricIntervalLowerBound: toString(metricIntervalLowerBound),
+                    metricIntervalUpperBound: toString(metricIntervalUpperBound),
+                }))),
+        }, parentOpts);
+
+        this.alarm = args.metric.withPeriod(60).createAlarm(name, {
+            ...args.alarmArgs,
+            alarmActions: [this.policy.arn],
+        }, parentOpts);
+
+        this.registerOutputs();
+
+        return;
+
+        function toString(v: number | undefined) {
+            return v === undefined ? undefined! : v.toString();
+        }
     }
 }
