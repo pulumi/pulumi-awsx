@@ -31,6 +31,7 @@
         "autoscaling/launchConfiguration.ts",
         "autoscaling/metrics.ts",
         "autoscaling/policy.ts",
+        "autoscaling/policy_targetTracking.ts",
         "autoscaling/schedule.ts",
 
         "cloudwatch/index.ts",
