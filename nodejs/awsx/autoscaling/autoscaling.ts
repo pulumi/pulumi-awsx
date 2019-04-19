@@ -443,20 +443,6 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             ...args,
         }, opts);
     }
-
-    // public simpleScalingPolicy(name: string, args: policy.SimpleScalingPolicyArgs, opts?: pulumi.CustomResourceOptions) {
-    //     return this.createPolicy(name, "SimpleScaling", args, opts);
-    // }
-
-    // public stepScalingPolicy(name: string, args: policy.StepScalingPolicyArgs, opts?: pulumi.CustomResourceOptions) {
-    //     return this.createPolicy(name, "StepScaling", args, opts);
-    // }
-
-    // public trackingScalingPolicy(name: string, args: policy.TargetTrackingScalingPolicyArgs, opts?: pulumi.CustomResourceOptions) {
-    //     return this.createPolicy(name, "TargetTrackingScaling", args, opts);
-    // }
-
-    // public create
 }
 
 function ifUndefined<T>(val: T | undefined, defVal: T) {

@@ -20,12 +20,6 @@ import * as utils from "./../utils";
 
 import { AutoScalingGroup } from "./autoscaling";
 
-// export class Policy extends pulumi.ComponentResource {
-//     constructor(name: string, args: PolicyArgs, opts: pulumi.ComponentResourceOptions = {});
-//         super
-//     }
-// }
-
 export type AdjustmentType = "ChangeInCapacity" | "ExactCapacity" | "PercentChangeInCapacity";
 export type PolicyType = "SimpleScaling" | "StepScaling" | "TargetTrackingScaling";
 export type MetricAggregationType = "Minimum" | "Maximum" | "Average";
