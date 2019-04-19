@@ -350,16 +350,6 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         }, { parent: this, ...opts });
     }
 
-    private scaleOnPolicy(name: string, type: policy.PolicyType, args: policy.PolicyArgs, opts: pulumi.CustomResourceOptions = {}) {
-        const awsArgs: aws.autoscaling.PolicyArgs = {
-            autoscalingGroupName: this.group.name,
-            policyType: type,
-            ...args,
-        };
-
-        return new aws.autoscaling.Policy(name, awsArgs, { parent: this, ...opts });
-    }
-
     /**
      * With target tracking scaling policies, you select a scaling metric and set a target value.
      * Amazon EC2 Auto Scaling creates and manages the CloudWatch alarms that trigger the scaling
