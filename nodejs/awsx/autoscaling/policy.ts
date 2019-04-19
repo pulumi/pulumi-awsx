@@ -38,7 +38,7 @@ export type PredefinedMetricType =
     /** Average CPU utilization of the Auto Scaling group.  */
     "ASGAverageCPUUtilization" |
     /** Average number of bytes received on all network interfaces by the Auto Scaling group. */
-    "ASGAverageNetworkIn " |
+    "ASGAverageNetworkIn" |
     /** Average number of bytes sent out on all network interfaces by the Auto Scaling group. */
     "ASGAverageNetworkOut" |
     /** Number of requests completed per target in an Application Load Balancer or a Network Load Balancer target group */
@@ -92,8 +92,10 @@ export interface TargetTrackingConfiguration {
     }>;
 
     /**
-     * Indicates whether scale in by the target tracking policy is disabled.  Defaults to [false] if
-     * unspecified.
+     * Indicates whether scaling in by the target tracking scaling policy is disabled. If scaling in
+     * is disabled, the target tracking scaling policy doesn't remove instances from the Auto
+     * Scaling group. Otherwise, the target tracking scaling policy can remove instances from the
+     * Auto Scaling group.  Defaults to [false] if unspecified.
      */
     disableScaleIn?: pulumi.Input<boolean>;
 
@@ -131,10 +133,15 @@ export interface PolicyArgs {
      */
     estimatedInstanceWarmup?: pulumi.Input<number>;
 
+    /**
+     * The minimum number of instances to scale. If the value of [adjustmentType] is
+     * ["PercentChangeInCapacity"], the scaling policy changes the DesiredCapacity of the Auto
+     * Scaling group by at least this many instances.
+     */
     minAdjustmentMagnitude?: pulumi.Input<number>;
 }
 
-export interface SimpleScalingPolicyArgs extends PolicyArgs {
+export interface SimplePolicyArgs extends PolicyArgs {
     /**
      * The amount of time, in seconds, after a scaling activity completes and before the next
      * scaling activity can start.
@@ -150,7 +157,7 @@ export interface SimpleScalingPolicyArgs extends PolicyArgs {
     scalingAdjustment?: pulumi.Input<number>;
 }
 
-export interface StepScalingPolicyArgs extends PolicyArgs {
+export interface StepPolicyArgs extends PolicyArgs {
 
     /**
      * The aggregation type for the policy's metrics. Without a value, AWS will treat the
@@ -164,11 +171,81 @@ export interface StepScalingPolicyArgs extends PolicyArgs {
     stepAdjustments?: pulumi.Input<pulumi.Input<StepAdjustment>[]>;
 }
 
-export interface TargetTrackingScalingPolicyArgs extends PolicyArgs {
+export interface TargetTrackingPolicyArgs extends PolicyArgs {
     /**
      * A target tracking policy.
      */
     targetTrackingConfiguration?: pulumi.Input<TargetTrackingConfiguration>;
+}
+
+export interface BaseMetricTargetTrackingPolicyArgs extends PolicyArgs {
+    /**
+     * Indicates whether scaling in by the target tracking scaling policy is disabled. If scaling in
+     * is disabled, the target tracking scaling policy doesn't remove instances from the Auto
+     * Scaling group. Otherwise, the target tracking scaling policy can remove instances from the
+     * Auto Scaling group.  Defaults to [false] if unspecified.
+     */
+    disableScaleIn?: pulumi.Input<boolean>;
+
+    /**
+     * The target value for the metric.
+     */
+    targetValue: pulumi.Input<number>;
+}
+
+export interface ApplicationTargetGroupTrackingPolicyArgs extends BaseMetricTargetTrackingPolicyArgs {
+    targetGroup: x.elasticloadbalancingv2.ApplicationTargetGroup;
+}
+
+/**
+ * Represents a predefined metric for a target tracking scaling policy to use with Amazon EC2 Auto
+ * Scaling.
+ */
+export interface PredefinedMetricTargetTrackingPolicyArgs extends BaseMetricTargetTrackingPolicyArgs {
+    /**
+     * The metric type.
+     */
+    predefinedMetricType: pulumi.Input<PredefinedMetricType>;
+
+    /**
+     * Identifies the resource associated with the metric type.
+     */
+    resourceLabel?: pulumi.Input<string>;
+}
+
+
+/**
+ * Represents a CloudWatch metric of your choosing for a target tracking scaling policy to use with
+ * Amazon EC2 Auto Scaling.
+ *
+ * To create your customized metric specification:
+ *
+ *  * Add values for each required parameter from CloudWatch. You can use an existing metric, or a
+ *    new metric that you create. To use your own metric, you must first publish the metric to
+ *    CloudWatch. For more information, see
+ *    [Publish-Custom-Metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/publishingMetrics.html)
+ *    in the Amazon CloudWatch User Guide.
+ *
+ *  * Choose a metric that changes proportionally with capacity. The value of the metric should
+ *    increase or decrease in inverse proportion to the number of capacity units. That is, the value
+ *    of the metric should decrease when capacity increases.
+ */
+export interface CustomMetricTargetTrackingPolicyArgs extends PolicyArgs {
+    /** The metric to track */
+    metric: x.cloudwatch.Metric;
+
+    /**
+     * Indicates whether scaling in by the target tracking scaling policy is disabled. If scaling in
+     * is disabled, the target tracking scaling policy doesn't remove instances from the Auto
+     * Scaling group. Otherwise, the target tracking scaling policy can remove instances from the
+     * Auto Scaling group.  Defaults to [false] if unspecified.
+     */
+    disableScaleIn?: pulumi.Input<boolean>;
+
+    /**
+     * The target value for the metric.
+     */
+    targetValue: pulumi.Input<number>;
 }
 
 export abstract class Policy extends pulumi.ComponentResource {
@@ -182,8 +259,73 @@ export abstract class Policy extends pulumi.ComponentResource {
     }
 }
 
-export class SimpleScalingPolicy extends Policy {
-    constructor(name: string, group: AutoScalingGroup, args: SimpleScalingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+export class SimplePolicy extends Policy {
+    constructor(name: string, group: AutoScalingGroup, args: SimplePolicyArgs, opts?: pulumi.ComponentResourceOptions) {
         super("awsx:autoscaling:SimpleScalingPolicy", name, group, args, opts);
     }
+}
+
+export abstract class TargetTrackingPolicy extends Policy {
+    constructor(
+        type: string, name: string, group: AutoScalingGroup,
+        args: TargetTrackingPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
+
+        super(type, name, undefined, { parent: group, ...opts });
+    }
+}
+
+export class PredefinedMetricTargetTrackingPolicy extends TargetTrackingPolicy {
+    constructor(
+        name: string, group: AutoScalingGroup,
+        args: PredefinedMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+
+        super("awsx:autoscaling:PredefinedMetricTargetTrackingPolicy", name, group, {
+            ...args,
+            targetTrackingConfiguration: {
+                disableScaleIn: args.disableScaleIn,
+                targetValue: args.targetValue,
+                predefinedMetricSpecification: {
+                    predefinedMetricType: args.predefinedMetricType,
+                    resourceLabel: args.resourceLabel,
+                },
+            },
+        }, opts);
+    }
+}
+
+export class CustomMetricTargetTrackingPolicy extends TargetTrackingPolicy {
+    constructor(
+        name: string, group: AutoScalingGroup,
+        args: CustomMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+
+        super("awsx:autoscaling:CustomMetricTargetTrackingPolicyArgs", name, group, {
+            ...args,
+            targetTrackingConfiguration: {
+                disableScaleIn: args.disableScaleIn,
+                targetValue: args.targetValue,
+                customizedMetricSpecification: {
+                    namespace: args.metric.namespace,
+                    metricName: args.metric.name,
+                    unit: args.metric.unit.apply(u => <string>u),
+                    statistic: x.cloudwatch.statisticString(args.metric),
+                    metricDimensions: convertDimensions(args.metric.dimensions),
+                },
+            },
+        }, opts);
+    }
+}
+
+function convertDimensions(dimensions: pulumi.Output<Record<string, any> | undefined>) {
+    return dimensions.apply(d => {
+        if (!d) {
+            return [];
+        }
+
+        const result: { name: string, value: string }[] = [];
+        for (const key of Object.keys(d)) {
+            result.push({ name: key, value: d[key] });
+        }
+
+        return result;
+    });
 }
