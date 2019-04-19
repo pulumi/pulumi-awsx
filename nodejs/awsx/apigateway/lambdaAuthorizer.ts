@@ -19,8 +19,6 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as awslambda from "aws-lambda";
 
-import { CognitoAuthorizer } from "./cognitoAuthorizer";
-
 export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
 export type AuthResponseContext = awslambda.AuthResponseContext;
@@ -37,7 +35,7 @@ export interface LambdaAuthorizer {
 
     /**
      * parameterName is the name of the header or query parameter containing the authorization
-     * information. Must be "Unused" for multiple identity sources.
+     * token. Must be "Unused" for multiple identity sources.
      * */
     parameterName: string;
 
@@ -68,9 +66,9 @@ export interface LambdaAuthorizer {
 
     /**
      * List of mapping expressions of the request parameters as the identity source. This indicates
-     * where in the request identity information is expected. Required for "TOKEN" authorizers.
-     * Required for "REQUEST" authorizers when caching is enabled. Example:
-     * ["method.request.header.HeaderAuth1", "method.request.querystring.QueryString1"]
+     * where in the request identity information is expected. Applicable for the authorizer of the
+     * "request" type only. Example: ["method.request.header.HeaderAuth1",
+     * "method.request.querystring.QueryString1"]
      */
     identitySource?: string[];
 
@@ -105,23 +103,8 @@ export interface LambdaAuthorizerInfo {
 }
 
 /** @internal */
-export function isLambdaAuthorizer(authorizer: LambdaAuthorizer | CognitoAuthorizer): authorizer is LambdaAuthorizer {
-    return (<LambdaAuthorizer>authorizer).handler !== undefined;
-}
-
-/** @internal */
 export function isLambdaAuthorizerInfo(info: LambdaAuthorizerInfo | aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>): info is LambdaAuthorizerInfo {
     return (<LambdaAuthorizerInfo>info).uri !== undefined;
-}
-
-/** @internal */
-export function isLambdaFunction(uri: pulumi.Input<string> | aws.lambda.Function): uri is aws.lambda.Function {
-    return (<aws.lambda.Function>uri).invokeArn !== undefined;
-}
-
-/** @internal */
-export function isIAMRole(creds: pulumi.Input<string> | aws.iam.Role): creds is aws.iam.Role {
-    return (<aws.iam.Role>creds).assumeRolePolicy !== undefined;
 }
 
 /** @internal */
@@ -197,7 +180,7 @@ export interface TokenAuthorizerArgs {
 
     /**
      * The request header for the authorization token. If not set, this defaults to
-     * "Authorization".
+     * Authorization.
      */
     header?: string;
 
@@ -229,15 +212,13 @@ export interface TokenAuthorizerArgs {
  * @param args - configuration information for the token Lambda.
  */
 export function getTokenLambdaAuthorizer(args: TokenAuthorizerArgs): LambdaAuthorizer {
-    const parameterName = args.header || "Authorization";
     return {
         authorizerName: args.authorizerName,
-        parameterName: parameterName,
+        parameterName: args.header || "Authorization",
         parameterLocation: "header",
         authType: "oauth2",
         type: "token",
         handler: args.handler,
-        identitySource: ["method.request.header." + parameterName],
         identityValidationExpression: args.identityValidationExpression,
         authorizerResultTtlInSeconds: args.authorizerResultTtlInSeconds,
     };
