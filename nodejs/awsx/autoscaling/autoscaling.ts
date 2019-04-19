@@ -138,19 +138,15 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * See https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html for
      * more details.
      */
-    public scaleToTrackMetric(
-            name: string, args: policy.CustomMetricTargetTrackingPolicyArgs,
-            opts?: pulumi.ComponentResourceOptions): policy.Policy {
-        return new policy.CustomMetricTargetTrackingPolicy(name, this, args, opts);
+    public scaleToTrackMetric(name: string, args: policy.CustomMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions): aws.autoscaling.Policy {
+        return policy.createCustomMetricTargetTrackingPolicy(name, this, args, opts);
     }
 
     /**
      * Scales in response to the average CPU utilization of the [AutoScalingGroup].
      */
-    public scaleToTrackAverageCPUUtilization(
-            name: string, args: policy.TargetTrackingPolicyArgs,
-            opts?: pulumi.ComponentResourceOptions): policy.Policy {
-        return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
+    public scaleToTrackAverageCPUUtilization(name: string, args: policy.TargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions): aws.autoscaling.Policy {
+        return policy.createPredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ASGAverageCPUUtilization",
             ...args,
         }, opts);
@@ -160,10 +156,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * Scales in response to the average number of bytes received on all network interfaces by the
      * [AutoScalingGroup].
      */
-    public scaleToTrackAverageNetworkIn(
-            name: string, args: policy.TargetTrackingPolicyArgs,
-            opts?: pulumi.ComponentResourceOptions): policy.Policy {
-        return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
+    public scaleToTrackAverageNetworkIn(name: string, args: policy.TargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions): aws.autoscaling.Policy {
+        return policy.createPredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ASGAverageNetworkIn",
             ...args,
         }, opts);
@@ -173,10 +167,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * Scales in response to the average number of bytes sent out on all network interfaces by the
      * [AutoScalingGroup].
      */
-    public scaleToTrackAverageNetworkOut(
-            name: string, args: policy.TargetTrackingPolicyArgs,
-            opts?: pulumi.ComponentResourceOptions): policy.Policy {
-        return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
+    public scaleToTrackAverageNetworkOut(name: string, args: policy.TargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions): aws.autoscaling.Policy {
+        return policy.createPredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ASGAverageNetworkOut",
             ...args,
         }, opts);
@@ -187,10 +179,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * [AutoScalingGroup].  These [TargetGroup]s must have been provided to the [AutoScalingGroup]
      * when constructed using [AutoScalingGroupArgs.targetGroups].
      */
-    public scaleToTrackRequestCountPerTarget(
-            name: string, args: policy.ApplicationTargetGroupTrackingPolicyArgs,
-            opts?: pulumi.ComponentResourceOptions): policy.Policy {
-
+    public scaleToTrackRequestCountPerTarget(name: string, args: policy.ApplicationTargetGroupTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
         const firstTargetGroup = this.targetGroups.find(
             tg => x.elasticloadbalancingv2.ApplicationTargetGroup.isInstance(tg));
 
@@ -210,7 +199,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         // https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_PredefinedMetricSpecification.html
         // for more details.
 
-        return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
+        return policy.createPredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ALBRequestCountPerTarget",
             resourceLabel: pulumi.interpolate `${loadBalancer.arnSuffix}/${targetGroup.targetGroup.arnSuffix}`,
             ...args,

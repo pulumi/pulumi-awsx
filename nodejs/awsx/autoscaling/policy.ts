@@ -83,34 +83,6 @@ export interface PolicyArgs {
     minAdjustmentMagnitude?: pulumi.Input<number>;
 }
 
-interface AwsPolicyArgs extends PolicyArgs {
-    /**
-     * The amount of time, in seconds, after a scaling activity completes and before the next
-     * scaling activity can start.
-     */
-    cooldown?: pulumi.Input<number>;
-    /**
-     * The aggregation type for the policy's metrics. Valid values are "Minimum", "Maximum", and
-     * "Average". Without a value, AWS will treat the aggregation type as "Average".
-     */
-    metricAggregationType?: pulumi.Input<MetricAggregationType>;
-    /**
-     * The policy type, either  . If this value isn't provided, AWS will default to "SimpleScaling."
-     */
-    policyType: pulumi.Input<PolicyType>;
-    /**
-     * The number of members by which to
-     * scale, when the adjustment bounds are breached. A positive value scales
-     * up. A negative value scales down.
-     */
-    scalingAdjustment?: pulumi.Input<number>;
-    stepAdjustments?: aws.autoscaling.PolicyArgs["stepAdjustments"];
-    /**
-     * A target tracking policy.
-     */
-    targetTrackingConfiguration?: aws.autoscaling.PolicyArgs["targetTrackingConfiguration"];
-}
-
 export interface SimplePolicyArgs extends PolicyArgs {
     /**
      * The amount of time, in seconds, after a scaling activity completes and before the next
@@ -145,7 +117,7 @@ interface AwsTargetTrackingPolicyArgs extends PolicyArgs {
     /**
      * A target tracking policy.
      */
-    targetTrackingConfiguration?: aws.autoscaling.PolicyArgs["targetTrackingConfiguration"];
+    targetTrackingConfiguration: aws.autoscaling.PolicyArgs["targetTrackingConfiguration"];
 }
 
 export interface TargetTrackingPolicyArgs extends PolicyArgs {
@@ -211,94 +183,62 @@ export interface CustomMetricTargetTrackingPolicyArgs extends TargetTrackingPoli
     metric: x.cloudwatch.Metric;
 }
 
-export abstract class Policy extends pulumi.ComponentResource {
-    public readonly policy: aws.autoscaling.Policy;
+/** @internal */
+export function createTargetTrackingPolicy(
+        name: string, group: AutoScalingGroup,
+        args: AwsTargetTrackingPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
 
-    /** @internal */
-    constructor(
-        type: string, name: string, group: AutoScalingGroup,
-        args: AwsPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
-
-        super(type, name, undefined, { parent: group, ...opts });
-
-        this.policy = new aws.autoscaling.Policy(name, {
-            adjustmentType: args.adjustmentType,
-            autoscalingGroupName: group.group.name,
-            cooldown: args.cooldown,
-            estimatedInstanceWarmup: args.estimatedInstanceWarmup,
-            metricAggregationType: args.metricAggregationType,
-            minAdjustmentMagnitude: args.minAdjustmentMagnitude,
-            policyType: args.policyType,
-            scalingAdjustment: args.scalingAdjustment,
-            stepAdjustments: args.stepAdjustments,
-            targetTrackingConfiguration: args.targetTrackingConfiguration,
-        }, { parent: this });
-
-        this.registerOutputs();
-    }
+    return new aws.autoscaling.Policy(name, {
+        policyType: "TargetTrackingScaling",
+        autoscalingGroupName: group.group.name,
+        adjustmentType: args.adjustmentType,
+        cooldown: undefined,
+        estimatedInstanceWarmup: args.estimatedInstanceWarmup,
+        metricAggregationType: undefined,
+        minAdjustmentMagnitude: args.minAdjustmentMagnitude,
+        scalingAdjustment: undefined,
+        stepAdjustments: undefined,
+        targetTrackingConfiguration: args.targetTrackingConfiguration,
+    }, { parent: group, ...opts });
 }
 
 /** @internal */
-abstract class TargetTrackingPolicy extends Policy {
-    constructor(
-        type: string, name: string, group: AutoScalingGroup,
-        args: AwsTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
-
-        super(type, name, group, {
-            policyType: "TargetTrackingScaling",
-            adjustmentType: args.adjustmentType,
-            cooldown: undefined,
-            estimatedInstanceWarmup: args.estimatedInstanceWarmup,
-            metricAggregationType: undefined,
-            minAdjustmentMagnitude: args.minAdjustmentMagnitude,
-            scalingAdjustment: undefined,
-            stepAdjustments: undefined,
-            targetTrackingConfiguration: args.targetTrackingConfiguration,
-        }, opts);
-    }
-}
-
-/** @internal */
-export class PredefinedMetricTargetTrackingPolicy extends TargetTrackingPolicy {
-    constructor(
+export function createPredefinedMetricTargetTrackingPolicy(
         name: string, group: AutoScalingGroup,
         args: PredefinedMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
 
-        super("awsx:autoscaling:PredefinedMetricTargetTrackingPolicy", name, group, {
-            ...args,
-            targetTrackingConfiguration: {
-                disableScaleIn: args.disableScaleIn,
-                targetValue: args.targetValue,
-                predefinedMetricSpecification: {
-                    predefinedMetricType: args.predefinedMetricType,
-                    resourceLabel: args.resourceLabel,
-                },
+    return createTargetTrackingPolicy(name, group, {
+        ...args,
+        targetTrackingConfiguration: {
+            disableScaleIn: args.disableScaleIn,
+            targetValue: args.targetValue,
+            predefinedMetricSpecification: {
+                predefinedMetricType: args.predefinedMetricType,
+                resourceLabel: args.resourceLabel,
             },
-        }, opts);
-    }
+        },
+    }, opts);
 }
 
 /** @internal */
-export class CustomMetricTargetTrackingPolicy extends TargetTrackingPolicy {
-    constructor(
+export function createCustomMetricTargetTrackingPolicy(
         name: string, group: AutoScalingGroup,
         args: CustomMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
 
-        super("awsx:autoscaling:CustomMetricTargetTrackingPolicyArgs", name, group, {
-            ...args,
-            targetTrackingConfiguration: {
-                disableScaleIn: args.disableScaleIn,
-                targetValue: args.targetValue,
-                customizedMetricSpecification: {
-                    namespace: args.metric.namespace,
-                    metricName: args.metric.name,
-                    unit: args.metric.unit.apply(u => <string>u),
-                    statistic: x.cloudwatch.statisticString(args.metric),
-                    metricDimensions: convertDimensions(args.metric.dimensions),
-                },
+    return createTargetTrackingPolicy(name, group, {
+        ...args,
+        targetTrackingConfiguration: {
+            disableScaleIn: args.disableScaleIn,
+            targetValue: args.targetValue,
+            customizedMetricSpecification: {
+                namespace: args.metric.namespace,
+                metricName: args.metric.name,
+                unit: args.metric.unit.apply(u => <string>u),
+                statistic: x.cloudwatch.statisticString(args.metric),
+                metricDimensions: convertDimensions(args.metric.dimensions),
             },
-        }, opts);
-    }
+        },
+    }, opts);
 }
 
 function convertDimensions(dimensions: pulumi.Output<Record<string, any> | undefined>) {
