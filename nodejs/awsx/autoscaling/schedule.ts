@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 /**
- * Creates an appropriate [cron](https://en.wikipedia.org/wiki/Cron) format string that can be
+ * Creates an appropriate [Cron](https://en.wikipedia.org/wiki/Cron) format string that can be
  * used as the [recurrence] property of [ScheduleArgs].
  */
 export function cronExpression(a: ScheduleRecurrenceArgs) {
