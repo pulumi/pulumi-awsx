@@ -282,6 +282,13 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      */
     public readonly group: aws.autoscaling.Group;
 
+    /**
+     * Target groups this [AutoScalingGroup] is attached to.  See
+     * https://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html
+     * for more details.
+     */
+    public readonly targetGroups: x.elasticloadbalancingv2.TargetGroup[];
+
     constructor(name: string,
                 args: AutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
@@ -291,8 +298,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
-        const targetGroups = args.targetGroups || [];
-        const targetGroupArns = targetGroups.map(g => g.targetGroup.arn);
+        this.targetGroups = args.targetGroups || [];
+        const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
 
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
         if (args.launchConfiguration) {
@@ -425,12 +432,24 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     public scaleToTrackRequestCountPerTarget(name: string, args: policy.ApplicationTargetGroupTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
         // For predefined metric type ALBRequestCountPerTarget, the parameter must be specified
         // in the format: loadbalancersuffix/targetgroupsuffix
-        const targetGroup = args.targetGroup.targetGroup;
-        const loadBalancer = args.targetGroup.loadBalancer.loadBalancer;
+
+        const firstTargetGroup = this.targetGroups.find(
+            tg => x.elasticloadbalancingv2.ApplicationTargetGroup.isInstance(tg));
+
+        if (!firstTargetGroup) {
+            throw new Error("AutoScalingGroup must have been created with at least one ApplicationTargetGroup to support scaling by request count.");
+        }
+
+        const targetGroup = args.targetGroup || firstTargetGroup;
+        if (this.targetGroups.indexOf(targetGroup) < 0) {
+            throw new Error("AutoScalingGroup must have been created with [args.targetGroup] to support scaling by request count.");
+        }
+
+        const loadBalancer = targetGroup.loadBalancer.loadBalancer;
 
         return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ALBRequestCountPerTarget",
-            resourceLabel: pulumi.interpolate `${loadBalancer.arnSuffix}/${targetGroup.arnSuffix}`,
+            resourceLabel: pulumi.interpolate `${loadBalancer.arnSuffix}/${targetGroup.targetGroup.arnSuffix}`,
             ...args,
         }, opts);
     }
@@ -484,7 +503,7 @@ function getCloudFormationTemplate(
         suspendProcessesString += "                    -   " + sp;
     }
 
-    const result = `
+    let result = `
     AWSTemplateFormatVersion: '2010-09-09'
     Outputs:
         Instances:
@@ -501,8 +520,14 @@ function getCloudFormationTemplate(
                 MaxSize: ${maxSize}
                 MetricsCollection:
                 -   Granularity: 1Minute
-                MinSize: ${minSize}
-                TargetGroupARNs: ${JSON.stringify(targetGroupArns)}
+                MinSize: ${minSize}`;
+
+    if (targetGroupArns.length) {
+        result += `
+                TargetGroupARNs: ${JSON.stringify(targetGroupArns)}`;
+    }
+
+    result += `
                 VPCZoneIdentifier: ${JSON.stringify(subnetIdsArray)}
                 Tags:
                 -   Key: Name
@@ -568,9 +593,10 @@ export interface AutoScalingGroupArgs {
     templateParameters?: pulumi.Input<TemplateParameters>;
 
     /**
-     * A list of target groups to associate with the Auto Scaling group.
+     * A list of target groups to associate with the Auto Scaling group.  All target groups must
+     * have the "instance" [targetType].
      */
-    targetGroups?: x.elasticloadbalancingv2.ApplicationTargetGroup[];
+    targetGroups?: x.elasticloadbalancingv2.TargetGroup[];
 }
 
 type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling.GroupArgs>, {

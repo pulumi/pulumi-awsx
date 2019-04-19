@@ -86,11 +86,20 @@ export class EC2Service extends ecs.Service {
             taskDefinition,
             securityGroups,
             launchType: "EC2",
-            networkConfiguration: {
-                subnets,
-                assignPublicIp: false,
-                securityGroups: securityGroups.map(g => g.id),
-            },
+            networkConfiguration: taskDefinition.taskDefinition.networkMode.apply(n => {
+                // The network configuration for the service. This parameter is required for task
+                // definitions that use the `awsvpc` network mode to receive their own Elastic
+                // Network Interface, and it is not supported for other network modes.
+                if (n !== "awsvpc") {
+                    return undefined!;
+                }
+
+                return {
+                    subnets,
+                    assignPublicIp: false,
+                    securityGroups: securityGroups.map(g => g.id),
+                };
+            }),
         }, /*isFargate:*/ false, opts);
 
         this.registerOutputs();
