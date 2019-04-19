@@ -28,6 +28,8 @@
 
         "autoscaling/index.ts",
         "autoscaling/autoscaling.ts",
+        "autoscaling/launchConfiguration.ts",
+        "autoscaling/metrics.ts",
         "autoscaling/schedule.ts",
 
         "cloudwatch/index.ts",
