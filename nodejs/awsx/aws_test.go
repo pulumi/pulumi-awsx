@@ -169,6 +169,14 @@ func Test_Examples(t *testing.T) {
 	}
 
 	longTests := []integration.ProgramTestOptions{
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/fargate"),
+			StackName: addRandomSuffix("fargate"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/ec2"),
+			StackName: addRandomSuffix("ec2"),
+		}),
 		// {
 		// 	Dir:       path.Join(cwd, "../examples/ec2"),
 		// 	StackName: addRandomSuffix("ec2"),
