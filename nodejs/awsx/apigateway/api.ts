@@ -37,6 +37,7 @@ import {
     Method,
     RequestValidator,
     SecurityDefinition,
+    SwaggerCognitoAuthorizer,
     SwaggerLambdaAuthorizer,
     SwaggerOperation,
     SwaggerSpec,
@@ -624,37 +625,26 @@ function addAuthorizersToSwagger(
             throw new Error("Two different authorizers using the same name: " + authName);
         }
 
-        let methods: string[] = [];
         // Add security definition if it's a new authorizer
         if (!swagger["securityDefinitions"][auth.authorizerName]) {
-            let securityDef: SecurityDefinition;
 
-            if (lambdaAuthorizer.isLambdaAuthorizer(auth)) {
-                securityDef = {
-                    type: "apiKey",
-                    name: auth.parameterName,
-                    in: auth.parameterLocation,
-                    "x-amazon-apigateway-authtype": auth.authType,
-                    "x-amazon-apigateway-authorizer": getLambdaAuthorizer(authName, auth),
-                };
-            } else {
-                // Cognito Authorizer
-                securityDef = {
-                    type: "apiKey",
-                    name: auth.parameterName,
-                    in: "header",
-                    "x-amazon-apigateway-authtype": "cognito_user_pools",
-                    "x-amazon-apigateway-authorizer": {
-                        type: "cognito_user_pools",
-                        identitySource: lambdaAuthorizer.getIdentitySource(auth.identitySource),
-                        providerARNs: getCognitoPoolARNs(auth.providerARNs),
-                    },
-                };
-                methods = auth.methodsToAuthorize || methods;
-            }
-            swagger["securityDefinitions"][authName] = securityDef;
+            swagger["securityDefinitions"][authName] = {
+                type: "apiKey",
+                name: auth.parameterName,
+                in: lambdaAuthorizer.isLambdaAuthorizer(auth) ? auth.parameterLocation : "header",
+                "x-amazon-apigateway-authtype": lambdaAuthorizer.isLambdaAuthorizer(auth) ? auth.authType : "cognito_user_pools",
+                "x-amazon-apigateway-authorizer": lambdaAuthorizer.isLambdaAuthorizer(auth)
+                    ? getLambdaAuthorizer(authName, auth)
+                    : getCognitoAuthorizer(auth.identitySource, auth.providerARNs),
+            };
         }
+
+        const methods = lambdaAuthorizer.isLambdaAuthorizer(auth) || !auth.methodsToAuthorize
+            ? []
+            : auth.methodsToAuthorize;
+
         authRecords.push({ [authName]: methods });
+
     }
     return authRecords;
 }
@@ -670,6 +660,14 @@ function getCognitoPoolARNs(pools: Array<pulumi.Input<string> | aws.cognito.User
         }
     }
     return arns;
+}
+
+function getCognitoAuthorizer(identitySource: string[] | undefined, providerARNs: Array<pulumi.Input<string> | aws.cognito.UserPool>): SwaggerCognitoAuthorizer {
+    return {
+        type: "cognito_user_pools",
+        identitySource: lambdaAuthorizer.getIdentitySource(identitySource),
+        providerARNs: getCognitoPoolARNs(providerARNs),
+    };
 }
 
 function getLambdaAuthorizer(authorizerName: string, authorizer: lambdaAuthorizer.LambdaAuthorizer): SwaggerLambdaAuthorizer {

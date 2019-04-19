@@ -71,7 +71,7 @@ export interface SecurityDefinition {
     name: string;
     in: "header" | "query";
     "x-amazon-apigateway-authtype"?: string;
-    "x-amazon-apigateway-authorizer"?: SwaggerLambdaAuthorizer | CognitoAuthorizer;
+    "x-amazon-apigateway-authorizer"?: SwaggerLambdaAuthorizer | SwaggerCognitoAuthorizer;
 }
 
 export interface SwaggerLambdaAuthorizer {
@@ -83,7 +83,7 @@ export interface SwaggerLambdaAuthorizer {
     authorizerResultTtlInSeconds?: number;
 }
 
-interface CognitoAuthorizer {
+export interface SwaggerCognitoAuthorizer {
     type: "cognito_user_pools";
     identitySource: string;
     providerARNs: pulumi.Input<string>[];
