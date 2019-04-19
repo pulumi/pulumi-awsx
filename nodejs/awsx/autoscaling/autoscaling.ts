@@ -420,9 +420,6 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * when constructed using [AutoScalingGroupArgs.targetGroups].
      */
     public scaleToTrackRequestCountPerTarget(name: string, args: policy.ApplicationTargetGroupTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
-        // For predefined metric type ALBRequestCountPerTarget, the parameter must be specified
-        // in the format: loadbalancersuffix/targetgroupsuffix
-
         const firstTargetGroup = this.targetGroups.find(
             tg => x.elasticloadbalancingv2.ApplicationTargetGroup.isInstance(tg));
 
@@ -436,6 +433,11 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         }
 
         const loadBalancer = targetGroup.loadBalancer.loadBalancer;
+
+        // loadbalancer-arnsuffix/targetgroup-arnsuffix is the format necessary to specify an
+        // AppTargetGroup for a tracking policy.  See
+        // https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_PredefinedMetricSpecification.html
+        // for more details.
 
         return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ALBRequestCountPerTarget",
