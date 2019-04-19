@@ -23,12 +23,6 @@ export function cronExpression(a: ScheduleRecurrenceArgs) {
     checkRange(a.minute, "minute", 0, 59);
     checkRange(a.hour, "hour", 0, 23);
     checkRange(a.dayOfMonth, "dayOfMonth", 1, 31);
-    if (typeof a.month === "number") {
-        checkRange(a.month, "month", 1, 12);
-    }
-    if (typeof a.dayOfWeek === "number") {
-        checkRange(a.dayOfWeek, "dayOfWeek", 0, 7);
-    }
 
     return `${val(a.minute)} ${val(a.hour)} ${val(a.dayOfMonth)} ${month(a.month)} ${dayOfWeek(a.dayOfWeek)}`;
 
@@ -38,6 +32,7 @@ export function cronExpression(a: ScheduleRecurrenceArgs) {
 
     function dayOfWeek(v: DayOfWeek | undefined) {
         if (v === undefined || typeof v === "number") {
+            checkRange(v, "dayOfWeek", 0, 7);
             return val(v);
         }
 
@@ -55,6 +50,7 @@ export function cronExpression(a: ScheduleRecurrenceArgs) {
 
     function month(v: Month | undefined) {
         if (v === undefined || typeof v === "number") {
+            checkRange(v, "month", 1, 12);
             return val(v);
         }
 
