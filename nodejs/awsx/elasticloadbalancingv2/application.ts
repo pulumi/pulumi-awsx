@@ -110,7 +110,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     }
 
     public createListener(name: string, args: ApplicationListenerArgs,
-                          opts?: pulumi.ComponentResourceOptions): ApplicationListener {
+                          opts: pulumi.ComponentResourceOptions = {}): ApplicationListener {
         return new ApplicationListener(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
