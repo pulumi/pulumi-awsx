@@ -62,7 +62,7 @@ export interface StepAdjustment {
     scalingAdjustment: pulumi.Input<number>;
 }
 
-export interface BasePolicyArgs {
+export interface PolicyArgs {
     /**
      * Specifies whether the adjustment is an absolute number or a percentage of the current
      * capacity.
@@ -83,7 +83,7 @@ export interface BasePolicyArgs {
     minAdjustmentMagnitude?: pulumi.Input<number>;
 }
 
-interface PolicyArgs extends BasePolicyArgs {
+interface AwsPolicyArgs extends PolicyArgs {
     /**
      * The amount of time, in seconds, after a scaling activity completes and before the next
      * scaling activity can start.
@@ -111,7 +111,7 @@ interface PolicyArgs extends BasePolicyArgs {
     targetTrackingConfiguration?: aws.autoscaling.PolicyArgs["targetTrackingConfiguration"];
 }
 
-export interface SimplePolicyArgs extends BasePolicyArgs {
+export interface SimplePolicyArgs extends PolicyArgs {
     /**
      * The amount of time, in seconds, after a scaling activity completes and before the next
      * scaling activity can start.
@@ -127,7 +127,7 @@ export interface SimplePolicyArgs extends BasePolicyArgs {
     scalingAdjustment?: pulumi.Input<number>;
 }
 
-export interface StepPolicyArgs extends BasePolicyArgs {
+export interface StepPolicyArgs extends PolicyArgs {
     /**
      * The aggregation type for the policy's metrics. Without a value, AWS will treat the
      * aggregation type as "Average"
@@ -141,14 +141,14 @@ export interface StepPolicyArgs extends BasePolicyArgs {
 }
 
 /** @internal */
-interface AwsTargetTrackingPolicyArgs extends BasePolicyArgs {
+interface AwsTargetTrackingPolicyArgs extends PolicyArgs {
     /**
      * A target tracking policy.
      */
     targetTrackingConfiguration?: aws.autoscaling.PolicyArgs["targetTrackingConfiguration"];
 }
 
-export interface TargetTrackingPolicyArgs extends BasePolicyArgs {
+export interface TargetTrackingPolicyArgs extends PolicyArgs {
     /**
      * Indicates whether scaling in by the target tracking scaling policy is disabled. If scaling in
      * is disabled, the target tracking scaling policy doesn't remove instances from the Auto
@@ -209,27 +209,15 @@ interface PredefinedMetricTargetTrackingPolicyArgs extends TargetTrackingPolicyA
 export interface CustomMetricTargetTrackingPolicyArgs extends TargetTrackingPolicyArgs {
     /** The metric to track */
     metric: x.cloudwatch.Metric;
-
-    /**
-     * Indicates whether scaling in by the target tracking scaling policy is disabled. If scaling in
-     * is disabled, the target tracking scaling policy doesn't remove instances from the Auto
-     * Scaling group. Otherwise, the target tracking scaling policy can remove instances from the
-     * Auto Scaling group.  Defaults to [false] if unspecified.
-     */
-    disableScaleIn?: pulumi.Input<boolean>;
-
-    /**
-     * The target value for the metric.
-     */
-    targetValue: pulumi.Input<number>;
 }
 
 export abstract class Policy extends pulumi.ComponentResource {
     public readonly policy: aws.autoscaling.Policy;
 
+    /** @internal */
     constructor(
         type: string, name: string, group: AutoScalingGroup,
-        args: PolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        args: AwsPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
 
         super(type, name, undefined, { parent: group, ...opts });
 
