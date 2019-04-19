@@ -145,7 +145,7 @@ export interface PolicyArgs extends BasePolicyArgs {
      * The aggregation type for the policy's metrics. Valid values are "Minimum", "Maximum", and
      * "Average". Without a value, AWS will treat the aggregation type as "Average".
      */
-    metricAggregationType?: pulumi.Input<string>;
+    metricAggregationType?: pulumi.Input<MetricAggregationType>;
     /**
      * The policy type, either  . If this value isn't provided, AWS will default to "SimpleScaling."
      */
@@ -298,12 +298,6 @@ export abstract class Policy extends pulumi.ComponentResource {
         this.registerOutputs();
     }
 }
-
-// export class SimplePolicy extends Policy {
-//     constructor(name: string, group: AutoScalingGroup, args: SimplePolicyArgs, opts?: pulumi.ComponentResourceOptions) {
-//         super("awsx:autoscaling:SimpleScalingPolicy", name, group, args, opts);
-//     }
-// }
 
 export abstract class TargetTrackingPolicy extends Policy {
     constructor(
