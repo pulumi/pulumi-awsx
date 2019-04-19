@@ -28,6 +28,8 @@
 
         "autoscaling/index.ts",
         "autoscaling/autoscaling.ts",
+        "autoscaling/launchConfiguration.ts",
+        "autoscaling/metrics.ts",
         "autoscaling/policy.ts",
         "autoscaling/schedule.ts",
 
