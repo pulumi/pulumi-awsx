@@ -19,11 +19,11 @@ const cluster = new awsx.ecs.Cluster("testing");
 const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true });
 
 // A simple NGINX service, scaled out over two containers.
-const targetGroup = loadBalancer.createTargetGroup("nginx", { port: 80 });
+const targetGroup = loadBalancer.createTargetGroup("nginx", { port: 80, targetType: "instance" });
 
 const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
     subnetIds: awsx.ec2.Vpc.getDefault().publicSubnetIds,
-    // targetGroups: [targetGroup],
+    targetGroups: [targetGroup],
     templateParameters: {
         minSize: 10,
     },
@@ -33,10 +33,17 @@ const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
     },
 });
 
+const policy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
+    targetValue: 10,
+    estimatedInstanceWarmup: 120,
+    targetGroup: targetGroup,
+});
+
 const nginxListener = targetGroup.createListener("nginx", { port: 80, external: true });
 const nginx = new awsx.ecs.EC2Service("nginx", {
     cluster,
     taskDefinitionArgs: {
+        networkMode: "bridge",
         containers: {
             nginx: {
                 image: "nginx",

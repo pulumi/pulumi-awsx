@@ -186,6 +186,26 @@ type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
     tags?: pulumi.Input<aws.Tags>;
 }>;
 
+export interface NetworkConfiguration {
+    /**
+     * Assign a public IP address to the ENI (Fargate launch type only). Valid values are true or
+     * false. Default false.
+     *
+     */
+    assignPublicIp?: pulumi.Input<boolean>;
+
+    /**
+     * The security groups associated with the task or service. If you do not specify a security
+     * group, the default security group for the VPC is used.
+     */
+    securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
+
+    /**
+     * The subnets associated with the task or service.
+     */
+    subnets: pulumi.Input<pulumi.Input<string>[]>;
+}
+
 export interface ServiceArgs {
     // Properties from aws.ecs.ServiceArgs
 
@@ -233,7 +253,7 @@ export interface ServiceArgs {
      * that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is
      * not supported for other network modes.
      */
-    networkConfiguration?: aws.ecs.ServiceArgs["networkConfiguration"];
+    networkConfiguration?: pulumi.Input<NetworkConfiguration>;
 
     /**
      * Service level strategy rules that are taken into consideration during task placement. List

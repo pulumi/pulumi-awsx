@@ -15,4 +15,6 @@
 export * from "./autoscaling";
 export * from "./launchConfiguration";
 export * from "./metrics";
+export * from "./policy";
 export * from "./schedule";
+

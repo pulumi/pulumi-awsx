@@ -19,6 +19,7 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 import { AutoScalingLaunchConfiguration, AutoScalingLaunchConfigurationArgs } from "./launchConfiguration";
+import * as policy from "./policy";
 import { cronExpression, ScheduleArgs } from "./schedule";
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
@@ -41,6 +42,13 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      */
     public readonly group: aws.autoscaling.Group;
 
+    /**
+     * Target groups this [AutoScalingGroup] is attached to.  See
+     * https://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html
+     * for more details.
+     */
+    public readonly targetGroups: x.elasticloadbalancingv2.TargetGroup[];
+
     constructor(name: string,
                 args: AutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
@@ -50,6 +58,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault();
         const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
+        this.targetGroups = args.targetGroups || [];
+        const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
 
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
         if (args.launchConfiguration) {
@@ -70,6 +80,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 name,
                 this.launchConfiguration.id,
                 subnetIds,
+                targetGroupArns,
                 utils.ifUndefined(args.templateParameters, {})),
         }, parentOpts);
 
@@ -98,6 +109,102 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             desiredCapacity: utils.ifUndefined(args.desiredCapacity, -1),
         }, { parent: this, ...opts });
     }
+
+    /**
+     * With target tracking scaling policies, you select a scaling metric and set a target value.
+     * Amazon EC2 Auto Scaling creates and manages the CloudWatch alarms that trigger the scaling
+     * policy and calculates the scaling adjustment based on the metric and the target value. The
+     * scaling policy adds or removes capacity as required to keep the metric at, or close to, the
+     * specified target value. In addition to keeping the metric close to the target value, a target
+     * tracking scaling policy also adjusts to the changes in the metric due to a changing load
+     * pattern.
+     *
+     * For example, you can use target tracking scaling to:
+     *
+     * * Configure a target tracking scaling policy to keep the average aggregate CPU utilization of
+     *   your Auto Scaling group at 50 percent.
+     *
+     * * Configure a target tracking scaling policy to keep the request count per target of your
+     *   Elastic Load Balancing target group at 1000 for your Auto Scaling group.
+     *
+     * We recommend that you scale on Amazon EC2 instance metrics with a 1-minute frequency because
+     * that ensures a faster response to utilization changes. Scaling on metrics with a 5-minute
+     * frequency can result in slower response times and scaling on stale metric data. By default,
+     * Amazon EC2 instances are enabled for basic monitoring, which means metric data for instances
+     * is available at 5-minute intervals. You can enable detailed monitoring to get metric data for
+     * instances at 1-minute frequency. For more information, see
+     * [Configure-Monitoring-for-Auto-Scaling-Instances](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#enable-as-instance-metrics).
+     *
+     * See https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html for
+     * more details.
+     */
+    public scaleToTrackMetric(name: string, args: policy.CustomMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions): aws.autoscaling.Policy {
+        return policy.createCustomMetricTargetTrackingPolicy(name, this, args, opts);
+    }
+
+    /**
+     * Scales in response to the average CPU utilization of the [AutoScalingGroup].
+     */
+    public scaleToTrackAverageCPUUtilization(name: string, args: policy.TargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions): aws.autoscaling.Policy {
+        return policy.createPredefinedMetricTargetTrackingPolicy(name, this, {
+            predefinedMetricType: "ASGAverageCPUUtilization",
+            ...args,
+        }, opts);
+    }
+
+    /**
+     * Scales in response to the average number of bytes received on all network interfaces by the
+     * [AutoScalingGroup].
+     */
+    public scaleToTrackAverageNetworkIn(name: string, args: policy.TargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions): aws.autoscaling.Policy {
+        return policy.createPredefinedMetricTargetTrackingPolicy(name, this, {
+            predefinedMetricType: "ASGAverageNetworkIn",
+            ...args,
+        }, opts);
+    }
+
+    /**
+     * Scales in response to the average number of bytes sent out on all network interfaces by the
+     * [AutoScalingGroup].
+     */
+    public scaleToTrackAverageNetworkOut(name: string, args: policy.TargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions): aws.autoscaling.Policy {
+        return policy.createPredefinedMetricTargetTrackingPolicy(name, this, {
+            predefinedMetricType: "ASGAverageNetworkOut",
+            ...args,
+        }, opts);
+    }
+
+    /**
+     * Scales in response to the number of requests completed per target in an [TargetGroup].
+     * [AutoScalingGroup].  These [TargetGroup]s must have been provided to the [AutoScalingGroup]
+     * when constructed using [AutoScalingGroupArgs.targetGroups].
+     */
+    public scaleToTrackRequestCountPerTarget(name: string, args: policy.ApplicationTargetGroupTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+        const firstTargetGroup = this.targetGroups.find(
+            tg => x.elasticloadbalancingv2.ApplicationTargetGroup.isInstance(tg));
+
+        if (!firstTargetGroup) {
+            throw new Error("AutoScalingGroup must have been created with at least one ApplicationTargetGroup to support scaling by request count.");
+        }
+
+        const targetGroup = args.targetGroup || firstTargetGroup;
+        if (this.targetGroups.indexOf(targetGroup) < 0) {
+            throw new Error("AutoScalingGroup must have been created with [args.targetGroup] to support scaling by request count.");
+        }
+
+        const loadBalancer = targetGroup.loadBalancer.loadBalancer;
+
+        // loadbalancer-arnsuffix/targetgroup-arnsuffix is the format necessary to specify an
+        // AppTargetGroup for a tracking policy.  See
+        // https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_PredefinedMetricSpecification.html
+        // for more details.
+
+        return policy.createPredefinedMetricTargetTrackingPolicy(name, this, {
+            predefinedMetricType: "ALBRequestCountPerTarget",
+            resourceLabel: pulumi.interpolate `${loadBalancer.arnSuffix}/${targetGroup.targetGroup.arnSuffix}`,
+            ...args,
+        }, opts);
+    }
 }
 
 function ifUndefined<T>(val: T | undefined, defVal: T) {
@@ -110,11 +217,12 @@ function getCloudFormationTemplate(
     instanceName: string,
     instanceLaunchConfigurationId: pulumi.Output<string>,
     subnetIds: pulumi.Input<string>[],
+    targetGroupArns: pulumi.Input<string>[],
     parameters: pulumi.Output<TemplateParameters>): pulumi.Output<string> {
 
     const subnetIdsArray = pulumi.all(subnetIds);
-    return pulumi.all([subnetIdsArray, instanceLaunchConfigurationId, parameters])
-                 .apply(([subnetIdsArray, instanceLaunchConfigurationId, parameters]) => {
+    return pulumi.all([subnetIdsArray, targetGroupArns, instanceLaunchConfigurationId, parameters])
+                 .apply(([subnetIdsArray, targetGroupArns, instanceLaunchConfigurationId, parameters]) => {
 
     const minSize = ifUndefined(parameters.minSize, 2);
     const maxSize = ifUndefined(parameters.maxSize, 100);
@@ -133,7 +241,7 @@ function getCloudFormationTemplate(
         suspendProcessesString += "                    -   " + sp;
     }
 
-    const result = `
+    let result = `
     AWSTemplateFormatVersion: '2010-09-09'
     Outputs:
         Instances:
@@ -150,7 +258,14 @@ function getCloudFormationTemplate(
                 MaxSize: ${maxSize}
                 MetricsCollection:
                 -   Granularity: 1Minute
-                MinSize: ${minSize}
+                MinSize: ${minSize}`;
+
+    if (targetGroupArns.length) {
+        result += `
+                TargetGroupARNs: ${JSON.stringify(targetGroupArns)}`;
+    }
+
+    result += `
                 VPCZoneIdentifier: ${JSON.stringify(subnetIdsArray)}
                 Tags:
                 -   Key: Name
@@ -214,6 +329,12 @@ export interface AutoScalingGroupArgs {
      * the defaults specified in TemplateParameters will be used.
      */
     templateParameters?: pulumi.Input<TemplateParameters>;
+
+    /**
+     * A list of target groups to associate with the Auto Scaling group.  All target groups must
+     * have the "instance" [targetType].
+     */
+    targetGroups?: x.elasticloadbalancingv2.TargetGroup[];
 }
 
 type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling.GroupArgs>, {
