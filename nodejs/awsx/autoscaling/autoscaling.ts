@@ -180,7 +180,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * when constructed using [AutoScalingGroupArgs.targetGroups].
      */
     public scaleToTrackRequestCountPerTarget(name: string, args: policy.ApplicationTargetGroupTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
-        const targetGroup = args.targetGroup || firstTargetGroup;
+        const targetGroup = args.targetGroup;
         if (this.targetGroups.indexOf(targetGroup) < 0) {
             throw new Error("AutoScalingGroup must have been created with [args.targetGroup] to support scaling by request count.");
         }
