@@ -62,59 +62,6 @@ export interface StepAdjustment {
     scalingAdjustment: pulumi.Input<number>;
 }
 
-/** @internal */
-interface TargetTrackingConfiguration {
-    /**
-     * A customized metric. Cannot be provided along with [predefinedMetricSpecification].
-     */
-    customizedMetricSpecification?: pulumi.Input<{
-        /** The dimensions of the metric. */
-        metricDimensions?: pulumi.Input<pulumi.Input<{
-            /** The name of the dimension. */
-            name: pulumi.Input<string>;
-
-            /** The value of the dimension.  */
-            value: pulumi.Input<string>;
-        }>[]>;
-        /** The name of the metric. */
-        metricName: pulumi.Input<string>;
-        /** The namespace of the metric. */
-        namespace: pulumi.Input<string>;
-        /** The statistic of the metric. */
-        statistic: pulumi.Input<string>;
-        /** The unit of the metric. */
-        unit?: pulumi.Input<string>;
-    }>;
-
-    /**
-     * Indicates whether scaling in by the target tracking scaling policy is disabled. If scaling in
-     * is disabled, the target tracking scaling policy doesn't remove instances from the Auto
-     * Scaling group. Otherwise, the target tracking scaling policy can remove instances from the
-     * Auto Scaling group.  Defaults to [false] if unspecified.
-     */
-    disableScaleIn?: pulumi.Input<boolean>;
-
-    /**
-     * A predefined metric. Cannot be provided along with [customizedMetricSpecification].
-     */
-    predefinedMetricSpecification?: pulumi.Input<{
-        /**
-         * The metric type.
-         */
-        predefinedMetricType: pulumi.Input<PredefinedMetricType>;
-
-        /**
-         * Identifies the resource associated with the metric type.
-         */
-        resourceLabel?: pulumi.Input<string>;
-    }>;
-
-    /**
-     * The target value for the metric.
-     */
-    targetValue: pulumi.Input<number>;
-}
-
 export interface BasePolicyArgs {
     /**
      * Specifies whether the adjustment is an absolute number or a percentage of the current
@@ -159,7 +106,7 @@ interface PolicyArgs extends BasePolicyArgs {
     scalingAdjustment?: pulumi.Input<number>;
     stepAdjustments?: aws.autoscaling.PolicyArgs["stepAdjustments"];
     /**
-     * A target tracking policy. These have the following structure:
+     * A target tracking policy.
      */
     targetTrackingConfiguration?: aws.autoscaling.PolicyArgs["targetTrackingConfiguration"];
 }
@@ -194,14 +141,14 @@ export interface StepPolicyArgs extends BasePolicyArgs {
 }
 
 /** @internal */
-interface TargetTrackingPolicyArgs extends BasePolicyArgs {
+interface AwsTargetTrackingPolicyArgs extends BasePolicyArgs {
     /**
      * A target tracking policy.
      */
-    targetTrackingConfiguration?: pulumi.Input<TargetTrackingConfiguration>;
+    targetTrackingConfiguration?: aws.autoscaling.PolicyArgs["targetTrackingConfiguration"];
 }
 
-export interface MetricTargetTrackingPolicyArgs extends BasePolicyArgs {
+export interface TargetTrackingPolicyArgs extends BasePolicyArgs {
     /**
      * Indicates whether scaling in by the target tracking scaling policy is disabled. If scaling in
      * is disabled, the target tracking scaling policy doesn't remove instances from the Auto
@@ -216,7 +163,7 @@ export interface MetricTargetTrackingPolicyArgs extends BasePolicyArgs {
     targetValue: pulumi.Input<number>;
 }
 
-export interface ApplicationTargetGroupTrackingPolicyArgs extends MetricTargetTrackingPolicyArgs {
+export interface ApplicationTargetGroupTrackingPolicyArgs extends TargetTrackingPolicyArgs {
     /**
      * The target group to scale [AutoScalingGroup] in response to number of requests to.
      * If not provided, the first [TargetGroup] in [AutoScalingGroup.targetGroups] will be used.
@@ -231,7 +178,7 @@ export interface ApplicationTargetGroupTrackingPolicyArgs extends MetricTargetTr
  *
  * @internal
  */
-interface PredefinedMetricTargetTrackingPolicyArgs extends MetricTargetTrackingPolicyArgs {
+interface PredefinedMetricTargetTrackingPolicyArgs extends TargetTrackingPolicyArgs {
     /**
      * The metric type.
      */
@@ -259,7 +206,7 @@ interface PredefinedMetricTargetTrackingPolicyArgs extends MetricTargetTrackingP
  *    increase or decrease in inverse proportion to the number of capacity units. That is, the value
  *    of the metric should decrease when capacity increases.
  */
-export interface CustomMetricTargetTrackingPolicyArgs extends MetricTargetTrackingPolicyArgs {
+export interface CustomMetricTargetTrackingPolicyArgs extends TargetTrackingPolicyArgs {
     /** The metric to track */
     metric: x.cloudwatch.Metric;
 
@@ -307,7 +254,7 @@ export abstract class Policy extends pulumi.ComponentResource {
 abstract class TargetTrackingPolicy extends Policy {
     constructor(
         type: string, name: string, group: AutoScalingGroup,
-        args: TargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+        args: AwsTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
 
         super(type, name, group, {
             policyType: "TargetTrackingScaling",
