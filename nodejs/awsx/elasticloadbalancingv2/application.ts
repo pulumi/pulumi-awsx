@@ -20,6 +20,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as mod from ".";
 import * as x from "..";
 
+import * as utils from "../utils";
+
 export type ApplicationProtocol = "HTTP" | "HTTPS";
 
 /**
@@ -92,6 +94,10 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 
     public readonly listeners: x.elasticloadbalancingv2.ApplicationListener[];
 
+    /** @internal */
+    // tslint:disable-next-line:variable-name
+    public readonly __isApplicationTargetGroup: boolean;
+
     constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, { vpc: args.vpc }, opts);
         const { port, protocol } = computePortInfo(args.port, args.protocol);
@@ -102,6 +108,8 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             port,
             protocol,
         }, opts);
+
+        this.__isApplicationTargetGroup = true;
 
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
@@ -116,6 +124,10 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             loadBalancer: this.loadBalancer,
             ...args,
         }, opts);
+    }
+
+    public static isInstance(obj: any): obj is ApplicationTargetGroup {
+        return utils.isInstance<ApplicationTargetGroup>(obj, "__isApplicationTargetGroup");
     }
 }
 

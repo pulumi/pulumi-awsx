@@ -8,7 +8,13 @@
   [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/dashboards/index.ts)
   for an example.
 - [awsx.autoscaling.AutoScalingGroup]s can now easily have a scheduling action provided by using the
-  new [createSchedule] instance method.
+  new [AutoScalingGroup.createSchedule] instance method.
+- [awsx.autoscaling.AutoScalingGroup]s can now easily scale based on an [aws.cloudwatch.Metric] or
+  based on some preexisting well-known metrics.  See the new [AutoScalingGroup.scaleToTrackXXX]
+  instance methods. Amazon EC2 Auto Scaling creates and manages the CloudWatch alarms that trigger
+  the scaling policy and calculates the scaling adjustment based on the metric and the target value.
+  The scaling policy adds or removes capacity as required to keep the metric at, or close to, the
+  specified target value.
 
 ## 0.18.1 (Released 4/14/2019)
 

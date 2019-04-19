@@ -75,3 +75,31 @@ export function mergeTags(tags1: pulumi.Input<aws.Tags> | undefined,
         ...(tags2 || {}),
     }));
 }
+
+/**
+ * Common code for doing RTTI typechecks.  RTTI is done by having a boolean property on an object
+ * with a special name (like "__resource" or "__asset").  This function checks that the object
+ * exists, has a **boolean** property with that name, and that that boolean property has the value
+ * of 'true'.  Checking that property is 'boolean' helps ensure that this test works even on proxies
+ * that synthesize properties dynamically (like Output).  Checking that the property has the 'true'
+ * value isn't strictly necessary, but works to make sure that the impls are following a common
+ * pattern.
+ */
+/** @internal */
+export function isInstance<T>(obj: any, name: keyof T): obj is T {
+    return hasTrueBooleanMember(obj, name);
+}
+
+/** @internal */
+export function hasTrueBooleanMember(obj: any, memberName: string | number | symbol): boolean {
+    if (obj === undefined || obj === null) {
+        return false;
+    }
+
+    const val = obj[memberName];
+    if (typeof val !== "boolean") {
+        return false;
+    }
+
+    return val === true;
+}
