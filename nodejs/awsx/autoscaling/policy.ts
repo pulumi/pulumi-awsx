@@ -27,6 +27,8 @@ export type MetricAggregationType = "Minimum" | "Maximum" | "Average";
 /**
  * See https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_PredefinedMetricSpecification.html
  * for full details.
+ *
+ * @internal
  */
 export type PredefinedMetricType =
     /** Average CPU utilization of the Auto Scaling group.  */
@@ -59,10 +61,8 @@ export interface StepAdjustment {
     scalingAdjustment: pulumi.Input<number>;
 }
 
-/**
- * A target tracking policy.
- */
-export interface TargetTrackingConfiguration {
+/** @internal */
+interface TargetTrackingConfiguration {
     /**
      * A customized metric. Cannot be provided along with [predefinedMetricSpecification].
      */
@@ -135,7 +135,7 @@ export interface BasePolicyArgs {
     minAdjustmentMagnitude?: pulumi.Input<number>;
 }
 
-export interface PolicyArgs extends BasePolicyArgs {
+interface PolicyArgs extends BasePolicyArgs {
     /**
      * The amount of time, in seconds, after a scaling activity completes and before the next
      * scaling activity can start.
@@ -192,7 +192,8 @@ export interface StepPolicyArgs extends BasePolicyArgs {
     stepAdjustments?: pulumi.Input<pulumi.Input<StepAdjustment>[]>;
 }
 
-export interface TargetTrackingPolicyArgs extends BasePolicyArgs {
+/** @internal */
+interface TargetTrackingPolicyArgs extends BasePolicyArgs {
     /**
      * A target tracking policy.
      */
@@ -299,7 +300,8 @@ export abstract class Policy extends pulumi.ComponentResource {
     }
 }
 
-export abstract class TargetTrackingPolicy extends Policy {
+/** @internal */
+abstract class TargetTrackingPolicy extends Policy {
     constructor(
         type: string, name: string, group: AutoScalingGroup,
         args: TargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
@@ -318,6 +320,7 @@ export abstract class TargetTrackingPolicy extends Policy {
     }
 }
 
+/** @internal */
 export class PredefinedMetricTargetTrackingPolicy extends TargetTrackingPolicy {
     constructor(
         name: string, group: AutoScalingGroup,
@@ -337,6 +340,7 @@ export class PredefinedMetricTargetTrackingPolicy extends TargetTrackingPolicy {
     }
 }
 
+/** @internal */
 export class CustomMetricTargetTrackingPolicy extends TargetTrackingPolicy {
     constructor(
         name: string, group: AutoScalingGroup,

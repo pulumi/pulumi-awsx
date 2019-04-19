@@ -378,14 +378,18 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * See https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html for
      * more details.
      */
-    public scaleToTrackMetric(name: string, args: policy.CustomMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+    public scaleToTrackMetric(
+            name: string, args: policy.CustomMetricTargetTrackingPolicyArgs,
+            opts?: pulumi.ComponentResourceOptions): policy.Policy {
         return new policy.CustomMetricTargetTrackingPolicy(name, this, args, opts);
     }
 
     /**
      * Scales in response to the average CPU utilization of the [AutoScalingGroup].
      */
-    public scaleToTrackAverageCPUUtilization(name: string, args: policy.BaseMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+    public scaleToTrackAverageCPUUtilization(
+            name: string, args: policy.BaseMetricTargetTrackingPolicyArgs,
+            opts?: pulumi.ComponentResourceOptions): policy.Policy {
         return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ASGAverageCPUUtilization",
             ...args,
@@ -396,7 +400,9 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * Scales in response to the average number of bytes received on all network interfaces by the
      * [AutoScalingGroup].
      */
-    public scaleToTrackAverageNetworkIn(name: string, args: policy.BaseMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+    public scaleToTrackAverageNetworkIn(
+            name: string, args: policy.BaseMetricTargetTrackingPolicyArgs,
+            opts?: pulumi.ComponentResourceOptions): policy.Policy {
         return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ASGAverageNetworkIn",
             ...args,
@@ -407,7 +413,9 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * Scales in response to the average number of bytes sent out on all network interfaces by the
      * [AutoScalingGroup].
      */
-    public scaleToTrackAverageNetworkOut(name: string, args: policy.BaseMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+    public scaleToTrackAverageNetworkOut(
+            name: string, args: policy.BaseMetricTargetTrackingPolicyArgs,
+            opts?: pulumi.ComponentResourceOptions): policy.Policy {
         return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ASGAverageNetworkOut",
             ...args,
@@ -419,7 +427,10 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * [AutoScalingGroup].  These [TargetGroup]s must have been provided to the [AutoScalingGroup]
      * when constructed using [AutoScalingGroupArgs.targetGroups].
      */
-    public scaleToTrackRequestCountPerTarget(name: string, args: policy.ApplicationTargetGroupTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+    public scaleToTrackRequestCountPerTarget(
+            name: string, args: policy.ApplicationTargetGroupTrackingPolicyArgs,
+            opts?: pulumi.ComponentResourceOptions): policy.Policy {
+
         const firstTargetGroup = this.targetGroups.find(
             tg => x.elasticloadbalancingv2.ApplicationTargetGroup.isInstance(tg));
 
