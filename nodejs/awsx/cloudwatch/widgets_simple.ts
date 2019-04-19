@@ -297,6 +297,18 @@ export abstract class MetricWidget extends SimpleWidget {
     }
 }
 
+
+/** @internal */
+export function statisticString(obj: { extendedStatistic: pulumi.Input<number | undefined>, statistic: pulumi.Input<MetricStatistic> }) {
+    return pulumi.output(obj).apply(obj => {
+        if (obj.statistic !== undefined && obj.extendedStatistic !== undefined) {
+            throw new Error("[args.statistic] and [args.extendedStatistic] cannot both be provided.");
+        }
+
+        return obj.extendedStatistic !== undefined ? `p${obj.extendedStatistic}` : obj.statistic;
+    });
+}
+
 /**
  * Base type for all objects that can be placed in the [metrics] array of [MetricWidgetArgs].
  *
