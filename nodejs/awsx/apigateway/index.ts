@@ -13,7 +13,6 @@
 // limitations under the License.
 
 export * from "./api";
-
 export * from "./apikey";
 export * from "./cognitoAuthorizer";
 export * from "./lambdaAuthorizer";
