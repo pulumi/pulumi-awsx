@@ -21,7 +21,7 @@
         "read-package-tree": "^5.2.1",
         "resolve": "^1.7.1",
         "mocha": "^3.5.0",
-        "typescript": "^3.0.0",
+        "typescript": "^3.4.4",
         "chai": "^4.2.0",
         "proxyquire": "^2.1.0",
         "semver": "^6.0.0"
