@@ -138,10 +138,10 @@ export interface TargetTrackingPolicyArgs extends PolicyArgs {
 export interface ApplicationTargetGroupTrackingPolicyArgs extends TargetTrackingPolicyArgs {
     /**
      * The target group to scale [AutoScalingGroup] in response to number of requests to.
-     * If not provided, the first [TargetGroup] in [AutoScalingGroup.targetGroups] will be used.
-     * If provided, this must be a [TargetGroup] the [AutoScalingGroup] was created with.
+     * This must be a [TargetGroup] that the [AutoScalingGroup] was created with.  These can
+     * be provided to the [AutoScalingGroup] using [AutoScalingGroupArgs.targetGroups].
      */
-    targetGroup?: x.elasticloadbalancingv2.ApplicationTargetGroup;
+    targetGroup: x.elasticloadbalancingv2.ApplicationTargetGroup;
 }
 
 /**
