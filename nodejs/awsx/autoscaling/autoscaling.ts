@@ -148,7 +148,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * Scales in response to the average CPU utilization of the [AutoScalingGroup].
      */
     public scaleToTrackAverageCPUUtilization(
-            name: string, args: policy.BaseMetricTargetTrackingPolicyArgs,
+            name: string, args: policy.MetricTargetTrackingPolicyArgs,
             opts?: pulumi.ComponentResourceOptions): policy.Policy {
         return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ASGAverageCPUUtilization",
@@ -161,7 +161,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * [AutoScalingGroup].
      */
     public scaleToTrackAverageNetworkIn(
-            name: string, args: policy.BaseMetricTargetTrackingPolicyArgs,
+            name: string, args: policy.MetricTargetTrackingPolicyArgs,
             opts?: pulumi.ComponentResourceOptions): policy.Policy {
         return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ASGAverageNetworkIn",
@@ -174,7 +174,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * [AutoScalingGroup].
      */
     public scaleToTrackAverageNetworkOut(
-            name: string, args: policy.BaseMetricTargetTrackingPolicyArgs,
+            name: string, args: policy.MetricTargetTrackingPolicyArgs,
             opts?: pulumi.ComponentResourceOptions): policy.Policy {
         return new policy.PredefinedMetricTargetTrackingPolicy(name, this, {
             predefinedMetricType: "ASGAverageNetworkOut",

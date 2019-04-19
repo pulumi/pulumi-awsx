@@ -21,8 +21,9 @@ import * as utils from "./../utils";
 import { AutoScalingGroup } from "./autoscaling";
 
 export type AdjustmentType = "ChangeInCapacity" | "ExactCapacity" | "PercentChangeInCapacity";
-export type PolicyType = "SimpleScaling" | "StepScaling" | "TargetTrackingScaling";
 export type MetricAggregationType = "Minimum" | "Maximum" | "Average";
+
+type PolicyType = "SimpleScaling" | "StepScaling" | "TargetTrackingScaling";
 
 /**
  * See https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_PredefinedMetricSpecification.html
@@ -30,7 +31,7 @@ export type MetricAggregationType = "Minimum" | "Maximum" | "Average";
  *
  * @internal
  */
-export type PredefinedMetricType =
+type PredefinedMetricType =
     /** Average CPU utilization of the Auto Scaling group.  */
     "ASGAverageCPUUtilization" |
     /** Average number of bytes received on all network interfaces by the Auto Scaling group. */
@@ -200,7 +201,7 @@ interface TargetTrackingPolicyArgs extends BasePolicyArgs {
     targetTrackingConfiguration?: pulumi.Input<TargetTrackingConfiguration>;
 }
 
-export interface BaseMetricTargetTrackingPolicyArgs extends BasePolicyArgs {
+export interface MetricTargetTrackingPolicyArgs extends BasePolicyArgs {
     /**
      * Indicates whether scaling in by the target tracking scaling policy is disabled. If scaling in
      * is disabled, the target tracking scaling policy doesn't remove instances from the Auto
@@ -215,7 +216,7 @@ export interface BaseMetricTargetTrackingPolicyArgs extends BasePolicyArgs {
     targetValue: pulumi.Input<number>;
 }
 
-export interface ApplicationTargetGroupTrackingPolicyArgs extends BaseMetricTargetTrackingPolicyArgs {
+export interface ApplicationTargetGroupTrackingPolicyArgs extends MetricTargetTrackingPolicyArgs {
     /**
      * The target group to scale [AutoScalingGroup] in response to number of requests to.
      * If not provided, the first [TargetGroup] in [AutoScalingGroup.targetGroups] will be used.
@@ -227,8 +228,10 @@ export interface ApplicationTargetGroupTrackingPolicyArgs extends BaseMetricTarg
 /**
  * Represents a predefined metric for a target tracking scaling policy to use with Amazon EC2 Auto
  * Scaling.
+ *
+ * @internal
  */
-export interface PredefinedMetricTargetTrackingPolicyArgs extends BaseMetricTargetTrackingPolicyArgs {
+interface PredefinedMetricTargetTrackingPolicyArgs extends MetricTargetTrackingPolicyArgs {
     /**
      * The metric type.
      */
@@ -256,7 +259,7 @@ export interface PredefinedMetricTargetTrackingPolicyArgs extends BaseMetricTarg
  *    increase or decrease in inverse proportion to the number of capacity units. That is, the value
  *    of the metric should decrease when capacity increases.
  */
-export interface CustomMetricTargetTrackingPolicyArgs extends BaseMetricTargetTrackingPolicyArgs {
+export interface CustomMetricTargetTrackingPolicyArgs extends MetricTargetTrackingPolicyArgs {
     /** The metric to track */
     metric: x.cloudwatch.Metric;
 
