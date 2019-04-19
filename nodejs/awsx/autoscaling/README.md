@@ -65,20 +65,18 @@ Scaling based on a schedule allows you to set your own scaling schedule for pred
 To create a `Schedule` you can do:
 
 ```ts
-// Schedule the ASG to go up to 20 instances at 6am, and back down to 10 at 10pm.
+// Schedule the ASG to go up to 20 instances on Friday and back down to 10 on Monday.
 autoScalingGroup.scaleOnSchedule("scaleUpOnFriday", {
     minSize: 20,
-    recurrence: { dayOfWeek: 5 /*friday*/ },
+    recurrence: { dayOfWeek: "Friday" },
 });
 autoScalingGroup.scaleOnSchedule("scaleDownOnMonday", {
     minSize: 10,
-    recurrence: { dayOfWeek: 1 /*monday*/ },
+    recurrence: { dayOfWeek: "Monday" },
 });
 ```
 
 Schedules also support normal [cron](https://en.wikipedia.org/wiki/Cron) format strings like so:
-
-
 
 ```ts
 // Schedule the ASG to go up to 20 instances at 6am, and back down to 10 at 10pm.

@@ -23,13 +23,56 @@ export function cronExpression(a: ScheduleRecurrenceArgs) {
     checkRange(a.minute, "minute", 0, 59);
     checkRange(a.hour, "hour", 0, 23);
     checkRange(a.dayOfMonth, "dayOfMonth", 1, 31);
-    checkRange(a.month, "month", 1, 12);
-    checkRange(a.dayOfWeek, "dayOfWeek", 0, 7);
+    if (typeof a.month === "number") {
+        checkRange(a.month, "month", 1, 12);
+    }
+    if (typeof a.dayOfWeek === "number") {
+        checkRange(a.dayOfWeek, "dayOfWeek", 0, 7);
+    }
 
-    return `${val(a.minute)} ${val(a.hour)} ${val(a.dayOfMonth)} ${val(a.month)} ${val(a.dayOfWeek)}`;
+    return `${val(a.minute)} ${val(a.hour)} ${val(a.dayOfMonth)} ${month(a.month)} ${dayOfWeek(a.dayOfWeek)}`;
 
     function val(v: number | undefined) {
         return v === undefined ? "*" : v;
+    }
+
+    function dayOfWeek(v: DayOfWeek | undefined) {
+        if (v === undefined || typeof v === "number") {
+            return val(v);
+        }
+
+        switch (v) {
+            case "Sunday": return 0;
+            case "Monday": return 1;
+            case "Tuesday": return 2;
+            case "Wednesday": return 3;
+            case "Thursday": return 4;
+            case "Friday": return 5;
+            case "Saturday": return 6;
+            default: throw new Error(`Invalid day of week: ${v}`);
+        }
+    }
+
+    function month(v: Month | undefined) {
+        if (v === undefined || typeof v === "number") {
+            return val(v);
+        }
+
+        switch (v) {
+            case "January": return 1;
+            case "February": return 2;
+            case "March": return 3;
+            case "April": return 4;
+            case "May": return 5;
+            case "June": return 6;
+            case "July": return 7;
+            case "August": return 8;
+            case "September": return 9;
+            case "October": return 10;
+            case "November": return 11;
+            case "December": return 12;
+            default: throw new Error(`Invalid month: ${v}`);
+        }
     }
 
     function checkRange(
@@ -43,6 +86,20 @@ export function cronExpression(a: ScheduleRecurrenceArgs) {
     }
 }
 
+/**
+ * If a number, it must be between 0 to 7 (inclusive).  (0 and 7 both represent Sunday). Leave
+ * undefined to indicate no specific value.
+ */
+export type DayOfWeek = number | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+
+/**
+ * If a number, it must be between 1 to 12 (inclusive).  Leave undefined to indicate no specific
+ * value.
+ */
+export type Month = number |
+    "January" | "February" | "March" | "April" | "May" | "June" |
+    "July" | "August" | "September" | "October" | "November" | "December";
+
 export interface ScheduleRecurrenceArgs {
     /** 0 to 59.  Leave undefined to indicate no specific value. */
     minute?: number;
@@ -53,11 +110,11 @@ export interface ScheduleRecurrenceArgs {
     /** 1 to 31.  Leave undefined to indicate no specific value. */
     dayOfMonth?: number;
 
-    /** 1 to 12.  Leave undefined to indicate no specific value. */
-    month?: number;
+    /** Month of the year to perform the scheduled action on.  Leave undefined to indicate no specific value. */
+    month?: Month;
 
-    /** 0 to 7.  (0 and 7 both represent Sunday). Leave undefined to indicate no specific value. */
-    dayOfWeek?: number;
+    /** Day of the week to perform the scheduled action on.  Leave undefined to indicate no specific value. */
+    dayOfWeek?: DayOfWeek;
 }
 
 export interface ScheduleArgs {
