@@ -18,7 +18,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as awslambda from "aws-lambda";
-import { CognitoAuthorizer } from './cognitoAuthorizer';
+import { CognitoAuthorizer } from "./cognitoAuthorizer";
 
 export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
