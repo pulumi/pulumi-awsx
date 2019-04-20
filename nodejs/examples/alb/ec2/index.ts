@@ -33,14 +33,14 @@ const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
     },
 });
 
-const policy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
+const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
     targetValue: 10,
     estimatedInstanceWarmup: 120,
     targetGroup: targetGroup,
 });
 
 const nginxListener = targetGroup.createListener("nginx", { port: 80, external: true });
-const nginx = new awsx.ecs.EC2Service("nginx", {
+const service = new awsx.ecs.EC2Service("nginx", {
     cluster,
     taskDefinitionArgs: {
         networkMode: "bridge",
@@ -53,6 +53,19 @@ const nginx = new awsx.ecs.EC2Service("nginx", {
         },
     },
     desiredCount: 2,
+});
+
+// Create a policy that scales the ASG in response to the average memory utilization of the service.
+// When memory goes above 60%, scale up the ASG by 10%.  If it goes above 70%, scale it up by 30%.
+// Similarly, if memory goes below 40%, scale down by 10%.  If it goes below 30%, scale it down by
+// 30%.
+const stepScalingPolicy = autoScalingGroup.scaleInSteps("scale-in-out", {
+    metric: awsx.ecs.metrics.memoryUtilization({ service, unit: "Percent", statistic: "Average" }),
+    adjustmentType: "PercentChangeInCapacity",
+    steps: {
+        upper: [{ value: 60, adjustment: 10 }, { value: 70, adjustment: 30 }],
+        lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }]
+    },
 });
 
 loadBalancer.securityGroups[0].createEgressRule("nginxEgress",

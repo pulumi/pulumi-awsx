@@ -19,9 +19,6 @@ import * as x from "..";
 
 import { AutoScalingGroup } from "./autoscaling";
 
-export type AdjustmentType = "ChangeInCapacity" | "ExactCapacity" | "PercentChangeInCapacity";
-export type MetricAggregationType = "Minimum" | "Maximum" | "Average";
-
 /**
  * See https://docs.aws.amazon.com/autoscaling/ec2/APIReference/API_PredefinedMetricSpecification.html
  * for full details.

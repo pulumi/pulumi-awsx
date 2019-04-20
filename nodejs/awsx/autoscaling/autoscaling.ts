@@ -19,8 +19,9 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 import { AutoScalingLaunchConfiguration, AutoScalingLaunchConfigurationArgs } from "./launchConfiguration";
-import * as targetTracking from "./policy_targetTracking";
 import { cronExpression, ScheduleArgs } from "./schedule";
+import * as stepScaling from "./stepScaling";
+import * as targetTracking from "./targetTracking";
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
     public readonly vpc: x.ec2.Vpc;
@@ -197,6 +198,17 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             resourceLabel: pulumi.interpolate `${loadBalancerSuffix}/${targetGroupSuffix}`,
             ...args,
         }, opts);
+    }
+
+    /**
+     * Creates a [StepScalingPolicy]  that increases or decreases the current capacity of this
+     * AutoScalingGroup based on a set of scaling adjustments, known as step adjustments. The
+     * adjustments vary based on the size of the alarm breach.
+     *
+     * See [StepScalingPolicy] for more details.
+     */
+    public scaleInSteps(name: string, args: stepScaling.StepScalingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+        return new stepScaling.StepScalingPolicy(name, this, args, opts);
     }
 }
 
