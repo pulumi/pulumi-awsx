@@ -32,7 +32,7 @@ const lambda = new aws.lambda.Function("myfunction", {
 // Define the Authorizers up here so we can use it for two routes. Note - if you are sharing an
 // authorizer you will want to set the authorizerResultTtlInSeconds to 0 seconds or else it will
 // cause problems for you.
-const authorizers: awsx.apigateway.LambdaAuthorizer[] = [{
+const lambdaAuthorizer: awsx.apigateway.LambdaAuthorizer = {
     authorizerName: "prettyAuthorizer",
     parameterName: "auth",
     parameterLocation: "query",
@@ -43,7 +43,7 @@ const authorizers: awsx.apigateway.LambdaAuthorizer[] = [{
     },
     identitySource: ["method.request.querystring.auth"],
     authorizerResultTtlInSeconds: 0,
-}];
+};
 
 /**
  * In the following example, parameter validation is required for the `/a` route.
@@ -65,13 +65,13 @@ const api = new awsx.apigateway.API("myapi", {
             name: "key",
             in: "query",
         }],
-        authorizers: authorizers,
+        authorizers: lambdaAuthorizer,
     }, {
         path: "/b",
         method: "GET",
         eventHandler: lambda,
         apiKeyRequired: true,
-        authorizers: authorizers,
+        authorizers: lambdaAuthorizer,
     }, {
         path: "/www",
         localPath: "www",
