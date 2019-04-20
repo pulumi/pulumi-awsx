@@ -215,6 +215,21 @@ autoScalingGroup.scaleInSteps("scale-in-out", {
 };
 ```
 
+This represents the following scaling strategy:
+
+```
+Memory utilization:
+
+0%               30%    40%          60%     70%               100%
+-------------------------------------------------------------------
+|       -30%      | -10% | Unchanged  | +10%  |       +30%        |
+-------------------------------------------------------------------
+```
+
+This will end up setting two alarms for this metric.  One for when the metric goes above 60%, and
+one where it goes below.  Depending on which step range the value is in when the alarm fires, the
+ASG will scale accordingly.  Because we've chosen `"PercentChangeInCapacity"` as our adjustment type, a value of 65% would scale the ASG up by 10%, while a value of 85% would scale the ASG up by 30%.
+
 If the metric value gets to 60, Auto Scaling increases the desired capacity of the group by 1, to
 11. That's based on the second step adjustment of the scale-out policy (add 10 percent of 10). After
 the new capacity is added, Application Auto Scaling increases the current capacity to 11. If the
@@ -227,3 +242,20 @@ If the metric value gets to 40, Application Auto Scaling decreases the target ca
 rounded down to 1). If the metric value falls to 30 even after this decrease in capacity,
 Application Auto Scaling decreases the target capacity by 3, to 10, based on the third step
 adjustment of the scale-in policy (remove 30 percent of 13, 3.9, rounded down to 3).
+
+Other adjustment types are possible as well.  The full list is:
+
+1. "ChangeInCapacity".  This increases or decreases the current capacity of the group by the
+   specified number of instances. A positive value increases the capacity and a negative adjustment
+   value decreases the capacity.  For example: If the current capacity of the group is 3 instances
+   and the adjustment is 5, then when this policy is performed, there are 5 instances added to the
+   group for a total of 8 instances.
+
+2. "ExactCapacity".  This changes the current capacity of the group to the specified number of instances. Specify a positive value with this adjustment type.  For example: If the current capacity of the group is 3 instances and the adjustment is 5, then when this policy is performed, the capacity is set to 5 instances.
+
+3. "PercentChangeInCapacity".  As shown above. Increment or decrement the current capacity of the
+   group by the specified percentage. A positive value increases the capacity and a negative value
+   decreases the capacity. If the resulting value is not an integer, it is rounded.  See [step
+   scaling](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html for
+   more) details.  With "PercentChangeInCapacity", you can also specify the minimum number of
+   instances to scale using the `minAdjustmentMagnitude` parameter.
