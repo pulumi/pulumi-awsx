@@ -14,6 +14,7 @@
 
 export * from "./api";
 export * from "./apikey";
+export * from "./cognitoAuthorizer";
 export * from "./lambdaAuthorizer";
 export * from "./metrics";
 export * from "./swagger_json";

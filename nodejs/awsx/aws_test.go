@@ -153,6 +153,15 @@ func Test_Examples(t *testing.T) {
 					},
 					expectedBody: "contents1\n",
 				},
+				{
+					urlStackOutputKey: "cognitoUrl",
+					urlPath:           "/www_old/sub/file1.txt",
+					requiredToken: &requiredToken{
+						header:       "Authorization",
+						getAuthToken: getCognitoUserToken,
+					},
+					expectedBody: "othercontents1\n",
+				},
 			}),
 			EditDirs: []integration.EditDir{{
 				Dir:      "../examples/api/step2",
@@ -429,6 +438,7 @@ type apiTest struct {
 	urlPath            string
 	requiredParameters *requiredParameters
 	requiredAuth       *requiredAuth
+	requiredToken      *requiredToken
 	requiredAPIKey     *requiredAPIKey
 	expectedBody       string
 }
@@ -436,6 +446,11 @@ type apiTest struct {
 type requiredAuth struct {
 	headers         map[string]string
 	queryParameters map[string]string
+}
+
+type requiredToken struct {
+	header       string
+	getAuthToken func(t *testing.T, stack integration.RuntimeValidationStackInfo) string
 }
 
 type requiredAPIKey struct {
@@ -470,6 +485,14 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 					q.Add(param, val)
 				}
 				req.URL.RawQuery = q.Encode()
+			}
+
+			if tt.requiredToken != nil {
+				resp := GetHTTP(t, req, 401)
+				assertRequestBody(t, `{"message":"Unauthorized"}`, resp)
+
+				token := tt.requiredToken.getAuthToken(t, stack)
+				req.Header.Add(tt.requiredToken.header, token)
 			}
 
 			if tt.requiredAPIKey != nil {
