@@ -167,7 +167,7 @@ const gatewayRole = new aws.iam.Role("gateway-role", {
     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] }),
 });
 
-// Give the lambda role permission to invoke the Authorizer -- TODO this can be another role
+// Give the lambda role permission to invoke the Authorizer
 const invocationPolicy = new aws.iam.RolePolicy("invocation-policy", {
     policy: authorizerLambda.arn.apply(arn => `{
      "Version": "2012-10-17",
@@ -203,3 +203,28 @@ const associateKeys = awsx.apigateway.createAssociatedAPIKeys("authorizer-api", 
 });
 
 export const authorizerUrl = apiWithAuthorizer.url;
+
+/**
+ *The example below shows using a Cognito Authorizer.
+ */
+
+const cognitoUserPool = new aws.cognito.UserPool("pool", {});
+
+const cognitoClient = new aws.cognito.UserPoolClient("poolClient", {
+    userPoolId: cognitoUserPool.id,
+    explicitAuthFlows: ["ADMIN_NO_SRP_AUTH"],
+});
+
+const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-api", {
+    routes: [{
+        path: "/www_old",
+        localPath: "www",
+        authorizers: [awsx.apigateway.getCognitoAuthorizer({
+            providerARNs: [cognitoUserPool],
+        })],
+    }],
+});
+
+export const cognitoUrl = apiWithCognitoAuthorizer.url;
+export const cognitoPoolId = cognitoUserPool.id;
+export const cognitoClientId = cognitoClient.id;

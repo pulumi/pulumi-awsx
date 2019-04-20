@@ -18,6 +18,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as awslambda from "aws-lambda";
+import { CognitoAuthorizer } from "./cognitoAuthorizer";
 
 export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
@@ -100,6 +101,11 @@ export interface LambdaAuthorizerInfo {
      * For example, "arn:aws:iam::account-id:IAM_role".
      */
     credentials: pulumi.Input<string> | aws.iam.Role;
+}
+
+/** @internal */
+export function isLambdaAuthorizer(authorizer: LambdaAuthorizer | CognitoAuthorizer): authorizer is LambdaAuthorizer {
+    return (<LambdaAuthorizer>authorizer).handler !== undefined;
 }
 
 /** @internal */
