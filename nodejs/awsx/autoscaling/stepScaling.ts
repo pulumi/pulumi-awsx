@@ -208,14 +208,13 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
-        const upperStepsAndThreshold = pulumi.output(args.steps.upper)
-                                             .apply(convertUpperSteps);
+        const convertedSteps = pulumi.output(args.steps).apply(convertSteps);
 
         this.upperPolicy = new aws.autoscaling.Policy(`${name}-upper`, {
             autoscalingGroupName: group.group.name,
             policyType: "StepScaling",
             ...args,
-            stepAdjustments: upperStepsAndThreshold.stepAdjustments,
+            stepAdjustments: convertedSteps.upper.stepAdjustments,
             metricAggregationType: pulumi.output(args.metric.statistic).apply(s => {
                 if (s !== "Minimum" && s !== "Maximum" && s !== "Average") {
                     throw new Error(`[args.metric.statistic] must be one of "Minimum", "Maximum" or "Average", but was: ${s}`);
@@ -229,26 +228,23 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
             // step ranges and alarms are inclusive on the lower end.
             comparisonOperator: "GreaterThanOrEqualToThreshold",
             evaluationPeriods: 1,
-            threshold: upperStepsAndThreshold.threshold,
+            threshold: convertedSteps.upper.threshold,
             alarmActions: [this.upperPolicy.arn],
         }, parentOpts);
 
         if (args.steps.lower) {
-            const lowerStepsAndThreshold = pulumi.output(args.steps.lower)
-                                                 .apply(convertLowerSteps);
-
             this.lowerPolicy = new aws.autoscaling.Policy(`${name}-lower`, {
                 autoscalingGroupName: group.group.name,
                 policyType: "StepScaling",
                 ...args,
-                stepAdjustments: lowerStepsAndThreshold.stepAdjustments,
+                stepAdjustments: convertedSteps.lower.stepAdjustments,
             }, parentOpts);
 
             this.lowerAlarm = args.metric.withPeriod(60).createAlarm(`${name}-lower`, {
                 // step ranges and alarms are inclusive on the upper end.
                 comparisonOperator: "LessThanOrEqualToThreshold",
                 evaluationPeriods: 1,
-                threshold: lowerStepsAndThreshold.threshold,
+                threshold: convertedSteps.lower.threshold,
                 alarmActions: [this.lowerPolicy.arn],
             }, parentOpts);
         }
@@ -261,6 +257,28 @@ interface AwsStepAdjustment {
     metricIntervalLowerBound: string | undefined;
     metricIntervalUpperBound: string | undefined;
     scalingAdjustment: number;
+}
+
+/** @internal */
+export function convertSteps(steps: pulumi.Unwrap<Steps>) {
+    // First, order so that smaller values comes first.
+    const upperSteps = sortSteps(steps.upper);
+    const lowerSteps = steps.lower ? sortSteps(steps.lower) : undefined;
+
+    const result = {
+        upper: convertUpperSteps(upperSteps),
+        lower: convertLowerSteps(lowerSteps),
+    };
+
+    if (upperSteps && lowerSteps) {
+        const lowerStep = lowerSteps[lowerSteps.length - 1];
+        const upperStep = upperSteps[0];
+        if (lowerStep.value > upperStep.value) {
+            throw new Error(`Lower and upper steps cannot overlap. Lower step value ${lowerStep.value} greater than upper step value ${upperStep.value}`);
+        }
+    }
+
+    return result;
 }
 
 /** @internal */
@@ -305,9 +323,13 @@ function sortSteps(steps: pulumi.UnwrappedObject<x.autoscaling.Step>[]) {
 }
 
 /** @internal */
-export function convertLowerSteps(lowerSteps: pulumi.Unwrap<Step>[]) {
+export function convertLowerSteps(lowerSteps: pulumi.Unwrap<Step>[] | undefined) {
+    if (!lowerSteps) {
+        return undefined!;
+    }
+
     if (lowerSteps.length === 0) {
-        throw new Error("[args.steps.lower] must be non-empty if provided.");
+        throw new Error("[args.steps.lower] must be non-empty.");
     }
 
     // First, order so that smaller values comes first.

@@ -18,7 +18,7 @@ pulumi.runtime.setConfig("aws:region", "us-east-2");
 
 import * as assert from "assert";
 
-import { convertLowerSteps, convertUpperSteps, Step } from "../../autoscaling/stepScaling";
+import { convertLowerSteps, convertSteps, convertUpperSteps, Step, Steps } from "../../autoscaling/stepScaling";
 
 function upperStepsJson(...steps: pulumi.Unwrap<Step>[]) {
     return JSON.stringify(convertUpperSteps(steps), null, 4);
@@ -26,6 +26,10 @@ function upperStepsJson(...steps: pulumi.Unwrap<Step>[]) {
 
 function lowerStepsJson(...steps: pulumi.Unwrap<Step>[]) {
     return JSON.stringify(convertLowerSteps(steps), null, 4);
+}
+
+function stepsJson(steps: pulumi.Unwrap<Steps>) {
+    return JSON.stringify(convertSteps(steps), null, 4);
 }
 
 describe("step scaling", () => {
@@ -153,5 +157,95 @@ describe("step scaling", () => {
     ]
 }`);
         });
+    });
+
+    it("upper and lower", () => {
+        assert.equal(stepsJson({
+            upper: [{ value: 60, adjustment: 10 }, { value: 70, adjustment: 30 }],
+            lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }]
+        }), `{
+    "upper": {
+        "threshold": 60,
+        "stepAdjustments": [
+            {
+                "metricIntervalLowerBound": "0",
+                "metricIntervalUpperBound": "10",
+                "scalingAdjustment": 10
+            },
+            {
+                "metricIntervalLowerBound": "10",
+                "scalingAdjustment": 30
+            }
+        ]
+    },
+    "lower": {
+        "threshold": 40,
+        "stepAdjustments": [
+            {
+                "metricIntervalUpperBound": "-10",
+                "scalingAdjustment": -30
+            },
+            {
+                "metricIntervalLowerBound": "-10",
+                "metricIntervalUpperBound": "0",
+                "scalingAdjustment": -10
+            }
+        ]
+    }
+}`);
+    });
+
+    it("upper and lower flipped", () => {
+        assert.equal(stepsJson({
+            upper: [{ value: 70, adjustment: 30 }, { value: 60, adjustment: 10 }],
+            lower: [{ value: 30, adjustment: -30 }, { value: 40, adjustment: -10 }, ]
+        }), `{
+    "upper": {
+        "threshold": 60,
+        "stepAdjustments": [
+            {
+                "metricIntervalLowerBound": "0",
+                "metricIntervalUpperBound": "10",
+                "scalingAdjustment": 10
+            },
+            {
+                "metricIntervalLowerBound": "10",
+                "scalingAdjustment": 30
+            }
+        ]
+    },
+    "lower": {
+        "threshold": 40,
+        "stepAdjustments": [
+            {
+                "metricIntervalUpperBound": "-10",
+                "scalingAdjustment": -30
+            },
+            {
+                "metricIntervalLowerBound": "-10",
+                "metricIntervalUpperBound": "0",
+                "scalingAdjustment": -10
+            }
+        ]
+    }
+}`);
+    });
+
+    it("throws on overlap 1", () => {
+        assert.throws(() => stepsJson({
+            upper: [{ value: 60, adjustment: 10 }],
+            lower: [{ value: 70, adjustment: -10 }] }));
+    });
+
+    it("throws on overlap 1", () => {
+        assert.throws(() => stepsJson({
+            upper: [{ value: 60, adjustment: 10 }, { value: 80, adjustment: 10 }],
+            lower: [{ value: 40, adjustment: -10 }, { value: 70, adjustment: -10 }] }));
+    });
+
+    it("throws on overlap 2", () => {
+        assert.throws(() => stepsJson({
+            upper: [{ value: 80, adjustment: 10 }, { value: 60, adjustment: 10 }],
+            lower: [{ value: 70, adjustment: -10 }, { value: 40, adjustment: -10 }] }));
     });
 });
