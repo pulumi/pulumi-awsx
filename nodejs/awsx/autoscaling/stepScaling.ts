@@ -64,50 +64,51 @@ export type AdjustmentType =
 
 export type MetricAggregationType = "Minimum" | "Maximum" | "Average";
 
-/**
- * When you create a step scaling policy, you add one or more step adjustments that enable you to
- * scale based on the size of the alarm breach. Each step adjustment specifies the following:
- *
- *  1. A lower bound for the metric value
- *  2. An upper bound for the metric value
- *  3. The amount by which to scale, based on the scaling adjustment type
- *
- * There are a few rules for the step adjustments for your policy:
- *
- *  1. The ranges of your step adjustments can't overlap or have a gap.
- *  2. Only one step adjustment can have a null lower bound (negative infinity). If one step
- *     adjustment has a negative lower bound, then there must be a step adjustment with a null lower
- *     bound.
- *  3. Only one step adjustment can have a null upper bound (positive infinity). If one step
- *     adjustment has a positive upper bound, then there must be a step adjustment with a null upper
- *     bound.
- *  4. The upper and lower bound can't be null in the same step adjustment.
- *  5. If the metric value is above the breach threshold, the lower bound is inclusive and the upper
- *     bound is exclusive. If the metric value is below the breach threshold, the lower bound is
- *     exclusive and the upper bound is inclusive.
- *
- * See https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html for more
- * details.
- */
-export interface StepAdjustment {
+export interface Steps {
     /**
-     * The lower bound for the difference between the alarm threshold and the CloudWatch metric.
-     * Without a value, AWS will treat this bound as infinity.
+     * The upper steps for this policy normally describing how to scale-out the AutoScalingGroup.
+     * This must be non-empty.  An alarm will be created that will fire when the desired metric goes
+     * greater-than-or-equal-to the value of the first step's `value`.  Each step ranges from it's
+     * `value` (inclusive) to the `value` of the next step (exclusive).  For the last step, the end
+     * part of the range is `Infinity`.
+     *
+     * Depending on which step range the alarm triggers for will determine which particular
+     * [scalingAdjustment] will be performed.
+     *
+     * `upper` and `lower` must not overlap.
      */
-    metricIntervalLowerBound?: pulumi.Input<number>;
+    upper: pulumi.Input<Step>[];
 
     /**
-     * The upper bound for the difference between the alarm threshold and the CloudWatch metric.
-     * Without a value, AWS will treat this bound as infinity. The upper bound must be greater
-     * than the lower bound.
+     * Optional lower steps for this step policy normally used to describe how to scale-in the
+     * AutoScalingGroup.  If these are provided then the step policy will create two alarms.  One
+     * for when the upper steps are breached and one for when the lower steps are breached.
+     *
+     * The latter alarm will fire when the desired metric goes less-than-or-equal-to the value of
+     * the first step's `value`.  Each step ranges from it's `value` (inclusive) to the `value` of
+     * the next step (exclusive).  For the last step, the end part of the range is `-Infinity`.
+     *
+     * Depending on which step range the alarm triggers for will determine which particular
+     * [scalingAdjustment] will be performed.
+     *
+     * `upper` and `lower` must not overlap.
      */
-    metricIntervalUpperBound?: pulumi.Input<number>;
+    lower?: pulumi.Input<Step>[];
+}
+
+export interface Step {
+    /**
+     * The threshold value that causes this step to be followed.  If this an `upperStep` then values
+     * `>=` to this will trigger this step's [scalingAdjustment].  If this is a `lowerStep` then
+     * values `<=` to this will trigger this step's [scalingAdjustment].
+     */
+    value: pulumi.Input<number>;
 
     /**
-     * The number of members by which to scale, when the adjustment bounds are breached. A
-     * positive value scales up. A negative value scales down
+     * The number of members by which to scale, when [value] breached. A
+     * positive value scales up. A negative value scales down.
      */
-    scalingAdjustment: pulumi.Input<number>;
+    adjustment: pulumi.Input<number>;
 }
 
 export interface StepScalingPolicyArgs {
@@ -121,9 +122,9 @@ export interface StepScalingPolicyArgs {
     metric: x.cloudwatch.Metric;
 
     /**
-     * The arguments controlling the alarm that gets created.
+     * A set of adjustments that manage group scaling.
      */
-    alarmArgs: x.cloudwatch.AlarmArgs;
+    steps: Steps;
 
     /**
      * When a step scaling or simple scaling policy is executed, it changes the current capacity of
@@ -131,7 +132,7 @@ export interface StepScalingPolicyArgs {
      * adjustment can't change the capacity of the group above the maximum group size or below the
      * minimum group size.
      */
-    adjustmentType?: pulumi.Input<AdjustmentType>;
+    adjustmentType: pulumi.Input<AdjustmentType>;
 
     /**
      * The estimated time, in seconds, until a newly launched instance will contribute CloudWatch
@@ -147,57 +148,111 @@ export interface StepScalingPolicyArgs {
     minAdjustmentMagnitude?: pulumi.Input<number>;
 
     /**
-     * The number of instances by which to scale. adjustmentType determines the interpretation of
-     * this number (e.g., as an absolute number or as a percentage of the existing Auto Scaling
-     * group size). A positive increment adds to the current capacity and a negative value removes
-     * from the current capacity.
-     */
-    scalingAdjustment?: pulumi.Input<number>;
-
-    /**
      * The aggregation type for the policy's metrics. Without a value, AWS will treat the
      * aggregation type as "Average"
      */
     metricAggregationType?: pulumi.Input<MetricAggregationType>;
-
-    /**
-     * A set of adjustments that manage group scaling.
-     */
-    stepAdjustments: pulumi.Input<pulumi.Input<StepAdjustment>[]>;
 }
 
+/**
+ * Step scaling policies increase or decrease the current capacity of your Auto Scaling group based
+ * on a set of scaling adjustments, known as step adjustments. The adjustments vary based on the
+ * size of the alarm breach.
+ *
+ * For example, consider the following StepScaling description for an ASG that has both a current
+ * capacity and a desired capacity of 10. The current and desired capacity is maintained while the
+ * aggregated metric value is greater than 40 and less than 60.
+ *
+ * ```ts
+ *  const policy = {
+ *      // ... other values
+ *      adjustmentType: "PercentChangeInCapacity",
+ *      steps: {
+ *          upper: [{ value: 60, adjustment: 10 }, { value: 70, adjustment: 30 }],
+ *          lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }]
+ *      },
+ *  };
+ * ```
+ *
+ * If the metric value gets to 60, Application Auto Scaling increases the desired capacity of the
+ * group by 1, to 11. That's based on the second step adjustment of the scale-out policy (add 10
+ * percent of 10). After the new capacity is added, Application Auto Scaling increases the current
+ * capacity to 11. If the metric value rises to 70 even after this increase in capacity, Application
+ * Auto Scaling increases the target capacity by 3, to 14. That's based on the third step adjustment
+ * of the scale-out policy (add 30 percent of 11, 3.3, rounded down to 3).
+ *
+ * If the metric value gets to 40, Application Auto Scaling decreases the target capacity by 1, to
+ * 13, based on the second step adjustment of the scale-in policy (remove 10 percent of 14, 1.4,
+ * rounded down to 1). If the metric value falls to 30 even after this decrease in capacity,
+ * Application Auto Scaling decreases the target capacity by 3, to 10, based on the third step
+ * adjustment of the scale-in policy (remove 30 percent of 13, 3.9, rounded down to 3).
+ */
 export class StepScalingPolicy extends pulumi.ComponentResource {
     /**
-     * Underlying [Policy] created to define the scaling strategy.
+     * Underlying [Policy] created to define the scaling strategy for the upper set of steps.
      */
-    public readonly policy: aws.autoscaling.Policy;
+    public readonly upperPolicy: aws.autoscaling.Policy;
 
     /**
-     * Alarm that invokes the policy when triggered.
+     * Alarm that invokes [upperPolicy] when the metric goes above the lowest value of the upper
+     * range of steps.
      */
-    public readonly alarm: aws.cloudwatch.MetricAlarm;
+    public readonly upperAlarm: aws.cloudwatch.MetricAlarm;
+
+    /**
+     * Underlying [Policy] created to define the scaling strategy for the lower set of steps.
+     */
+    public readonly lowerPolicy: aws.autoscaling.Policy | undefined;
+
+    /**
+     * Alarm that invokes [lowerPolicy] when the metric goes below the highest value of the lower
+     * range of steps.
+     */
+    public readonly lowerAlarm: aws.cloudwatch.MetricAlarm | undefined;
 
     constructor(name: string, group: AutoScalingGroup,
                 args: StepScalingPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:autoscaling:StepScalingPolicy", name, undefined, { parent: group, ...opts });
 
         const parentOpts = { parent: this };
-        this.policy = new aws.autoscaling.Policy(name, {
+
+        const upperStepsAndThreshold = pulumi.output(args.steps.upper)
+                                             .apply(convertUpperSteps);
+
+        this.upperPolicy = new aws.autoscaling.Policy(`${name}-upper`, {
             autoscalingGroupName: group.group.name,
             policyType: "StepScaling",
             ...args,
-            stepAdjustments: pulumi.output(args.stepAdjustments).apply(
-                steps => steps.map(({ scalingAdjustment, metricIntervalLowerBound, metricIntervalUpperBound })  => ({
-                    scalingAdjustment,
-                    metricIntervalLowerBound: toString(metricIntervalLowerBound),
-                    metricIntervalUpperBound: toString(metricIntervalUpperBound),
-                }))),
+            stepAdjustments: upperStepsAndThreshold.stepAdjustments,
         }, parentOpts);
 
-        this.alarm = args.metric.withPeriod(60).createAlarm(name, {
-            ...args.alarmArgs,
-            alarmActions: [this.policy.arn],
+        this.upperAlarm = args.metric.withPeriod(60).createAlarm(`${name}-upper`, {
+            // step ranges and alarms are inclusive on the lower end.
+            comparisonOperator: "GreaterThanOrEqualToThreshold",
+            evaluationPeriods: 1,
+            threshold: upperStepsAndThreshold.threshold,
+            alarmActions: [this.upperPolicy.arn],
         }, parentOpts);
+
+        if (args.steps.lower) {
+            const lowerStepsAndThreshold = pulumi.output(args.steps.lower)
+                                                 .apply(convertLowerSteps);
+
+            this.lowerPolicy = new aws.autoscaling.Policy(`${name}-lower`, {
+                autoscalingGroupName: group.group.name,
+                policyType: "StepScaling",
+                ...args,
+                stepAdjustments: lowerStepsAndThreshold.stepAdjustments,
+            }, parentOpts);
+
+            this.lowerAlarm = args.metric.withPeriod(60).createAlarm(`${name}-lower`, {
+                // step ranges and alarms are inclusive on the upper end.
+                comparisonOperator: "LessThanOrEqualToThreshold",
+                evaluationPeriods: 1,
+                threshold: lowerStepsAndThreshold.threshold,
+                alarmActions: [this.upperPolicy.arn],
+            }, parentOpts);
+        }
 
         this.registerOutputs();
 
@@ -207,4 +262,87 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
             return v === undefined ? undefined! : v.toString();
         }
     }
+}
+
+interface AwsStepAdjustment {
+    metricIntervalLowerBound: string | undefined;
+    metricIntervalUpperBound: string | undefined;
+    scalingAdjustment: number;
+}
+
+/** @internal */
+export function convertUpperSteps(upperSteps: pulumi.Unwrap<Step>[]) {
+    if (upperSteps.length === 0) {
+        throw new Error("[args.steps.upper] must be non-empty.");
+    }
+
+    // First, order so that smaller values comes first.
+    upperSteps = sortSteps(upperSteps);
+
+    // The threshold is the value of the first step.  This is the point where we'll set the alarm
+    // to fire.  Note: inthe aws description, steps are offset from this.  So if the breach-point is
+    // 50, and the step value is 65, then we'll set metricIntervalLowerBound to 15.
+    const threshold = upperSteps[0].value;
+
+    const stepAdjustments: AwsStepAdjustment[] = [];
+    for (let i = 0, n = upperSteps.length; i < n; i++) {
+        const step = upperSteps[i];
+        const nextStep = i === n - 1 ? undefined : upperSteps[i + 1];
+
+        if (nextStep) {
+            if (step.value === nextStep.value) {
+                throw new Error(`Upper steps contained two steps with the same [value]: ${step.value}`);
+            }
+        }
+
+        stepAdjustments.push({
+            metricIntervalLowerBound: (step.value - threshold).toString(),
+            // if this is the last step, extend it to infinity (using 'undefined').  Otherwise,
+            // extend it to the next step.
+            metricIntervalUpperBound: nextStep ? (nextStep.value - threshold).toString() : undefined,
+            scalingAdjustment: step.adjustment,
+        });
+    }
+
+    return { threshold, stepAdjustments };
+}
+
+function sortSteps(steps: pulumi.UnwrappedObject<x.autoscaling.Step>[]) {
+    return steps.sort((s1, s2) => s1.value - s2.value);
+}
+
+/** @internal */
+export function convertLowerSteps(lowerSteps: pulumi.Unwrap<Step>[]) {
+    if (lowerSteps.length === 0) {
+        throw new Error("[args.steps.lower] must be non-empty if provided.");
+    }
+
+    // First, order so that smaller values comes first.
+    lowerSteps = sortSteps(lowerSteps);
+
+    // The threshold is the value of the last step.  This is the point where we'll set the alarm to
+    // fire.  Note: in the aws description, steps are offset from this.  So if the breach-point is
+    // 50, and the step value is 35, then we'll set metricIntervalUpperBound to -15.
+    const threshold = lowerSteps[lowerSteps.length - 1].value;
+
+    const stepAdjustments: AwsStepAdjustment[] = [];
+    for (let i = 0, n = lowerSteps.length; i < n; i++) {
+        const step = lowerSteps[i];
+        const previousStep = i === 0 ? undefined : lowerSteps[i - 1];
+        if (previousStep) {
+            if (step.value === previousStep.value) {
+                throw new Error(`Lower steps contained two steps with the same [value]: ${step.value}`);
+            }
+        }
+
+        stepAdjustments.push({
+            // if this is the last step, extend it to -infinity (using 'undefined').  Otherwise,
+            // extend it to the next step.
+            metricIntervalLowerBound: previousStep ? (previousStep.value - threshold).toString() : undefined,
+            metricIntervalUpperBound: (step.value - threshold).toString(),
+            scalingAdjustment: step.adjustment,
+        });
+    }
+
+    return { threshold, stepAdjustments };
 }

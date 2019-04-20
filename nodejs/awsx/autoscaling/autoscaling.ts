@@ -200,6 +200,13 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         }, opts);
     }
 
+    /**
+     * Creates a [StepScalingPolicy]  that increases or decreases the current capacity of this
+     * AutoScalingGroup based on a set of scaling adjustments, known as step adjustments. The
+     * adjustments vary based on the size of the alarm breach.
+     *
+     * See [StepScalingPolicy] for more details.
+     */
     public scaleToMetric(name: string, args: stepScaling.StepScalingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
         return new stepScaling.StepScalingPolicy(name, this, args, opts);
     }
