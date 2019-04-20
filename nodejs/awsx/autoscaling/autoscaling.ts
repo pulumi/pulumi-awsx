@@ -138,6 +138,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      *
      * See https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-target-tracking.html for
      * more details.
+     *
      */
     public scaleToTrackMetric(name: string, args: targetTracking.CustomMetricTargetTrackingPolicyArgs, opts?: pulumi.ComponentResourceOptions): aws.autoscaling.Policy {
         return targetTracking.createCustomMetricPolicy(name, this, args, opts);
@@ -207,7 +208,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      *
      * See [StepScalingPolicy] for more details.
      */
-    public scaleToMetric(name: string, args: stepScaling.StepScalingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+    public scaleInSteps(name: string, args: stepScaling.StepScalingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
         return new stepScaling.StepScalingPolicy(name, this, args, opts);
     }
 }

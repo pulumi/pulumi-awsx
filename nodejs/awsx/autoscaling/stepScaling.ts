@@ -62,8 +62,6 @@ export type AdjustmentType =
      */
     "PercentChangeInCapacity";
 
-export type MetricAggregationType = "Minimum" | "Maximum" | "Average";
-
 export interface Steps {
     /**
      * The upper steps for this policy normally describing how to scale-out the AutoScalingGroup.
@@ -146,12 +144,6 @@ export interface StepScalingPolicyArgs {
      * Scaling group by at least this many instances.
      */
     minAdjustmentMagnitude?: pulumi.Input<number>;
-
-    /**
-     * The aggregation type for the policy's metrics. Without a value, AWS will treat the
-     * aggregation type as "Average"
-     */
-    metricAggregationType?: pulumi.Input<MetricAggregationType>;
 }
 
 /**
@@ -224,6 +216,13 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
             policyType: "StepScaling",
             ...args,
             stepAdjustments: upperStepsAndThreshold.stepAdjustments,
+            metricAggregationType: pulumi.output(args.metric.statistic).apply(s => {
+                if (s !== "Minimum" && s !== "Maximum" && s !== "Average") {
+                    throw new Error(`[args.metric.statistic] must be one of "Minimum", "Maximum" or "Average", but was: ${s}`);
+                }
+
+                return s;
+            }),
         }, parentOpts);
 
         this.upperAlarm = args.metric.withPeriod(60).createAlarm(`${name}-upper`, {
@@ -250,7 +249,7 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
                 comparisonOperator: "LessThanOrEqualToThreshold",
                 evaluationPeriods: 1,
                 threshold: lowerStepsAndThreshold.threshold,
-                alarmActions: [this.upperPolicy.arn],
+                alarmActions: [this.lowerPolicy.arn],
             }, parentOpts);
         }
 
