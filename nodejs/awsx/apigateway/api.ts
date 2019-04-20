@@ -26,6 +26,7 @@ import * as awslambda from "aws-lambda";
 import { sha1hash } from "../utils";
 
 import { apiKeySecurityDefinition } from "./apikey";
+import * as cognitoAuthorizer from "./cognitoAuthorizer";
 import * as lambdaAuthorizer from "./lambdaAuthorizer";
 import * as reqvalidation from "./requestValidator";
 import {
@@ -36,6 +37,7 @@ import {
     Method,
     RequestValidator,
     SecurityDefinition,
+    SwaggerCognitoAuthorizer,
     SwaggerLambdaAuthorizer,
     SwaggerOperation,
     SwaggerSpec,
@@ -85,7 +87,7 @@ export type EventHandlerRoute = {
     authorizers?: Authorizer[] | Authorizer;
 };
 
-type Authorizer = lambdaAuthorizer.LambdaAuthorizer;
+type Authorizer = lambdaAuthorizer.LambdaAuthorizer | cognitoAuthorizer.CognitoAuthorizer;
 
 function isEventHandler(route: Route): route is EventHandlerRoute {
     return (<EventHandlerRoute>route).eventHandler !== undefined;
@@ -546,8 +548,8 @@ function addEventHandlerRouteToSwaggerSpec(
 
     const swaggerOperation = createSwaggerOperationForLambda();
     if (route.authorizers) {
-        const authNames = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
-        addAuthorizersToSwaggerOperation(swaggerOperation, authNames);
+        const authRecords = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
+        addAuthorizersToSwaggerOperation(swaggerOperation, authRecords);
     }
     if (route.requiredParameters) {
         addRequiredParametersToSwaggerOperation(swaggerOperation, route.requiredParameters);
@@ -605,39 +607,68 @@ function addAPIKeyToSwaggerOperation(swaggerOperation: SwaggerOperation) {
 function addAuthorizersToSwagger(
     swagger: SwaggerSpec,
     authorizers: Authorizer[] | Authorizer,
-    apiAuthorizers: Record<string, Authorizer>): string[] {
+    apiAuthorizers: Record<string, Authorizer>): Record<string, string[]>[] {
 
-    const authNames: string[] = [];
+    const authRecords: Record<string, string[]>[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
 
     authorizers = authorizers instanceof Array ? authorizers : [authorizers];
 
     for (const auth of authorizers) {
         const suffix = Object.keys(swagger["securityDefinitions"]).length;
-        auth.authorizerName = auth.authorizerName || `${swagger.info.title}-authorizer-${suffix}`;
+        const authName = auth.authorizerName || `${swagger.info.title}-authorizer-${suffix}`;
+        auth.authorizerName = authName;
 
         // Check API authorizers - if its a new authorizer add it to the apiAuthorizers
         // if the name already exists, we check that the authorizer references the same authorizer
-        if (!apiAuthorizers[auth.authorizerName]) {
-            apiAuthorizers[auth.authorizerName] = auth;
-        } else if (apiAuthorizers[auth.authorizerName] !== auth) {
-            throw new Error("Two different authorizers using the same name: " + auth.authorizerName);
+        if (!apiAuthorizers[authName]) {
+            apiAuthorizers[authName] = auth;
+        } else if (apiAuthorizers[authName] !== auth) {
+            throw new Error("Two different authorizers using the same name: " + authName);
         }
 
         // Add security definition if it's a new authorizer
         if (!swagger["securityDefinitions"][auth.authorizerName]) {
-            const securityDef: SecurityDefinition = {
+
+            swagger["securityDefinitions"][authName] = {
                 type: "apiKey",
                 name: auth.parameterName,
-                in: auth.parameterLocation,
-                "x-amazon-apigateway-authtype": auth.authType,
-                "x-amazon-apigateway-authorizer": getLambdaAuthorizer(auth.authorizerName, auth),
+                in: lambdaAuthorizer.isLambdaAuthorizer(auth) ? auth.parameterLocation : "header",
+                "x-amazon-apigateway-authtype": lambdaAuthorizer.isLambdaAuthorizer(auth) ? auth.authType : "cognito_user_pools",
+                "x-amazon-apigateway-authorizer": lambdaAuthorizer.isLambdaAuthorizer(auth)
+                    ? getLambdaAuthorizer(authName, auth)
+                    : getCognitoAuthorizer(auth.identitySource, auth.providerARNs),
             };
-            swagger["securityDefinitions"][auth.authorizerName] = securityDef;
         }
-        authNames.push(auth.authorizerName);
+
+        const methods = lambdaAuthorizer.isLambdaAuthorizer(auth) || !auth.methodsToAuthorize
+            ? []
+            : auth.methodsToAuthorize;
+
+        authRecords.push({ [authName]: methods });
     }
-    return authNames;
+    return authRecords;
+}
+
+function getCognitoPoolARNs(pools: (pulumi.Input<string> | aws.cognito.UserPool)[]): pulumi.Input<string>[] {
+    const arns: pulumi.Input<string>[] = [];
+
+    for (const pool of pools) {
+        if (pulumi.CustomResource.isInstance(pool)) {
+            arns.push(pool.arn);
+        } else {
+            arns.push(pool);
+        }
+    }
+    return arns;
+}
+
+function getCognitoAuthorizer(identitySource: string[] | undefined, providerARNs: (pulumi.Input<string> | aws.cognito.UserPool)[]): SwaggerCognitoAuthorizer {
+    return {
+        type: "cognito_user_pools",
+        identitySource: lambdaAuthorizer.getIdentitySource(identitySource),
+        providerARNs: getCognitoPoolARNs(providerARNs),
+    };
 }
 
 function getLambdaAuthorizer(authorizerName: string, authorizer: lambdaAuthorizer.LambdaAuthorizer): SwaggerLambdaAuthorizer {
@@ -684,12 +715,10 @@ function getLambdaAuthorizer(authorizerName: string, authorizer: lambdaAuthorize
     };
 }
 
-function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authorizerNames: string[]) {
+function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authRecords: Record<string, string[]>[]) {
     swaggerOperation["security"] = swaggerOperation["security"] || [];
-    for (const authName of authorizerNames) {
-        swaggerOperation["security"].push({
-            [authName]: [],
-        });
+    for (const record of authRecords) {
+        swaggerOperation["security"].push(record);
     }
 }
 
@@ -719,9 +748,9 @@ function addStaticRouteToSwaggerSpec(
     // Create a bucket to place all the static data under.
     bucket = bucket || new aws.s3.Bucket(safeS3BucketName(name), undefined, parentOpts);
 
-    let authNames: string[] | undefined;
+    let authRecords: Record<string, string[]>[] | undefined;
     if (route.authorizers) {
-        authNames = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
+        authRecords = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
     }
     if (route.apiKeyRequired) {
         addAPIkeyToSecurityDefinitions(swagger);
@@ -734,10 +763,10 @@ function addStaticRouteToSwaggerSpec(
     // gateway route to all the s3 bucket objects we create for the files in these directories.
     const stat = fs.statSync(route.localPath);
     if (stat.isFile()) {
-        processFile(route, authNames);
+        processFile(route, authRecords);
     }
     else if (stat.isDirectory()) {
-        processDirectory(route, authNames);
+        processDirectory(route, authRecords);
     }
 
     return bucket;
@@ -764,7 +793,7 @@ function addStaticRouteToSwaggerSpec(
         }, parentOpts);
     }
 
-    function processFile(route: StaticRoute, authorizerNames: string[] | undefined) {
+    function processFile(route: StaticRoute, authorizerRecords: Record<string, string[]>[] | undefined) {
         const key = name + sha1hash(method + ":" + route.path);
         const role = createRole(key);
 
@@ -777,8 +806,8 @@ function addStaticRouteToSwaggerSpec(
         if (route.requestValidator) {
             swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
         }
-        if (authorizerNames) {
-            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+        if (authorizerRecords) {
+            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerRecords);
         }
         if (route.apiKeyRequired) {
             addAPIKeyToSwaggerOperation(swaggerOperation);
@@ -786,7 +815,7 @@ function addStaticRouteToSwaggerSpec(
         addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
 
-    function processDirectory(directory: StaticRoute, authorizerNames: string[] | undefined) {
+    function processDirectory(directory: StaticRoute, authorizerRecords: Record<string, string[]>[] | undefined) {
         const directoryServerPath = route.path.endsWith("/") ? route.path : route.path + "/";
 
         const directoryKey = name + sha1hash(method + ":" + directoryServerPath);
@@ -840,8 +869,8 @@ function addStaticRouteToSwaggerSpec(
                         if (directory.requestValidator) {
                             swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
                         }
-                        if (authorizerNames) {
-                            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+                        if (authorizerRecords) {
+                            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerRecords);
                         }
                         if (directory.apiKeyRequired) {
                             addAPIKeyToSwaggerOperation(swaggerOperation);
@@ -866,8 +895,8 @@ function addStaticRouteToSwaggerSpec(
         if (directory.requestValidator) {
             swaggerOperation["x-amazon-apigateway-request-validator"] = directory.requestValidator;
         }
-        if (authorizerNames) {
-            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerNames);
+        if (authorizerRecords) {
+            addAuthorizersToSwaggerOperation(swaggerOperation, authorizerRecords);
         }
         if (directory.apiKeyRequired) {
             addAPIKeyToSwaggerOperation(swaggerOperation);

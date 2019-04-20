@@ -56,11 +56,14 @@ export interface SwaggerOperation {
     "x-amazon-apigateway-request-validator"?: RequestValidator;
 
     /**
-    * security is an object whose properties are securityDefinitionName. Each securityDefinitionName
-    * refers to a SecurityDefinition, defined at the top level of the swagger definition, by matching
-    * a Security Definition's name property. The securityDefinitionNames' values are empty arrays.
-    */
-    security?: { [securityDefinitionName: string]: string[] }[];
+     * security a list of objects whose keys are the names of the authorizer. Each authorizer name
+     * refers to a SecurityDefinition, defined at the top level of the swagger definition, by
+     * matching a Security Definition's name property. For Cognito User Pool Authorizers, the value
+     * of these object can be left as an empty array or used to define the resource servers and
+     * custom scopes (e.g. "resource-server/scope"). For lambda authorizers, the value of the
+     * objects is an empty array.
+     */
+    security?: Record<string, string[]>[];
 }
 
 export interface SecurityDefinition {
@@ -68,7 +71,7 @@ export interface SecurityDefinition {
     name: string;
     in: "header" | "query";
     "x-amazon-apigateway-authtype"?: string;
-    "x-amazon-apigateway-authorizer"?: SwaggerLambdaAuthorizer;
+    "x-amazon-apigateway-authorizer"?: SwaggerLambdaAuthorizer | SwaggerCognitoAuthorizer;
 }
 
 export interface SwaggerLambdaAuthorizer {
@@ -77,6 +80,13 @@ export interface SwaggerLambdaAuthorizer {
     authorizerCredentials: pulumi.Input<string>;
     identitySource?: string;
     identityValidationExpression?: string;
+    authorizerResultTtlInSeconds?: number;
+}
+
+export interface SwaggerCognitoAuthorizer {
+    type: "cognito_user_pools";
+    identitySource: string;
+    providerARNs: pulumi.Input<string>[];
     authorizerResultTtlInSeconds?: number;
 }
 
