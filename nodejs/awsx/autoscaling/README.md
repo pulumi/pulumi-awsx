@@ -1,10 +1,10 @@
 # Pulumi Autoscaling Components
 
-AutoScalingGroups (ASGs) allow you to allocate a set of EC2 instances on which to run code (like ECS Services) for a `Cluster`.  Groups can define hard constraints in terms of the minimum, maximum and desired number of instances that should be running.  They can also specify `Schedule`s that control changing these desired values (for example, to scale up on certain days with high expected load), as well as specifying `Policy`s that will adjust how the group scales in response to events happening in the system.
+AutoScalingGroups (ASGs) allow you to allocate a set of EC2 instances on which to run code (like ECS Services) for a `Cluster`.  Groups can define hard constraints in terms of the minimum, maximum and desired number of instances that should be running.  They can also specify [Scaling Schedules](#scaling-schedules) that control changing these desired values (for example, to scale up on certain days with high expected load), as well as specifying [Scaling Policies](#scaling-policies) that will adjust how the group scales in response to events happening in the system.
 
 ## Creating an AutoScalingGroup
 
-AutoScalingGroups are created for a corresponding `awsx.ecs.Cluster`.  This can be done by either manually creating a cluster, or using `Cluster.getDefault()` to get to the default cluster for the default VPC for the account.  The simplest way to create a cluster is to just do:
+AutoScalingGroups are created for a corresponding `awsx.ecs.Cluster`.  This can be done by either manually creating a cluster, or using `Cluster.getDefault()` to get to the default cluster for the default VPC for the account.  The simplest way to create a `AutoScalingGroup` is to just do:
 
 ```ts
 const cluster = new awsx.ecs.Cluster("testing", { vpc });
@@ -67,10 +67,10 @@ autoScalingGroup.scaleOnSchedule("scaleDownOnMonday", {
 });
 ```
 
-Schedules also support normal [cron](https://en.wikipedia.org/wiki/Cron) format strings like so:
+Schedules also support normal [Cron](https://en.wikipedia.org/wiki/Cron) format strings like so:
 
 ```ts
-// Schedule the ASG to go up to 20 instances at 6am, and back down to 10 at 10pm.
+// Schedule the ASG to go up to 20 instances on Friday and back down to 10 on Monday.
 autoScalingGroup.scaleOnSchedule("scaleUpOnFriday", {
     minSize: 20,
     recurrence: "* * * * 5",
@@ -83,13 +83,22 @@ autoScalingGroup.scaleOnSchedule("scaleDownOnMonday", {
 
 ## Scaling policies
 
-A more advanced way to scale; scaling policies lets you define parameters that control the scaling process. For example, you have a web application that currently runs on two instances and you want the CPU utilization of the Auto Scaling group to stay at around 50 percent when the load on the application changes. This is useful for scaling in response to changing conditions, when you don't know when those conditions will change.
+A more advanced way to scale; scaling policies lets you define parameters that control the scaling process. For example, you could a web application that currently runs on two instances and you want the CPU utilization of the Auto Scaling group to stay at around 50 percent when the load on the application changes. This is useful for scaling in response to changing conditions, when you don't necessarily know when those conditions will change.
 
-There are three main ways to scale on demand:
+There are two main ways to scale on demand:
 
-1. [Target Tracking](#target-tracking-scaling).  With target tracking scaling policies, you select a scaling metric and set a target value. Amazon EC2 Auto Scaling creates and manages the CloudWatch alarms that trigger the scaling policy and calculates the scaling adjustment based on the metric and the target value. The scaling policy adds or removes capacity as required to keep the metric at, or close to, the specified target value.
+1. [Target Tracking](#target-tracking-scaling).  With target tracking scaling policies, you select a
+   scaling metric and set a target value. Amazon EC2 Auto Scaling creates and manages the CloudWatch
+   alarms that trigger the scaling policy and calculates the scaling adjustment based on the metric
+   and the target value. The scaling policy adds or removes capacity as required to keep the metric
+   at, or close to, the specified target value.
 
-2. [Step Scaling](#step-scaling).  TBD.
+2. [Step Scaling](#step-scaling).  With step scaling, you choose scaling metrics and threshold
+   values for the CloudWatch alarms that trigger the scaling process as well as define how your
+   scalable target should be scaled when a threshold is in breach for a specified number of
+   evaluation periods. Step scaling policies increase or decrease the current capacity of a scalable
+   target based on a set of scaling adjustments, known as step adjustments. The adjustments vary
+   based on the size of the alarm breach.
 
 ### Target tracking scaling
 
