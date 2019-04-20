@@ -231,6 +231,7 @@ function getCloudFormationTemplate(
 
     const minSize = ifUndefined(parameters.minSize, 2);
     const maxSize = ifUndefined(parameters.maxSize, 100);
+    const desiredCapacity = ifUndefined(parameters.desiredCapacity, minSize);
     const cooldown = ifUndefined(parameters.defaultCooldown, 300);
     const healthCheckGracePeriod = ifUndefined(parameters.healthCheckGracePeriod, 120);
     const healthCheckType = ifUndefined(parameters.healthCheckType, "EC2");
@@ -256,7 +257,7 @@ function getCloudFormationTemplate(
             Type: AWS::AutoScaling::AutoScalingGroup
             Properties:
                 Cooldown: ${cooldown}
-                DesiredCapacity: ${minSize}
+                DesiredCapacity: ${desiredCapacity}
                 HealthCheckGracePeriod: ${healthCheckGracePeriod}
                 HealthCheckType: ${healthCheckType}
                 LaunchConfigurationName: "${instanceLaunchConfigurationId}"
@@ -344,7 +345,6 @@ export interface AutoScalingGroupArgs {
 
 type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling.GroupArgs>, {
     availabilityZones?: never;
-    desiredCapacity?: never;
     enabledMetrics?: never;
     forceDelete?: never;
     initialLifecycleHooks?: never;
@@ -366,14 +366,9 @@ type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling
     waitForCapacityTimeout?: never;
     waitForElbCapacity?: never;
 
-    /**
-     * The maximum size of the auto scale group.  Defaults to 100 if unspecified.
-     */
     maxSize?: pulumi.Input<number>;
-    /**
-     * The minimum size of the auto scale group.  Defaults to 2 if unspecified.
-     */
     minSize?: pulumi.Input<number>;
+    desiredCapacity?: pulumi.Input<number>;
 }>;
 
 export interface TemplateParameters {
@@ -413,9 +408,14 @@ export interface TemplateParameters {
     maxSize?: pulumi.Input<number>;
 
     /**
-     * The minimum size of the auto scale group.  Defaults to 100 if unspecified.
+     * The minimum size of the auto scale group.  Defaults to 2 if unspecified.
      */
     minSize?: pulumi.Input<number>;
+
+    /**
+     * The desired size of the auto scale group.  Defaults to [minSize] if unspecified.
+     */
+    desiredCapacity?: pulumi.Input<number>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

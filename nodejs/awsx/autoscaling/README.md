@@ -109,6 +109,8 @@ or removes capacity as required to keep the metric at, or close to, the specifie
 addition to keeping the metric close to the target value, a target tracking scaling policy also
 adjusts to the changes in the metric due to a changing load pattern.
 
+#### Predefined target tracking scaling
+
 AutoScalingGroups provide several predefined scaling metrics.
 
 1. Scaling based on cpu utilization:
@@ -146,7 +148,6 @@ autoScalingGroup.scaleToTrackAverageNetworkOut("scaleDownOnMonday", {
 const cluster = new awsx.ecs.Cluster("testing");
 const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("testing", { external: true });
 
-// A simple NGINX service, scaled out over two containers.
 const targetGroup = loadBalancer.createTargetGroup("testing", { port: 80, targetType: "instance" });
 
 const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
@@ -161,3 +162,68 @@ const policy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest
     targetGroup: targetGroup,
 });
 ```
+
+#### Custom metric target tracking scaling
+
+On top of the predefined targets defined above, you can also scale to any arbitrary
+[awsx.cloudwatch.Metric].  Note: not all metrics work for target tracking. This can be important
+when you are specifying a customized metric. The metric must be a valid utilization metric and
+describe how busy an instance is. The metric value must increase or decrease proportionally to the
+number of instances in the Auto Scaling group. That's so the metric data can be used to
+proportionally scale out or in the number of instances.
+
+We recommend that you scale on Amazon EC2 instance metrics with a 1-minute frequency because that
+ensures a faster response to utilization changes. Scaling on metrics with a 5-minute frequency can
+result in slower response times and scaling on stale metric data. By default, Amazon EC2 instances
+are enabled for basic monitoring, which means metric data for instances is available at 5-minute
+intervals. You can enable detailed monitoring to get metric data for instances at 1-minute
+frequency. For more information, see
+[Configure-Monitoring-for-Auto-Scaling-Instances](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-monitoring.html#enable-as-instance-metrics).
+
+```ts
+// Scale the ASG based on average memory utilization of a service.
+// Try to keep enough instances to keep things around 50% memory utilization.
+autoScalingGroup.scaleToTrackMetric("keepAround50Percent", {
+    metric: awsx.ecs.metrics.memoryUtilization({ service, statistic: "Average", unit: "Percent" }),
+    targetValue: 50,
+});
+```
+
+### Step scaling
+
+Step scaling policies increase or decrease the current capacity of your Auto Scaling group based on
+a set of scaling adjustments, known as step adjustments. The adjustments vary based on the size of
+the alarm breach.
+
+For example, consider the following StepScaling description for an ASG that has both a current
+capacity and a desired capacity of 10. The current and desired capacity is maintained while the
+aggregated metric value is greater than 40 and less than 60.
+
+```ts
+const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
+    templateParameters: { minSize: 2, desiredCapacity: 10 },
+    launchConfigurationArgs: { instanceType: "t2.medium" },
+});
+
+autoScalingGroup.scaleInSteps("scale-in-out", {
+    metric: awsx.ecs.metrics.memoryUtilization({ service, statistic: "Average", unit: "Percent" }),
+    adjustmentType: "PercentChangeInCapacity",
+    steps: {
+        upper: [{ value: 60, adjustment: 10 }, { value: 70, adjustment: 30 }],
+        lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }]
+    },
+};
+```
+
+If the metric value gets to 60, Auto Scaling increases the desired capacity of the group by 1, to
+11. That's based on the second step adjustment of the scale-out policy (add 10 percent of 10). After
+the new capacity is added, Application Auto Scaling increases the current capacity to 11. If the
+metric value rises to 70 even after this increase in capacity, Application Auto Scaling increases
+the target capacity by 3, to 14. That's based on the third step adjustment of the scale-out policy
+(add 30 percent of 11, 3.3, rounded down to 3).
+
+If the metric value gets to 40, Application Auto Scaling decreases the target capacity by 1, to
+13, based on the second step adjustment of the scale-in policy (remove 10 percent of 14, 1.4,
+rounded down to 1). If the metric value falls to 30 even after this decrease in capacity,
+Application Auto Scaling decreases the target capacity by 3, to 10, based on the third step
+adjustment of the scale-in policy (remove 30 percent of 13, 3.9, rounded down to 3).
