@@ -644,12 +644,11 @@ function addAuthorizersToSwagger(
             : auth.methodsToAuthorize;
 
         authRecords.push({ [authName]: methods });
-
     }
     return authRecords;
 }
 
-function getCognitoPoolARNs(pools: Array<pulumi.Input<string> | aws.cognito.UserPool>): pulumi.Input<string>[] {
+function getCognitoPoolARNs(pools: (pulumi.Input<string> | aws.cognito.UserPool)[]): pulumi.Input<string>[] {
     const arns: pulumi.Input<string>[] = [];
 
     for (const pool of pools) {
@@ -662,7 +661,7 @@ function getCognitoPoolARNs(pools: Array<pulumi.Input<string> | aws.cognito.User
     return arns;
 }
 
-function getCognitoAuthorizer(identitySource: string[] | undefined, providerARNs: Array<pulumi.Input<string> | aws.cognito.UserPool>): SwaggerCognitoAuthorizer {
+function getCognitoAuthorizer(identitySource: string[] | undefined, providerARNs: (pulumi.Input<string> | aws.cognito.UserPool)[]): SwaggerCognitoAuthorizer {
     return {
         type: "cognito_user_pools",
         identitySource: lambdaAuthorizer.getIdentitySource(identitySource),
