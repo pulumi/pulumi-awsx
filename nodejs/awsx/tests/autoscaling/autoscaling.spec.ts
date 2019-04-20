@@ -17,28 +17,8 @@ import * as pulumi from "@pulumi/pulumi";
 pulumi.runtime.setConfig("aws:region", "us-east-2");
 
 import * as assert from "assert";
-import * as semver from "semver";
-
-import * as aws from "../..";
-
-import * as dashboard from "../../cloudwatch/dashboard";
-import { Metric } from "../../cloudwatch/metric";
-import { Widget } from "../../cloudwatch/widget";
-import { AlarmAnnotation, HorizontalAnnotation, VerticalAnnotation } from "../../cloudwatch/widgets_annotations";
-import { ColumnWidget, RowWidget } from "../../cloudwatch/widgets_flow";
-import { LineGraphMetricWidget, SingleNumberMetricWidget, StackedAreaGraphMetricWidget } from "../../cloudwatch/widgets_graph";
-import { ExpressionWidgetMetric, TextWidget } from "../../cloudwatch/widgets_simple";
 
 import { convertLowerSteps, convertUpperSteps, Step } from "../../autoscaling/stepScaling";
-
-async function bodyJson(...widgets: Widget[]) {
-    return await toJson({ widgets });
-}
-
-async function toJson(body: dashboard.DashboardArgs) {
-    const op = dashboard.getDashboardBody(body).apply(b => JSON.stringify(b, null, 4));
-    return await (<any>op).promise();
-}
 
 function upperStepsJson(...steps: pulumi.Unwrap<Step>[]) {
     return JSON.stringify(convertUpperSteps(steps), null, 4);

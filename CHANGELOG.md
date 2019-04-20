@@ -15,6 +15,11 @@
   the scaling policy and calculates the scaling adjustment based on the metric and the target value.
   The scaling policy adds or removes capacity as required to keep the metric at, or close to, the
   specified target value.
+- [Step-Scaling-Policies](https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-step-scaling-policies.html)
+  can easily be added for [awsx.autoscaling.AutoScalingGroup]s.  All you need to do is provide an
+  appropriate metric and simple information about where your scale-out and scale-in steps should
+  begin and the [AutoScalingGroup] will create the appropriate policies and
+  [cloudwatch.MetricAlarm]s to trigger those policies.  See the new [AutoScalingGroup.scaleInSteps] instance method.
 
 ## 0.18.1 (Released 4/14/2019)
 

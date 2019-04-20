@@ -141,7 +141,7 @@ export interface StepScalingPolicyArgs {
     /**
      * The minimum number of instances to scale. If the value of [adjustmentType] is
      * ["PercentChangeInCapacity"], the scaling policy changes the DesiredCapacity of the Auto
-     * Scaling group by at least this many instances.
+     * Scaling group by at least this many instances.  Defaults to `1` if not specified.
      */
     minAdjustmentMagnitude?: pulumi.Input<number>;
 }
@@ -254,12 +254,6 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
         }
 
         this.registerOutputs();
-
-        return;
-
-        function toString(v: number | undefined) {
-            return v === undefined ? undefined! : v.toString();
-        }
     }
 }
 
@@ -279,7 +273,7 @@ export function convertUpperSteps(upperSteps: pulumi.Unwrap<Step>[]) {
     upperSteps = sortSteps(upperSteps);
 
     // The threshold is the value of the first step.  This is the point where we'll set the alarm
-    // to fire.  Note: inthe aws description, steps are offset from this.  So if the breach-point is
+    // to fire.  Note: in the aws description, steps are offset from this.  So if the breach-point is
     // 50, and the step value is 65, then we'll set metricIntervalLowerBound to 15.
     const threshold = upperSteps[0].value;
 
@@ -335,7 +329,7 @@ export function convertLowerSteps(lowerSteps: pulumi.Unwrap<Step>[]) {
         }
 
         stepAdjustments.push({
-            // if this is the last step, extend it to -infinity (using 'undefined').  Otherwise,
+            // if this is the first step, extend it to -infinity (using 'undefined').  Otherwise,
             // extend it to the next step.
             metricIntervalLowerBound: previousStep ? (previousStep.value - threshold).toString() : undefined,
             metricIntervalUpperBound: (step.value - threshold).toString(),
