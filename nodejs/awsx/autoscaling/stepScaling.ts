@@ -64,18 +64,19 @@ export type AdjustmentType =
 
 export interface Steps {
     /**
-     * The upper steps for this policy normally describing how to scale-out the AutoScalingGroup.
-     * This must be non-empty.  An alarm will be created that will fire when the desired metric goes
-     * greater-than-or-equal-to the value of the first step's `value`.  Each step ranges from it's
-     * `value` (inclusive) to the `value` of the next step (exclusive).  For the last step, the end
-     * part of the range is `Infinity`.
+     * Optional upper steps for this policy normally describing how to scale-out the
+     * AutoScalingGroup. This must be non-empty.  An alarm will be created that will fire when the
+     * desired metric goes greater-than-or-equal-to the value of the first step's `value`.  Each
+     * step ranges from it's `value` (inclusive) to the `value` of the next step (exclusive).  For
+     * the last step, the end part of the range is `Infinity`.
      *
      * Depending on which step range the alarm triggers for will determine which particular
      * [scalingAdjustment] will be performed.
      *
-     * `upper` and `lower` must not overlap.
+     * At least one of `upper` or `lower` must be non-empty.  If both are provided, `upper` and
+     * `lower` must not overlap.
      */
-    upper: pulumi.Input<Step>[];
+    upper?: pulumi.Input<Step>[];
 
     /**
      * Optional lower steps for this step policy normally used to describe how to scale-in the
@@ -89,7 +90,8 @@ export interface Steps {
      * Depending on which step range the alarm triggers for will determine which particular
      * [scalingAdjustment] will be performed.
      *
-     * `upper` and `lower` must not overlap.
+     * At least one of `upper` or `lower` must be non-empty.  If both are provided, `upper` and
+     * `lower` must not overlap.
      */
     lower?: pulumi.Input<Step>[];
 }
@@ -206,41 +208,55 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
                 args: StepScalingPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:autoscaling:StepScalingPolicy", name, undefined, { parent: group, ...opts });
 
+        if (!args.steps.upper && !args.steps.lower) {
+            throw new Error("At least one of [args.steps.upper] and [args.steps.lower] must be provided.");
+        }
+
         const parentOpts = { parent: this };
 
         const convertedSteps = pulumi.output(args.steps).apply(convertSteps);
 
-        this.upperPolicy = new aws.autoscaling.Policy(`${name}-upper`, {
+        const metricAggregationType = pulumi.output(args.metric.statistic).apply(s => {
+            if (s !== "Minimum" && s !== "Maximum" && s !== "Average") {
+                throw new Error(`[args.metric.statistic] must be one of "Minimum", "Maximum" or "Average", but was: ${s}`);
+            }
+
+            return s;
+        });
+
+        const commonArgs = {
             autoscalingGroupName: group.group.name,
             policyType: "StepScaling",
+            metricAggregationType,
             ...args,
-            stepAdjustments: convertedSteps.upper.stepAdjustments,
-            metricAggregationType: pulumi.output(args.metric.statistic).apply(s => {
-                if (s !== "Minimum" && s !== "Maximum" && s !== "Average") {
-                    throw new Error(`[args.metric.statistic] must be one of "Minimum", "Maximum" or "Average", but was: ${s}`);
-                }
+        };
 
-                return s;
-            }),
-        }, parentOpts);
+        // AutoScaling recommends a metric of 60 to ensure that adjustments can happen in a timely
+        // manner.
+        const metric = args.metric.withPeriod(60);
 
-        this.upperAlarm = args.metric.withPeriod(60).createAlarm(`${name}-upper`, {
-            // step ranges and alarms are inclusive on the lower end.
-            comparisonOperator: "GreaterThanOrEqualToThreshold",
-            evaluationPeriods: 1,
-            threshold: convertedSteps.upper.threshold,
-            alarmActions: [this.upperPolicy.arn],
-        }, parentOpts);
+        if (args.steps.upper) {
+            this.upperPolicy = new aws.autoscaling.Policy(`${name}-upper`, {
+                ...commonArgs,
+                stepAdjustments: convertedSteps.upper.stepAdjustments,
+            }, parentOpts);
+
+            this.upperAlarm = metric.createAlarm(`${name}-upper`, {
+                // step ranges and alarms are inclusive on the lower end.
+                comparisonOperator: "GreaterThanOrEqualToThreshold",
+                evaluationPeriods: 1,
+                threshold: convertedSteps.upper.threshold,
+                alarmActions: [this.upperPolicy.arn],
+            }, parentOpts);
+        }
 
         if (args.steps.lower) {
             this.lowerPolicy = new aws.autoscaling.Policy(`${name}-lower`, {
-                autoscalingGroupName: group.group.name,
-                policyType: "StepScaling",
-                ...args,
+                ...commonArgs,
                 stepAdjustments: convertedSteps.lower.stepAdjustments,
             }, parentOpts);
 
-            this.lowerAlarm = args.metric.withPeriod(60).createAlarm(`${name}-lower`, {
+            this.lowerAlarm = metric.createAlarm(`${name}-lower`, {
                 // step ranges and alarms are inclusive on the upper end.
                 comparisonOperator: "LessThanOrEqualToThreshold",
                 evaluationPeriods: 1,
@@ -263,7 +279,7 @@ interface AwsStepAdjustment {
 export function convertSteps(steps: pulumi.Unwrap<Steps>) {
     // First, order so that smaller values comes first.
     const upperSteps = sortSteps(steps.upper);
-    const lowerSteps = steps.lower ? sortSteps(steps.lower) : undefined;
+    const lowerSteps = sortSteps(steps.lower);
 
     const result = {
         upper: convertUpperSteps(upperSteps),
@@ -282,13 +298,17 @@ export function convertSteps(steps: pulumi.Unwrap<Steps>) {
 }
 
 /** @internal */
-export function convertUpperSteps(upperSteps: pulumi.Unwrap<Step>[]) {
+export function convertUpperSteps(upperSteps: pulumi.Unwrap<Step>[] | undefined) {
+    // First, order so that smaller values comes first.
+    upperSteps = sortSteps(upperSteps);
+
+    if (!upperSteps) {
+        return undefined!;
+    }
+
     if (upperSteps.length === 0) {
         throw new Error("[args.steps.upper] must be non-empty.");
     }
-
-    // First, order so that smaller values comes first.
-    upperSteps = sortSteps(upperSteps);
 
     // The threshold is the value of the first step.  This is the point where we'll set the alarm
     // to fire.  Note: in the aws description, steps are offset from this.  So if the breach-point is
@@ -318,12 +338,19 @@ export function convertUpperSteps(upperSteps: pulumi.Unwrap<Step>[]) {
     return { threshold, stepAdjustments };
 }
 
-function sortSteps(steps: pulumi.UnwrappedObject<x.autoscaling.Step>[]) {
+function sortSteps(steps: pulumi.UnwrappedObject<x.autoscaling.Step>[] | undefined) {
+    if (!steps) {
+        return undefined;
+    }
+
     return steps.sort((s1, s2) => s1.value - s2.value);
 }
 
 /** @internal */
 export function convertLowerSteps(lowerSteps: pulumi.Unwrap<Step>[] | undefined) {
+    // First, order so that smaller values comes first.
+    lowerSteps = sortSteps(lowerSteps);
+
     if (!lowerSteps) {
         return undefined!;
     }
@@ -331,9 +358,6 @@ export function convertLowerSteps(lowerSteps: pulumi.Unwrap<Step>[] | undefined)
     if (lowerSteps.length === 0) {
         throw new Error("[args.steps.lower] must be non-empty.");
     }
-
-    // First, order so that smaller values comes first.
-    lowerSteps = sortSteps(lowerSteps);
 
     // The threshold is the value of the last step.  This is the point where we'll set the alarm to
     // fire.  Note: in the aws description, steps are offset from this.  So if the breach-point is
