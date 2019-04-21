@@ -62,7 +62,7 @@ export type AdjustmentType =
      */
     "PercentChangeInCapacity";
 
-export interface Steps {
+export interface ScalingSteps {
     /**
      * Optional upper steps for this policy normally describing how to scale-out the
      * AutoScalingGroup. This must be non-empty.  An alarm will be created that will fire when the
@@ -76,7 +76,7 @@ export interface Steps {
      * At least one of `upper` or `lower` must be non-empty.  If both are provided, `upper` and
      * `lower` must not overlap.
      */
-    upper?: pulumi.Input<Step>[];
+    upper?: pulumi.Input<ScalingStep>[];
 
     /**
      * Optional lower steps for this step policy normally used to describe how to scale-in the
@@ -93,10 +93,10 @@ export interface Steps {
      * At least one of `upper` or `lower` must be non-empty.  If both are provided, `upper` and
      * `lower` must not overlap.
      */
-    lower?: pulumi.Input<Step>[];
+    lower?: pulumi.Input<ScalingStep>[];
 }
 
-export interface Step {
+export interface ScalingStep {
     /**
      * The threshold value that causes this step to be followed.  If this an `upperStep` then values
      * `>=` to this will trigger this step's [scalingAdjustment].  If this is a `lowerStep` then
@@ -124,7 +124,7 @@ export interface StepScalingPolicyArgs {
     /**
      * A set of adjustments that manage group scaling.
      */
-    steps: Steps;
+    steps: ScalingSteps;
 
     /**
      * When a step scaling or simple scaling policy is executed, it changes the current capacity of
@@ -276,7 +276,7 @@ interface AwsStepAdjustment {
 }
 
 /** @internal */
-export function convertSteps(steps: pulumi.Unwrap<Steps>) {
+export function convertSteps(steps: pulumi.Unwrap<ScalingSteps>) {
     // First, order so that smaller values comes first.
     const upperSteps = sortSteps(steps.upper);
     const lowerSteps = sortSteps(steps.lower);
@@ -298,7 +298,7 @@ export function convertSteps(steps: pulumi.Unwrap<Steps>) {
 }
 
 /** @internal */
-export function convertUpperSteps(upperSteps: pulumi.Unwrap<Step>[] | undefined) {
+export function convertUpperSteps(upperSteps: pulumi.Unwrap<ScalingStep>[] | undefined) {
     // First, order so that smaller values comes first.
     upperSteps = sortSteps(upperSteps);
 
@@ -338,7 +338,7 @@ export function convertUpperSteps(upperSteps: pulumi.Unwrap<Step>[] | undefined)
     return { threshold, stepAdjustments };
 }
 
-function sortSteps(steps: pulumi.UnwrappedObject<x.autoscaling.Step>[] | undefined) {
+function sortSteps(steps: pulumi.UnwrappedObject<x.autoscaling.ScalingStep>[] | undefined) {
     if (!steps) {
         return undefined;
     }
@@ -347,7 +347,7 @@ function sortSteps(steps: pulumi.UnwrappedObject<x.autoscaling.Step>[] | undefin
 }
 
 /** @internal */
-export function convertLowerSteps(lowerSteps: pulumi.Unwrap<Step>[] | undefined) {
+export function convertLowerSteps(lowerSteps: pulumi.Unwrap<ScalingStep>[] | undefined) {
     // First, order so that smaller values comes first.
     lowerSteps = sortSteps(lowerSteps);
 
