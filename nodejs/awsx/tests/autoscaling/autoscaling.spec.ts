@@ -18,17 +18,17 @@ pulumi.runtime.setConfig("aws:region", "us-east-2");
 
 import * as assert from "assert";
 
-import { convertLowerSteps, convertSteps, convertUpperSteps, Step, Steps } from "../../autoscaling/stepScaling";
+import { convertLowerSteps, convertSteps, convertUpperSteps, ScalingStep, ScalingSteps } from "../../autoscaling/stepScaling";
 
-function upperStepsJson(...steps: pulumi.Unwrap<Step>[]) {
+function upperStepsJson(...steps: pulumi.Unwrap<ScalingStep>[]) {
     return JSON.stringify(convertUpperSteps(steps), null, 4);
 }
 
-function lowerStepsJson(...steps: pulumi.Unwrap<Step>[]) {
+function lowerStepsJson(...steps: pulumi.Unwrap<ScalingStep>[]) {
     return JSON.stringify(convertLowerSteps(steps), null, 4);
 }
 
-function stepsJson(steps: pulumi.Unwrap<Steps>) {
+function stepsJson(steps: pulumi.Unwrap<ScalingSteps>) {
     return JSON.stringify(convertSteps(steps), null, 4);
 }
 
@@ -162,7 +162,7 @@ describe("step scaling", () => {
     it("upper and lower", () => {
         assert.equal(stepsJson({
             upper: [{ value: 60, adjustment: 10 }, { value: 70, adjustment: 30 }],
-            lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }]
+            lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }],
         }), `{
     "upper": {
         "threshold": 60,
@@ -198,7 +198,7 @@ describe("step scaling", () => {
     it("upper and lower flipped", () => {
         assert.equal(stepsJson({
             upper: [{ value: 70, adjustment: 30 }, { value: 60, adjustment: 10 }],
-            lower: [{ value: 30, adjustment: -30 }, { value: 40, adjustment: -10 }, ]
+            lower: [{ value: 30, adjustment: -30 }, { value: 40, adjustment: -10 }],
         }), `{
     "upper": {
         "threshold": 60,

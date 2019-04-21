@@ -209,8 +209,8 @@ autoScalingGroup.scaleInSteps("scale-in-out", {
     metric: awsx.ecs.metrics.memoryUtilization({ service, statistic: "Average", unit: "Percent" }),
     adjustmentType: "PercentChangeInCapacity",
     steps: {
-        upper: [{ value: 60, adjustment: 10 }, { value: 70, adjustment: 30 }],
-        lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }]
+        lower: [{ value: 30, adjustment: -30 }, { value: 40, adjustment: -10 }],
+        upper: [{ value: 60, adjustment: 10 }, { value: 70, adjustment: 30 }]
     },
 };
 ```
