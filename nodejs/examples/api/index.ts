@@ -114,6 +114,12 @@ const api = new awsx.apigateway.API("myapi", {
             uri: "https://www.google.com",
             type: "http_proxy",
         },
+        requiredParameters: [{
+            name: "key",
+            in: "query",
+        }],
+        apiKeyRequired: true,
+        authorizers: lambdaAuthorizer,
     }],
     requestValidator: "ALL",
 });

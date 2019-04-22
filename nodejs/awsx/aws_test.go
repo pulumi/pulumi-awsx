@@ -141,6 +141,23 @@ func Test_Examples(t *testing.T) {
 					expectedBody: "contents1\n",
 				},
 				{
+					urlStackOutputKey: "url",
+					urlPath:           "/integration",
+					requiredParameters: &requiredParameters{
+						queryParameters:             []string{"key"},
+						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+					},
+					requiredAuth: &requiredAuth{
+						queryParameters: map[string]string{
+							"auth": "password",
+						},
+					},
+					requiredAPIKey: &requiredAPIKey{
+						stackOutput: "apiKeyValue",
+					},
+					skipBodyValidation: true,
+				},
+				{
 					urlStackOutputKey: "authorizerUrl",
 					urlPath:           "/www_old/file1.txt",
 					requiredAuth: &requiredAuth{
@@ -441,6 +458,7 @@ type apiTest struct {
 	requiredToken      *requiredToken
 	requiredAPIKey     *requiredAPIKey
 	expectedBody       string
+	skipBodyValidation bool
 }
 
 type requiredAuth struct {
@@ -474,7 +492,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 
 			if tt.requiredAuth != nil {
 				resp := GetHTTP(t, req, 401)
-				assertRequestBody(t, `{"message":"Unauthorized"}`, resp)
+				assertRequestBody(t, `{"message":"Unauthorized"}`, false, resp)
 
 				for header, val := range tt.requiredAuth.headers {
 					req.Header.Add(header, val)
@@ -489,7 +507,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 
 			if tt.requiredToken != nil {
 				resp := GetHTTP(t, req, 401)
-				assertRequestBody(t, `{"message":"Unauthorized"}`, resp)
+				assertRequestBody(t, `{"message":"Unauthorized"}`, false, resp)
 
 				token := tt.requiredToken.getAuthToken(t, stack)
 				req.Header.Add(tt.requiredToken.header, token)
@@ -497,7 +515,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 
 			if tt.requiredAPIKey != nil {
 				resp := GetHTTP(t, req, 403)
-				assertRequestBody(t, `{"message":"Forbidden"}`, resp)
+				assertRequestBody(t, `{"message":"Forbidden"}`, false, resp)
 
 				apikey := stack.Outputs[tt.requiredAPIKey.stackOutput].(string)
 				req.Header.Add("x-api-key", apikey)
@@ -505,7 +523,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 
 			if tt.requiredParameters != nil {
 				resp := GetHTTP(t, req, 400)
-				assertRequestBody(t, tt.requiredParameters.expectedBodyWithoutQueryStr, resp)
+				assertRequestBody(t, tt.requiredParameters.expectedBodyWithoutQueryStr, false, resp)
 
 				q := req.URL.Query()
 				for _, param := range tt.requiredParameters.queryParameters {
@@ -515,16 +533,18 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 			}
 
 			resp := GetHTTP(t, req, 200)
-			assertRequestBody(t, tt.expectedBody, resp)
+			assertRequestBody(t, tt.expectedBody, tt.skipBodyValidation, resp)
 		}
 	}
 }
 
-func assertRequestBody(t *testing.T, expectedBody string, resp *http.Response) {
+func assertRequestBody(t *testing.T, expectedBody string, skipBodyValidation bool, resp *http.Response) {
 	defer resp.Body.Close()
-	bytes, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(t, err)
-	assert.Equal(t, expectedBody, string(bytes))
+	if !skipBodyValidation {
+		bytes, err := ioutil.ReadAll(resp.Body)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedBody, string(bytes))
+	}
 }
 
 func GetHTTP(t *testing.T, req *http.Request, statusCode int) *http.Response {

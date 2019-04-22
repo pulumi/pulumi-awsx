@@ -155,6 +155,32 @@ function isStaticRoute(route: Route): route is StaticRoute {
 export interface IntegrationRoute {
     path: string;
     target: pulumi.Input<IntegrationTarget> | IntegrationRouteTargetProvider;
+
+    /**
+    * Required Parameters to validate. If the request validator is set to ALL or PARAMS_ONLY, api
+    * gateway will validate these before sending traffic to the event handler. Parameter validation
+    * will get applied to all static resources defined by the localPath.
+    */
+    requiredParameters?: reqvalidation.Parameter[];
+
+    /**
+    * Request Validator specifies the validator to use at the method level. This will override anything
+    * defined at the API level.
+    */
+    requestValidator?: RequestValidator;
+
+    /**
+     * If true, an API key will be required for this route. The source for the API Key can be set at
+     * the API level and by default, the source will be the HEADER.
+     */
+    apiKeyRequired?: boolean;
+
+    /**
+     * Authorizers allows you to define Lambda authorizers be applied for authorization when the
+     * the route is called. The authorizer will get applied to all static resources defined by the
+     * localPath.
+     */
+    authorizers?: Authorizer[] | Authorizer;
 }
 
 /**
@@ -504,7 +530,7 @@ function createSwaggerSpec(
             staticRouteBucket = addStaticRouteToSwaggerSpec(api, name, swagger, route, staticRouteBucket, apiAuthorizers);
         }
         else if (isIntegrationRoute(route)) {
-            addIntegrationRouteToSwaggerSpec(api, name, swagger, route);
+            addIntegrationRouteToSwaggerSpec(api, name, swagger, route, apiAuthorizers);
         }
         else if (isRawDataRoute(route)) {
             addRawDataRouteToSwaggerSpec(api, name, swagger, route);
@@ -973,7 +999,7 @@ function addStaticRouteToSwaggerSpec(
 }
 
 function addIntegrationRouteToSwaggerSpec(
-    api: API, name: string, swagger: SwaggerSpec, route: IntegrationRoute) {
+    api: API, name: string, swagger: SwaggerSpec, route: IntegrationRoute, apiAuthorizers: Record<string, Authorizer>) {
 
     checkRoute(api, route, "target");
 
@@ -986,11 +1012,31 @@ function addIntegrationRouteToSwaggerSpec(
     const swaggerPath = route.path.endsWith("/") ? route.path : route.path + "/";
     const swaggerPathProxy = swaggerPath + "{proxy+}";
 
-    addSwaggerOperation(swagger, swaggerPath, method,
-        createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ false));
+    const swaggerOpWithoutProxyPathParam = createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ false);
+    const swaggerOpWithProxyPathParam = createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ true);
 
-    addSwaggerOperation(swagger, swaggerPathProxy, method,
-        createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ true));
+    if (route.authorizers) {
+        const authRecords = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
+        addAuthorizersToSwaggerOperation(swaggerOpWithoutProxyPathParam, authRecords);
+        addAuthorizersToSwaggerOperation(swaggerOpWithProxyPathParam, authRecords);
+    }
+    if (route.requiredParameters) {
+        addRequiredParametersToSwaggerOperation(swaggerOpWithoutProxyPathParam, route.requiredParameters);
+        addRequiredParametersToSwaggerOperation(swaggerOpWithProxyPathParam, route.requiredParameters);
+    }
+    if (route.requestValidator) {
+        swaggerOpWithoutProxyPathParam["x-amazon-apigateway-request-validator"] = route.requestValidator;
+        swaggerOpWithProxyPathParam["x-amazon-apigateway-request-validator"] = route.requestValidator;
+    }
+    if (route.apiKeyRequired) {
+        addAPIkeyToSecurityDefinitions(swagger);
+        addAPIKeyToSwaggerOperation(swaggerOpWithoutProxyPathParam);
+        addAPIKeyToSwaggerOperation(swaggerOpWithProxyPathParam);
+    }
+
+    addSwaggerOperation(swagger, swaggerPath, method, swaggerOpWithoutProxyPathParam);
+
+    addSwaggerOperation(swagger, swaggerPathProxy, method, swaggerOpWithProxyPathParam);
 
     return;
 
