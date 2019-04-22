@@ -296,7 +296,7 @@ export function convertSteps(steps: pulumi.Unwrap<ScalingSteps>) {
     if (upperSteps && lowerSteps) {
         const lowerStep = lowerSteps[lowerSteps.length - 1];
         const upperStep = upperSteps[0];
-        if (lowerStep.value > upperStep.value) {
+        if (lowerStep.value >= upperStep.value) {
             throw new Error(`Lower and upper steps cannot overlap. Lower step value ${lowerStep.value} greater than upper step value ${upperStep.value}`);
         }
     }
