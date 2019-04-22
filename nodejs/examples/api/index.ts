@@ -108,12 +108,6 @@ const api = new awsx.apigateway.API("myapi", {
                 "type": "http_proxy",
             },
         },
-        requiredParameters: [{
-            name: "key",
-            in: "query",
-        }],
-        apiKeyRequired: true,
-        authorizers: lambdaAuthorizer,
     }, {
         path: "/integration",
         target: {
