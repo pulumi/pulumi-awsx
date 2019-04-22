@@ -612,7 +612,7 @@ function addAuthorizersToSwagger(
     const authRecords: Record<string, string[]>[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
 
-    authorizers = authorizers instanceof Array ? authorizers : [authorizers];
+    authorizers = Array.isArray(authorizers) ? authorizers : [authorizers];
 
     for (const auth of authorizers) {
         const suffix = Object.keys(swagger["securityDefinitions"]).length;
