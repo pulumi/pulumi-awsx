@@ -20,6 +20,13 @@ pulumi.runtime.setConfig("aws:region", "us-east-2");
 import * as assert from "assert";
 
 import { Cidr32Block } from "../../ec2/cidr";
+import { VpcSubnetArgs } from "../../ec2/vpc";
+import { VpcTopology } from "../../ec2/vpcTopology";
+
+function topologyToJson(cidr: string, numberOfAvailabilityZones: number, subnets: VpcSubnetArgs[]) {
+    return JSON.stringify(
+        new VpcTopology("testing", cidr, numberOfAvailabilityZones).createSubnets(subnets), null, 4);
+}
 
 describe("cidr", () => {
     it("throws without /", () => {
@@ -98,6 +105,11 @@ describe("cidr", () => {
             assert.equal(cidr.nextBlock().toString(), "10.16.0.0/12");
         });
 
+        it("16", () => {
+            const cidr = Cidr32Block.fromCidrNotation("10.0.0.0/16");
+            assert.equal(cidr.nextBlock().toString(), "10.1.0.0/16");
+        });
+
         it("20", () => {
             const cidr = Cidr32Block.fromCidrNotation("10.0.0.0/20");
             assert.equal(cidr.nextBlock().toString(), "10.0.16.0/20");
@@ -121,6 +133,243 @@ describe("cidr", () => {
         it("32", () => {
             const cidr = Cidr32Block.fromCidrNotation("10.0.0.0/32");
             assert.equal(cidr.nextBlock().toString(), "10.0.0.1/32");
+        });
+    });
+});
+
+describe("topology", () => {
+    describe("default", () => {
+        it("1 AZ", () => {
+            assert.equal(topologyToJson("10.0.0.0/16", 1, [
+                { type: "public" },
+                { type: "private" },
+            ]), `[
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/17"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.128.0/17"
+    }
+]`);
+        });
+
+        it("2 AZs", () => {
+            assert.equal(topologyToJson("10.0.0.0/16", 2, [
+                { type: "public" },
+                { type: "private" },
+            ]), `[
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/18"
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.0.64.0/18"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.128.0/18"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.0.192.0/18"
+    }
+]`);
+        });
+
+        it("3 AZs", () => {
+            assert.equal(topologyToJson("10.0.0.0/16", 3, [
+                { type: "public" },
+                { type: "private" },
+            ]), `[
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/19"
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.0.32.0/19"
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-2",
+        "availabilityZone": 2,
+        "cidrBlock": "10.0.64.0/19"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.96.0/19"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.0.128.0/19"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-2",
+        "availabilityZone": 2,
+        "cidrBlock": "10.0.160.0/19"
+    }
+]`);
+        });
+    });
+
+    describe("custom cidr", () => {
+        it("custom 1", () => {
+            assert.equal(topologyToJson("10.10.0.0/16", 2, [
+                { type: "public", cidrMask: 24 },
+                { type: "private", cidrMask: 28 },
+            ]), `[
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.10.0.0/24"
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.10.1.0/24"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.10.2.0/28"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.10.2.16/28"
+    }
+]`);
+        });
+
+        it("custom 2", () => {
+            assert.equal(topologyToJson("10.10.0.0/16", 2, [
+                { type: "public", cidrMask: 26 },
+                { type: "private" },
+                { type: "isolated", cidrMask: 28 },
+            ]), `[
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.10.0.0/26"
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.10.0.64/26"
+    },
+    {
+        "type": "isolated",
+        "subnetName": "testing-isolated-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.10.0.128/28"
+    },
+    {
+        "type": "isolated",
+        "subnetName": "testing-isolated-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.10.0.144/28"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.10.0.160/18"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.10.64.160/18"
+    }
+]`);
+        });
+
+        it("custom 3", () => {
+            assert.equal(topologyToJson("10.10.0.0/16", 2, [
+                { type: "public", cidrMask: 24 },
+                { type: "private", name: "private1" },
+                { type: "private", name: "private2" },
+                { type: "isolated", cidrMask: 24 },
+            ]), `[
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.10.0.0/24"
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.10.1.0/24"
+    },
+    {
+        "type": "isolated",
+        "subnetName": "testing-isolated-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.10.2.0/24"
+    },
+    {
+        "type": "isolated",
+        "subnetName": "testing-isolated-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.10.3.0/24"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private1-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.10.4.0/19"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private1-private-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.10.36.0/19"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private2-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.10.68.0/19"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private2-private-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.10.100.0/19"
+    }
+]`);
         });
     });
 });
