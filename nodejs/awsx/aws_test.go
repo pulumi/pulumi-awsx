@@ -76,16 +76,9 @@ func Test_Examples(t *testing.T) {
 			StackName: addRandomSuffix("vpc"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/fargate"),
-			StackName: addRandomSuffix("fargate"),
-			Config: map[string]string{
-				"aws:region":               region,
-				"containers:redisPassword": "SECRETPASSWORD",
-			},
-			PreviewCommandlineFlags: []string{
-				"--diff",
-			},
-			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/),
+			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
+			StackName:              addRandomSuffix("fargate"),
+			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/, true /*short*/),
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/api"),
@@ -186,6 +179,19 @@ func Test_Examples(t *testing.T) {
 			Dir:       path.Join(cwd, "../examples/alb/ec2"),
 			StackName: addRandomSuffix("ec2"),
 		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/nlb/fargate"),
+			StackName: addRandomSuffix("fargate"),
+			Config: map[string]string{
+				"aws:region":               region,
+				"containers:redisPassword": "SECRETPASSWORD",
+			},
+			PreviewCommandlineFlags: []string{
+				"--diff",
+			},
+			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/, false /*short*/),
+		}),
+
 		// {
 		// 	Dir:       path.Join(cwd, "../examples/ec2"),
 		// 	StackName: addRandomSuffix("ec2"),
@@ -271,7 +277,7 @@ func getLogs(t *testing.T, region string, stackInfo integration.RuntimeValidatio
 	return logs
 }
 
-func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
+func containersRuntimeValidator(region string, isFargate bool, short bool) func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
 		baseURL, ok := stackInfo.Outputs["frontendURL"].(string)
 
@@ -288,18 +294,6 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 			err = json.Unmarshal(bytes, &endpoints)
 			assert.NoError(t, err)
 			t.Logf("GET %v [%v/%v]: %v - %v", baseURL+"test", resp.StatusCode, contentType, string(bytes), endpoints)
-		}
-
-		// Validate the GET / endpoint
-		{
-			// Call the endpoint twice so that things have time to warm up.
-			http.Get(baseURL)
-			resp := examples.GetHTTP(t, baseURL, 200)
-			contentType := resp.Header.Get("Content-Type")
-			assert.Equal(t, "application/json", contentType)
-			bytes, err := ioutil.ReadAll(resp.Body)
-			assert.NoError(t, err)
-			t.Logf("GET %v [%v/%v]: %v", baseURL, resp.StatusCode, contentType, string(bytes))
 		}
 
 		// Validate the GET /nginx endpoint
@@ -324,94 +318,108 @@ func containersRuntimeValidator(region string, isFargate bool) func(t *testing.T
 			}
 		}
 
-		// Validate the GET /run endpoint
-		{
-			resp := examples.GetHTTP(t, baseURL+"run", 200)
-			contentType := resp.Header.Get("Content-Type")
-			assert.Equal(t, "application/json", contentType)
-			bytes, err := ioutil.ReadAll(resp.Body)
-			assert.NoError(t, err)
-			var data map[string]interface{}
-			err = json.Unmarshal(bytes, &data)
-			assert.NoError(t, err)
-			success, ok := data["success"]
-			assert.Equal(t, true, ok)
-			assert.Equal(t, true, success)
-			t.Logf("GET %v [%v/%v]: %v - %v", baseURL+"run", resp.StatusCode, contentType, string(bytes), data)
-		}
+		if !short {
+			// Validate the GET / endpoint
+			{
+				// Call the endpoint twice so that things have time to warm up.
+				http.Get(baseURL)
+				resp := examples.GetHTTP(t, baseURL, 200)
+				contentType := resp.Header.Get("Content-Type")
+				assert.Equal(t, "application/json", contentType)
+				bytes, err := ioutil.ReadAll(resp.Body)
+				assert.NoError(t, err)
+				t.Logf("GET %v [%v/%v]: %v", baseURL, resp.StatusCode, contentType, string(bytes))
+			}
 
-		// Validate the GET /custom endpoint
-		{
-			resp := examples.GetHTTP(t, baseURL+"custom", 200)
-			contentType := resp.Header.Get("Content-Type")
-			assert.Equal(t, "application/json", contentType)
-			bytes, err := ioutil.ReadAll(resp.Body)
-			assert.NoError(t, err)
-			assert.True(t, strings.HasPrefix(string(bytes), "Hello, world"))
-			t.Logf("GET %v [%v/%v]: %v", baseURL+"custom", resp.StatusCode, contentType, string(bytes))
-		}
+			// Validate the GET /run endpoint
+			{
+				resp := examples.GetHTTP(t, baseURL+"run", 200)
+				contentType := resp.Header.Get("Content-Type")
+				assert.Equal(t, "application/json", contentType)
+				bytes, err := ioutil.ReadAll(resp.Body)
+				assert.NoError(t, err)
+				var data map[string]interface{}
+				err = json.Unmarshal(bytes, &data)
+				assert.NoError(t, err)
+				success, ok := data["success"]
+				assert.Equal(t, true, ok)
+				assert.Equal(t, true, success)
+				t.Logf("GET %v [%v/%v]: %v - %v", baseURL+"run", resp.StatusCode, contentType, string(bytes), data)
+			}
 
-		// Wait for five minutes before getting logs.
-		time.Sleep(5 * time.Minute)
+			// Validate the GET /custom endpoint
+			{
+				resp := examples.GetHTTP(t, baseURL+"custom", 200)
+				contentType := resp.Header.Get("Content-Type")
+				assert.Equal(t, "application/json", contentType)
+				bytes, err := ioutil.ReadAll(resp.Body)
+				assert.NoError(t, err)
+				assert.True(t, strings.HasPrefix(string(bytes), "Hello, world"))
+				t.Logf("GET %v [%v/%v]: %v", baseURL+"custom", resp.StatusCode, contentType, string(bytes))
+			}
 
-		// Validate logs from example
-		logs := getLogs(t, region, stackInfo, operations.LogQuery{})
-		if !assert.NotNil(t, logs, "expected logs to be produced") {
-			return
-		}
-		if !assert.True(t, len(*logs) > 10) {
-			return
-		}
-		logsByResource := map[string][]operations.LogEntry{}
-		for _, l := range *logs {
-			cur, _ := logsByResource[l.ID]
-			logsByResource[l.ID] = append(cur, l)
-		}
+			// Wait for five minutes before getting logs.
+			time.Sleep(5 * time.Minute)
 
-		// for id, logs := range logsByResource {
-		// 	t.Logf("LogId (%v): %v\n%v", len(logs), id, getAllMessageText(logs))
-		// }
-
-		// NGINX logs
-		//  {examples-nginx 1512871243078 18.217.247.198 - - [10/Dec/2017:02:00:43 +0000] "GET / HTTP/1.1" ...
-
-		// https://github.com/pulumi/pulumi-cloud/issues/666
-		// We are only making the proxy route in fargate testing.
-		if isFargate {
-			nginxLogs, exists := getLogsWithPrefix(logsByResource, "nginx-")
-			if !assert.True(t, exists) {
+			// Validate logs from example
+			logs := getLogs(t, region, stackInfo, operations.LogQuery{})
+			if !assert.NotNil(t, logs, "expected logs to be produced") {
 				return
 			}
-			if !assert.True(t, len(nginxLogs) > 0) {
+			if !assert.True(t, len(*logs) > 10) {
 				return
 			}
-			assert.Contains(t, getAllMessageText(nginxLogs), "GET /")
-		}
+			logsByResource := map[string][]operations.LogEntry{}
+			for _, l := range *logs {
+				cur, _ := logsByResource[l.ID]
+				logsByResource[l.ID] = append(cur, l)
+			}
 
-		// Hello World container Task logs
-		//  {examples-hello-world 1512871250458 Hello from Docker!}
-		{
-			helloWorldLogs, exists := getLogsWithPrefix(logsByResource, "hello-world-")
-			if !assert.True(t, exists) {
-				return
-			}
-			if !assert.True(t, len(helloWorldLogs) > 3) {
-				return
-			}
-			assert.Contains(t, getAllMessageText(helloWorldLogs), "Hello from Docker!")
-		}
+			// for id, logs := range logsByResource {
+			// 	t.Logf("LogId (%v): %v\n%v", len(logs), id, getAllMessageText(logs))
+			// }
 
-		// Cache Redis container  logs
-		//  {examples-mycache 1512870479441 1:C 10 Dec 01:47:59.440 # oO0OoO0OoO0Oo Redis is starting ...
-		{
-			redisLogs, exists := getLogsWithPrefix(logsByResource, "mycache-")
-			if !assert.True(t, exists) {
-				return
+			// NGINX logs
+			//  {examples-nginx 1512871243078 18.217.247.198 - - [10/Dec/2017:02:00:43 +0000] "GET / HTTP/1.1" ...
+
+			// https://github.com/pulumi/pulumi-cloud/issues/666
+			// We are only making the proxy route in fargate testing.
+			if isFargate {
+				nginxLogs, exists := getLogsWithPrefix(logsByResource, "nginx-")
+				if !assert.True(t, exists) {
+					return
+				}
+				if !assert.True(t, len(nginxLogs) > 0) {
+					return
+				}
+				assert.Contains(t, getAllMessageText(nginxLogs), "GET /")
 			}
-			if !assert.True(t, len(redisLogs) > 5) {
-				return
+
+			// Hello World container Task logs
+			//  {examples-hello-world 1512871250458 Hello from Docker!}
+			{
+				helloWorldLogs, exists := getLogsWithPrefix(logsByResource, "hello-world-")
+				if !assert.True(t, exists) {
+					return
+				}
+				if !assert.True(t, len(helloWorldLogs) > 3) {
+					return
+				}
+				assert.Contains(t, getAllMessageText(helloWorldLogs), "Hello from Docker!")
 			}
-			assert.Contains(t, getAllMessageText(redisLogs), "Redis is starting")
+
+			// Cache Redis container  logs
+			//  {examples-mycache 1512870479441 1:C 10 Dec 01:47:59.440 # oO0OoO0OoO0Oo Redis is starting ...
+			{
+				redisLogs, exists := getLogsWithPrefix(logsByResource, "mycache-")
+				if !assert.True(t, exists) {
+					return
+				}
+				if !assert.True(t, len(redisLogs) > 5) {
+					return
+				}
+				assert.Contains(t, getAllMessageText(redisLogs), "Redis is starting")
+			}
 		}
 	}
 }
