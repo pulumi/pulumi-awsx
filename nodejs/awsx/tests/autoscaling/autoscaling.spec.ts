@@ -40,6 +40,12 @@ describe("step scaling", () => {
             });
         });
 
+        it("throws on duplicate", () => {
+            assert.throws(() => stepsJson({
+                upper: [{ value: 60, adjustment: 10 }, { value: 60, adjustment: 20 }],
+            }));
+        });
+
         it("single step", () => {
             assert.equal(upperStepsJson({ value: 100, adjustment: 10 }), `{
     "threshold": 100,
@@ -101,6 +107,12 @@ describe("step scaling", () => {
             assert.throws(() => {
                 convertLowerSteps([]);
             });
+        });
+
+        it("throws on duplicate", () => {
+            assert.throws(() => stepsJson({
+                lower: [{ value: 60, adjustment: 10 }, { value: 60, adjustment: 20 }],
+            }));
         });
 
         it("single step", () => {
@@ -247,5 +259,11 @@ describe("step scaling", () => {
         assert.throws(() => stepsJson({
             upper: [{ value: 80, adjustment: 10 }, { value: 60, adjustment: 10 }],
             lower: [{ value: 70, adjustment: -10 }, { value: 40, adjustment: -10 }] }));
+    });
+
+    it("throws on overlap 3", () => {
+        assert.throws(() => stepsJson({
+            upper: [{ value: 60, adjustment: 10 }],
+            lower: [{ value: 60, adjustment: -10 }] }));
     });
 });
