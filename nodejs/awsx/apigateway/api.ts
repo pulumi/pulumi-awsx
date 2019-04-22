@@ -734,14 +734,6 @@ function addStaticRouteToSwaggerSpec(
     // Create a bucket to place all the static data under.
     bucket = bucket || new aws.s3.Bucket(safeS3BucketName(name), undefined, parentOpts);
 
-    let authRecords: Record<string, string[]>[] | undefined;
-    if (route.authorizers) {
-        authRecords = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
-    }
-    if (route.apiKeyRequired) {
-        addAPIkeyToSecurityDefinitions(swagger);
-    }
-
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
     // that routes from the file path to the arn for the bucket object.
     //
@@ -749,10 +741,10 @@ function addStaticRouteToSwaggerSpec(
     // gateway route to all the s3 bucket objects we create for the files in these directories.
     const stat = fs.statSync(route.localPath);
     if (stat.isFile()) {
-        processFile(route, authRecords);
+        processFile(route);
     }
     else if (stat.isDirectory()) {
-        processDirectory(route, authRecords);
+        processDirectory(route);
     }
 
     return bucket;
@@ -779,7 +771,7 @@ function addStaticRouteToSwaggerSpec(
         }, parentOpts);
     }
 
-    function processFile(route: StaticRoute, authorizerRecords: Record<string, string[]>[] | undefined) {
+    function processFile(route: StaticRoute) {
         const key = name + sha1hash(method + ":" + route.path);
         const role = createRole(key);
 
@@ -790,7 +782,7 @@ function addStaticRouteToSwaggerSpec(
         addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
 
-    function processDirectory(directory: StaticRoute, authorizerRecords: Record<string, string[]>[] | undefined) {
+    function processDirectory(directory: StaticRoute) {
         const directoryServerPath = route.path.endsWith("/") ? route.path : route.path + "/";
 
         const directoryKey = name + sha1hash(method + ":" + directoryServerPath);
