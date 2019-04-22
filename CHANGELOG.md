@@ -1,4 +1,6 @@
-## 0.18.2 (Unreleased)
+## 0.18.3 (Unreleased)
+
+## 0.18.2 (4/22/2019)
 
 - Adds a new set of APIs for defining and CloudWatch metrics and creating alarms from them. See
   [awsx.cloudwatch.Metric] for more details, and see [awsx.lambda.metrics.duration] as an example of
