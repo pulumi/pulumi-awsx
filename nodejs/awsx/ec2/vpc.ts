@@ -92,6 +92,9 @@ export class Vpc extends pulumi.ComponentResource {
                     // always win out over any defaults we pick.
                     tags: utils.mergeTags({ type, Name: subnetName }, tags),
                 }, opts);
+
+                this.getSubnets(type).push(subnet);
+                this.getSubnetIds(type).push(subnet.id);
             }
 
             // Create an internet gateway if we have public subnets.
