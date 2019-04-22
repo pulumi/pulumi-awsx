@@ -1,6 +1,6 @@
 ## 0.18.3 (Unreleased)
 
-- Add Typescript support for Authorizers, API Keys and Request Validaiton to Integration Routes in API Gateway
+- Add Typescript support for Authorizers, API Keys and Request Validation to Integration Routes in API Gateway
 
 ## 0.18.2 (4/22/2019)
 
