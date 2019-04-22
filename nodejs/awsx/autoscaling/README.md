@@ -18,11 +18,9 @@ const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
 This will create an ASG that use the private subnets of the VPC, attempting to keep around at least 10 instances running with the specified size.  If you want instances to be allowed access to the internet, this can be done by specifying:
 
 ```ts
-const cluster = new awsx.ecs.Cluster("testing", { vpc });
-
 const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
+    // ... other parameters
     subnetIds: vpc.publicSubnetIds,
-    templateParameters: { minSize: 10 },
     launchConfigurationArgs: { instanceType: "t2.medium", associatePublicIpAddress: true },
 });
 ```
@@ -58,11 +56,11 @@ To create a `Schedule` you can do:
 ```ts
 // Schedule the ASG to go up to 20 instances on Friday and back down to 10 on Monday.
 autoScalingGroup.scaleOnSchedule("scaleUpOnFriday", {
-    minSize: 20,
+    desiredCapacity: 20,
     recurrence: { dayOfWeek: "Friday" },
 });
 autoScalingGroup.scaleOnSchedule("scaleDownOnMonday", {
-    minSize: 10,
+    desiredCapacity: 10,
     recurrence: { dayOfWeek: "Monday" },
 });
 ```
@@ -72,18 +70,18 @@ Schedules also support normal [Cron](https://en.wikipedia.org/wiki/Cron) format 
 ```ts
 // Schedule the ASG to go up to 20 instances on Friday and back down to 10 on Monday.
 autoScalingGroup.scaleOnSchedule("scaleUpOnFriday", {
-    minSize: 20,
+    desiredCapacity: 20,
     recurrence: "* * * * 5",
 });
 autoScalingGroup.scaleOnSchedule("scaleDownOnMonday", {
-    minSize: 10,
+    desiredCapacity: 10,
     recurrence: "* * * * 1",
 });
 ```
 
 ## Scaling policies
 
-A more advanced way to scale; scaling policies lets you define parameters that control the scaling process. For example, you could a web application that currently runs on two instances and you want the CPU utilization of the Auto Scaling group to stay at around 50 percent when the load on the application changes. This is useful for scaling in response to changing conditions, when you don't necessarily know when those conditions will change.
+A more advanced way to scale; scaling policies lets you define parameters that control the scaling process. For example, you could have a web application that currently runs on two EC2 instances and you want the CPU utilization of the group to stay at around 50 percent when the load on the application changes. This is useful for scaling in response to changing conditions, when you don't necessarily know a specific schedule when those conditions will change.
 
 There are two main ways to scale on demand:
 
