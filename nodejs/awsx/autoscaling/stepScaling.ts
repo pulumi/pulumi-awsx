@@ -146,6 +146,12 @@ export interface StepScalingPolicyArgs {
      * Scaling group by at least this many instances.  Defaults to `1` if not specified.
      */
     minAdjustmentMagnitude?: pulumi.Input<number>;
+
+    /**
+     * The number of periods over which data is compared to the specified threshold before an alarm
+     * is fired.  Defaults to `1` if unspecified.
+     */
+    evaluationPeriods?: pulumi.Input<number>;
 }
 
 /**
@@ -234,6 +240,7 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
         // AutoScaling recommends a metric of 60 to ensure that adjustments can happen in a timely
         // manner.
         const metric = args.metric.withPeriod(60);
+        const evaluationPeriods = utils.ifUndefined(args.evaluationPeriods, 1);
 
         if (args.steps.upper) {
             this.upperPolicy = new aws.autoscaling.Policy(`${name}-upper`, {
@@ -242,9 +249,9 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
             }, parentOpts);
 
             this.upperAlarm = metric.createAlarm(`${name}-upper`, {
+                evaluationPeriods,
                 // step ranges and alarms are inclusive on the lower end.
                 comparisonOperator: "GreaterThanOrEqualToThreshold",
-                evaluationPeriods: 1,
                 threshold: convertedSteps.upper.threshold,
                 alarmActions: [this.upperPolicy.arn],
             }, parentOpts);
@@ -257,9 +264,9 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
             }, parentOpts);
 
             this.lowerAlarm = metric.createAlarm(`${name}-lower`, {
+                evaluationPeriods,
                 // step ranges and alarms are inclusive on the upper end.
                 comparisonOperator: "LessThanOrEqualToThreshold",
-                evaluationPeriods: 1,
                 threshold: convertedSteps.lower.threshold,
                 alarmActions: [this.lowerPolicy.arn],
             }, parentOpts);
