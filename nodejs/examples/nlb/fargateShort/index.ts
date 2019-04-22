@@ -20,17 +20,19 @@ const cluster = new awsx.ecs.Cluster("testing", { vpc });
 
 // A simple NGINX service, scaled out over two containers.
 const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { port: 80 });
-
-// A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("simple-nginx", { port: 80 });
-const simpleNginx = new awsx.ecs.FargateTaskDefinition("simple-nginx", {
-    container: {
-        image: "nginx",
-        memory: 128,
-        portMappings: [simpleNginxListener],
+const nginx = new awsx.ecs.FargateService("nginx", {
+    cluster,
+    taskDefinitionArgs: {
+        containers: {
+            nginx: {
+                image: "nginx",
+                memory: 128,
+                portMappings: [nginxListener],
+            },
+        },
     },
-}).createService("simple-nginx", { cluster, desiredCount: 2});
-
+    desiredCount: 2,
+});
 
 function errorJSON(err: any) {
     const result: any = Object.create(null);

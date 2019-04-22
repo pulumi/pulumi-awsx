@@ -77,6 +77,7 @@ func Test_Examples(t *testing.T) {
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
+			StackName:              addRandomSuffix("fargate"),
 			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/, true /*short*/),
 		}),
 		testBase.With(integration.ProgramTestOptions{
