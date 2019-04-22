@@ -84,7 +84,7 @@ export type EventHandlerRoute = {
      * Authorizers allows you to define Lambda authorizers be applied for authorization when the
      * the route is called.
      */
-    authorizers?: Authorizer[];
+    authorizers?: Authorizer[] | Authorizer;
 };
 
 type Authorizer = lambdaAuthorizer.LambdaAuthorizer | cognitoAuthorizer.CognitoAuthorizer;
@@ -141,7 +141,7 @@ export type StaticRoute = {
      * the route is called. The authorizer will get applied to all static resources defined by the
      * localPath.
      */
-    authorizers?: Authorizer[];
+    authorizers?: Authorizer[] | Authorizer;
 };
 
 function isStaticRoute(route: Route): route is StaticRoute {
@@ -606,11 +606,13 @@ function addAPIKeyToSwaggerOperation(swaggerOperation: SwaggerOperation) {
 
 function addAuthorizersToSwagger(
     swagger: SwaggerSpec,
-    authorizers: Authorizer[],
+    authorizers: Authorizer[] | Authorizer,
     apiAuthorizers: Record<string, Authorizer>): Record<string, string[]>[] {
 
     const authRecords: Record<string, string[]>[] = [];
     swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
+
+    authorizers = Array.isArray(authorizers) ? authorizers : [authorizers];
 
     for (const auth of authorizers) {
         const suffix = Object.keys(swagger["securityDefinitions"]).length;
