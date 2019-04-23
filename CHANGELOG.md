@@ -1,5 +1,7 @@
 ## 0.18.3 (Unreleased)
 
+- Add support for Authorizers, API Keys and Request Validation to Integration Routes in API Gateway
+
 ## 0.18.2 (4/22/2019)
 
 - Adds a new set of APIs for defining and CloudWatch metrics and creating alarms from them. See
