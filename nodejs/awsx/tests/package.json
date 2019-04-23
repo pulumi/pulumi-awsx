@@ -23,13 +23,15 @@
         "typescript": "^3.4.4",
         "chai": "^4.2.0",
         "proxyquire": "^2.1.0",
-        "semver": "^6.0.0"
+        "semver": "^6.0.0",
+        "js-combinatorics": "^0.5.4"
     },
     "devDependencies": {
         "@types/mime": "^2.0.0",
         "@types/mocha": "^2.2.42",
         "@types/node": "^10.0.0",
-        "@types/semver": "^6.0.0"
+        "@types/semver": "^6.0.0",
+        "@types/js-combinatorics": "^0.5.31"
     },
     "pulumi": {
         "resource": true

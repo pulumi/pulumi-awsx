@@ -16,6 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
+import { getAvailabilityZone } from "./../aws";
 import { VpcTopology } from "./vpcTopology";
 
 import * as utils from "./../utils";
@@ -76,11 +77,25 @@ export class Vpc extends pulumi.ComponentResource {
 
             // Create the appropriate subnets.  Default to a single public and private subnet for each
             // availability zone if none were specified.
-            const topology = new VpcTopology(this, name, cidrBlock, numberOfAvailabilityZones, opts);
-            topology.createSubnets(args.subnets || [
+            const topology = new VpcTopology(name, cidrBlock, numberOfAvailabilityZones);
+            const subnetDescriptions = topology.createSubnets(args.subnets || [
                 { type: "public" },
                 { type: "private" },
             ]);
+
+            for (const { type, subnetName, availabilityZone, cidrBlock, tags } of subnetDescriptions) {
+                const subnet = new x.ec2.Subnet(subnetName, this, {
+                    cidrBlock,
+                    availabilityZone: getAvailabilityZone(availabilityZone),
+                    mapPublicIpOnLaunch: type === "public",
+                    // merge some good default tags, with whatever the user wants.  Their choices should
+                    // always win out over any defaults we pick.
+                    tags: utils.mergeTags({ type, Name: subnetName }, tags),
+                }, opts);
+
+                this.getSubnets(type).push(subnet);
+                this.getSubnetIds(type).push(subnet.id);
+            }
 
             // Create an internet gateway if we have public subnets.
             this.addInternetGateway(name, this.publicSubnets);

@@ -12,24 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { getAvailabilityZone } from "./../aws";
 import { Cidr32Block, getIPv4Address } from "./cidr";
-
-import * as utils from "./../utils";
 
 /** @internal */
 export class VpcTopology {
     private readonly vpcCidrBlock: Cidr32Block;
     private lastAllocatedSubnetCidrBlock?: Cidr32Block;
 
-    constructor(private readonly vpc: x.ec2.Vpc,
-                private readonly vpcName: string,
+    constructor(private readonly vpcName: string,
                 vpcCidr: string,
-                private readonly numberOfAvailabilityZones: number,
-                private readonly opts: pulumi.ComponentResourceOptions | undefined) {
+                private readonly numberOfAvailabilityZones: number) {
 
         this.vpcCidrBlock = Cidr32Block.fromCidrNotation(vpcCidr);
     }
@@ -38,17 +34,21 @@ export class VpcTopology {
         const maskedSubnets = subnetArgsArray.filter(s => s.cidrMask !== undefined);
         const unmaskedSubnets = subnetArgsArray.filter(s => s.cidrMask === undefined);
 
+        const result: SubnetDescription[] = [];
+
         // First, break up the available vpc cidr block to each subnet based on the amount of space
         // they request.
         for (const subnetArgs of maskedSubnets) {
-            this.createSubnet(subnetArgs, subnetArgs.cidrMask!);
+            result.push(...this.createSubnetsWorker(subnetArgs, subnetArgs.cidrMask!));
         }
 
         // Then, take the remaining subnets can break the remaining space up to them.
         const cidrMaskForUnmaskedSubnets = this.computeCidrMaskForSubnets(unmaskedSubnets);
         for (const subnetArgs of unmaskedSubnets) {
-            this.createSubnet(subnetArgs, cidrMaskForUnmaskedSubnets);
+            result.push(...this.createSubnetsWorker(subnetArgs, cidrMaskForUnmaskedSubnets));
         }
+
+        return result;
     }
 
     private computeCidrMaskForSubnets(subnets: x.ec2.VpcSubnetArgs[]): number {
@@ -99,32 +99,28 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
         return nextCidrBlock;
     }
 
-    private createSubnet(subnetArgs: x.ec2.VpcSubnetArgs, cidrMask: number) {
+    private createSubnetsWorker(subnetArgs: x.ec2.VpcSubnetArgs, cidrMask: number) {
         if (cidrMask < 16 || cidrMask > 28) {
             throw new Error(`Cidr mask must be between "16" and "28" but was ${cidrMask}`);
         }
 
+        const result: SubnetDescription[] = [];
+
         const type = subnetArgs.type;
-        const subnets = this.vpc.getSubnets(type);
-        const subnetIds = this.vpc.getSubnetIds(type);
 
         for (let i = 0; i < this.numberOfAvailabilityZones; i++) {
             const subnetName = getSubnetName(this.vpcName, subnetArgs, i);
 
-            const subnet = new x.ec2.Subnet(subnetName, this.vpc, {
-                availabilityZone: getAvailabilityZone(i),
+            result.push({
+                type,
+                subnetName,
+                availabilityZone: i,
                 cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
-                mapPublicIpOnLaunch: type === "public",
-                // merge some good default tags, with whatever the user wants.  Their choices should
-                // always win out over any defaults we pick.
-                tags: utils.mergeTags({ type, Name: subnetName }, subnetArgs.tags),
-            }, this.opts);
-
-            subnets.push(subnet);
-            subnetIds.push(subnet.id);
+                tags: subnetArgs.tags,
+            });
         }
 
-        return;
+        return result;
 
         function getSubnetName(vpcName: string, subnetArgs: x.ec2.VpcSubnetArgs, i: number) {
             let subnetName = `${subnetArgs.type}-${i}`;
@@ -135,4 +131,12 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
             return `${vpcName}-${subnetName}`;
         }
     }
+}
+
+interface SubnetDescription {
+    type: x.ec2.VpcSubnetType;
+    subnetName: string;
+    availabilityZone: number;
+    cidrBlock: string;
+    tags?: pulumi.Input<aws.Tags>;
 }
