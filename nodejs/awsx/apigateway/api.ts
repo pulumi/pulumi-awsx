@@ -82,13 +82,13 @@ export interface BaseRoute {
      * the route is called.
      */
     authorizers?: Authorizer[] | Authorizer;
-};
+}
 
 export interface EventHandlerRoute extends BaseRoute {
     path: string;
     method: Method;
     eventHandler: aws.lambda.EventHandler<Request, Response>;
-};
+}
 
 type Authorizer = lambdaAuthorizer.LambdaAuthorizer | cognitoAuthorizer.CognitoAuthorizer;
 
@@ -119,7 +119,7 @@ export interface StaticRoute extends BaseRoute {
      * To disable this set false or to supply a new index pass an appropriate name.
      */
     index?: boolean | string;
-};
+}
 
 function isStaticRoute(route: Route): route is StaticRoute {
     return (<StaticRoute>route).localPath !== undefined;
