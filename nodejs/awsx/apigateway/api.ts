@@ -58,7 +58,7 @@ export type Response = awslambda.APIGatewayProxyResult;
 export type Route = EventHandlerRoute | StaticRoute | IntegrationRoute | RawDataRoute;
 
 
-export type BaseRoute = {
+export interface BaseRoute {
     /**
      * Required Parameters to validate. If the request validator is set to ALL or PARAMS_ONLY, api
      * gateway will validate these before sending traffic to the event handler.
@@ -84,7 +84,7 @@ export type BaseRoute = {
     authorizers?: Authorizer[] | Authorizer;
 };
 
-export type EventHandlerRoute = BaseRoute & {
+export interface EventHandlerRoute extends BaseRoute {
     path: string;
     method: Method;
     eventHandler: aws.lambda.EventHandler<Request, Response>;
@@ -100,7 +100,7 @@ function isEventHandler(route: Route): route is EventHandlerRoute {
  * StaticRoute is a route that will map from an incoming path to the files/directories specified by
  * [localPath].
  */
-export type StaticRoute = BaseRoute & {
+export interface StaticRoute extends BaseRoute {
     path: string;
     /**
      * The local path on disk to create static S3 resources for.  Files will be uploaded into S3
