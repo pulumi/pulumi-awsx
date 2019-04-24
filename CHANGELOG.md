@@ -1,4 +1,6 @@
-## 0.18.3 (Unreleased)
+## 0.18.4 (Unreleased)
+
+## 0.18.3 (4/24/2019)
 
 - Add support for Authorizers, API Keys and Request Validation to Integration Routes in API Gateway
 
