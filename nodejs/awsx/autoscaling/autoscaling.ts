@@ -77,6 +77,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         this.stack = new aws.cloudformation.Stack(name, {
             ...args,
             name: this.launchConfiguration.stackName,
+            disableRollback: utils.ifUndefined(args.disableRollback, true),
             templateBody: getCloudFormationTemplate(
                 name,
                 this.launchConfiguration.id,
@@ -341,6 +342,12 @@ export interface AutoScalingGroupArgs {
      * have the "instance" [targetType].
      */
     targetGroups?: x.elasticloadbalancingv2.TargetGroup[];
+
+    /**
+     * Set to true to disable rollback of the underlying aws.cloudformation.Stack if that Stack
+     * creation failed.  Defaults to 'true'.
+     */
+    disableRollback?: pulumi.Input<boolean>;
 }
 
 type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling.GroupArgs>, {
