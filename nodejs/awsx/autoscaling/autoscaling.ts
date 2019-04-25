@@ -344,7 +344,7 @@ export interface AutoScalingGroupArgs {
 
     /**
      * Set to true to disable rollback of the underlying aws.cloudformation.Stack if that Stack
-     * creation failed.  Defaults to 'false'.  Conflicts withonFailure
+     * creation failed.  Defaults to 'false'.  Conflicts with `onFailure`.
      */
     disableRollback?: pulumi.Input<boolean>;
 
