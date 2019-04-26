@@ -341,6 +341,18 @@ export interface AutoScalingGroupArgs {
      * have the "instance" [targetType].
      */
     targetGroups?: x.elasticloadbalancingv2.TargetGroup[];
+
+    /**
+     * Set to true to disable rollback of the underlying aws.cloudformation.Stack if that Stack
+     * creation failed.  Defaults to 'false'.  Conflicts with `onFailure`.
+     */
+    disableRollback?: pulumi.Input<boolean>;
+
+    /**
+     * Action to be taken if stack creation fails. This must be
+     * one of: `DO_NOTHING`, `ROLLBACK`, or `DELETE`. Conflicts with `disableRollback`.
+     */
+    onFailure?: pulumi.Input<"DO_NOTHING" | "ROLLBACK" | "DELETE">;
 }
 
 type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling.GroupArgs>, {
