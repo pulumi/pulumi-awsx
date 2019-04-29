@@ -298,12 +298,24 @@ export interface APIArgs {
      * set to true on a route, and this is not defined the value will default to HEADER.
      */
     apiKeySource?: APIKeySource;
+
+    /**
+     * Bucket to use for placing resources for static resources.  If not provided a default one will
+     * be created on your behalf if any [StaticRoute]s are provided.
+     */
+    staticRoutesBucket?: aws.s3.Bucket | aws.s3.BucketArgs;
 }
 
 export class API extends pulumi.ComponentResource {
     public readonly restAPI: aws.apigateway.RestApi;
     public readonly deployment: aws.apigateway.Deployment;
     public readonly stage: aws.apigateway.Stage;
+
+    /**
+     * Bucket where static resources were placed.  Only set if a Bucket was provided to the API at
+     * construction time, or if there were any [StaticRoute]s passed to the API.
+     */
+    public readonly staticRoutesBucket?: aws.s3.Bucket;
 
     public readonly url: pulumi.Output<string>;
 
@@ -319,10 +331,12 @@ export class API extends pulumi.ComponentResource {
             swaggerString = pulumi.output(args.swaggerString);
         }
         else if (args.routes) {
-            const result = createSwaggerSpec(this, name, args.routes, args.requestValidator, args.apiKeySource);
+            const result = createSwaggerSpec(
+                this, name, args.routes, args.requestValidator, args.apiKeySource, args.staticRoutesBucket);
             swaggerSpec = result.swagger;
             swaggerLambdas = result.swaggerLambdas;
             swaggerString = pulumi.output<any>(swaggerSpec).apply(JSON.stringify);
+            this.staticRoutesBucket = result.staticRoutesBucket;
         }
         else {
             throw new pulumi.ResourceError(
@@ -410,7 +424,8 @@ function createSwaggerSpec(
     name: string,
     routes: Route[],
     requestValidator: RequestValidator | undefined,
-    apikeySource: APIKeySource | undefined) {
+    apikeySource: APIKeySource | undefined,
+    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined) {
 
     // Default API Key source to "HEADER"
     apikeySource = apikeySource || "HEADER";
@@ -462,11 +477,6 @@ function createSwaggerSpec(
 
     // Now add all the routes to it.
 
-    // For static routes, we'll end up creating a bucket to store all the data.  We only want to do
-    // this once.  So have a value here that can be lazily initialized the first route we hit, which
-    // can then be used for all successive static routes.
-    let staticRouteBucket: aws.s3.Bucket | undefined;
-
     // Use this to track the API's authorizers and ensure any authorizers with the same name
     // reference the same authorizer.
     const apiAuthorizers: Record<string, Authorizer> = {};
@@ -478,7 +488,7 @@ function createSwaggerSpec(
             addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
         }
         else if (isStaticRoute(route)) {
-            staticRouteBucket = addStaticRouteToSwaggerSpec(api, name, swagger, route, staticRouteBucket, apiAuthorizers);
+            bucketOrArgs = addStaticRouteToSwaggerSpec(api, name, swagger, route, bucketOrArgs, apiAuthorizers);
         }
         else if (isIntegrationRoute(route)) {
             addIntegrationRouteToSwaggerSpec(api, name, swagger, route, apiAuthorizers);
@@ -492,7 +502,7 @@ function createSwaggerSpec(
         }
     }
 
-    return { swagger, swaggerLambdas };
+    return { swagger, swaggerLambdas, staticRoutesBucket: pulumi.Resource.isInstance(bucketOrArgs) ? bucketOrArgs : undefined };
 }
 
 function addSwaggerOperation(swagger: SwaggerSpec, path: string, method: string, operation: SwaggerOperation) {
@@ -723,7 +733,7 @@ function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperat
 
 function addStaticRouteToSwaggerSpec(
     api: API, name: string, swagger: SwaggerSpec, route: StaticRoute,
-    bucket: aws.s3.Bucket | undefined,
+    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined,
     apiAuthorizers: Record<string, Authorizer>) {
 
     checkRoute(api, route, "localPath");
@@ -732,7 +742,9 @@ function addStaticRouteToSwaggerSpec(
 
     const parentOpts = { parent: api };
     // Create a bucket to place all the static data under.
-    bucket = bucket || new aws.s3.Bucket(safeS3BucketName(name), undefined, parentOpts);
+    const bucket = pulumi.Resource.isInstance(bucketOrArgs)
+        ? bucketOrArgs
+        : new aws.s3.Bucket(safeS3BucketName(name), bucketOrArgs, parentOpts);
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
     // that routes from the file path to the arn for the bucket object.
@@ -764,8 +776,8 @@ function addStaticRouteToSwaggerSpec(
 
     function createBucketObject(key: string, localPath: string, contentType?: string) {
         return new aws.s3.BucketObject(key, {
-            bucket: bucket!,
-            key: key,
+            bucket,
+            key,
             source: new pulumi.asset.FileAsset(localPath),
             contentType: contentType || mime.getType(localPath) || undefined,
         }, parentOpts);
