@@ -1,8 +1,8 @@
 ## 0.18.4 (Unreleased)
 
 - ApiGateway now provides control over the backing s3.Bucket created for `StaticRoute`s.  This is
-  useful for SinglePageApp scenarios that want to relevant Bucket values like `errorDocument` or
-  `indexDocument`.
+  useful for SinglePageApp scenarios that want to control relevant Bucket values like
+  `errorDocument` or `indexDocument`.
 
 ## 0.18.3 (4/24/2019)
 
