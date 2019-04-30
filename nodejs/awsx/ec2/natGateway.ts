@@ -23,7 +23,7 @@ export class NatGateway
         implements x.ec2.SubnetRouteProvider {
 
     public readonly vpc: x.ec2.Vpc;
-    public readonly elasticIP: aws.ec2.Eip;
+    public readonly elasticIP: aws.ec2.Eip | undefined;
     public readonly natGateway: aws.ec2.NatGateway;
 
     constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions);

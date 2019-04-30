@@ -33,7 +33,8 @@ export abstract class TargetGroup
 
     public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
 
-    constructor(type: string, name: string, args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(type: string, name: string, loadBalancer: mod.LoadBalancer,
+                args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
         const parentOpts = { parent: this };
@@ -50,6 +51,8 @@ export abstract class TargetGroup
             targetType: utils.ifUndefined(args.targetType, "ip"),
             tags: utils.mergeTags(args.tags, { Name: longName }),
         }, parentOpts);
+
+        this.loadBalancer = loadBalancer;
     }
 
     private dependencies() {

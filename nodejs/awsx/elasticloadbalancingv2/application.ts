@@ -102,7 +102,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, { vpc: args.vpc }, opts);
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
-        super("awsx:x:elasticloadbalancingv2:ApplicationTargetGroup", name, {
+        super("awsx:x:elasticloadbalancingv2:ApplicationTargetGroup", name, loadBalancer, {
             ...args,
             vpc: loadBalancer.vpc,
             port,
@@ -111,6 +111,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 
         this.__isApplicationTargetGroup = true;
 
+        this.listeners = [];
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
@@ -199,6 +200,9 @@ export class ApplicationListener extends mod.Listener {
 
         const parentOpts = { parent: this };
 
+        this.loadBalancer = loadBalancer;
+        loadBalancer.listeners.push(this);
+
         // If the listener is externally available, then open it's port both for ingress
         // in the load balancer's security groups.
         if (args.external !== false) {
@@ -211,9 +215,6 @@ export class ApplicationListener extends mod.Listener {
                 securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, parentOpts);
             }
         }
-
-        this.loadBalancer = loadBalancer;
-        loadBalancer.listeners.push(this);
 
         this.registerOutputs();
     }

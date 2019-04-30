@@ -140,7 +140,7 @@ export class Metric {
         this.period = utils.ifUndefined(args.period, 300).apply(validatePeriod);
         this.statistic = pulumi.all([args.statistic, args.extendedStatistic])
                                .apply(([statistic, extendedStatistic]) => validateStatistics(statistic, extendedStatistic));
-        this.extendedStatistic = pulumi.output(args.extendedStatistic).apply(validateExtendedStatistic);
+        this.extendedStatistic = pulumi.output(args.extendedStatistic).apply(es => validateExtendedStatistic(es));
         this.unit = pulumi.output(args.unit);
 
         // Only for metrics that are placed in dashboards.
@@ -386,7 +386,7 @@ function validateStatistics(statistic: MetricStatistic | undefined, extendedStat
     return statistic!;
 }
 
-function validateExtendedStatistic(extendedStatistic: number) {
+function validateExtendedStatistic(extendedStatistic: number | undefined) {
     if (extendedStatistic !== undefined) {
         if (extendedStatistic < 0 || extendedStatistic > 100) {
                 throw new Error("[args.extendedStatistic] must be between 0 and 100.");

@@ -89,7 +89,7 @@ class AssetImage extends Image {
     private readonly pathOrBuild: pulumi.Output<string | docker.DockerBuild>;
 
     // Computed and cached on demand.
-    private imageResult: pulumi.Output<string>;
+    private imageResult: pulumi.Output<string> | undefined;
 
     constructor(nameOrRepository: string | aws.ecr.Repository, pathOrBuild: pulumi.Input<string | docker.DockerBuild>) {
         super();

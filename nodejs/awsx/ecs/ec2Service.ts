@@ -102,6 +102,8 @@ export class EC2Service extends ecs.Service {
             }),
         }, /*isFargate:*/ false, opts);
 
+        this.taskDefinition = taskDefinition;
+
         this.registerOutputs();
     }
 }

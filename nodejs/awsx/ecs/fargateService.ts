@@ -219,6 +219,8 @@ export class FargateService extends ecs.Service {
             },
         },  /*isFargate:*/ true, opts);
 
+        this.taskDefinition = taskDefinition;
+
         this.registerOutputs();
     }
 }
