@@ -74,7 +74,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
         this.containers = args.containers;
         const containerDefinitions = computeContainerDefinitions(this, name, this.containers, this.logGroup);
-        const containerString = containerDefinitions.apply(JSON.stringify);
+        const containerString = containerDefinitions.apply(d => JSON.stringify(d));
         const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
 
         this.taskDefinition = new aws.ecs.TaskDefinition(name, {

@@ -85,7 +85,7 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
     constructor(name: string, args: DashboardArgs, opts?: pulumi.CustomResourceOptions) {
         super(name, {
             dashboardName: utils.ifUndefined(args.name, name),
-            dashboardBody: getDashboardBody(args).apply(JSON.stringify),
+            dashboardBody: getDashboardBody(args).apply(b => JSON.stringify(b)),
         }, opts);
     }
 }

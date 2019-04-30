@@ -220,7 +220,7 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
-        const convertedSteps = pulumi.output(args.steps).apply(convertSteps);
+        const convertedSteps = pulumi.output(args.steps).apply(s => convertSteps(s));
 
         const metricAggregationType = pulumi.output(args.metric.statistic).apply(s => {
             if (s !== "Minimum" && s !== "Maximum" && s !== "Average") {

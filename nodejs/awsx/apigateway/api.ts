@@ -335,7 +335,7 @@ export class API extends pulumi.ComponentResource {
                 this, name, args.routes, args.requestValidator, args.apiKeySource, args.staticRoutesBucket);
             swaggerSpec = result.swagger;
             swaggerLambdas = result.swaggerLambdas;
-            swaggerString = pulumi.output<any>(swaggerSpec).apply(JSON.stringify);
+            swaggerString = pulumi.output<any>(swaggerSpec).apply(s => JSON.stringify(s));
             this.staticRoutesBucket = result.staticRoutesBucket;
         }
         else {
@@ -362,7 +362,7 @@ export class API extends pulumi.ComponentResource {
             // when needed.  The Stage allocated below will be the stable stage that always points
             // to the latest deployment of the API.
             variables: {
-                version: swaggerString.apply(sha1hash),
+                version: swaggerString.apply(s => sha1hash(s)),
             },
         }, { parent: this });
 
