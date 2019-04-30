@@ -23,7 +23,6 @@ export abstract class Service extends pulumi.ComponentResource {
     public readonly service: aws.ecs.Service;
     public readonly cluster: ecs.Cluster;
     public readonly taskDefinition: ecs.TaskDefinition;
-    public readonly securityGroups: x.ec2.SecurityGroup[];
 
     constructor(type: string, name: string,
                 args: ServiceArgs, isFargate: boolean,

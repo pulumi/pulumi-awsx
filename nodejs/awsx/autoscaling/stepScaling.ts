@@ -191,13 +191,13 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
     /**
      * Underlying [Policy] created to define the scaling strategy for the upper set of steps.
      */
-    public readonly upperPolicy: aws.autoscaling.Policy;
+    public readonly upperPolicy: aws.autoscaling.Policy | undefined;
 
     /**
      * Alarm that invokes [upperPolicy] when the metric goes above the lowest value of the upper
      * range of steps.
      */
-    public readonly upperAlarm: aws.cloudwatch.MetricAlarm;
+    public readonly upperAlarm: aws.cloudwatch.MetricAlarm | undefined;
 
     /**
      * Underlying [Policy] created to define the scaling strategy for the lower set of steps.

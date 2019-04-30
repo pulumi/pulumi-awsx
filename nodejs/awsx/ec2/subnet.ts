@@ -31,8 +31,8 @@ export class Subnet extends pulumi.ComponentResource {
      */
     public readonly id: pulumi.Output<string>;
     public readonly subnet: aws.ec2.Subnet;
-    public readonly routeTable: aws.ec2.RouteTable;
-    public readonly routeTableAssociation: aws.ec2.RouteTableAssociation;
+    public readonly routeTable: aws.ec2.RouteTable | undefined;
+    public readonly routeTableAssociation: aws.ec2.RouteTableAssociation | undefined;
 
     public readonly routes: aws.ec2.Route[] = [];
 
@@ -81,6 +81,10 @@ export class Subnet extends pulumi.ComponentResource {
     public createRoute(name: string, args: RouteArgs, opts?: pulumi.ComponentResourceOptions): void;
     public createRoute(name: string, provider: SubnetRouteProvider, opts?: pulumi.ComponentResourceOptions): void;
     public createRoute(name: string, argsOrProvider: RouteArgs | SubnetRouteProvider, opts: pulumi.ComponentResourceOptions = {}): void {
+        if (!this.routeTable) {
+            throw new Error("Cannot call [createRoute] on a [Subnet] that doesn't have a [RouteTable]");
+        }
+
         opts = { parent: this, ...opts };
 
         const args = isSubnetRouteProvider(argsOrProvider)

@@ -83,12 +83,13 @@ export class NetworkTargetGroup extends mod.TargetGroup {
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP");
 
-        super("awsx:x:elasticloadbalancingv2:NetworkTargetGroup", name, {
+        super("awsx:x:elasticloadbalancingv2:NetworkTargetGroup", name, loadBalancer, {
             ...args,
             protocol,
             vpc: loadBalancer.vpc,
         }, { parent: loadBalancer, ...opts });
 
+        this.listeners = [];
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
