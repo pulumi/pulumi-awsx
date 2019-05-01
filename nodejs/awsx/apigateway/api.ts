@@ -399,7 +399,7 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
     const permissions: aws.lambda.Permission[] = [];
     for (const [path, lambdas] of swaggerLambdas) {
         for (const [method, lambda] of lambdas) {
-            const methodAndPath = `${method === "ANY" ? "*" : method}${path}`;
+            const methodAndPath = `${method === "ANY" ? "*" : method}/${path}`;
 
             permissions.push(new aws.lambda.Permission(name + "-" + sha1hash(methodAndPath), {
                 action: "lambda:invokeFunction",
