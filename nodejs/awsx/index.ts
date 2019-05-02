@@ -25,6 +25,7 @@ import * as cognito from "./cognito";
 import * as dynamodb from "./dynamodb";
 import * as ebs from "./ebs";
 import * as ec2 from "./ec2";
+import * as ecr from "./ecr";
 import * as ecs from "./ecs";
 import * as efs from "./efs";
 import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";

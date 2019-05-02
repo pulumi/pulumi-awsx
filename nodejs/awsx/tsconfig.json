@@ -52,6 +52,7 @@
         "dynamodb/metrics.ts",
         "ebs/index.ts",
         "ebs/metrics.ts",
+
         "ec2/index.ts",
         "ec2/cidr.ts",
         "ec2/metrics.ts",
@@ -60,6 +61,12 @@
         "ec2/subnet.ts",
         "ec2/vpc.ts",
         "ec2/vpcTopology.ts",
+
+        "ecr/index.ts",
+        "ecr/lifecyclePolicy.ts",
+        "ecr/repository.ts",
+        "ecr/repositoryImage.ts",
+
         "ecs/index.ts",
         "ecs/cluster.ts",
         "ecs/container.ts",
@@ -69,6 +76,7 @@
         "ecs/metrics.ts",
         "ecs/service.ts",
         "ecs/taskDefinition.ts",
+
         "efs/index.ts",
         "efs/metrics.ts",
         "elasticloadbalancingv2/application.ts",
