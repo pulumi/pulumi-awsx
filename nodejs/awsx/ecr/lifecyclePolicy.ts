@@ -125,6 +125,10 @@ type TagStatus = "tagged" | "untagged" | "any";
 type CountUnit = "days" | undefined;
 type CountTypeJson = "imageCountMoreThan" | "sinceImagePushed";
 
+/**
+ * See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for
+ * more details.
+ */
 export interface LifecyclePolicyArgs {
     /**
      * Specified the rules to determine how images should be retired from this repository. Rules are
