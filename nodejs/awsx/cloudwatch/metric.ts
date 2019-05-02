@@ -137,7 +137,7 @@ export class Metric {
         this.name = pulumi.output(args.name);
         this.dimensions = pulumi.output(args.dimensions);
         this.namespace = pulumi.output(args.namespace);
-        this.period = utils.ifUndefined(args.period, 300).apply(validatePeriod);
+        this.period = utils.ifUndefined(args.period, 300).apply(p => validatePeriod(p));
         this.statistic = pulumi.all([args.statistic, args.extendedStatistic])
                                .apply(([statistic, extendedStatistic]) => validateStatistics(statistic, extendedStatistic));
         this.extendedStatistic = pulumi.output(args.extendedStatistic).apply(es => validateExtendedStatistic(es));
