@@ -85,6 +85,10 @@ export interface BaseRoute {
 }
 
 export interface EventHandlerRoute extends BaseRoute {
+    /**
+     * The path on the API that will invoke the provided [eventHandler].  If not prefixed with `/`,
+     * then a `/` will be added automatically to the beginning.
+     */
     path: string;
     method: Method;
     eventHandler: aws.lambda.EventHandler<Request, Response>;
@@ -101,6 +105,10 @@ function isEventHandler(route: Route): route is EventHandlerRoute {
  * [localPath].
  */
 export interface StaticRoute extends BaseRoute {
+    /**
+     * The path on the API that will map to files in [localPath].  If not prefixed with `/`, then a
+     * `/` will be added automatically to the beginning.
+     */
     path: string;
     /**
      * The local path on disk to create static S3 resources for.  Files will be uploaded into S3
@@ -130,6 +138,10 @@ function isStaticRoute(route: Route): route is StaticRoute {
  * https://docs.aws.amazon.com/apigateway/api-reference/resource/integration/ for more details.
  */
 export interface IntegrationRoute extends BaseRoute {
+    /**
+     * The path on the API that will invoke the provided [target].  If not prefixed with `/`, then a
+     * `/` will be added automatically to the beginning.
+     */
     path: string;
     target: pulumi.Input<IntegrationTarget> | IntegrationRouteTargetProvider;
 }
@@ -250,6 +262,10 @@ function isIntegrationRoute(route: Route): route is IntegrationRoute {
  * string here.
  */
 export type RawDataRoute = {
+    /**
+     * The path on the API that will return the provided [data].  If not prefixed with `/`, then a
+     * `/` will be added automatically to the beginning.
+     */
     path: string;
     method: Method;
     data: any;
@@ -483,6 +499,12 @@ function createSwaggerSpec(
 
     for (const route of routes) {
         checkRoute(api, route, "path");
+
+        // We allow paths to be provided that don't start with / just for convenience. But we always
+        // normalize them internally to start with / as that it what swagger requires.
+        if (!route.path.startsWith("/")) {
+            route.path = "/" + route.path;
+        }
 
         if (isEventHandler(route)) {
             addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
