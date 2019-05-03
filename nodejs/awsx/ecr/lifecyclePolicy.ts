@@ -131,7 +131,7 @@ type CountTypeJson = "imageCountMoreThan" | "sinceImagePushed";
  */
 export interface LifecyclePolicyArgs {
     /**
-     * Specified the rules to determine how images should be retired from this repository. Rules are
+     * Specifies the rules to determine how images should be retired from this repository. Rules are
      * ordered from lowest priority to highest.  If there is a rule with a `selection` value of
      * `any`, then it will have the highest priority.
      */
