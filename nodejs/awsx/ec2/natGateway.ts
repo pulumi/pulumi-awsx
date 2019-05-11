@@ -71,7 +71,7 @@ export class NatGateway
             // Choose Add another route. For Destination, type 0.0.0.0/0. For Target, select the ID
             // of your NAT gateway.
             destinationCidrBlock: "0.0.0.0/0",
-            gatewayId: this.natGateway.id,
+            natGatewayId: this.natGateway.id,
         };
     }
 }
