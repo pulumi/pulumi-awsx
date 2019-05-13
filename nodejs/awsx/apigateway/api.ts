@@ -245,7 +245,7 @@ export interface IntegrationRouteTargetProvider {
 }
 
 function isIntegrationRouteTargetProvider(obj: any): obj is IntegrationRouteTargetProvider {
-    return (<IntegrationRouteTargetProvider>obj).target !== undefined;
+    return (<IntegrationRouteTargetProvider>obj).target instanceof Function;
 }
 
 function isIntegrationRoute(route: Route): route is IntegrationRoute {

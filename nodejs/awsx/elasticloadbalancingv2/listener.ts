@@ -265,12 +265,16 @@ export interface ListenerActions {
 
 /** @internal */
 export function isListenerDefaultAction(obj: any): obj is ListenerDefaultAction {
-    return obj && !!obj.listenerDefaultAction && !!obj.registerListener;
+    return obj &&
+        (<ListenerDefaultAction>obj).listenerDefaultAction instanceof Function &&
+        (<ListenerDefaultAction>obj).registerListener instanceof Function;
 }
 
 /** @internal */
 export function isListenerActions(obj: any): obj is ListenerActions {
-    return obj && !!obj.actions && !!obj.registerListener;
+    return obj &&
+        (<ListenerActions>obj).actions instanceof Function &&
+        (<ListenerActions>obj).registerListener instanceof Function;
 }
 
 type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
