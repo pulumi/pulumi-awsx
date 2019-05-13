@@ -1,6 +1,6 @@
 ## Pulumi Elastic Contain Registry (ECR) Components
 
-Pulumi's API's for simplifying working with [ECR](https://aws.amazon.com/ecr/). The API currently provides ways to define and configure [`Repositories`]https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html) and [`LifecyclePolicies`](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html).  It also makes it simple to build and push [Docker Images](https://docs.docker.com/engine/reference/commandline/image/) to a Repository providing stored cloud images that can then be used by other AWS services like ECS.
+Pulumi's API's for simplifying working with [ECR](https://aws.amazon.com/ecr/). The API currently provides ways to define and configure [`Repositories`](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html) and [`LifecyclePolicies`](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html).  It also makes it simple to build and push [Docker Images](https://docs.docker.com/engine/reference/commandline/image/) to a Repository providing stored cloud images that can then be used by other AWS services like ECS.
 
 ### Repositories
 
@@ -213,12 +213,12 @@ const repository = new awsx.ecr.Repository("app", {
 ```
 
 Repository contents:
-* Image A, Taglist: "alpha-1", Pushed: 12 days ago
-* Image B, Taglist: "beta-1", Pushed: 11 days ago
-* Image C, Taglist: "alpha-2", "beta-2", Pushed: 10 days ago
-* Image D, Taglist: "alpha-3", Pushed: 4 days ago
-* Image E, Taglist: "beta-3", Pushed: 3 days ago
-* Image F, Taglist: "alpha-4", "beta-4", Pushed: 2 days ago
+* Image A, Taglist: ["alpha-1"], Pushed: 12 days ago
+* Image B, Taglist: ["beta-1"], Pushed: 11 days ago
+* Image C, Taglist: ["alpha-2", "beta-2"], Pushed: 10 days ago
+* Image D, Taglist: ["alpha-3"], Pushed: 4 days ago
+* Image E, Taglist: ["beta-3"], Pushed: 3 days ago
+* Image F, Taglist: ["alpha-4", "beta-4"], Pushed: 2 days ago
 
 The logic of this lifecycle policy would be:
 
