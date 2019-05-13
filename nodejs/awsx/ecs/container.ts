@@ -123,12 +123,12 @@ export interface ContainerLoadBalancerProvider {
 
 /** @internal */
 export function isContainerPortMappingProvider(obj: any): obj is ContainerPortMappingProvider {
-    return obj && !!(<ContainerPortMappingProvider>obj).containerPortMapping;
+    return obj && (<ContainerPortMappingProvider>obj).containerPortMapping instanceof Function;
 }
 
 /** @internal */
 export function isContainerLoadBalancerProvider(obj: any): obj is ContainerLoadBalancerProvider {
-    return obj && !!(<ContainerLoadBalancerProvider>obj).containerLoadBalancer;
+    return obj && (<ContainerLoadBalancerProvider>obj).containerLoadBalancer instanceof Function;
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
@@ -206,7 +206,9 @@ export interface ContainerImageProvider {
 
 /** @internal */
 export function isContainerImageProvider(obj: any): obj is ContainerImageProvider {
-    return obj && !!(<ContainerImageProvider>obj).image && !!(<ContainerImageProvider>obj).environment;
+    return obj &&
+        (<ContainerImageProvider>obj).image instanceof Function &&
+        (<ContainerImageProvider>obj).environment instanceof Function;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

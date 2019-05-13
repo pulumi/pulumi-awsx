@@ -112,32 +112,10 @@ class AssetImage extends Image {
 
             this.imageResult = pulumi.all([this.pathOrBuild, repositoryUrl, registryId])
                                      .apply(([pathOrBuild, repositoryUrl, registryId]) =>
-                AssetImage.computeImageFromAsset(pathOrBuild, repositoryUrl, registryId, parent));
+                computeImageFromAsset(pathOrBuild, repositoryUrl, registryId, parent));
         }
 
         return this.imageResult;
-    }
-
-    private static getImageName(pathOrBuild: string | pulumi.Unwrap<docker.DockerBuild>) {
-        // Produce a hash of the build context and use that for the image name.
-        let buildSig: string;
-        if (typeof pathOrBuild === "string") {
-            buildSig = pathOrBuild;
-        }
-        else {
-            buildSig = pathOrBuild.context || ".";
-            if (pathOrBuild.dockerfile ) {
-                buildSig += `;dockerfile=${pathOrBuild.dockerfile}`;
-            }
-            if (pathOrBuild.args) {
-                for (const arg of Object.keys(pathOrBuild.args)) {
-                    buildSig += `;arg[${arg}]=${pathOrBuild.args[arg]}`;
-                }
-            }
-        }
-
-        buildSig += pulumi.getStack();
-        return `${utils.sha1hash(buildSig)}-container`;
     }
 
     // getOrCreateRepository returns the ECR repository for this image, lazily allocating if necessary.
@@ -168,47 +146,69 @@ class AssetImage extends Image {
 
         return repository;
     }
-
-    private static computeImageFromAsset(
-            pathOrBuild: string | pulumi.Unwrap<docker.DockerBuild>,
-            repositoryUrl: string,
-            registryId: string,
-            logResource: pulumi.Resource) {
-
-        pulumi.log.debug(`Building container image at '${JSON.stringify(pathOrBuild)}'`, logResource);
-
-        const imageName = AssetImage.getImageName(pathOrBuild);
-
-        // If we haven't, build and push the local build context to the ECR repository.  Then return
-        // the unique image name we pushed to.  The name will change if the image changes ensuring
-        // the TaskDefinition get's replaced IFF the built image changes.
-
-        const uniqueImageName = docker.buildAndPushImage(
-                imageName, pathOrBuild, repositoryUrl, logResource, async () => {
-            // Construct Docker registry auth data by getting the short-lived authorizationToken from ECR, and
-            // extracting the username/password pair after base64-decoding the token.
-            //
-            // See: http://docs.aws.amazon.com/cli/latest/reference/ecr/get-authorization-token.html
-            if (!registryId) {
-                throw new Error("Expected registry ID to be defined during push");
-            }
-            const credentials = await aws.ecr.getCredentials({ registryId: registryId });
-            const decodedCredentials = Buffer.from(credentials.authorizationToken, "base64").toString();
-            const [username, password] = decodedCredentials.split(":");
-            if (!password || !username) {
-                throw new Error("Invalid credentials");
-            }
-            return {
-                registry: credentials.proxyEndpoint,
-                username: username,
-                password: password,
-            };
-        });
-
-        uniqueImageName.apply(d =>
-            pulumi.log.debug(`    build complete: ${imageName} (${d})`, logResource));
-
-        return uniqueImageName;
-    }
 }
 
+function getImageName(pathOrBuild: string | pulumi.Unwrap<docker.DockerBuild>) {
+    // Produce a hash of the build context and use that for the image name.
+    let buildSig: string;
+    if (typeof pathOrBuild === "string") {
+        buildSig = pathOrBuild;
+    }
+    else {
+        buildSig = pathOrBuild.context || ".";
+        if (pathOrBuild.dockerfile ) {
+            buildSig += `;dockerfile=${pathOrBuild.dockerfile}`;
+        }
+        if (pathOrBuild.args) {
+            for (const arg of Object.keys(pathOrBuild.args)) {
+                buildSig += `;arg[${arg}]=${pathOrBuild.args[arg]}`;
+            }
+        }
+    }
+
+    buildSig += pulumi.getStack();
+    return `${utils.sha1hash(buildSig)}-container`;
+}
+
+/** @internal */
+export function computeImageFromAsset(
+        pathOrBuild: string | pulumi.Unwrap<docker.DockerBuild>,
+        repositoryUrl: string,
+        registryId: string,
+        logResource: pulumi.Resource) {
+
+    pulumi.log.debug(`Building container image at '${JSON.stringify(pathOrBuild)}'`, logResource);
+
+    const imageName = getImageName(pathOrBuild);
+
+    // If we haven't, build and push the local build context to the ECR repository.  Then return
+    // the unique image name we pushed to.  The name will change if the image changes ensuring
+    // the TaskDefinition get's replaced IFF the built image changes.
+
+    const uniqueImageName = docker.buildAndPushImage(
+            imageName, pathOrBuild, repositoryUrl, logResource, async () => {
+        // Construct Docker registry auth data by getting the short-lived authorizationToken from ECR, and
+        // extracting the username/password pair after base64-decoding the token.
+        //
+        // See: http://docs.aws.amazon.com/cli/latest/reference/ecr/get-authorization-token.html
+        if (!registryId) {
+            throw new Error("Expected registry ID to be defined during push");
+        }
+        const credentials = await aws.ecr.getCredentials({ registryId: registryId });
+        const decodedCredentials = Buffer.from(credentials.authorizationToken, "base64").toString();
+        const [username, password] = decodedCredentials.split(":");
+        if (!password || !username) {
+            throw new Error("Invalid credentials");
+        }
+        return {
+            registry: credentials.proxyEndpoint,
+            username: username,
+            password: password,
+        };
+    });
+
+    uniqueImageName.apply(d =>
+        pulumi.log.debug(`    build complete: ${imageName} (${d})`, logResource));
+
+    return uniqueImageName;
+}

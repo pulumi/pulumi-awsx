@@ -103,7 +103,7 @@ export interface SubnetRouteProvider {
 }
 
 function isSubnetRouteProvider(obj: any): obj is SubnetRouteProvider {
-    return !!(<SubnetRouteProvider>obj).route;
+    return (<SubnetRouteProvider>obj).route instanceof Function;
 }
 
 export type SubnetOrId = Subnet | pulumi.Input<string>;

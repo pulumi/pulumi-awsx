@@ -427,8 +427,8 @@ export interface AutoScalingUserData {
 
 function isAutoScalingUserData(obj: any): obj is AutoScalingUserData {
     return obj !== undefined &&
-        (!!(<AutoScalingUserData>obj).extraBootcmdLines ||
-         !!(<AutoScalingUserData>obj).extraRuncmdLines);
+        ((<AutoScalingUserData>obj).extraBootcmdLines instanceof Function ||
+         (<AutoScalingUserData>obj).extraRuncmdLines instanceof Function);
 }
 
 /**

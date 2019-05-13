@@ -3,6 +3,8 @@
 - ApiGateway now provides control over the backing s3.Bucket created for `StaticRoute`s.  This is
   useful for SinglePageApp scenarios that want to control relevant Bucket values like
   `errorDocument` or `indexDocument`.
+- A new `ecr` module has been created, simplifying creation of `ecr.Repository`s and
+  `ecr.LifecyclePolicy`s.
 
 ## 0.18.3 (4/24/2019)
 

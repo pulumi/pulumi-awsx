@@ -167,7 +167,7 @@ export interface ServiceLoadBalancerProvider {
 
 /** @internal */
 export function isServiceLoadBalancerProvider(obj: any): obj is ServiceLoadBalancerProvider {
-    return obj && !!(<ServiceLoadBalancerProvider>obj).serviceLoadBalancer;
+    return obj && (<ServiceLoadBalancerProvider>obj).serviceLoadBalancer instanceof Function;
 }
 
 // The shape we want for ClusterFileSystemArgs.  We don't export this as 'Overwrite' types are not pleasant to

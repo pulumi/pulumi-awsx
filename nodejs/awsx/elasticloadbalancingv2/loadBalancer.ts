@@ -128,5 +128,5 @@ export interface LoadBalancerSubnets {
 }
 
 function isLoadBalancerSubnets(obj: any): obj is LoadBalancerSubnets {
-    return obj && !!(<LoadBalancerSubnets>obj).subnets;
+    return obj && (<LoadBalancerSubnets>obj).subnets instanceof Function;
 }
