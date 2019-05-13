@@ -143,7 +143,7 @@ export interface LifecyclePolicyArgs {
  *
  *  * An image is expired by exactly one or zero rules.
  *
- *  * An image that matches the tagging requirements of a higher priority rule  cannot be expired by
+ *  * An image that matches the tagging requirements of a higher priority rule cannot be expired by
  *    a rule with a lower priority.
  *
  *  * Rules can never mark images that are marked by higher priority rules, but can still identify
