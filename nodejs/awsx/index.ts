@@ -46,6 +46,7 @@ export {
     dynamodb,
     ec2,
     ebs,
+    ecr,
     ecs,
     efs,
     elasticloadbalancingv2,

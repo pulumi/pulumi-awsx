@@ -206,7 +206,9 @@ export interface ContainerImageProvider {
 
 /** @internal */
 export function isContainerImageProvider(obj: any): obj is ContainerImageProvider {
-    return obj && !!(<ContainerImageProvider>obj).image && !!(<ContainerImageProvider>obj).environment;
+    return obj &&
+        (<ContainerImageProvider>obj).image instanceof Function &&
+        (<ContainerImageProvider>obj).environment instanceof Function;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

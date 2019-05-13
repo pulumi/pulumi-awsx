@@ -61,10 +61,10 @@ function convertRules(rules: pulumi.Unwrap<LifecyclePolicyRule>[]): LifecyclePol
     // Place the 'any' rule last so it has higest priority.
     const orderedRules = [...nonAnyRules, ...anyRules];
 
-    let index = 0;
+    let rulePriority = 1;
     for (const rule of orderedRules) {
-        result.rules.push(convertRule(rule, index));
-        index++;
+        result.rules.push(convertRule(rule, rulePriority));
+        rulePriority++;
     }
 
     return result;
