@@ -1,4 +1,6 @@
-## 0.18.4 (Unreleased)
+## 0.18.5 (Unreleased)
+
+## 0.18.4 (5/14/2019)
 
 - ApiGateway now provides control over the backing s3.Bucket created for `StaticRoute`s.  This is
   useful for SinglePageApp scenarios that want to control relevant Bucket values like
