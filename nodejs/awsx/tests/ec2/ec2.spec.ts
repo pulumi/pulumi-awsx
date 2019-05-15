@@ -373,7 +373,158 @@ describe("topology", () => {
         });
     });
 
-    describe("small cidr", () => {
+    describe("26 block", () => {
+        // a 26 block can only fit four subnets since it only has 64 addresses available.
+        it("1 AZ, 1 subnet", () => {
+            assert.equal(topologyToJson("10.0.0.0/26", 1, [
+                { type: "private" },
+            ]), `[
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/26"
+    }
+]`);
+        });
+        it("1 AZ, 2 subnets", () => {
+            assert.equal(topologyToJson("10.0.0.0/26", 1, [
+                { type: "public" },
+                { type: "private" },
+            ]), `[
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/27"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.32/27"
+    }
+]`);
+        });
+        it("2 AZs, 1 subnets", () => {
+            assert.equal(topologyToJson("10.0.0.0/26", 2, [
+                { type: "private" },
+            ]), `[
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/27"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.0.0.32/27"
+    }
+]`);
+        });
+        it("2 AZs, 2 subnets", () => {
+            assert.equal(topologyToJson("10.0.0.0/26", 2, [
+                { type: "public" },
+                { type: "private" },
+            ]), `[
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/28"
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.0.0.16/28"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.32/28"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.0.0.48/28"
+    }
+]`);
+        });
+        it("2 AZs, 3 subnets", () => {
+            assert.throws(() => topologyToJson("10.0.0.0/26", 2, [
+                { type: "public" },
+                { type: "private" },
+                { type: "isolated" },
+            ]));
+        });
+    });
+
+    describe("27 block", () => {
+        // a 27 block can only fit two subnets since it only has 32 addresses available.
+        it("1 AZ, 1 subnet", () => {
+            assert.equal(topologyToJson("10.0.0.0/27", 1, [
+                { type: "private" },
+            ]), `[
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/27"
+    }
+]`);
+        });
+        it("1 AZ, 2 subnets", () => {
+            assert.equal(topologyToJson("10.0.0.0/27", 1, [
+                { type: "public" },
+                { type: "private" },
+            ]), `[
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/28"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.16/28"
+    }
+]`);
+        });
+        it("2 AZs, 1 subnets", () => {
+            assert.equal(topologyToJson("10.0.0.0/27", 2, [
+                { type: "private" },
+            ]), `[
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/28"
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        "availabilityZone": 1,
+        "cidrBlock": "10.0.0.16/28"
+    }
+]`);
+        });
+        it("2 AZs, 2 subnets", () => {
+            assert.throws(() => topologyToJson("10.0.0.0/27", 2, [
+                { type: "public" },
+                { type: "private" },
+            ]));
+        });
+    });
+
+    describe("28 block", () => {
+        // a 28 block can only fit a single subnet since it only has 16 addresses available.
         it("1 AZ, 1 subnet", () => {
             assert.equal(topologyToJson("10.0.0.0/28", 1, [
                 { type: "private" },
@@ -392,14 +543,14 @@ describe("topology", () => {
                 { type: "private" },
             ]));
         });
-        it("2 AZs, 2 subnets", () => {
+        it("2 AZs, 1 subnets", () => {
             assert.throws(() => topologyToJson("10.0.0.0/28", 2, [
-                { type: "public" },
                 { type: "private" },
             ]));
         });
-        it("2 AZs, 1 subnets", () => {
+        it("2 AZs, 2 subnets", () => {
             assert.throws(() => topologyToJson("10.0.0.0/28", 2, [
+                { type: "public" },
                 { type: "private" },
             ]));
         });
