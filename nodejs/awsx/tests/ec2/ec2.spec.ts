@@ -372,4 +372,36 @@ describe("topology", () => {
 ]`);
         });
     });
+
+    describe("small cidr", () => {
+        it("1 AZ, 1 subnet", () => {
+            assert.equal(topologyToJson("10.0.0.0/28", 1, [
+                { type: "private" },
+            ]), `[
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        "availabilityZone": 0,
+        "cidrBlock": "10.0.0.0/28"
+    }
+]`);
+        });
+        it("1 AZ, 2 subnets", () => {
+            assert.throws(() => topologyToJson("10.0.0.0/28", 1, [
+                { type: "public" },
+                { type: "private" },
+            ]));
+        });
+        it("2 AZs, 2 subnets", () => {
+            assert.throws(() => topologyToJson("10.0.0.0/28", 2, [
+                { type: "public" },
+                { type: "private" },
+            ]));
+        });
+        it("2 AZs, 1 subnets", () => {
+            assert.throws(() => topologyToJson("10.0.0.0/28", 2, [
+                { type: "private" },
+            ]));
+        });
+    });
 });

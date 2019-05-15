@@ -57,7 +57,7 @@ export class Cidr32Block {
         const ipAddressesInBlock = 2 ** trailing1Bits;
 
         // i.e. if we have 256 ipAddresses in the blockq and the starting ipAddress is
-        // 192.168.100.0, then thene exclusive endIpAddress is 192.168.101.000. Or, inclusively
+        // 192.168.100.0, then then exclusive endIpAddress is 192.168.101.000. Or, inclusively
         // the range is from 192.168.100.0 to 192.168.100.255.
         this.endIpAddressExclusive = startIpAddressInclusive + ipAddressesInBlock;
     }
