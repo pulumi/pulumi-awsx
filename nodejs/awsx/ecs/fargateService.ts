@@ -294,6 +294,11 @@ export interface FargateTaskDefinitionArgs {
      * Either [container] or [containers] must be provided.
      */
     containers?: Record<string, ecs.Container>;
+
+    /**
+     * Key-value mapping of resource tags
+     */
+    tags?: pulumi.Input<aws.Tags>;
 }
 
 type OverwriteFargateServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
@@ -427,6 +432,11 @@ export interface FargateServiceArgs {
      * [taskDefinitionArgs] must be provided.
      */
     taskDefinitionArgs?: FargateTaskDefinitionArgs;
+
+    /**
+     * Key-value mapping of resource tags
+     */
+    tags?: pulumi.Input<aws.Tags>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
