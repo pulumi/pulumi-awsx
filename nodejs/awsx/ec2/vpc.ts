@@ -15,6 +15,8 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as deasync from "deasync";
+
 import * as x from "..";
 import { getAvailabilityZone } from "./../aws";
 import { VpcTopology } from "./vpcTopology";
@@ -60,7 +62,8 @@ export class Vpc extends pulumi.ComponentResource {
         }
         else {
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
-            const numberOfAvailabilityZones = args.numberOfAvailabilityZones === undefined ? 2 : args.numberOfAvailabilityZones;
+            const numberOfAvailabilityZones = getNumberOfAvailabilityZones(args.numberOfAvailabilityZones);
+
             const numberOfNatGateways = args.numberOfNatGateways === undefined ? numberOfAvailabilityZones : args.numberOfNatGateways;
             if (numberOfNatGateways > numberOfAvailabilityZones) {
                 throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
@@ -225,6 +228,19 @@ export class Vpc extends pulumi.ComponentResource {
 
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
+
+function getNumberOfAvailabilityZones(requestedCount: number | undefined) {
+    if (requestedCount !== undefined) {
+        return requestedCount;
+    }
+
+    const availabilityZones = utils.promiseResult(aws.getAvailabilityZones());
+    if (availabilityZones && availabilityZones.names && availabilityZones.names.length > 0) {
+        return availabilityZones.names.length;
+    }
+
+    return 2;
+}
 
 function createNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
     // Create nat gateways if we have private subnets and we have public subnets to place them in.

@@ -15,6 +15,8 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as deasync from "deasync";
+
 import * as crypto from "crypto";
 
 type Diff<T extends string | number | symbol, U extends string | number | symbol> =
@@ -102,4 +104,34 @@ export function hasTrueBooleanMember(obj: any, memberName: string | number | sym
     }
 
     return val === true;
+}
+
+/** @internal */
+export function promiseResult<T>(promise: Promise<T>): T {
+    enum State {
+        running,
+        finishedSuccessfully,
+        finishedWithError,
+    }
+
+    let result: T;
+    let error = undefined;
+    let state = <State>State.running;
+
+    promise.then(
+        val => {
+            result = val;
+            state = State.finishedSuccessfully;
+        },
+        err => {
+            error = err;
+            state = State.finishedWithError;
+        });
+
+    deasync.loopWhile(() => state === State.running);
+    if (state === State.finishedWithError) {
+        throw error;
+    }
+
+    return result!;
 }
