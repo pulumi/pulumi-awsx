@@ -15,6 +15,8 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as deasync from "deasync";
+
 import * as x from "..";
 import { getAvailabilityZone } from "./../aws";
 import { VpcTopology } from "./vpcTopology";
@@ -60,7 +62,8 @@ export class Vpc extends pulumi.ComponentResource {
         }
         else {
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
-            const numberOfAvailabilityZones = args.numberOfAvailabilityZones === undefined ? 2 : args.numberOfAvailabilityZones;
+            const numberOfAvailabilityZones = getNumberOfAvailabilityZones(args.numberOfAvailabilityZones);
+
             const numberOfNatGateways = args.numberOfNatGateways === undefined ? numberOfAvailabilityZones : args.numberOfNatGateways;
             if (numberOfNatGateways > numberOfAvailabilityZones) {
                 throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
@@ -226,6 +229,21 @@ export class Vpc extends pulumi.ComponentResource {
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
 
+function getNumberOfAvailabilityZones(requestedCount: "all" | number | undefined) {
+    if (typeof requestedCount === "number") {
+        return requestedCount;
+    }
+
+    if (requestedCount === "all") {
+        const availabilityZones = utils.promiseResult(aws.getAvailabilityZones());
+        if (availabilityZones && availabilityZones.names && availabilityZones.names.length > 0) {
+            return availabilityZones.names.length;
+        }
+    }
+
+    return 2;
+}
+
 function createNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
     // Create nat gateways if we have private subnets and we have public subnets to place them in.
     if (vpc.privateSubnets.length === 0 || numberOfNatGateways === 0 || vpc.publicSubnets.length === 0) {
@@ -373,10 +391,10 @@ export interface VpcArgs {
     subnets?: VpcSubnetArgs[];
 
     /**
-     * The maximum number of availability zones to use in the current region.  Defaults to '2' if
-     * unspecified.
+     * The maximum number of availability zones to use in the current region.  Defaults to `2` if
+     * unspecified.  Use `"all"` to use all the availability zones in the current region.
      */
-    numberOfAvailabilityZones?: number;
+    numberOfAvailabilityZones?: number | "all";
 
     /**
      * The number of NAT gateways to create if there are any private subnets created.  A NAT gateway
