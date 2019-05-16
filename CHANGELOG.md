@@ -1,5 +1,10 @@
 ## 0.18.5 (Unreleased)
 
+- VPCs can now be made which scale to use all availability zones in a region if desired.  Use
+  `new awsx.ec2.Vpc("name", { numberOfAvailabilityZones: "all" })` to get this behavior.  If
+  `numberOfAvailabilityZones` is not provided, the current behavior of defaulting to 2 availability
+  zones remains.
+
 ## 0.18.4 (5/14/2019)
 
 - ApiGateway now provides control over the backing s3.Bucket created for `StaticRoute`s.  This is
