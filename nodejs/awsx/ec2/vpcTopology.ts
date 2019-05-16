@@ -43,7 +43,7 @@ export class VpcTopology {
         }
 
         // Then, take the remaining subnets can break the remaining space up to them.
-        const cidrMaskForUnmaskedSubnets = this.computeCidrMaskForSubnets(unmaskedSubnets);
+        const cidrMaskForUnmaskedSubnets = this.computeCidrMaskForSubnets(unmaskedSubnets, unmaskedSubnets.length > 0);
         for (const subnetArgs of unmaskedSubnets) {
             result.push(...this.createSubnetsWorker(subnetArgs, cidrMaskForUnmaskedSubnets));
         }
@@ -51,7 +51,7 @@ export class VpcTopology {
         return result;
     }
 
-    private computeCidrMaskForSubnets(subnets: x.ec2.VpcSubnetArgs[]): number {
+    private computeCidrMaskForSubnets(subnets: x.ec2.VpcSubnetArgs[], checkResult: boolean): number {
         // We need one cidr block for each of these subnets in each availability zone.
         const requiredCidrBlockCount = subnets.length * this.numberOfAvailabilityZones;
 
@@ -67,7 +67,21 @@ export class VpcTopology {
         //
         // However, that value corresponds to the trailing mask bits, whereas we want the leading
         // bits.  So take that value and subtract from 32 to get the final amount we need.
-        return 32 - Math.floor(Math.log2(ipsPerBlock));
+        const result = 32 - Math.floor(Math.log2(ipsPerBlock));
+        if (checkResult) {
+            if (result > 28) {
+                // subnets cannot be this small as per: https://aws.amazon.com/vpc/faqs/ The minimum
+                // size of a subnet is a /28 (or 14 IP addresses.) for IPv4. Subnets cannot be
+                // larger than the VPC in which they are created.
+                throw new Error(
+`Not enough address space in VPC to create desired subnet config.
+VPC has ${availableIps} IPs, but is being asked to split into a total of ${requiredCidrBlockCount} subnets.
+${requiredCidrBlockCount} subnets are necessary to have ${this.numberOfAvailabilityZones} AZ(s) each with ${subnets.length} subnet(s) in them.
+This needs ${ipsPerBlock} IPs/subnet, which is smaller than the minimum (16) allowed by AWS.`);
+            }
+        }
+
+        return result;
     }
 
     private getNextCidrBlockStartingAddress() {
