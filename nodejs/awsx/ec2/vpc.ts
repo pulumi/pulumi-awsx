@@ -229,14 +229,16 @@ export class Vpc extends pulumi.ComponentResource {
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
 
-function getNumberOfAvailabilityZones(requestedCount: number | undefined) {
-    if (requestedCount !== undefined) {
+function getNumberOfAvailabilityZones(requestedCount: "all" | number | undefined) {
+    if (typeof requestedCount === "number") {
         return requestedCount;
     }
 
-    const availabilityZones = utils.promiseResult(aws.getAvailabilityZones());
-    if (availabilityZones && availabilityZones.names && availabilityZones.names.length > 0) {
-        return availabilityZones.names.length;
+    if (requestedCount === "all") {
+        const availabilityZones = utils.promiseResult(aws.getAvailabilityZones());
+        if (availabilityZones && availabilityZones.names && availabilityZones.names.length > 0) {
+            return availabilityZones.names.length;
+        }
     }
 
     return 2;
@@ -389,10 +391,10 @@ export interface VpcArgs {
     subnets?: VpcSubnetArgs[];
 
     /**
-     * The maximum number of availability zones to use in the current region.  Defaults to '2' if
-     * unspecified.
+     * The maximum number of availability zones to use in the current region.  Defaults to `2` if
+     * unspecified.  Use `"all"` to use all the availability zones in the current region.
      */
-    numberOfAvailabilityZones?: number;
+    numberOfAvailabilityZones?: number | "all";
 
     /**
      * The number of NAT gateways to create if there are any private subnets created.  A NAT gateway
