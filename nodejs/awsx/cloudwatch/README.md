@@ -90,6 +90,15 @@ With dashboards, you can create the following:
 
 Dashboards are created from [Widgets](#Widgets) that are then automatically placed on a 24 unit wide, infinitely tall grid, based on flow constraints.  When creating widgets, a desired Width-x-Height cab be supplied (otherwise a default size of 6x6 is used).  Widgets can then be related to other widgets by either placing them in a [Column](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_flow.ts#L96) or in a [Row](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_flow.ts#L130).  Widgets placed in a column can flow veritically as far as necessary.  Widgets placed in a row will wrap automatically after 24 grid spaces.
 
+#### Text widgets
+
+You can place a simple piece of text on the dashboard using a [Text Widget](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_simple.ts#L127).  These can contain markdown and will be rendered by the dashboard in the requested location and size.
+
+#### Space widgets
+
+The [Space Widget](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_simple.ts#L92) acts as a simple mechanism to place a gap (with a desired Width-x-Height) in between other widgets.
+
+
 #### Metric widgets
 
 The most common widgets that will be added to a Dashboard are 'metric' widgets.  i.e. widgets that display the latest reported values of some metric.  These metrics can be shown on the dashboard as either a [ine-graph](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_graph.ts#L64), [stacked-graph](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_graph.ts#L75), or as a [single-number](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_graph.ts#L86).  Creating these can be done like so:
@@ -126,3 +135,35 @@ const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
 });
 ```
 
+Graph widgets can also have a line on them showing the breaching threshold for a specific alarm using `annotations`.  This can be done like so:
+
+
+```ts
+// Create an alarm if this lambda takes more than 1000ms to complete in a period of 10 minutes over
+// at least five periods in a row.
+const funcAlarm1 = funcMetric.with({ unit: "Milliseconds", period: 600 })
+                             .createAlarm("SlowUrlProcessing", { threshold: 1000, evaluationPeriods: 5 });
+
+// Also create a dashboard to track this.
+const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
+    widgets: [
+        ...,
+        new awsx.cloudwatch.LineGraphMetricWidget({
+            title: "Lambda duration",
+            width: 14,
+
+            // Place a line on the graph to indicate where our alarm will be triggered.
+            annotations: new awsx.cloudwatch.HorizontalAnnotation(funcAlarm1),
+
+            // Log our different p90/p95/p99 latencies
+            metrics: [
+                funcMetric.with({ extendedStatistic: 90, label: "Duration p90" }),
+                funcMetric.with({ extendedStatistic: 95, label: "Duration p95" }),
+                funcMetric.with({ extendedStatistic: 98, label: "Duration p99" }),
+            ],
+        }),
+    ],
+});
+```
+
+More complex widget customization is possible.  See the invidual types and arguments in the [Cloudwatch API](https://pulumi.io/reference/pkg/nodejs/@pulumi/awsx/cloudwatch/) for more details.
