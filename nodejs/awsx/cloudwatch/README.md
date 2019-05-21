@@ -86,5 +86,43 @@ With dashboards, you can create the following:
 2. An operational playbook that provides guidance for team members during operational events about how to respond to specific incidents.
 3. A common view of critical resource and application measurements that can be shared by team members for faster communication flow during operational events.
 
-Dashboards are created from [Widgets](#Widgets) that are then automatically placed on a 24 unit wide, infinitely tall grid, based on flow constraints.  When creating widgets, a desired Width-x-Height must be provided.  Widgets can then be related to other widgets by either placing them in a [Column](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_flow.ts#L96) or in a [Row](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_flow.ts#L130).  Widgets placed in a column can flow veritically as far as necessary.  Widgets placed in a row will wrap automatically after 24 grid spaces.
+### Widgets
+
+Dashboards are created from [Widgets](#Widgets) that are then automatically placed on a 24 unit wide, infinitely tall grid, based on flow constraints.  When creating widgets, a desired Width-x-Height cab be supplied (otherwise a default size of 6x6 is used).  Widgets can then be related to other widgets by either placing them in a [Column](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_flow.ts#L96) or in a [Row](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_flow.ts#L130).  Widgets placed in a column can flow veritically as far as necessary.  Widgets placed in a row will wrap automatically after 24 grid spaces.
+
+#### Metric widgets
+
+The most common widgets that will be added to a Dashboard are 'metric' widgets.  i.e. widgets that display the latest reported values of some metric.  These metrics can be shown on the dashboard as either a [ine-graph](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_graph.ts#L64), [stacked-graph](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_graph.ts#L75), or as a [single-number](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_graph.ts#L86).  Creating these can be done like so:
+
+```ts
+// Get the metric for the lambda that processing our topic requests.
+const funcMetric = awsx.lambda.metrics.duration({ function: func });
+
+// Also create a dashboard to track this.
+const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
+    widgets: [
+        new awsx.cloudwatch.SingleNumberMetricWidget({
+            title: "Requests/Minute",
+            width: 10,
+            metrics: awsx.lambda.metrics.invocations({
+                function: func,
+                unit: "Count",
+                statistic: "Average",
+                period: 60,
+            }),
+        }),
+        new awsx.cloudwatch.LineGraphMetricWidget({
+            title: "Lambda duration",
+            width: 14,
+
+            // Log our different p90/p95/p99 latencies
+            metrics: [
+                funcMetric.with({ extendedStatistic: 90, label: "Duration p90" }),
+                funcMetric.with({ extendedStatistic: 95, label: "Duration p95" }),
+                funcMetric.with({ extendedStatistic: 98, label: "Duration p99" }),
+            ],
+        }),
+    ],
+});
+```
 
