@@ -20,6 +20,8 @@ Metrics are uniquely defined by a name, a namespace, and zero or more dimensions
 
 see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html#Metric for more details.
 
+### Predefined metrics
+
 Most commonly, applications will want to work with existing metrics produced by AWS services.  These metrics are exposed through the corresponding for awsx module in a submodule called `metrics`.  For example:
 
 ```ts
@@ -34,3 +36,37 @@ In this example, this will return the metric giving information about how long e
 3. The `unit` the metric should be collected in.  For example, for bandwidth, `Megabytes/Second`.
 
 Not all of these can be controlled for a particular metric, and not all values are legal for any given metric.  For example, some metrics may not support collecting the `Maximum` statistic.  See the docs for each individual Metric for more information on what is specifiable or not.
+
+## Alarms
+
+You can create a CloudWatch alarm that watches a single CloudWatch metric. The alarm performs one or more actions based on the value of the metric or expression relative to a threshold over a number of time periods. The action can be an Amazon EC2 action, an Amazon EC2 Auto Scaling action, or a notification sent to an Amazon SNS topic.
+
+You can also add alarms to CloudWatch dashboards and monitor them visually. When an alarm is on a dashboard, it turns red when it is in the ALARM state, making it easier for you to monitor its status proactively.
+
+Alarms invoke actions for sustained state changes only. CloudWatch alarms do not invoke actions simply because they are in a particular state, the state must have changed and been maintained for a specified number of periods.
+
+After an alarm invokes an action due to a change in state, its subsequent behavior depends on the type of action that you have associated with the alarm. For Amazon EC2 Auto Scaling actions, the alarm continues to invoke the action for every period that the alarm remains in the new state. For Amazon SNS notifications, no additional actions are invoked. 
+
+To create an alarm from a metric:
+
+```ts
+const func = new aws.lambda.CallbackFunction(...);
+const funcMetric = awsx.lambda.metrics.duration({ function: func, period: 300, unit: "Seconds" });
+const alarm = funcMetric.createAlarm("alarm", {
+    threshold: 120,
+    evaluationPeriods: 2,
+});
+```
+
+To report the alarm to an SNS Topic:
+
+```ts
+const alarm = funcMetric.createAlarm("alarm", {
+    threshold: 120,
+    evaluationPeriods: 2,
+    alarmActions: [someTopic],
+});
+```
+
+See [Autoscaling Scaling Policies](https://github.com/pulumi/pulumi-awsx/tree/master/nodejs/awsx/autoscaling#scaling-policies) for more details on easily connecting metric changes to autoscaling group changes.
+
