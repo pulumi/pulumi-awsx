@@ -47,6 +47,12 @@ Alarms invoke actions for sustained state changes only. CloudWatch alarms do not
 
 After an alarm invokes an action due to a change in state, its subsequent behavior depends on the type of action that you have associated with the alarm. For Amazon EC2 Auto Scaling actions, the alarm continues to invoke the action for every period that the alarm remains in the new state. For Amazon SNS notifications, no additional actions are invoked. 
 
+When creating an alarm, the following can be specified:
+
+1. `threshold`.  The value to compare the metric value against. 
+2. `comparisonOperator`.  The type of comparison that should be made between the metric value and the threshold value.  The default is `"GreaterThanOrEqualToThreshold"`.
+3. `evaluationPeriods`.  The number of periods over which data is compared to the specified threshold.
+
 To create an alarm from a metric:
 
 ```ts
@@ -69,4 +75,16 @@ const alarm = funcMetric.createAlarm("alarm", {
 ```
 
 See [Autoscaling Scaling Policies](https://github.com/pulumi/pulumi-awsx/tree/master/nodejs/awsx/autoscaling#scaling-policies) for more details on easily connecting metric changes to autoscaling group changes.
+
+## Dashboards
+
+Amazon CloudWatch dashboards are customizable home pages in the CloudWatch console that you can use to monitor your resources in a single view, even those resources that are spread across different Regions. You can use CloudWatch dashboards to create customized views of the metrics and alarms for your AWS resources.
+
+With dashboards, you can create the following:
+
+1. A single view for selected metrics and alarms to help you assess the health of your resources and applications across one or more regions. You can select the color used for each metric on each graph, so that you can easily track the same metric across multiple graphs.
+2. An operational playbook that provides guidance for team members during operational events about how to respond to specific incidents.
+3. A common view of critical resource and application measurements that can be shared by team members for faster communication flow during operational events.
+
+Dashboards are created from [Widgets](#Widgets) that are then automatically placed on a 24 unit wide, infinitely tall grid, based on flow constraints.  When creating widgets, a desired Width-x-Height must be provided.  Widgets can then be related to other widgets by either placing them in a [Column](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_flow.ts#L96) or in a [Row](https://github.com/pulumi/pulumi-awsx/blob/27e8d976c2bb4e856937af90ad2633b6ad11e568/nodejs/awsx/cloudwatch/widgets_flow.ts#L130).  Widgets placed in a column can flow veritically as far as necessary.  Widgets placed in a row will wrap automatically after 24 grid spaces.
 
