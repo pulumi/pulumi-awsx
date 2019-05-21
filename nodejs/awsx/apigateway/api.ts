@@ -552,7 +552,7 @@ function addEventHandlerRouteToSwaggerSpec(
     checkRoute(api, route, "method");
 
     const method = swaggerMethod(route.method);
-    const lambda = aws.lambda.createFunctionFromEventHandler(
+    const lambda = (<any>aws.lambda).createFunctionFromEventHandler(
         name + sha1hash(method + ":" + route.path), route.eventHandler, { parent: api });
 
     const swaggerOperation = createSwaggerOperationForLambda();
@@ -717,7 +717,7 @@ function getLambdaAuthorizer(authorizerName: string, authorizer: lambdaAuthorize
         };
     }
 
-    const authorizerLambda = aws.lambda.createFunctionFromEventHandler<lambdaAuthorizer.AuthorizerEvent, lambdaAuthorizer.AuthorizerResponse>(
+    const authorizerLambda = (<any>aws.lambda).createFunctionFromEventHandler(
         authorizerName, authorizer.handler);
 
     const role = lambdaAuthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);

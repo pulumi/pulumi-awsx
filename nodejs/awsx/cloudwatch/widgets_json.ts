@@ -44,7 +44,7 @@ export interface MetricWidgetPropertiesJson {
     annotations: MetricWidgetAnnotationsJson | undefined;
     title: pulumi.Input<string> | undefined;
     period: pulumi.Input<number> | undefined;
-    region: pulumi.Input<string>;
+    region: pulumi.Input<string | undefined>;
     stat: pulumi.Input<string>;
     view: pulumi.Input<"timeSeries" | "singleValue" | undefined>;
     stacked: pulumi.Input<boolean | undefined>;
