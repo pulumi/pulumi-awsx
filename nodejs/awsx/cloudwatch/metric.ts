@@ -125,7 +125,7 @@ export class Metric {
      *
      * Only used if this metric is displayed in a [Dashboard] with a [MetricWidget].
      */
-    public readonly yAxis: pulumi.Output<"left" | "right">;
+    public readonly yAxis: pulumi.Output<MetricYAxis>;
 
     /**
      * @param resource Optional resource this is a metric for.  This is only used for parenting
@@ -137,7 +137,7 @@ export class Metric {
         this.name = pulumi.output(args.name);
         this.dimensions = pulumi.output(args.dimensions);
         this.namespace = pulumi.output(args.namespace);
-        this.period = utils.ifUndefined(args.period, 300).apply(p => validatePeriod(p));
+        this.period = utils.ifUndefined<number>(args.period, 300).apply(p => validatePeriod(p));
         this.statistic = pulumi.all([args.statistic, args.extendedStatistic])
                                .apply(([statistic, extendedStatistic]) => validateStatistics(statistic, extendedStatistic));
         this.extendedStatistic = pulumi.output(args.extendedStatistic).apply(es => validateExtendedStatistic(es));
@@ -146,8 +146,8 @@ export class Metric {
         // Only for metrics that are placed in dashboards.
         this.color = pulumi.output(args.color);
         this.label = pulumi.output(args.label);
-        this.visible = utils.ifUndefined(args.visible, true);
-        this.yAxis = utils.ifUndefined(args.yAxis, "left");
+        this.visible = utils.ifUndefined<boolean>(args.visible, true);
+        this.yAxis = utils.ifUndefined<MetricYAxis>(args.yAxis, "left");
     }
 
     public with(change: MetricChange | undefined) {
@@ -300,6 +300,8 @@ export class Metric {
         metrics.push(op);
     }
 }
+
+export type MetricYAxis = "left" | "right";
 
 /** @internal */
 export function mergeDimensions(
@@ -460,7 +462,7 @@ export interface MetricChange {
      *
      * Only used if this metric is displayed in a [Dashboard] with a [MetricWidget].
      */
-    yAxis?: pulumi.Input<"left" | "right">;
+    yAxis?: pulumi.Input<MetricYAxis>;
 }
 
 export type AlarmComparisonOperator =
@@ -610,7 +612,7 @@ export interface MetricArgs {
      *
      * Only used if this metric is displayed in a [Dashboard] with a [MetricWidget].
      */
-    yAxis?: pulumi.Input<"left" | "right" | undefined>;
+    yAxis?: pulumi.Input<MetricYAxis | undefined>;
 }
 
 export type MetricStatistic = "SampleCount" | "Average" | "Sum" | "Minimum" | "Maximum";

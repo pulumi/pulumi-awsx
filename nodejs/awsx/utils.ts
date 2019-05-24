@@ -56,9 +56,11 @@ export function combineArrays<T>(
 }
 
 /** @internal */
-export function ifUndefined<T>(input: pulumi.Input<T | undefined> | undefined, value: pulumi.Input<T>) {
-    return pulumi.all([input, value])
-                 .apply(([input, value]) => input !== undefined ? input : value);
+export function ifUndefined<T>(input: pulumi.Input<T> | undefined, value: pulumi.Input<T>): pulumi.Output<T>;
+export function ifUndefined<T>(input: pulumi.Input<T | undefined> | undefined, value: pulumi.Input<T>): pulumi.Output<T>;
+export function ifUndefined<T>(input: any, value: any): pulumi.Output<T> {
+    return <pulumi.Output<T>>pulumi.all([input, value])
+                                   .apply(([input, value]) => input !== undefined ? input : value);
 }
 
 /** @internal */

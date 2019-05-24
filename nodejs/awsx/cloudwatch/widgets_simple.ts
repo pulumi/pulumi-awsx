@@ -257,7 +257,7 @@ export abstract class MetricWidget extends SimpleWidget {
                 throw new Error("[args.statistic] and [args.extendedStatistic] cannot both be provided.");
             }
 
-            return extendedStatistic !== undefined ? `p${extendedStatistic}` : statistic;
+            return extendedStatistic !== undefined ? `p${extendedStatistic}` : statistic!;
         });
 
 
@@ -277,7 +277,7 @@ export abstract class MetricWidget extends SimpleWidget {
             }
         }
 
-        return {
+        const result = {
             stat,
             metrics,
             annotations,
@@ -289,11 +289,13 @@ export abstract class MetricWidget extends SimpleWidget {
 
                 return p;
             }),
-            region: utils.ifUndefined(this.metricArgs.region, aws.config.region),
+            region: utils.ifUndefined<aws.Region>(this.metricArgs.region, aws.config.region!),
             view: this.computeView(),
             stacked: this.computedStacked(),
             yAxis: this.computeYAxis(),
         };
+
+        return result;
     }
 }
 
