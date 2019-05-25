@@ -55,12 +55,13 @@ export function combineArrays<T>(
     return <pulumi.Output<T[]>><unknown>result;
 }
 
+type WithoutUndefined<T> = T extends undefined ? never : T;
+
 /** @internal */
-export function ifUndefined<T>(input: pulumi.Input<T> | undefined, value: pulumi.Input<T>): pulumi.Output<T>;
-export function ifUndefined<T>(input: pulumi.Input<T | undefined> | undefined, value: pulumi.Input<T>): pulumi.Output<T>;
-export function ifUndefined<T>(input: any, value: any): pulumi.Output<T> {
-    return <pulumi.Output<T>>pulumi.all([input, value])
-                                   .apply(([input, value]) => input !== undefined ? input : value);
+export function ifUndefined<T>(input: pulumi.Input<T> | undefined, value: pulumi.Input<T>): pulumi.Output<WithoutUndefined<T>> {
+    const all = pulumi.all([input, value]);
+    const res = all.apply(([input, value]) => input !== undefined ? input : value);
+    return <any>res;
 }
 
 /** @internal */

@@ -289,7 +289,7 @@ export abstract class MetricWidget extends SimpleWidget {
 
                 return p;
             }),
-            region: utils.ifUndefined<aws.Region>(this.metricArgs.region, aws.config.region!),
+            region: utils.ifUndefined(this.metricArgs.region, aws.config.region!),
             view: this.computeView(),
             stacked: this.computedStacked(),
             yAxis: this.computeYAxis(),
