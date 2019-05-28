@@ -196,6 +196,12 @@ export class Vpc extends pulumi.ComponentResource {
         return defaultVpc;
     }
 
+    /**
+     * Get an existing Vpc resource's state with the given name and IDs of its relevant
+     * sub-resources. This will not cause a VPC (or any sub-resources) to be created, and removing
+     * this Vpc from your pulumi application will not cause the existing cloud resource (or
+     * sub-resources) to be destroyed.
+     */
     public static fromExistingIds(name: string, idArgs: ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions) {
         const vpc = new Vpc(name, {
             vpc: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
