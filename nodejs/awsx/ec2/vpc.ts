@@ -75,7 +75,7 @@ export class Vpc extends pulumi.ComponentResource {
                 enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
                 enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
-            });
+            }, { parent: this });
             this.id = this.vpc.id;
 
             // Create the appropriate subnets.  Default to a single public and private subnet for each
