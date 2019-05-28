@@ -73,6 +73,11 @@ export class SecurityGroup extends pulumi.ComponentResource {
         return !!(<SecurityGroup>obj).__isSecurityGroupInstance;
     }
 
+    /**
+     * Get an existing SecurityGroup resource's state with the given name and ID. This will not
+     * cause a SecurityGroup to be created, and removing this SecurityGroup from your pulumi
+     * application will not cause the existing cloud resource to be destroyed.
+     */
     public static fromExistingId(
         name: string, id: pulumi.Input<string>,
         args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
