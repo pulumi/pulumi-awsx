@@ -191,7 +191,7 @@ export interface NetworkLoadBalancerArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * Whether or not the load balancer is exposed to the internet. Defaults to `false` if
+     * Whether or not the load balancer is exposed to the internet. Defaults to `true` if
      * unspecified.
      */
     external?: boolean;
