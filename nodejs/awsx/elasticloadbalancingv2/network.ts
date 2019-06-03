@@ -80,7 +80,10 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     public readonly listeners: x.elasticloadbalancingv2.NetworkListener[];
 
     constructor(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
+        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {
+            vpc: args.vpc,
+            name: args.name,
+        }, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP");
 
         super("awsx:x:elasticloadbalancingv2:NetworkTargetGroup", name, loadBalancer, {
@@ -129,7 +132,10 @@ export class NetworkListener
             throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
         }
 
-        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, { vpc: args.vpc }, opts);
+        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {
+            vpc: args.vpc,
+            name: args.name,
+        }, opts);
         const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP");
 
@@ -177,7 +183,11 @@ function getDefaultActions(
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
-    const targetGroup = new NetworkTargetGroup(name, { loadBalancer, port: args.port }, opts);
+    const targetGroup = new NetworkTargetGroup(name, {
+        loadBalancer,
+        name: args.name,
+        port: args.port,
+    }, opts);
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 }
 
@@ -189,6 +199,14 @@ export interface NetworkLoadBalancerArgs {
      * unspecified.
      */
     vpc?: x.ec2.Vpc;
+
+    /**
+     * The name of the LoadBalancer. This name must be unique within your AWS account, can have a
+     * maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not
+     * begin or end with a hyphen. If not specified, the [name] parameter passed into the
+     * LoadBalancer constructor will be hashed and used as the name.
+     */
+    name?: pulumi.Input<string>;
 
     /**
      * Whether or not the load balancer is exposed to the internet. Defaults to `true` if
@@ -275,6 +293,13 @@ export interface NetworkTargetGroupArgs {
     vpc?: x.ec2.Vpc;
 
     /**
+     * The name of the TargetGroup. If not specified, the [name] parameter passed into the
+     * TargetGroup constructor will be hashed and used as the name.  If a [loadBalancer] is not
+     * provided, this name will be used to name that resource as well.
+     */
+    name?: pulumi.Input<string>;
+
+    /**
      * The load balancer this target group is associated with.  If not provided, a new load balancer
      * will be automatically created.
      */
@@ -350,6 +375,12 @@ export interface NetworkListenerArgs {
      * unspecified.
      */
     vpc?: x.ec2.Vpc;
+
+    /**
+     * An explicit name to use for this resource and dependent resources.  If a LoadBalancer or
+     * TargetGroup is not provided, this name will be used to name those resources as well.
+     */
+    name?: pulumi.Input<string>;
 
     /**
      * The load balancer this listener is associated with.  If not provided, a new load balancer

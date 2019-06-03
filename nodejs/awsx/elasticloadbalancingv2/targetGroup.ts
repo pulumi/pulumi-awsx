@@ -157,6 +157,12 @@ export interface TargetGroupArgs {
     vpc: x.ec2.Vpc;
 
     /**
+     * The name of the TargetGroup. If not specified, the [name] parameter passed into the
+     * TargetGroup constructor will be hashed and used as the name.
+     */
+    name?: pulumi.Input<string>;
+
+    /**
      * The amount time for Elastic Load Balancing to wait before changing the state of a
      * deregistering target from draining to unused. The range is 0-3600 seconds. The default value
      * is 300 seconds.
