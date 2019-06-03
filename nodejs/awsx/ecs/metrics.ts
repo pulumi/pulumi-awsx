@@ -55,6 +55,7 @@ export namespace metrics {
      * [Amazon-CloudWatch-User-Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/).
      *
      * Amazon ECS metrics use the AWS/ECS namespace and provide metrics for the following dimensions.
+     *
      * 1. "ClusterName": This dimension filters the data that you request for all resources in a
      *    specified cluster. All Amazon ECS metrics are filtered by ClusterName.
      * 2. "ServiceName": This dimension filters the data that you request for all resources in a
