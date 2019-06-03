@@ -377,8 +377,8 @@ export interface NetworkListenerArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * An explicit name to use for this resource and dependent resources.  If a LoadBalancer or
-     * TargetGroup is not provided, this name will be used to name those resources as well.
+     * An explicit name to use for dependent resources.  Specifically, if a LoadBalancer or
+     * TargetGroup is not provided, this name will be used to name those resources.
      */
     name?: pulumi.Input<string>;
 
