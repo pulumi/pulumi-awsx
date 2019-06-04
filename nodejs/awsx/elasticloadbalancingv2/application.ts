@@ -267,7 +267,7 @@ export interface ApplicationLoadBalancerArgs {
      * begin or end with a hyphen. If not specified, the [name] parameter passed into the
      * LoadBalancer constructor will be hashed and used as the name.
      */
-    name?: pulumi.Input<string>;
+    name?: string;
 
     /**
      * Whether or not the load balancer is exposed to the internet. Defaults to `true` if
@@ -368,7 +368,7 @@ export interface ApplicationTargetGroupArgs {
      * TargetGroup constructor will be hashed and used as the name.  If a [loadBalancer] is not
      * provided, this name will be used to name that resource as well.
      */
-    name?: pulumi.Input<string>;
+    name?: string;
 
     /**
      * The load balancer this target group is associated with.  If not provided, a new load balancer
@@ -452,7 +452,7 @@ export interface ApplicationListenerArgs {
      * An explicit name to use for dependent resources.  Specifically, if a LoadBalancer or
      * TargetGroup is not provided, this name will be used to name those resources.
      */
-    name?: pulumi.Input<string>;
+    name?: string;
 
     /**
      * The load balancer this listener is associated with.  If not provided, a new load balancer

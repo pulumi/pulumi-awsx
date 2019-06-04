@@ -40,7 +40,7 @@ export abstract class TargetGroup
         const parentOpts = { parent: this };
 
         const longName = `${name}`;
-        const shortName = utils.sha1hash(`${longName}`);
+        const shortName = args.name || utils.sha1hash(`${longName}`);
 
         this.vpc = args.vpc;
         this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
@@ -160,7 +160,7 @@ export interface TargetGroupArgs {
      * The name of the TargetGroup. If not specified, the [name] parameter passed into the
      * TargetGroup constructor will be hashed and used as the name.
      */
-    name?: pulumi.Input<string>;
+    name?: string;
 
     /**
      * The amount time for Elastic Load Balancing to wait before changing the state of a
