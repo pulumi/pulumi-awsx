@@ -27,7 +27,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         super(type, name, {}, opts);
 
         const longName = `${name}`;
-        const shortName = utils.sha1hash(`${longName}`);
+        const shortName = args.name || utils.sha1hash(`${longName}`);
 
         const parentOpts = { parent: this };
 
@@ -76,6 +76,14 @@ export interface LoadBalancerArgs {
      * unspecified.
      */
     vpc?: x.ec2.Vpc;
+
+    /**
+     * The name of the LoadBalancer. This name must be unique within your AWS account, can have a
+     * maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not
+     * begin or end with a hyphen. If not specified, the [name] parameter passed into the
+     * LoadBalancer constructor will be hashed and used as the name.
+     */
+    name?: string;
 
     /**
      * Whether or not the load balancer is exposed to the internet. Defaults to `true` if
