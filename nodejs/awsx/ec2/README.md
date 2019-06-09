@@ -93,8 +93,8 @@ const vpc = new awsx.ec2.Vpc("custom", {
    subnets: [
      { type: "public" },
      { type: "private" },
-     { type: isolated, name: "db" },
-     { type: isolated, name: "redis" }],
+     { type: "isolated", name: "db" },
+     { type: "isolated", name: "redis" }],
 });
 ```
 
