@@ -123,7 +123,8 @@ export interface SwaggerAPIGatewayIntegrationResponse {
 }
 
 export interface ApigatewayIntegration {
-    requestParameters?: any;
+    requestParameters?: pulumi.Input<Record<string, string> | undefined>;
+    requestTemplates?: pulumi.Input<Record<string, string> | undefined>;
     passthroughBehavior?: pulumi.Input<IntegrationPassthroughBehavior>;
     httpMethod: pulumi.Input<Method>;
     type: pulumi.Input<IntegrationType>;

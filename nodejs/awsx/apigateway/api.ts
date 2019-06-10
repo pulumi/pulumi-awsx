@@ -143,6 +143,18 @@ export interface IntegrationRoute extends BaseRoute {
      * `/` will be added automatically to the beginning.
      */
     path: string;
+    /**
+     * Specifies the integration's HTTP method type.  Defaults to 'ANY' if unspecified.
+     */
+    method?: Method;
+
+    /**
+     * Whether or not a {proxy+} target route should be registered as well to catch and
+     * forward along all requests prefixed with [path] to this target.  Defaults to `true`
+     * if unspecified.
+     */
+    proxy?: boolean;
+
     target: pulumi.Input<IntegrationTarget> | IntegrationRouteTargetProvider;
 }
 
@@ -173,11 +185,6 @@ export interface IntegrationTarget {
      * without invoking any backend.
      */
     type: pulumi.Input<IntegrationType>;
-
-    /**
-     * Specifies the integration's HTTP method type.  Currently, the only supported type is 'ANY'.
-     */
-    httpMethod?: "ANY";
 
     /**
      * Specifies Uniform Resource Identifier (URI) of the integration endpoint.
@@ -238,6 +245,23 @@ export interface IntegrationTarget {
      * Defaults to 'WHEN_NO_MATCH' if unspecified.
      */
     passthroughBehavior?: pulumi.Input<IntegrationPassthroughBehavior>;
+
+    /**
+     * A key-value map specifying request parameters that are passed from the method request to the
+     * back end. The key is an integration request parameter name and the associated value is a
+     * method request parameter value or static value that must be enclosed within single quotes and
+     * pre-encoded as required by the back end. The method request parameter value must match the
+     * pattern of method.request.{location}.{name}, where location is querystring, path, or header
+     * and name must be a valid and unique method request parameter name.
+     */
+    requestParameters?: pulumi.Input<Record<string, string>>;
+
+    /**
+     * Represents a map of Velocity templates that are applied on the request payload based on the
+     * value of the Content-Type header sent by the client. The content type value is the key in
+     * this map, and the template (as a String) is the value.
+     */
+    requestTemplates?: pulumi.Input<Record<string, string>>;
 }
 
 export interface IntegrationRouteTargetProvider {
@@ -961,17 +985,19 @@ function addIntegrationRouteToSwaggerSpec(
         : pulumi.output(route.target);
 
     // Register two paths in the Swagger spec, for the root and for a catch all under the root
-    const method = swaggerMethod("ANY");
+    const httpMethod = route.method || "ANY";
+    const method = swaggerMethod(httpMethod);
     const swaggerPath = route.path.endsWith("/") ? route.path : route.path + "/";
-    const swaggerPathProxy = swaggerPath + "{proxy+}";
 
     const swaggerOpWithoutProxyPathParam = createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ false);
     addBasePathOptionsToSwagger(swagger, swaggerOpWithoutProxyPathParam, route, apiAuthorizers);
     addSwaggerOperation(swagger, swaggerPath, method, swaggerOpWithoutProxyPathParam);
 
-    const swaggerOpWithProxyPathParam = createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ true);
-    addBasePathOptionsToSwagger(swagger, swaggerOpWithProxyPathParam, route, apiAuthorizers);
-    addSwaggerOperation(swagger, swaggerPathProxy, method, swaggerOpWithProxyPathParam);
+    if (route.proxy !== false) {
+        const swaggerOpWithProxyPathParam = createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ true);
+        addBasePathOptionsToSwagger(swagger, swaggerOpWithProxyPathParam, route, apiAuthorizers);
+        addSwaggerOperation(swagger, swaggerPath + "{proxy+}", method, swaggerOpWithProxyPathParam);
+    }
 
     return;
 
@@ -993,10 +1019,12 @@ function addIntegrationRouteToSwaggerSpec(
             return result;
         });
 
-        const connectionType = target.apply(t => t.connectionType);
-        const connectionId = target.apply(t => t.connectionId);
+        const connectionType = target.connectionType;
+        const connectionId = target.connectionId;
         const type = target.apply(t => t.type === undefined ? "http_proxy" : t.type);
         const passthroughBehavior = target.apply(t => t.passthroughBehavior === undefined ? "when_no_match" : t.passthroughBehavior);
+        const requestParameters = target.requestParameters;
+        const requestTemplates = target.requestTemplates;
 
         const result: SwaggerOperation = {
             "x-amazon-apigateway-integration": {
@@ -1010,7 +1038,9 @@ function addIntegrationRouteToSwaggerSpec(
                 connectionType,
                 connectionId,
                 passthroughBehavior,
-                httpMethod: "ANY",
+                httpMethod,
+                requestParameters: requestParameters,
+                requestTemplates: requestTemplates,
             },
         };
         if (useProxyPathParameter) {
