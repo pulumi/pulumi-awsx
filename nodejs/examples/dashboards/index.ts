@@ -50,12 +50,11 @@ const funcAlarm1 = funcMetric.with({ unit: "Milliseconds", period: 600 })
 const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
     widgets: [
         new awsx.cloudwatch.SingleNumberMetricWidget({
-            title: "Requests/Minute",
+            title: "Requests in the last minute",
             width: 10,
             metrics: awsx.lambda.metrics.invocations({
                 function: subscription.func,
-                unit: "Count",
-                statistic: "Average",
+                statistic: "Sum",
                 period: 60,
             }),
         }),
