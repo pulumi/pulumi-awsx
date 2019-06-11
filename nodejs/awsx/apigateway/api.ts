@@ -403,11 +403,56 @@ export class API extends pulumi.ComponentResource {
      * Returns the [aws.lambda.Function] an [EventHandlerRoute] points to.  This will either be for
      * the aws.lambda.Function created on your behalf if the route was passed a normal
      * JavaScript/Typescript function, or it will be the [aws.lambda.Function] that was explicitly
-     * passed in. Returns [undefined] if this route/method wasn't an [EventHandlerRoute].
+     * passed in.
+     *
+     * [route] and [method] can both be elided if this API only has a single [EventHandlerRoute]
+     * assigned to it.
+     *
+     * [method] can be elided if [route] only has a single [EventHandlerRoute] assigned to it.
+     *
+     * This method will throw if the provided [route] and [method] do not resolve to a single
+     * [aws.lambda.Function]
      */
-    public getFunction(route: string, method: Method) {
-        const methods = this.swaggerLambdas.get(route);
-        return methods ? methods.get(method) : undefined;
+    public getFunction(route?: string, method?: Method): aws.lambda.Function {
+        const methods = this.getMethods(route);
+        if (!methods || methods.size === 0) {
+            throw new pulumi.ResourceError(`Route '${route}' has no methods defined for it`, this);
+        }
+
+        if (!method) {
+            if (methods.size === 1) {
+                for (const m of methods.values()) {
+                    return m;
+                }
+            }
+
+            throw new pulumi.ResourceError(`Route '${route}' has multiple methods defined for it.  Please provide [method].`, this);
+        }
+
+        const result = methods.get(method);
+        if (!result) {
+            throw new pulumi.ResourceError(`Route '${route}' does not have method '${method}' defined for it`, this);
+        }
+
+        return result;
+    }
+
+    private getMethods(route: string | undefined) {
+        if (route === undefined) {
+            if (this.swaggerLambdas.size === 0) {
+                throw new pulumi.ResourceError(`This Api has no routes to any Functions.`, this);
+            }
+
+            if (this.swaggerLambdas.size === 1) {
+                for (const map of this.swaggerLambdas.values()) {
+                    return map;
+                }
+            }
+
+            throw new pulumi.ResourceError(`[route] must be provided as this Api defines multiple routes with Functions.`, this);
+        }
+
+        return this.swaggerLambdas.get(route);
     }
 }
 
