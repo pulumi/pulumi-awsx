@@ -405,9 +405,27 @@ export class API extends pulumi.ComponentResource {
      * JavaScript/Typescript function, or it will be the [aws.lambda.Function] that was explicitly
      * passed in. Returns [undefined] if this route/method wasn't an [EventHandlerRoute].
      */
-    public getFunction(route: string, method: Method) {
+    public getFunction(route: string, method?: Method) {
         const methods = this.swaggerLambdas.get(route);
-        return methods ? methods.get(method) : undefined;
+        if (!methods) {
+            return undefined;
+        }
+
+        if (!method) {
+            if (methods.size === 0) {
+                throw new pulumi.ResourceError(`Route '${route}' has no methods defined for it`, this);
+            }
+
+            if (methods.size === 1) {
+                for (const m of methods) {
+                    return m;
+                }
+            }
+
+            throw new pulumi.ResourceError(`Route '${route}' has multiple methods defined for it.  Please provide [method].`, this);
+        }
+
+        return methods.get(method);
     }
 }
 
