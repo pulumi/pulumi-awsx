@@ -403,19 +403,22 @@ export class API extends pulumi.ComponentResource {
      * Returns the [aws.lambda.Function] an [EventHandlerRoute] points to.  This will either be for
      * the aws.lambda.Function created on your behalf if the route was passed a normal
      * JavaScript/Typescript function, or it will be the [aws.lambda.Function] that was explicitly
-     * passed in. Returns [undefined] if this route/method wasn't an [EventHandlerRoute].
+     * passed in.
+     *
+     * [method] is optional if [route] only has a single [EventHandlerRoute] assigned to it.
+     *
+     * Throws if:
+     * 1. this [route] does not exist in this [API]
+     * 2. this [route] has no functions assigned to it.
+     * 3. this [route] has multiple functions assigned to it, and [method] was not provided.
      */
     public getFunction(route: string, method?: Method) {
         const methods = this.swaggerLambdas.get(route);
-        if (!methods) {
-            return undefined;
+        if (!methods || methods.size === 0) {
+            throw new pulumi.ResourceError(`Route '${route}' has no methods defined for it`, this);
         }
 
         if (!method) {
-            if (methods.size === 0) {
-                throw new pulumi.ResourceError(`Route '${route}' has no methods defined for it`, this);
-            }
-
             if (methods.size === 1) {
                 for (const m of methods) {
                     return m;
@@ -425,7 +428,12 @@ export class API extends pulumi.ComponentResource {
             throw new pulumi.ResourceError(`Route '${route}' has multiple methods defined for it.  Please provide [method].`, this);
         }
 
-        return methods.get(method);
+        const result = methods.get(method);
+        if (!result) {
+            throw new pulumi.ResourceError(`Route '${route}' does not have method '${method}' defined for it`, this);
+        }
+
+        return result;
     }
 }
 
