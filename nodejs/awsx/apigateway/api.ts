@@ -405,15 +405,16 @@ export class API extends pulumi.ComponentResource {
      * JavaScript/Typescript function, or it will be the [aws.lambda.Function] that was explicitly
      * passed in.
      *
-     * [method] is optional if [route] only has a single [EventHandlerRoute] assigned to it.
+     * [route] and [method] can both be elided if this API only has a single [EventHandlerRoute]
+     * assigned to it.
      *
-     * Throws if:
-     * 1. this [route] does not exist in this [API]
-     * 2. this [route] has no functions assigned to it.
-     * 3. this [route] has multiple functions assigned to it, and [method] was not provided.
+     * [method] can be elided if [route] only has a single [EventHandlerRoute] assigned to it.
+     *
+     * This method will throw if the provided [route] and [method] do not resolve to a single
+     * [aws.lambda.Function]
      */
-    public getFunction(route: string, method?: Method): aws.lambda.Function {
-        const methods = this.swaggerLambdas.get(route);
+    public getFunction(route?: string, method?: Method): aws.lambda.Function {
+        const methods = this.getMethods(route);
         if (!methods || methods.size === 0) {
             throw new pulumi.ResourceError(`Route '${route}' has no methods defined for it`, this);
         }
@@ -434,6 +435,24 @@ export class API extends pulumi.ComponentResource {
         }
 
         return result;
+    }
+
+    private getMethods(route: string | undefined) {
+        if (route === undefined) {
+            if (this.swaggerLambdas.size === 0) {
+                throw new pulumi.ResourceError(`This Api has no routes to any Functions.`, this);
+            }
+
+            if (this.swaggerLambdas.size === 1) {
+                for (const map of this.swaggerLambdas.values()) {
+                    return map;
+                }
+            }
+
+            throw new pulumi.ResourceError(`[route] must be provided as this Api defines multiple routes with Functions.`, this);
+        }
+
+        return this.swaggerLambdas.get(route);
     }
 }
 
