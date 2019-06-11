@@ -412,7 +412,7 @@ export class API extends pulumi.ComponentResource {
      * 2. this [route] has no functions assigned to it.
      * 3. this [route] has multiple functions assigned to it, and [method] was not provided.
      */
-    public getFunction(route: string, method?: Method) {
+    public getFunction(route: string, method?: Method): aws.lambda.Function {
         const methods = this.swaggerLambdas.get(route);
         if (!methods || methods.size === 0) {
             throw new pulumi.ResourceError(`Route '${route}' has no methods defined for it`, this);
@@ -420,7 +420,7 @@ export class API extends pulumi.ComponentResource {
 
         if (!method) {
             if (methods.size === 1) {
-                for (const m of methods) {
+                for (const m of methods.values()) {
                     return m;
                 }
             }
