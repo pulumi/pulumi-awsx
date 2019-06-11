@@ -4,6 +4,8 @@
   `new awsx.ec2.Vpc("name", { numberOfAvailabilityZones: "all" })` to get this behavior.  If
   `numberOfAvailabilityZones` is not provided, the current behavior of defaulting to 2 availability
   zones remains.
+- Externally available application listeners will now open their security group to both ingress and
+  egress for their specified port.
 
 ## 0.18.4 (5/14/2019)
 
