@@ -62,7 +62,7 @@ export class Vpc extends pulumi.ComponentResource {
         }
         else {
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
-            const numberOfAvailabilityZones = getNumberOfAvailabilityZones(args.numberOfAvailabilityZones);
+            const numberOfAvailabilityZones = getNumberOfAvailabilityZones(this, args.numberOfAvailabilityZones);
 
             const numberOfNatGateways = args.numberOfNatGateways === undefined ? numberOfAvailabilityZones : args.numberOfNatGateways;
             if (numberOfNatGateways > numberOfAvailabilityZones) {
@@ -235,13 +235,13 @@ export class Vpc extends pulumi.ComponentResource {
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
 
-function getNumberOfAvailabilityZones(requestedCount: "all" | number | undefined) {
+function getNumberOfAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined) {
     if (typeof requestedCount === "number") {
         return requestedCount;
     }
 
     if (requestedCount === "all") {
-        const availabilityZones = utils.promiseResult(aws.getAvailabilityZones());
+        const availabilityZones = utils.promiseResult(aws.getAvailabilityZones(/*args:*/undefined, { parent: vpc }));
         if (availabilityZones && availabilityZones.names && availabilityZones.names.length > 0) {
             return availabilityZones.names.length;
         }
