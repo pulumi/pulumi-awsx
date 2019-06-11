@@ -209,16 +209,23 @@ export class ApplicationListener extends mod.Listener {
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
-        // If the listener is externally available, then open it's port both for ingress
-        // in the load balancer's security groups.
+        // As per https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html
+        //
+        // Whenever you add a listener to your load balancer or update the health check port for a
+        // target group used by the load balancer to route requests, you must verify that the
+        // security groups associated with the load balancer allow traffic on the new port in both
+        // directions.
         if (args.external !== false) {
-            const args = x.ec2.SecurityGroupRule.ingressArgs(
-                new x.ec2.AnyIPv4Location(), new x.ec2.TcpPorts(port),
-                pulumi.interpolate`Externally available at port ${port}`);
+            const args = {
+                location: new x.ec2.AnyIPv4Location(),
+                ports: new x.ec2.TcpPorts(port),
+                description: pulumi.interpolate`Externally available at port ${port}`,
+            };
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
                 securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, parentOpts);
+                securityGroup.createEgressRule(`${name}-external-${i}-egress`, args, parentOpts);
             }
         }
 

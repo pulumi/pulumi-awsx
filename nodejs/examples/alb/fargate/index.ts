@@ -34,8 +34,4 @@ const nginx = new awsx.ecs.FargateService("nginx", {
     desiredCount: 2,
 });
 
-loadBalancer.securityGroups[0].createEgressRule("nginxEgress",
-    awsx.ec2.SecurityGroupRule.egressArgs(
-        new awsx.ec2.AnyIPv4Location(), new awsx.ec2.TcpPorts(80)));
-
 export const nginxEndpoint = nginxListener.endpoint;
