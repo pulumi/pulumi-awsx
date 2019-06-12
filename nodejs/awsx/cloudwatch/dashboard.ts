@@ -93,8 +93,12 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
             dashboardBody: getDashboardBody(args).apply(b => JSON.stringify(b)),
         }, opts);
 
+        const provider: any = this.getProvider("aws:cloudwatch:Dashboard");
+        let region = provider ? provider.region : undefined;
+        region = region || aws.config.region;
+
         this.url = pulumi.interpolate
-            `https://${aws.config.region}.console.aws.amazon.com/cloudwatch/home?region=${aws.config.region}#dashboards:name=${this.dashboardName}`;
+            `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#dashboards:name=${this.dashboardName}`;
     }
 }
 
