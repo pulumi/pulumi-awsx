@@ -62,4 +62,5 @@ export {
 // deployment time module can be ok in some cases.  For example, using "awsx.apigateway.authorizerResponse"
 // as a helper function is fine. However, in general, the majority of this API is not safe to use
 // at 'run time' and will fail.
+/** @internal */
 export const deploymentOnlyModule = true;
