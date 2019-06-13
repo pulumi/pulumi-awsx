@@ -1,4 +1,7 @@
-## 0.18.5 (Unreleased)
+## 0.18.6 (Unreleased)
+
+
+## 0.18.5 (6/12/2019)
 
 - VPCs can now be made which scale to use all availability zones in a region if desired.  Use
   `new awsx.ec2.Vpc("name", { numberOfAvailabilityZones: "all" })` to get this behavior.  If
