@@ -19,9 +19,7 @@ import * as fetch from "node-fetch";
 
 // Examples of different types of metrics and alarms that can be set.
 
-const provider = new aws.Provider("custom", { region: "us-west-2" });
-
-const topic = new aws.sns.Topic("sites-to-process-topic", /*args:*/ undefined, { provider });
+const topic = new aws.sns.Topic("sites-to-process-topic");
 const subscription = topic.onEvent("for-each-url", async (event) => {
     const records = event.Records || [];
     for (const record of records) {
@@ -38,7 +36,7 @@ const subscription = topic.onEvent("for-each-url", async (event) => {
             return;
         }
     }
-}, /*args:*/ undefined, { providers: { aws: provider } });
+});
 
 // Get the metric for the lambda that processing our topic requests.
 const funcMetric = awsx.lambda.metrics.duration({ function: subscription.func });
@@ -75,6 +73,4 @@ const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
             ],
         }),
     ],
-}, { provider });
-
-export const dashboardUrl = dashboard.url;
+});
