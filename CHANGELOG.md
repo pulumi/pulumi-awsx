@@ -1,13 +1,14 @@
-## 0.18.5 (Unreleased)
+## 0.18.6 (Unreleased)
+
+
+## 0.18.5 (6/12/2019)
 
 - VPCs can now be made which scale to use all availability zones in a region if desired.  Use
   `new awsx.ec2.Vpc("name", { numberOfAvailabilityZones: "all" })` to get this behavior.  If
   `numberOfAvailabilityZones` is not provided, the current behavior of defaulting to 2 availability
   zones remains.
-
 - Externally available application listeners will now open their security group to both ingress and
   egress for their specified port.
-
 - Tweaked API.getFunction to allow [route] and [method] parameters to be optional.  Also changed
   function to throw if passed arguments that don't map to an actual function.
 
