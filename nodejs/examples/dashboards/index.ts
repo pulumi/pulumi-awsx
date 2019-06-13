@@ -74,3 +74,5 @@ const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
         }),
     ],
 });
+
+export const dashboardUrl = dashboard.url;

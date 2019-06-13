@@ -78,6 +78,11 @@ export interface DashboardArgs {
  */
 export class Dashboard extends aws.cloudwatch.Dashboard {
     /**
+     * The url this [Dashboard] is published at.
+     */
+    public readonly url: pulumi.Output<string>;
+
+    /**
      * Constructs a [DashboardGrid] out of [Widget]s.  If any of these Widgets are [RowWidget]s.
      * then these will be treated as a sequence of rows to add to the grid.  Otherwise, this will
      * be treated as a single row to add to the grid.
@@ -87,6 +92,13 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
             dashboardName: utils.ifUndefined(args.name, name),
             dashboardBody: getDashboardBody(args).apply(b => JSON.stringify(b)),
         }, opts);
+
+        const provider: any = this.getProvider("aws::");
+        let region = provider ? provider.region : undefined;
+        region = region || aws.config.region;
+
+        this.url = pulumi.interpolate
+            `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#dashboards:name=${this.dashboardName}`;
     }
 }
 

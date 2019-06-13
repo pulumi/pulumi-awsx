@@ -11,6 +11,8 @@
   egress for their specified port.
 - Tweaked API.getFunction to allow [route] and [method] parameters to be optional.  Also changed
   function to throw if passed arguments that don't map to an actual function.
+- awsx.cloudwatch.Dashboard now exports a `url` property that gives you an immediate link to the
+  Dashboard.
 
 ## 0.18.4 (5/14/2019)
 
