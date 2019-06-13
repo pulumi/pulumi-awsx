@@ -93,7 +93,7 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
             dashboardBody: getDashboardBody(args).apply(b => JSON.stringify(b)),
         }, opts);
 
-        const provider: any = this.getProvider("aws:cloudwatch:Dashboard");
+        const provider: any = this.getProvider("aws::");
         let region = provider ? provider.region : undefined;
         region = region || aws.config.region;
 
