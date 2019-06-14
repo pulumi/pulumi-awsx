@@ -86,9 +86,13 @@ export class Vpc extends pulumi.ComponentResource {
                 { type: "private" },
             ]);
 
-            for (const desc of subnetDescriptions) {
+            for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
+                const desc = subnetDescriptions[i];
                 const type = desc.type;
                 const subnetName = desc.subnetName;
+
+                const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
+                const ipv6CidrBlock = createIpv6CidrBlock(this, assignIpv6AddressOnCreation, i);
 
                 const subnet = new x.ec2.Subnet(subnetName, this, {
                     cidrBlock: desc.cidrBlock,
@@ -102,7 +106,8 @@ export class Vpc extends pulumi.ComponentResource {
                     // Allow the individual subnet to decide it if wants an ipv6 address assigned at
                     // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
                     // it, don't assign otherwise.
-                    assignIpv6AddressOnCreation: utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock),
+                    ipv6CidrBlock: ipv6CidrBlock,
+                    assignIpv6AddressOnCreation,
 
                     // merge some good default tags, with whatever the user wants.  Their choices should
                     // always win out over any defaults we pick.
@@ -247,6 +252,43 @@ export class Vpc extends pulumi.ComponentResource {
 
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
+
+function createIpv6CidrBlock(
+        vpc: Vpc,
+        assignIpv6AddressOnCreation: pulumi.Output<boolean>,
+        index: number): pulumi.Output<string> {
+
+    const result = pulumi.all([vpc.vpc.ipv6CidrBlock, assignIpv6AddressOnCreation])
+                         .apply(([vpcIpv6CidrBlock, assignIpv6AddressOnCreation]) => {
+                    if (!assignIpv6AddressOnCreation) {
+                        return undefined;
+                    }
+
+                    if (!vpcIpv6CidrBlock) {
+                        throw new pulumi.ResourceError(
+"Must set [assignGeneratedIpv6CidrBlock] to true on [Vpc] in order to assign ipv6 address to subnet.", vpc);
+                    }
+
+                    // Should be of the form: 2600:1f16:110:2600::/56
+                    const colonColonIndex = vpcIpv6CidrBlock.indexOf("::");
+                    if (colonColonIndex < 0 ||
+                        vpcIpv6CidrBlock.substr(colonColonIndex) !== "::/56") {
+
+                        throw new pulumi.ResourceError(`Vpc ipv6 cidr block was not in an expected form: ${vpcIpv6CidrBlock}`, vpc);
+                    }
+
+                    const header = vpcIpv6CidrBlock.substr(0, colonColonIndex);
+                    if (!header.endsWith("00")) {
+                        throw new pulumi.ResourceError(`Vpc ipv6 cidr block was not in an expected form: ${vpcIpv6CidrBlock}`, vpc);
+                    }
+
+                    // trim off the 00, and then add 00, 01, 02, 03, etc.
+                    const prefix = header.substr(0, header.length - 2);
+                    return prefix + index.toString().padStart(2, "0") + "::/64";
+                 });
+
+    return <pulumi.Output<string>>result;
+}
 
 function getNumberOfAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined) {
     if (typeof requestedCount === "number") {

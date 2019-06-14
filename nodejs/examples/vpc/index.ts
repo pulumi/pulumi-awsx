@@ -32,3 +32,7 @@ const vpcWithOnlyPrivateSubnets = new awsx.ec2.Vpc("custom3", {
         type: "private"
     }]
 });
+
+const vpcWithIpv6 = new awsx.ec2.Vpc("custom4", {
+    assignGeneratedIpv6CidrBlock: true,
+});
