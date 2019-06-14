@@ -102,7 +102,7 @@ export class Vpc extends pulumi.ComponentResource {
                     // Allow the individual subnet to decide it if wants an ipv6 address assigned at
                     // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
                     // it, don't assign otherwise.
-                    assignIpv6AddressOnCreation: utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
+                    assignIpv6AddressOnCreation: utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock),
 
                     // merge some good default tags, with whatever the user wants.  Their choices should
                     // always win out over any defaults we pick.
