@@ -178,8 +178,7 @@ export interface SubnetArgs {
      */
     cidrBlock: pulumi.Input<string>;
     /**
-     * Specify true to indicate
-     * that network interfaces created in the specified subnet should be
+     * Specify true to indicate that network interfaces created in the specified subnet should be
      * assigned an IPv6 address. Default is `false`
      */
     assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
@@ -197,9 +196,8 @@ export interface SubnetArgs {
      */
     ipv6CidrBlock?: pulumi.Input<string>;
     /**
-     * Specify true to indicate
-     * that instances launched into the subnet should be assigned
-     * a public IP address. Default is `false`.
+     * Specify true to indicate that instances launched into the subnet should be assigned a public
+     * IP address. Default is `false`.
      */
     mapPublicIpOnLaunch?: pulumi.Input<boolean>;
     /**

@@ -69,12 +69,14 @@ export class Vpc extends pulumi.ComponentResource {
                 throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
             }
 
+            const assignGeneratedIpv6CidrBlock = utils.ifUndefined(args.assignGeneratedIpv6CidrBlock, false);
             this.vpc = new aws.ec2.Vpc(name, {
                 ...args,
                 cidrBlock,
                 enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
                 enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
+                assignGeneratedIpv6CidrBlock,
             });
             this.id = this.vpc.id;
 
@@ -86,14 +88,19 @@ export class Vpc extends pulumi.ComponentResource {
                 { type: "private" },
             ]);
 
-            for (const { type, subnetName, availabilityZone, cidrBlock, tags } of subnetDescriptions) {
+            for (const desc of subnetDescriptions) {
+                const type = desc.type;
+                const subnetName = desc.subnetName;
+
                 const subnet = new x.ec2.Subnet(subnetName, this, {
-                    cidrBlock,
-                    availabilityZone: getAvailabilityZone(availabilityZone),
-                    mapPublicIpOnLaunch: type === "public",
+                    cidrBlock: desc.cidrBlock,
+                    availabilityZone: getAvailabilityZone(desc.availabilityZone),
+                    mapPublicIpOnLaunch: utils.ifUndefined(desc.mapPublicIpOnLaunch, type === "public"),
+                    assignIpv6AddressOnCreation: utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
+
                     // merge some good default tags, with whatever the user wants.  Their choices should
                     // always win out over any defaults we pick.
-                    tags: utils.mergeTags({ type, Name: subnetName }, tags),
+                    tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
                 }, opts);
 
                 this.getSubnets(type).push(subnet);
@@ -354,6 +361,18 @@ export interface VpcSubnetArgs {
      */
     cidrMask?: number;
 
+    /**
+     * Specify true to indicate that network interfaces created in the specified subnet should be
+     * assigned an IPv6 address. Defaults to the value of VpcArgs.assignGeneratedIpv6CidrBlock.
+     */
+    assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
+
+    /**
+     * Specify true to indicate that instances launched into the subnet should be assigned a public
+     * IP address. Default's to `true` if `type` is `public`.  `false` otherwise.
+     */
+    mapPublicIpOnLaunch?: pulumi.Input<boolean>;
+
     tags?: pulumi.Input<aws.Tags>;
 }
 
@@ -422,12 +441,14 @@ export interface VpcArgs {
      * Defaults to [numberOfAvailabilityZones].
      */
     numberOfNatGateways?: number;
+
     /**
-     * Requests an Amazon-provided IPv6 CIDR
-     * block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or
-     * the size of the CIDR block. Default is `false`.
+     * Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot
+     * specify the range of IP addresses, or the size of the CIDR block. Default is `false`.  If set
+     * to `true`, then subnets created will default to `assignIpv6AddressOnCreation: true` as well.
      */
     assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
+
     /**
      * The CIDR block for the VPC.  Defaults to "10.0.0.0/16" if unspecified.
      */
