@@ -2,6 +2,13 @@
 
 - awsx.ecs.Cluster can be created from an existing aws.ecs.Cluster's id.
 
+### Compatibility issues
+
+- An `awsx.ec2.Vpc` with `assignGeneratedIpv6CidrBlock: true` will now set
+  `assignIpv6AddressOnCreation: true` by default for child subnets.  This can be overridden by
+  setting that value explicitly to `false` with the subnet's args.
+
+
 ## 0.18.5 (6/12/2019)
 
 - VPCs can now be made which scale to use all availability zones in a region if desired.  Use
