@@ -47,7 +47,7 @@ export class Cluster
 
         // First create an ECS cluster.
         const parentOpts = { parent: this };
-        const cluster = args.cluster || new aws.ecs.Cluster(name, args, parentOpts);
+        const cluster = getOrCreateCluster(name, args, this);
         this.cluster = cluster;
         this.id = cluster.id;
 
@@ -147,11 +147,24 @@ export class Cluster
 
 (<any>Cluster.prototype.createAutoScalingGroup).doNotCapture = true;
 
+function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
+    if (args.cluster === undefined) {
+        return new aws.ecs.Cluster(name, args, { parent });
+    }
+
+    if (pulumi.Resource.isInstance(args.cluster)) {
+        return args.cluster;
+    }
+
+    return aws.ecs.Cluster.get(name, args.cluster, undefined, { parent });
+}
+
 // The shape we want for ClusterArgs.  We don't export this as 'Overwrite' types are not pleasant to
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     vpc?: x.ec2.Vpc;
+    cluster?: aws.ecs.Cluster | pulumi.Input<string>;
     securityGroups?: x.ec2.SecurityGroupOrId[];
     tags?: pulumi.Input<aws.Tags>;
 }>;
@@ -167,10 +180,10 @@ export interface ClusterArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * An existing Cluster to use for this awsx Cluster.  If not provided, a default one will
-     * be created.
+     * An existing Cluster (or Cluster-Id) to use for this awsx Cluster.  If not provided, a default
+     * one will be created.
      */
-    cluster?: aws.ecs.Cluster;
+    cluster?: aws.ecs.Cluster | pulumi.Input<string>;
 
     /**
      * The name of the cluster (up to 255 letters, numbers, hyphens, and underscores)
