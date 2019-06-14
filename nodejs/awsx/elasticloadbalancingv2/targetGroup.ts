@@ -85,6 +85,27 @@ export abstract class TargetGroup
     public registerListener(listener: x.elasticloadbalancingv2.Listener) {
         this.listeners.push(listener);
     }
+
+    public attachTarget(
+            name: string,
+            args: pulumi.Input<mod.LoadBalancerTarget> | mod.LoadBalancerTargetProvider | aws.ec2.Instance,
+            opts: pulumi.CustomResourceOptions = {}) {
+
+        args = aws.ec2.Instance.isInstance(args)
+            ? new mod.Ec2InstanceTarget(args)
+            : args;
+
+        const target = mod.isLoadBalancerTargetProvider(args)
+            ? args.loadBalancerTarget(<pulumi.Output<TargetType>>this.targetGroup.targetType)
+            : pulumi.output(args);
+
+        return new aws.elasticloadbalancingv2.TargetGroupAttachment(name, {
+            targetGroupArn: this.targetGroup.arn,
+            targetId: target.targetId,
+            availabilityZone: <pulumi.Output<string>>target.availabilityZone,
+            port: <pulumi.Output<number>>target.port,
+        }, { parent: this, ...opts });
+    }
 }
 
 /**
@@ -212,11 +233,24 @@ export interface TargetGroupArgs {
     /**
      * The type of target that you must specify when registering targets with this target group. The
      * possible values are `instance` (targets are specified by instance ID) or `ip` (targets are
-     * specified by IP address). The default is `ip`. Note that you can't specify targets for
-     * a target group using both instance IDs and IP addresses. If the target type is `ip`, specify
-     * IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the
-     * RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range
-     * (100.64.0.0/10). You can't specify publicly routable IP addresses.
+     * specified by IP address) or `lambda` (targets are specified by lambda arn). The default is
+     * `ip`. Note that you can't specify targets for a target group using both instance IDs
+     * and IP addresses. If the target type is `ip`, specify IP addresses from the subnets of the
+     * virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8,
+     * 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify
+     * publicly routable IP addresses.
      */
-    targetType?: pulumi.Input<"instance" | "ip">;
+    targetType?: pulumi.Input<TargetType>;
 }
+
+/**
+ * The type of target that you must specify when registering targets with a target group. The
+ * possible values are `instance` (targets are specified by instance ID) or `ip` (targets are
+ * specified by IP address) or `lambda` (targets are specified by lambda arn). The default is
+ * `ip`. Note that you can't specify targets for a target group using both instance IDs and IP
+ * addresses. If the target type is `ip`, specify IP addresses from the subnets of the virtual
+ * private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and
+ * 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP
+ * addresses.
+ */
+export type TargetType = "instance" | "ip" | "lambda";

@@ -15,6 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as mod from ".";
 import * as x from "..";
 import * as utils from "./../utils";
 
@@ -22,6 +23,9 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
     public readonly vpc: x.ec2.Vpc;
     public readonly securityGroups: x.ec2.SecurityGroup[];
+
+    public readonly listeners: mod.Listener[] = [];
+    public readonly targetGroups: mod.TargetGroup[] = [];
 
     constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
@@ -42,7 +46,18 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
             securityGroups: this.securityGroups.map(g => g.id),
             tags: utils.mergeTags(args.tags, { Name: longName }),
         }, parentOpts);
-   }
+    }
+
+    public attachTarget(
+            name: string,
+            args: pulumi.Input<LoadBalancerTarget> | LoadBalancerTargetProvider | aws.ec2.Instance,
+            opts: pulumi.CustomResourceOptions = {}) {
+        if (this.listeners.length === 0) {
+            throw new pulumi.ResourceError("Load balancer must have at least one [Listener] in order to attach a target.", this);
+        }
+
+        return this.listeners[0].attachTarget(name, args, opts);
+    }
 }
 
 function getSubnets(
@@ -137,4 +152,53 @@ export interface LoadBalancerSubnets {
 
 function isLoadBalancerSubnets(obj: any): obj is LoadBalancerSubnets {
     return obj && (<LoadBalancerSubnets>obj).subnets instanceof Function;
+}
+
+export interface LoadBalancerTarget {
+    /**
+     * The ID of the target. This is the Instance ID for an `instance`, or the container ID for an
+     * ECS container. If the target type is `ip`, specify an IP address. If the target type is
+     * `lambda`, specify the arn of lambda.
+     */
+    targetId: string;
+    /**
+     * The Availability Zone where the IP address of the target is to be registered.
+     */
+    availabilityZone?: string;
+    /**
+     * The port on which targets receive traffic.
+     */
+    port?: number;
+}
+
+export interface LoadBalancerTargetProvider {
+    loadBalancerTarget(targetType: pulumi.Input<mod.TargetType>): pulumi.Output<LoadBalancerTarget>;
+}
+
+export function isLoadBalancerTargetProvider(obj: any): obj is LoadBalancerTargetProvider {
+    return (<LoadBalancerTargetProvider>obj).loadBalancerTarget instanceof Function;
+}
+
+/**
+ * Allows an EC2 instance to simply be used as the target of an ALB or NLB.  To use, just call:
+ *
+ * ```ts
+ *  lb.attachTarget(new Ec2InstanceTarget(instance));
+ * ```
+ */
+export class Ec2InstanceTarget implements LoadBalancerTargetProvider {
+    constructor(public readonly instance: aws.ec2.Instance) {
+    }
+
+    public loadBalancerTarget(targetType: pulumi.Input<mod.TargetType>): pulumi.Output<LoadBalancerTarget> {
+        const result = pulumi.output([targetType, this.instance.id, this.instance.privateIp, this.instance.availabilityZone])
+                             .apply(([targetType, instanceId, privateIp, availabilityZone]) => {
+            return {
+                targetId: targetType === "instance" ? instanceId : privateIp,
+                availabilityZone: availabilityZone,
+            };
+        });
+
+        return result;
+    }
 }
