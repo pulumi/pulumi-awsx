@@ -1,5 +1,6 @@
 ## 0.18.6 (Unreleased)
 
+- awsx.ecs.Cluster can be created from an existing aws.ecs.Cluster's id.
 
 ## 0.18.5 (6/12/2019)
 
