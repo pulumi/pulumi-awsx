@@ -15,8 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as deasync from "deasync";
-
 import * as x from "..";
 import { getAvailabilityZone } from "./../aws";
 import { VpcTopology } from "./vpcTopology";
@@ -95,7 +93,15 @@ export class Vpc extends pulumi.ComponentResource {
                 const subnet = new x.ec2.Subnet(subnetName, this, {
                     cidrBlock: desc.cidrBlock,
                     availabilityZone: getAvailabilityZone(desc.availabilityZone),
+
+                    // Allow the individual subnet to decide if it wants to be mapped.  If not
+                    // specified, default to mapping a public-ip open if the type is 'public', and
+                    // not mapping otherwise.
                     mapPublicIpOnLaunch: utils.ifUndefined(desc.mapPublicIpOnLaunch, type === "public"),
+
+                    // Allow the individual subnet to decide it if wants an ipv6 address assigned at
+                    // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
+                    // it, don't assign otherwise.
                     assignIpv6AddressOnCreation: utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
 
                     // merge some good default tags, with whatever the user wants.  Their choices should
