@@ -149,10 +149,12 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
 
         // Want to return docker CPU units, not vCPU values. From AWS:
         //
-        // You can determine the number of CPU units that are available per Amazon EC2 instance type
-        // by multiplying the number of vCPUs listed for that instance type on the Amazon EC2
-        // Instances detail page by 1,024.
-        return { memory: `${config.memGB}GB`, cpu: `${config.vcpu * 1024}` };
+        // You can determine the number of CPU units that are available per Amazon EC2 instance type by multiplying the
+        // number of vCPUs listed for that instance type on the Amazon EC2 Instances detail page by 1,024.
+        //
+        // We return `memory` in MB units because that appears to be how AWS normalized these internally so this avoids
+        // refresh issues.
+        return { memory: `${config.memGB * 1024}`, cpu: `${config.vcpu * 1024}` };
 
         // local functions.
         function getRequestedVCPUandMemory() {
