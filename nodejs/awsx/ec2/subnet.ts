@@ -52,9 +52,14 @@ export class Subnet extends pulumi.ComponentResource {
             // when importing a subnet.
         }
         else {
+            // Allow the individual subnet to decide it if wants an ipv6 address assigned at
+            // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
+            // it, don't assign otherwise.
+            const assignIpv6AddressOnCreation = utils.ifUndefined(args.assignIpv6AddressOnCreation, vpc.vpc.assignGeneratedIpv6CidrBlock);
             this.subnet = new aws.ec2.Subnet(name, {
                 vpcId: vpc.id,
                 ...args,
+                assignIpv6AddressOnCreation,
             }, parentOpts);
 
             this.routeTable = new aws.ec2.RouteTable(name, {
@@ -179,7 +184,8 @@ export interface SubnetArgs {
     cidrBlock: pulumi.Input<string>;
     /**
      * Specify true to indicate that network interfaces created in the specified subnet should be
-     * assigned an IPv6 address. Default is `false`
+     * assigned an IPv6 address. Default's to `true` if the Vpc this is associated with has
+     * `assignGeneratedIpv6CidrBlock: true`. `false` otherwise.
      */
     assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
     /**
