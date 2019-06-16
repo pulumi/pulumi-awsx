@@ -130,6 +130,8 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                 subnetName,
                 availabilityZone: i,
                 cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
+                mapPublicIpOnLaunch: subnetArgs.mapPublicIpOnLaunch,
+                assignIpv6AddressOnCreation: subnetArgs.assignIpv6AddressOnCreation,
                 tags: subnetArgs.tags,
             });
         }
@@ -153,4 +155,6 @@ interface SubnetDescription {
     availabilityZone: number;
     cidrBlock: string;
     tags?: pulumi.Input<aws.Tags>;
+    mapPublicIpOnLaunch?: pulumi.Input<boolean>;
+    assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
 }

@@ -99,7 +99,10 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     public readonly __isApplicationTargetGroup: boolean;
 
     constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
-        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, { vpc: args.vpc }, opts);
+        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {
+            vpc: args.vpc,
+            name: args.name,
+        }, opts);
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
         super("awsx:x:elasticloadbalancingv2:ApplicationTargetGroup", name, loadBalancer, {
@@ -181,7 +184,10 @@ export class ApplicationListener extends mod.Listener {
             throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
         }
 
-        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, { vpc: args.vpc }, opts);
+        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {
+            vpc: args.vpc,
+            name: args.name,
+        }, opts);
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultActions, defaultListener } = getDefaultActions(
@@ -203,16 +209,23 @@ export class ApplicationListener extends mod.Listener {
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
-        // If the listener is externally available, then open it's port both for ingress
-        // in the load balancer's security groups.
+        // As per https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html
+        //
+        // Whenever you add a listener to your load balancer or update the health check port for a
+        // target group used by the load balancer to route requests, you must verify that the
+        // security groups associated with the load balancer allow traffic on the new port in both
+        // directions.
         if (args.external !== false) {
-            const args = x.ec2.SecurityGroupRule.ingressArgs(
-                new x.ec2.AnyIPv4Location(), new x.ec2.TcpPorts(port),
-                pulumi.interpolate`Externally available at port ${port}`);
+            const args = {
+                location: new x.ec2.AnyIPv4Location(),
+                ports: new x.ec2.TcpPorts(port),
+                description: pulumi.interpolate`Externally available at port ${port}`,
+            };
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
                 securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, parentOpts);
+                securityGroup.createEgressRule(`${name}-external-${i}-egress`, args, parentOpts);
             }
         }
 
@@ -237,7 +250,12 @@ function getDefaultActions(
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
-    const targetGroup = new ApplicationTargetGroup(name, { loadBalancer, port, protocol }, opts);
+    const targetGroup = new ApplicationTargetGroup(name, {
+        loadBalancer,
+        port,
+        protocol,
+        name: args.name,
+    }, opts);
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 }
 
@@ -251,7 +269,15 @@ export interface ApplicationLoadBalancerArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * Whether or not the load balancer is exposed to the internet. Defaults to `false` if
+     * The name of the LoadBalancer. This name must be unique within your AWS account, can have a
+     * maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not
+     * begin or end with a hyphen. If not specified, the [name] parameter passed into the
+     * LoadBalancer constructor will be hashed and used as the name.
+     */
+    name?: string;
+
+    /**
+     * Whether or not the load balancer is exposed to the internet. Defaults to `true` if
      * unspecified.
      */
     external?: boolean;
@@ -345,6 +371,13 @@ export interface ApplicationTargetGroupArgs {
     vpc?: x.ec2.Vpc;
 
     /**
+     * The name of the TargetGroup. If not specified, the [name] parameter passed into the
+     * TargetGroup constructor will be hashed and used as the name.  If a [loadBalancer] is not
+     * provided, this name will be used to name that resource as well.
+     */
+    name?: string;
+
+    /**
      * The load balancer this target group is associated with.  If not provided, a new load balancer
      * will be automatically created.
      */
@@ -421,6 +454,12 @@ export interface ApplicationListenerArgs {
      * unspecified.
      */
     vpc?: x.ec2.Vpc;
+
+    /**
+     * An explicit name to use for dependent resources.  Specifically, if a LoadBalancer or
+     * TargetGroup is not provided, this name will be used to name those resources.
+     */
+    name?: string;
 
     /**
      * The load balancer this listener is associated with.  If not provided, a new load balancer

@@ -329,7 +329,7 @@ export function mergeDimensions(
     });
 }
 
-function hasOwnProperty<T>(obj: T, key: keyof T) {
+function hasOwnProperty<T extends object>(obj: T, key: keyof T) {
     return obj.hasOwnProperty(key);
 }
 

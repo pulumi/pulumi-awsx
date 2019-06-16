@@ -11,8 +11,8 @@
     "homepage": "https://pulumi.io",
     "repository": "https://github.com/pulumi/pulumi-awsx",
     "dependencies": {
-        "@pulumi/pulumi": "^0.17.12",
-        "@pulumi/aws": "^0.18.4",
+        "@pulumi/pulumi": "^0.17.17",
+        "@pulumi/aws": "^0.18.9",
         "@pulumi/docker": "^0.17.0",
         "@types/aws-lambda": "^8.10.23",
         "mime": "^2.0.0",
@@ -25,6 +25,6 @@
         "@types/deasync": "^0.1.0",
         "tslint": "^5.11.0",
         "typedoc": "^0.13.0",
-        "typescript": "^3.4.1"
+        "typescript": "^3.4.5"
     }
 }

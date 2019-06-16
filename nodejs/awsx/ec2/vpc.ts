@@ -15,8 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as deasync from "deasync";
-
 import * as x from "..";
 import { getAvailabilityZone } from "./../aws";
 import { VpcTopology } from "./vpcTopology";
@@ -62,19 +60,21 @@ export class Vpc extends pulumi.ComponentResource {
         }
         else {
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
-            const numberOfAvailabilityZones = getNumberOfAvailabilityZones(args.numberOfAvailabilityZones);
+            const numberOfAvailabilityZones = getNumberOfAvailabilityZones(this, args.numberOfAvailabilityZones);
 
             const numberOfNatGateways = args.numberOfNatGateways === undefined ? numberOfAvailabilityZones : args.numberOfNatGateways;
             if (numberOfNatGateways > numberOfAvailabilityZones) {
                 throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
             }
 
+            const assignGeneratedIpv6CidrBlock = utils.ifUndefined(args.assignGeneratedIpv6CidrBlock, false);
             this.vpc = new aws.ec2.Vpc(name, {
                 ...args,
                 cidrBlock,
                 enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
                 enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
+                assignGeneratedIpv6CidrBlock,
             });
             this.id = this.vpc.id;
 
@@ -86,14 +86,32 @@ export class Vpc extends pulumi.ComponentResource {
                 { type: "private" },
             ]);
 
-            for (const { type, subnetName, availabilityZone, cidrBlock, tags } of subnetDescriptions) {
+            for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
+                const desc = subnetDescriptions[i];
+                const type = desc.type;
+                const subnetName = desc.subnetName;
+
+                const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
+                const ipv6CidrBlock = createIpv6CidrBlock(this, assignIpv6AddressOnCreation, i);
+
                 const subnet = new x.ec2.Subnet(subnetName, this, {
-                    cidrBlock,
-                    availabilityZone: getAvailabilityZone(availabilityZone),
-                    mapPublicIpOnLaunch: type === "public",
+                    cidrBlock: desc.cidrBlock,
+                    availabilityZone: getAvailabilityZone(desc.availabilityZone),
+
+                    // Allow the individual subnet to decide if it wants to be mapped.  If not
+                    // specified, default to mapping a public-ip open if the type is 'public', and
+                    // not mapping otherwise.
+                    mapPublicIpOnLaunch: utils.ifUndefined(desc.mapPublicIpOnLaunch, type === "public"),
+
+                    // Allow the individual subnet to decide it if wants an ipv6 address assigned at
+                    // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
+                    // it, don't assign otherwise.
+                    ipv6CidrBlock: ipv6CidrBlock,
+                    assignIpv6AddressOnCreation,
+
                     // merge some good default tags, with whatever the user wants.  Their choices should
                     // always win out over any defaults we pick.
-                    tags: utils.mergeTags({ type, Name: subnetName }, tags),
+                    tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
                 }, opts);
 
                 this.getSubnets(type).push(subnet);
@@ -196,6 +214,12 @@ export class Vpc extends pulumi.ComponentResource {
         return defaultVpc;
     }
 
+    /**
+     * Get an existing Vpc resource's state with the given name and IDs of its relevant
+     * sub-resources. This will not cause a VPC (or any sub-resources) to be created, and removing
+     * this Vpc from your pulumi application will not cause the existing cloud resource (or
+     * sub-resources) to be destroyed.
+     */
     public static fromExistingIds(name: string, idArgs: ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions) {
         const vpc = new Vpc(name, {
             vpc: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
@@ -229,13 +253,50 @@ export class Vpc extends pulumi.ComponentResource {
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
 
-function getNumberOfAvailabilityZones(requestedCount: "all" | number | undefined) {
+function createIpv6CidrBlock(
+        vpc: Vpc,
+        assignIpv6AddressOnCreation: pulumi.Output<boolean>,
+        index: number): pulumi.Output<string> {
+
+    const result = pulumi.all([vpc.vpc.ipv6CidrBlock, assignIpv6AddressOnCreation])
+                         .apply(([vpcIpv6CidrBlock, assignIpv6AddressOnCreation]) => {
+                    if (!assignIpv6AddressOnCreation) {
+                        return undefined;
+                    }
+
+                    if (!vpcIpv6CidrBlock) {
+                        throw new pulumi.ResourceError(
+"Must set [assignGeneratedIpv6CidrBlock] to true on [Vpc] in order to assign ipv6 address to subnet.", vpc);
+                    }
+
+                    // Should be of the form: 2600:1f16:110:2600::/56
+                    const colonColonIndex = vpcIpv6CidrBlock.indexOf("::");
+                    if (colonColonIndex < 0 ||
+                        vpcIpv6CidrBlock.substr(colonColonIndex) !== "::/56") {
+
+                        throw new pulumi.ResourceError(`Vpc ipv6 cidr block was not in an expected form: ${vpcIpv6CidrBlock}`, vpc);
+                    }
+
+                    const header = vpcIpv6CidrBlock.substr(0, colonColonIndex);
+                    if (!header.endsWith("00")) {
+                        throw new pulumi.ResourceError(`Vpc ipv6 cidr block was not in an expected form: ${vpcIpv6CidrBlock}`, vpc);
+                    }
+
+                    // trim off the 00, and then add 00, 01, 02, 03, etc.
+                    const prefix = header.substr(0, header.length - 2);
+                    return prefix + index.toString().padStart(2, "0") + "::/64";
+                 });
+
+    return <pulumi.Output<string>>result;
+}
+
+function getNumberOfAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined) {
     if (typeof requestedCount === "number") {
         return requestedCount;
     }
 
     if (requestedCount === "all") {
-        const availabilityZones = utils.promiseResult(aws.getAvailabilityZones());
+        const availabilityZones = utils.promiseResult(aws.getAvailabilityZones(/*args:*/undefined, { parent: vpc }));
         if (availabilityZones && availabilityZones.names && availabilityZones.names.length > 0) {
             return availabilityZones.names.length;
         }
@@ -348,6 +409,18 @@ export interface VpcSubnetArgs {
      */
     cidrMask?: number;
 
+    /**
+     * Specify true to indicate that network interfaces created in the specified subnet should be
+     * assigned an IPv6 address. Defaults to the value of VpcArgs.assignGeneratedIpv6CidrBlock.
+     */
+    assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
+
+    /**
+     * Specify true to indicate that instances launched into the subnet should be assigned a public
+     * IP address. Default's to `true` if `type` is `public`.  `false` otherwise.
+     */
+    mapPublicIpOnLaunch?: pulumi.Input<boolean>;
+
     tags?: pulumi.Input<aws.Tags>;
 }
 
@@ -416,12 +489,14 @@ export interface VpcArgs {
      * Defaults to [numberOfAvailabilityZones].
      */
     numberOfNatGateways?: number;
+
     /**
-     * Requests an Amazon-provided IPv6 CIDR
-     * block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or
-     * the size of the CIDR block. Default is `false`.
+     * Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot
+     * specify the range of IP addresses, or the size of the CIDR block. Default is `false`.  If set
+     * to `true`, then subnets created will default to `assignIpv6AddressOnCreation: true` as well.
      */
     assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
+
     /**
      * The CIDR block for the VPC.  Defaults to "10.0.0.0/16" if unspecified.
      */
