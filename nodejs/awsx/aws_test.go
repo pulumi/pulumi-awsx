@@ -503,7 +503,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 
 			if tt.requiredAuth != nil {
 				resp := GetHTTP(t, req, 401)
-				assertRequestBody(t, `{"message":"Unauthorized"}`, false /*skipBodyValidation*/, resp)
+				assertRequestBody(t, `{"message":"401 Unauthorized"}`, false /*skipBodyValidation*/, resp)
 
 				for header, val := range tt.requiredAuth.headers {
 					req.Header.Add(header, val)
@@ -518,7 +518,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 
 			if tt.requiredToken != nil {
 				resp := GetHTTP(t, req, 401)
-				assertRequestBody(t, `{"message":"Unauthorized"}`, false /*skipBodyValidation*/, resp)
+				assertRequestBody(t, `{"message":"401 Unauthorized"}`, false /*skipBodyValidation*/, resp)
 
 				token := tt.requiredToken.getAuthToken(t, stack)
 				req.Header.Add(tt.requiredToken.header, token)

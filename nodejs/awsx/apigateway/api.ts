@@ -36,8 +36,8 @@ import {
     IntegrationType,
     Method,
     RequestValidator,
-    SecurityDefinition,
     SwaggerCognitoAuthorizer,
+    SwaggerGatewayResponse,
     SwaggerLambdaAuthorizer,
     SwaggerOperation,
     SwaggerSpec,
@@ -320,6 +320,12 @@ export interface APIArgs {
      * be created on your behalf if any [StaticRoute]s are provided.
      */
     staticRoutesBucket?: aws.s3.Bucket | aws.s3.BucketArgs;
+
+    /**
+     * Define custom gateway responses for the API. This can be used to properly enable
+     * CORS for Lambda Authorizers.
+     */
+    gatewayResponses?: Record<string, SwaggerGatewayResponse>;
 }
 
 export class API extends pulumi.ComponentResource {
@@ -348,7 +354,8 @@ export class API extends pulumi.ComponentResource {
         }
         else if (args.routes) {
             const result = createSwaggerSpec(
-                this, name, args.routes, args.requestValidator, args.apiKeySource, args.staticRoutesBucket);
+                this, name, args.routes, args.gatewayResponses, args.requestValidator,
+                args.apiKeySource, args.staticRoutesBucket);
             swaggerSpec = result.swagger;
             swaggerLambdas = result.swaggerLambdas;
             swaggerString = pulumi.output<any>(swaggerSpec).apply(s => JSON.stringify(s));
@@ -439,6 +446,7 @@ function createSwaggerSpec(
     api: API,
     name: string,
     routes: Route[],
+    gatewayResponses: Record<string, SwaggerGatewayResponse> | undefined,
     requestValidator: RequestValidator | undefined,
     apikeySource: APIKeySource | undefined,
     bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined) {
@@ -454,20 +462,7 @@ function createSwaggerSpec(
         "x-amazon-apigateway-binary-media-types": ["*/*"],
         // Map paths the user doesn't have access to as 404.
         // http://docs.aws.amazon.com/apigateway/latest/developerguide/supported-gateway-response-types.html
-        "x-amazon-apigateway-gateway-responses": {
-            "MISSING_AUTHENTICATION_TOKEN": {
-                "statusCode": 404,
-                "responseTemplates": {
-                    "application/json": "{\"message\": \"404 Not found\" }",
-                },
-            },
-            "ACCESS_DENIED": {
-                "statusCode": 404,
-                "responseTemplates": {
-                    "application/json": "{\"message\": \"404 Not found\" }",
-                },
-            },
-        },
+        "x-amazon-apigateway-gateway-responses": generateGatewayResponses(gatewayResponses),
         "x-amazon-apigateway-api-key-source": apikeySource,
     };
 
@@ -525,6 +520,27 @@ function createSwaggerSpec(
     }
 
     return { swagger, swaggerLambdas, staticRoutesBucket: pulumi.Resource.isInstance(bucketOrArgs) ? bucketOrArgs : undefined };
+}
+
+function generateGatewayResponses(responses: Record<string, SwaggerGatewayResponse> | undefined): Record<string, SwaggerGatewayResponse> {
+    responses = responses || {};
+    if (!responses["MISSING_AUTHENTICATION_TOKEN"]) {
+        responses["MISSING_AUTHENTICATION_TOKEN"] = {
+            "statusCode": 404,
+            "responseTemplates": {
+                "application/json": "{\"message\": \"404 Not found\" }",
+            },
+        };
+    }
+    if (!responses["ACCESS_DENIED"]) {
+        responses["ACCESS_DENIED"] = {
+            "statusCode": 404,
+            "responseTemplates": {
+                "application/json": "{\"message\": \"404 Not found\" }",
+            },
+        };
+    }
+    return responses;
 }
 
 function addSwaggerOperation(swagger: SwaggerSpec, path: string, method: string, operation: SwaggerOperation) {
