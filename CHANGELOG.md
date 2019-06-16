@@ -4,6 +4,8 @@
   `new awsx.ec2.Vpc("name", { numberOfAvailabilityZones: "all" })` to get this behavior.  If
   `numberOfAvailabilityZones` is not provided, the current behavior of defaulting to 2 availability
   zones remains.
+- Add OPTIONS as a valid method and add ability to set custom gateway responses for
+ [awsx.apigateway.API].
 
 ## 0.18.4 (5/14/2019)
 
