@@ -45,6 +45,19 @@ const lambdaAuthorizer: awsx.apigateway.LambdaAuthorizer = {
     authorizerResultTtlInSeconds: 0,
 };
 
+const customUnauthorizedResponse = {
+    "UNAUTHORIZED": {
+        "statusCode": 401,
+        "responseTemplates": {
+            "application/json": "{\"message\":\"401 Unauthorized\"}",
+        },
+        "responseParameters": {
+            "gatewayresponse.header.Access-Control-Allow-Origin": "'*'",
+            "gatewayresponse.header.Access-Control-Allow-Headers": "'*'",
+        },
+    },
+};
+
 /**
  * In the following example, parameter validation is required for the `/a` route.
  * `curl $(pulumi stack output url)/a?key=hello` would return a 200, whereas
@@ -122,6 +135,7 @@ const api = new awsx.apigateway.API("myapi", {
         authorizers: lambdaAuthorizer,
     }],
     requestValidator: "ALL",
+    gatewayResponses: customUnauthorizedResponse,
 });
 
 // Export the url of the API.
@@ -200,6 +214,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
             handler: authorizerLambda,
         })],
     }],
+    gatewayResponses: customUnauthorizedResponse,
 });
 
 // Create a usage plan + associate the apikey with it
@@ -229,6 +244,7 @@ const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-api", {
             providerARNs: [cognitoUserPool],
         })],
     }],
+    gatewayResponses: customUnauthorizedResponse,
 });
 
 export const cognitoUrl = apiWithCognitoAuthorizer.url;

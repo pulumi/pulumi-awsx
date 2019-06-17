@@ -42,6 +42,9 @@ export interface SwaggerGatewayResponse {
     responseTemplates: {
         "application/json": string,
     };
+    responseParameters?: {
+        [parameter: string]: string,
+    };
 }
 
 export interface SwaggerInfo {
@@ -134,7 +137,7 @@ export interface ApigatewayIntegration {
     credentials?: pulumi.Output<string>;
 }
 
-export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH";
+export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH" | "OPTIONS";
 export type IntegrationConnectionType = "INTERNET" | "VPC_LINK";
 export type IntegrationType = "aws" | "aws_proxy" | "http" | "http_proxy" | "mock";
 export type IntegrationPassthroughBehavior = "when_no_match" | "when_no_templates" | "never";
