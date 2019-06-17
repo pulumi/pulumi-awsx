@@ -86,6 +86,11 @@ export abstract class TargetGroup
         this.listeners.push(listener);
     }
 
+    /**
+     * Attaches a target to this target group.  See
+     * [Register-Targets](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-register-targets.html)
+     * for more details.
+     */
     public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
         return new mod.TargetGroupAttachment(name, this, args, { parent: this, ...opts });
     }

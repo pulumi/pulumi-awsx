@@ -48,6 +48,11 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         }, parentOpts);
     }
 
+    /**
+     * Attaches a target to the first `listener` of this LoadBalancer.  If there are multiple
+     * `listeners` you can add a target to specific listener to by calling `.attachTarget` directly
+     * on it.
+     */
     public attachTarget(
             name: string,
             args: LoadBalancerTarget,
