@@ -79,13 +79,17 @@
 
         "efs/index.ts",
         "efs/metrics.ts",
+
         "elasticloadbalancingv2/application.ts",
         "elasticloadbalancingv2/index.ts",
         "elasticloadbalancingv2/listener.ts",
         "elasticloadbalancingv2/listenerRule.ts",
         "elasticloadbalancingv2/loadBalancer.ts",
+        "elasticloadbalancingv2/metrics.ts",
         "elasticloadbalancingv2/network.ts",
         "elasticloadbalancingv2/targetGroup.ts",
+        "elasticloadbalancingv2/targetGroupAttachment.ts",
+
         "lambda/index.ts",
         "lambda/metrics.ts",
         "rds/index.ts",

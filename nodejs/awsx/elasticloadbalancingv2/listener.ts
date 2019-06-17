@@ -17,6 +17,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as mod from ".";
 import * as x from "..";
 import * as utils from "./../utils";
 
@@ -31,6 +32,7 @@ export abstract class Listener
                    x.ecs.ContainerLoadBalancerProvider {
     public readonly listener: aws.elasticloadbalancingv2.Listener;
     public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
+    public readonly defaultTargetGroup?: x.elasticloadbalancingv2.TargetGroup;
 
     public readonly endpoint: pulumi.Output<ListenerEndpoint>;
 
@@ -64,6 +66,10 @@ export abstract class Listener
         this.loadBalancer = args.loadBalancer;
         this.defaultListenerAction = defaultListenerAction;
 
+        if (defaultListenerAction instanceof mod.TargetGroup) {
+            this.defaultTargetGroup = defaultListenerAction;
+        }
+
         if (defaultListenerAction) {
             // If our default rule hooked up this listener to a target group, then add our listener
             // to the set of listeners the target group knows about.  This is necessary so that
@@ -91,6 +97,17 @@ export abstract class Listener
 
     public addListenerRule(name: string, args: x.elasticloadbalancingv2.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
         return new x.elasticloadbalancingv2.ListenerRule(name, this, args, opts);
+    }
+
+    /**
+     * Attaches a target to the `defaultTargetGroup` for this Listener.
+     */
+    public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
+        if (!this.defaultTargetGroup) {
+            throw new pulumi.ResourceError("Listener must have a [defaultTargetGroup] in order to attach a target.", this);
+        }
+
+        return this.defaultTargetGroup.attachTarget(name, args, opts);
     }
 }
 

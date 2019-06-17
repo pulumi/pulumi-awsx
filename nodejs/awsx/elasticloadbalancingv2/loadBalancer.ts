@@ -15,6 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as mod from ".";
 import * as x from "..";
 import * as utils from "./../utils";
 
@@ -22,6 +23,9 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
     public readonly vpc: x.ec2.Vpc;
     public readonly securityGroups: x.ec2.SecurityGroup[];
+
+    public readonly listeners: mod.Listener[] = [];
+    public readonly targetGroups: mod.TargetGroup[] = [];
 
     constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
@@ -42,7 +46,23 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
             securityGroups: this.securityGroups.map(g => g.id),
             tags: utils.mergeTags(args.tags, { Name: longName }),
         }, parentOpts);
-   }
+    }
+
+    /**
+     * Attaches a target to the first `listener` of this LoadBalancer.  If there are multiple
+     * `listeners` you can add a target to specific listener to by calling `.attachTarget` directly
+     * on it.
+     */
+    public attachTarget(
+            name: string,
+            args: LoadBalancerTarget,
+            opts: pulumi.CustomResourceOptions = {}) {
+        if (this.listeners.length === 0) {
+            throw new pulumi.ResourceError("Load balancer must have at least one [Listener] in order to attach a target.", this);
+        }
+
+        return this.listeners[0].attachTarget(name, args, opts);
+    }
 }
 
 function getSubnets(
@@ -138,3 +158,39 @@ export interface LoadBalancerSubnets {
 function isLoadBalancerSubnets(obj: any): obj is LoadBalancerSubnets {
     return obj && (<LoadBalancerSubnets>obj).subnets instanceof Function;
 }
+
+export interface LoadBalancerTargetInfo {
+    /**
+     * The ID of the target. This is the Instance ID for an `instance`, or the container ID for an
+     * ECS container. If the target type is `ip`, specify an IP address. If the target type is
+     * `lambda`, specify the arn of lambda.
+     */
+    targetId: string;
+    /**
+     * The Availability Zone where the IP address of the target is to be registered.
+     */
+    availabilityZone?: string;
+    /**
+     * The port on which targets receive traffic.
+     */
+    port?: number;
+}
+
+export interface LoadBalancerTargetInfoProvider {
+    loadBalancerTargetInfo(targetType: pulumi.Input<mod.TargetType>): pulumi.Output<LoadBalancerTargetInfo>;
+}
+
+export function isLoadBalancerTargetInfoProvider(obj: any): obj is LoadBalancerTargetInfoProvider {
+    return (<LoadBalancerTargetInfoProvider>obj).loadBalancerTargetInfo instanceof Function;
+}
+
+/**
+ * The types of things that can be the target of a load balancer.
+ *
+ * Note: A lambda event handler can only be supplied if using an application load balancer.
+ */
+export type LoadBalancerTarget =
+    pulumi.Input<LoadBalancerTargetInfo> |
+    LoadBalancerTargetInfoProvider |
+    aws.ec2.Instance |
+    aws.lambda.EventHandler<x.apigateway.Request, x.apigateway.Response>;
