@@ -50,7 +50,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 
     public attachTarget(
             name: string,
-            args: pulumi.Input<LoadBalancerTarget> | LoadBalancerTargetProvider | aws.ec2.Instance,
+            args: LoadBalancerTarget,
             opts: pulumi.CustomResourceOptions = {}) {
         if (this.listeners.length === 0) {
             throw new pulumi.ResourceError("Load balancer must have at least one [Listener] in order to attach a target.", this);
@@ -154,7 +154,7 @@ function isLoadBalancerSubnets(obj: any): obj is LoadBalancerSubnets {
     return obj && (<LoadBalancerSubnets>obj).subnets instanceof Function;
 }
 
-export interface LoadBalancerTarget {
+export interface LoadBalancerTargetInfo {
     /**
      * The ID of the target. This is the Instance ID for an `instance`, or the container ID for an
      * ECS container. If the target type is `ip`, specify an IP address. If the target type is
@@ -171,34 +171,21 @@ export interface LoadBalancerTarget {
     port?: number;
 }
 
-export interface LoadBalancerTargetProvider {
-    loadBalancerTarget(targetType: pulumi.Input<mod.TargetType>): pulumi.Output<LoadBalancerTarget>;
+export interface LoadBalancerTargetInfoProvider {
+    loadBalancerTargetInfo(targetType: pulumi.Input<mod.TargetType>): pulumi.Output<LoadBalancerTargetInfo>;
 }
 
-export function isLoadBalancerTargetProvider(obj: any): obj is LoadBalancerTargetProvider {
-    return (<LoadBalancerTargetProvider>obj).loadBalancerTarget instanceof Function;
+export function isLoadBalancerTargetInfoProvider(obj: any): obj is LoadBalancerTargetInfoProvider {
+    return (<LoadBalancerTargetInfoProvider>obj).loadBalancerTargetInfo instanceof Function;
 }
 
 /**
- * Allows an EC2 instance to simply be used as the target of an ALB or NLB.  To use, just call:
+ * The types of things that can be the target of a load balancer.
  *
- * ```ts
- *  lb.attachTarget(new Ec2InstanceTarget(instance));
- * ```
+ * Note: A lambda event handler can only be supplied if using an application load balancer.
  */
-export class Ec2InstanceTarget implements LoadBalancerTargetProvider {
-    constructor(public readonly instance: aws.ec2.Instance) {
-    }
-
-    public loadBalancerTarget(targetType: pulumi.Input<mod.TargetType>): pulumi.Output<LoadBalancerTarget> {
-        const result = pulumi.output([targetType, this.instance.id, this.instance.privateIp, this.instance.availabilityZone])
-                             .apply(([targetType, instanceId, privateIp, availabilityZone]) => {
-            return {
-                targetId: targetType === "instance" ? instanceId : privateIp,
-                availabilityZone: availabilityZone,
-            };
-        });
-
-        return result;
-    }
-}
+export type LoadBalancerTarget =
+    pulumi.Input<LoadBalancerTargetInfo> |
+    LoadBalancerTargetInfoProvider |
+    aws.ec2.Instance |
+    aws.lambda.EventHandler<x.apigateway.Request, x.apigateway.Response>;

@@ -86,25 +86,8 @@ export abstract class TargetGroup
         this.listeners.push(listener);
     }
 
-    public attachTarget(
-            name: string,
-            args: pulumi.Input<mod.LoadBalancerTarget> | mod.LoadBalancerTargetProvider | aws.ec2.Instance,
-            opts: pulumi.CustomResourceOptions = {}) {
-
-        args = aws.ec2.Instance.isInstance(args)
-            ? new mod.Ec2InstanceTarget(args)
-            : args;
-
-        const target = mod.isLoadBalancerTargetProvider(args)
-            ? args.loadBalancerTarget(<pulumi.Output<TargetType>>this.targetGroup.targetType)
-            : pulumi.output(args);
-
-        return new aws.elasticloadbalancingv2.TargetGroupAttachment(name, {
-            targetGroupArn: this.targetGroup.arn,
-            targetId: target.targetId,
-            availabilityZone: <pulumi.Output<string>>target.availabilityZone,
-            port: <pulumi.Output<number>>target.port,
-        }, { parent: this, ...opts });
+    public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
+        return new mod.TargetGroupAttachment(name, this, args, { parent: this, ...opts });
     }
 }
 
@@ -246,11 +229,15 @@ export interface TargetGroupArgs {
 /**
  * The type of target that you must specify when registering targets with a target group. The
  * possible values are `instance` (targets are specified by instance ID) or `ip` (targets are
- * specified by IP address) or `lambda` (targets are specified by lambda arn). The default is
- * `ip`. Note that you can't specify targets for a target group using both instance IDs and IP
- * addresses. If the target type is `ip`, specify IP addresses from the subnets of the virtual
- * private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and
- * 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP
- * addresses.
+ * specified by IP address) or `lambda` (targets are specified by lambda arn). The default is `ip`.
+ * Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+ * If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud
+ * (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16),
+ * and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+ *
+ * Network Load Balancers do not support the lambda target type, only Application Load Balancers
+ * support the lambda target type. For more information, see
+ * [Lambda-Functions-as-Targets](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#register-lambda-function)
+ * in the User Guide for Application Load Balancers.
  */
 export type TargetType = "instance" | "ip" | "lambda";

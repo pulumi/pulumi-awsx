@@ -99,10 +99,7 @@ export abstract class Listener
         return new x.elasticloadbalancingv2.ListenerRule(name, this, args, opts);
     }
 
-    public attachTarget(
-            name: string,
-            args: pulumi.Input<mod.LoadBalancerTarget> | mod.LoadBalancerTargetProvider | aws.ec2.Instance,
-            opts: pulumi.CustomResourceOptions = {}) {
+    public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
         if (!this.defaultTargetGroup) {
             throw new pulumi.ResourceError("Listener must have a [defaultTargetGroup] in order to attach a target.", this);
         }

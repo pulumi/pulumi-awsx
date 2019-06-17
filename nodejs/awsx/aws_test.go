@@ -204,6 +204,10 @@ func Test_Examples(t *testing.T) {
 			StackName: addRandomSuffix("ec2Instance"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/lambdaTarget"),
+			StackName: addRandomSuffix("lambdaTarget"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/nlb/fargate"),
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
