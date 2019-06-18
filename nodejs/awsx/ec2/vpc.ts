@@ -59,6 +59,7 @@ export class Vpc extends pulumi.ComponentResource {
             this.id = this.vpc.id;
         }
         else {
+            const parentOpts = { parent: this };
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
             const numberOfAvailabilityZones = getNumberOfAvailabilityZones(this, args.numberOfAvailabilityZones);
 
@@ -68,6 +69,10 @@ export class Vpc extends pulumi.ComponentResource {
             }
 
             const assignGeneratedIpv6CidrBlock = utils.ifUndefined(args.assignGeneratedIpv6CidrBlock, false);
+
+            // We previously did not parent the underlying Vpc to this component. We now do. Provide
+            // an alias so this doesn't cause resources to be destroyed/recreated for existing
+            // stacks.
             this.vpc = new aws.ec2.Vpc(name, {
                 ...args,
                 cidrBlock,
@@ -75,7 +80,7 @@ export class Vpc extends pulumi.ComponentResource {
                 enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
                 assignGeneratedIpv6CidrBlock,
-            });
+            }, { ...parentOpts, aliases: [pulumi.createUrn(name, "aws:ec2/vpc:Vpc")] });
             this.id = this.vpc.id;
 
             // Create the appropriate subnets.  Default to a single public and private subnet for each
@@ -94,9 +99,12 @@ export class Vpc extends pulumi.ComponentResource {
                 const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
                 const ipv6CidrBlock = createIpv6CidrBlock(this, assignIpv6AddressOnCreation, i);
 
+                // We previously did not parent the subnet to this component. We now do. Provide an
+                // alias so this doesn't cause resources to be destroyed/recreated for existing
+                // stacks.
                 const subnet = new x.ec2.Subnet(subnetName, this, {
                     cidrBlock: desc.cidrBlock,
-                    availabilityZone: getAvailabilityZone(desc.availabilityZone),
+                    availabilityZone: getAvailabilityZone(desc.availabilityZone, parentOpts),
 
                     // Allow the individual subnet to decide if it wants to be mapped.  If not
                     // specified, default to mapping a public-ip open if the type is 'public', and
