@@ -202,7 +202,9 @@ export class Vpc extends pulumi.ComponentResource {
      * See https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html for more details.
      */
     public static getDefault(opts?: pulumi.ComponentResourceOptions): Vpc {
-        if (defaultVpc) {
+        // Only cache the defaultVpc if no opts were passed in.  We can't be sure the value we're
+        // storing is the right one if the user is passing in a different provider.
+        if (!opts && defaultVpc) {
             return defaultVpc;
         }
 
@@ -212,14 +214,18 @@ export class Vpc extends pulumi.ComponentResource {
         // The default VPC will contain at least two public subnets (one per availability zone).
         // See https://docs.aws.amazon.com/vpc/latest/userguide/images/default-vpc-diagram.png for
         // more information.
-        const subnetIds = vpcId.then(id => aws.ec2.getSubnetIds({ vpcId: id }))
-            .then(subnets => subnets.ids);
+        const subnetIds = vpcId.then(id => aws.ec2.getSubnetIds({ vpcId: id }, opts))
+                               .then(subnets => subnets.ids);
         const subnet0 = subnetIds.then(ids => ids[0]);
         const subnet1 = subnetIds.then(ids => ids[1]);
         const publicSubnetIds = [subnet0, subnet1];
 
-        defaultVpc = Vpc.fromExistingIds("default-vpc", { vpcId, publicSubnetIds }, opts);
-        return defaultVpc;
+        const result = Vpc.fromExistingIds("default-vpc", { vpcId, publicSubnetIds }, opts);
+        if (!opts) {
+            defaultVpc = result;
+        }
+
+        return result;
     }
 
     /**
@@ -237,11 +243,12 @@ export class Vpc extends pulumi.ComponentResource {
         createSubnets(vpc, name, "private", idArgs.privateSubnetIds);
         createSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
 
+        const parentOpts = { parent: vpc };
         if (idArgs.internetGatewayId) {
             const igName = `${name}-ig`;
             vpc.internetGateway = new x.ec2.InternetGateway(igName, vpc, {
-                internetGateway: aws.ec2.InternetGateway.get(igName, idArgs.internetGatewayId),
-            });
+                internetGateway: aws.ec2.InternetGateway.get(igName, idArgs.internetGatewayId, {}, parentOpts),
+            }, parentOpts);
         }
 
         if (idArgs.natGatewayIds) {
@@ -249,8 +256,8 @@ export class Vpc extends pulumi.ComponentResource {
                 const natGatewayId = idArgs.natGatewayIds[i];
                 const natName = `${name}-nat-${i}`;
                 vpc.natGateways.push(new x.ec2.NatGateway(natName, vpc, {
-                    natGateway: aws.ec2.NatGateway.get(natName, natGatewayId),
-                }));
+                    natGateway: aws.ec2.NatGateway.get(natName, natGatewayId, {}, parentOpts),
+                }, parentOpts));
             }
         }
 
