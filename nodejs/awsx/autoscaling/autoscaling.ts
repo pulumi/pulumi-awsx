@@ -57,7 +57,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault(parentOpts);
         const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
         this.targetGroups = args.targetGroups || [];
         const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
@@ -71,7 +71,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 name, this.vpc, args.launchConfigurationArgs, parentOpts);
         }
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault(parentOpts);
 
         // Use cloudformation to actually construct the autoscaling group.
         this.stack = new aws.cloudformation.Stack(name, {

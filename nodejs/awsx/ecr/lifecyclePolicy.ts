@@ -24,7 +24,7 @@ export class LifecyclePolicy extends aws.ecr.LifecyclePolicy {
         super(name, {
             policy: convertToJSON(args || LifecyclePolicy.defaultLifecyclePolicyArgs()),
             repository: repository.name,
-        }, opts);
+        }, { parent: repository, ...opts });
     }
 
     /**

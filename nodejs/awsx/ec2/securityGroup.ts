@@ -49,7 +49,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault(parentOpts);
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
             vpcId: this.vpc.id,

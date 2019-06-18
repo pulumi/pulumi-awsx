@@ -37,9 +37,9 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: ApplicationListener[];
     public readonly targetGroups: ApplicationTargetGroup[];
 
-    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
-            vpc: args.vpc || x.ec2.Vpc.getDefault(),
+            vpc: args.vpc || x.ec2.Vpc.getDefault(opts),
             ...args,
             loadBalancerType: "application",
         };

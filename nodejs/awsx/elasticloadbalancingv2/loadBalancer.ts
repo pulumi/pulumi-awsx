@@ -35,7 +35,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 
         const parentOpts = { parent: this };
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault(parentOpts);
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) || [];
 
         const external = utils.ifUndefined(args.external, true);

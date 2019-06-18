@@ -21,7 +21,11 @@ import { VpcTopology } from "./vpcTopology";
 
 import * as utils from "./../utils";
 
-let defaultVpc: Vpc;
+// Mapping from vpcId to Vpc.
+const defaultVpcs = new Map<string, Vpc>();
+const defaultVpcName = "default-vpc";
+
+const vpcTypeName = "awsx:x:ec2:Vpc";
 
 export class Vpc extends pulumi.ComponentResource {
     // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
@@ -52,7 +56,7 @@ export class Vpc extends pulumi.ComponentResource {
     constructor(name: string, args?: VpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts?: pulumi.ComponentResourceOptions) {
-        super("awsx:x:ec2:Vpc", name, {}, opts);
+        super(vpcTypeName, name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
             this.vpc = args.vpc;
@@ -200,32 +204,43 @@ export class Vpc extends pulumi.ComponentResource {
      * Gets the default vpc for the current aws account and region.
      *
      * See https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html for more details.
+     *
+     * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
+     * for the current region and cache it (returning the same instance after multiple calls).  This
+     * vpc cannot be used with different providers (for example, to get the default-vpc for another
+     * region).  It is only kept around for backwards compatibility.
+     *
+     * Instead, it is recommended that the `getDefault(opts)` version be used instead.  This version
+     * will properly respect providers.
      */
-    public static getDefault(opts?: pulumi.ComponentResourceOptions): Vpc {
+    public static getDefault(opts: pulumi.ComponentResourceOptions = {}): Vpc {
         // Only cache the defaultVpc if no opts were passed in.  We can't be sure the value we're
         // storing is the right one if the user is passing in a different provider.
-        if (!opts && defaultVpc) {
-            return defaultVpc;
+
+        const vpcId = utils.promiseResult(aws.ec2.getVpc({ default: true }, opts).then(v => v.id));
+        let vpc = defaultVpcs.get(vpcId);
+        if (!vpc) {
+            // The default VPC will contain at least two public subnets (one per availability zone).
+            // See https://docs.aws.amazon.com/vpc/latest/userguide/images/default-vpc-diagram.png for
+            // more information.
+            const publicSubnetIds = utils.promiseResult(aws.ec2.getSubnetIds({ vpcId }, opts).then(subnets => subnets.ids));
+
+            const vpcName = generateVpcName(vpcId);
+            const aliases: pulumi.Input<string>[] = [];
+            if (vpcName === "default-vpc" && opts.parent) {
+                // Previously, we didn't pass parents into Vpc.getDefault, causing the default Vpc
+                // to be parented to the stack.  In order to not break users, we create an alias
+                // between the original vpc urn we used to create and the new one that we'll now be
+                // getting.
+                aliases.push(pulumi.createUrn(vpcName, vpcTypeName));
+            }
+
+            vpc = Vpc.fromExistingIds(vpcName, { vpcId, publicSubnetIds }, { aliases, ...opts });
+
+            defaultVpcs.set(vpcId, vpc);
         }
 
-        const vpc = aws.ec2.getVpc({ default: true }, opts);
-        const vpcId = vpc.then(v => v.id);
-
-        // The default VPC will contain at least two public subnets (one per availability zone).
-        // See https://docs.aws.amazon.com/vpc/latest/userguide/images/default-vpc-diagram.png for
-        // more information.
-        const subnetIds = vpcId.then(id => aws.ec2.getSubnetIds({ vpcId: id }, opts))
-                               .then(subnets => subnets.ids);
-        const subnet0 = subnetIds.then(ids => ids[0]);
-        const subnet1 = subnetIds.then(ids => ids[1]);
-        const publicSubnetIds = [subnet0, subnet1];
-
-        const result = Vpc.fromExistingIds("default-vpc", { vpcId, publicSubnetIds }, opts);
-        if (!opts) {
-            defaultVpc = result;
-        }
-
-        return result;
+        return vpc;
     }
 
     /**
@@ -267,6 +282,21 @@ export class Vpc extends pulumi.ComponentResource {
 
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
+
+function generateVpcName(vpcId: string) {
+    // For back compat, keep the name the same as how awsx has always called the vpc.
+    if (defaultVpcs.size === 0) {
+        return defaultVpcName;
+    }
+
+    // If we're getting a second default vpc, then the user must be using different providers.
+    // This didn't work before, so there is no existing name that we need to preserve here.
+    // So use the actual name of the vpcId passed in as part of the resource name.
+
+    return vpcId.startsWith("vpc-")
+        ? defaultVpcName + vpcId.substr("vpc".length)
+        : defaultVpcName + vpcId;
+}
 
 function createIpv6CidrBlock(
         vpc: Vpc,

@@ -51,7 +51,7 @@ export class Cluster
         this.cluster = cluster;
         this.id = cluster.id;
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault(parentOpts);
 
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
@@ -109,9 +109,9 @@ export class Cluster
     public static createDefaultSecurityGroup(
             name: string,
             vpc?: x.ec2.Vpc,
-            opts?: pulumi.ComponentResourceOptions): x.ec2.SecurityGroup {
+            opts: pulumi.ComponentResourceOptions = {}): x.ec2.SecurityGroup {
 
-        vpc = vpc || x.ec2.Vpc.getDefault();
+        vpc = vpc || x.ec2.Vpc.getDefault(opts);
         const securityGroup = new x.ec2.SecurityGroup(name, {
             vpc,
             tags: { Name: name },
