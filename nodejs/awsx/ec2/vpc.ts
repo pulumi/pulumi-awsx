@@ -206,36 +206,36 @@ export class Vpc extends pulumi.ComponentResource {
      * See https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html for more details.
      *
      * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
-     * for the current region and cache it (returning the same instance after multiple calls).  This
-     * vpc cannot be used with different providers (for example, to get the default-vpc for another
-     * region).  It is only kept around for backwards compatibility.
-     *
-     * Instead, it is recommended that the `getDefault(opts)` version be used instead.  This version
-     * will properly respect providers.
+     * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
+     * version be used instead.  This version will properly respect providers.
      */
-    public static getDefault(opts: pulumi.ComponentResourceOptions = {}): Vpc {
-        // Only cache the defaultVpc if no opts were passed in.  We can't be sure the value we're
-        // storing is the right one if the user is passing in a different provider.
+    public static getDefault(opts: pulumi.InvokeOptions = {}): Vpc {
+        // Pull out the provider to ensure we're looking up the default vpc in the right location.
+        // Note that we do not pass 'parent' along as we want the default vpc to always be parented
+        // logically by hte stack.
+        const provider = opts.provider ? opts.provider :
+                         opts.parent   ? opts.parent.getProvider("aws::") : undefined;
 
-        const vpcId = utils.promiseResult(aws.ec2.getVpc({ default: true }, opts).then(v => v.id));
+        const vpcId = utils.promiseResult(aws.ec2.getVpc({ default: true }, { provider }).then(v => v.id));
         let vpc = defaultVpcs.get(vpcId);
         if (!vpc) {
+
             // The default VPC will contain at least two public subnets (one per availability zone).
             // See https://docs.aws.amazon.com/vpc/latest/userguide/images/default-vpc-diagram.png for
             // more information.
-            const publicSubnetIds = utils.promiseResult(aws.ec2.getSubnetIds({ vpcId }, opts).then(subnets => subnets.ids));
+            const publicSubnetIds = utils.promiseResult(aws.ec2.getSubnetIds({ vpcId }, { provider }).then(subnets => subnets.ids));
 
-            const vpcName = generateVpcName(vpcId);
-            const aliases: pulumi.Input<string>[] = [];
-            if (vpcName === "default-vpc" && opts.parent) {
-                // Previously, we didn't pass parents into Vpc.getDefault, causing the default Vpc
-                // to be parented to the stack.  In order to not break users, we create an alias
-                // between the original vpc urn we used to create and the new one that we'll now be
-                // getting.
-                aliases.push(pulumi.createUrn(vpcName, vpcTypeName));
-            }
+            // Generate the name as `default-` + the actual name.  For back compat with how we
+            // previously named things, also create an alias from "default-vpc" to this name for
+            // the very first default Vpc we create as that's how we used to name them.
+            const vpcName = "default-" + vpcId;
 
-            vpc = Vpc.fromExistingIds(vpcName, { vpcId, publicSubnetIds }, { aliases, ...opts });
+            // If this is the first
+            const aliases = defaultVpcs.size === 0
+                ? [pulumi.createUrn("default-vpc", vpcTypeName)]
+                : [];
+
+            vpc = Vpc.fromExistingIds(vpcName, { vpcId, publicSubnetIds }, { aliases, provider });
 
             defaultVpcs.set(vpcId, vpc);
         }
@@ -282,21 +282,6 @@ export class Vpc extends pulumi.ComponentResource {
 
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
-
-function generateVpcName(vpcId: string) {
-    // For back compat, keep the name the same as how awsx has always called the vpc.
-    if (defaultVpcs.size === 0) {
-        return defaultVpcName;
-    }
-
-    // If we're getting a second default vpc, then the user must be using different providers.
-    // This didn't work before, so there is no existing name that we need to preserve here.
-    // So use the actual name of the vpcId passed in as part of the resource name.
-
-    return vpcId.startsWith("vpc-")
-        ? defaultVpcName + vpcId.substr("vpc".length)
-        : defaultVpcName + vpcId;
-}
 
 function createIpv6CidrBlock(
         vpc: Vpc,
