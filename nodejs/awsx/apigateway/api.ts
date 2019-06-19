@@ -636,7 +636,7 @@ function addEventHandlerRouteToSwaggerSpec(
 
         return {
             "x-amazon-apigateway-integration": {
-                uri: uri,
+                uri,
                 passthroughBehavior: "when_no_match",
                 httpMethod: "POST",
                 type: "aws_proxy",
@@ -953,8 +953,8 @@ function addStaticRouteToSwaggerSpec(
 
         const region = getRegion(bucket!);
 
-        const uri = bucket!.bucket.apply(bucketName =>
-            `arn:aws:apigateway:${region}:s3:path/${bucketName}/${objectKey}${(pathParameter ? `/{${pathParameter}}` : ``)}`);
+        const uri = pulumi.interpolate
+            `arn:aws:apigateway:${region}:s3:path/${bucket!.bucket}/${objectKey}${(pathParameter ? `/{${pathParameter}}` : ``)}`;
 
         const result: SwaggerOperation = {
             responses: {
