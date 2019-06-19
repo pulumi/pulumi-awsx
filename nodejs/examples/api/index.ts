@@ -19,34 +19,34 @@ import * as pulumi from "@pulumi/pulumi";
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-// // Create role for our lambda
-// const role = new aws.iam.Role("mylambda-role", {
-//     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] }),
-// }, providerOpts);
+// Create role for our lambda
+const role = new aws.iam.Role("mylambda-role", {
+    assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] }),
+}, providerOpts);
 
-// // Create the lambda whose code lives in the ./afunction directory
-// const lambda = new aws.lambda.Function("myfunction", {
-//     code: new pulumi.asset.FileArchive("./afunction"),
-//     role: role.arn,
-//     handler: "index.handler",
-//     runtime: aws.lambda.NodeJS8d10Runtime,
-// }, providerOpts);
+// Create the lambda whose code lives in the ./afunction directory
+const lambda = new aws.lambda.Function("myfunction", {
+    code: new pulumi.asset.FileArchive("./afunction"),
+    role: role.arn,
+    handler: "index.handler",
+    runtime: aws.lambda.NodeJS8d10Runtime,
+}, providerOpts);
 
-// // Define the Authorizers up here so we can use it for two routes. Note - if you are sharing an
-// // authorizer you will want to set the authorizerResultTtlInSeconds to 0 seconds or else it will
-// // cause problems for you.
-// const lambdaAuthorizer: awsx.apigateway.LambdaAuthorizer = {
-//     authorizerName: "prettyAuthorizer",
-//     parameterName: "auth",
-//     parameterLocation: "query",
-//     authType: "custom",
-//     type: "request",
-//     handler: async (event: awsx.apigateway.AuthorizerEvent) => {
-//         return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
-//     },
-//     identitySource: ["method.request.querystring.auth"],
-//     authorizerResultTtlInSeconds: 0,
-// };
+// Define the Authorizers up here so we can use it for two routes. Note - if you are sharing an
+// authorizer you will want to set the authorizerResultTtlInSeconds to 0 seconds or else it will
+// cause problems for you.
+const lambdaAuthorizer: awsx.apigateway.LambdaAuthorizer = {
+    authorizerName: "prettyAuthorizer",
+    parameterName: "auth",
+    parameterLocation: "query",
+    authType: "custom",
+    type: "request",
+    handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+        return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
+    },
+    identitySource: ["method.request.querystring.auth"],
+    authorizerResultTtlInSeconds: 0,
+};
 
 const customUnauthorizedResponse = {
     "UNAUTHORIZED": {
@@ -61,172 +61,172 @@ const customUnauthorizedResponse = {
     },
 };
 
-// /**
-//  * In the following example, parameter validation is required for the `/a` route.
-//  * `curl $(pulumi stack output url)/a?key=hello` would return a 200, whereas
-//  * `curl $(url)/a` would return a 400, since the required key query parameter is
-//  * missing.
-//  */
-// const api = new awsx.apigateway.API("myapi", {
-//     routes: [{
-//         path: "/a",
-//         method: "GET",
-//         eventHandler: async () => {
-//             return {
-//                 statusCode: 200,
-//                 body: "<h1>Hello world!</h1>",
-//             };
-//         },
-//         requiredParameters: [{
-//             name: "key",
-//             in: "query",
-//         }],
-//         authorizers: lambdaAuthorizer,
-//     }, {
-//         path: "/b",
-//         method: "GET",
-//         eventHandler: lambda,
-//         apiKeyRequired: true,
-//         authorizers: lambdaAuthorizer,
-//     }, {
-//         path: "/www",
-//         localPath: "www",
-//         requiredParameters: [{
-//             name: "key",
-//             in: "query",
-//         }],
-//         apiKeyRequired: true,
-//         authorizers: [awsx.apigateway.getTokenLambdaAuthorizer({
-//             header: "Authorization",
-//             handler: async (event: awsx.apigateway.AuthorizerEvent) => {
-//                 const token = event.authorizationToken;
-//                 if (token === "Allow") {
-//                     return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
-//                 }
-//                 return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
-//             },
-//         })],
-//     }, {
-//         path: "/rawdata",
-//         method: "GET",
-//         data: {
-//             "responses": {},
-//             "x-amazon-apigateway-request-validator": "ALL",
-//             "x-amazon-apigateway-integration": {
-//                 "uri": "https://www.google.com/",
-//                 "responses": {
-//                     "default": {
-//                         "statusCode": "200",
-//                     },
-//                 },
-//                 "passthroughBehavior": "when_no_match",
-//                 "httpMethod": "GET",
-//                 "type": "http_proxy",
-//             },
-//         },
-//     }, {
-//         path: "/integration",
-//         target: {
-//             uri: "https://www.google.com",
-//             type: "http_proxy",
-//         },
-//         requiredParameters: [{
-//             name: "key",
-//             in: "query",
-//         }],
-//         apiKeyRequired: true,
-//         authorizers: lambdaAuthorizer,
-//     }],
-//     requestValidator: "ALL",
-//     gatewayResponses: customUnauthorizedResponse,
-// }, providerOpts);
+/**
+ * In the following example, parameter validation is required for the `/a` route.
+ * `curl $(pulumi stack output url)/a?key=hello` would return a 200, whereas
+ * `curl $(url)/a` would return a 400, since the required key query parameter is
+ * missing.
+ */
+const api = new awsx.apigateway.API("myapi", {
+    routes: [{
+        path: "/a",
+        method: "GET",
+        eventHandler: async () => {
+            return {
+                statusCode: 200,
+                body: "<h1>Hello world!</h1>",
+            };
+        },
+        requiredParameters: [{
+            name: "key",
+            in: "query",
+        }],
+        authorizers: lambdaAuthorizer,
+    }, {
+        path: "/b",
+        method: "GET",
+        eventHandler: lambda,
+        apiKeyRequired: true,
+        authorizers: lambdaAuthorizer,
+    }, {
+        path: "/www",
+        localPath: "www",
+        requiredParameters: [{
+            name: "key",
+            in: "query",
+        }],
+        apiKeyRequired: true,
+        authorizers: [awsx.apigateway.getTokenLambdaAuthorizer({
+            header: "Authorization",
+            handler: async (event: awsx.apigateway.AuthorizerEvent) => {
+                const token = event.authorizationToken;
+                if (token === "Allow") {
+                    return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn);
+                }
+                return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
+            },
+        })],
+    }, {
+        path: "/rawdata",
+        method: "GET",
+        data: {
+            "responses": {},
+            "x-amazon-apigateway-request-validator": "ALL",
+            "x-amazon-apigateway-integration": {
+                "uri": "https://www.google.com/",
+                "responses": {
+                    "default": {
+                        "statusCode": "200",
+                    },
+                },
+                "passthroughBehavior": "when_no_match",
+                "httpMethod": "GET",
+                "type": "http_proxy",
+            },
+        },
+    }, {
+        path: "/integration",
+        target: {
+            uri: "https://www.google.com",
+            type: "http_proxy",
+        },
+        requiredParameters: [{
+            name: "key",
+            in: "query",
+        }],
+        apiKeyRequired: true,
+        authorizers: lambdaAuthorizer,
+    }],
+    requestValidator: "ALL",
+    gatewayResponses: customUnauthorizedResponse,
+}, providerOpts);
 
-// // Export the url of the API.
-// export const url = api.url;
+// Export the url of the API.
+export const url = api.url;
 
-// // Set up a usage plan and an associated api key
-// const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
-//     apis: [api],
-//     apiKeys: [{
-//         name: "test-key",
-//     }],
-// }, providerOpts);
+// Set up a usage plan and an associated api key
+const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
+    apis: [api],
+    apiKeys: [{
+        name: "test-key",
+    }],
+}, providerOpts);
 
-// // Export the API Key of the API for testing.
-// export const apiKeyValue = apikeys.keys[0].apikey.value;
+// Export the API Key of the API for testing.
+export const apiKeyValue = apikeys.keys[0].apikey.value;
 
-// /**
-//  * ----------------------------------------------------------------------------
-//  * The example below shows how to use a pre-existing Lambda as an Authorizer.
-//  * ----------------------------------------------------------------------------
-//  */
+/**
+ * ----------------------------------------------------------------------------
+ * The example below shows how to use a pre-existing Lambda as an Authorizer.
+ * ----------------------------------------------------------------------------
+ */
 
-// // Create a role for the authorizer lambda
-// const authorizerRole = new aws.iam.Role("myauthorizer-role", {
-//     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com"] }),
-// }, providerOpts);
+// Create a role for the authorizer lambda
+const authorizerRole = new aws.iam.Role("myauthorizer-role", {
+    assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com"] }),
+}, providerOpts);
 
-// // Create API Key for Lambda Authorizer to use
-// const apikey = new aws.apigateway.ApiKey("apikey-test", {}, providerOpts);
+// Create API Key for Lambda Authorizer to use
+const apikey = new aws.apigateway.ApiKey("apikey-test", {}, providerOpts);
 
-// // Create Authorizer Lambda
-// const authorizerLambda = new aws.lambda.CallbackFunction("authorizer-lambda2", {
-//     role: authorizerRole,
-//     callback: async (event: awsx.apigateway.AuthorizerEvent) => {
-//         console.log(event);
-//         if (event.queryStringParameters) {
-//             const token = event.queryStringParameters.auth;
-//             if (token === "Allow") {
-//                 // use .get() to get the apikey value at Pulumi runtime
-//                 return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn, undefined, apikey.id.get());
-//             }
-//         }
-//         return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
-//     },
-// }, providerOpts);
+// Create Authorizer Lambda
+const authorizerLambda = new aws.lambda.CallbackFunction("authorizer-lambda2", {
+    role: authorizerRole,
+    callback: async (event: awsx.apigateway.AuthorizerEvent) => {
+        console.log(event);
+        if (event.queryStringParameters) {
+            const token = event.queryStringParameters.auth;
+            if (token === "Allow") {
+                // use .get() to get the apikey value at Pulumi runtime
+                return awsx.apigateway.authorizerResponse("user", "Allow", event.methodArn, undefined, apikey.id.get());
+            }
+        }
+        return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
+    },
+}, providerOpts);
 
-// // Create a role for the gateway to use to invoke the Authorizer Lambda
-// const gatewayRole = new aws.iam.Role("gateway-role", {
-//     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] }),
-// }, providerOpts);
+// Create a role for the gateway to use to invoke the Authorizer Lambda
+const gatewayRole = new aws.iam.Role("gateway-role", {
+    assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] }),
+}, providerOpts);
 
-// // Give the lambda role permission to invoke the Authorizer
-// const invocationPolicy = new aws.iam.RolePolicy("invocation-policy", {
-//     policy: authorizerLambda.arn.apply(arn => `{
-//      "Version": "2012-10-17",
-//        "Statement": [
-//          {
-//            "Action": "lambda:InvokeFunction",
-//            "Effect": "Allow",
-//            "Resource": "${arn}"
-//          }
-//        ]
-//      }
-//      `),
-//     role: gatewayRole.id,
-// }, providerOpts);
+// Give the lambda role permission to invoke the Authorizer
+const invocationPolicy = new aws.iam.RolePolicy("invocation-policy", {
+    policy: authorizerLambda.arn.apply(arn => `{
+     "Version": "2012-10-17",
+       "Statement": [
+         {
+           "Action": "lambda:InvokeFunction",
+           "Effect": "Allow",
+           "Resource": "${arn}"
+         }
+       ]
+     }
+     `),
+    role: gatewayRole.id,
+}, providerOpts);
 
-// // Specify the authorizerUri and authorizerCredentials to use an Authorizer that is created elsewhere.
-// const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
-//     routes: [{
-//         path: "/www_old",
-//         localPath: "www",
-//         authorizers: [awsx.apigateway.getRequestLambdaAuthorizer({
-//             queryParameters: ["auth"],
-//             headers: ["secret"],
-//             handler: authorizerLambda,
-//         })],
-//     }],
-//     gatewayResponses: customUnauthorizedResponse,
-// }, providerOpts);
+// Specify the authorizerUri and authorizerCredentials to use an Authorizer that is created elsewhere.
+const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
+    routes: [{
+        path: "/www_old",
+        localPath: "www",
+        authorizers: [awsx.apigateway.getRequestLambdaAuthorizer({
+            queryParameters: ["auth"],
+            headers: ["secret"],
+            handler: authorizerLambda,
+        })],
+    }],
+    gatewayResponses: customUnauthorizedResponse,
+}, providerOpts);
 
-// // Create a usage plan + associate the apikey with it
-// const associateKeys = awsx.apigateway.createAssociatedAPIKeys("authorizer-api", {
-//     apis: [apiWithAuthorizer],
-//     apiKeys: [apikey],
-// }, providerOpts);
+// Create a usage plan + associate the apikey with it
+const associateKeys = awsx.apigateway.createAssociatedAPIKeys("authorizer-api", {
+    apis: [apiWithAuthorizer],
+    apiKeys: [apikey],
+}, providerOpts);
 
-// export const authorizerUrl = apiWithAuthorizer.url;
+export const authorizerUrl = apiWithAuthorizer.url;
 
 /**
  *The example below shows using a Cognito Authorizer.
