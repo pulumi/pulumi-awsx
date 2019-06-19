@@ -134,8 +134,8 @@ export function createRoleWithAuthorizerInvocationPolicy(
     }, { aliases: roleAliases, ...opts });
 
     // Add invocation policy to lambda role
-    const rolePolicyName = authorizerName + "-invocation-policy"
-    const rolePolicyAliases = [pulumi.createUrn(rolePolicyName, "aws:iam/role:RolePolicy")]
+    const rolePolicyName = authorizerName + "-invocation-policy";
+    const rolePolicyAliases = [pulumi.createUrn(rolePolicyName, "aws:iam/role:RolePolicy")];
     const invocationPolicy = new aws.iam.RolePolicy(rolePolicyName, {
         policy: pulumi.interpolate`{
                 "Version": "2012-10-17",
