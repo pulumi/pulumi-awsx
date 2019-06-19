@@ -17,9 +17,12 @@ import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
 import * as fetch from "node-fetch";
 
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
 // Examples of different types of metrics and alarms that can be set.
 
-const topic = new aws.sns.Topic("sites-to-process-topic");
+const topic = new aws.sns.Topic("sites-to-process-topic", {}, providerOpts);
 const subscription = topic.onEvent("for-each-url", async (event) => {
     const records = event.Records || [];
     for (const record of records) {
@@ -61,7 +64,7 @@ const queueAlarm = queueMetric.createAlarm("alarm" + alarmIndex++, { threshold: 
 
 const restApi = new aws.apigateway.RestApi("MyDemoAPI", {
     description: "This is my API for demonstration purposes",
-  });
+}, providerOpts);
 
 const restApiMetric = awsx.apigateway.metrics.error5XX({ restApi });
 const restApiAlarm = restApiMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 });
@@ -76,7 +79,7 @@ const table = new aws.dynamodb.Table("testtable", {
     writeCapacity: 5,
     streamEnabled: true,
     streamViewType: "NEW_AND_OLD_IMAGES",
-});
+}, providerOpts);
 
 const tableMetric = awsx.dynamodb.metrics.throttledRequests({ table });
 const tableAlarm = tableMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
@@ -87,7 +90,7 @@ const bucket = new aws.s3.Bucket("b", {
         Environment: "Dev",
         Name: "My bucket",
     },
-});
+}, providerOpts);
 
 const bucketMetric = awsx.s3.metrics.firstByteLatency({ bucket, unit: "Seconds" });
 const bucketAlarm = bucketMetric.createAlarm("alarm" + alarmIndex++, { threshold: 30 , evaluationPeriods: 2 });
@@ -106,16 +109,16 @@ const instance = new aws.ec2.Instance("web", {
     tags: {
         Name: "HelloWorld",
     },
-});
+}, providerOpts);
 
 const instanceMetric = awsx.ec2.metrics.cpuUtilization({ instance });
 const instanceAlarm = instanceMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
-const cluster = new aws.ecs.Cluster("foo", {});
+const cluster = new aws.ecs.Cluster("foo", {}, providerOpts);
 const clusterMetric = awsx.ecs.metrics.cpuUtilization({ cluster, unit: "Percent" });
 const clusterAlarm = clusterMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 });
 
-const userPool = new aws.cognito.UserPool("pool", {});
+const userPool = new aws.cognito.UserPool("pool", {}, providerOpts);
 const userPoolMetric = awsx.cognito.metrics.compromisedCredentialsRisk({ userPool });
 const userPoolAlarm = userPoolMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
@@ -127,7 +130,7 @@ const eventRule = new aws.cloudwatch.EventRule("console", {
   ]
 }
 `,
-});
+}, providerOpts);
 const eventRuleMetric = awsx.cloudwatch.metrics.events.deadLetterInvocations({ eventRule });
 const eventRuleAlarm = eventRuleMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
@@ -136,6 +139,6 @@ const logGroup = new aws.cloudwatch.LogGroup("yada", {
         Application: "serviceA",
         Environment: "production",
     },
-});
+}, providerOpts);
 const logGroupMetric = awsx.cloudwatch.metrics.logs.incomingBytes({ logGroup, unit: "Megabytes" });
 const logGroupAlarm = logGroupMetric.createAlarm("alarm" + alarmIndex++, { threshold: 512, evaluationPeriods: 2 });

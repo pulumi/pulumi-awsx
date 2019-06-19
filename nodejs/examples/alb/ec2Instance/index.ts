@@ -16,15 +16,18 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
 // Create a security group to let traffic flow.
 const sg = new awsx.ec2.SecurityGroup("web-sg", {
-    vpc: awsx.ec2.Vpc.getDefault(),
+    vpc: awsx.ec2.Vpc.getDefault(providerOpts),
     egress: [{ protocol: "-1", fromPort: 0, toPort: 0, cidrBlocks: [ "0.0.0.0/0" ] }],
-});
+}, providerOpts);
 
 // Creates an ALB associated with the default VPC for this region and listen on port 80.
 const alb = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("web-traffic",
-    { external: true, securityGroups: [ sg ] });
+    { external: true, securityGroups: [ sg ] }, providerOpts);
 const listener = alb.createListener("web-listener", { port: 80 });
 
 // For each subnet, and each subnet/zone, create a VM and a listener.
@@ -46,7 +49,7 @@ for (let i = 0; i < alb.vpc.publicSubnets.length; i++) {
         userData: `#!/bin/bash
 echo "Hello World, from Server ${i+1}!" > index.html
 nohup python -m SimpleHTTPServer 80 &`,
-    });
+    }, providerOpts);
     publicIps.push(vm.publicIp);
 
     alb.attachTarget("target-" + i, vm);

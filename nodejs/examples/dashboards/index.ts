@@ -17,9 +17,12 @@ import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
 import * as fetch from "node-fetch";
 
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
 // Examples of different types of metrics and alarms that can be set.
 
-const topic = new aws.sns.Topic("sites-to-process-topic");
+const topic = new aws.sns.Topic("sites-to-process-topic", {}, providerOpts);
 const subscription = topic.onEvent("for-each-url", async (event) => {
     const records = event.Records || [];
     for (const record of records) {
@@ -73,6 +76,6 @@ const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
             ],
         }),
     ],
-});
+}, providerOpts);
 
 export const dashboardUrl = dashboard.url;

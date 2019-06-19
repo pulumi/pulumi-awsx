@@ -16,10 +16,13 @@ import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
 
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
 // Create role for our lambda
 const role = new aws.iam.Role("mylambda-role", {
     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] }),
-});
+}, providerOpts);
 
 // Create the lambda whose code lives in the ./afunction directory
 const lambda = new aws.lambda.Function("myfunction", {
@@ -27,7 +30,7 @@ const lambda = new aws.lambda.Function("myfunction", {
     role: role.arn,
     handler: "index.handler",
     runtime: aws.lambda.NodeJS8d10Runtime,
-});
+}, providerOpts);
 
 // Define the Authorizers up here so we can use it for two routes. Note - if you are sharing an
 // authorizer you will want to set the authorizerResultTtlInSeconds to 0 seconds or else it will
@@ -136,7 +139,7 @@ const api = new awsx.apigateway.API("myapi", {
     }],
     requestValidator: "ALL",
     gatewayResponses: customUnauthorizedResponse,
-});
+}, providerOpts);
 
 // Export the url of the API.
 export const url = api.url;
@@ -161,10 +164,10 @@ export const apiKeyValue = apikeys.keys[0].apikey.value;
 // Create a role for the authorizer lambda
 const authorizerRole = new aws.iam.Role("myauthorizer-role", {
     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com"] }),
-});
+}, providerOpts);
 
 // Create API Key for Lambda Authorizer to use
-const apikey = new aws.apigateway.ApiKey("apikey-test");
+const apikey = new aws.apigateway.ApiKey("apikey-test", {}, providerOpts);
 
 // Create Authorizer Lambda
 const authorizerLambda = new aws.lambda.CallbackFunction("authorizer-lambda2", {
@@ -180,12 +183,12 @@ const authorizerLambda = new aws.lambda.CallbackFunction("authorizer-lambda2", {
         }
         return awsx.apigateway.authorizerResponse("user", "Deny", event.methodArn);
     },
-});
+}, providerOpts);
 
 // Create a role for the gateway to use to invoke the Authorizer Lambda
 const gatewayRole = new aws.iam.Role("gateway-role", {
     assumeRolePolicy: aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] }),
-});
+}, providerOpts);
 
 // Give the lambda role permission to invoke the Authorizer
 const invocationPolicy = new aws.iam.RolePolicy("invocation-policy", {
@@ -201,7 +204,7 @@ const invocationPolicy = new aws.iam.RolePolicy("invocation-policy", {
      }
      `),
     role: gatewayRole.id,
-});
+}, providerOpts);
 
 // Specify the authorizerUri and authorizerCredentials to use an Authorizer that is created elsewhere.
 const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
@@ -215,7 +218,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
         })],
     }],
     gatewayResponses: customUnauthorizedResponse,
-});
+}, providerOpts);
 
 // Create a usage plan + associate the apikey with it
 const associateKeys = awsx.apigateway.createAssociatedAPIKeys("authorizer-api", {
@@ -229,12 +232,12 @@ export const authorizerUrl = apiWithAuthorizer.url;
  *The example below shows using a Cognito Authorizer.
  */
 
-const cognitoUserPool = new aws.cognito.UserPool("pool", {});
+const cognitoUserPool = new aws.cognito.UserPool("pool", {}, providerOpts);
 
 const cognitoClient = new aws.cognito.UserPoolClient("poolClient", {
     userPoolId: cognitoUserPool.id,
     explicitAuthFlows: ["ADMIN_NO_SRP_AUTH"],
-});
+}, providerOpts);
 
 const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-api", {
     routes: [{
@@ -245,7 +248,7 @@ const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-api", {
         })],
     }],
     gatewayResponses: customUnauthorizedResponse,
-});
+}, providerOpts);
 
 export const cognitoUrl = apiWithCognitoAuthorizer.url;
 export const cognitoPoolId = cognitoUserPool.id;

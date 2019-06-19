@@ -12,12 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
 const vpcWithDifferentCidrBlock = new awsx.ec2.Vpc("custom1", {
     cidrBlock: "192.168.0.0/16",
-});
+}, providerOpts);
 
 const vpcWithOnlyPublicSubnets = new awsx.ec2.Vpc("custom2", {
     cidrBlock: "193.168.0.0/16",
@@ -31,11 +35,11 @@ const vpcWithOnlyPrivateSubnets = new awsx.ec2.Vpc("custom3", {
     subnets: [{
         type: "private"
     }]
-});
+}, providerOpts);
 
 const vpcWithIpv6 = new awsx.ec2.Vpc("custom4", {
     assignGeneratedIpv6CidrBlock: true,
-});
+}, providerOpts);
 
 const vpcWithProvider = new awsx.ec2.Vpc("custom5", {
     assignGeneratedIpv6CidrBlock: true,
