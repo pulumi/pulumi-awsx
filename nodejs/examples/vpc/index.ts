@@ -43,4 +43,4 @@ const vpcWithIpv6 = new awsx.ec2.Vpc("custom4", {
 
 const vpcWithProvider = new awsx.ec2.Vpc("custom5", {
     assignGeneratedIpv6CidrBlock: true,
-}, { provider: new aws.Provider("prov", { region: "us-east-1" }) });
+}, { provider: new aws.Provider("prov2", { region: "us-east-1" }) });

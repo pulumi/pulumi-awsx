@@ -44,10 +44,10 @@ const subscription = topic.onEvent("for-each-url", async (event) => {
 let alarmIndex = 0;
 
 const funcMetric = awsx.lambda.metrics.duration({ function: subscription.func, unit: "Seconds" });
-const funcAlarm = funcMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
+const funcAlarm = funcMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
 
 const topicMetric = awsx.sns.metrics.numberOfMessagesPublished({ topic });
-const topicAlarm = topicMetric.createAlarm("alarm" + alarmIndex++, { threshold: 1000, evaluationPeriods: 2 });
+const topicAlarm = topicMetric.createAlarm("alarm" + alarmIndex++, { threshold: 1000, evaluationPeriods: 2 }, providerOpts);
 
 const queue = new aws.sqs.Queue("terraform_queue", {
     delaySeconds: 90,
@@ -60,14 +60,14 @@ const queue = new aws.sqs.Queue("terraform_queue", {
 });
 
 const queueMetric = awsx.sqs.metrics.sentMessageSize({ queue });
-const queueAlarm = queueMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
+const queueAlarm = queueMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
 
 const restApi = new aws.apigateway.RestApi("MyDemoAPI", {
     description: "This is my API for demonstration purposes",
 }, providerOpts);
 
 const restApiMetric = awsx.apigateway.metrics.error5XX({ restApi });
-const restApiAlarm = restApiMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 });
+const restApiAlarm = restApiMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 }, providerOpts);
 
 const table = new aws.dynamodb.Table("testtable", {
     attributes: [{
@@ -82,7 +82,7 @@ const table = new aws.dynamodb.Table("testtable", {
 }, providerOpts);
 
 const tableMetric = awsx.dynamodb.metrics.throttledRequests({ table });
-const tableAlarm = tableMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
+const tableAlarm = tableMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
 
 const bucket = new aws.s3.Bucket("b", {
     acl: "private",
@@ -93,7 +93,7 @@ const bucket = new aws.s3.Bucket("b", {
 }, providerOpts);
 
 const bucketMetric = awsx.s3.metrics.firstByteLatency({ bucket, unit: "Seconds" });
-const bucketAlarm = bucketMetric.createAlarm("alarm" + alarmIndex++, { threshold: 30 , evaluationPeriods: 2 });
+const bucketAlarm = bucketMetric.createAlarm("alarm" + alarmIndex++, { threshold: 30 , evaluationPeriods: 2 }, providerOpts);
 
 const ubuntu = pulumi.output(aws.getAmi({
     filters: [
@@ -112,15 +112,15 @@ const instance = new aws.ec2.Instance("web", {
 }, providerOpts);
 
 const instanceMetric = awsx.ec2.metrics.cpuUtilization({ instance });
-const instanceAlarm = instanceMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
+const instanceAlarm = instanceMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
 
 const cluster = new aws.ecs.Cluster("foo", {}, providerOpts);
 const clusterMetric = awsx.ecs.metrics.cpuUtilization({ cluster, unit: "Percent" });
-const clusterAlarm = clusterMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 });
+const clusterAlarm = clusterMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 }, providerOpts);
 
 const userPool = new aws.cognito.UserPool("pool", {}, providerOpts);
 const userPoolMetric = awsx.cognito.metrics.compromisedCredentialsRisk({ userPool });
-const userPoolAlarm = userPoolMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
+const userPoolAlarm = userPoolMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
 
 const eventRule = new aws.cloudwatch.EventRule("console", {
     description: "Capture each AWS Console Sign In",
@@ -132,7 +132,7 @@ const eventRule = new aws.cloudwatch.EventRule("console", {
 `,
 }, providerOpts);
 const eventRuleMetric = awsx.cloudwatch.metrics.events.deadLetterInvocations({ eventRule });
-const eventRuleAlarm = eventRuleMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
+const eventRuleAlarm = eventRuleMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
 
 const logGroup = new aws.cloudwatch.LogGroup("yada", {
     tags: {
@@ -141,4 +141,4 @@ const logGroup = new aws.cloudwatch.LogGroup("yada", {
     },
 }, providerOpts);
 const logGroupMetric = awsx.cloudwatch.metrics.logs.incomingBytes({ logGroup, unit: "Megabytes" });
-const logGroupAlarm = logGroupMetric.createAlarm("alarm" + alarmIndex++, { threshold: 512, evaluationPeriods: 2 });
+const logGroupAlarm = logGroupMetric.createAlarm("alarm" + alarmIndex++, { threshold: 512, evaluationPeriods: 2 }, providerOpts);

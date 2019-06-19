@@ -63,10 +63,15 @@ func Test_Examples(t *testing.T) {
 	}
 
 	shortTests := []integration.ProgramTestOptions{
-		testBase.With(integration.ProgramTestOptions{
+		integration.ProgramTestOptions{
 			Config: map[string]string{"aws:region": envRegion},
 			Dir:    path.Join(cwd, "../examples/cluster"),
-		}),
+			Dependencies: []string{
+				"@pulumi/awsx",
+			},
+			Quick:       true,
+			SkipRefresh: true,
+		},
 		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/dashboards"),
 		}),

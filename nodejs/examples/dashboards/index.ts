@@ -47,7 +47,7 @@ const funcMetric = awsx.lambda.metrics.duration({ function: subscription.func })
 // Create an alarm if this lambda takes more than 1000ms to complete in a period of 10 minutes over
 // at least five periods in a row.
 const funcAlarm1 = funcMetric.with({ unit: "Milliseconds", period: 600 })
-                             .createAlarm("SlowUrlProcessing", { threshold: 1000, evaluationPeriods: 5 });
+                             .createAlarm("SlowUrlProcessing", { threshold: 1000, evaluationPeriods: 5 }, providerOpts);
 
 // Also create a dashboard to track this.
 const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
