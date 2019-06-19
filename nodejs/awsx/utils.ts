@@ -109,6 +109,26 @@ export function hasTrueBooleanMember(obj: any, memberName: string | number | sym
 }
 
 /** @internal */
+export function getRegionFromOpts(opts: pulumi.CustomResourceOptions): pulumi.Output<aws.Region> {
+    if (opts.parent) {
+        return getRegion(opts.parent);
+    }
+
+    return getRegionFromProvider(opts.provider);
+}
+
+
+/** @internal */
+export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
+    return getRegionFromProvider(res.getProvider("aws::"));
+}
+
+function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
+    const region = provider ? (<any>provider).region : undefined;
+    return region || aws.config.region;
+}
+
+/** @internal */
 export function promiseResult<T>(promise: Promise<T>): T {
     enum State {
         running,

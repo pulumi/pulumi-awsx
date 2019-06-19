@@ -23,7 +23,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as awslambda from "aws-lambda";
 
-import { sha1hash } from "../utils";
+import { getRegion, sha1hash } from "../utils";
 
 import { apiKeySecurityDefinition } from "./apikey";
 import * as cognitoAuthorizer from "./cognitoAuthorizer";
@@ -630,7 +630,7 @@ function addEventHandlerRouteToSwaggerSpec(
     return;
 
     function createSwaggerOperationForLambda(): SwaggerOperation {
-        const region = aws.config.requireRegion();
+        const region = getRegion(api);
         const uri = pulumi.interpolate
             `arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${lambda.arn}/invocations`;
 
@@ -948,7 +948,7 @@ function addStaticRouteToSwaggerSpec(
         role: aws.iam.Role,
         pathParameter?: string): SwaggerOperation {
 
-        const region = aws.config.requireRegion();
+        const region = getRegion(bucket!);
 
         const uri = bucket!.bucket.apply(bucketName =>
             `arn:aws:apigateway:${region}:s3:path/${bucketName}/${objectKey}${(pathParameter ? `/{${pathParameter}}` : ``)}`);

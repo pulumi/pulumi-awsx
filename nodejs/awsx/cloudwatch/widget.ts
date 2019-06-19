@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as pulumi from "@pulumi/pulumi";
+import * as aws from "@pulumi/aws";
 
 import { WidgetJson } from "./widgets_json";
 
@@ -53,5 +54,5 @@ export interface Widget {
      *
      * For internal use only.
      */
-    addWidgetJson(widgetJsons: WidgetJson[], xOffset: number, yOffset: number): void;
+    addWidgetJson(widgetJsons: WidgetJson[], xOffset: number, yOffset: number, region: pulumi.Output<aws.Region>): void;
 }
