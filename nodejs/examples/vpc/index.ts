@@ -28,7 +28,7 @@ const vpcWithOnlyPublicSubnets = new awsx.ec2.Vpc("custom2", {
     subnets: [{
         type: "public"
     }]
-});
+}, providerOpts);
 
 const vpcWithOnlyPrivateSubnets = new awsx.ec2.Vpc("custom3", {
     cidrBlock: "194.168.0.0/16",
