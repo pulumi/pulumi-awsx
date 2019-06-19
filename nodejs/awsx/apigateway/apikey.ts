@@ -138,7 +138,12 @@ function getUsagePlan(name: string, args: APIKeyArgs, opts: pulumi.CustomResourc
             }
         }
 
-        return new aws.apigateway.UsagePlan(name, usagePlanArgs, opts);
+        // We previously did not parent the UsagePlan. We now do. Provide an alias so this doesn't
+        // cause resources to be destroyed/recreated for existing stacks.
+        const aliases = opts.parent
+            ? [pulumi.createUrn(name, "aws:apigateway/usagePlan:UsagePlan")]
+            : [];
+        return new aws.apigateway.UsagePlan(name, usagePlanArgs, { aliases, ...opts });
     }
 }
 
@@ -151,19 +156,26 @@ function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.Usage
         for (let i = 0; i < args.apiKeys.length; i++) {
             const currKey = args.apiKeys[i];
 
+            // We previously did not parent the ApiKey or UsagePlanKey. We now do. Provide an alias so this doesn't
+            // cause resources to be destroyed/recreated for existing stacks.
+            const childName = `${name}-${i}`;
+            const apiKeyAliases = [pulumi.createUrn(childName, "aws:apigateway/apiKey:ApiKey")];
+            const usagePlayKeyAliases = [pulumi.createUrn(childName, "aws:apigateway/usagePlanKey:UsagePlanKey")];
+
             const apikey = pulumi.CustomResource.isInstance(currKey)
                 ? currKey
-                : new aws.apigateway.ApiKey(`${name}-${i}`, currKey, parentOpts);
+                : new aws.apigateway.ApiKey(childName, currKey, { aliases: apiKeyAliases, ...parentOpts });
 
-            const usagePlanKey = new aws.apigateway.UsagePlanKey(`${name}-${i}`, {
+            const usagePlanKey = new aws.apigateway.UsagePlanKey(childName, {
                 keyId: apikey.id,
                 keyType: "API_KEY",
                 usagePlanId: usagePlan.id,
-            }, parentOpts);
+            }, { aliases: usagePlayKeyAliases, ...parentOpts });
 
             keys.push({ apikey, usagePlanKey });
         }
     }
+
     return keys;
 }
 
