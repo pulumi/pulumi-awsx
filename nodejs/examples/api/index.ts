@@ -150,7 +150,7 @@ const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
     apiKeys: [{
         name: "test-key",
     }],
-});
+}, providerOpts);
 
 // Export the API Key of the API for testing.
 export const apiKeyValue = apikeys.keys[0].apikey.value;
@@ -224,7 +224,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
 const associateKeys = awsx.apigateway.createAssociatedAPIKeys("authorizer-api", {
     apis: [apiWithAuthorizer],
     apiKeys: [apikey],
-});
+}, providerOpts);
 
 export const authorizerUrl = apiWithAuthorizer.url;
 

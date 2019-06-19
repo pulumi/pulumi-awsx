@@ -91,15 +91,15 @@ export interface Key {
  * @param name The _unique_ name of the resource.
  * @param args The arguments to use to populate this resource's properties.
  */
-export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): AssociatedAPIKeys {
-    const usagePlan = getUsagePlan(name, args);
+export function createAssociatedAPIKeys(name: string, args: APIKeyArgs, opts: pulumi.CustomResourceOptions = {}): AssociatedAPIKeys {
+    const usagePlan = getUsagePlan(name, args, opts);
     const keys = getKeys(name, args, usagePlan);
 
     return { usagePlan, keys };
 }
 
 /** @internal */
-function getUsagePlan(name: string, args: APIKeyArgs): aws.apigateway.UsagePlan {
+function getUsagePlan(name: string, args: APIKeyArgs, opts: pulumi.CustomResourceOptions): aws.apigateway.UsagePlan {
     if (args.usagePlan && pulumi.CustomResource.isInstance(args.usagePlan)) {
         if (args.apis) {
             throw new Error("cannot define both [args.apis] and an existing usagePlan [args.usagePlan]");
@@ -137,7 +137,8 @@ function getUsagePlan(name: string, args: APIKeyArgs): aws.apigateway.UsagePlan 
                 };
             }
         }
-        return new aws.apigateway.UsagePlan(name, usagePlanArgs);
+
+        return new aws.apigateway.UsagePlan(name, usagePlanArgs, opts);
     }
 }
 
@@ -145,19 +146,20 @@ function getUsagePlan(name: string, args: APIKeyArgs): aws.apigateway.UsagePlan 
 function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.UsagePlan): Key[] {
     const keys: Key[] = [];
 
+    const parentOpts = { parent: usagePlan };
     if (args.apiKeys) {
         for (let i = 0; i < args.apiKeys.length; i++) {
             const currKey = args.apiKeys[i];
 
             const apikey = pulumi.CustomResource.isInstance(currKey)
                 ? currKey
-                : new aws.apigateway.ApiKey(`${name}-${i}`, currKey);
+                : new aws.apigateway.ApiKey(`${name}-${i}`, currKey, parentOpts);
 
             const usagePlanKey = new aws.apigateway.UsagePlanKey(`${name}-${i}`, {
                 keyId: apikey.id,
                 keyType: "API_KEY",
                 usagePlanId: usagePlan.id,
-            });
+            }, parentOpts);
 
             keys.push({ apikey, usagePlanKey });
         }
