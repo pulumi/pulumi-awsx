@@ -54,7 +54,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             ...args,
             securityGroups: this.securityGroups.map(g => g.id),
-            imageId: getEcsAmiId(args.ecsOptimizedAMIName),
+            imageId: getEcsAmiId(args.ecsOptimizedAMIName, parentOpts),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: this.instanceProfile.id,
             enableMonitoring: utils.ifUndefined(args.enableMonitoring, true),
@@ -111,7 +111,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
 }
 
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
-async function getEcsAmiId(name?: string): Promise<string> {
+async function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): Promise<string> {
     // If a name was not provided, use the latest recommended version.
     if (!name) {
         // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/retrieve-ecs-optimized_AMI.html
@@ -133,7 +133,7 @@ async function getEcsAmiId(name?: string): Promise<string> {
             },
         ],
         mostRecent: true,
-    });
+    }, opts);
 
     return result.imageId;
 }
