@@ -57,7 +57,7 @@ const queue = new aws.sqs.Queue("terraform_queue", {
     tags: {
         Environment: "production",
     },
-});
+}, providerOpts);
 
 const queueMetric = awsx.sqs.metrics.sentMessageSize({ queue });
 const queueAlarm = queueMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
