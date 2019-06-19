@@ -122,11 +122,13 @@ export function getIdentitySource(identitySources: string[] | undefined): string
 }
 
 /** @internal */
-export function createRoleWithAuthorizerInvocationPolicy(authorizerName: string, authorizerLambda: aws.lambda.Function): aws.iam.Role {
+export function createRoleWithAuthorizerInvocationPolicy(
+        authorizerName: string, authorizerLambda: aws.lambda.Function,
+        opts: pulumi.CustomResourceOptions): aws.iam.Role {
     const policy = aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] });
     const role = new aws.iam.Role(authorizerName + "-authorizer-role", {
         assumeRolePolicy: JSON.stringify(policy),
-    });
+    }, opts);
 
     // Add invocation policy to lambda role
     const invocationPolicy = new aws.iam.RolePolicy(authorizerName + "-invocation-policy", {
@@ -141,7 +143,8 @@ export function createRoleWithAuthorizerInvocationPolicy(authorizerName: string,
                 ]
             }`,
         role: role.id,
-    });
+    }, opts);
+
     return role;
 }
 

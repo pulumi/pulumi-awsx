@@ -617,7 +617,7 @@ function addEventHandlerRouteToSwaggerSpec(
         name + sha1hash(method + ":" + route.path), route.eventHandler, { parent: api });
 
     const swaggerOperation = createSwaggerOperationForLambda();
-    addBasePathOptionsToSwagger(swagger, swaggerOperation, route, apiAuthorizers);
+    addBasePathOptionsToSwagger(api, swagger, swaggerOperation, route, apiAuthorizers);
     addSwaggerOperation(swagger, route.path, method, swaggerOperation);
 
     let lambdas = swaggerLambdas.get(route.path);
@@ -646,13 +646,14 @@ function addEventHandlerRouteToSwaggerSpec(
 }
 
 function addBasePathOptionsToSwagger(
+    api: API,
     swagger: SwaggerSpec,
     swaggerOperation: SwaggerOperation,
     route: BaseRoute,
     apiAuthorizers: Record<string, Authorizer>) {
 
     if (route.authorizers) {
-        const authRecords = addAuthorizersToSwagger(swagger, route.authorizers, apiAuthorizers);
+        const authRecords = addAuthorizersToSwagger(api, swagger, route.authorizers, apiAuthorizers);
         addAuthorizersToSwaggerOperation(swaggerOperation, authRecords);
     }
     if (route.requiredParameters) {
@@ -684,6 +685,7 @@ function addAPIKeyToSwaggerOperation(swaggerOperation: SwaggerOperation) {
 }
 
 function addAuthorizersToSwagger(
+    api: API,
     swagger: SwaggerSpec,
     authorizers: Authorizer[] | Authorizer,
     apiAuthorizers: Record<string, Authorizer>): Record<string, string[]>[] {
@@ -715,7 +717,7 @@ function addAuthorizersToSwagger(
                 in: lambdaAuthorizer.isLambdaAuthorizer(auth) ? auth.parameterLocation : "header",
                 "x-amazon-apigateway-authtype": lambdaAuthorizer.isLambdaAuthorizer(auth) ? auth.authType : "cognito_user_pools",
                 "x-amazon-apigateway-authorizer": lambdaAuthorizer.isLambdaAuthorizer(auth)
-                    ? getLambdaAuthorizer(authName, auth)
+                    ? getLambdaAuthorizer(api, authName, auth)
                     : getCognitoAuthorizer(auth.identitySource, auth.providerARNs),
             };
         }
@@ -750,7 +752,7 @@ function getCognitoAuthorizer(identitySource: string[] | undefined, providerARNs
     };
 }
 
-function getLambdaAuthorizer(authorizerName: string, authorizer: lambdaAuthorizer.LambdaAuthorizer): SwaggerLambdaAuthorizer {
+function getLambdaAuthorizer(api: API, authorizerName: string, authorizer: lambdaAuthorizer.LambdaAuthorizer): SwaggerLambdaAuthorizer {
     if (lambdaAuthorizer.isLambdaAuthorizerInfo(authorizer.handler)) {
         const identitySource = lambdaAuthorizer.getIdentitySource(authorizer.identitySource);
 
@@ -778,9 +780,10 @@ function getLambdaAuthorizer(authorizerName: string, authorizer: lambdaAuthorize
         };
     }
 
-    const authorizerLambda = aws.lambda.createFunctionFromEventHandler(authorizerName, authorizer.handler);
+    const parentOpts = { parent: api };
+    const authorizerLambda = aws.lambda.createFunctionFromEventHandler(authorizerName, authorizer.handler, parentOpts);
 
-    const role = lambdaAuthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda);
+    const role = lambdaAuthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda, parentOpts);
 
     const identitySource = lambdaAuthorizer.getIdentitySource(authorizer.identitySource);
     return {
@@ -872,7 +875,7 @@ function addStaticRouteToSwaggerSpec(
         createBucketObject(key, route.localPath, route.contentType);
 
         const swaggerOperation = createSwaggerOperationForObjectKey(key, role);
-        addBasePathOptionsToSwagger(swagger, swaggerOperation, route, apiAuthorizers);
+        addBasePathOptionsToSwagger(api, swagger, swaggerOperation, route, apiAuthorizers);
         addSwaggerOperation(swagger, route.path, method, swaggerOperation);
     }
 
@@ -924,7 +927,7 @@ function addStaticRouteToSwaggerSpec(
                         // We hit the file that we also want to serve as the index file. Create
                         // a specific swagger path from the server root path to it.
                         const swaggerOperation = createSwaggerOperationForObjectKey(childUrn, role);
-                        addBasePathOptionsToSwagger(swagger, swaggerOperation, directory, apiAuthorizers);
+                        addBasePathOptionsToSwagger(api, swagger, swaggerOperation, directory, apiAuthorizers);
                         swagger.paths[directoryServerPath] = {
                             [method]: swaggerOperation,
                         };
@@ -939,7 +942,7 @@ function addStaticRouteToSwaggerSpec(
         // greedy matching predicate to the end.
         const proxyPath = directoryServerPath + "{proxy+}";
         const swaggerOperation = createSwaggerOperationForObjectKey(directoryKey, role, "proxy");
-        addBasePathOptionsToSwagger(swagger, swaggerOperation, directory, apiAuthorizers);
+        addBasePathOptionsToSwagger(api, swagger, swaggerOperation, directory, apiAuthorizers);
         addSwaggerOperation(swagger, proxyPath, swaggerMethod("ANY"), swaggerOperation);
     }
 
@@ -1026,11 +1029,11 @@ function addIntegrationRouteToSwaggerSpec(
     const swaggerPathProxy = swaggerPath + "{proxy+}";
 
     const swaggerOpWithoutProxyPathParam = createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ false);
-    addBasePathOptionsToSwagger(swagger, swaggerOpWithoutProxyPathParam, route, apiAuthorizers);
+    addBasePathOptionsToSwagger(api, swagger, swaggerOpWithoutProxyPathParam, route, apiAuthorizers);
     addSwaggerOperation(swagger, swaggerPath, method, swaggerOpWithoutProxyPathParam);
 
     const swaggerOpWithProxyPathParam = createSwaggerOperationForProxy(target, /*useProxyPathParameter:*/ true);
-    addBasePathOptionsToSwagger(swagger, swaggerOpWithProxyPathParam, route, apiAuthorizers);
+    addBasePathOptionsToSwagger(api, swagger, swaggerOpWithProxyPathParam, route, apiAuthorizers);
     addSwaggerOperation(swagger, swaggerPathProxy, method, swaggerOpWithProxyPathParam);
 
     return;
