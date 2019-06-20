@@ -120,6 +120,8 @@ export function getRegionFromOpts(opts: pulumi.CustomResourceOptions): pulumi.Ou
 
 /** @internal */
 export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
+    // A little strange, but all we're doing is passing a fake type-token simply to get
+    // the AWS provider from this resource.
     return getRegionFromProvider(res.getProvider("aws::"));
 }
 
