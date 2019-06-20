@@ -1,4 +1,6 @@
-## 0.18.6 (Unreleased)
+## 0.18.7 (Unreleased)
+
+## 0.18.6 (6/19/2019)
 
 ### Improvements
 
