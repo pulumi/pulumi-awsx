@@ -55,7 +55,7 @@ export class Vpc extends pulumi.ComponentResource {
 
     constructor(name: string, args?: VpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super(vpcTypeName, name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
@@ -105,6 +105,7 @@ export class Vpc extends pulumi.ComponentResource {
                 // We previously did not parent the subnet to this component. We now do. Provide an
                 // alias so this doesn't cause resources to be destroyed/recreated for existing
                 // stacks.
+                const subnetAliases = [pulumi.createUrn(subnetName, "awsx:x:ec2:Subnet", opts.parent)];
                 const subnet = new x.ec2.Subnet(subnetName, this, {
                     cidrBlock: desc.cidrBlock,
                     availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: this }),
@@ -123,7 +124,7 @@ export class Vpc extends pulumi.ComponentResource {
                     // merge some good default tags, with whatever the user wants.  Their choices should
                     // always win out over any defaults we pick.
                     tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
-                }, opts);
+                }, { aliases: subnetAliases, parent: this });
 
                 this.getSubnets(type).push(subnet);
                 this.getSubnetIds(type).push(subnet.id);
