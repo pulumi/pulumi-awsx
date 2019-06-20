@@ -127,6 +127,8 @@ export function createRoleWithAuthorizerInvocationPolicy(
         opts: pulumi.CustomResourceOptions): aws.iam.Role {
     const policy = aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] });
 
+    // We previously didn't parent the Role or RolePolicy to anything.  Now we do.  Pass an
+    // appropriate alias to prevent resources from being destroyed/created.
     const roleName = authorizerName + "-authorizer-role";
     const roleAliases = [pulumi.createUrn(roleName, "aws:iam/role:Role")];
     const role = new aws.iam.Role(roleName, {
