@@ -20,6 +20,8 @@
   `assignIpv6AddressOnCreation: true` by default for child subnets.  This can be overridden by
   setting that value explicitly to `false` with the subnet's args.
 
+- `awsx.Cluster` and `awsx.Network` are now deprecated and will no longer receive future changes.
+  Code that uses these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
 
 ## 0.18.5 (6/12/2019)
 

@@ -22,6 +22,8 @@ import { ifUndefined } from "./utils";
 
 /**
  * Optional arguments that can be provided when creating a network.
+ *
+ * @deprecated Usages of awsx.Network should be migrated to awsx.ec2.Vpc.
  */
 export interface NetworkArgs {
     /**
@@ -54,6 +56,8 @@ export interface NetworkArgs {
 
 /**
  * Arguments necessary when creating a network using Network.fromVpc.
+ *
+ * @deprecated Usages of awsx.Network should be migrated to awsx.ec2.Vpc.
  */
 export interface NetworkVpcArgs {
     /**
@@ -86,6 +90,8 @@ let defaultNetwork: Network;
  * Subnet](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Scenario1.html) and [VPC with Public and Private
  * Subnets (NAT)](https://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Scenario2.html) configurations are
  * supported.
+ *
+ * @deprecated Usages of awsx.Network should be migrated to awsx.ec2.Vpc.
  */
 export class Network extends pulumi.ComponentResource implements ClusterNetworkArgs {
     /**

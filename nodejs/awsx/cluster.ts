@@ -22,6 +22,9 @@ import { sha1hash } from "./utils";
 // The default path to use for mounting EFS inside ECS container instances.
 const defaultEfsMountPath = "/mnt/efs";
 
+/**
+ * @deprecated Usages of awsx.Cluster should be migrated to awsx.ecs.Cluster.
+ */
 export interface ClusterNetworkArgs {
     /**
      * The VPC id of the network for the cluster
@@ -34,7 +37,8 @@ export interface ClusterNetworkArgs {
 }
 
 /**
- * Arguments bag for creating infrastrcture for a new Cluster.
+ * Arguments bag for creating infrastructure for a new Cluster.
+ * @deprecated Usages of awsx.Cluster should be migrated to awsx.ecs.Cluster.
  */
 export interface ClusterArgs {
     /**
@@ -103,6 +107,8 @@ export interface ClusterArgs {
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided
  * Network.
+ *
+ * @deprecated Usages of awsx.Cluster should be migrated to awsx.ecs.Cluster.
  */
 export class Cluster extends pulumi.ComponentResource {
     /**
