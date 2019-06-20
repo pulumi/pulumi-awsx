@@ -204,8 +204,6 @@ export class ApplicationListener extends mod.Listener {
             protocol,
         }, opts);
 
-        const parentOpts = { parent: this };
-
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
@@ -224,8 +222,8 @@ export class ApplicationListener extends mod.Listener {
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
-                securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, parentOpts);
-                securityGroup.createEgressRule(`${name}-external-${i}-egress`, args, parentOpts);
+                securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, { parent: this });
+                securityGroup.createEgressRule(`${name}-external-${i}-egress`, args, { parent: this });
             }
         }
 

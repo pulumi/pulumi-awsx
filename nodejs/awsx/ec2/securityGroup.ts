@@ -47,24 +47,22 @@ export class SecurityGroup extends pulumi.ComponentResource {
         delete args.egress;
         delete args.ingress;
 
-        const parentOpts = { parent: this };
-
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault(parentOpts);
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
             vpcId: this.vpc.id,
-        }, parentOpts);
+        }, { parent: this });
 
         this.id = this.securityGroup.id;
 
         this.registerOutputs();
 
         for (let i = 0, n = egressRules.length; i < n; i++) {
-            this.createEgressRule(`${name}-egress-${i}`, egressRules[i], parentOpts);
+            this.createEgressRule(`${name}-egress-${i}`, egressRules[i], { parent: this });
         }
 
         for (let i = 0, n = ingressRules.length; i < n; i++) {
-            this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i], parentOpts);
+            this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i], { parent: this });
         }
     }
 

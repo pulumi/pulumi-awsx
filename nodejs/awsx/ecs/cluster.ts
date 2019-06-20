@@ -46,18 +46,17 @@ export class Cluster
         super("awsx:x:ecs:Cluster", name, {}, opts);
 
         // First create an ECS cluster.
-        const parentOpts = { parent: this };
         const cluster = getOrCreateCluster(name, args, this);
         this.cluster = cluster;
         this.id = cluster.id;
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault(parentOpts);
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
 
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) ||
-            [Cluster.createDefaultSecurityGroup(name, this.vpc, parentOpts)];
+        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) ||
+            [Cluster.createDefaultSecurityGroup(name, this.vpc, { parent: this })];
 
         this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);

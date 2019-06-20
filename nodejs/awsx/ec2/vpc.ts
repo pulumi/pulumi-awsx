@@ -63,7 +63,6 @@ export class Vpc extends pulumi.ComponentResource {
             this.id = this.vpc.id;
         }
         else {
-            const parentOpts = { parent: this };
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
             const numberOfAvailabilityZones = getNumberOfAvailabilityZones(this, args.numberOfAvailabilityZones);
 
@@ -84,7 +83,7 @@ export class Vpc extends pulumi.ComponentResource {
                 enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
                 assignGeneratedIpv6CidrBlock,
-            }, { ...parentOpts, aliases: [pulumi.createUrn(name, "aws:ec2/vpc:Vpc")] });
+            }, { parent: this, aliases: [pulumi.createUrn(name, "aws:ec2/vpc:Vpc")] });
             this.id = this.vpc.id;
 
             // Create the appropriate subnets.  Default to a single public and private subnet for each
@@ -108,7 +107,7 @@ export class Vpc extends pulumi.ComponentResource {
                 // stacks.
                 const subnet = new x.ec2.Subnet(subnetName, this, {
                     cidrBlock: desc.cidrBlock,
-                    availabilityZone: getAvailabilityZone(desc.availabilityZone, parentOpts),
+                    availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: this }),
 
                     // Allow the individual subnet to decide if it wants to be mapped.  If not
                     // specified, default to mapping a public-ip open if the type is 'public', and
@@ -258,12 +257,11 @@ export class Vpc extends pulumi.ComponentResource {
         createSubnets(vpc, name, "private", idArgs.privateSubnetIds);
         createSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
 
-        const parentOpts = { parent: vpc };
         if (idArgs.internetGatewayId) {
             const igName = `${name}-ig`;
             vpc.internetGateway = new x.ec2.InternetGateway(igName, vpc, {
-                internetGateway: aws.ec2.InternetGateway.get(igName, idArgs.internetGatewayId, {}, parentOpts),
-            }, parentOpts);
+                internetGateway: aws.ec2.InternetGateway.get(igName, idArgs.internetGatewayId, {}, { parent: vpc }),
+            }, { parent: vpc });
         }
 
         if (idArgs.natGatewayIds) {
@@ -271,8 +269,8 @@ export class Vpc extends pulumi.ComponentResource {
                 const natGatewayId = idArgs.natGatewayIds[i];
                 const natName = `${name}-nat-${i}`;
                 vpc.natGateways.push(new x.ec2.NatGateway(natName, vpc, {
-                    natGateway: aws.ec2.NatGateway.get(natName, natGatewayId, {}, parentOpts),
-                }, parentOpts));
+                    natGateway: aws.ec2.NatGateway.get(natName, natGatewayId, {}, { parent: vpc }),
+                }, { parent: vpc }));
             }
         }
 
@@ -378,15 +376,14 @@ function createNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones:
 }
 
 function createSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
-    const parentOpts = { parent: vpc };
     const subnets = vpc.getSubnets(type);
     const subnetIds = vpc.getSubnetIds(type);
 
     for (let i = 0, n = inputs.length; i < n; i++) {
         const subnetName = `${vpcName}-${type}-${i}`;
         const subnet = new x.ec2.Subnet(subnetName, vpc, {
-            subnet: aws.ec2.Subnet.get(subnetName, inputs[i], /*state:*/undefined, parentOpts),
-        }, parentOpts);
+            subnet: aws.ec2.Subnet.get(subnetName, inputs[i], /*state:*/undefined, { parent: vpc }),
+        }, { parent: vpc });
 
         subnets.push(subnet);
         subnetIds.push(subnet.id);

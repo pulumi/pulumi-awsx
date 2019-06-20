@@ -780,10 +780,8 @@ function getLambdaAuthorizer(api: API, authorizerName: string, authorizer: lambd
         };
     }
 
-    const parentOpts = { parent: api };
-    const authorizerLambda = aws.lambda.createFunctionFromEventHandler(authorizerName, authorizer.handler, parentOpts);
-
-    const role = lambdaAuthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda, parentOpts);
+    const authorizerLambda = aws.lambda.createFunctionFromEventHandler(authorizerName, authorizer.handler, { parent: api });
+    const role = lambdaAuthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda, { parent: api });
 
     const identitySource = lambdaAuthorizer.getIdentitySource(authorizer.identitySource);
     return {
@@ -825,11 +823,10 @@ function addStaticRouteToSwaggerSpec(
 
     const method = swaggerMethod("GET");
 
-    const parentOpts = { parent: api };
     // Create a bucket to place all the static data under.
     const bucket = pulumi.Resource.isInstance(bucketOrArgs)
         ? bucketOrArgs
-        : new aws.s3.Bucket(safeS3BucketName(name), bucketOrArgs, parentOpts);
+        : new aws.s3.Bucket(safeS3BucketName(name), bucketOrArgs, { parent: api });
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
     // that routes from the file path to the arn for the bucket object.
@@ -850,11 +847,11 @@ function addStaticRouteToSwaggerSpec(
         // Create a role and attach it so that this route can access the AWS bucket.
         const role = new aws.iam.Role(key, {
             assumeRolePolicy: JSON.stringify(apigatewayAssumeRolePolicyDocument),
-        }, parentOpts);
+        }, { parent: api });
         const attachment = new aws.iam.RolePolicyAttachment(key, {
             role: role,
             policyArn: aws.iam.AmazonS3FullAccess,
-        }, parentOpts);
+        }, { parent: api });
 
         return role;
     }
@@ -865,7 +862,7 @@ function addStaticRouteToSwaggerSpec(
             key,
             source: new pulumi.asset.FileAsset(localPath),
             contentType: contentType || mime.getType(localPath) || undefined,
-        }, parentOpts);
+        }, { parent: api });
     }
 
     function processFile(route: StaticRoute) {

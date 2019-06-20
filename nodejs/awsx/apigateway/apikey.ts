@@ -149,7 +149,6 @@ function getUsagePlan(name: string, args: APIKeyArgs, opts: pulumi.CustomResourc
 function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.UsagePlan): Key[] {
     const keys: Key[] = [];
 
-    const parentOpts = { parent: usagePlan };
     if (args.apiKeys) {
         for (let i = 0; i < args.apiKeys.length; i++) {
             const currKey = args.apiKeys[i];
@@ -162,13 +161,13 @@ function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.Usage
 
             const apikey = pulumi.CustomResource.isInstance(currKey)
                 ? currKey
-                : new aws.apigateway.ApiKey(childName, currKey, { aliases: apiKeyAliases, ...parentOpts });
+                : new aws.apigateway.ApiKey(childName, currKey, { aliases: apiKeyAliases, parent: usagePlan });
 
             const usagePlanKey = new aws.apigateway.UsagePlanKey(childName, {
                 keyId: apikey.id,
                 keyType: "API_KEY",
                 usagePlanId: usagePlan.id,
-            }, { aliases: usagePlayKeyAliases, ...parentOpts });
+            }, { aliases: usagePlayKeyAliases, parent: usagePlan });
 
             keys.push({ apikey, usagePlanKey });
         }

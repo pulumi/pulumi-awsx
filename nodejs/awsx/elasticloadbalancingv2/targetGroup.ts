@@ -37,8 +37,6 @@ export abstract class TargetGroup
                 args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
-        const parentOpts = { parent: this };
-
         const longName = `${name}`;
         const shortName = args.name || utils.sha1hash(`${longName}`);
 
@@ -50,7 +48,7 @@ export abstract class TargetGroup
             deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 300),
             targetType: utils.ifUndefined(args.targetType, "ip"),
             tags: utils.mergeTags(args.tags, { Name: longName }),
-        }, parentOpts);
+        }, { parent: this });
 
         this.loadBalancer = loadBalancer;
     }

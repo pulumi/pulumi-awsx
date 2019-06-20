@@ -33,10 +33,8 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         const longName = `${name}`;
         const shortName = args.name || utils.sha1hash(`${longName}`);
 
-        const parentOpts = { parent: this };
-
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault(parentOpts);
-        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) || [];
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
+        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 
         const external = utils.ifUndefined(args.external, true);
         this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
@@ -45,7 +43,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
             internal: external.apply(ex => !ex),
             securityGroups: this.securityGroups.map(g => g.id),
             tags: utils.mergeTags(args.tags, { Name: longName }),
-        }, parentOpts);
+        }, { parent: this });
     }
 
     /**

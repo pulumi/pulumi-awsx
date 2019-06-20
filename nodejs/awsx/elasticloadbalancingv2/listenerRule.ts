@@ -35,7 +35,6 @@ export class ListenerRule extends pulumi.ComponentResource {
                 args: ListenerRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:elasticloadbalancingv2", name, {}, { parent: listener, ...opts });
 
-        const parentOpts = { parent: this };
         const actions = x.elasticloadbalancingv2.isListenerActions(args.actions)
             ? args.actions.actions()
             : args.actions;
@@ -44,7 +43,7 @@ export class ListenerRule extends pulumi.ComponentResource {
             ...args,
             actions,
             listenerArn: listener.listener.arn,
-        }, parentOpts);
+        }, { parent: this });
 
         // If this is a rule hooking up this listener to a target group, then add our listener to
         // the set of listeners the target group knows about.  This is necessary so that anything
