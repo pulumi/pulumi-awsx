@@ -139,15 +139,12 @@ export class NetworkListener
         const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP");
 
-        // we used to incorrect parent ourselves to the load balancer.  Now, we don't parent to
-        // that, but we keep an alias to that original parent in case we move.
-        const aliases = [pulumi.createUrn(name, "awsx:x:elasticloadbalancingv2:NetworkListener", loadBalancer)];
         super("awsx:x:elasticloadbalancingv2:NetworkListener", name, defaultListener, {
             ...args,
             protocol,
             loadBalancer,
             defaultActions,
-        }, { aliases, ...opts });
+        }, opts);
 
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);

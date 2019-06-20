@@ -181,7 +181,7 @@ export class ApplicationListener extends mod.Listener {
 
     constructor(name: string,
                 args: ApplicationListenerArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (args.defaultAction && args.defaultActions) {
             throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
@@ -199,6 +199,7 @@ export class ApplicationListener extends mod.Listener {
         // Pass along the target as the defaultTarget for this listener.  This allows this listener
         // to defer to it for ContainerPortMappings information.  this allows this listener to be
         // passed in as the portMappings information needed for a Service.
+
         super("awsx:x:elasticloadbalancingv2:ApplicationListener", name, defaultListener, {
             ...args,
             defaultActions,

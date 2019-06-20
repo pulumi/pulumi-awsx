@@ -40,8 +40,15 @@ export abstract class Listener
 
     constructor(type: string, name: string,
                 defaultListenerAction: ListenerDefaultAction | undefined,
-                args: ListenerArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, args, opts);
+                args: ListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        // By default, we'd like to be parented by the LB .  However, we didn't use to do this.
+        // Create an alias from teh old urn to the new one so that we don't cause these to eb
+        // created/destroyed.
+        super(type, name, args, {
+            parent: args.loadBalancer,
+            aliases: [pulumi.createUrn(name, type, opts.parent)],
+            ...opts,
+        });
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
         // security policy from:

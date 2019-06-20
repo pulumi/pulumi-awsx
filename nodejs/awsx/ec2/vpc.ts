@@ -214,13 +214,13 @@ export class Vpc extends pulumi.ComponentResource {
         const provider = opts.provider ? opts.provider :
                          opts.parent   ? opts.parent.getProvider("aws::") : undefined;
 
+        // And we want to be able to return the same Vpc object instance if it represents the same
+        // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
+        // an account.  So we just map from the id to the Vpc instance we hydrate.  If asked again
+        // for the same id we can just return the same instance.
         const vpcId = utils.promiseResult(aws.ec2.getVpc({ default: true }, { provider }).then(v => v.id));
         let vpc = defaultVpcs.get(vpcId);
         if (!vpc) {
-
-            // The default VPC will contain at least two public subnets (one per availability zone).
-            // See https://docs.aws.amazon.com/vpc/latest/userguide/images/default-vpc-diagram.png for
-            // more information.
             const publicSubnetIds = utils.promiseResult(aws.ec2.getSubnetIds({ vpcId }, { provider }).then(subnets => subnets.ids));
 
             // Generate the name as `default-` + the actual name.  For back compat with how we
