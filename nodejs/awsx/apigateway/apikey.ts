@@ -19,6 +19,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as api from "./api";
 import { SecurityDefinition } from "./swagger_json";
 
+import * as utils from "../utils";
+
 /**
  * Input properties for creating a UsagePlan and associated API Keys.
  */
@@ -140,8 +142,8 @@ function getUsagePlan(name: string, args: APIKeyArgs, opts: pulumi.CustomResourc
 
         // We previously did not parent the UsagePlan. We now do. Provide an alias so this doesn't
         // cause resources to be destroyed/recreated for existing stacks.
-        const aliases = [pulumi.createUrn(name, "aws:apigateway/usagePlan:UsagePlan")];
-        return new aws.apigateway.UsagePlan(name, usagePlanArgs, { aliases, ...opts });
+        return new aws.apigateway.UsagePlan(name, usagePlanArgs,
+            utils.withAlias(opts, pulumi.createUrn(name, "aws:apigateway/usagePlan:UsagePlan")));
     }
 }
 

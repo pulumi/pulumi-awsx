@@ -157,3 +157,26 @@ export function promiseResult<T>(promise: Promise<T>): T {
 
     return result!;
 }
+
+interface HasAliases { aliases?: pulumi.Input<pulumi.URN | pulumi.Alias>[] };
+
+/** @internal */
+export function withAlias<T extends HasAliases>(opts: T, alias: pulumi.Input<pulumi.URN | pulumi.Alias>): T {
+  return withAliases(opts, [alias]);
+}
+
+/** @internal */
+export function withAliases<T extends HasAliases>(opts: T, aliases: pulumi.Input<pulumi.URN | pulumi.Alias>[]): T {
+    const allAliases: pulumi.Input<pulumi.URN | pulumi.Alias>[] = [];
+    if (opts.aliases) {
+        for (const alias of opts.aliases) {
+            allAliases.push(alias);
+        }
+    }
+
+    for (const alias of aliases) {
+        allAliases.push(alias);
+    }
+
+    return { ...opts, aliases };
+}

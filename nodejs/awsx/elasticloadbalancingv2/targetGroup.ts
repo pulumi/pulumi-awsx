@@ -40,8 +40,7 @@ export abstract class TargetGroup
         // resources from being created/destroyed.
         super(type, name, {}, {
             parent: loadBalancer,
-            aliases: [pulumi.createUrn(name, type, opts.parent)],
-            ...opts,
+            ...utils.withAlias(opts, pulumi.createUrn(name, type, opts.parent)),
         });
 
         const longName = `${name}`;

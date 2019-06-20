@@ -125,12 +125,14 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
                           opts: pulumi.ComponentResourceOptions = {}): ApplicationListener {
         // We didn't use to parent the listener to the target group.  Now we do.  Create an alias
         // from the old parent to the current one if this moves over.
-        const aliases = [pulumi.createUrn(name, "awsx:x:elasticloadbalancingv2:ApplicationListener", opts.parent)];
         return new ApplicationListener(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
             ...args,
-        }, { parent: this, aliases, ...opts });
+        }, {
+            parent: this,
+            ...utils.withAlias(opts, pulumi.createUrn(name, "awsx:x:elasticloadbalancingv2:ApplicationListener", opts.parent)),
+        });
     }
 
     public static isInstance(obj: any): obj is ApplicationTargetGroup {

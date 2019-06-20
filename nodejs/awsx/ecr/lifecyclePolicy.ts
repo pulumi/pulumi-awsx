@@ -15,6 +15,8 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as utils from "../utils";
+
 export class LifecyclePolicy extends aws.ecr.LifecyclePolicy {
     /**
      * Creates a new [LifecyclePolicy] for the given [repository].  If [args] is not provided, then
@@ -28,8 +30,7 @@ export class LifecyclePolicy extends aws.ecr.LifecyclePolicy {
             repository: repository.name,
         }, {
             parent: repository,
-            aliases: [pulumi.createUrn(name, "aws:ecr/lifecyclePolicy:LifecyclePolicy", opts.parent)],
-            ...opts,
+            ...utils.withAlias(opts, pulumi.createUrn(name, "aws:ecr/lifecyclePolicy:LifecyclePolicy", opts.parent)),
         });
     }
 
