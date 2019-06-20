@@ -92,7 +92,7 @@ export class Subnet extends pulumi.ComponentResource {
         opts = { parent: this, ...opts };
 
         const args = isSubnetRouteProvider(argsOrProvider)
-            ? argsOrProvider.route(name, opts)
+            ? argsOrProvider.route(name, { parent: this })
             : argsOrProvider;
 
         this.routes.push(new aws.ec2.Route(`${this.subnetName}-${name}`, {

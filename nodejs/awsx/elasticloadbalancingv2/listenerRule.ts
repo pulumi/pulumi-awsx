@@ -33,7 +33,10 @@ export class ListenerRule extends pulumi.ComponentResource {
 
     constructor(name: string, listener: x.elasticloadbalancingv2.Listener,
                 args: ListenerRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:x:elasticloadbalancingv2", name, {}, { parent: listener, ...opts });
+        // We forgot to add the `ListenerRule` part of the name.  Add it in and create an alias from
+        // the previous incorrect name.
+        const aliases = [pulumi.createUrn(name, "awsx:x:elasticloadbalancingv2", opts.parent)];
+        super("awsx:x:elasticloadbalancingv2: ListenerRule", name, {}, { parent: listener, aliases, ...opts });
 
         const actions = x.elasticloadbalancingv2.isListenerActions(args.actions)
             ? args.actions.actions()

@@ -58,11 +58,11 @@ export class SecurityGroup extends pulumi.ComponentResource {
         this.registerOutputs();
 
         for (let i = 0, n = egressRules.length; i < n; i++) {
-            this.createEgressRule(`${name}-egress-${i}`, egressRules[i], { parent: this });
+            this.createEgressRule(`${name}-egress-${i}`, egressRules[i]);
         }
 
         for (let i = 0, n = ingressRules.length; i < n; i++) {
-            this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i], { parent: this });
+            this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i]);
         }
     }
 
@@ -119,9 +119,7 @@ export function getSecurityGroups(
             result.push(obj);
         }
         else {
-            result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, {
-                vpc,
-            }, opts));
+            result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, { vpc }, opts));
         }
     }
 

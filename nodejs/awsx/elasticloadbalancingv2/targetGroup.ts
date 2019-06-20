@@ -90,7 +90,7 @@ export abstract class TargetGroup
      * for more details.
      */
     public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
-        return new mod.TargetGroupAttachment(name, this, args, { parent: this, ...opts });
+        return new mod.TargetGroupAttachment(name, this, args, opts);
     }
 }
 
