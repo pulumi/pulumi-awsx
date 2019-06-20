@@ -256,11 +256,13 @@ export class Vpc extends pulumi.ComponentResource {
         createSubnets(vpc, name, "private", idArgs.privateSubnetIds);
         createSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
 
+        // Pass along aliases so that the previously unparented resources are now properly parented
+        // to the vpc.
         if (idArgs.internetGatewayId) {
             const igName = `${name}-ig`;
             vpc.internetGateway = new x.ec2.InternetGateway(igName, vpc, {
                 internetGateway: aws.ec2.InternetGateway.get(igName, idArgs.internetGatewayId, {}, { parent: vpc }),
-            }, { parent: vpc });
+            }, { parent: vpc, aliases: [pulumi.createUrn(igName, "awsx:x:ec2:InternetGateway")] });
         }
 
         if (idArgs.natGatewayIds) {
@@ -269,7 +271,7 @@ export class Vpc extends pulumi.ComponentResource {
                 const natName = `${name}-nat-${i}`;
                 vpc.natGateways.push(new x.ec2.NatGateway(natName, vpc, {
                     natGateway: aws.ec2.NatGateway.get(natName, natGatewayId, {}, { parent: vpc }),
-                }, { parent: vpc }));
+                }, { parent: vpc, aliases: [pulumi.createUrn(natName, "awsx:x:ec2:NatGateway")] }));
             }
         }
 

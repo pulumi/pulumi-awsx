@@ -1,5 +1,48 @@
 ## 0.18.7 (Unreleased)
 
+### Provider fixes + Reparenting
+
+- Many awsx components were both not parented properly and also did not correctly pass 'provider'
+  information along.  For programs not explicitly passing a 'provider' along, this normally was not
+  an issue.  However, programs that did want to use an explicit 'provider' (for example, to set a
+  particular region for a resource), would commonly run into issues.  We tried to broadly fix these
+  issues, while doing so in a way that should hopefully **not** have any impact on any existing
+  stacks. Specifically, the 'aliases' feature was used so that while we may have reparented some
+  resources, pulumi will know that that is just a representation change, and shouldn't cause any
+  actual resources to be created/deleted.  If you see otherwise, please let us know.
+
+  The specific resources/apis affected are:
+
+  1. Lambda authorizers will now be parented by the `awsx.apigateway.Api` they are created for.
+  2. `awsx.apigateway.Api` static routes will properly work when using a different provider
+     (previously it wouldn't place the static route in the corresponding region for the provider).
+  3. `awsx.apigateway.Api` UsagePlans/UsagePlanKeys now properly pass along a provider.
+
+  4. `awsx.autoscaling.AutoScalingGroup` now properly passes along a provider.
+  5. The `LaunchConfiguration` for an `AutoScalingGroup` will now be parented by the `AutoScalingGroup`
+
+  6. `awsx.cloudwatch.Dashboard` now properly passes along a provider.
+
+  7. The underlying `aws.ec2.Vpc` is now parented to the `awsx.ec2.Vpc` that created it.
+  8. `awsx.ec2.Vpc.getDefault` has changed behavior.  It now takes in options that allow a provider
+     to be passed in.  This provider is used to determine which region to lookup the default Vpc in.
+     Note: when this function is called multiple times it will return the same Vpc instance if for
+     the same region.
+  9. `awsx.ec2.Vpc.getDefault` will now return Vpcs with the name `default-<actual vpc id>`.  An
+     existing default vpc with the name `default-vpc` will be aliased to this new name.
+  10. Subnets created by `awsx.ec2.Vpc` will be parented to the Vpc now.
+  11. The InternetGateway and NatGateways created by `Vpc.fromExistingIds` will now be parented to
+      the Vpc.
+
+  12. `awsx.ecr.LifeCyclePolicy` is now parented by the `aws.ecr.Repository` it is created for.
+
+  13. `awsx.ecs.Service/TaskDefinition` now respect providers.
+
+  14. `awsx.elasticloadbalancingv2.ApplicationListener/ApplicationTargetGroup/NetworkListener/NetworkTargetGroup`
+      will now all be parented by their respective `LoadBalancer` by default if a parent is not
+      specified.
+  15. The type name of an `awsx.elasticloadbalancingv2.ListenerRule` has been fixed.
+
 ## 0.18.6 (6/19/2019)
 
 ### Improvements
@@ -9,12 +52,6 @@
   [awsx.apigateway.API].
 - Load balancing targets can now be simply added to an ALB, NLB, Listener or TargetGroup using the
   new `.attachTarget` methods on the respective classes.
-
-### Fixes
-
-- The underlying aws.ec2.Vpc resource will now be parented by default by the awsx.ec2.Vpc that
-  created it. This has been implemented using 'aliases' so this will not have any effect on existing
-  stacks.
 
 ### Compatibility issues
 
