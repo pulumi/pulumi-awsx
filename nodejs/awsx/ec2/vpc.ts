@@ -171,8 +171,6 @@ export class Vpc extends pulumi.ComponentResource {
             throw new Error("Cannot add InternetGateway to Vpc that already has one.");
         }
 
-        opts = { parent: this, ...opts };
-
         // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
         // for more details.
         this.internetGateway = new x.ec2.InternetGateway(name, this, args, opts);
