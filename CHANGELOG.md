@@ -1,4 +1,6 @@
-## 0.18.6 (Unreleased)
+## 0.18.7 (Unreleased)
+
+## 0.18.6 (6/19/2019)
 
 - awsx.ecs.Cluster can be created from an existing aws.ecs.Cluster's id.
 - Add OPTIONS as a valid method and add ability to set custom gateway responses for
