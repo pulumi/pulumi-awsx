@@ -1,4 +1,7 @@
-## 0.18.7 (Unreleased)
+CHANGELOG
+=========
+
+## HEAD (Unreleased)
 
 ### Provider fixes + Reparenting
 
@@ -43,7 +46,7 @@
       specified.
   15. The type name of an `awsx.elasticloadbalancingv2.ListenerRule` has been fixed.
 
-## 0.18.6 (6/19/2019)
+## 0.18.6 (2019-06-19)
 
 ### Improvements
 
@@ -62,7 +65,7 @@
 - `awsx.Cluster` and `awsx.Network` are now deprecated and will no longer receive future changes.
   Code that uses these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
 
-## 0.18.5 (6/12/2019)
+## 0.18.5 (2019-06-12)
 
 - VPCs can now be made which scale to use all availability zones in a region if desired.  Use
   `new awsx.ec2.Vpc("name", { numberOfAvailabilityZones: "all" })` to get this behavior.  If
@@ -75,7 +78,7 @@
 - awsx.cloudwatch.Dashboard now exports a `url` property that gives you an immediate link to the
   Dashboard.
 
-## 0.18.4 (5/14/2019)
+## 0.18.4 (2019-05-14)
 
 - ApiGateway now provides control over the backing s3.Bucket created for `StaticRoute`s.  This is
   useful for SinglePageApp scenarios that want to control relevant Bucket values like
@@ -83,18 +86,18 @@
 - A new `ecr` module has been created, simplifying creation of `ecr.Repository`s and
   `ecr.LifecyclePolicy`s.
 
-## 0.18.3 (4/24/2019)
+## 0.18.3 (2019-04-24)
 
 - Add support for Authorizers, API Keys and Request Validation to Integration Routes in API Gateway
 
-## 0.18.2 (4/22/2019)
+## 0.18.2 (2019-04-22)
 
 - Adds a new set of APIs for defining and CloudWatch metrics and creating alarms from them. See
   [awsx.cloudwatch.Metric] for more details, and see [awsx.lambda.metrics.duration] as an example of
   a newly exposed easy-to-use metric.
 - Dashboards can easily be created from the above [awsx.cloudwatch.Metric] objects using the new
   [awsx.cloudwatch.Dashboard] helper.  See
-  [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/dashboards/index.ts)
+  [here](index.ts-https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples-dashboards)
   for an example.
 - [awsx.autoscaling.AutoScalingGroup]s can now easily have a scheduling action provided by using the
   new [AutoScalingGroup.createSchedule] instance method.
@@ -104,13 +107,13 @@
   the scaling policy and calculates the scaling adjustment based on the metric and the target value.
   The scaling policy adds or removes capacity as required to keep the metric at, or close to, the
   specified target value.
-- [Step-Scaling-Policies](https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-step-scaling-policies.html)
+- [Step-Scaling-Policies](application-auto-scaling-step-scaling-policies.html-https://docs.aws.amazon.com/autoscaling/application-userguide)
   can easily be added for [awsx.autoscaling.AutoScalingGroup]s.  All you need to do is provide an
   appropriate metric and simple information about where your scale-out and scale-in steps should
   begin and the [AutoScalingGroup] will create the appropriate policies and
   [cloudwatch.MetricAlarm]s to trigger those policies.  See the new [AutoScalingGroup.scaleInSteps] instance method.
 
-## 0.18.1 (Released 4/14/2019)
+## 0.18.1 (2019-04-14)
 
 - TypeScript typings for awsx.apigateway.API have been updated to be more accurate.
 - Application LoadBalancers/Listeners/TargetGroups will now create a default SecurityGroup for their
@@ -118,9 +121,9 @@
 - Added easier convenience methods overloads on an awsx.ec2.SecurityGroup to make ingress/egress
   rules.
 - Add TypeScript documentation on API Gateway's Integration Route and Raw Data Route
-- Add support for [Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) and [Cognito Authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) and [API Keys](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-setup-api-key-with-restapi.html) for API Gateway in TypeScripts
+- Add support for [Lambda Authorizers](api-gateway-setup-api-key-with-restapi.html-https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) and [Cognito Authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) and [API Keys](https://docs.aws.amazon.com/apigateway/latest-developerguide) for API Gateway in TypeScripts
 
-## 0.18.0 (Release March 29, 2019)
+## 0.18.0 (2019-03-29)
 
 ### Important
 
@@ -140,12 +143,12 @@
 - Fixes issue where computation of Fargate Memory/CPU requirements was not being done properly.
 - Fixes issue where VPC might fail to create because tags could not be set on its EIPs.
 
-## 0.17.1 (Released March 21, 2019)
+## 0.17.1 (2019-03-21)
 
 - Fixes issue where creating an ApplicationListener would fail with an error of:
     "description" cannot be longer than 255 characters
 
-## 0.17.0 (Released March 5, 2019)
+## 0.17.0 (2019-03-05)
 
 ### Important
 
@@ -156,7 +159,7 @@ See https://github.com/pulumi/pulumi/commit/7f5e089f043a70c02f7e03600d6404ff0e27
 
 As such, we are rev'ing the minor version of the package from 0.16 to 0.17.  Recent version of `pulumi` will now detect, and warn, if different versions of `@pulumi/pulumi` are loaded into the same application.  If you encounter this warning, it is recommended you move to versions of the `@pulumi/...` packages that are compatible.  i.e. keep everything on 0.16.x until you are ready to move everything to 0.17.x.
 
-## 0.16.5 (Released February 22nd, 2019)
+## 0.16.5 (2019-02-22)
 
 - Supply easy mechanisms to add Internet and NAT gateways to a VPC.
 - Change awsx.elasticloadbalancingv2.Listener.endpoint from a method to a property.
@@ -169,12 +172,12 @@ As such, we are rev'ing the minor version of the package from 0.16 to 0.17.  Rec
 - Require at least version 0.16.14 of @pulumi/pulumi, in order to support the `deleteBeforeReplace`
   option and improve handling of delete-before-replace.
 
-## 0.16.4 (Release February 5th, 2019)
+## 0.16.4 (2019-02-05)
 
 - Renamed 'aws-infra' package to 'awsx'.
 - Moved `aws.apigateway.x.Api` from `@pulumi/aws` into this package under the name `awsx.apigateway.Api`.
 
-## 0.16.3 (Release January 25th, 2019)
+## 0.16.3 (2019-01-25)
 
 - Experimental abstractions have been promoted to supported abstractions.  see new modules for:
   - autoscaling
@@ -182,13 +185,13 @@ As such, we are rev'ing the minor version of the package from 0.16 to 0.17.  Rec
   - ecs
   - elasticloadbalancingv2
 
-## 0.16.2 (Released December 5th, 2018)
+## 0.16.2 (2018-12-05)
 
 ### Improvements
 
 - Add some experimental abstractions for Services and Tasks in the `experimental` module.
 
-## 0.16.1 (Released November 13th, 2018)
+## 0.16.1 (2018-11-13)
 
 ### Improvements
 
