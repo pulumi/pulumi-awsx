@@ -69,10 +69,10 @@ export abstract class SimpleWidget implements Widget {
     /** @internal */
     protected abstract computeType(): wjson.WidgetJson["type"];
     /** @internal */
-    protected abstract computeProperties(): wjson.WidgetJson["properties"];
+    protected abstract computeProperties(region: pulumi.Output<aws.Region>): wjson.WidgetJson["properties"];
 
     /** For internal use only. */
-    public addWidgetJson(widgetJsons: wjson.WidgetJson[], xOffset: number, yOffset: number) {
+    public addWidgetJson(widgetJsons: wjson.WidgetJson[], xOffset: number, yOffset: number, region: pulumi.Output<aws.Region>) {
         // Build the structure common to all simple widgets.  Defer to our subclasses for
         // details only they can fill in.
         widgetJsons.push({
@@ -81,7 +81,7 @@ export abstract class SimpleWidget implements Widget {
             width: this.width(),
             height: this.height(),
             type: this.computeType(),
-            properties: this.computeProperties(),
+            properties: this.computeProperties(region),
         });
     }
 }
@@ -140,7 +140,7 @@ export class TextWidget extends SimpleWidget {
         return "text";
     }
 
-    protected computeProperties(): wjson.TextWidgetJson["properties"] {
+    protected computeProperties(region: pulumi.Output<aws.Region>): wjson.TextWidgetJson["properties"] {
         return { markdown: this.textArgs.markdown };
     }
 }
@@ -250,7 +250,7 @@ export abstract class MetricWidget extends SimpleWidget {
 
     protected computeType = (): wjson.MetricWidgetJson["type"] => "metric";
 
-    protected computeProperties(): wjson.MetricWidgetJson["properties"] {
+    protected computeProperties(region: pulumi.Output<aws.Region>): wjson.MetricWidgetJson["properties"] {
         const stat = pulumi.all([this.metricArgs.extendedStatistic, this.metricArgs.statistic])
                            .apply(([extendedStatistic, statistic]) => {
             if (statistic !== undefined && extendedStatistic !== undefined) {
@@ -289,7 +289,7 @@ export abstract class MetricWidget extends SimpleWidget {
 
                 return p;
             }),
-            region: utils.ifUndefined(this.metricArgs.region, aws.config.region!),
+            region: utils.ifUndefined(this.metricArgs.region, region),
             view: this.computeView(),
             stacked: this.computedStacked(),
             yAxis: this.computeYAxis(),

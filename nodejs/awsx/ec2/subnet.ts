@@ -44,7 +44,6 @@ export class Subnet extends pulumi.ComponentResource {
         this.vpc = vpc;
         this.subnetName = name;
 
-        const parentOpts = { parent: this };
         if (isExistingSubnetArgs(args)) {
             this.subnet = args.subnet;
             this.id = args.subnet.id;
@@ -60,16 +59,16 @@ export class Subnet extends pulumi.ComponentResource {
                 vpcId: vpc.id,
                 ...args,
                 assignIpv6AddressOnCreation,
-            }, parentOpts);
+            }, { parent: this });
 
             this.routeTable = new aws.ec2.RouteTable(name, {
                 vpcId: vpc.id,
-            }, parentOpts);
+            }, { parent: this });
 
             this.routeTableAssociation = new aws.ec2.RouteTableAssociation(name, {
                 routeTableId: this.routeTable.id,
                 subnetId: this.subnet.id,
-            }, parentOpts);
+            }, { parent: this });
 
             this.id = pulumi.all([this.subnet.id, this.routeTableAssociation.id])
                             .apply(([id]) => id);
@@ -93,7 +92,7 @@ export class Subnet extends pulumi.ComponentResource {
         opts = { parent: this, ...opts };
 
         const args = isSubnetRouteProvider(argsOrProvider)
-            ? argsOrProvider.route(name, opts)
+            ? argsOrProvider.route(name, { parent: this })
             : argsOrProvider;
 
         this.routes.push(new aws.ec2.Route(`${this.subnetName}-${name}`, {

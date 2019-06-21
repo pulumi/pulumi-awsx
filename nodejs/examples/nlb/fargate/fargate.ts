@@ -12,16 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
 import { Config } from "@pulumi/pulumi";
 
-const vpc = awsx.ec2.Vpc.getDefault();
-const cluster = new awsx.ecs.Cluster("testing", { vpc });
+const config1 = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config1.require("envRegion") }) };
+
+const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
+const cluster = new awsx.ecs.Cluster("testing", { vpc }, providerOpts);
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { port: 80 });
+const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { port: 80 }, providerOpts);
 const nginx = new awsx.ecs.FargateService("nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -34,19 +38,19 @@ const nginx = new awsx.ecs.FargateService("nginx", {
         },
     },
     desiredCount: 2,
-});
+}, providerOpts);
 
 const nginxEndpoint = nginxListener.endpoint;
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("simple-nginx", { port: 80 });
+const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("simple-nginx", { port: 80 }, providerOpts);
 const simpleNginx = new awsx.ecs.FargateTaskDefinition("simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
         portMappings: [simpleNginxListener],
     },
-}).createService("simple-nginx", { cluster, desiredCount: 2});
+}, providerOpts).createService("simple-nginx", { cluster, desiredCount: 2});
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint;
 
@@ -60,12 +64,12 @@ const cachedNginx = new awsx.ecs.FargateService("cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener("cached-nginx", { port: 80 })],
+                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener("cached-nginx", { port: 80 }, providerOpts)],
             },
         },
     },
     desiredCount: 2,
-});
+}, providerOpts);
 
 const multistageCachedNginx = new awsx.ecs.FargateService("multistage-cached-nginx", {
     cluster,
@@ -79,15 +83,15 @@ const multistageCachedNginx = new awsx.ecs.FargateService("multistage-cached-ngi
                 }),
                 memory: 128,
                 portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
-                    "multistage-cached-nginx", { port: 80 })],
+                    "multistage-cached-nginx", { port: 80 }, providerOpts)],
             },
         },
     },
     desiredCount: 2,
-});
+}, providerOpts);
 
 const customWebServerListener =
-    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { port: 8080 })
+    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { port: 8080 }, providerOpts)
          .createListener("custom", { port: 80 });
 
 const customWebServer = new awsx.ecs.FargateService("custom", {
@@ -108,7 +112,7 @@ const customWebServer = new awsx.ecs.FargateService("custom", {
         },
     },
     desiredCount: 2,
-});
+}, providerOpts);
 
 const config = new Config("containers");
 const redisPassword = config.require("redisPassword");
@@ -121,7 +125,7 @@ class FargateCache {
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { port: 6379 });
+        const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { port: 6379 }, providerOpts);
         const redis = new awsx.ecs.FargateService(name, {
             cluster,
             taskDefinitionArgs: {
@@ -134,7 +138,7 @@ class FargateCache {
                     },
                 },
             },
-        });
+        }, providerOpts);
 
         this.get = (key: string) => {
             const endpoint = redisListener.endpoint.get();
@@ -184,10 +188,10 @@ const helloTask = new awsx.ecs.FargateTaskDefinition("hello-world", {
         image: "hello-world",
         memory: 20,
     },
-});
+}, providerOpts);
 
 // build an anonymous image:
-const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx2", { port: 80 });
+const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx2", { port: 80 }, providerOpts);
 const builtService = new awsx.ecs.FargateService("nginx2", {
     cluster,
     taskDefinitionArgs: {
@@ -201,7 +205,7 @@ const builtService = new awsx.ecs.FargateService("nginx2", {
     },
     desiredCount: 2,
     waitForSteadyState: false,
-});
+}, providerOpts);
 
 function errorJSON(err: any) {
     const result: any = Object.create(null);
@@ -285,7 +289,7 @@ const api = new awsx.apigateway.API("containers", {
                     return handleError(err);
                 }
             },
-        }),
+        }, providerOpts),
     }, {
         path: "/custom",
         method: "GET",
@@ -313,7 +317,7 @@ const api = new awsx.apigateway.API("containers", {
         path: "/nginx",
         target: nginxListener,
     }],
-});
+}, providerOpts);
 
 export let frontendURL = api.url;
 export let vpcId = vpc.id;
