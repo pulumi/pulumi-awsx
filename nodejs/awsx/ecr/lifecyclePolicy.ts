@@ -30,7 +30,7 @@ export class LifecyclePolicy extends aws.ecr.LifecyclePolicy {
             repository: repository.name,
         }, {
             parent: repository,
-            ...utils.withAlias(opts, pulumi.createUrn(name, "aws:ecr/lifecyclePolicy:LifecyclePolicy", opts.parent)),
+            ...utils.withAlias(opts, { parent: opts.parent }),
         });
     }
 

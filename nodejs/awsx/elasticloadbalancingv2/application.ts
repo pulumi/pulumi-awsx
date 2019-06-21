@@ -131,7 +131,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             ...args,
         }, {
             parent: this,
-            ...utils.withAlias(opts, pulumi.createUrn(name, "awsx:x:elasticloadbalancingv2:ApplicationListener", opts.parent)),
+            ...utils.withAlias(opts, { parent: opts.parent }),
         });
     }
 

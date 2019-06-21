@@ -23,9 +23,6 @@ import * as utils from "./../utils";
 
 // Mapping from vpcId to Vpc.
 const defaultVpcs = new Map<string, Vpc>();
-const defaultVpcName = "default-vpc";
-
-const vpcTypeName = "awsx:x:ec2:Vpc";
 
 export class Vpc extends pulumi.ComponentResource {
     // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
@@ -56,7 +53,7 @@ export class Vpc extends pulumi.ComponentResource {
     constructor(name: string, args?: VpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        super(vpcTypeName, name, {}, opts);
+        super("awsx:x:ec2:Vpc", name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
             this.vpc = args.vpc;
@@ -83,7 +80,7 @@ export class Vpc extends pulumi.ComponentResource {
                 enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
                 assignGeneratedIpv6CidrBlock,
-            }, { parent: this, aliases: [pulumi.createUrn(name, "aws:ec2/vpc:Vpc")] });
+            }, { parent: this, aliases: [{ parent: pulumi.rootStackResource }] });
             this.id = this.vpc.id;
 
             // Create the appropriate subnets.  Default to a single public and private subnet for each
@@ -105,7 +102,6 @@ export class Vpc extends pulumi.ComponentResource {
                 // We previously did not parent the subnet to this component. We now do. Provide an
                 // alias so this doesn't cause resources to be destroyed/recreated for existing
                 // stacks.
-                const subnetAliases = [pulumi.createUrn(subnetName, "awsx:x:ec2:Subnet", opts.parent)];
                 const subnet = new x.ec2.Subnet(subnetName, this, {
                     cidrBlock: desc.cidrBlock,
                     availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: this }),
@@ -124,7 +120,7 @@ export class Vpc extends pulumi.ComponentResource {
                     // merge some good default tags, with whatever the user wants.  Their choices should
                     // always win out over any defaults we pick.
                     tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
-                }, { aliases: subnetAliases, parent: this });
+                }, { aliases: [{ parent: opts.parent }], parent: this });
 
                 this.getSubnets(type).push(subnet);
                 this.getSubnetIds(type).push(subnet.id);
@@ -228,9 +224,8 @@ export class Vpc extends pulumi.ComponentResource {
             // the very first default Vpc we create as that's how we used to name them.
             const vpcName = "default-" + vpcId;
 
-            // If this is the first
             const aliases = defaultVpcs.size === 0
-                ? [pulumi.createUrn("default-vpc", vpcTypeName)]
+                ? [{ name: "default-vpc" }]
                 : [];
 
             vpc = Vpc.fromExistingIds(vpcName, { vpcId, publicSubnetIds }, { aliases, provider });
@@ -262,7 +257,7 @@ export class Vpc extends pulumi.ComponentResource {
             const igName = `${name}-ig`;
             vpc.internetGateway = new x.ec2.InternetGateway(igName, vpc, {
                 internetGateway: aws.ec2.InternetGateway.get(igName, idArgs.internetGatewayId, {}, { parent: vpc }),
-            }, { parent: vpc, aliases: [pulumi.createUrn(igName, "awsx:x:ec2:InternetGateway")] });
+            }, { parent: vpc, aliases: [{ parent: pulumi.rootStackResource }] });
         }
 
         if (idArgs.natGatewayIds) {
@@ -271,7 +266,7 @@ export class Vpc extends pulumi.ComponentResource {
                 const natName = `${name}-nat-${i}`;
                 vpc.natGateways.push(new x.ec2.NatGateway(natName, vpc, {
                     natGateway: aws.ec2.NatGateway.get(natName, natGatewayId, {}, { parent: vpc }),
-                }, { parent: vpc, aliases: [pulumi.createUrn(natName, "awsx:x:ec2:NatGateway")] }));
+                }, { parent: vpc, aliases: [{ parent: pulumi.rootStackResource }] }));
             }
         }
 

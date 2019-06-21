@@ -46,7 +46,7 @@ export abstract class Listener
         // created/destroyed.
         super(type, name, args, {
             parent: args.loadBalancer,
-            ...utils.withAlias(opts, pulumi.createUrn(name, type, opts.parent)),
+            ...utils.withAlias(opts, { parent: opts.parent }),
         });
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
