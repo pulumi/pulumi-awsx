@@ -131,8 +131,7 @@ export function createRoleWithAuthorizerInvocationPolicy(
 
     // We previously didn't parent the Role or RolePolicy to anything.  Now we do.  Pass an
     // appropriate alias to prevent resources from being destroyed/created.
-    const roleName = authorizerName + "-authorizer-role";
-    const role = new aws.iam.Role(roleName, {
+    const role = new aws.iam.Role(authorizerName + "-authorizer-role", {
         assumeRolePolicy: JSON.stringify(policy),
     }, utils.withAlias(opts, { parent: pulumi.rootStackResource }));
 
