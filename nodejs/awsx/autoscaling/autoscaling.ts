@@ -14,6 +14,7 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as random from "@pulumi/random";
 
 import * as x from "..";
 import * as utils from "./../utils";
@@ -34,9 +35,10 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     public readonly stack: aws.cloudformation.Stack;
 
     /**
-     * The launch configuration for this auto scaling group.
+     * The launch configuration for this auto scaling group.  Does not have a value if
+     * [args.launchConfigurationId] is provided.
      */
-    public readonly launchConfiguration: AutoScalingLaunchConfiguration;
+    public readonly launchConfiguration: AutoScalingLaunchConfiguration | undefined;
 
     /**
      * Underlying [autoscaling.Group] that is created by cloudformation.
@@ -60,13 +62,26 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         this.targetGroups = args.targetGroups || [];
         const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
 
+        let launchConfigurationId: pulumi.Input<string>;
+        let stackName: pulumi.Input<string>;
+
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
-        if (args.launchConfiguration) {
-            this.launchConfiguration = args.launchConfiguration;
+        if (args.launchConfigurationId) {
+            launchConfigurationId = args.launchConfigurationId;
+            stackName = new random.RandomId(name, {
+                byteLength: 8,
+                prefix: name,
+                keepers: { launchConfigurationId },
+            }, { parent: this }).b64Url;
         }
         else {
-            this.launchConfiguration = new AutoScalingLaunchConfiguration(
-                name, this.vpc, args.launchConfigurationArgs, { parent: this });
+            this.launchConfiguration = args.launchConfiguration
+                ? args.launchConfiguration
+                : new AutoScalingLaunchConfiguration(
+                    name, this.vpc, args.launchConfigurationArgs, { parent: this });
+
+            launchConfigurationId = this.launchConfiguration.id;
+            stackName = this.launchConfiguration.stackName;
         }
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
@@ -74,10 +89,10 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         // Use cloudformation to actually construct the autoscaling group.
         this.stack = new aws.cloudformation.Stack(name, {
             ...args,
-            name: this.launchConfiguration.stackName,
+            name: stackName,
             templateBody: getCloudFormationTemplate(
                 name,
-                this.launchConfiguration.id,
+                launchConfigurationId,
                 subnetIds,
                 targetGroupArns,
                 utils.ifUndefined(args.templateParameters, {})),
@@ -218,7 +233,7 @@ function ifUndefined<T>(val: T | undefined, defVal: T) {
 // rolling updates in an autoscaling group.
 function getCloudFormationTemplate(
     instanceName: string,
-    instanceLaunchConfigurationId: pulumi.Output<string>,
+    instanceLaunchConfigurationId: pulumi.Input<string>,
     subnetIds: pulumi.Input<string>[],
     targetGroupArns: pulumi.Input<string>[],
     parameters: pulumi.Output<TemplateParameters>): pulumi.Output<string> {
@@ -309,21 +324,32 @@ export interface AutoScalingGroupArgs {
     /**
      * The config to use when creating the auto scaling group.
      *
-     * [launchConfiguration] or [launchConfigurationArgs] can be provided.  And, if either are
-     * provided will be used as the launch configuration for the auto scaling group.
+     * [launchConfiguration], [launchConfigurationId] or [launchConfigurationArgs] can be provided.
+     * And, if any provided will be used as the launch configuration for the auto scaling group.
      *
-     * If neither are provided, a default instance will be create by calling
+     * If none are provided, a default instance will be create by calling
      * [cluster.createAutoScalingConfig()].
      */
     launchConfiguration?: AutoScalingLaunchConfiguration;
 
     /**
+     * The launch configuration id to use when creating the auto scaling group.
+     *
+     * [launchConfiguration], [launchConfigurationId] or [launchConfigurationArgs] can be provided.
+     * And, if any provided will be used as the launch configuration for the auto scaling group.
+     *
+     * If none are provided, a default instance will be create by calling
+     * [cluster.createAutoScalingConfig()].
+     */
+    launchConfigurationId?: pulumi.Input<string>;
+
+    /**
      * The config to use when creating the auto scaling group.
      *
-     * [launchConfiguration] or [launchConfigurationArgs] can be provided.  And, if either are
-     * provided will be used as the launch configuration for the auto scaling group.
+     * [launchConfiguration], [launchConfigurationId] or [launchConfigurationArgs] can be provided.
+     * And, if any provided will be used as the launch configuration for the auto scaling group.
      *
-     * If neither are provided, a default instance will be create by calling
+     * If none are provided, a default instance will be create by calling
      * [cluster.createAutoScalingConfig()].
      */
     launchConfigurationArgs?: AutoScalingLaunchConfigurationArgs;
