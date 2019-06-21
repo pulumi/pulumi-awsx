@@ -158,18 +158,15 @@ function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.Usage
             // We previously did not parent the ApiKey or UsagePlanKey. We now do. Provide an alias so this doesn't
             // cause resources to be destroyed/recreated for existing stacks.
             const childName = `${name}-${i}`;
-            const apiKeyAliases = [{ parent: pulumi.rootStackResource }];
-            const usagePlayKeyAliases = [{ parent: pulumi.rootStackResource }];
-
             const apikey = pulumi.CustomResource.isInstance(currKey)
                 ? currKey
-                : new aws.apigateway.ApiKey(childName, currKey, { aliases: apiKeyAliases, parent: usagePlan });
+                : new aws.apigateway.ApiKey(childName, currKey, { aliases: [{ parent: pulumi.rootStackResource }], parent: usagePlan });
 
             const usagePlanKey = new aws.apigateway.UsagePlanKey(childName, {
                 keyId: apikey.id,
                 keyType: "API_KEY",
                 usagePlanId: usagePlan.id,
-            }, { aliases: usagePlayKeyAliases, parent: usagePlan });
+            }, { aliases: [{ parent: pulumi.rootStackResource }], parent: usagePlan });
 
             keys.push({ apikey, usagePlanKey });
         }
