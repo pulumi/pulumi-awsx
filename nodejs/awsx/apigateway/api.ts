@@ -780,8 +780,16 @@ function getLambdaAuthorizer(api: API, authorizerName: string, authorizer: lambd
         };
     }
 
-    const authorizerLambda = aws.lambda.createFunctionFromEventHandler(authorizerName, authorizer.handler, { parent: api });
-    const role = lambdaAuthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda, { parent: api });
+    // We used to create the lambda and role in an unparented fashion.  Pass along an appropriate
+    // alias to make sure that they can be parented to the api without causing replacements.
+    const authorizerLambda = aws.lambda.createFunctionFromEventHandler(authorizerName, authorizer.handler, {
+        parent: api,
+        aliases: [{ parent: pulumi.rootStackResource }],
+    });
+    const role = lambdaAuthorizer.createRoleWithAuthorizerInvocationPolicy(authorizerName, authorizerLambda, {
+        parent: api,
+        aliases: [{ parent: pulumi.rootStackResource }],
+    });
 
     const identitySource = lambdaAuthorizer.getIdentitySource(authorizer.identitySource);
     return {
