@@ -160,7 +160,7 @@ export function promiseResult<T>(promise: Promise<T>): T {
     return result!;
 }
 
-interface HasAliases { aliases?: pulumi.Input<pulumi.URN | pulumi.Alias>[] };
+interface HasAliases { aliases?: pulumi.Input<pulumi.URN | pulumi.Alias>[]; }
 
 /** @internal */
 export function withAlias<T extends HasAliases>(opts: T, alias: pulumi.Input<pulumi.URN | pulumi.Alias>): T {
