@@ -33,6 +33,11 @@ export abstract class Service extends pulumi.ComponentResource {
 
         // If the cluster has any autoscaling groups, ensure the service depends on it being
         // created.
+        const parentOpts = {
+            parent: this,
+            dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
+        };
+
         const loadBalancers = getLoadBalancers(this, name, args);
 
         this.service = new aws.ecs.Service(name, {
@@ -43,10 +48,7 @@ export abstract class Service extends pulumi.ComponentResource {
             desiredCount: utils.ifUndefined(args.desiredCount, 1),
             launchType: utils.ifUndefined(args.launchType, "EC2"),
             waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),
-        }, {
-            parent: this,
-            dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
-        });
+        }, parentOpts);
 
         this.taskDefinition = args.taskDefinition;
     }

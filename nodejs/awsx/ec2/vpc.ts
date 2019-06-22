@@ -21,8 +21,7 @@ import { VpcTopology } from "./vpcTopology";
 
 import * as utils from "./../utils";
 
-// Mapping from vpcId to Vpc.
-const defaultVpcs = new Map<string, Vpc>();
+let defaultVpc: Vpc;
 
 export class Vpc extends pulumi.ComponentResource {
     // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
@@ -52,7 +51,7 @@ export class Vpc extends pulumi.ComponentResource {
 
     constructor(name: string, args?: VpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
@@ -69,10 +68,6 @@ export class Vpc extends pulumi.ComponentResource {
             }
 
             const assignGeneratedIpv6CidrBlock = utils.ifUndefined(args.assignGeneratedIpv6CidrBlock, false);
-
-            // We previously did not parent the underlying Vpc to this component. We now do. Provide
-            // an alias so this doesn't cause resources to be destroyed/recreated for existing
-            // stacks.
             this.vpc = new aws.ec2.Vpc(name, {
                 ...args,
                 cidrBlock,
@@ -80,7 +75,7 @@ export class Vpc extends pulumi.ComponentResource {
                 enableDnsSupport: utils.ifUndefined(args.enableDnsSupport, true),
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
                 assignGeneratedIpv6CidrBlock,
-            }, { parent: this, aliases: [{ parent: pulumi.rootStackResource }] });
+            });
             this.id = this.vpc.id;
 
             // Create the appropriate subnets.  Default to a single public and private subnet for each
@@ -99,12 +94,9 @@ export class Vpc extends pulumi.ComponentResource {
                 const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
                 const ipv6CidrBlock = createIpv6CidrBlock(this, assignIpv6AddressOnCreation, i);
 
-                // We previously did not parent the subnet to this component. We now do. Provide an
-                // alias so this doesn't cause resources to be destroyed/recreated for existing
-                // stacks.
                 const subnet = new x.ec2.Subnet(subnetName, this, {
                     cidrBlock: desc.cidrBlock,
-                    availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: this }),
+                    availabilityZone: getAvailabilityZone(desc.availabilityZone),
 
                     // Allow the individual subnet to decide if it wants to be mapped.  If not
                     // specified, default to mapping a public-ip open if the type is 'public', and
@@ -120,7 +112,7 @@ export class Vpc extends pulumi.ComponentResource {
                     // merge some good default tags, with whatever the user wants.  Their choices should
                     // always win out over any defaults we pick.
                     tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
-                }, { aliases: [{ parent: opts.parent }], parent: this });
+                }, opts);
 
                 this.getSubnets(type).push(subnet);
                 this.getSubnetIds(type).push(subnet.id);
@@ -168,6 +160,8 @@ export class Vpc extends pulumi.ComponentResource {
             throw new Error("Cannot add InternetGateway to Vpc that already has one.");
         }
 
+        opts = { parent: this, ...opts };
+
         // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
         // for more details.
         this.internetGateway = new x.ec2.InternetGateway(name, this, args, opts);
@@ -198,42 +192,26 @@ export class Vpc extends pulumi.ComponentResource {
      * Gets the default vpc for the current aws account and region.
      *
      * See https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html for more details.
-     *
-     * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
-     * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
-     * version be used instead.  This version will properly respect providers.
      */
-    public static getDefault(opts: pulumi.InvokeOptions = {}): Vpc {
-        // Pull out the provider to ensure we're looking up the default vpc in the right location.
-        // Note that we do not pass 'parent' along as we want the default vpc to always be parented
-        // logically by hte stack.
-        const provider = opts.provider ? opts.provider :
-                         opts.parent   ? opts.parent.getProvider("aws::") : undefined;
-
-        // And we want to be able to return the same Vpc object instance if it represents the same
-        // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
-        // an account.  So we just map from the id to the Vpc instance we hydrate.  If asked again
-        // for the same id we can just return the same instance.
-        const vpcId = utils.promiseResult(aws.ec2.getVpc({ default: true }, { provider }).then(v => v.id));
-        let vpc = defaultVpcs.get(vpcId);
-        if (!vpc) {
-            const publicSubnetIds = utils.promiseResult(aws.ec2.getSubnetIds({ vpcId }, { provider }).then(subnets => subnets.ids));
-
-            // Generate the name as `default-` + the actual name.  For back compat with how we
-            // previously named things, also create an alias from "default-vpc" to this name for
-            // the very first default Vpc we create as that's how we used to name them.
-            const vpcName = "default-" + vpcId;
-
-            const aliases = defaultVpcs.size === 0
-                ? [{ name: "default-vpc" }]
-                : [];
-
-            vpc = Vpc.fromExistingIds(vpcName, { vpcId, publicSubnetIds }, { aliases, provider });
-
-            defaultVpcs.set(vpcId, vpc);
+    public static getDefault(opts?: pulumi.ComponentResourceOptions): Vpc {
+        if (defaultVpc) {
+            return defaultVpc;
         }
 
-        return vpc;
+        const vpc = aws.ec2.getVpc({ default: true }, opts);
+        const vpcId = vpc.then(v => v.id);
+
+        // The default VPC will contain at least two public subnets (one per availability zone).
+        // See https://docs.aws.amazon.com/vpc/latest/userguide/images/default-vpc-diagram.png for
+        // more information.
+        const subnetIds = vpcId.then(id => aws.ec2.getSubnetIds({ vpcId: id }))
+            .then(subnets => subnets.ids);
+        const subnet0 = subnetIds.then(ids => ids[0]);
+        const subnet1 = subnetIds.then(ids => ids[1]);
+        const publicSubnetIds = [subnet0, subnet1];
+
+        defaultVpc = Vpc.fromExistingIds("default-vpc", { vpcId, publicSubnetIds }, opts);
+        return defaultVpc;
     }
 
     /**
@@ -251,13 +229,11 @@ export class Vpc extends pulumi.ComponentResource {
         createSubnets(vpc, name, "private", idArgs.privateSubnetIds);
         createSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
 
-        // Pass along aliases so that the previously unparented resources are now properly parented
-        // to the vpc.
         if (idArgs.internetGatewayId) {
             const igName = `${name}-ig`;
             vpc.internetGateway = new x.ec2.InternetGateway(igName, vpc, {
-                internetGateway: aws.ec2.InternetGateway.get(igName, idArgs.internetGatewayId, {}, { parent: vpc }),
-            }, { parent: vpc, aliases: [{ parent: pulumi.rootStackResource }] });
+                internetGateway: aws.ec2.InternetGateway.get(igName, idArgs.internetGatewayId),
+            });
         }
 
         if (idArgs.natGatewayIds) {
@@ -265,8 +241,8 @@ export class Vpc extends pulumi.ComponentResource {
                 const natGatewayId = idArgs.natGatewayIds[i];
                 const natName = `${name}-nat-${i}`;
                 vpc.natGateways.push(new x.ec2.NatGateway(natName, vpc, {
-                    natGateway: aws.ec2.NatGateway.get(natName, natGatewayId, {}, { parent: vpc }),
-                }, { parent: vpc, aliases: [{ parent: pulumi.rootStackResource }] }));
+                    natGateway: aws.ec2.NatGateway.get(natName, natGatewayId),
+                }));
             }
         }
 
@@ -372,14 +348,15 @@ function createNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones:
 }
 
 function createSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
+    const parentOpts = { parent: vpc };
     const subnets = vpc.getSubnets(type);
     const subnetIds = vpc.getSubnetIds(type);
 
     for (let i = 0, n = inputs.length; i < n; i++) {
         const subnetName = `${vpcName}-${type}-${i}`;
         const subnet = new x.ec2.Subnet(subnetName, vpc, {
-            subnet: aws.ec2.Subnet.get(subnetName, inputs[i], /*state:*/undefined, { parent: vpc }),
-        }, { parent: vpc });
+            subnet: aws.ec2.Subnet.get(subnetName, inputs[i], /*state:*/undefined, parentOpts),
+        }, parentOpts);
 
         subnets.push(subnet);
         subnetIds.push(subnet.id);

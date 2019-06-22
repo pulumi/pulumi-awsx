@@ -34,14 +34,10 @@ export abstract class TargetGroup
     public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
 
     constructor(type: string, name: string, loadBalancer: mod.LoadBalancer,
-                args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        // We want our parent to the be the ALB by default if nothing else is specified.
-        // Create an alias from our old name where we didn't parent by default to keep
-        // resources from being created/destroyed.
-        super(type, name, {}, {
-            parent: loadBalancer,
-            ...utils.withAlias(opts, { parent: opts.parent }),
-        });
+                args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
+        super(type, name, {}, opts);
+
+        const parentOpts = { parent: this };
 
         const longName = `${name}`;
         const shortName = args.name || utils.sha1hash(`${longName}`);
@@ -54,7 +50,7 @@ export abstract class TargetGroup
             deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 300),
             targetType: utils.ifUndefined(args.targetType, "ip"),
             tags: utils.mergeTags(args.tags, { Name: longName }),
-        }, { parent: this });
+        }, parentOpts);
 
         this.loadBalancer = loadBalancer;
     }
@@ -96,7 +92,7 @@ export abstract class TargetGroup
      * for more details.
      */
     public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
-        return new mod.TargetGroupAttachment(name, this, args, opts);
+        return new mod.TargetGroupAttachment(name, this, args, { parent: this, ...opts });
     }
 }
 
