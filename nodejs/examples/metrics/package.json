@@ -8,8 +8,8 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@pulumi/pulumi": "^0.17.6",
-        "@pulumi/aws": "^0.18.1",
+        "@pulumi/pulumi": "feature-dedupeAliases",
+        "@pulumi/aws": "dev",
         "node-fetch": "^2.2.0"
     },
     "devDependencies": {
