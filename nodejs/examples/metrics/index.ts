@@ -17,12 +17,9 @@ import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
 import * as fetch from "node-fetch";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
-
 // Examples of different types of metrics and alarms that can be set.
 
-const topic = new aws.sns.Topic("sites-to-process-topic", {}, providerOpts);
+const topic = new aws.sns.Topic("sites-to-process-topic");
 const subscription = topic.onEvent("for-each-url", async (event) => {
     const records = event.Records || [];
     for (const record of records) {
@@ -44,10 +41,10 @@ const subscription = topic.onEvent("for-each-url", async (event) => {
 let alarmIndex = 0;
 
 const funcMetric = awsx.lambda.metrics.duration({ function: subscription.func, unit: "Seconds" });
-const funcAlarm = funcMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
+const funcAlarm = funcMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const topicMetric = awsx.sns.metrics.numberOfMessagesPublished({ topic });
-const topicAlarm = topicMetric.createAlarm("alarm" + alarmIndex++, { threshold: 1000, evaluationPeriods: 2 }, providerOpts);
+const topicAlarm = topicMetric.createAlarm("alarm" + alarmIndex++, { threshold: 1000, evaluationPeriods: 2 });
 
 const queue = new aws.sqs.Queue("terraform_queue", {
     delaySeconds: 90,
@@ -57,17 +54,17 @@ const queue = new aws.sqs.Queue("terraform_queue", {
     tags: {
         Environment: "production",
     },
-}, providerOpts);
+});
 
 const queueMetric = awsx.sqs.metrics.sentMessageSize({ queue });
-const queueAlarm = queueMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
+const queueAlarm = queueMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const restApi = new aws.apigateway.RestApi("MyDemoAPI", {
     description: "This is my API for demonstration purposes",
-}, providerOpts);
+  });
 
 const restApiMetric = awsx.apigateway.metrics.error5XX({ restApi });
-const restApiAlarm = restApiMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 }, providerOpts);
+const restApiAlarm = restApiMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 });
 
 const table = new aws.dynamodb.Table("testtable", {
     attributes: [{
@@ -79,10 +76,10 @@ const table = new aws.dynamodb.Table("testtable", {
     writeCapacity: 5,
     streamEnabled: true,
     streamViewType: "NEW_AND_OLD_IMAGES",
-}, providerOpts);
+});
 
 const tableMetric = awsx.dynamodb.metrics.throttledRequests({ table });
-const tableAlarm = tableMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
+const tableAlarm = tableMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const bucket = new aws.s3.Bucket("b", {
     acl: "private",
@@ -90,10 +87,10 @@ const bucket = new aws.s3.Bucket("b", {
         Environment: "Dev",
         Name: "My bucket",
     },
-}, providerOpts);
+});
 
 const bucketMetric = awsx.s3.metrics.firstByteLatency({ bucket, unit: "Seconds" });
-const bucketAlarm = bucketMetric.createAlarm("alarm" + alarmIndex++, { threshold: 30 , evaluationPeriods: 2 }, providerOpts);
+const bucketAlarm = bucketMetric.createAlarm("alarm" + alarmIndex++, { threshold: 30 , evaluationPeriods: 2 });
 
 const ubuntu = pulumi.output(aws.getAmi({
     filters: [
@@ -102,25 +99,25 @@ const ubuntu = pulumi.output(aws.getAmi({
     ],
     mostRecent: true,
     owners: ["099720109477"], // Canonical
-}, providerOpts));
+}));
 const instance = new aws.ec2.Instance("web", {
     ami: ubuntu.apply(ubuntu => ubuntu.id),
     instanceType: "t2.micro",
     tags: {
         Name: "HelloWorld",
     },
-}, providerOpts);
+});
 
 const instanceMetric = awsx.ec2.metrics.cpuUtilization({ instance });
-const instanceAlarm = instanceMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
+const instanceAlarm = instanceMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
-const cluster = new aws.ecs.Cluster("foo", {}, providerOpts);
+const cluster = new aws.ecs.Cluster("foo", {});
 const clusterMetric = awsx.ecs.metrics.cpuUtilization({ cluster, unit: "Percent" });
-const clusterAlarm = clusterMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 }, providerOpts);
+const clusterAlarm = clusterMetric.createAlarm("alarm" + alarmIndex++, { threshold: 50, evaluationPeriods: 2 });
 
-const userPool = new aws.cognito.UserPool("pool", {}, providerOpts);
+const userPool = new aws.cognito.UserPool("pool", {});
 const userPoolMetric = awsx.cognito.metrics.compromisedCredentialsRisk({ userPool });
-const userPoolAlarm = userPoolMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
+const userPoolAlarm = userPoolMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const eventRule = new aws.cloudwatch.EventRule("console", {
     description: "Capture each AWS Console Sign In",
@@ -130,15 +127,15 @@ const eventRule = new aws.cloudwatch.EventRule("console", {
   ]
 }
 `,
-}, providerOpts);
+});
 const eventRuleMetric = awsx.cloudwatch.metrics.events.deadLetterInvocations({ eventRule });
-const eventRuleAlarm = eventRuleMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);
+const eventRuleAlarm = eventRuleMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 });
 
 const logGroup = new aws.cloudwatch.LogGroup("yada", {
     tags: {
         Application: "serviceA",
         Environment: "production",
     },
-}, providerOpts);
+});
 const logGroupMetric = awsx.cloudwatch.metrics.logs.incomingBytes({ logGroup, unit: "Megabytes" });
-const logGroupAlarm = logGroupMetric.createAlarm("alarm" + alarmIndex++, { threshold: 512, evaluationPeriods: 2 }, providerOpts);
+const logGroupAlarm = logGroupMetric.createAlarm("alarm" + alarmIndex++, { threshold: 512, evaluationPeriods: 2 });

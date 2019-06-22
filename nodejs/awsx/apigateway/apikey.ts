@@ -19,8 +19,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as api from "./api";
 import { SecurityDefinition } from "./swagger_json";
 
-import * as utils from "../utils";
-
 /**
  * Input properties for creating a UsagePlan and associated API Keys.
  */
@@ -93,15 +91,15 @@ export interface Key {
  * @param name The _unique_ name of the resource.
  * @param args The arguments to use to populate this resource's properties.
  */
-export function createAssociatedAPIKeys(name: string, args: APIKeyArgs, opts: pulumi.CustomResourceOptions = {}): AssociatedAPIKeys {
-    const usagePlan = getUsagePlan(name, args, opts);
+export function createAssociatedAPIKeys(name: string, args: APIKeyArgs): AssociatedAPIKeys {
+    const usagePlan = getUsagePlan(name, args);
     const keys = getKeys(name, args, usagePlan);
 
     return { usagePlan, keys };
 }
 
 /** @internal */
-function getUsagePlan(name: string, args: APIKeyArgs, opts: pulumi.CustomResourceOptions): aws.apigateway.UsagePlan {
+function getUsagePlan(name: string, args: APIKeyArgs): aws.apigateway.UsagePlan {
     if (args.usagePlan && pulumi.CustomResource.isInstance(args.usagePlan)) {
         if (args.apis) {
             throw new Error("cannot define both [args.apis] and an existing usagePlan [args.usagePlan]");
@@ -139,11 +137,7 @@ function getUsagePlan(name: string, args: APIKeyArgs, opts: pulumi.CustomResourc
                 };
             }
         }
-
-        // We previously did not parent the UsagePlan. We now do. Provide an alias so this doesn't
-        // cause resources to be destroyed/recreated for existing stacks.
-        return new aws.apigateway.UsagePlan(name, usagePlanArgs,
-            utils.withAlias(opts, { parent: pulumi.rootStackResource }));
+        return new aws.apigateway.UsagePlan(name, usagePlanArgs);
     }
 }
 
@@ -155,23 +149,19 @@ function getKeys(name: string, args: APIKeyArgs, usagePlan: aws.apigateway.Usage
         for (let i = 0; i < args.apiKeys.length; i++) {
             const currKey = args.apiKeys[i];
 
-            // We previously did not parent the ApiKey or UsagePlanKey. We now do. Provide an alias so this doesn't
-            // cause resources to be destroyed/recreated for existing stacks.
-            const childName = `${name}-${i}`;
             const apikey = pulumi.CustomResource.isInstance(currKey)
                 ? currKey
-                : new aws.apigateway.ApiKey(childName, currKey, { aliases: [{ parent: pulumi.rootStackResource }], parent: usagePlan });
+                : new aws.apigateway.ApiKey(`${name}-${i}`, currKey);
 
-            const usagePlanKey = new aws.apigateway.UsagePlanKey(childName, {
+            const usagePlanKey = new aws.apigateway.UsagePlanKey(`${name}-${i}`, {
                 keyId: apikey.id,
                 keyType: "API_KEY",
                 usagePlanId: usagePlan.id,
-            }, { aliases: [{ parent: pulumi.rootStackResource }], parent: usagePlan });
+            });
 
             keys.push({ apikey, usagePlanKey });
         }
     }
-
     return keys;
 }
 

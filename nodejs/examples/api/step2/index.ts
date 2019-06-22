@@ -12,12 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
-
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
 const api = new awsx.apigateway.API("myapi", {
     routes: [{
@@ -30,6 +25,6 @@ const api = new awsx.apigateway.API("myapi", {
             };
         }
     }],
-}, providerOpts);
+});
 
 export const url = api.url;

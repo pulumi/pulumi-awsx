@@ -34,10 +34,9 @@ export function computeContainerDefinition(
         : container.environment;
 
     const portMappings = getPortMappings(name, container, parent);
-    const region = utils.getRegion(logGroup);
 
-    return pulumi.all([container, logGroup.id, image, environment, portMappings, region])
-                 .apply(([container, logGroupId, image, environment, portMappings, region]) => {
+    return pulumi.all([container, logGroup.id, image, environment, portMappings])
+                 .apply(([container, logGroupId, image, environment, portMappings]) => {
         const containerDefinition = {
             ...container,
             image,
@@ -53,7 +52,7 @@ export function computeContainerDefinition(
                 logDriver: "awslogs",
                 options: {
                     "awslogs-group": logGroupId,
-                    "awslogs-region": region,
+                    "awslogs-region": aws.config.requireRegion(),
                     "awslogs-stream-prefix": containerName,
                 },
             },

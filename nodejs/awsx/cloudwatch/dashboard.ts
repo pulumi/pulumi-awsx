@@ -87,13 +87,15 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
      * then these will be treated as a sequence of rows to add to the grid.  Otherwise, this will
      * be treated as a single row to add to the grid.
      */
-    constructor(name: string, args: DashboardArgs, opts: pulumi.CustomResourceOptions = {}) {
+    constructor(name: string, args: DashboardArgs, opts?: pulumi.CustomResourceOptions) {
         super(name, {
             dashboardName: utils.ifUndefined(args.name, name),
-            dashboardBody: getDashboardBody(args, opts).apply(b => JSON.stringify(b)),
+            dashboardBody: getDashboardBody(args).apply(b => JSON.stringify(b)),
         }, opts);
 
-        const region = utils.getRegion(this);
+        const provider: any = this.getProvider("aws::");
+        let region = provider ? provider.region : undefined;
+        region = region || aws.config.region;
 
         this.url = pulumi.interpolate
             `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#dashboards:name=${this.dashboardName}`;
@@ -101,7 +103,7 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
 }
 
 /** @internal */
-export function getDashboardBody(args: DashboardArgs, opts: pulumi.CustomResourceOptions = {}) {
+export function getDashboardBody(args: DashboardArgs) {
     const widgets = args.widgets || [];
     if (widgets.length < 0 || widgets.length > 100) {
         throw new Error("Must supply between 0 and 100 widgets.");
@@ -122,7 +124,7 @@ export function getDashboardBody(args: DashboardArgs, opts: pulumi.CustomResourc
     const column = new ColumnWidget(...rows);
 
     const widgetJsons: WidgetJson[] = [];
-    column.addWidgetJson(widgetJsons, /*xOffset:*/ 0, /*yOffset:*/0, utils.getRegionFromOpts(opts));
+    column.addWidgetJson(widgetJsons, /*xOffset:*/ 0, /*yOffset:*/0);
 
     return pulumi.output({
         start: args.start,

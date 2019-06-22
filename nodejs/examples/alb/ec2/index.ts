@@ -12,21 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
-
-const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
-const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true }, providerOpts);
+const cluster = new awsx.ecs.Cluster("testing");
+const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true });
 
 // A simple NGINX service, scaled out over two containers.
 const targetGroup = loadBalancer.createTargetGroup("nginx", { port: 80, targetType: "instance" });
 
 const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
-    subnetIds: awsx.ec2.Vpc.getDefault(providerOpts).publicSubnetIds,
+    subnetIds: awsx.ec2.Vpc.getDefault().publicSubnetIds,
     targetGroups: [targetGroup],
     templateParameters: {
         minSize: 10,
@@ -57,7 +53,7 @@ const service = new awsx.ecs.EC2Service("nginx", {
         },
     },
     desiredCount: 2,
-}, providerOpts);
+});
 
 // Create a policy that scales the ASG in response to the average memory utilization of the service.
 // When memory goes above 60%, scale up the ASG by 10%.  If it goes above 70%, scale it up by 30%.

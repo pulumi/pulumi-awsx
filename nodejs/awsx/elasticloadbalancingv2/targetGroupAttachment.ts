@@ -27,9 +27,10 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     public readonly func?: aws.lambda.Function;
 
     constructor(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:elasticloadbalancingv2:TargetGroupAttachment", name, undefined, { parent: targetGroup, ...opts });
+        super("awsx:elasticloadbalancingv2:TargetGroupAttachment", name, undefined, opts);
 
-        const { targetInfo, func, permission } = getTargetInfo(this, targetGroup, name, args);
+        const parentOpts = { parent: this };
+        const { targetInfo, func, permission } = getTargetInfo(targetGroup, name, args, parentOpts);
 
         const dependsOn = permission ? [permission] : [];
 
@@ -38,7 +39,7 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
             port: <pulumi.Input<number>>targetInfo.port,
             targetGroupArn: targetGroup.targetGroup.arn,
             targetId: targetInfo.targetId,
-        }, { parent: this, dependsOn });
+        }, { ...parentOpts, dependsOn });
 
         this.func = func;
         this.permission = permission;
@@ -47,17 +48,17 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     }
 }
 
-function getTargetInfo(parent: TargetGroupAttachment, targetGroup: mod.TargetGroup, name: string, args: mod.LoadBalancerTarget) {
+function getTargetInfo(targetGroup: mod.TargetGroup, name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions) {
     if (aws.ec2.Instance.isInstance(args)) {
         return { targetInfo: getEc2InstanceTargetInfo(targetGroup, args), permission: undefined, func: undefined };
     }
 
     if (aws.lambda.Function.isInstance(args)) {
-        return getLambdaFunctionTargetInfo(parent, targetGroup, name, args);
+        return getLambdaFunctionTargetInfo(targetGroup, name, args, opts);
     }
 
     if (args instanceof Function) {
-        return getLambdaFunctionTargetInfo(parent, targetGroup, name, new aws.lambda.CallbackFunction(name, { callback: args }, { parent }));
+        return getLambdaFunctionTargetInfo(targetGroup, name, new aws.lambda.CallbackFunction(name, { callback: args }, opts), opts);
     }
 
     if (mod.isLoadBalancerTargetInfoProvider(args)) {
@@ -91,13 +92,13 @@ function getEc2InstanceTargetInfo(targetGroup: mod.TargetGroup, instance: aws.ec
 /**
  * Allows a Lambda to simply be used as the target of an ALB.  To use, just call:
  */
-function getLambdaFunctionTargetInfo(parent: TargetGroupAttachment, targetGroup: mod.TargetGroup, name: string, func: aws.lambda.Function) {
+function getLambdaFunctionTargetInfo(targetGroup: mod.TargetGroup, name: string, func: aws.lambda.Function, opts: pulumi.CustomResourceOptions) {
     const permission = new aws.lambda.Permission(name, {
         action: "lambda:InvokeFunction",
         function: func,
         principal: "elasticloadbalancing.amazonaws.com",
         sourceArn: targetGroup.targetGroup.arn,
-    }, { parent });
+    }, opts);
 
     const targetInfo = pulumi.output([targetGroup.targetGroup.targetType, func.arn])
                              .apply(([targetType, lambdaArn]) => {

@@ -109,28 +109,6 @@ export function hasTrueBooleanMember(obj: any, memberName: string | number | sym
 }
 
 /** @internal */
-export function getRegionFromOpts(opts: pulumi.CustomResourceOptions): pulumi.Output<aws.Region> {
-    if (opts.parent) {
-        return getRegion(opts.parent);
-    }
-
-    return getRegionFromProvider(opts.provider);
-}
-
-
-/** @internal */
-export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
-    // A little strange, but all we're doing is passing a fake type-token simply to get
-    // the AWS provider from this resource.
-    return getRegionFromProvider(res.getProvider("aws::"));
-}
-
-function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
-    const region = provider ? (<any>provider).region : undefined;
-    return region || aws.config.region;
-}
-
-/** @internal */
 export function promiseResult<T>(promise: Promise<T>): T {
     enum State {
         running,
@@ -158,27 +136,4 @@ export function promiseResult<T>(promise: Promise<T>): T {
     }
 
     return result!;
-}
-
-interface HasAliases { aliases?: pulumi.Input<pulumi.URN | pulumi.Alias>[]; }
-
-/** @internal */
-export function withAlias<T extends HasAliases>(opts: T, alias: pulumi.Input<pulumi.URN | pulumi.Alias>): T {
-  return withAliases(opts, [alias]);
-}
-
-/** @internal */
-export function withAliases<T extends HasAliases>(opts: T, aliases: pulumi.Input<pulumi.URN | pulumi.Alias>[]): T {
-    const allAliases: pulumi.Input<pulumi.URN | pulumi.Alias>[] = [];
-    if (opts.aliases) {
-        for (const alias of opts.aliases) {
-            allAliases.push(alias);
-        }
-    }
-
-    for (const alias of aliases) {
-        allAliases.push(alias);
-    }
-
-    return { ...opts, aliases };
 }

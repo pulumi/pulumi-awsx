@@ -12,18 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
-
-const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
-const cluster = new awsx.ecs.Cluster("testing", { vpc }, providerOpts);
+const vpc = awsx.ec2.Vpc.getDefault();
+const cluster = new awsx.ecs.Cluster("testing", { vpc });
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { port: 80 }, providerOpts);
+const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { port: 80 });
 const nginx = new awsx.ecs.FargateService("nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -36,7 +32,7 @@ const nginx = new awsx.ecs.FargateService("nginx", {
         },
     },
     desiredCount: 2,
-}, providerOpts);
+});
 
 function errorJSON(err: any) {
     const result: any = Object.create(null);
@@ -74,6 +70,6 @@ const api = new awsx.apigateway.API("containers", {
         path: "/nginx",
         target: nginxListener,
     }],
-}, providerOpts);
+});
 
 export let frontendURL = api.url;
