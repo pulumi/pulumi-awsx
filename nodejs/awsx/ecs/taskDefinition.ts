@@ -44,15 +44,14 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
                 opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
-        const parentOpts = { parent: this };
         this.logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
-        }, parentOpts);
+        }, { parent: this });
 
         this.taskRole = args.taskRole || TaskDefinition.createTaskRole(
-            `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, parentOpts);
+            `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
         this.executionRole = args.executionRole || TaskDefinition.createExecutionRole(
-            `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, parentOpts);
+            `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
 //         // todo(cyrusn): volumes.
 //         //     // Find all referenced Volumes.
@@ -83,7 +82,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             taskRoleArn: this.taskRole.arn,
             executionRoleArn: this.executionRole.arn,
             containerDefinitions: containerString,
-        }, parentOpts);
+        }, { parent: this });
 
         this.run = createRunFunction(isFargate, this.taskDefinition.arn);
     }

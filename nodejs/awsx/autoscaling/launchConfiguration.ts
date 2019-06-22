@@ -36,25 +36,23 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingLaunchConfiguration", name, {}, opts);
 
-        const parentOpts = { parent: this };
-
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.
         // TODO[pulumi/pulumi#381]: Creating an S3 bucket is an inelegant way to get a durable,
         // unique name.
-        this.stackName = pulumi.output(args.stackName).apply(sn => sn ? pulumi.output(sn) : new aws.s3.Bucket(name, {}, parentOpts).id);
+        this.stackName = pulumi.output(args.stackName).apply(sn => sn ? pulumi.output(sn) : new aws.s3.Bucket(name, {}, { parent: this }).id);
 
         // Use the instance provided, or create a new one.
         this.instanceProfile = args.instanceProfile ||
             AutoScalingLaunchConfiguration.createInstanceProfile(
-                name, /*assumeRolePolicy:*/ undefined, /*policyArns:*/ undefined, parentOpts);
+                name, /*assumeRolePolicy:*/ undefined, /*policyArns:*/ undefined, { parent: this });
 
-        this.securityGroups = x.ec2.getSecurityGroups(vpc, name, args.securityGroups, parentOpts) || [];
+        this.securityGroups = x.ec2.getSecurityGroups(vpc, name, args.securityGroups, { parent: this }) || [];
 
         this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             ...args,
             securityGroups: this.securityGroups.map(g => g.id),
-            imageId: utils.ifUndefined(args.imageId, getEcsAmiId(args.ecsOptimizedAMIName)),
+            imageId: getEcsAmiId(args.ecsOptimizedAMIName, { parent: this }),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: this.instanceProfile.id,
             enableMonitoring: utils.ifUndefined(args.enableMonitoring, true),
@@ -62,7 +60,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             rootBlockDevice: utils.ifUndefined(args.rootBlockDevice, defaultRootBlockDevice),
             ebsBlockDevices: utils.ifUndefined(args.ebsBlockDevices, defaultEbsBlockDevices),
             userData: getInstanceUserData(args, this.stackName),
-        }, parentOpts);
+        }, { parent: this });
         this.id = this.launchConfiguration.id;
 
         this.registerOutputs();
@@ -111,13 +109,13 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
 }
 
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
-async function getEcsAmiId(name?: string): Promise<string> {
+async function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): Promise<string> {
     // If a name was not provided, use the latest recommended version.
     if (!name) {
         // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/retrieve-ecs-optimized_AMI.html
         const ecsRecommendedAMI = await aws.ssm.getParameter({
             name: "/aws/service/ecs/optimized-ami/amazon-linux/recommended",
-        });
+        }, opts);
         return JSON.parse(ecsRecommendedAMI.value).image_id;
     }
 
@@ -133,7 +131,7 @@ async function getEcsAmiId(name?: string): Promise<string> {
             },
         ],
         mostRecent: true,
-    });
+    }, opts);
 
     return result.imageId;
 }
@@ -263,7 +261,7 @@ function getAdditionalRuncmdLines(args: AutoScalingUserData | undefined): pulumi
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
 type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable<aws.ec2.LaunchConfigurationArgs>, {
-    imageId?: pulumi.Input<string>;
+    imageId?: never;
     stackName?: pulumi.Input<string>;
     instanceProfile?: aws.iam.InstanceProfile;
     ecsOptimizedAMIName?: string;
@@ -358,13 +356,6 @@ export interface AutoScalingLaunchConfigurationArgs {
      * be created.
      */
     instanceProfile?: aws.iam.InstanceProfile;
-
-    /**
-     * The EC2 image ID to launch.  If this is not provided, then [ecsOptimizedAMIName] will be
-     * used. If neither are provided the imageId for Amazon'
-     * `"/aws/service/ecs/optimized-ami/amazon-linux/recommended"` image will be used.
-     */
-    imageId?: pulumi.Input<string>;
 
     /**
      * The name of the ECS-optimzed AMI to use for the Container Instances in this cluster, e.g.
