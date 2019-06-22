@@ -39,11 +39,11 @@ import (
 )
 
 func Test_Examples(t *testing.T) {
-	envRegion := os.Getenv("AWS_REGION")
-	if envRegion == "" {
+	region := os.Getenv("AWS_REGION")
+	if region == "" {
 		t.Skipf("Skipping test due to missing AWS_REGION environment variable")
 	}
-	fmt.Printf("AWS Region: %v\n", envRegion)
+	fmt.Printf("AWS Region: %v\n", region)
 
 	cwd, err := os.Getwd()
 	if !assert.NoError(t, err, "expected a valid working directory: %v", err) {
@@ -52,8 +52,7 @@ func Test_Examples(t *testing.T) {
 
 	testBase := integration.ProgramTestOptions{
 		Config: map[string]string{
-			"aws:region":    "INVALID_REGION",
-			"aws:envRegion": envRegion,
+			"aws:region": region,
 		},
 		Dependencies: []string{
 			"@pulumi/awsx",
@@ -63,15 +62,9 @@ func Test_Examples(t *testing.T) {
 	}
 
 	shortTests := []integration.ProgramTestOptions{
-		integration.ProgramTestOptions{
-			Config: map[string]string{"aws:region": envRegion},
-			Dir:    path.Join(cwd, "../examples/cluster"),
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
-			Quick:       true,
-			SkipRefresh: true,
-		},
+		testBase.With(integration.ProgramTestOptions{
+			Dir: path.Join(cwd, "../examples/cluster"),
+		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/dashboards"),
 		}),
@@ -88,10 +81,13 @@ func Test_Examples(t *testing.T) {
 		testBase.With(integration.ProgramTestOptions{
 			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
 			StackName:              addRandomSuffix("fargate"),
-			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
+			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/, true /*short*/),
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/api"),
+			Config: map[string]string{
+				"aws:region": region,
+			},
 			Dependencies: []string{
 				"@pulumi/awsx",
 			},
@@ -215,14 +211,13 @@ func Test_Examples(t *testing.T) {
 			Dir:       path.Join(cwd, "../examples/nlb/fargate"),
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
-				"aws:region":               "INVALID_REGION",
-				"aws:envRegion":            envRegion,
+				"aws:region":               region,
 				"containers:redisPassword": "SECRETPASSWORD",
 			},
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
-			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
+			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/, false /*short*/),
 		}),
 
 		// {

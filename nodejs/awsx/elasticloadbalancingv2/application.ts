@@ -37,9 +37,9 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: ApplicationListener[];
     public readonly targetGroups: ApplicationTargetGroup[];
 
-    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
         const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
-            vpc: args.vpc || x.ec2.Vpc.getDefault(opts),
+            vpc: args.vpc || x.ec2.Vpc.getDefault(),
             ...args,
             loadBalancerType: "application",
         };
@@ -122,17 +122,12 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     }
 
     public createListener(name: string, args: ApplicationListenerArgs,
-                          opts: pulumi.ComponentResourceOptions = {}): ApplicationListener {
-        // We didn't use to parent the listener to the target group.  Now we do.  Create an alias
-        // from the old parent to the current one if this moves over.
+                          opts?: pulumi.ComponentResourceOptions): ApplicationListener {
         return new ApplicationListener(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
             ...args,
-        }, {
-            parent: this,
-            ...utils.withAlias(opts, { parent: opts.parent }),
-        });
+        }, opts);
     }
 
     public static isInstance(obj: any): obj is ApplicationTargetGroup {
@@ -183,7 +178,7 @@ export class ApplicationListener extends mod.Listener {
 
     constructor(name: string,
                 args: ApplicationListenerArgs,
-                opts: pulumi.ComponentResourceOptions = {}) {
+                opts?: pulumi.ComponentResourceOptions) {
 
         if (args.defaultAction && args.defaultActions) {
             throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
@@ -201,7 +196,6 @@ export class ApplicationListener extends mod.Listener {
         // Pass along the target as the defaultTarget for this listener.  This allows this listener
         // to defer to it for ContainerPortMappings information.  this allows this listener to be
         // passed in as the portMappings information needed for a Service.
-
         super("awsx:x:elasticloadbalancingv2:ApplicationListener", name, defaultListener, {
             ...args,
             defaultActions,
@@ -209,6 +203,8 @@ export class ApplicationListener extends mod.Listener {
             port,
             protocol,
         }, opts);
+
+        const parentOpts = { parent: this };
 
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
@@ -228,8 +224,8 @@ export class ApplicationListener extends mod.Listener {
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
-                securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, { parent: this });
-                securityGroup.createEgressRule(`${name}-external-${i}-egress`, args, { parent: this });
+                securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, parentOpts);
+                securityGroup.createEgressRule(`${name}-external-${i}-egress`, args, parentOpts);
             }
         }
 

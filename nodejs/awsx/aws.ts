@@ -15,27 +15,20 @@
 // TODO[pulumi/pulumi-aws#40]: Move these to pulumi-aws.
 
 import * as aws from "@pulumi/aws";
-import * as pulumi from "@pulumi/pulumi";
 
 // Compute the availability zones only once, and store the resulting promise.
 let zones: Promise<string[]> | undefined;
 
 // Export as a function instead of a variable so clients can pass one AZ as a promise to a resource.
-export async function getAvailabilityZone(index: number, opts?: pulumi.InvokeOptions): Promise<string> {
-    const azs = await getAvailabilityZones(opts);
+export async function getAvailabilityZone(index: number): Promise<string> {
+    const azs = await getAvailabilityZones();
     return azs[index];
 }
 
-export function getAvailabilityZones(opts?: pulumi.InvokeOptions): Promise<string[]> {
-    if (opts === undefined) {
-        // Only cache the results if 'opts' is not passed in.  If there are opts, it may change the
-        // results and we can't necessarily reuse any previous results.
-        if (!zones) {
-            zones = aws.getAvailabilityZones(/*args:*/ undefined).then(r => r.names);
-        }
-
-        return zones;
+export function getAvailabilityZones(): Promise<string[]> {
+    if (!zones) {
+        zones = aws.getAvailabilityZones().then(r => r.names);
     }
 
-    return aws.getAvailabilityZones(/*args:*/ undefined, opts).then(r => r.names);
+    return zones;
 }
