@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "@pulumi/pulumi": "feature-dedupeAliases",
-        "@pulumi/aws": "^0.18.1",
+        "@pulumi/aws": "feature-dedupeAliases",
         "aws-sdk": "^2.0.0",
         "builtin-modules": "3.0.0",
         "mime": "^2.0.0",

@@ -9,7 +9,7 @@
     },
     "dependencies": {
         "@pulumi/pulumi": "feature-dedupeAliases",
-        "@pulumi/aws": "dev"
+        "@pulumi/aws": "feature-dedupeAliases"
     },
     "devDependencies": {
         "@types/node": "^10.0.0",

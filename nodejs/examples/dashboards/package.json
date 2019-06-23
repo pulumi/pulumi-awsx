@@ -9,7 +9,7 @@
     },
     "dependencies": {
         "@pulumi/pulumi": "feature-dedupeAliases",
-        "@pulumi/aws": "dev",
+        "@pulumi/aws": "feature-dedupeAliases",
         "node-fetch": "^2.2.0"
     },
     "devDependencies": {
