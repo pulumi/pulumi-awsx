@@ -196,4 +196,3 @@ As such, we are rev'ing the minor version of the package from 0.16 to 0.17.  Rec
 ### Improvements
 
 - Fix an issue where passing a cluster to another component would fail in some cases.
-
