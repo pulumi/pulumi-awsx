@@ -13,8 +13,8 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@pulumi/pulumi": "feature-dedupeAliases",
-        "@pulumi/aws": "feature-dedupeAliases",
+        "@pulumi/pulumi": "dev",
+        "@pulumi/aws": "dev",
         "aws-sdk": "^2.0.0",
         "builtin-modules": "3.0.0",
         "mime": "^2.0.0",
