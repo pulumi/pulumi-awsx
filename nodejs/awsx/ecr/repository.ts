@@ -35,12 +35,10 @@ export class Repository extends pulumi.ComponentResource {
     constructor(name: string, args: RepositoryArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:ecr:Repository", name, undefined, opts);
 
-        const parentOpts = { parent: this };
-
         const lowerCaseName = name.toLowerCase();
 
-        this.repository = args.repository || new aws.ecr.Repository(lowerCaseName, args, parentOpts);
-        this.lifecyclePolicy = new LifecyclePolicy(lowerCaseName, this.repository, args.lifeCyclePolicyArgs, parentOpts);
+        this.repository = args.repository || new aws.ecr.Repository(lowerCaseName, args, { parent: this });
+        this.lifecyclePolicy = new LifecyclePolicy(lowerCaseName, this.repository, args.lifeCyclePolicyArgs, { parent: this });
 
         this.registerOutputs();
     }

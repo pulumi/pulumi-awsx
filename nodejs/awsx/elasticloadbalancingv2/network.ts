@@ -144,7 +144,7 @@ export class NetworkListener
             protocol,
             loadBalancer,
             defaultActions,
-        }, { parent: loadBalancer, ...opts });
+        }, opts);
 
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
