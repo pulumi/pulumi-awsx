@@ -30,20 +30,25 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
-        const longName = `${name}`;
-        const shortName = args.name || utils.sha1hash(`${longName}`);
-
         this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 
         const external = utils.ifUndefined(args.external, true);
-        this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(shortName, {
+
+        // We used to hash the name of an LB to keep the name short.  This was necessary back when
+        // people didn't have direct control over creating the LB.  In awsx though creating the LB
+        // is easy to do, so we just let the user pass in the name they want.  We simply add an
+        // alias from the old name to the new one to keep things from being recreated.
+        this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(name, {
             ...args,
             subnets: getSubnets(args, this.vpc, external),
             internal: external.apply(ex => !ex),
             securityGroups: this.securityGroups.map(g => g.id),
-            tags: utils.mergeTags(args.tags, { Name: longName }),
-        }, { parent: this });
+            tags: utils.mergeTags(args.tags, { Name: name }),
+        }, {
+            parent: this,
+            aliases: [{ name: args.name || utils.sha1hash(name) }],
+        });
     }
 
     /**
@@ -96,10 +101,8 @@ export interface LoadBalancerArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * The name of the LoadBalancer. This name must be unique within your AWS account, can have a
-     * maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not
-     * begin or end with a hyphen. If not specified, the [name] parameter passed into the
-     * LoadBalancer constructor will be hashed and used as the name.
+     * @deprecated Not used.  Supply the name you want for a LoadBalancer through the [name]
+     * constructor arg.
      */
     name?: string;
 
