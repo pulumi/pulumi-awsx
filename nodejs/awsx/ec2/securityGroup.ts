@@ -144,7 +144,7 @@ export interface SecurityGroupArgs {
     securityGroup?: aws.ec2.SecurityGroup;
 
     /**
-     * The vpc this security group applies to.  Or [Network.getDefault] if unspecified.
+     * The vpc this security group applies to.  Or [Vpc.getDefault] if unspecified.
      */
     vpc?: x.ec2.Vpc;
 
