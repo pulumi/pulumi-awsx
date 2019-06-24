@@ -20,6 +20,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as awslambda from "aws-lambda";
 import { CognitoAuthorizer } from "./cognitoAuthorizer";
 
+import * as utils from "../utils";
+
 export type AuthorizerEvent = awslambda.CustomAuthorizerEvent;
 export type AuthorizerResponse = awslambda.CustomAuthorizerResult;
 export type AuthResponseContext = awslambda.AuthResponseContext;
@@ -122,11 +124,16 @@ export function getIdentitySource(identitySources: string[] | undefined): string
 }
 
 /** @internal */
-export function createRoleWithAuthorizerInvocationPolicy(authorizerName: string, authorizerLambda: aws.lambda.Function): aws.iam.Role {
+export function createRoleWithAuthorizerInvocationPolicy(
+        authorizerName: string, authorizerLambda: aws.lambda.Function,
+        opts: pulumi.CustomResourceOptions): aws.iam.Role {
     const policy = aws.iam.assumeRolePolicyForPrincipal({ "Service": ["lambda.amazonaws.com", "apigateway.amazonaws.com"] });
+
+    // We previously didn't parent the Role or RolePolicy to anything.  Now we do.  Pass an
+    // appropriate alias to prevent resources from being destroyed/created.
     const role = new aws.iam.Role(authorizerName + "-authorizer-role", {
         assumeRolePolicy: JSON.stringify(policy),
-    });
+    }, utils.withAlias(opts, { parent: pulumi.rootStackResource }));
 
     // Add invocation policy to lambda role
     const invocationPolicy = new aws.iam.RolePolicy(authorizerName + "-invocation-policy", {
@@ -141,7 +148,8 @@ export function createRoleWithAuthorizerInvocationPolicy(authorizerName: string,
                 ]
             }`,
         role: role.id,
-    });
+    }, utils.withAlias(opts, { parent: pulumi.rootStackResource }));
+
     return role;
 }
 
