@@ -64,10 +64,6 @@ export class Vpc extends pulumi.ComponentResource {
             const numberOfAvailabilityZones = getNumberOfAvailabilityZones(this, args.numberOfAvailabilityZones);
 
             const numberOfNatGateways = args.numberOfNatGateways === undefined ? numberOfAvailabilityZones : args.numberOfNatGateways;
-            if (numberOfNatGateways > numberOfAvailabilityZones) {
-                throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
-            }
-
             const assignGeneratedIpv6CidrBlock = utils.ifUndefined(args.assignGeneratedIpv6CidrBlock, false);
 
             // We previously did not parent the underlying Vpc to this component. We now do. Provide
@@ -83,107 +79,200 @@ export class Vpc extends pulumi.ComponentResource {
             }, { parent: this, aliases: [{ parent: pulumi.rootStackResource }] });
             this.id = this.vpc.id;
 
-            this.createSubnets(
-                name, cidrBlock, numberOfAvailabilityZones,
-                assignGeneratedIpv6CidrBlock, args.subnets || [
-                    { type: "public" },
-                    { type: "private" },
-                ], opts);
+            const subnets = args.subnets || [
+                { type: "public" },
+                { type: "private" },
+            ];
+
+            // Check if the subnets were given explicit location information or not.  If so, we'll
+            // respect the location information the user asked for.  If not, we'll automatically
+            // smartly partition the vpc.
+            const firstSubnet = subnets[0];
+            const hasExplicitLocation = !!firstSubnet.location;
+            for (const subnet of subnets) {
+                const siblingHasLocation = !!subnet.location;
+
+                if (hasExplicitLocation !== siblingHasLocation) {
+                    throw new pulumi.ResourceError("[location] property must be specified for either no subnets or all of the subnets.", this);
+                }
+
+                if (siblingHasLocation && subnet.cidrMask !== undefined) {
+                    throw new pulumi.ResourceError("Subnet cannot specify [location] and [cidrMask]", this);
+                }
+            }
+
+            if (hasExplicitLocation) {
+                this.partitionUsingExplicitLocations(
+                    name, numberOfNatGateways, assignGeneratedIpv6CidrBlock, subnets);
+            }
+            else {
+                this.partitionUsingComputedLocations(
+                    name, cidrBlock, numberOfAvailabilityZones, numberOfNatGateways,
+                    assignGeneratedIpv6CidrBlock, subnets, opts);
+            }
 
             // Create an internet gateway if we have public subnets.
             this.addInternetGateway(name, this.publicSubnets);
-
-            // Create nat gateways if we have private subnets.
-            createNatGateways(name, this, numberOfAvailabilityZones, numberOfNatGateways);
         }
 
         this.registerOutputs();
     }
 
-    private createSubnets(
-            name: string, cidrBlock: string, numberOfAvailabilityZones: number,
+    private partitionUsingComputedLocations(
+            name: string, cidrBlock: string,
+            numberOfAvailabilityZones: number, numberOfNatGateways: number,
             assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
             subnets: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
+        // Create the appropriate subnets.  Default to a single public and private subnet for each
+        // availability zone if none were specified.
+        const topology = new VpcTopology(name, cidrBlock, numberOfAvailabilityZones);
+        const subnetDescriptions = topology.createSubnets(subnets);
+
+        for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
+            const desc = subnetDescriptions[i];
+            const type = desc.type;
+            const subnetName = desc.subnetName;
+
+            const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
+            const ipv6CidrBlock = createIpv6CidrBlock(this, assignIpv6AddressOnCreation, i);
+
+            // We previously did not parent the subnet to this component. We now do. Provide an
+            // alias so this doesn't cause resources to be destroyed/recreated for existing
+            // stacks.
+            const subnet = new x.ec2.Subnet(subnetName, this, {
+                cidrBlock: desc.cidrBlock,
+                availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: this }),
+
+                // Allow the individual subnet to decide if it wants to be mapped.  If not
+                // specified, default to mapping a public-ip open if the type is 'public', and
+                // not mapping otherwise.
+                mapPublicIpOnLaunch: utils.ifUndefined(desc.mapPublicIpOnLaunch, type === "public"),
+
+                // Allow the individual subnet to decide it if wants an ipv6 address assigned at
+                // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
+                // it, don't assign otherwise.
+                ipv6CidrBlock: ipv6CidrBlock,
+                assignIpv6AddressOnCreation,
+
+                // merge some good default tags, with whatever the user wants.  Their choices should
+                // always win out over any defaults we pick.
+                tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
+            }, { aliases: [{ parent: opts.parent }], parent: this });
+
+            this.addSubnet(type, subnet);
+        }
+
+        partitionNatGateways(name, this, numberOfAvailabilityZones, numberOfNatGateways);
+    }
+
+    private partitionUsingExplicitLocations(
+            name: string, numberOfNatGateways: number,
+            assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>, subnets: VpcSubnetArgs[]) {
         if (subnets.length === 0) {
             return;
         }
 
-        const firstSubnet = subnets[0];
-        const hasLocation = !!firstSubnet.location;
-        for (const subnet of subnets) {
-            const siblingHasLocation = !!subnet.location;
+        // First, we'll create all the actual subnets, keeping track of which AZs they're in. This
+        // information will then be used to create the natgateways needed by the private subnets.
+        // The private subnets will need a natgateway created in some public subnet (ideally in the
+        // same AZ they are in).
 
-            if (hasLocation !== siblingHasLocation) {
-                throw new pulumi.ResourceError("[location] property must be specified for either no subnets or all of the subnets.", this);
-            }
+        type AZ = string | undefined;
+        const azToPublicSubnets = new Map<AZ, x.ec2.Subnet[]>();
+        const azToPrivateSubnets = new Map<AZ, x.ec2.Subnet[]>();
 
-            if (siblingHasLocation && subnet.cidrMask !== undefined) {
-                throw new pulumi.ResourceError("Subnet cannot specify [location] and [cidrMask]", this);
+        for (let i = 0, n = subnets.length; i < n; i++) {
+            const subnetArgs = subnets[i];
+            const location = <VpcSubnetLocation>subnetArgs.location;
+            const type = subnetArgs.type;
+            const subnetName = subnetArgs.name || `${type}-${i}`;
+
+            const subnet = new x.ec2.Subnet(subnetName, this, {
+                ...location,
+
+                // Allow the individual subnet to decide if it wants to be mapped.  If not
+                // specified, default to mapping a public-ip open if the type is 'public', and
+                // not mapping otherwise.
+                mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
+                assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock),
+
+                // merge some good default tags, with whatever the user wants.  Their choices should
+                // always win out over any defaults we pick.
+                tags: utils.mergeTags({ type, Name: subnetName }, subnetArgs.tags),
+            }, { parent: this });
+
+            this.addSubnet(type, subnet);
+
+            const az = location.availabilityZone || location.availabilityZoneId;
+            const specificSubnetMap =
+                type === "public" ? azToPublicSubnets :
+                type === "private" ? azToPrivateSubnets : undefined;
+
+            if (specificSubnetMap) {
+                const specificSubnets = specificSubnetMap.get(az) || [];
+                specificSubnets.push(subnet);
+                specificSubnetMap.set(az, specificSubnets);
             }
         }
 
-        if (hasLocation) {
-            for (let i = 0, n = subnets.length; i < n; i++) {
-                const subnetArgs = subnets[i];
-                const location = <VpcSubnetLocation>subnetArgs.location;
-                const type = subnetArgs.type;
-                const subnetName = subnetArgs.name || `${type}-${i}`;
-
-                const subnet = new x.ec2.Subnet(subnetName, this, {
-                    ...location,
-
-                    // Allow the individual subnet to decide if it wants to be mapped.  If not
-                    // specified, default to mapping a public-ip open if the type is 'public', and
-                    // not mapping otherwise.
-                    mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
-                    assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock),
-
-                    // merge some good default tags, with whatever the user wants.  Their choices should
-                    // always win out over any defaults we pick.
-                    tags: utils.mergeTags({ type, Name: subnetName }, subnetArgs.tags),
-                }, { parent: this });
-
-                this.addSubnet(type, subnet);
-            }
+        if (!shouldCreateNatGateways(this, numberOfNatGateways)) {
+            return;
         }
-        else {
-            // Create the appropriate subnets.  Default to a single public and private subnet for each
-            // availability zone if none were specified.
-            const topology = new VpcTopology(name, cidrBlock, numberOfAvailabilityZones);
-            const subnetDescriptions = topology.createSubnets(subnets);
 
-            for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
-                const desc = subnetDescriptions[i];
-                const type = desc.type;
-                const subnetName = desc.subnetName;
+        // Create nat gateways for our private subnets.  First, collect the azs the private subnets
+        // are in. We'll try to ensure an actual nat gateway in those azs (which is only possible if
+        // we have a public subnet in that az).  If there is no public subnet in that az, then just
+        // pick another public subnet and place the gateway there.
+        const azToNatGateways = new Map<string | undefined, x.ec2.NatGateway[]>();
 
-                const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
-                const ipv6CidrBlock = createIpv6CidrBlock(this, assignIpv6AddressOnCreation, i);
+        // process AZs in sorted order.  That way we always do things in the same order across
+        // runs.
+        const privateSubnetAzs = [...azToPrivateSubnets.keys()].sort();
+        for (let i = 0; i < numberOfNatGateways; i++) {
+            // keep round-robining through the set of azs our private subnets are in.
+            const az = privateSubnetAzs[i % privateSubnetAzs.length];
 
-                // We previously did not parent the subnet to this component. We now do. Provide an
-                // alias so this doesn't cause resources to be destroyed/recreated for existing
-                // stacks.
-                const subnet = new x.ec2.Subnet(subnetName, this, {
-                    cidrBlock: desc.cidrBlock,
-                    availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: this }),
+            // try to make a nat gateway in a public subnet in that az.  If we don't have any public
+            // subnets in that az, use a public subnet from another az.  It's not ideal, but it can
+            // at least route things.
+            //
+            // this helps distribute the nat gateways across the AZs.
+            const publicSubnetsInAz = azToPublicSubnets.get(az) || this.publicSubnets;
 
-                    // Allow the individual subnet to decide if it wants to be mapped.  If not
-                    // specified, default to mapping a public-ip open if the type is 'public', and
-                    // not mapping otherwise.
-                    mapPublicIpOnLaunch: utils.ifUndefined(desc.mapPublicIpOnLaunch, type === "public"),
+            // Because of round-robining, we may hit the same set of public-subnets for this az
+            // multiple times.  Just iterate through those public-subnets as well.
+            //
+            // This helps distribute the nat gateways in an an AZ across its public subnets.
+            const pubicSubnetIndex = Math.floor(i / publicSubnetsInAz.length);
+            const publicSubnet = publicSubnetsInAz[pubicSubnetIndex % publicSubnetsInAz.length];
 
-                    // Allow the individual subnet to decide it if wants an ipv6 address assigned at
-                    // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
-                    // it, don't assign otherwise.
-                    ipv6CidrBlock: ipv6CidrBlock,
-                    assignIpv6AddressOnCreation,
+            const natGateways = azToNatGateways.get(az) || [];
+            natGateways.push(this.addNatGateway(`${name}-${i}`, { subnet: publicSubnet }));
+            azToNatGateways.set(az, natGateways);
+        }
 
-                    // merge some good default tags, with whatever the user wants.  Their choices should
-                    // always win out over any defaults we pick.
-                    tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
-                }, { aliases: [{ parent: opts.parent }], parent: this });
+        // Now, go through every private subnet.  Make a natgateway route for it.  Try to pick
+        // a natgateway from it's az.  Otherwise, pick some available natgateway otherwise.
 
-                this.addSubnet(type, subnet);
+        let roundRobinIndex = 0;
+        let routeIndex = 0;
+
+        for (const az of privateSubnetAzs) {
+            const privateSubnetsInAz = azToPrivateSubnets.get(az)!;
+            const natGatewaysInAz = azToNatGateways.get(az);
+
+            for (let i = 0, n = privateSubnetsInAz.length; i < n; i++) {
+                const privateSubnet = privateSubnetsInAz[i];
+
+                // if we have natgateways in the same AZ as the private subnet, then just cycle
+                // through those for this private subnet.
+                //
+                // if we don't, then cycle through the entire list of natgateways in this VPC.
+                const natGateway = natGatewaysInAz
+                    ? natGatewaysInAz[i % natGatewaysInAz.length]
+                    : this.natGateways[roundRobinIndex++ % this.natGateways.length];
+
+                privateSubnet.createRoute(`nat-${routeIndex++}`, natGateway);
             }
         }
     }
@@ -386,10 +475,18 @@ function getNumberOfAvailabilityZones(vpc: Vpc, requestedCount: "all" | number |
     return 2;
 }
 
-function createNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
+function shouldCreateNatGateways(vpc: Vpc, numberOfNatGateways: number) {
+    return vpc.privateSubnets.length > 0 && numberOfNatGateways > 0 && vpc.publicSubnets.length === 0;
+}
+
+function partitionNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
     // Create nat gateways if we have private subnets and we have public subnets to place them in.
-    if (vpc.privateSubnets.length === 0 || numberOfNatGateways === 0 || vpc.publicSubnets.length === 0) {
+    if (!shouldCreateNatGateways(vpc, numberOfNatGateways)) {
         return;
+    }
+
+    if (numberOfNatGateways > numberOfAvailabilityZones) {
+        throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
     }
 
     for (let i = 0; i < numberOfNatGateways; i++) {
@@ -522,11 +619,11 @@ export interface VpcSubnetLocation {
     /**
      * The AZ for the subnet.
      */
-    availabilityZone?: pulumi.Input<string>;
+    availabilityZone?: string;
     /**
      * The AZ ID of the subnet.
      */
-    availabilityZoneId?: pulumi.Input<string>;
+    availabilityZoneId?: string;
     /**
      * The CIDR block for the subnet.
      */
