@@ -128,35 +128,30 @@ export class Vpc extends pulumi.ComponentResource {
             numberOfNatGateways, assignGeneratedIpv6CidrBlock);
         const { subnets, natGateways, natRoutes } = vpcTopology.create(subnetArgs);
 
-        for (let i = 0, n = subnets.length; i < n; i++) {
-            const desc = subnets[i];
-            const type = desc.type;
-            const subnetName = desc.subnetName;
-
+        for (const desc of subnets) {
             // We previously did not parent the subnet to this component. We now do. Provide an
             // alias so this doesn't cause resources to be destroyed/recreated for existing
             // stacks.
-            const subnet = new x.ec2.Subnet(subnetName, this, {
-                cidrBlock: desc.cidrBlock,
-                availabilityZone: desc.availabilityZone.name,
-
-                mapPublicIpOnLaunch: desc.mapPublicIpOnLaunch,
-
-                // Allow the individual subnet to decide it if wants an ipv6 address assigned at
-                // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
-                // it, don't assign otherwise.
-                ipv6CidrBlock: desc.ipv6CidrBlock,
-                assignIpv6AddressOnCreation: desc.assignIpv6AddressOnCreation,
-
+            const subnet = new x.ec2.Subnet(desc.subnetName, this, {
+                ...desc,
                 // merge some good default tags, with whatever the user wants.  Their choices should
                 // always win out over any defaults we pick.
-                tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
+                tags: utils.mergeTags({ type: desc.type, Name: desc.subnetName }, desc.tags),
             }, { aliases: [{ parent: opts.parent }], parent: this });
 
-            this.addSubnet(type, subnet);
+            this.addSubnet(desc.type, subnet);
         }
 
-        createNatGateways(this, natGateways, natRoutes);
+        for (const desc of natGateways) {
+            this.addNatGateway(desc.name, { subnet: this.publicSubnets[desc.publicSubnet] });
+        }
+
+        for (const desc of natRoutes) {
+            const privateSubnet = this.privateSubnets[desc.privateSubnet];
+            const natGateway = this.natGateways[desc.natGateway];
+
+            privateSubnet.createRoute(desc.name, natGateway);
+        }
     }
 
     private partitionUsingExplicitLocations(
@@ -418,19 +413,6 @@ export class Vpc extends pulumi.ComponentResource {
 
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
-
-function createNatGateways(vpc: Vpc, natGateways: topology.NatGatewayDescription[], natRoutes: topology.NatRouteDescription[]) {
-    for (const desc of natGateways) {
-        vpc.addNatGateway(desc.name, { subnet: vpc.publicSubnets[desc.publicSubnet] });
-    }
-
-    for (const desc of natRoutes) {
-        const privateSubnet = vpc.privateSubnets[desc.privateSubnet];
-        const natGateway = vpc.natGateways[desc.natGateway];
-
-        privateSubnet.createRoute(desc.name, natGateway);
-    }
-}
 
 function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): topology.AvailabilityZoneDescription[] {
     const result = utils.promiseResult(aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc }));

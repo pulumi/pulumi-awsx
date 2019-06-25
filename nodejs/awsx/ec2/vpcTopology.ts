@@ -51,13 +51,13 @@ export class VpcTopology {
         // First, break up the available vpc cidr block to each subnet based on the amount of space
         // they request.
         for (const subnetArgs of maskedSubnets) {
-            subnetDescriptions.push(...this.createSubnetsWorker(subnetArgs, subnetArgs.cidrMask!));
+            subnetDescriptions.push(...this.createSubnetsWorker(subnetArgs, subnetArgs.cidrMask!, subnetDescriptions.length));
         }
 
         // Then, take the remaining subnets can break the remaining space up to them.
         const cidrMaskForUnmaskedSubnets = this.computeCidrMaskForSubnets(unmaskedSubnets, unmaskedSubnets.length > 0);
         for (const subnetArgs of unmaskedSubnets) {
-            subnetDescriptions.push(...this.createSubnetsWorker(subnetArgs, cidrMaskForUnmaskedSubnets));
+            subnetDescriptions.push(...this.createSubnetsWorker(subnetArgs, cidrMaskForUnmaskedSubnets, subnetDescriptions.length));
         }
 
         const natGatewayDescriptions = this.createNatGateways(subnetDescriptions);
@@ -175,7 +175,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
         return nextCidrBlock;
     }
 
-    private createSubnetsWorker(subnetArgs: x.ec2.VpcSubnetArgs, cidrMask: number) {
+    private createSubnetsWorker(subnetArgs: x.ec2.VpcSubnetArgs, cidrMask: number, currentSubnetIndex: number) {
         if (cidrMask < 16 || cidrMask > 28) {
             throw new Error(`Cidr mask must be between "16" and "28" but was ${cidrMask}`);
         }
@@ -188,12 +188,17 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
             const subnetName = getSubnetName(this.vpcName, subnetArgs, i);
 
             const assignIpv6AddressOnCreation = utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, this.assignGeneratedIpv6CidrBlock);
-            const ipv6CidrBlock = this.createIpv6CidrBlock(assignIpv6AddressOnCreation, i);
+            const ipv6CidrBlock = this.createIpv6CidrBlock(assignIpv6AddressOnCreation, currentSubnetIndex++);
+
+            // Only set one of availabilityZone or availabilityZoneId
+            const availabilityZone = this.availabilityZones[i].name;
+            const availabilityZoneId = availabilityZone ? undefined : this.availabilityZones[i].id;
 
             result.push({
                 type,
                 subnetName,
-                availabilityZone: this.availabilityZones[i],
+                availabilityZone,
+                availabilityZoneId,
                 cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
                 ipv6CidrBlock,
 
@@ -275,7 +280,8 @@ export interface VpcTopologyDescription {
 export interface SubnetDescription {
     type: x.ec2.VpcSubnetType;
     subnetName: string;
-    availabilityZone: AvailabilityZoneDescription;
+    availabilityZone: string;
+    availabilityZoneId?: string;
     cidrBlock: string;
     ipv6CidrBlock?: pulumi.Output<string>;
     tags?: pulumi.Input<aws.Tags>;
