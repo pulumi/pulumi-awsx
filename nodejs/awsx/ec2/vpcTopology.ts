@@ -197,17 +197,19 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
             result.push({
                 type,
                 subnetName,
-                availabilityZone,
-                availabilityZoneId,
-                cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
-                ipv6CidrBlock,
+                args: {
+                    availabilityZone,
+                    availabilityZoneId,
+                    cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
+                    ipv6CidrBlock,
 
-                // Allow the individual subnet to decide if it wants to be mapped.  If not
-                // specified, default to mapping a public-ip open if the type is 'public', and
-                // not mapping otherwise.
-                mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
-                assignIpv6AddressOnCreation,
-                tags: subnetArgs.tags,
+                    // Allow the individual subnet to decide if it wants to be mapped.  If not
+                    // specified, default to mapping a public-ip open if the type is 'public', and
+                    // not mapping otherwise.
+                    mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
+                    assignIpv6AddressOnCreation,
+                    tags: subnetArgs.tags,
+                },
             });
         }
 
@@ -280,13 +282,7 @@ export interface VpcTopologyDescription {
 export interface SubnetDescription {
     type: x.ec2.VpcSubnetType;
     subnetName: string;
-    availabilityZone: string;
-    availabilityZoneId?: string;
-    cidrBlock: string;
-    ipv6CidrBlock?: pulumi.Output<string>;
-    tags?: pulumi.Input<aws.Tags>;
-    mapPublicIpOnLaunch: pulumi.Input<boolean>;
-    assignIpv6AddressOnCreation: pulumi.Input<boolean>;
+    args: x.ec2.SubnetArgs;
 }
 
 

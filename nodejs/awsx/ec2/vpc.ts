@@ -126,6 +126,7 @@ export class Vpc extends pulumi.ComponentResource {
         const vpcTopology = new topology.VpcTopology(
             this, name, cidrBlock, this.vpc.ipv6CidrBlock, availabilityZones,
             numberOfNatGateways, assignGeneratedIpv6CidrBlock);
+
         const { subnets, natGateways, natRoutes } = vpcTopology.create(subnetArgs);
 
         for (const desc of subnets) {
@@ -133,10 +134,8 @@ export class Vpc extends pulumi.ComponentResource {
             // alias so this doesn't cause resources to be destroyed/recreated for existing
             // stacks.
             const subnet = new x.ec2.Subnet(desc.subnetName, this, {
-                ...desc,
-                // merge some good default tags, with whatever the user wants.  Their choices should
-                // always win out over any defaults we pick.
-                tags: utils.mergeTags({ type: desc.type, Name: desc.subnetName }, desc.tags),
+                ...desc.args,
+                tags: utils.mergeTags({ type: desc.type, Name: desc.subnetName }, desc.args.tags),
             }, { aliases: [{ parent: opts.parent }], parent: this });
 
             this.addSubnet(desc.type, subnet);
