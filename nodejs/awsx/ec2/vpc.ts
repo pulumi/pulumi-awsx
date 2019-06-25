@@ -457,9 +457,9 @@ export type VpcSubnetType = "public" | "private" | "isolated";
 
 /**
  * Information that controls how each vpc subnet should be created for each availability zone. By
- * default vpc will control actually creating the appropriate subnets in each zone depending on the
- * values specified in this type.  This help ensure that each subnet will reside entirely within one
- * Availability Zone and cannot span zones.
+ * default, the Vpc will control actually creating the appropriate subnets in each zone depending on
+ * the values specified in this type.  This help ensure that each subnet will reside entirely within
+ * one Availability Zone and cannot span zones.
  *
  * For finer control of the locations of the subnets, specify the [location] property for all the
  * subnets.
@@ -495,9 +495,11 @@ export interface VpcSubnetArgs {
     cidrMask?: number;
 
     /**
-     * More precise information about the location of this subnet.  If this property is provided,
-     * [cidrMask] cannot be provided.  If this property is provided for one subnet, it must be
-     * provided for all subnets.
+     * More precise information about the location of this subnet.
+     *
+     * If this property is provided, [cidrMask] cannot be provided.
+     *
+     * If this property is provided for one subnet, it must be provided for all subnets.
      */
     location?: VpcSubnetLocation;
 
