@@ -31,30 +31,80 @@ export class VpcTopology {
 
     constructor(private readonly vpcName: string,
                 vpcCidr: string,
-                private readonly availabilityZones: AvailabilityZoneDescription[]) {
+                private readonly availabilityZones: AvailabilityZoneDescription[],
+                private readonly numberOfNatGateways: number) {
 
         this.vpcCidrBlock = Cidr32Block.fromCidrNotation(vpcCidr);
     }
 
-    public createSubnets(subnetArgsArray: x.ec2.VpcSubnetArgs[]) {
+    public createSubnetsAndNatGateways(subnetArgsArray: x.ec2.VpcSubnetArgs[]) {
         const maskedSubnets = subnetArgsArray.filter(s => s.cidrMask !== undefined);
         const unmaskedSubnets = subnetArgsArray.filter(s => s.cidrMask === undefined);
 
-        const result: SubnetDescription[] = [];
+        const subnetDescriptions: SubnetDescription[] = [];
 
         // First, break up the available vpc cidr block to each subnet based on the amount of space
         // they request.
         for (const subnetArgs of maskedSubnets) {
-            result.push(...this.createSubnetsWorker(subnetArgs, subnetArgs.cidrMask!));
+            subnetDescriptions.push(...this.createSubnetsWorker(subnetArgs, subnetArgs.cidrMask!));
         }
 
         // Then, take the remaining subnets can break the remaining space up to them.
         const cidrMaskForUnmaskedSubnets = this.computeCidrMaskForSubnets(unmaskedSubnets, unmaskedSubnets.length > 0);
         for (const subnetArgs of unmaskedSubnets) {
-            result.push(...this.createSubnetsWorker(subnetArgs, cidrMaskForUnmaskedSubnets));
+            subnetDescriptions.push(...this.createSubnetsWorker(subnetArgs, cidrMaskForUnmaskedSubnets));
         }
 
-        return result;
+        const natGatewayDescriptions = this.createNatGateways(subnetDescriptions);
+
+        return { subnetDescriptions, ...natGatewayDescriptions };
+    }
+
+    private createNatGateways(subnetDescriptions: SubnetDescription[]) {
+        const natGatewayDescriptions: NatGatewayDescription[] = [];
+        const natRouteDescriptions: NatRouteDescription[] = [];
+        const publicSubnets = subnetDescriptions.filter(d => d.type === "public");
+        const privateSubnets = subnetDescriptions.filter(d => d.type === "private");
+
+        // Create nat gateways if we have private subnets and we have public subnets to place them in.
+        if (shouldCreateNatGateways(this.numberOfNatGateways, publicSubnets, privateSubnets)) {
+            const numberOfAvailabilityZones = this.availabilityZones.length;
+            if (this.numberOfNatGateways > numberOfAvailabilityZones) {
+                throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${this.numberOfNatGateways} > ${numberOfAvailabilityZones}`);
+            }
+
+            for (let i = 0; i < this.numberOfNatGateways; i++) {
+                // Each public subnet was already created across all availability zones.  So, to
+                // maximize coverage of availability zones, we can just walk the public subnets and
+                // create a nat gateway for it's availability zone.  If more natgateways were
+                // requested then we'll just round-robin them among the availability zones.
+
+                // this indexing is safe since we would have created the any subnet across all
+                // availability zones.
+                const publicSubnetIndex = i % numberOfAvailabilityZones;
+                natGatewayDescriptions.push({ name: `${this.vpcName}-${i}`, publicSubnet: publicSubnetIndex });
+            }
+
+            let roundRobinIndex = 0;
+
+            // We created subnets 'numberOfAvailabilityZones' at a time.  So just jump through them in
+            // chunks of that size.
+            for (let i = 0, n = privateSubnets.length; i < n; i += numberOfAvailabilityZones) {
+                // For each chunk of subnets, we will have spread them across all the availability
+                // zones.  We also created a nat gateway per availability zone *up to*
+                // numberOfNatGateways.  So for the subnets in an availability zone that we created a
+                // nat gateway in, just route to that nat gateway.  For the other subnets that are
+                // in an availability zone without a nat gateway, we just round-robin between any
+                // nat gateway we created.
+                for (let j = 0; j < numberOfAvailabilityZones; j++) {
+                    const privateSubnetIndex = i + j;
+                    const natGatewayIndex = j < this.numberOfNatGateways ? j : roundRobinIndex++;
+                    natRouteDescriptions.push({ name: `nat-${j}`, privateSubnet: privateSubnetIndex, natGateway: natGatewayIndex});
+                }
+            }
+        }
+
+        return { natGatewayDescriptions, natRouteDescriptions };
     }
 
     private computeCidrMaskForSubnets(subnets: x.ec2.VpcSubnetArgs[], checkResult: boolean): number {
@@ -155,6 +205,15 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
     }
 }
 
+function shouldCreateNatGateways(
+        numberOfNatGateways: number, publicSubnets: SubnetDescription[], privateSubnets: SubnetDescription[]) {
+    // To make natgateways:
+    // 1. we have to have at least been asked to make some nat gateways.
+    // 2. we need public subnets to actually place the nat gateways in.
+    // 3. we need private subnets that will actually be connected to the nat gateways.
+    return  numberOfNatGateways > 0 && publicSubnets.length > 0 && privateSubnets.length > 0;
+}
+
 /** @internal */
 export interface SubnetDescription {
     type: x.ec2.VpcSubnetType;
@@ -164,4 +223,24 @@ export interface SubnetDescription {
     tags?: pulumi.Input<aws.Tags>;
     mapPublicIpOnLaunch?: pulumi.Input<boolean>;
     assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
+}
+
+
+/** @internal */
+export interface NatGatewayDescription {
+    name: string;
+
+    /** index of the public subnet that this nat gateway should live in. */
+    publicSubnet: number;
+}
+
+/** @internal */
+export interface NatRouteDescription {
+    name: string;
+
+    /** The index of the private subnet that is getting the route */
+    privateSubnet: number;
+
+    /** The index of the nat gateway this private subnet is getting a route to. */
+    natGateway: number;
 }

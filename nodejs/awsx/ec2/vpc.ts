@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { AvailabilityZoneDescription, VpcTopology } from "./vpcTopology";
+import * as topology from "./vpcTopology";
 
 import * as utils from "./../utils";
 
@@ -118,14 +118,13 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     private partitionUsingComputedLocations(
-            name: string, cidrBlock: CidrBlock,
-            availabilityZones: AvailabilityZoneDescription[], numberOfNatGateways: number,
-            assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
+            name: string, cidrBlock: CidrBlock, availabilityZones: topology.AvailabilityZoneDescription[],
+            numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
             subnets: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
         // Create the appropriate subnets.  Default to a single public and private subnet for each
         // availability zone if none were specified.
-        const topology = new VpcTopology(name, cidrBlock, availabilityZones);
-        const subnetDescriptions = topology.createSubnets(subnets);
+        const vpcTopology = new topology.VpcTopology(name, cidrBlock, availabilityZones, numberOfNatGateways);
+        const { subnetDescriptions, natGatewayDescriptions, natRouteDescriptions } = vpcTopology.createSubnetsAndNatGateways(subnets);
 
         for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
             const desc = subnetDescriptions[i];
@@ -161,7 +160,7 @@ export class Vpc extends pulumi.ComponentResource {
             this.addSubnet(type, subnet);
         }
 
-        partitionNatGateways(name, this, availabilityZones, numberOfNatGateways);
+        createNatGateways(this, natGatewayDescriptions, natRouteDescriptions);
     }
 
     private partitionUsingExplicitLocations(
@@ -424,6 +423,19 @@ export class Vpc extends pulumi.ComponentResource {
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
 
+function createNatGateways(vpc: Vpc, natGateways: topology.NatGatewayDescription[], natRoutes: topology.NatRouteDescription[]) {
+    for (const desc of natGateways) {
+        vpc.addNatGateway(desc.name, { subnet: vpc.publicSubnets[desc.publicSubnet] });
+    }
+
+    for (const desc of natRoutes) {
+        const privateSubnet = vpc.privateSubnets[desc.privateSubnet];
+        const natGateway = vpc.natGateways[desc.natGateway];
+
+        privateSubnet.createRoute(desc.name, natGateway);
+    }
+}
+
 function createIpv6CidrBlock(
         vpc: Vpc,
         assignIpv6AddressOnCreation: pulumi.Output<boolean>,
@@ -461,13 +473,13 @@ function createIpv6CidrBlock(
     return <pulumi.Output<string>>result;
 }
 
-function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): AvailabilityZoneDescription[] {
+function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): topology.AvailabilityZoneDescription[] {
     const result = utils.promiseResult(aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc }));
     if (result.names.length !== result.zoneIds.length) {
         throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", vpc);
     }
 
-    const descriptions: AvailabilityZoneDescription[] = [];
+    const descriptions: topology.AvailabilityZoneDescription[] = [];
     for (let i = 0, n = result.names.length; i < n; i++) {
         descriptions.push({ name: result.names[i], id: result.zoneIds[i] });
     }
@@ -481,53 +493,6 @@ function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefin
 
 function shouldCreateNatGateways(vpc: Vpc, numberOfNatGateways: number) {
     return vpc.privateSubnets.length > 0 && numberOfNatGateways > 0 && vpc.publicSubnets.length > 0;
-}
-
-function partitionNatGateways(vpcName: string, vpc: Vpc, availabilityZones: AvailabilityZoneDescription[], numberOfNatGateways: number) {
-    // Create nat gateways if we have private subnets and we have public subnets to place them in.
-    if (!shouldCreateNatGateways(vpc, numberOfNatGateways)) {
-        return;
-    }
-
-    const numberOfAvailabilityZones = availabilityZones.length;
-    if (numberOfNatGateways > numberOfAvailabilityZones) {
-        throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
-    }
-
-    for (let i = 0; i < numberOfNatGateways; i++) {
-        // Each public subnet was already created across all availability zones.  So, to
-        // maximize coverage of availability zones, we can just walk the public subnets and
-        // create a nat gateway for it's availability zone.  If more natgateways were
-        // requested then we'll just round-robin them among the availability zones.
-        const availabilityZone = i % numberOfAvailabilityZones;
-
-        // this indexing is safe since we would have created the any subnet across all
-        // availability zones.
-        const publicSubnet = vpc.publicSubnets[availabilityZone];
-
-        vpc.addNatGateway(`${vpcName}-${i}`, { subnet: publicSubnet });
-    }
-
-    let roundRobinIndex = 0;
-
-    // We created subnets 'numberOfAvailabilityZones' at a time.  So just jump through them in
-    // chunks of that size.
-    for (let i = 0, n = vpc.privateSubnets.length; i < n; i += numberOfAvailabilityZones) {
-        // For each chunk of subnets, we will have spread them across all the availability
-        // zones.  We also created a nat gateway per availability zone *up to*
-        // numberOfNatGateways.  So for the subnets in an availability zone that we created a
-        // nat gateway in, just route to that nat gateway.  For the other subnets that are
-        // in an availability zone without a nat gateway, we just round-robin between any
-        // nat gateway we created.
-        for (let j = 0; j < numberOfAvailabilityZones; j++) {
-            const privateSubnet = vpc.privateSubnets[i + j];
-            const natGateway = j < numberOfNatGateways
-                ? vpc.natGateways[j]
-                : vpc.natGateways[roundRobinIndex++];
-
-            privateSubnet.createRoute(`nat-${j}`, natGateway);
-        }
-    }
 }
 
 function getExistingSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
