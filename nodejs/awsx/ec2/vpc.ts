@@ -123,7 +123,9 @@ export class Vpc extends pulumi.ComponentResource {
             subnetArgs: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
         // Create the appropriate subnets.  Default to a single public and private subnet for each
         // availability zone if none were specified.
-        const vpcTopology = new topology.VpcTopology(name, cidrBlock, availabilityZones, numberOfNatGateways);
+        const vpcTopology = new topology.VpcTopology(
+            name, cidrBlock, availabilityZones,
+            numberOfNatGateways, assignGeneratedIpv6CidrBlock);
         const { subnets, natGateways, natRoutes } = vpcTopology.create(subnetArgs);
 
         for (let i = 0, n = subnets.length; i < n; i++) {
@@ -131,8 +133,7 @@ export class Vpc extends pulumi.ComponentResource {
             const type = desc.type;
             const subnetName = desc.subnetName;
 
-            const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
-            const ipv6CidrBlock = createIpv6CidrBlock(this, assignIpv6AddressOnCreation, i);
+            const ipv6CidrBlock = createIpv6CidrBlock(this, desc.assignIpv6AddressOnCreation, i);
 
             // We previously did not parent the subnet to this component. We now do. Provide an
             // alias so this doesn't cause resources to be destroyed/recreated for existing
@@ -147,7 +148,7 @@ export class Vpc extends pulumi.ComponentResource {
                 // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
                 // it, don't assign otherwise.
                 ipv6CidrBlock: ipv6CidrBlock,
-                assignIpv6AddressOnCreation,
+                assignIpv6AddressOnCreation: desc.assignIpv6AddressOnCreation,
 
                 // merge some good default tags, with whatever the user wants.  Their choices should
                 // always win out over any defaults we pick.
@@ -435,7 +436,7 @@ function createNatGateways(vpc: Vpc, natGateways: topology.NatGatewayDescription
 
 function createIpv6CidrBlock(
         vpc: Vpc,
-        assignIpv6AddressOnCreation: pulumi.Output<boolean>,
+        assignIpv6AddressOnCreation: pulumi.Input<boolean>,
         index: number): pulumi.Output<string> {
 
     const result = pulumi.all([vpc.vpc.ipv6CidrBlock, assignIpv6AddressOnCreation])

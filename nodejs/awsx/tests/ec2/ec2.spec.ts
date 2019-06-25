@@ -26,7 +26,9 @@ import * as vpcTopology from "../../ec2/vpcTopology";
 function topology(
         cidr: string, availabilityZones: vpcTopology.AvailabilityZoneDescription[],
         numberOfNatGateways: number, subnets: VpcSubnetArgs[]) {
-    return new vpcTopology.VpcTopology("testing", cidr, availabilityZones, numberOfNatGateways).create(subnets);
+    return new vpcTopology.VpcTopology(
+        "testing", cidr, availabilityZones,
+        numberOfNatGateways, false).create(subnets);
 }
 
 function subnets(
@@ -172,6 +174,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/17",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -179,6 +182,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.128.0/17",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -194,6 +198,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/18",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "public",
@@ -201,6 +206,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.0.64.0/18",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -208,6 +214,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.128.0/18",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -215,6 +222,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.0.192.0/18",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -230,6 +238,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/19",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "public",
@@ -237,6 +246,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.0.32.0/19",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "public",
@@ -244,6 +254,7 @@ describe("topology", () => {
         "availabilityZone": AZ3,
         "cidrBlock": "10.0.64.0/19",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -251,6 +262,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.96.0/19",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -258,6 +270,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.0.128.0/19",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -265,6 +278,7 @@ describe("topology", () => {
         "availabilityZone": AZ3,
         "cidrBlock": "10.0.160.0/19",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -282,6 +296,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.10.0.0/24",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "public",
@@ -289,6 +304,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.10.1.0/24",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -296,6 +312,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.10.2.0/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -303,6 +320,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.10.2.16/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -319,6 +337,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.10.0.0/26",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "public",
@@ -326,6 +345,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.10.0.64/26",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "isolated",
@@ -333,6 +353,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.10.0.128/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "isolated",
@@ -340,6 +361,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.10.0.144/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -347,6 +369,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.10.0.160/18",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -354,6 +377,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.10.64.160/18",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -371,6 +395,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.10.0.0/24",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "public",
@@ -378,6 +403,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.10.1.0/24",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "isolated",
@@ -385,6 +411,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.10.2.0/24",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "isolated",
@@ -392,6 +419,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.10.3.0/24",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -399,6 +427,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.10.4.0/19",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -406,6 +435,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.10.36.0/19",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -413,6 +443,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.10.68.0/19",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -420,6 +451,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.10.100.0/19",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -437,6 +469,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/26",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -451,6 +484,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/27",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -458,6 +492,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.32/27",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -471,6 +506,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/27",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -478,6 +514,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.0.0.32/27",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -492,6 +529,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/28",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "public",
@@ -499,6 +537,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.0.0.16/28",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -506,6 +545,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.32/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -513,6 +553,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.0.0.48/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -537,6 +578,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/27",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -551,6 +593,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/28",
         mapPublicIpOnLaunch: true,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -558,6 +601,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.16/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -571,6 +615,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
     {
         "type": "private",
@@ -578,6 +623,7 @@ describe("topology", () => {
         "availabilityZone": AZ2,
         "cidrBlock": "10.0.0.16/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });
@@ -601,6 +647,7 @@ describe("topology", () => {
         "availabilityZone": AZ1,
         "cidrBlock": "10.0.0.0/28",
         mapPublicIpOnLaunch: false,
+        assignIpv6AddressOnCreation: false,
     },
 ]);
         });

@@ -34,7 +34,8 @@ export class VpcTopology {
     constructor(private readonly vpcName: string,
                 vpcCidr: string,
                 private readonly availabilityZones: AvailabilityZoneDescription[],
-                private readonly numberOfNatGateways: number) {
+                private readonly numberOfNatGateways: number,
+                private readonly assignGeneratedIpv6CidrBlock: pulumi.Input<boolean>) {
 
         this.vpcCidrBlock = Cidr32Block.fromCidrNotation(vpcCidr);
     }
@@ -194,7 +195,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                 // specified, default to mapping a public-ip open if the type is 'public', and
                 // not mapping otherwise.
                 mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
-                assignIpv6AddressOnCreation: subnetArgs.assignIpv6AddressOnCreation,
+                assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, this.assignGeneratedIpv6CidrBlock),
                 tags: subnetArgs.tags,
             });
         }
@@ -236,7 +237,7 @@ export interface SubnetDescription {
     cidrBlock: string;
     tags?: pulumi.Input<aws.Tags>;
     mapPublicIpOnLaunch: pulumi.Input<boolean>;
-    assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
+    assignIpv6AddressOnCreation: pulumi.Input<boolean>;
 }
 
 
