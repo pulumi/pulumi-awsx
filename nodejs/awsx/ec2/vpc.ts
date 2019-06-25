@@ -119,7 +119,7 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     private partitionUsingComputedLocations(
-            name: string, cidrBlock: string,
+            name: string, cidrBlock: CidrBlock,
             numberOfAvailabilityZones: number, numberOfNatGateways: number,
             assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
             subnets: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
@@ -183,7 +183,9 @@ export class Vpc extends pulumi.ComponentResource {
 
         for (let i = 0, n = subnets.length; i < n; i++) {
             const subnetArgs = subnets[i];
-            const location = <VpcSubnetLocation>subnetArgs.location;
+            const location = typeof subnetArgs.location === "string"
+                ? { cidrBlock: subnetArgs.location }
+                : subnetArgs.location!;
             const type = subnetArgs.type;
             const subnetName = subnetArgs.name || `${type}-${i}`;
 
@@ -592,13 +594,18 @@ export interface VpcSubnetArgs {
     cidrMask?: number;
 
     /**
-     * More precise information about the location of this subnet.
+     * More precise information about the location of this subnet.  Can either be a simple CidrBlock
+     * (i.e. 10.0.0.0/24), or a richer object describing the CidrBlocks and Availability Zone for
+     * the subnet.
      *
      * If this property is provided, [cidrMask] cannot be provided.
      *
+     * If only a CidrBlock is provided here, then the subnet will be placed in the first
+     * availability zone for the region.
+     *
      * If this property is provided for one subnet, it must be provided for all subnets.
      */
-    location?: VpcSubnetLocation;
+    location?: CidrBlock | VpcSubnetLocation;
 
     /**
      * Specify true to indicate that network interfaces created in the specified subnet should be
@@ -615,6 +622,11 @@ export interface VpcSubnetArgs {
     tags?: pulumi.Input<aws.Tags>;
 }
 
+/**
+ * Alias for a cidr block.
+ */
+export type CidrBlock = string;
+
 export interface VpcSubnetLocation {
     /**
      * The AZ for the subnet.
@@ -627,7 +639,7 @@ export interface VpcSubnetLocation {
     /**
      * The CIDR block for the subnet.
      */
-    cidrBlock: pulumi.Input<string>;
+    cidrBlock: pulumi.Input<CidrBlock>;
     /**
      * The IPv6 network range for the subnet, in CIDR notation. The subnet size must use a /64
      * prefix length.
@@ -664,7 +676,7 @@ function isExistingVpcArgs(obj: any): obj is ExistingVpcArgs {
 }
 
 type OverwriteShape = utils.Overwrite<aws.ec2.VpcArgs, {
-    cidrBlock?: string;
+    cidrBlock?: CidrBlock;
 }>;
 
 export interface VpcArgs {
@@ -711,7 +723,7 @@ export interface VpcArgs {
     /**
      * The CIDR block for the VPC.  Defaults to "10.0.0.0/16" if unspecified.
      */
-    cidrBlock?: string;
+    cidrBlock?: CidrBlock;
     /**
      * A boolean flag to enable/disable ClassicLink
      * for the VPC. Only valid in regions and accounts that support EC2 Classic.
