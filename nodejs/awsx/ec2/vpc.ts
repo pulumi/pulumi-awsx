@@ -530,8 +530,8 @@ export interface VpcSubnetLocation {
      */
     cidrBlock: pulumi.Input<string>;
     /**
-     * The IPv6 network range for the subnet,
-     * in CIDR notation. The subnet size must use a /64 prefix length.
+     * The IPv6 network range for the subnet, in CIDR notation. The subnet size must use a /64
+     * prefix length.
      */
     ipv6CidrBlock?: pulumi.Input<string>;
 }
