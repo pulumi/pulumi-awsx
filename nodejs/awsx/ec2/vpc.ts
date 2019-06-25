@@ -83,8 +83,8 @@ export class Vpc extends pulumi.ComponentResource {
             }, { parent: this, aliases: [{ parent: pulumi.rootStackResource }] });
             this.id = this.vpc.id;
 
-            createSubnets(
-                this, cidrBlock, numberOfAvailabilityZones,
+            this.createSubnets(
+                cidrBlock, numberOfAvailabilityZones,
                 assignGeneratedIpv6CidrBlock, args.subnets || [
                     { type: "public" },
                     { type: "private" },
@@ -98,6 +98,99 @@ export class Vpc extends pulumi.ComponentResource {
         }
 
         this.registerOutputs();
+    }
+
+    private createSubnets(
+            cidrBlock: string, numberOfAvailabilityZones: number,
+            assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
+            subnets: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
+        if (subnets.length === 0) {
+            return;
+        }
+
+        const firstSubnet = subnets[0];
+        const hasLocation = !!firstSubnet.location;
+        for (const subnet of subnets) {
+            const siblingHasLocation = !!subnet.location;
+
+            if (hasLocation !== siblingHasLocation) {
+                throw new pulumi.ResourceError("[location] property must be specified for either no subnets or all of the subnets.", this);
+            }
+
+            if (siblingHasLocation && subnet.cidrMask !== undefined) {
+                throw new pulumi.ResourceError("Subnet cannot specify [location] and [cidrMask]", this);
+            }
+        }
+
+        if (hasLocation) {
+            for (let i = 0, n = subnets.length; i < n; i++) {
+                const subnetArgs = subnets[i];
+                const location = <VpcSubnetLocation>subnetArgs.location;
+                const type = subnetArgs.type;
+                const subnetName = subnetArgs.name || `${type}-${i}`;
+
+                const subnet = new x.ec2.Subnet(subnetName, this, {
+                    ...location,
+
+                    // Allow the individual subnet to decide if it wants to be mapped.  If not
+                    // specified, default to mapping a public-ip open if the type is 'public', and
+                    // not mapping otherwise.
+                    mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
+                    assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock),
+
+                    // merge some good default tags, with whatever the user wants.  Their choices should
+                    // always win out over any defaults we pick.
+                    tags: utils.mergeTags({ type, Name: subnetName }, subnetArgs.tags),
+                }, { parent: this });
+
+                this.addSubnet(type, subnet);
+            }
+        }
+        else {
+            // Create the appropriate subnets.  Default to a single public and private subnet for each
+            // availability zone if none were specified.
+            const topology = new VpcTopology(name, cidrBlock, numberOfAvailabilityZones);
+            const subnetDescriptions = topology.createSubnets(subnets);
+
+            for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
+                const desc = subnetDescriptions[i];
+                const type = desc.type;
+                const subnetName = desc.subnetName;
+
+                const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
+                const ipv6CidrBlock = createIpv6CidrBlock(this, assignIpv6AddressOnCreation, i);
+
+                // We previously did not parent the subnet to this component. We now do. Provide an
+                // alias so this doesn't cause resources to be destroyed/recreated for existing
+                // stacks.
+                const subnet = new x.ec2.Subnet(subnetName, this, {
+                    cidrBlock: desc.cidrBlock,
+                    availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: this }),
+
+                    // Allow the individual subnet to decide if it wants to be mapped.  If not
+                    // specified, default to mapping a public-ip open if the type is 'public', and
+                    // not mapping otherwise.
+                    mapPublicIpOnLaunch: utils.ifUndefined(desc.mapPublicIpOnLaunch, type === "public"),
+
+                    // Allow the individual subnet to decide it if wants an ipv6 address assigned at
+                    // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
+                    // it, don't assign otherwise.
+                    ipv6CidrBlock: ipv6CidrBlock,
+                    assignIpv6AddressOnCreation,
+
+                    // merge some good default tags, with whatever the user wants.  Their choices should
+                    // always win out over any defaults we pick.
+                    tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
+                }, { aliases: [{ parent: opts.parent }], parent: this });
+
+                this.addSubnet(type, subnet);
+            }
+        }
+    }
+
+    private addSubnet(type: VpcSubnetType, subnet: x.ec2.Subnet) {
+        this.getSubnets(type).push(subnet);
+        this.getSubnetIds(type).push(subnet.id);
     }
 
     public getSubnets(type: VpcSubnetType) {
@@ -240,96 +333,6 @@ export class Vpc extends pulumi.ComponentResource {
 
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
-
-function createSubnets(
-        vpc: Vpc, cidrBlock: string, numberOfAvailabilityZones: number,
-        assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>, subnets: VpcSubnetArgs[],
-        opts: pulumi.ComponentResourceOptions) {
-    if (subnets.length === 0) {
-        return;
-    }
-
-    const firstSubnet = subnets[0];
-    const hasLocation = !!firstSubnet.location;
-    for (const subnet of subnets) {
-        const siblingHasLocation = !!subnet.location;
-
-        if (hasLocation !== siblingHasLocation) {
-            throw new pulumi.ResourceError("[location] property must be specified for either no subnets or all of the subnets.", vpc);
-        }
-
-        if (siblingHasLocation && subnet.cidrMask !== undefined) {
-            throw new pulumi.ResourceError("Subnet cannot specify [location] and [cidrMask]", vpc);
-        }
-    }
-
-    if (hasLocation) {
-        for (let i = 0, n = subnets.length; i < n; i++) {
-            const subnetArgs = subnets[i];
-            const location = <VpcSubnetLocation>subnetArgs.location;
-            const type = subnetArgs.type;
-            const subnetName = subnetArgs.name || `${type}-${i}`;
-
-            const subnet = new x.ec2.Subnet(subnetName, vpc, {
-                ...location,
-
-                // Allow the individual subnet to decide if it wants to be mapped.  If not
-                // specified, default to mapping a public-ip open if the type is 'public', and
-                // not mapping otherwise.
-                mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
-                assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock),
-
-                // merge some good default tags, with whatever the user wants.  Their choices should
-                // always win out over any defaults we pick.
-                tags: utils.mergeTags({ type, Name: subnetName }, subnetArgs.tags),
-            }, { parent: vpc });
-
-            vpc.getSubnets(type).push(subnet);
-            vpc.getSubnetIds(type).push(subnet.id);
-        }
-    }
-    else {
-        // Create the appropriate subnets.  Default to a single public and private subnet for each
-        // availability zone if none were specified.
-        const topology = new VpcTopology(name, cidrBlock, numberOfAvailabilityZones);
-        const subnetDescriptions = topology.createSubnets(subnets);
-
-        for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
-            const desc = subnetDescriptions[i];
-            const type = desc.type;
-            const subnetName = desc.subnetName;
-
-            const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
-            const ipv6CidrBlock = createIpv6CidrBlock(vpc, assignIpv6AddressOnCreation, i);
-
-            // We previously did not parent the subnet to this component. We now do. Provide an
-            // alias so this doesn't cause resources to be destroyed/recreated for existing
-            // stacks.
-            const subnet = new x.ec2.Subnet(subnetName, vpc, {
-                cidrBlock: desc.cidrBlock,
-                availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: vpc }),
-
-                // Allow the individual subnet to decide if it wants to be mapped.  If not
-                // specified, default to mapping a public-ip open if the type is 'public', and
-                // not mapping otherwise.
-                mapPublicIpOnLaunch: utils.ifUndefined(desc.mapPublicIpOnLaunch, type === "public"),
-
-                // Allow the individual subnet to decide it if wants an ipv6 address assigned at
-                // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
-                // it, don't assign otherwise.
-                ipv6CidrBlock: ipv6CidrBlock,
-                assignIpv6AddressOnCreation,
-
-                // merge some good default tags, with whatever the user wants.  Their choices should
-                // always win out over any defaults we pick.
-                tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
-            }, { aliases: [{ parent: opts.parent }], parent: vpc });
-
-            vpc.getSubnets(type).push(subnet);
-            vpc.getSubnetIds(type).push(subnet.id);
-        }
-    }
-}
 
 function createIpv6CidrBlock(
         vpc: Vpc,
