@@ -19,13 +19,19 @@ import * as x from "..";
 import { Cidr32Block, getIPv4Address } from "./cidr";
 
 /** @internal */
+export interface AvailabilityZoneDescription {
+    name: string;
+    id: string;
+}
+
+/** @internal */
 export class VpcTopology {
     private readonly vpcCidrBlock: Cidr32Block;
     private lastAllocatedSubnetCidrBlock?: Cidr32Block;
 
     constructor(private readonly vpcName: string,
                 vpcCidr: string,
-                private readonly numberOfAvailabilityZones: number) {
+                private readonly availabilityZones: AvailabilityZoneDescription[]) {
 
         this.vpcCidrBlock = Cidr32Block.fromCidrNotation(vpcCidr);
     }
@@ -53,7 +59,7 @@ export class VpcTopology {
 
     private computeCidrMaskForSubnets(subnets: x.ec2.VpcSubnetArgs[], checkResult: boolean): number {
         // We need one cidr block for each of these subnets in each availability zone.
-        const requiredCidrBlockCount = subnets.length * this.numberOfAvailabilityZones;
+        const requiredCidrBlockCount = subnets.length * this.availabilityZones.length;
 
         const firstAvailableIp = this.getNextCidrBlockStartingAddress();
         const availableIps = this.vpcCidrBlock.endIpAddressExclusive - firstAvailableIp;
@@ -76,7 +82,7 @@ export class VpcTopology {
                 throw new Error(
 `Not enough address space in VPC to create desired subnet config.
 VPC has ${availableIps} IPs, but is being asked to split into a total of ${requiredCidrBlockCount} subnets.
-${requiredCidrBlockCount} subnets are necessary to have ${this.numberOfAvailabilityZones} AZ(s) each with ${subnets.length} subnet(s) in them.
+${requiredCidrBlockCount} subnets are necessary to have ${this.availabilityZones.length} AZ(s) each with ${subnets.length} subnet(s) in them.
 This needs ${ipsPerBlock} IPs/subnet, which is smaller than the minimum (16) allowed by AWS.`);
             }
         }
@@ -122,13 +128,13 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
 
         const type = subnetArgs.type;
 
-        for (let i = 0; i < this.numberOfAvailabilityZones; i++) {
+        for (let i = 0; i < this.availabilityZones.length; i++) {
             const subnetName = getSubnetName(this.vpcName, subnetArgs, i);
 
             result.push({
                 type,
                 subnetName,
-                availabilityZone: i,
+                availabilityZone: this.availabilityZones[i],
                 cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
                 mapPublicIpOnLaunch: subnetArgs.mapPublicIpOnLaunch,
                 assignIpv6AddressOnCreation: subnetArgs.assignIpv6AddressOnCreation,
@@ -152,7 +158,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
 interface SubnetDescription {
     type: x.ec2.VpcSubnetType;
     subnetName: string;
-    availabilityZone: number;
+    availabilityZone: AvailabilityZoneDescription;
     cidrBlock: string;
     tags?: pulumi.Input<aws.Tags>;
     mapPublicIpOnLaunch?: pulumi.Input<boolean>;

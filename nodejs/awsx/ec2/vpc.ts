@@ -16,8 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { getAvailabilityZone } from "./../aws";
-import { VpcTopology } from "./vpcTopology";
+import { AvailabilityZoneDescription, VpcTopology } from "./vpcTopology";
 
 import * as utils from "./../utils";
 
@@ -61,9 +60,9 @@ export class Vpc extends pulumi.ComponentResource {
         }
         else {
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
-            const numberOfAvailabilityZones = getNumberOfAvailabilityZones(this, args.numberOfAvailabilityZones);
+            const availabilityZones = getAvailabilityZones(this, args.numberOfAvailabilityZones);
 
-            const numberOfNatGateways = args.numberOfNatGateways === undefined ? numberOfAvailabilityZones : args.numberOfNatGateways;
+            const numberOfNatGateways = args.numberOfNatGateways === undefined ? availabilityZones.length : args.numberOfNatGateways;
             const assignGeneratedIpv6CidrBlock = utils.ifUndefined(args.assignGeneratedIpv6CidrBlock, false);
 
             // We previously did not parent the underlying Vpc to this component. We now do. Provide
@@ -107,7 +106,7 @@ export class Vpc extends pulumi.ComponentResource {
             }
             else {
                 this.partitionUsingComputedLocations(
-                    name, cidrBlock, numberOfAvailabilityZones, numberOfNatGateways,
+                    name, cidrBlock, availabilityZones, numberOfNatGateways,
                     assignGeneratedIpv6CidrBlock, subnets, opts);
             }
 
@@ -120,12 +119,12 @@ export class Vpc extends pulumi.ComponentResource {
 
     private partitionUsingComputedLocations(
             name: string, cidrBlock: CidrBlock,
-            numberOfAvailabilityZones: number, numberOfNatGateways: number,
+            availabilityZones: AvailabilityZoneDescription[], numberOfNatGateways: number,
             assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
             subnets: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
         // Create the appropriate subnets.  Default to a single public and private subnet for each
         // availability zone if none were specified.
-        const topology = new VpcTopology(name, cidrBlock, numberOfAvailabilityZones);
+        const topology = new VpcTopology(name, cidrBlock, availabilityZones);
         const subnetDescriptions = topology.createSubnets(subnets);
 
         for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
@@ -141,7 +140,7 @@ export class Vpc extends pulumi.ComponentResource {
             // stacks.
             const subnet = new x.ec2.Subnet(subnetName, this, {
                 cidrBlock: desc.cidrBlock,
-                availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: this }),
+                availabilityZone: desc.availabilityZone.name,
 
                 // Allow the individual subnet to decide if it wants to be mapped.  If not
                 // specified, default to mapping a public-ip open if the type is 'public', and
@@ -162,7 +161,7 @@ export class Vpc extends pulumi.ComponentResource {
             this.addSubnet(type, subnet);
         }
 
-        partitionNatGateways(name, this, numberOfAvailabilityZones, numberOfNatGateways);
+        partitionNatGateways(name, this, availabilityZones, numberOfNatGateways);
     }
 
     private partitionUsingExplicitLocations(
@@ -462,31 +461,35 @@ function createIpv6CidrBlock(
     return <pulumi.Output<string>>result;
 }
 
-function getNumberOfAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined) {
-    if (typeof requestedCount === "number") {
-        return requestedCount;
+function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): AvailabilityZoneDescription[] {
+    const result = utils.promiseResult(aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc }));
+    if (result.names.length !== result.zoneIds.length) {
+        throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", vpc);
     }
 
-    if (requestedCount === "all") {
-        const availabilityZones = utils.promiseResult(aws.getAvailabilityZones(/*args:*/undefined, { parent: vpc }));
-        if (availabilityZones && availabilityZones.names && availabilityZones.names.length > 0) {
-            return availabilityZones.names.length;
-        }
+    const descriptions: AvailabilityZoneDescription[] = [];
+    for (let i = 0, n = result.names.length; i < n; i++) {
+        descriptions.push({ name: result.names[i], id: result.zoneIds[i] });
     }
 
-    return 2;
+    const count =
+        typeof requestedCount === "number" ? requestedCount :
+        requestedCount === "all" ? descriptions.length : 2;
+
+    return descriptions.slice(0, count);
 }
 
 function shouldCreateNatGateways(vpc: Vpc, numberOfNatGateways: number) {
     return vpc.privateSubnets.length > 0 && numberOfNatGateways > 0 && vpc.publicSubnets.length > 0;
 }
 
-function partitionNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
+function partitionNatGateways(vpcName: string, vpc: Vpc, availabilityZones: AvailabilityZoneDescription[], numberOfNatGateways: number) {
     // Create nat gateways if we have private subnets and we have public subnets to place them in.
     if (!shouldCreateNatGateways(vpc, numberOfNatGateways)) {
         return;
     }
 
+    const numberOfAvailabilityZones = availabilityZones.length;
     if (numberOfNatGateways > numberOfAvailabilityZones) {
         throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
     }
