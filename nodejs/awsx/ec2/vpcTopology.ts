@@ -37,7 +37,7 @@ export class VpcTopology {
         this.vpcCidrBlock = Cidr32Block.fromCidrNotation(vpcCidr);
     }
 
-    public createSubnetsAndNatGateways(subnetArgsArray: x.ec2.VpcSubnetArgs[]) {
+    public create(subnetArgsArray: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription {
         const maskedSubnets = subnetArgsArray.filter(s => s.cidrMask !== undefined);
         const unmaskedSubnets = subnetArgsArray.filter(s => s.cidrMask === undefined);
 
@@ -57,12 +57,13 @@ export class VpcTopology {
 
         const natGatewayDescriptions = this.createNatGateways(subnetDescriptions);
 
-        return { subnetDescriptions, ...natGatewayDescriptions };
+        return { subnets: subnetDescriptions, ...natGatewayDescriptions };
     }
 
     private createNatGateways(subnetDescriptions: SubnetDescription[]) {
-        const natGatewayDescriptions: NatGatewayDescription[] = [];
-        const natRouteDescriptions: NatRouteDescription[] = [];
+        const natGateways: NatGatewayDescription[] = [];
+        const natRoutes: NatRouteDescription[] = [];
+
         const publicSubnets = subnetDescriptions.filter(d => d.type === "public");
         const privateSubnets = subnetDescriptions.filter(d => d.type === "private");
 
@@ -82,7 +83,7 @@ export class VpcTopology {
                 // this indexing is safe since we would have created the any subnet across all
                 // availability zones.
                 const publicSubnetIndex = i % numberOfAvailabilityZones;
-                natGatewayDescriptions.push({ name: `${this.vpcName}-${i}`, publicSubnet: publicSubnetIndex });
+                natGateways.push({ name: `${this.vpcName}-${i}`, publicSubnet: publicSubnetIndex });
             }
 
             let roundRobinIndex = 0;
@@ -99,12 +100,12 @@ export class VpcTopology {
                 for (let j = 0; j < numberOfAvailabilityZones; j++) {
                     const privateSubnetIndex = i + j;
                     const natGatewayIndex = j < this.numberOfNatGateways ? j : roundRobinIndex++;
-                    natRouteDescriptions.push({ name: `nat-${j}`, privateSubnet: privateSubnetIndex, natGateway: natGatewayIndex});
+                    natRoutes.push({ name: `nat-${j}`, privateSubnet: privateSubnetIndex, natGateway: natGatewayIndex});
                 }
             }
         }
 
-        return { natGatewayDescriptions, natRouteDescriptions };
+        return { natGateways, natRoutes };
     }
 
     private computeCidrMaskForSubnets(subnets: x.ec2.VpcSubnetArgs[], checkResult: boolean): number {
@@ -212,6 +213,13 @@ function shouldCreateNatGateways(
     // 2. we need public subnets to actually place the nat gateways in.
     // 3. we need private subnets that will actually be connected to the nat gateways.
     return  numberOfNatGateways > 0 && publicSubnets.length > 0 && privateSubnets.length > 0;
+}
+
+/** @internal */
+export interface VpcTopologyDescription {
+    subnets: SubnetDescription[];
+    natGateways: NatGatewayDescription[];
+    natRoutes: NatRouteDescription[];
 }
 
 /** @internal */

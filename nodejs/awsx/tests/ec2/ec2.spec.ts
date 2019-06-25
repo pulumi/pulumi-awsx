@@ -21,23 +21,34 @@ import * as assert from "assert";
 
 import { Cidr32Block } from "../../ec2/cidr";
 import { VpcSubnetArgs } from "../../ec2/vpc";
-import { AvailabilityZoneDescription, SubnetDescription, VpcTopology } from "../../ec2/vpcTopology";
+import * as vpcTopology from "../../ec2/vpcTopology";
 
-function topology(cidr: string, availabilityZones: AvailabilityZoneDescription[], subnets: VpcSubnetArgs[]) {
-    return new VpcTopology("testing", cidr, availabilityZones).createSubnets(subnets);
+function topology(
+        cidr: string, availabilityZones: vpcTopology.AvailabilityZoneDescription[],
+        numberOfNatGateways: number, subnets: VpcSubnetArgs[]) {
+    return new vpcTopology.VpcTopology("testing", cidr, availabilityZones, numberOfNatGateways).create(subnets);
 }
 
-function jsonEqual(arr1: SubnetDescription[], arr2: SubnetDescription[]) {
-    return assert.equal(JSON.stringify(arr1, null, 4), JSON.stringify(arr2, null, 4));
+function subnets(
+        cidr: string, availabilityZones: vpcTopology.AvailabilityZoneDescription[], subnets: VpcSubnetArgs[]) {
+    return topology(cidr, availabilityZones, availabilityZones.length, subnets).subnets;
+}
+
+function jsonEqual(desc1: vpcTopology.VpcTopologyDescription, desc2: vpcTopology.VpcTopologyDescription) {
+    return assert.equal(JSON.stringify(desc1, null, 4), JSON.stringify(desc1, null, 4));
+}
+
+function subnetsEqual(desc1: vpcTopology.SubnetDescription[], desc2: vpcTopology.SubnetDescription[]) {
+    return assert.equal(JSON.stringify(desc1, null, 4), JSON.stringify(desc1, null, 4));
 }
 
 const AZ1 = { name: "name_a", id: "id_a" };
 const AZ2 = { name: "name_b", id: "id_b" };
 const AZ3 = { name: "name_c", id: "id_c" };
 
-const oneAZ: AvailabilityZoneDescription[] = [AZ1];
-const twoAZs: AvailabilityZoneDescription[] = [AZ1, AZ2];
-const threeAZs: AvailabilityZoneDescription[] = [AZ1, AZ2, AZ3];
+const oneAZ: vpcTopology.AvailabilityZoneDescription[] = [AZ1];
+const twoAZs: vpcTopology.AvailabilityZoneDescription[] = [AZ1, AZ2];
+const threeAZs: vpcTopology.AvailabilityZoneDescription[] = [AZ1, AZ2, AZ3];
 
 describe("cidr", () => {
     it("throws without /", () => {
@@ -151,7 +162,7 @@ describe("cidr", () => {
 describe("topology", () => {
     describe("default", () => {
         it("1 AZ", () => {
-            jsonEqual(topology("10.0.0.0/16", oneAZ, [
+            subnetsEqual(subnets("10.0.0.0/16", oneAZ, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -171,7 +182,7 @@ describe("topology", () => {
         });
 
         it("2 AZs", () => {
-            jsonEqual(topology("10.0.0.0/16", twoAZs, [
+            subnetsEqual(subnets("10.0.0.0/16", twoAZs, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -203,7 +214,7 @@ describe("topology", () => {
         });
 
         it("3 AZs", () => {
-            jsonEqual(topology("10.0.0.0/16", threeAZs, [
+            subnetsEqual(subnets("10.0.0.0/16", threeAZs, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -249,7 +260,7 @@ describe("topology", () => {
 
     describe("custom cidr", () => {
         it("custom 1", () => {
-            jsonEqual(topology("10.10.0.0/16", twoAZs, [
+            subnetsEqual(subnets("10.10.0.0/16", twoAZs, [
                 { type: "public", cidrMask: 24 },
                 { type: "private", cidrMask: 28 },
             ]), [
@@ -281,7 +292,7 @@ describe("topology", () => {
         });
 
         it("custom 2", () => {
-            jsonEqual(topology("10.10.0.0/16", twoAZs, [
+            subnetsEqual(subnets("10.10.0.0/16", twoAZs, [
                 { type: "public", cidrMask: 26 },
                 { type: "private" },
                 { type: "isolated", cidrMask: 28 },
@@ -326,7 +337,7 @@ describe("topology", () => {
         });
 
         it("custom 3", () => {
-            jsonEqual(topology("10.10.0.0/16", twoAZs, [
+            subnetsEqual(subnets("10.10.0.0/16", twoAZs, [
                 { type: "public", cidrMask: 24 },
                 { type: "private", name: "private1" },
                 { type: "private", name: "private2" },
@@ -387,7 +398,7 @@ describe("topology", () => {
     describe("26 block", () => {
         // a 26 block can only fit four subnets since it only has 64 addresses available.
         it("1 AZ, 1 subnet", () => {
-            jsonEqual(topology("10.0.0.0/26", oneAZ, [
+            subnetsEqual(subnets("10.0.0.0/26", oneAZ, [
                 { type: "private" },
             ]), [
     {
@@ -399,7 +410,7 @@ describe("topology", () => {
 ]);
         });
         it("1 AZ, 2 subnets", () => {
-            jsonEqual(topology("10.0.0.0/26", oneAZ, [
+            subnetsEqual(subnets("10.0.0.0/26", oneAZ, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -418,7 +429,7 @@ describe("topology", () => {
 ]);
         });
         it("2 AZs, 1 subnets", () => {
-            jsonEqual(topology("10.0.0.0/26", twoAZs, [
+            subnetsEqual(subnets("10.0.0.0/26", twoAZs, [
                 { type: "private" },
             ]), [
     {
@@ -436,7 +447,7 @@ describe("topology", () => {
 ]);
         });
         it("2 AZs, 2 subnets", () => {
-            jsonEqual(topology("10.0.0.0/26", twoAZs, [
+            subnetsEqual(subnets("10.0.0.0/26", twoAZs, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -467,7 +478,7 @@ describe("topology", () => {
 ]);
         });
         it("2 AZs, 3 subnets", () => {
-            assert.throws(() => topology("10.0.0.0/26", twoAZs, [
+            assert.throws(() => subnets("10.0.0.0/26", twoAZs, [
                 { type: "public" },
                 { type: "private" },
                 { type: "isolated" },
@@ -478,7 +489,7 @@ describe("topology", () => {
     describe("27 block", () => {
         // a 27 block can only fit two subnets since it only has 32 addresses available.
         it("1 AZ, 1 subnet", () => {
-            jsonEqual(topology("10.0.0.0/27", oneAZ, [
+            subnetsEqual(subnets("10.0.0.0/27", oneAZ, [
                 { type: "private" },
             ]), [
     {
@@ -490,7 +501,7 @@ describe("topology", () => {
 ]);
         });
         it("1 AZ, 2 subnets", () => {
-            jsonEqual(topology("10.0.0.0/27", oneAZ, [
+            subnetsEqual(subnets("10.0.0.0/27", oneAZ, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -509,7 +520,7 @@ describe("topology", () => {
 ]);
         });
         it("2 AZs, 1 subnets", () => {
-            jsonEqual(topology("10.0.0.0/27", twoAZs, [
+            subnetsEqual(subnets("10.0.0.0/27", twoAZs, [
                 { type: "private" },
             ]), [
     {
@@ -527,7 +538,7 @@ describe("topology", () => {
 ]);
         });
         it("2 AZs, 2 subnets", () => {
-            assert.throws(() => topology("10.0.0.0/27", twoAZs, [
+            assert.throws(() => subnets("10.0.0.0/27", twoAZs, [
                 { type: "public" },
                 { type: "private" },
             ]));
@@ -537,7 +548,7 @@ describe("topology", () => {
     describe("28 block", () => {
         // a 28 block can only fit a single subnet since it only has 16 addresses available.
         it("1 AZ, 1 subnet", () => {
-            jsonEqual(topology("10.0.0.0/28", oneAZ, [
+            subnetsEqual(subnets("10.0.0.0/28", oneAZ, [
                 { type: "private" },
             ]), [
     {
@@ -549,18 +560,18 @@ describe("topology", () => {
 ]);
         });
         it("1 AZ, 2 subnets", () => {
-            assert.throws(() => topology("10.0.0.0/28", oneAZ, [
+            assert.throws(() => subnets("10.0.0.0/28", oneAZ, [
                 { type: "public" },
                 { type: "private" },
             ]));
         });
         it("2 AZs, 1 subnets", () => {
-            assert.throws(() => topology("10.0.0.0/28", twoAZs, [
+            assert.throws(() => subnets("10.0.0.0/28", twoAZs, [
                 { type: "private" },
             ]));
         });
         it("2 AZs, 2 subnets", () => {
-            assert.throws(() => topology("10.0.0.0/28", twoAZs, [
+            assert.throws(() => subnets("10.0.0.0/28", twoAZs, [
                 { type: "public" },
                 { type: "private" },
             ]));

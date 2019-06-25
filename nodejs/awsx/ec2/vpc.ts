@@ -120,14 +120,14 @@ export class Vpc extends pulumi.ComponentResource {
     private partitionUsingComputedLocations(
             name: string, cidrBlock: CidrBlock, availabilityZones: topology.AvailabilityZoneDescription[],
             numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
-            subnets: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
+            subnetArgs: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
         // Create the appropriate subnets.  Default to a single public and private subnet for each
         // availability zone if none were specified.
         const vpcTopology = new topology.VpcTopology(name, cidrBlock, availabilityZones, numberOfNatGateways);
-        const { subnetDescriptions, natGatewayDescriptions, natRouteDescriptions } = vpcTopology.createSubnetsAndNatGateways(subnets);
+        const { subnets, natGateways, natRoutes } = vpcTopology.create(subnetArgs);
 
-        for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
-            const desc = subnetDescriptions[i];
+        for (let i = 0, n = subnets.length; i < n; i++) {
+            const desc = subnets[i];
             const type = desc.type;
             const subnetName = desc.subnetName;
 
@@ -160,7 +160,7 @@ export class Vpc extends pulumi.ComponentResource {
             this.addSubnet(type, subnet);
         }
 
-        createNatGateways(this, natGatewayDescriptions, natRouteDescriptions);
+        createNatGateways(this, natGateways, natRoutes);
     }
 
     private partitionUsingExplicitLocations(
