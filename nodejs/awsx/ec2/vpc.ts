@@ -141,10 +141,7 @@ export class Vpc extends pulumi.ComponentResource {
                 cidrBlock: desc.cidrBlock,
                 availabilityZone: desc.availabilityZone.name,
 
-                // Allow the individual subnet to decide if it wants to be mapped.  If not
-                // specified, default to mapping a public-ip open if the type is 'public', and
-                // not mapping otherwise.
-                mapPublicIpOnLaunch: utils.ifUndefined(desc.mapPublicIpOnLaunch, type === "public"),
+                mapPublicIpOnLaunch: desc.mapPublicIpOnLaunch,
 
                 // Allow the individual subnet to decide it if wants an ipv6 address assigned at
                 // creation. If not specified, assign by default if the Vpc has ipv6 assigned to

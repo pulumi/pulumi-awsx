@@ -18,6 +18,8 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import { Cidr32Block, getIPv4Address } from "./cidr";
 
+import * as utils from "./../utils";
+
 /** @internal */
 export interface AvailabilityZoneDescription {
     name: string;
@@ -187,7 +189,11 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                 subnetName,
                 availabilityZone: this.availabilityZones[i],
                 cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
-                mapPublicIpOnLaunch: subnetArgs.mapPublicIpOnLaunch,
+
+                // Allow the individual subnet to decide if it wants to be mapped.  If not
+                // specified, default to mapping a public-ip open if the type is 'public', and
+                // not mapping otherwise.
+                mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
                 assignIpv6AddressOnCreation: subnetArgs.assignIpv6AddressOnCreation,
                 tags: subnetArgs.tags,
             });
@@ -229,7 +235,7 @@ export interface SubnetDescription {
     availabilityZone: AvailabilityZoneDescription;
     cidrBlock: string;
     tags?: pulumi.Input<aws.Tags>;
-    mapPublicIpOnLaunch?: pulumi.Input<boolean>;
+    mapPublicIpOnLaunch: pulumi.Input<boolean>;
     assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
 }
 
