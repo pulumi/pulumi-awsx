@@ -84,7 +84,7 @@ export class Vpc extends pulumi.ComponentResource {
             this.id = this.vpc.id;
 
             this.createSubnets(
-                cidrBlock, numberOfAvailabilityZones,
+                name, cidrBlock, numberOfAvailabilityZones,
                 assignGeneratedIpv6CidrBlock, args.subnets || [
                     { type: "public" },
                     { type: "private" },
@@ -101,7 +101,7 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     private createSubnets(
-            cidrBlock: string, numberOfAvailabilityZones: number,
+            name: string, cidrBlock: string, numberOfAvailabilityZones: number,
             assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
             subnets: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
         if (subnets.length === 0) {
