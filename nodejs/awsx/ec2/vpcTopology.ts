@@ -155,7 +155,8 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
     }
 }
 
-interface SubnetDescription {
+/** @internal */
+export interface SubnetDescription {
     type: x.ec2.VpcSubnetType;
     subnetName: string;
     availabilityZone: AvailabilityZoneDescription;

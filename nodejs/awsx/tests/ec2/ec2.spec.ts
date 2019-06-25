@@ -21,14 +21,14 @@ import * as assert from "assert";
 
 import { Cidr32Block } from "../../ec2/cidr";
 import { VpcSubnetArgs } from "../../ec2/vpc";
-import { AvailabilityZoneDescription, VpcTopology } from "../../ec2/vpcTopology";
+import { AvailabilityZoneDescription, SubnetDescription, VpcTopology } from "../../ec2/vpcTopology";
 
 function topology(cidr: string, availabilityZones: AvailabilityZoneDescription[], subnets: VpcSubnetArgs[]) {
     return new VpcTopology("testing", cidr, availabilityZones).createSubnets(subnets);
 }
 
-function jsonEqual(obj1: any, obj2: any) {
-    assert.equal(JSON.stringify(obj1, null, 4), JSON.stringify(obj2, null, 4));
+function jsonEqual(arr1: SubnetDescription[], arr2: SubnetDescription[]) {
+    return assert.equal(JSON.stringify(arr1, null, 4), JSON.stringify(arr2, null, 4));
 }
 
 const AZ1 = { name: "name_a", id: "id_a" };
