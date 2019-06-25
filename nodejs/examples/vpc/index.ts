@@ -44,3 +44,13 @@ const vpcWithIpv6 = new awsx.ec2.Vpc("custom4", {
 const vpcWithProvider = new awsx.ec2.Vpc("custom5", {
     assignGeneratedIpv6CidrBlock: true,
 }, { provider: new aws.Provider("prov2", { region: "us-east-1" }) });
+
+const vpcWithLocations = new awsx.ec2.Vpc("custom6", {
+    cidrBlock: "10.0.0.0/16",
+    subnets: [
+        { type: "public", location: { cidrBlock: "10.0.0.0/24" } },
+        { type: "private", location: { cidrBlock: "10.0.1.0/24" } },
+        { type: "isolated", name: "db", location: { cidrBlock: "10.0.2.0/24" } },
+        { type: "isolated", name: "redis", location: { cidrBlock: "10.0.3.0/24" } },
+    ],
+}, providerOpts);

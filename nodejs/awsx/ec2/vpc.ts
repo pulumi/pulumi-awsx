@@ -476,7 +476,7 @@ function getNumberOfAvailabilityZones(vpc: Vpc, requestedCount: "all" | number |
 }
 
 function shouldCreateNatGateways(vpc: Vpc, numberOfNatGateways: number) {
-    return vpc.privateSubnets.length > 0 && numberOfNatGateways > 0 && vpc.publicSubnets.length === 0;
+    return vpc.privateSubnets.length > 0 && numberOfNatGateways > 0 && vpc.publicSubnets.length > 0;
 }
 
 function partitionNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
