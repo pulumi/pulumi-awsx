@@ -27,8 +27,8 @@ function topology(
         cidr: string, availabilityZones: vpcTopology.AvailabilityZoneDescription[],
         numberOfNatGateways: number, subnets: VpcSubnetArgs[]) {
     return new vpcTopology.VpcTopology(
-        "testing", cidr, availabilityZones,
-        numberOfNatGateways, false).create(subnets);
+        undefined, "testing", cidr, undefined,
+        availabilityZones, numberOfNatGateways, false).create(subnets);
 }
 
 function subnets(

@@ -31,8 +31,10 @@ export class VpcTopology {
     private readonly vpcCidrBlock: Cidr32Block;
     private lastAllocatedSubnetCidrBlock?: Cidr32Block;
 
-    constructor(private readonly vpcName: string,
+    constructor(private readonly resource: pulumi.Resource | undefined,
+                private readonly vpcName: string,
                 vpcCidr: string,
+                private readonly ipv6CidrBlock: pulumi.Output<string> | undefined,
                 private readonly availabilityZones: AvailabilityZoneDescription[],
                 private readonly numberOfNatGateways: number,
                 private readonly assignGeneratedIpv6CidrBlock: pulumi.Input<boolean>) {
@@ -185,17 +187,21 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
         for (let i = 0; i < this.availabilityZones.length; i++) {
             const subnetName = getSubnetName(this.vpcName, subnetArgs, i);
 
+            const assignIpv6AddressOnCreation = utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, this.assignGeneratedIpv6CidrBlock);
+            const ipv6CidrBlock = this.createIpv6CidrBlock(assignIpv6AddressOnCreation, i);
+
             result.push({
                 type,
                 subnetName,
                 availabilityZone: this.availabilityZones[i],
                 cidrBlock: this.assignNextAvailableCidrBlock(cidrMask).toString(),
+                ipv6CidrBlock,
 
                 // Allow the individual subnet to decide if it wants to be mapped.  If not
                 // specified, default to mapping a public-ip open if the type is 'public', and
                 // not mapping otherwise.
                 mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
-                assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, this.assignGeneratedIpv6CidrBlock),
+                assignIpv6AddressOnCreation,
                 tags: subnetArgs.tags,
             });
         }
@@ -210,6 +216,42 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
 
             return `${vpcName}-${subnetName}`;
         }
+    }
+
+    private createIpv6CidrBlock(
+            assignIpv6AddressOnCreation: pulumi.Input<boolean>,
+            index: number): pulumi.Output<string> {
+
+        const result = pulumi.all([this.ipv6CidrBlock, assignIpv6AddressOnCreation])
+                     .apply(([vpcIpv6CidrBlock, assignIpv6AddressOnCreation]) => {
+                if (!assignIpv6AddressOnCreation) {
+                    return undefined;
+                }
+
+                if (!vpcIpv6CidrBlock) {
+                    throw new pulumi.ResourceError(
+"Must set [assignGeneratedIpv6CidrBlock] to true on [Vpc] in order to assign ipv6 address to subnet.", this.resource);
+                }
+
+                // Should be of the form: 2600:1f16:110:2600::/56
+                const colonColonIndex = vpcIpv6CidrBlock.indexOf("::");
+                if (colonColonIndex < 0 ||
+                    vpcIpv6CidrBlock.substr(colonColonIndex) !== "::/56") {
+
+                    throw new pulumi.ResourceError(`Vpc ipv6 cidr block was not in an expected form: ${vpcIpv6CidrBlock}`, this.resource);
+                }
+
+                const header = vpcIpv6CidrBlock.substr(0, colonColonIndex);
+                if (!header.endsWith("00")) {
+                    throw new pulumi.ResourceError(`Vpc ipv6 cidr block was not in an expected form: ${vpcIpv6CidrBlock}`, this.resource);
+                }
+
+                // trim off the 00, and then add 00, 01, 02, 03, etc.
+                const prefix = header.substr(0, header.length - 2);
+                return prefix + index.toString().padStart(2, "0") + "::/64";
+             });
+
+        return <pulumi.Output<string>>result;
     }
 }
 
@@ -235,6 +277,7 @@ export interface SubnetDescription {
     subnetName: string;
     availabilityZone: AvailabilityZoneDescription;
     cidrBlock: string;
+    ipv6CidrBlock?: pulumi.Output<string>;
     tags?: pulumi.Input<aws.Tags>;
     mapPublicIpOnLaunch: pulumi.Input<boolean>;
     assignIpv6AddressOnCreation: pulumi.Input<boolean>;
