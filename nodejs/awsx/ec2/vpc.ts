@@ -104,8 +104,7 @@ export class Vpc extends pulumi.ComponentResource {
             this, name, cidrBlock, this.vpc.ipv6CidrBlock, availabilityZones,
             numberOfNatGateways, assignGeneratedIpv6CidrBlock);
 
-        const top = vpcTopology.create(subnetArgs);
-        const { subnets, natGateways, natRoutes } = top;
+        const { subnets, natGateways, natRoutes } = vpcTopology.create(subnetArgs);
 
         for (const desc of subnets) {
             // We previously did not parent the subnet to this component. We now do. Provide an
