@@ -26,46 +26,65 @@ export interface AvailabilityZoneDescription {
     id: string;
 }
 
-/** @internal */
-export class VpcTopology {
-    private readonly vpcCidrBlock: Cidr32Block;
-    private lastAllocatedSubnetCidrBlock?: Cidr32Block;
+export function create(
+        resource: pulumi.Resource | undefined, vpcName: string, vpcCidr: string,
+        ipv6CidrBlock: pulumi.Output<string> | undefined, availabilityZones: AvailabilityZoneDescription[],
+        numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Input<boolean>,
+        subnetArgsArray: x.ec2.VpcSubnetArgs[]) {
 
-    constructor(private readonly resource: pulumi.Resource | undefined,
-                private readonly vpcName: string,
+    // Check if the subnets were given explicit location information or not.  If so, we'll
+    // respect the location information the user asked for.  If not, we'll automatically
+    // smartly partition the vpc.
+    const firstSubnet = subnetArgsArray[0];
+    const hasExplicitLocation = !!firstSubnet.location;
+    for (const subnet of subnetArgsArray) {
+        const siblingHasLocation = !!subnet.location;
+
+        if (hasExplicitLocation !== siblingHasLocation) {
+            throw new pulumi.ResourceError("[location] property must be specified for either no subnets or all of the subnets.", resource);
+        }
+
+        if (siblingHasLocation && subnet.cidrMask !== undefined) {
+            throw new pulumi.ResourceError("Subnet cannot specify [location] and [cidrMask]", resource);
+        }
+    }
+
+    const topology = hasExplicitLocation
+        ? new ExplicitLocationTopology(resource, vpcName, vpcCidr, ipv6CidrBlock, availabilityZones, numberOfNatGateways, assignGeneratedIpv6CidrBlock)
+        : new ComputedLocationTopology(resource, vpcName, vpcCidr, ipv6CidrBlock, availabilityZones, numberOfNatGateways, assignGeneratedIpv6CidrBlock);
+
+    return topology.create(subnetArgsArray);
+}
+
+/** @internal */
+abstract class VpcTopology {
+    protected readonly vpcCidrBlock: Cidr32Block;
+    protected lastAllocatedSubnetCidrBlock?: Cidr32Block;
+
+    constructor(protected  readonly resource: pulumi.Resource | undefined,
+                protected  readonly vpcName: string,
                 vpcCidr: string,
-                private readonly ipv6CidrBlock: pulumi.Output<string> | undefined,
-                private readonly availabilityZones: AvailabilityZoneDescription[],
-                private readonly numberOfNatGateways: number,
-                private readonly assignGeneratedIpv6CidrBlock: pulumi.Input<boolean>) {
+                protected  readonly ipv6CidrBlock: pulumi.Output<string> | undefined,
+                protected  readonly availabilityZones: AvailabilityZoneDescription[],
+                protected  readonly numberOfNatGateways: number,
+                protected  readonly assignGeneratedIpv6CidrBlock: pulumi.Input<boolean>) {
 
         this.vpcCidrBlock = Cidr32Block.fromCidrNotation(vpcCidr);
     }
 
-    public create(subnetArgsArray: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription {
-        // Check if the subnets were given explicit location information or not.  If so, we'll
-        // respect the location information the user asked for.  If not, we'll automatically
-        // smartly partition the vpc.
-        const firstSubnet = subnetArgsArray[0];
-        const hasExplicitLocation = !!firstSubnet.location;
-        for (const subnet of subnetArgsArray) {
-            const siblingHasLocation = !!subnet.location;
+    public abstract create(subnetArgsArray: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription;
 
-            if (hasExplicitLocation !== siblingHasLocation) {
-                throw new pulumi.ResourceError("[location] property must be specified for either no subnets or all of the subnets.", this.resource);
-            }
-
-            if (siblingHasLocation && subnet.cidrMask !== undefined) {
-                throw new pulumi.ResourceError("Subnet cannot specify [location] and [cidrMask]", this.resource);
-            }
-        }
-
-        return hasExplicitLocation
-            ? this.partitionUsingExplicitLocations(subnetArgsArray)
-            : this.partitionUsingComputedLocations(subnetArgsArray);
+    protected shouldCreateNatGateways(publicSubnets: SubnetDescription[], privateSubnets: SubnetDescription[]) {
+        // To make natgateways:
+        // 1. we have to have at least been asked to make some nat gateways.
+        // 2. we need public subnets to actually place the nat gateways in.
+        // 3. we need private subnets that will actually be connected to the nat gateways.
+        return this.numberOfNatGateways > 0 && publicSubnets.length > 0 && privateSubnets.length > 0;
     }
+}
 
-    private partitionUsingComputedLocations(subnetArgsArray: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription {
+class ComputedLocationTopology extends VpcTopology {
+    public create(subnetArgsArray: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription {
         const maskedSubnets = subnetArgsArray.filter(s => s.cidrMask !== undefined);
         const unmaskedSubnets = subnetArgsArray.filter(s => s.cidrMask === undefined);
 
@@ -89,7 +108,7 @@ export class VpcTopology {
         const privateSubnets = subnetDescriptions.filter(d => d.type === "private");
 
         // Create nat gateways if we have private subnets and we have public subnets to place them in.
-        if (shouldCreateNatGateways(this.numberOfNatGateways, publicSubnets, privateSubnets)) {
+        if (this.shouldCreateNatGateways(publicSubnets, privateSubnets)) {
             const numberOfAvailabilityZones = this.availabilityZones.length;
             if (this.numberOfNatGateways > numberOfAvailabilityZones) {
                 throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${this.numberOfNatGateways} > ${numberOfAvailabilityZones}`);
@@ -129,144 +148,6 @@ export class VpcTopology {
                         privateSubnet: privateSubnets[privateSubnetIndex].subnetName,
                         natGateway: natGateways[natGatewayIndex].name,
                     });
-                }
-            }
-        }
-
-        return { subnets: subnetDescriptions, natGateways, natRoutes };
-    }
-
-    private partitionUsingExplicitLocations(subnets: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription {
-        const subnetDescriptions: SubnetDescription[] = [];
-        const natGateways: NatGatewayDescription[] = [];
-        const natRoutes: NatRouteDescription[] = [];
-
-        if (subnets.length > 0) {
-            // First, we'll create all the actual subnets, keeping track of which AZs they're in. This
-            // information will then be used to create the natgateways needed by the private subnets.
-            // The private subnets will need a natgateway created in some public subnet (ideally in the
-            // same AZ they are in).
-
-            type AZ = string | undefined;
-            const azToPublicSubnets = new Map<AZ, SubnetDescription[]>();
-            const azToPrivateSubnets = new Map<AZ, SubnetDescription[]>();
-
-            for (let i = 0, n = subnets.length; i < n; i++) {
-                const subnetArgs = subnets[i];
-                const location = typeof subnetArgs.location === "string"
-                    ? { cidrBlock: subnetArgs.location }
-                    : subnetArgs.location!;
-
-                const type = subnetArgs.type;
-                const subnetName = subnetArgs.name || `${type}-${i}`;
-
-                const subnetDesc: SubnetDescription = {
-                    subnetName,
-                    type,
-                    args: {
-                        ...location,
-
-                        // Allow the individual subnet to decide if it wants to be mapped.  If not
-                        // specified, default to mapping a public-ip open if the type is 'public', and
-                        // not mapping otherwise.
-                        mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
-                        assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, this.assignGeneratedIpv6CidrBlock),
-                        tags: subnetArgs.tags,
-                    },
-                };
-                subnetDescriptions.push(subnetDesc);
-
-                const az = location.availabilityZone || location.availabilityZoneId;
-                const specificSubnetMap =
-                    type === "public" ? azToPublicSubnets :
-                    type === "private" ? azToPrivateSubnets : undefined;
-
-                if (specificSubnetMap) {
-                    const specificSubnets = specificSubnetMap.get(az) || [];
-                    specificSubnets.push(subnetDesc);
-                    specificSubnetMap.set(az, specificSubnets);
-                }
-            }
-
-            const publicSubnets = subnetDescriptions.filter(d => d.type === "public");
-            const privateSubnets = subnetDescriptions.filter(d => d.type === "private");
-
-            if (shouldCreateNatGateways(this.numberOfNatGateways, publicSubnets, privateSubnets)) {
-                // Create nat gateways for our private subnets.  First, collect the azs the private subnets
-                // are in. We'll try to ensure an actual nat gateway in those azs (which is only possible if
-                // we have a public subnet in that az).  If there is no public subnet in that az, then just
-                // pick another public subnet and place the gateway there.
-                const azToNatGateway = new Map<string | undefined, NatGatewayDescription>();
-
-                // process AZs in sorted order.  That way we always do things in the same order across
-                // runs.
-                const privateSubnetAzs = [...azToPrivateSubnets.keys()].sort();
-                const minNatGateways = Math.min(privateSubnetAzs.length, this.numberOfNatGateways);
-
-                const publicSubnetsWithNatGateway = new Set<SubnetDescription>();
-
-                outer:
-                for (let i = 0; i < minNatGateways; i++) {
-                    const az = privateSubnetAzs[i];
-
-                    // try to make a nat gateway in a public subnet in that az.  If we don't have any public
-                    // subnets in that az, use a public subnet from another az.  It's not ideal, but it can
-                    // at least route things.
-                    let publicSubnetForAz: SubnetDescription | undefined;
-                    if (azToPublicSubnets.has(az)) {
-                        // ok, we've got a public subnet for this az.  Just place hte natgateway in
-                        // the first public subnet in that az.
-
-                        publicSubnetForAz = azToPublicSubnets.get(az)![0];
-                    }
-                    else {
-                        // ok, we don't have a public subnet in this az.  Try to pick from any other
-                        // public subnet in an az that doesn't currently have a nat gateway.
-                        for (const [_, publicSubnetsForOtherAz] of azToPublicSubnets) {
-                            if (!publicSubnetsWithNatGateway.has(publicSubnetsForOtherAz[0])) {
-                                publicSubnetForAz = publicSubnetsForOtherAz[0];
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!publicSubnetForAz) {
-                        // no free public subnet
-                        continue;
-                    }
-
-                    publicSubnetsWithNatGateway.add(publicSubnetForAz);
-
-                    const natGateway = { name: `${this.vpcName}-${i}`, publicSubnet: publicSubnetForAz.subnetName };
-                    azToNatGateway.set(az, natGateway);
-                    natGateways.push(natGateway);
-                }
-
-                // Now, go through every private subnet.  Make a natgateway route for it.  Try to pick
-                // a natgateway from it's az.  Otherwise, pick some available natgateway otherwise.
-
-                let natGatewayRoundRobinIndex = 0;
-                let routeIndex = 0;
-
-                for (const az of privateSubnetAzs) {
-                    const privateSubnetsInAz = azToPrivateSubnets.get(az)!;
-                    const natGatewayInAz = azToNatGateway.get(az);
-
-                    for (let i = 0, n = privateSubnetsInAz.length; i < n; i++) {
-                        const privateSubnet = privateSubnetsInAz[i];
-
-                        // If we have a nat gateway in this az, then use it. Otherwise, round robin
-                        // through all the nat gateways.
-                        const natGateway = natGatewayInAz
-                            ? natGatewayInAz
-                            : natGateways[natGatewayRoundRobinIndex++ % natGateways.length];
-
-                        natRoutes.push({
-                            name: `nat-${routeIndex++}`,
-                            privateSubnet: privateSubnet.subnetName,
-                            natGateway: natGateway.name,
-                        });
-                    }
                 }
             }
         }
@@ -419,13 +300,143 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
     }
 }
 
-function shouldCreateNatGateways(
-        numberOfNatGateways: number, publicSubnets: SubnetDescription[], privateSubnets: SubnetDescription[]) {
-    // To make natgateways:
-    // 1. we have to have at least been asked to make some nat gateways.
-    // 2. we need public subnets to actually place the nat gateways in.
-    // 3. we need private subnets that will actually be connected to the nat gateways.
-    return  numberOfNatGateways > 0 && publicSubnets.length > 0 && privateSubnets.length > 0;
+class ExplicitLocationTopology extends VpcTopology {
+    public create(subnets: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription {
+        const subnetDescriptions: SubnetDescription[] = [];
+        const natGateways: NatGatewayDescription[] = [];
+        const natRoutes: NatRouteDescription[] = [];
+
+        if (subnets.length > 0) {
+            // First, we'll create all the actual subnets, keeping track of which AZs they're in. This
+            // information will then be used to create the natgateways needed by the private subnets.
+            // The private subnets will need a natgateway created in some public subnet (ideally in the
+            // same AZ they are in).
+
+            type AZ = string | undefined;
+            const azToPublicSubnets = new Map<AZ, SubnetDescription[]>();
+            const azToPrivateSubnets = new Map<AZ, SubnetDescription[]>();
+
+            for (let i = 0, n = subnets.length; i < n; i++) {
+                const subnetArgs = subnets[i];
+                const location = typeof subnetArgs.location === "string"
+                    ? { cidrBlock: subnetArgs.location }
+                    : subnetArgs.location!;
+
+                const type = subnetArgs.type;
+                const subnetName = subnetArgs.name || `${type}-${i}`;
+
+                const subnetDesc: SubnetDescription = {
+                    subnetName,
+                    type,
+                    args: {
+                        ...location,
+
+                        // Allow the individual subnet to decide if it wants to be mapped.  If not
+                        // specified, default to mapping a public-ip open if the type is 'public', and
+                        // not mapping otherwise.
+                        mapPublicIpOnLaunch: utils.ifUndefined(subnetArgs.mapPublicIpOnLaunch, type === "public"),
+                        assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, this.assignGeneratedIpv6CidrBlock),
+                        tags: subnetArgs.tags,
+                    },
+                };
+                subnetDescriptions.push(subnetDesc);
+
+                const az = location.availabilityZone || location.availabilityZoneId;
+                const specificSubnetMap =
+                    type === "public" ? azToPublicSubnets :
+                    type === "private" ? azToPrivateSubnets : undefined;
+
+                if (specificSubnetMap) {
+                    const specificSubnets = specificSubnetMap.get(az) || [];
+                    specificSubnets.push(subnetDesc);
+                    specificSubnetMap.set(az, specificSubnets);
+                }
+            }
+
+            const publicSubnets = subnetDescriptions.filter(d => d.type === "public");
+            const privateSubnets = subnetDescriptions.filter(d => d.type === "private");
+
+            if (this.shouldCreateNatGateways(publicSubnets, privateSubnets)) {
+                // Create nat gateways for our private subnets.  First, collect the azs the private subnets
+                // are in. We'll try to ensure an actual nat gateway in those azs (which is only possible if
+                // we have a public subnet in that az).  If there is no public subnet in that az, then just
+                // pick another public subnet and place the gateway there.
+                const azToNatGateway = new Map<string | undefined, NatGatewayDescription>();
+
+                // process AZs in sorted order.  That way we always do things in the same order across
+                // runs.
+                const privateSubnetAzs = [...azToPrivateSubnets.keys()].sort();
+                const minNatGateways = Math.min(privateSubnetAzs.length, this.numberOfNatGateways);
+
+                const publicSubnetsWithNatGateway = new Set<SubnetDescription>();
+
+                for (let i = 0; i < minNatGateways; i++) {
+                    const az = privateSubnetAzs[i];
+
+                    // try to make a nat gateway in a public subnet in that az.  If we don't have any public
+                    // subnets in that az, use a public subnet from another az.  It's not ideal, but it can
+                    // at least route things.
+                    let publicSubnetForAz: SubnetDescription | undefined;
+                    if (azToPublicSubnets.has(az)) {
+                        // ok, we've got a public subnet for this az.  Just place hte natgateway in
+                        // the first public subnet in that az.
+
+                        publicSubnetForAz = azToPublicSubnets.get(az)![0];
+                    }
+                    else {
+                        // ok, we don't have a public subnet in this az.  Try to pick from any other
+                        // public subnet in an az that doesn't currently have a nat gateway.
+                        for (const [_, publicSubnetsForOtherAz] of azToPublicSubnets) {
+                            if (!publicSubnetsWithNatGateway.has(publicSubnetsForOtherAz[0])) {
+                                publicSubnetForAz = publicSubnetsForOtherAz[0];
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!publicSubnetForAz) {
+                        // no free public subnet
+                        continue;
+                    }
+
+                    publicSubnetsWithNatGateway.add(publicSubnetForAz);
+
+                    const natGateway = { name: `${this.vpcName}-${i}`, publicSubnet: publicSubnetForAz.subnetName };
+                    azToNatGateway.set(az, natGateway);
+                    natGateways.push(natGateway);
+                }
+
+                // Now, go through every private subnet.  Make a natgateway route for it.  Try to pick
+                // a natgateway from it's az.  Otherwise, pick some available natgateway otherwise.
+
+                let natGatewayRoundRobinIndex = 0;
+                let routeIndex = 0;
+
+                for (const az of privateSubnetAzs) {
+                    const privateSubnetsInAz = azToPrivateSubnets.get(az)!;
+                    const natGatewayInAz = azToNatGateway.get(az);
+
+                    for (let i = 0, n = privateSubnetsInAz.length; i < n; i++) {
+                        const privateSubnet = privateSubnetsInAz[i];
+
+                        // If we have a nat gateway in this az, then use it. Otherwise, round robin
+                        // through all the nat gateways.
+                        const natGateway = natGatewayInAz
+                            ? natGatewayInAz
+                            : natGateways[natGatewayRoundRobinIndex++ % natGateways.length];
+
+                        natRoutes.push({
+                            name: `nat-${routeIndex++}`,
+                            privateSubnet: privateSubnet.subnetName,
+                            natGateway: natGateway.name,
+                        });
+                    }
+                }
+            }
+        }
+
+        return { subnets: subnetDescriptions, natGateways, natRoutes };
+    }
 }
 
 /** @internal */

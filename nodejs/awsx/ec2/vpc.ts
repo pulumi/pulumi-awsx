@@ -100,11 +100,9 @@ export class Vpc extends pulumi.ComponentResource {
             subnetArgs: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
         // Create the appropriate subnets.  Default to a single public and private subnet for each
         // availability zone if none were specified.
-        const vpcTopology = new topology.VpcTopology(
+        const { subnets, natGateways, natRoutes } = topology.create(
             this, name, cidrBlock, this.vpc.ipv6CidrBlock, availabilityZones,
-            numberOfNatGateways, assignGeneratedIpv6CidrBlock);
-
-        const { subnets, natGateways, natRoutes } = vpcTopology.create(subnetArgs);
+            numberOfNatGateways, assignGeneratedIpv6CidrBlock, subnetArgs);
 
         for (const desc of subnets) {
             // We previously did not parent the subnet to this component. We now do. Provide an

@@ -27,9 +27,9 @@ import * as vpcTopology from "../../ec2/vpcTopology";
 function topology(
         cidr: string, availabilityZones: vpcTopology.AvailabilityZoneDescription[],
         numberOfNatGateways: number, subnets: VpcSubnetArgs[]) {
-    return new vpcTopology.VpcTopology(
-        undefined, "testing", cidr, undefined,
-        availabilityZones, numberOfNatGateways, false).create(subnets);
+    return vpcTopology.create(
+        undefined, "testing", cidr, undefined, availabilityZones,
+        numberOfNatGateways, false, subnets);
 }
 
 function subnets(
