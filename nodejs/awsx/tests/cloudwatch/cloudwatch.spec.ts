@@ -14,7 +14,7 @@
 
 import * as pulumi from "@pulumi/pulumi";
 
-pulumi.runtime.setConfig("aws:region", "us-east-2");
+pulumi.runtime.setConfig("aws:region", "us-west-2");
 
 import * as assert from "assert";
 import * as semver from "semver";
@@ -85,7 +85,7 @@ describe("dashboard", () => {
                     ]
                 },
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -133,7 +133,7 @@ describe("dashboard", () => {
                     ]
                 },
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -168,7 +168,7 @@ describe("dashboard", () => {
                     ]
                 },
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -216,7 +216,7 @@ describe("dashboard", () => {
                     ]
                 },
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -251,7 +251,7 @@ describe("dashboard", () => {
                     ]
                 },
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -695,7 +695,7 @@ describe("dashboard", () => {
                     ]
                 ],
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -734,7 +734,7 @@ describe("dashboard", () => {
                     ]
                 ],
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -773,7 +773,7 @@ describe("dashboard", () => {
                     ]
                 ],
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -821,7 +821,7 @@ describe("dashboard", () => {
                     ]
                 ],
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -867,7 +867,7 @@ describe("dashboard", () => {
                     ]
                 ],
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -911,7 +911,7 @@ describe("dashboard", () => {
                     ]
                 },
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "singleValue",
                 "stacked": false
             }
@@ -951,7 +951,7 @@ describe("dashboard", () => {
                     ]
                 ],
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "timeSeries",
                 "stacked": true
             }
@@ -991,7 +991,7 @@ describe("dashboard", () => {
                     ]
                 ],
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "timeSeries",
                 "stacked": false
             }
@@ -1071,7 +1071,7 @@ describe("dashboard", () => {
                 ],
                 "title": "EC2 Instance CPU",
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "timeSeries",
                 "stacked": false
             }
@@ -1094,7 +1094,7 @@ describe("dashboard", () => {
                 ],
                 "title": "EC2 Instance CPU",
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "timeSeries",
                 "stacked": false
             }
@@ -1193,7 +1193,7 @@ describe("dashboard", () => {
                 },
                 "title": "EC2 Instance CPU",
                 "period": 300,
-                "region": "us-east-2",
+                "region": "us-west-2",
                 "view": "timeSeries",
                 "stacked": true,
                 "yAxis": {
