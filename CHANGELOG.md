@@ -3,7 +3,11 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
-- Specific cidr-blocks and availability zone locations can be provided for awsx.ec2.Vpc subnets.
+* LoadBalancers and TargetGroups will no longer create resources with 'hashed' names.  They will
+  instead use the name provided (like nearly all other resources do).  To prevent impact on existing
+  stacks, aliases have been provided to ensure proper tracking of the resources.
+
+* Specific cidr-blocks and availability zone locations can be provided for awsx.ec2.Vpc subnets.
 
 ### Provider fixes + Reparenting
 

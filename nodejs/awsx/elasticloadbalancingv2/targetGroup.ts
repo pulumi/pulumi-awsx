@@ -43,18 +43,23 @@ export abstract class TargetGroup
             ...utils.withAlias(opts, { parent: opts.parent }),
         });
 
-        const longName = `${name}`;
-        const shortName = args.name || utils.sha1hash(`${longName}`);
-
         this.vpc = args.vpc;
-        this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
+
+        // We used to hash the name of an TG to keep the name short.  This was necessary back when
+        // people didn't have direct control over creating the TG.  In awsx though creating the TG
+        // is easy to do, so we just let the user pass in the name they want.  We simply add an
+        // alias from the old name to the new one to keep things from being recreated.
+        this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(name, {
             ...args,
             vpcId: this.vpc.id,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
             deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 300),
             targetType: utils.ifUndefined(args.targetType, "ip"),
-            tags: utils.mergeTags(args.tags, { Name: longName }),
-        }, { parent: this });
+            tags: utils.mergeTags(args.tags, { Name: name }),
+        }, {
+            parent: this,
+            aliases: [{ name: args.name || utils.sha1hash(name) }],
+        });
 
         this.loadBalancer = loadBalancer;
     }
@@ -170,8 +175,8 @@ export interface TargetGroupArgs {
     vpc: x.ec2.Vpc;
 
     /**
-     * The name of the TargetGroup. If not specified, the [name] parameter passed into the
-     * TargetGroup constructor will be hashed and used as the name.
+     * @deprecated Not used.  Supply the name you want for a TargetGroup through the [name]
+     * constructor arg.
      */
     name?: string;
 
