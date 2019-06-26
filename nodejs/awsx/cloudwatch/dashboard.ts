@@ -28,6 +28,12 @@ export interface DashboardArgs {
     name?: pulumi.Input<string>;
 
     /**
+     * The region that widgets can say they're associated with.  If not provided, the region will be
+     * inferred by whatever provider the [Dashboard] ends up using.
+     */
+    region?: pulumi.Input<aws.Region>;
+
+    /**
      * The end of the time range to use for each widget on the dashboard when the dashboard loads.
      * If you specify a value for end, you must also specify a value for start. For each of these
      * values, specify an absolute time in the ISO 8601 format. For example,
@@ -88,12 +94,12 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
      * be treated as a single row to add to the grid.
      */
     constructor(name: string, args: DashboardArgs, opts: pulumi.CustomResourceOptions = {}) {
+        const region = utils.ifUndefined(args.region, utils.getRegionFromOpts(opts));
+
         super(name, {
             dashboardName: utils.ifUndefined(args.name, name),
-            dashboardBody: getDashboardBody(args, opts).apply(b => JSON.stringify(b)),
+            dashboardBody: getDashboardBody(args, region).apply(b => JSON.stringify(b)),
         }, opts);
-
-        const region = utils.getRegion(this);
 
         this.url = pulumi.interpolate
             `https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#dashboards:name=${this.dashboardName}`;
@@ -101,7 +107,7 @@ export class Dashboard extends aws.cloudwatch.Dashboard {
 }
 
 /** @internal */
-export function getDashboardBody(args: DashboardArgs, opts: pulumi.CustomResourceOptions = {}) {
+export function getDashboardBody(args: DashboardArgs, region: pulumi.Output<aws.Region>) {
     const widgets = args.widgets || [];
     if (widgets.length < 0 || widgets.length > 100) {
         throw new Error("Must supply between 0 and 100 widgets.");
@@ -122,7 +128,7 @@ export function getDashboardBody(args: DashboardArgs, opts: pulumi.CustomResourc
     const column = new ColumnWidget(...rows);
 
     const widgetJsons: WidgetJson[] = [];
-    column.addWidgetJson(widgetJsons, /*xOffset:*/ 0, /*yOffset:*/0, utils.getRegionFromOpts(opts));
+    column.addWidgetJson(widgetJsons, /*xOffset:*/ 0, /*yOffset:*/0, region);
 
     return pulumi.output({
         start: args.start,
