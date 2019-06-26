@@ -482,15 +482,15 @@ export interface VpcArgs {
     numberOfAvailabilityZones?: number | "all";
 
     /**
-     * The number of NAT gateways to create if there are any private subnets created.  A NAT gateway
-     * enables instances in a private subnet to connect to the internet or other AWS services, but
-     * prevent the internet from initiating a connection with those instances. A minimum of '1'
-     * gateway is needed if an instance is to be allowed connection to the internet.
+     * The max number of NAT gateways to create if there are any private subnets created.  A NAT
+     * gateway enables instances in a private subnet to connect to the internet or other AWS
+     * services, but prevent the internet from initiating a connection with those instances. A
+     * minimum of '1' gateway is needed if an instance is to be allowed connection to the internet.
      *
-     * If this is set, a nat gateway will be made for each availability zone in the current region.
-     * The first public subnet for that availability zone will be the one used to place the nat
-     * gateway in.  If less gateways are requested than availability zones, then only
-     * that many nat gateways will be created.
+     * If this is not set, a nat gateway will be made for each availability zone in the current
+     * region. The first public subnet for that availability zone will be the one used to place the
+     * nat gateway in.  If less gateways are requested than availability zones, then only that many
+     * nat gateways will be created.
      *
      * Private subnets in an availability zone that contains a nat gateway will route through that
      * gateway.  Private subnets in an availability zone that does not contain a nat gateway will be

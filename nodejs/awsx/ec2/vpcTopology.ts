@@ -196,58 +196,48 @@ export class VpcTopology {
                 // are in. We'll try to ensure an actual nat gateway in those azs (which is only possible if
                 // we have a public subnet in that az).  If there is no public subnet in that az, then just
                 // pick another public subnet and place the gateway there.
-                const azToNatGateways = new Map<string | undefined, NatGatewayDescription[]>();
+                const azToNatGateway = new Map<string | undefined, NatGatewayDescription>();
 
                 // process AZs in sorted order.  That way we always do things in the same order across
                 // runs.
                 const privateSubnetAzs = [...azToPrivateSubnets.keys()].sort();
-                for (let i = 0; i < this.numberOfNatGateways; i++) {
-                    // keep round-robining through the set of azs our private subnets are in.
-                    const az = privateSubnetAzs[i % privateSubnetAzs.length];
+                const minNatGateways = Math.min(privateSubnetAzs.length, this.numberOfNatGateways);
+                let publicSubnetRoundRobin = 0;
+                for (let i = 0; i < minNatGateways; i++) {
+                    const az = privateSubnetAzs[i];
 
                     // try to make a nat gateway in a public subnet in that az.  If we don't have any public
                     // subnets in that az, use a public subnet from another az.  It's not ideal, but it can
                     // at least route things.
                     //
                     // this helps distribute the nat gateways across the AZs.
-                    const publicSubnetsInAz = azToPublicSubnets.get(az) || publicSubnets;
-
-                    // Because of round-robining, we may hit the same set of public-subnets for this az
-                    // multiple times.  Just iterate through those public-subnets as well.
-                    //
-                    // This helps distribute the nat gateways in an an AZ across its public subnets.
-                    const pubicSubnetIndex = Math.floor(i / publicSubnetsInAz.length);
-                    const publicSubnet = publicSubnetsInAz[pubicSubnetIndex % publicSubnetsInAz.length];
+                    const publicSubnet = azToPublicSubnets.has(az)
+                        ? azToPublicSubnets.get(az)![0]
+                        : publicSubnets[publicSubnetRoundRobin++ % publicSubnets.length];
 
                     const natGateway: NatGatewayDescription = { name: `${this.vpcName}-${i}`, publicSubnet: publicSubnet.subnetName };
-
-                    const natGatewaysInAz = azToNatGateways.get(az) || [];
-                    natGatewaysInAz.push(natGateway);
-                    azToNatGateways.set(az, natGatewaysInAz);
-
+                    azToNatGateway.set(az, natGateway);
                     natGateways.push(natGateway);
                 }
 
                 // Now, go through every private subnet.  Make a natgateway route for it.  Try to pick
                 // a natgateway from it's az.  Otherwise, pick some available natgateway otherwise.
 
-                let roundRobinIndex = 0;
+                let natGatewayRoundRobinIndex = 0;
                 let routeIndex = 0;
 
                 for (const az of privateSubnetAzs) {
                     const privateSubnetsInAz = azToPrivateSubnets.get(az)!;
-                    const natGatewaysInAz = azToNatGateways.get(az);
+                    const natGatewayInAz = azToNatGateway.get(az);
 
                     for (let i = 0, n = privateSubnetsInAz.length; i < n; i++) {
                         const privateSubnet = privateSubnetsInAz[i];
 
-                        // if we have natgateways in the same AZ as the private subnet, then just cycle
-                        // through those for this private subnet.
-                        //
-                        // if we don't, then cycle through the entire list of natgateways in this VPC.
-                        const natGateway = natGatewaysInAz
-                            ? natGatewaysInAz[i % natGatewaysInAz.length]
-                            : natGateways[roundRobinIndex++ % natGateways.length];
+                        // If we have a nat gateway in this az, then use it. Otherwise, round robin
+                        // through all the nat gateways.
+                        const natGateway = natGatewayInAz
+                            ? natGatewayInAz
+                            : natGateways[natGatewayRoundRobinIndex++ % natGateways.length];
 
                         natRoutes.push({
                             name: `nat-${routeIndex++}`,

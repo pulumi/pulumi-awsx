@@ -18,6 +18,7 @@ import { permutation } from "js-combinatorics";
 pulumi.runtime.setConfig("aws:region", "us-east-2");
 
 import * as assert from "assert";
+import * as utils from "../../utils";
 
 import { Cidr32Block } from "../../ec2/cidr";
 import { VpcSubnetArgs } from "../../ec2/vpc";
@@ -36,12 +37,18 @@ function subnets(
     return topology(cidr, availabilityZones, availabilityZones.length, subnets).subnets;
 }
 
-function jsonEqual(desc1: vpcTopology.VpcTopologyDescription, desc2: vpcTopology.VpcTopologyDescription) {
-    return assert.equal(JSON.stringify(desc1, null, 4), JSON.stringify(desc1, null, 4));
+async function jsonEqual(desc1: vpcTopology.VpcTopologyDescription, desc2: vpcTopology.VpcTopologyDescription) {
+    const unwrapped1 = await (<any>pulumi.output(desc1)).promise();
+    const unwrapped2 = await (<any>pulumi.output(desc2)).promise();
+
+    return assert.equal(JSON.stringify(unwrapped1, null, 4), JSON.stringify(unwrapped2, null, 4));
 }
 
-function subnetsEqual(desc1: vpcTopology.SubnetDescription[], desc2: vpcTopology.SubnetDescription[]) {
-    return assert.equal(JSON.stringify(desc1, null, 4), JSON.stringify(desc1, null, 4));
+async function subnetsEqual(desc1: vpcTopology.SubnetDescription[], desc2: vpcTopology.SubnetDescription[]) {
+    const unwrapped1 = await (<any>pulumi.output(desc1)).promise();
+    const unwrapped2 = await (<any>pulumi.output(desc2)).promise();
+
+    return assert.equal(JSON.stringify(unwrapped1, null, 4), JSON.stringify(unwrapped2, null, 4));
 }
 
 const AZ1 = { name: "name_a", id: "id_a" };
@@ -163,8 +170,8 @@ describe("cidr", () => {
 
 describe("topology", () => {
     describe("default", () => {
-        it("1 AZ", () => {
-            subnetsEqual(subnets("10.0.0.0/16", oneAZ, [
+        it("1 AZ", async () => {
+            await subnetsEqual(subnets("10.0.0.0/16", oneAZ, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -173,6 +180,7 @@ describe("topology", () => {
         "subnetName": "testing-public-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/17",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -183,6 +191,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.128.0/17",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -191,8 +200,8 @@ describe("topology", () => {
 ]);
         });
 
-        it("2 AZs", () => {
-            subnetsEqual(subnets("10.0.0.0/16", twoAZs, [
+        it("2 AZs", async () => {
+            await subnetsEqual(subnets("10.0.0.0/16", twoAZs, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -201,6 +210,7 @@ describe("topology", () => {
         "subnetName": "testing-public-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/18",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -211,6 +221,7 @@ describe("topology", () => {
         "subnetName": "testing-public-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.0.64.0/18",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -221,6 +232,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.128.0/18",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -231,6 +243,7 @@ describe("topology", () => {
         "subnetName": "testing-private-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.0.192.0/18",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -239,8 +252,8 @@ describe("topology", () => {
 ]);
         });
 
-        it("3 AZs", () => {
-            subnetsEqual(subnets("10.0.0.0/16", threeAZs, [
+        it("3 AZs", async () => {
+            await subnetsEqual(subnets("10.0.0.0/16", threeAZs, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -249,6 +262,7 @@ describe("topology", () => {
         "subnetName": "testing-public-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/19",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -259,6 +273,7 @@ describe("topology", () => {
         "subnetName": "testing-public-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.0.32.0/19",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -269,6 +284,7 @@ describe("topology", () => {
         "subnetName": "testing-public-2",
         args: {
             "availabilityZone": AZ3.name,
+            "availabilityZoneId": AZ3.id,
             "cidrBlock": "10.0.64.0/19",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -279,6 +295,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.96.0/19",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -289,6 +306,7 @@ describe("topology", () => {
         "subnetName": "testing-private-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.0.128.0/19",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -299,6 +317,7 @@ describe("topology", () => {
         "subnetName": "testing-private-2",
         args: {
             "availabilityZone": AZ3.name,
+            "availabilityZoneId": AZ3.id,
             "cidrBlock": "10.0.160.0/19",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -309,8 +328,8 @@ describe("topology", () => {
     });
 
     describe("custom cidr", () => {
-        it("custom 1", () => {
-            subnetsEqual(subnets("10.10.0.0/16", twoAZs, [
+        it("custom 1", async () => {
+            await subnetsEqual(subnets("10.10.0.0/16", twoAZs, [
                 { type: "public", cidrMask: 24 },
                 { type: "private", cidrMask: 28 },
             ]), [
@@ -319,6 +338,7 @@ describe("topology", () => {
         "subnetName": "testing-public-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.10.0.0/24",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -329,6 +349,7 @@ describe("topology", () => {
         "subnetName": "testing-public-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.10.1.0/24",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -339,6 +360,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.10.2.0/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -349,6 +371,7 @@ describe("topology", () => {
         "subnetName": "testing-private-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.10.2.16/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -357,8 +380,8 @@ describe("topology", () => {
 ]);
         });
 
-        it("custom 2", () => {
-            subnetsEqual(subnets("10.10.0.0/16", twoAZs, [
+        it("custom 2", async () => {
+            await subnetsEqual(subnets("10.10.0.0/16", twoAZs, [
                 { type: "public", cidrMask: 26 },
                 { type: "private" },
                 { type: "isolated", cidrMask: 28 },
@@ -368,6 +391,7 @@ describe("topology", () => {
         "subnetName": "testing-public-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.10.0.0/26",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -378,6 +402,7 @@ describe("topology", () => {
         "subnetName": "testing-public-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.10.0.64/26",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -388,6 +413,7 @@ describe("topology", () => {
         "subnetName": "testing-isolated-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.10.0.128/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -398,6 +424,7 @@ describe("topology", () => {
         "subnetName": "testing-isolated-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.10.0.144/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -408,6 +435,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.10.0.160/18",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -418,6 +446,7 @@ describe("topology", () => {
         "subnetName": "testing-private-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.10.64.160/18",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -426,8 +455,8 @@ describe("topology", () => {
 ]);
         });
 
-        it("custom 3", () => {
-            subnetsEqual(subnets("10.10.0.0/16", twoAZs, [
+        it("custom 3", async () => {
+            await subnetsEqual(subnets("10.10.0.0/16", twoAZs, [
                 { type: "public", cidrMask: 24 },
                 { type: "private", name: "private1" },
                 { type: "private", name: "private2" },
@@ -438,6 +467,7 @@ describe("topology", () => {
         "subnetName": "testing-public-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.10.0.0/24",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -448,6 +478,7 @@ describe("topology", () => {
         "subnetName": "testing-public-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.10.1.0/24",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -458,6 +489,7 @@ describe("topology", () => {
         "subnetName": "testing-isolated-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.10.2.0/24",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -468,6 +500,7 @@ describe("topology", () => {
         "subnetName": "testing-isolated-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.10.3.0/24",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -478,6 +511,7 @@ describe("topology", () => {
         "subnetName": "testing-private1-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.10.4.0/19",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -488,6 +522,7 @@ describe("topology", () => {
         "subnetName": "testing-private1-private-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.10.36.0/19",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -498,6 +533,7 @@ describe("topology", () => {
         "subnetName": "testing-private2-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.10.68.0/19",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -508,6 +544,7 @@ describe("topology", () => {
         "subnetName": "testing-private2-private-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.10.100.0/19",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -519,8 +556,8 @@ describe("topology", () => {
 
     describe("26 block", () => {
         // a 26 block can only fit four subnets since it only has 64 addresses available.
-        it("1 AZ, 1 subnet", () => {
-            subnetsEqual(subnets("10.0.0.0/26", oneAZ, [
+        it("1 AZ, 1 subnet", async () => {
+            await subnetsEqual(subnets("10.0.0.0/26", oneAZ, [
                 { type: "private" },
             ]), [
     {
@@ -528,6 +565,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/26",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -535,8 +573,8 @@ describe("topology", () => {
     },
 ]);
         });
-        it("1 AZ, 2 subnets", () => {
-            subnetsEqual(subnets("10.0.0.0/26", oneAZ, [
+        it("1 AZ, 2 subnets", async () => {
+            await subnetsEqual(subnets("10.0.0.0/26", oneAZ, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -545,6 +583,7 @@ describe("topology", () => {
         "subnetName": "testing-public-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/27",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -555,6 +594,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.32/27",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -562,8 +602,8 @@ describe("topology", () => {
     },
 ]);
         });
-        it("2 AZs, 1 subnets", () => {
-            subnetsEqual(subnets("10.0.0.0/26", twoAZs, [
+        it("2 AZs, 1 subnets", async () => {
+            await subnetsEqual(subnets("10.0.0.0/26", twoAZs, [
                 { type: "private" },
             ]), [
     {
@@ -571,6 +611,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/27",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -581,6 +622,7 @@ describe("topology", () => {
         "subnetName": "testing-private-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.0.0.32/27",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -588,8 +630,8 @@ describe("topology", () => {
     },
 ]);
         });
-        it("2 AZs, 2 subnets", () => {
-            subnetsEqual(subnets("10.0.0.0/26", twoAZs, [
+        it("2 AZs, 2 subnets", async () => {
+            await subnetsEqual(subnets("10.0.0.0/26", twoAZs, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -598,6 +640,7 @@ describe("topology", () => {
         "subnetName": "testing-public-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/28",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -608,6 +651,7 @@ describe("topology", () => {
         "subnetName": "testing-public-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.0.0.16/28",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -618,6 +662,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.32/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -628,6 +673,7 @@ describe("topology", () => {
         "subnetName": "testing-private-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.0.0.48/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -646,8 +692,8 @@ describe("topology", () => {
 
     describe("27 block", () => {
         // a 27 block can only fit two subnets since it only has 32 addresses available.
-        it("1 AZ, 1 subnet", () => {
-            subnetsEqual(subnets("10.0.0.0/27", oneAZ, [
+        it("1 AZ, 1 subnet", async () => {
+            await subnetsEqual(subnets("10.0.0.0/27", oneAZ, [
                 { type: "private" },
             ]), [
     {
@@ -655,6 +701,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/27",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -662,8 +709,8 @@ describe("topology", () => {
     },
 ]);
         });
-        it("1 AZ, 2 subnets", () => {
-            subnetsEqual(subnets("10.0.0.0/27", oneAZ, [
+        it("1 AZ, 2 subnets", async () => {
+            await subnetsEqual(subnets("10.0.0.0/27", oneAZ, [
                 { type: "public" },
                 { type: "private" },
             ]), [
@@ -672,6 +719,7 @@ describe("topology", () => {
         "subnetName": "testing-public-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/28",
             mapPublicIpOnLaunch: true,
             assignIpv6AddressOnCreation: false,
@@ -682,6 +730,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.16/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -689,8 +738,8 @@ describe("topology", () => {
     },
 ]);
         });
-        it("2 AZs, 1 subnets", () => {
-            subnetsEqual(subnets("10.0.0.0/27", twoAZs, [
+        it("2 AZs, 1 subnets", async () => {
+            await subnetsEqual(subnets("10.0.0.0/27", twoAZs, [
                 { type: "private" },
             ]), [
     {
@@ -698,6 +747,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -708,6 +758,7 @@ describe("topology", () => {
         "subnetName": "testing-private-1",
         args: {
             "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
             "cidrBlock": "10.0.0.16/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -725,8 +776,8 @@ describe("topology", () => {
 
     describe("28 block", () => {
         // a 28 block can only fit a single subnet since it only has 16 addresses available.
-        it("1 AZ, 1 subnet", () => {
-            subnetsEqual(subnets("10.0.0.0/28", oneAZ, [
+        it("1 AZ, 1 subnet", async () => {
+            await subnetsEqual(subnets("10.0.0.0/28", oneAZ, [
                 { type: "private" },
             ]), [
     {
@@ -734,6 +785,7 @@ describe("topology", () => {
         "subnetName": "testing-private-0",
         args: {
             "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
             "cidrBlock": "10.0.0.0/28",
             mapPublicIpOnLaunch: false,
             assignIpv6AddressOnCreation: false,
@@ -757,6 +809,205 @@ describe("topology", () => {
                 { type: "public" },
                 { type: "private" },
             ]));
+        });
+    });
+
+    describe("custom locations", () => {
+        it("custom one azs", async () => {
+            await jsonEqual(topology("10.0.0.0/16", oneAZ, 1, [
+                { type: "public", location: "10.0.0.0/24" },
+                { type: "private", location: "10.0.1.0/24" },
+                { type: "isolated", name: "db", location: "10.0.2.0/24" },
+                { type: "isolated", name: "redis", location: "10.0.3.0/24" },
+            ]), {
+                "subnets": [
+                    {
+                        "subnetName": "public-0",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.0.0/24",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "private-1",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.1.0/24",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "db",
+                        "type": "isolated",
+                        "args": {
+                            "cidrBlock": "10.0.2.0/24",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "redis",
+                        "type": "isolated",
+                        "args": {
+                            "cidrBlock": "10.0.3.0/24",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                ],
+                "natGateways": [
+                    {
+                        "name": "testing-0",
+                        "publicSubnet": "public-0",
+                    },
+                ],
+                "natRoutes": [
+                    {
+                        "name": "nat-0",
+                        "privateSubnet": "private-1",
+                        "natGateway": "testing-0",
+                    },
+                ],
+            });
+        });
+
+        it("custom two private one public", async () => {
+            await jsonEqual(topology("10.0.0.0/16", twoAZs, 2, [
+                { type: "public", location: "10.0.0.0/24" },
+                { type: "private", location: { cidrBlock: "10.0.1.0/24", availabilityZone: AZ1.name } },
+                { type: "private", location: { cidrBlock: "10.0.2.0/24", availabilityZone: AZ2.name } },
+            ]), {
+                "subnets": [
+                    {
+                        "subnetName": "public-0",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.0.0/24",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "private-1",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.1.0/24",
+                            "availabilityZone": "name_a",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "private-2",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.2.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                ],
+                "natGateways": [
+                    {
+                        "name": "testing-0",
+                        "publicSubnet": "public-0",
+                    },
+                    {
+                        "name": "testing-1",
+                        "publicSubnet": "public-0",
+                    },
+                ],
+                "natRoutes": [
+                    {
+                        "name": "nat-0",
+                        "privateSubnet": "private-1",
+                        "natGateway": "testing-0",
+                    },
+                    {
+                        "name": "nat-1",
+                        "privateSubnet": "private-2",
+                        "natGateway": "testing-1",
+                    },
+                ],
+            });
+        });
+
+        it("custom two private two public", async () => {
+            await jsonEqual(topology("10.0.0.0/16", twoAZs, 2, [
+                { type: "public", location: { cidrBlock: "10.0.1.0/24", availabilityZone: AZ1.name } },
+                { type: "public", location: { cidrBlock: "10.0.2.0/24", availabilityZone: AZ2.name } },
+                { type: "private", location: { cidrBlock: "10.0.3.0/24", availabilityZone: AZ1.name } },
+                { type: "private", location: { cidrBlock: "10.0.4.0/24", availabilityZone: AZ2.name } },
+            ]), {
+                "subnets": [
+                    {
+                        "subnetName": "public-0",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.1.0/24",
+                            "availabilityZone": "name_a",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "public-1",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.2.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "private-2",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.3.0/24",
+                            "availabilityZone": "name_a",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "private-3",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.4.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                ],
+                "natGateways": [
+                    {
+                        "name": "testing-0",
+                        "publicSubnet": "public-0",
+                    },
+                    {
+                        "name": "testing-1",
+                        "publicSubnet": "public-1",
+                    },
+                ],
+                "natRoutes": [
+                    {
+                        "name": "nat-0",
+                        "privateSubnet": "private-2",
+                        "natGateway": "testing-0",
+                    },
+                    {
+                        "name": "nat-1",
+                        "privateSubnet": "private-3",
+                        "natGateway": "testing-1",
+                    },
+                ],
+            });
         });
     });
 });
