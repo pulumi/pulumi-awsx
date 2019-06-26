@@ -54,10 +54,14 @@ async function subnetsEqual(desc1: vpcTopology.SubnetDescription[], desc2: vpcTo
 const AZ1 = { name: "name_a", id: "id_a" };
 const AZ2 = { name: "name_b", id: "id_b" };
 const AZ3 = { name: "name_c", id: "id_c" };
+const AZ4 = { name: "name_d", id: "id_d" };
+const AZ5 = { name: "name_e", id: "id_e" };
 
 const oneAZ: vpcTopology.AvailabilityZoneDescription[] = [AZ1];
 const twoAZs: vpcTopology.AvailabilityZoneDescription[] = [AZ1, AZ2];
 const threeAZs: vpcTopology.AvailabilityZoneDescription[] = [AZ1, AZ2, AZ3];
+const fourAZs: vpcTopology.AvailabilityZoneDescription[] = [AZ1, AZ2, AZ3, AZ4];
+const fiveAZs: vpcTopology.AvailabilityZoneDescription[] = [AZ1, AZ2, AZ3, AZ5];
 
 describe("cidr", () => {
     it("throws without /", () => {
@@ -916,10 +920,6 @@ describe("topology", () => {
                         "name": "testing-0",
                         "publicSubnet": "public-0",
                     },
-                    {
-                        "name": "testing-1",
-                        "publicSubnet": "public-0",
-                    },
                 ],
                 "natRoutes": [
                     {
@@ -930,7 +930,7 @@ describe("topology", () => {
                     {
                         "name": "nat-1",
                         "privateSubnet": "private-2",
-                        "natGateway": "testing-1",
+                        "natGateway": "testing-0",
                     },
                 ],
             });
@@ -1004,6 +1004,115 @@ describe("topology", () => {
                     {
                         "name": "nat-1",
                         "privateSubnet": "private-3",
+                        "natGateway": "testing-1",
+                    },
+                ],
+            });
+        });
+
+        it("custom two private three public", async () => {
+            await jsonEqual(topology("10.0.0.0/16", fiveAZs, 5, [
+                { type: "public", location: { cidrBlock: "10.0.1.0/24", availabilityZone: AZ1.name } },
+                { type: "public", location: { cidrBlock: "10.0.2.0/24", availabilityZone: AZ2.name } },
+                // first private subnet should get natgateway from second public subnet (since it's
+                // in the same AZ).  Remaining private subnets should round-robin between the two
+                // natgateways we make.
+                { type: "private", location: { cidrBlock: "10.0.3.0/24", availabilityZone: AZ2.name } },
+                { type: "private", location: { cidrBlock: "10.0.4.0/24", availabilityZone: AZ3.name } },
+                { type: "private", location: { cidrBlock: "10.0.5.0/24", availabilityZone: AZ4.name } },
+                { type: "private", location: { cidrBlock: "10.0.6.0/24", availabilityZone: AZ5.name } },
+            ]), {
+                "subnets": [
+                    {
+                        "subnetName": "public-0",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.1.0/24",
+                            "availabilityZone": "name_a",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "public-1",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.2.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "private-2",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.3.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "private-3",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.4.0/24",
+                            "availabilityZone": "name_c",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "private-4",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.5.0/24",
+                            "availabilityZone": "name_d",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                    {
+                        "subnetName": "private-5",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.6.0/24",
+                            "availabilityZone": "name_e",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    },
+                ],
+                "natGateways": [
+                    {
+                        "name": "testing-0",
+                        "publicSubnet": "public-1",
+                    },
+                    {
+                        "name": "testing-1",
+                        "publicSubnet": "public-0",
+                    },
+                ],
+                "natRoutes": [
+                    {
+                        "name": "nat-0",
+                        "privateSubnet": "private-2",
+                        "natGateway": "testing-0",
+                    },
+                    {
+                        "name": "nat-1",
+                        "privateSubnet": "private-3",
+                        "natGateway": "testing-1",
+                    },
+                    {
+                        "name": "nat-2",
+                        "privateSubnet": "private-4",
+                        "natGateway": "testing-0",
+                    },
+                    {
+                        "name": "nat-3",
+                        "privateSubnet": "private-5",
                         "natGateway": "testing-1",
                     },
                 ],

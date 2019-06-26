@@ -202,20 +202,42 @@ export class VpcTopology {
                 // runs.
                 const privateSubnetAzs = [...azToPrivateSubnets.keys()].sort();
                 const minNatGateways = Math.min(privateSubnetAzs.length, this.numberOfNatGateways);
-                let publicSubnetRoundRobin = 0;
+
+                const publicSubnetsWithNatGateway = new Set<SubnetDescription>();
+
+                outer:
                 for (let i = 0; i < minNatGateways; i++) {
                     const az = privateSubnetAzs[i];
 
                     // try to make a nat gateway in a public subnet in that az.  If we don't have any public
                     // subnets in that az, use a public subnet from another az.  It's not ideal, but it can
                     // at least route things.
-                    //
-                    // this helps distribute the nat gateways across the AZs.
-                    const publicSubnet = azToPublicSubnets.has(az)
-                        ? azToPublicSubnets.get(az)![0]
-                        : publicSubnets[publicSubnetRoundRobin++ % publicSubnets.length];
+                    let publicSubnetForAz: SubnetDescription | undefined;
+                    if (azToPublicSubnets.has(az)) {
+                        // ok, we've got a public subnet for this az.  Just place hte natgateway in
+                        // the first public subnet in that az.
 
-                    const natGateway: NatGatewayDescription = { name: `${this.vpcName}-${i}`, publicSubnet: publicSubnet.subnetName };
+                        publicSubnetForAz = azToPublicSubnets.get(az)![0];
+                    }
+                    else {
+                        // ok, we don't have a public subnet in this az.  Try to pick from any other
+                        // public subnet in an az that doesn't currently have a nat gateway.
+                        for (const [_, publicSubnetsForOtherAz] of azToPublicSubnets) {
+                            if (!publicSubnetsWithNatGateway.has(publicSubnetsForOtherAz[0])) {
+                                publicSubnetForAz = publicSubnetsForOtherAz[0];
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!publicSubnetForAz) {
+                        // no free public subnet
+                        continue;
+                    }
+
+                    publicSubnetsWithNatGateway.add(publicSubnetForAz);
+
+                    const natGateway = { name: `${this.vpcName}-${i}`, publicSubnet: publicSubnetForAz.subnetName };
                     azToNatGateway.set(az, natGateway);
                     natGateways.push(natGateway);
                 }
