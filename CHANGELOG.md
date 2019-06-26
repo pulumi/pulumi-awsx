@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+- Specific cidr-blocks and availability zone locations can be provided for awsx.ec2.Vpc subnets.
+
 ### Provider fixes + Reparenting
 
 - Many awsx components were both not parented properly and also did not correctly pass 'provider'
