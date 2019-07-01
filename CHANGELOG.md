@@ -9,6 +9,8 @@ CHANGELOG
 * awsx.autoscaling.AutoScalingLaunchConfiguration can be passed an explicit imageId instead of
   only using and ecs-specific image name.
 
+* Specific cidr-blocks and availability zone locations can be provided for awsx.ec2.Vpc subnets.
+
 ### Provider fixes + Reparenting
 
 - Many awsx components were both not parented properly and also did not correctly pass 'provider'

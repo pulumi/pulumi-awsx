@@ -17,8 +17,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as assert from "assert";
 import * as semver from "semver";
 
-import * as aws from "../..";
-
 import * as dashboard from "../../cloudwatch/dashboard";
 import { Metric } from "../../cloudwatch/metric";
 import { Widget } from "../../cloudwatch/widget";

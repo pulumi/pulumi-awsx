@@ -16,8 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import { getAvailabilityZone } from "./../aws";
-import { VpcTopology } from "./vpcTopology";
+import * as topology from "./vpcTopology";
 
 import * as utils from "./../utils";
 
@@ -61,13 +60,9 @@ export class Vpc extends pulumi.ComponentResource {
         }
         else {
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
-            const numberOfAvailabilityZones = getNumberOfAvailabilityZones(this, args.numberOfAvailabilityZones);
+            const availabilityZones = getAvailabilityZones(this, args.numberOfAvailabilityZones);
 
-            const numberOfNatGateways = args.numberOfNatGateways === undefined ? numberOfAvailabilityZones : args.numberOfNatGateways;
-            if (numberOfNatGateways > numberOfAvailabilityZones) {
-                throw new Error(`[numberOfNatGateways] cannot be greater than [numberOfAvailabilityZones]: ${numberOfNatGateways} > ${numberOfAvailabilityZones}`);
-            }
-
+            const numberOfNatGateways = args.numberOfNatGateways === undefined ? availabilityZones.length : args.numberOfNatGateways;
             const assignGeneratedIpv6CidrBlock = utils.ifUndefined(args.assignGeneratedIpv6CidrBlock, false);
 
             // We previously did not parent the underlying Vpc to this component. We now do. Provide
@@ -83,57 +78,77 @@ export class Vpc extends pulumi.ComponentResource {
             }, { parent: this, aliases: [{ parent: pulumi.rootStackResource }] });
             this.id = this.vpc.id;
 
-            // Create the appropriate subnets.  Default to a single public and private subnet for each
-            // availability zone if none were specified.
-            const topology = new VpcTopology(name, cidrBlock, numberOfAvailabilityZones);
-            const subnetDescriptions = topology.createSubnets(args.subnets || [
+            const subnets = args.subnets || [
                 { type: "public" },
                 { type: "private" },
-            ]);
+            ];
 
-            for (let i = 0, n = subnetDescriptions.length; i < n; i++) {
-                const desc = subnetDescriptions[i];
-                const type = desc.type;
-                const subnetName = desc.subnetName;
-
-                const assignIpv6AddressOnCreation = utils.ifUndefined(desc.assignIpv6AddressOnCreation, assignGeneratedIpv6CidrBlock);
-                const ipv6CidrBlock = createIpv6CidrBlock(this, assignIpv6AddressOnCreation, i);
-
-                // We previously did not parent the subnet to this component. We now do. Provide an
-                // alias so this doesn't cause resources to be destroyed/recreated for existing
-                // stacks.
-                const subnet = new x.ec2.Subnet(subnetName, this, {
-                    cidrBlock: desc.cidrBlock,
-                    availabilityZone: getAvailabilityZone(desc.availabilityZone, { parent: this }),
-
-                    // Allow the individual subnet to decide if it wants to be mapped.  If not
-                    // specified, default to mapping a public-ip open if the type is 'public', and
-                    // not mapping otherwise.
-                    mapPublicIpOnLaunch: utils.ifUndefined(desc.mapPublicIpOnLaunch, type === "public"),
-
-                    // Allow the individual subnet to decide it if wants an ipv6 address assigned at
-                    // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
-                    // it, don't assign otherwise.
-                    ipv6CidrBlock: ipv6CidrBlock,
-                    assignIpv6AddressOnCreation,
-
-                    // merge some good default tags, with whatever the user wants.  Their choices should
-                    // always win out over any defaults we pick.
-                    tags: utils.mergeTags({ type, Name: subnetName }, desc.tags),
-                }, { aliases: [{ parent: opts.parent }], parent: this });
-
-                this.getSubnets(type).push(subnet);
-                this.getSubnetIds(type).push(subnet.id);
-            }
+            this.partition(
+                name, cidrBlock, availabilityZones, numberOfNatGateways,
+                assignGeneratedIpv6CidrBlock, subnets, opts);
 
             // Create an internet gateway if we have public subnets.
             this.addInternetGateway(name, this.publicSubnets);
-
-            // Create nat gateways if we have private subnets.
-            createNatGateways(name, this, numberOfAvailabilityZones, numberOfNatGateways);
         }
 
         this.registerOutputs();
+    }
+
+    private partition(
+            name: string, cidrBlock: CidrBlock, availabilityZones: topology.AvailabilityZoneDescription[],
+            numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
+            subnetArgs: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
+        // Create the appropriate subnets.  Default to a single public and private subnet for each
+        // availability zone if none were specified.
+        const { subnets, natGateways, natRoutes } = topology.create(
+            this, name, cidrBlock, this.vpc.ipv6CidrBlock, availabilityZones,
+            numberOfNatGateways, assignGeneratedIpv6CidrBlock, subnetArgs);
+
+        for (const desc of subnets) {
+            // We previously did not parent the subnet to this component. We now do. Provide an
+            // alias so this doesn't cause resources to be destroyed/recreated for existing
+            // stacks.
+            // Only set one of availabilityZone or availabilityZoneId
+            const availabilityZone = desc.args.availabilityZone;
+            const availabilityZoneId = availabilityZone ? undefined : desc.args.availabilityZoneId;
+
+            const subnet = new x.ec2.Subnet(desc.subnetName, this, {
+                ...desc.args,
+                availabilityZone,
+                availabilityZoneId,
+                tags: utils.mergeTags({ type: desc.type, Name: desc.subnetName }, desc.args.tags),
+            }, { aliases: [{ parent: opts.parent }], parent: this });
+
+            this.addSubnet(desc.type, subnet);
+        }
+
+        for (const desc of natGateways) {
+            const publicSubnet = this.publicSubnets.find(s => s.subnetName === desc.publicSubnet);
+            if (!publicSubnet) {
+                throw new pulumi.ResourceError(`Could not find public subnet named ${desc.publicSubnet}`, this);
+            }
+
+            this.addNatGateway(desc.name, { subnet: publicSubnet });
+        }
+
+        for (const desc of natRoutes) {
+            const privateSubnet = this.privateSubnets.find(s => s.subnetName === desc.privateSubnet);
+            if (!privateSubnet) {
+                throw new pulumi.ResourceError(`Could not find private subnet named ${desc.privateSubnet}`, this);
+            }
+
+            const natGateway = this.natGateways.find(g => g.natGatewayName === desc.natGateway);
+            if (!natGateway) {
+                throw new pulumi.ResourceError(`Could not find nat gateway named ${desc.natGateway}`, this);
+            }
+
+            privateSubnet.createRoute(desc.name, natGateway);
+        }
+    }
+
+    private addSubnet(type: VpcSubnetType, subnet: x.ec2.Subnet) {
+        this.getSubnets(type).push(subnet);
+        this.getSubnetIds(type).push(subnet.id);
     }
 
     public getSubnets(type: VpcSubnetType) {
@@ -247,9 +262,9 @@ export class Vpc extends pulumi.ComponentResource {
             vpc: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
         }, opts);
 
-        createSubnets(vpc, name, "public", idArgs.publicSubnetIds);
-        createSubnets(vpc, name, "private", idArgs.privateSubnetIds);
-        createSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
+        getExistingSubnets(vpc, name, "public", idArgs.publicSubnetIds);
+        getExistingSubnets(vpc, name, "private", idArgs.privateSubnetIds);
+        getExistingSubnets(vpc, name, "isolated", idArgs.isolatedSubnetIds);
 
         // Pass along aliases so that the previously unparented resources are now properly parented
         // to the vpc.
@@ -277,101 +292,29 @@ export class Vpc extends pulumi.ComponentResource {
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
 
-function createIpv6CidrBlock(
-        vpc: Vpc,
-        assignIpv6AddressOnCreation: pulumi.Output<boolean>,
-        index: number): pulumi.Output<string> {
+function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): topology.AvailabilityZoneDescription[] {
+    const result = utils.promiseResult(aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc }));
+    if (result.names.length !== result.zoneIds.length) {
+        throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", vpc);
+    }
 
-    const result = pulumi.all([vpc.vpc.ipv6CidrBlock, assignIpv6AddressOnCreation])
-                         .apply(([vpcIpv6CidrBlock, assignIpv6AddressOnCreation]) => {
-                    if (!assignIpv6AddressOnCreation) {
-                        return undefined;
-                    }
+    const descriptions: topology.AvailabilityZoneDescription[] = [];
+    for (let i = 0, n = result.names.length; i < n; i++) {
+        descriptions.push({ name: result.names[i], id: result.zoneIds[i] });
+    }
 
-                    if (!vpcIpv6CidrBlock) {
-                        throw new pulumi.ResourceError(
-"Must set [assignGeneratedIpv6CidrBlock] to true on [Vpc] in order to assign ipv6 address to subnet.", vpc);
-                    }
+    const count =
+        typeof requestedCount === "number" ? requestedCount :
+        requestedCount === "all" ? descriptions.length : 2;
 
-                    // Should be of the form: 2600:1f16:110:2600::/56
-                    const colonColonIndex = vpcIpv6CidrBlock.indexOf("::");
-                    if (colonColonIndex < 0 ||
-                        vpcIpv6CidrBlock.substr(colonColonIndex) !== "::/56") {
-
-                        throw new pulumi.ResourceError(`Vpc ipv6 cidr block was not in an expected form: ${vpcIpv6CidrBlock}`, vpc);
-                    }
-
-                    const header = vpcIpv6CidrBlock.substr(0, colonColonIndex);
-                    if (!header.endsWith("00")) {
-                        throw new pulumi.ResourceError(`Vpc ipv6 cidr block was not in an expected form: ${vpcIpv6CidrBlock}`, vpc);
-                    }
-
-                    // trim off the 00, and then add 00, 01, 02, 03, etc.
-                    const prefix = header.substr(0, header.length - 2);
-                    return prefix + index.toString().padStart(2, "0") + "::/64";
-                 });
-
-    return <pulumi.Output<string>>result;
+    return descriptions.slice(0, count);
 }
 
-function getNumberOfAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined) {
-    if (typeof requestedCount === "number") {
-        return requestedCount;
-    }
-
-    if (requestedCount === "all") {
-        const availabilityZones = utils.promiseResult(aws.getAvailabilityZones(/*args:*/undefined, { parent: vpc }));
-        if (availabilityZones && availabilityZones.names && availabilityZones.names.length > 0) {
-            return availabilityZones.names.length;
-        }
-    }
-
-    return 2;
+function shouldCreateNatGateways(vpc: Vpc, numberOfNatGateways: number) {
+    return vpc.privateSubnets.length > 0 && numberOfNatGateways > 0 && vpc.publicSubnets.length > 0;
 }
 
-function createNatGateways(vpcName: string, vpc: Vpc, numberOfAvailabilityZones: number, numberOfNatGateways: number) {
-    // Create nat gateways if we have private subnets and we have public subnets to place them in.
-    if (vpc.privateSubnets.length === 0 || numberOfNatGateways === 0 || vpc.publicSubnets.length === 0) {
-        return;
-    }
-
-    for (let i = 0; i < numberOfNatGateways; i++) {
-        // Each public subnet was already created across all availability zones.  So, to
-        // maximize coverage of availability zones, we can just walk the public subnets and
-        // create a nat gateway for it's availability zone.  If more natgateways were
-        // requested then we'll just round-robin them among the availability zones.
-        const availabilityZone = i % numberOfAvailabilityZones;
-
-        // this indexing is safe since we would have created the any subnet across all
-        // availability zones.
-        const publicSubnet = vpc.publicSubnets[availabilityZone];
-
-        vpc.addNatGateway(`${vpcName}-${i}`, { subnet: publicSubnet });
-    }
-
-    let roundRobinIndex = 0;
-
-    // We created subnets 'numberOfAvailabilityZones' at a time.  So just jump through them in
-    // chunks of that size.
-    for (let i = 0, n = vpc.privateSubnets.length; i < n; i += numberOfAvailabilityZones) {
-        // For each chunk of subnets, we will have spread them across all the availability
-        // zones.  We also created a nat gateway per availability zone *up to*
-        // numberOfNatGateways.  So for the subnets in an availability zone that we created a
-        // nat gateway in, just route to that nat gateway.  For the other subnets that are
-        // in an availability zone without a nat gateway, we just round-robin between any
-        // nat gateway we created.
-        for (let j = 0; j < numberOfAvailabilityZones; j++) {
-            const privateSubnet = vpc.privateSubnets[i + j];
-            const natGateway = j < numberOfNatGateways
-                ? vpc.natGateways[j]
-                : vpc.natGateways[roundRobinIndex++];
-
-            privateSubnet.createRoute(`nat-${j}`, natGateway);
-        }
-    }
-}
-
-function createSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
+function getExistingSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
     const subnets = vpc.getSubnets(type);
     const subnetIds = vpc.getSubnetIds(type);
 
@@ -399,10 +342,13 @@ function createSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: p
 export type VpcSubnetType = "public" | "private" | "isolated";
 
 /**
- * Information that controls how each vpc subnet should be created for each availability zone. The
- * vpc will control actually creating the appropriate subnets in each zone depending on the values
- * specified in this type.  This help ensure that each subnet will reside entirely within one
- * Availability Zone and cannot span zones.
+ * Information that controls how each vpc subnet should be created for each availability zone. By
+ * default, the Vpc will control actually creating the appropriate subnets in each zone depending on
+ * the values specified in this type.  This help ensure that each subnet will reside entirely within
+ * one Availability Zone and cannot span zones.
+ *
+ * For finer control of the locations of the subnets, specify the [location] property for all the
+ * subnets.
  *
  * See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html for more details.
  */
@@ -429,8 +375,24 @@ export interface VpcSubnetArgs {
      *
      * The allowed mask size is between a 28 netmask and 16 netmask.  See
      * https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html for more details.
+     *
+     * If this property is provided, [location] cannot be provided.
      */
     cidrMask?: number;
+
+    /**
+     * More precise information about the location of this subnet.  Can either be a simple CidrBlock
+     * (i.e. 10.0.0.0/24), or a richer object describing the CidrBlocks and Availability Zone for
+     * the subnet.
+     *
+     * If this property is provided, [cidrMask] cannot be provided.
+     *
+     * If only a CidrBlock is provided here, then the subnet will be placed in the first
+     * availability zone for the region.
+     *
+     * If this property is provided for one subnet, it must be provided for all subnets.
+     */
+    location?: CidrBlock | VpcSubnetLocation;
 
     /**
      * Specify true to indicate that network interfaces created in the specified subnet should be
@@ -445,6 +407,31 @@ export interface VpcSubnetArgs {
     mapPublicIpOnLaunch?: pulumi.Input<boolean>;
 
     tags?: pulumi.Input<aws.Tags>;
+}
+
+/**
+ * Alias for a cidr block.
+ */
+export type CidrBlock = string;
+
+export interface VpcSubnetLocation {
+    /**
+     * The AZ for the subnet.
+     */
+    availabilityZone?: string;
+    /**
+     * The AZ ID of the subnet.
+     */
+    availabilityZoneId?: string;
+    /**
+     * The CIDR block for the subnet.
+     */
+    cidrBlock: pulumi.Input<CidrBlock>;
+    /**
+     * The IPv6 network range for the subnet, in CIDR notation. The subnet size must use a /64
+     * prefix length.
+     */
+    ipv6CidrBlock?: pulumi.Input<string>;
 }
 
 export interface ExistingVpcIdArgs {
@@ -476,7 +463,7 @@ function isExistingVpcArgs(obj: any): obj is ExistingVpcArgs {
 }
 
 type OverwriteShape = utils.Overwrite<aws.ec2.VpcArgs, {
-    cidrBlock?: string;
+    cidrBlock?: CidrBlock;
 }>;
 
 export interface VpcArgs {
@@ -493,15 +480,15 @@ export interface VpcArgs {
     numberOfAvailabilityZones?: number | "all";
 
     /**
-     * The number of NAT gateways to create if there are any private subnets created.  A NAT gateway
-     * enables instances in a private subnet to connect to the internet or other AWS services, but
-     * prevent the internet from initiating a connection with those instances. A minimum of '1'
-     * gateway is needed if an instance is to be allowed connection to the internet.
+     * The max number of NAT gateways to create if there are any private subnets created.  A NAT
+     * gateway enables instances in a private subnet to connect to the internet or other AWS
+     * services, but prevent the internet from initiating a connection with those instances. A
+     * minimum of '1' gateway is needed if an instance is to be allowed connection to the internet.
      *
-     * If this is set, a nat gateway will be made for each availability zone in the current region.
-     * The first public subnet for that availability zone will be the one used to place the nat
-     * gateway in.  If less gateways are requested than availability zones, then only
-     * that many nat gateways will be created.
+     * If this is not set, a nat gateway will be made for each availability zone in the current
+     * region. The first public subnet for that availability zone will be the one used to place the
+     * nat gateway in.  If less gateways are requested than availability zones, then only that many
+     * nat gateways will be created.
      *
      * Private subnets in an availability zone that contains a nat gateway will route through that
      * gateway.  Private subnets in an availability zone that does not contain a nat gateway will be
@@ -523,7 +510,7 @@ export interface VpcArgs {
     /**
      * The CIDR block for the VPC.  Defaults to "10.0.0.0/16" if unspecified.
      */
-    cidrBlock?: string;
+    cidrBlock?: CidrBlock;
     /**
      * A boolean flag to enable/disable ClassicLink
      * for the VPC. Only valid in regions and accounts that support EC2 Classic.
