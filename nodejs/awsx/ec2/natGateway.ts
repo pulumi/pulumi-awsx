@@ -22,6 +22,7 @@ export class NatGateway
         extends pulumi.ComponentResource
         implements x.ec2.SubnetRouteProvider {
 
+    public readonly natGatewayName: string;
     public readonly vpc: x.ec2.Vpc;
     public readonly elasticIP: aws.ec2.Eip | undefined;
     public readonly natGateway: aws.ec2.NatGateway;
@@ -32,6 +33,8 @@ export class NatGateway
         super("awsx:x:ec2:NatGateway", name, {}, { parent: vpc, ...opts });
 
         this.vpc = vpc;
+        this.natGatewayName = name;
+
         if (isExistingNatGatewayArgs(args)) {
             this.natGateway = args.natGateway;
         }

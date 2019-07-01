@@ -7,6 +7,8 @@ CHANGELOG
   instead use the name provided (like nearly all other resources do).  To prevent impact on existing
   stacks, aliases have been provided to ensure proper tracking of the resources.
 
+* Specific cidr-blocks and availability zone locations can be provided for awsx.ec2.Vpc subnets.
+
 ### Provider fixes + Reparenting
 
 - Many awsx components were both not parented properly and also did not correctly pass 'provider'
