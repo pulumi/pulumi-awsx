@@ -52,7 +52,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             ...args,
             securityGroups: this.securityGroups.map(g => g.id),
-            imageId: getEcsAmiId(args.ecsOptimizedAMIName, { parent: this }),
+            imageId: utils.ifUndefined(args.imageId, getEcsAmiId(args.ecsOptimizedAMIName, { parent: this })),
             instanceType: utils.ifUndefined(args.instanceType, "t2.micro"),
             iamInstanceProfile: this.instanceProfile.id,
             enableMonitoring: utils.ifUndefined(args.enableMonitoring, true),
@@ -261,7 +261,7 @@ function getAdditionalRuncmdLines(args: AutoScalingUserData | undefined): pulumi
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
 type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable<aws.ec2.LaunchConfigurationArgs>, {
-    imageId?: never;
+    imageId?: pulumi.Input<string>;
     stackName?: pulumi.Input<string>;
     instanceProfile?: aws.iam.InstanceProfile;
     ecsOptimizedAMIName?: string;
@@ -356,6 +356,13 @@ export interface AutoScalingLaunchConfigurationArgs {
      * be created.
      */
     instanceProfile?: aws.iam.InstanceProfile;
+
+    /**
+     * The EC2 image ID to launch.  If this is not provided, then [ecsOptimizedAMIName] will be
+     * used. If neither are provided the imageId for Amazon'
+     * `"/aws/service/ecs/optimized-ami/amazon-linux/recommended"` image will be used.
+     */
+    imageId?: pulumi.Input<string>;
 
     /**
      * The name of the ECS-optimzed AMI to use for the Container Instances in this cluster, e.g.
