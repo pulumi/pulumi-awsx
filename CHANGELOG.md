@@ -6,6 +6,8 @@ CHANGELOG
 * LoadBalancers and TargetGroups will no longer create resources with 'hashed' names.  They will
   instead use the name provided (like nearly all other resources do).  To prevent impact on existing
   stacks, aliases have been provided to ensure proper tracking of the resources.
+* awsx.autoscaling.AutoScalingLaunchConfiguration can be passed an explicit imageId instead of
+  only using and ecs-specific image name.
 
 ### Provider fixes + Reparenting
 
