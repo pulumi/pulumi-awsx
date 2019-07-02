@@ -29,7 +29,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/pulumi/pulumi-cloud/examples"
 	"github.com/pulumi/pulumi/pkg/operations"
 	"github.com/pulumi/pulumi/pkg/resource"
 	"github.com/pulumi/pulumi/pkg/resource/config"
@@ -318,7 +317,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 
 		// Validate the GET /test endpoint
 		{
-			resp := examples.GetHTTP(t, baseURL+"test", 200)
+			resp := GetURL(t, baseURL+"test", 200)
 			contentType := resp.Header.Get("Content-Type")
 			assert.Equal(t, "application/json", contentType)
 			bytes, err := ioutil.ReadAll(resp.Body)
@@ -334,7 +333,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 			// https://github.com/pulumi/pulumi-cloud/issues/666
 			// We are only making the proxy route in fargate testing.
 			if isFargate {
-				resp := examples.GetHTTP(t, baseURL+"nginx", 200)
+				resp := GetURL(t, baseURL+"nginx", 200)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "text/html", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -342,7 +341,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 				t.Logf("GET %v [%v/%v]: %v", baseURL+"nginx", resp.StatusCode, contentType, string(bytes))
 			}
 			{
-				resp := examples.GetHTTP(t, baseURL+"nginx/doesnotexist", 404)
+				resp := GetURL(t, baseURL+"nginx/doesnotexist", 404)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "text/html", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -356,7 +355,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 			{
 				// Call the endpoint twice so that things have time to warm up.
 				http.Get(baseURL)
-				resp := examples.GetHTTP(t, baseURL, 200)
+				resp := GetURL(t, baseURL, 200)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "application/json", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -366,7 +365,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 
 			// Validate the GET /run endpoint
 			{
-				resp := examples.GetHTTP(t, baseURL+"run", 200)
+				resp := GetURL(t, baseURL+"run", 200)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "application/json", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -382,7 +381,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 
 			// Validate the GET /custom endpoint
 			{
-				resp := examples.GetHTTP(t, baseURL+"custom", 200)
+				resp := GetURL(t, baseURL+"custom", 200)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "application/json", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -455,6 +454,40 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 			}
 		}
 	}
+}
+
+func GetURL(t *testing.T, url string, statusCode int) *http.Response {
+	var resp *http.Response
+	var err error
+	for i := 0; i <= 10; i++ {
+		resp, err = http.Get(url)
+		if err == nil && resp.StatusCode == statusCode {
+			return resp
+		}
+
+		if err != nil {
+			t.Logf("Got error trying to get %v. %v", url, err.Error())
+		}
+
+		if resp != nil && resp.StatusCode != statusCode {
+			t.Logf("Expected to get status code %v for %v. Got: %v", statusCode, url, resp.StatusCode)
+		}
+
+		time.Sleep(1 * time.Minute)
+	}
+
+	if !assert.NoError(t, err, "expected to be able to GET "+url) {
+		t.FailNow()
+	}
+
+	if !assert.Equal(t, statusCode, resp.StatusCode, "Got unexpected status code. Body was:") {
+		contentType := resp.Header.Get("Content-Type")
+		bytes, _ := ioutil.ReadAll(resp.Body)
+		t.Logf("GET %v [%v/%v]: %v", url, resp.StatusCode, contentType, string(bytes))
+		t.FailNow()
+	}
+
+	return nil
 }
 
 func getLogsWithPrefix(logsByResource map[string][]operations.LogEntry, prefix string) ([]operations.LogEntry, bool) {
@@ -577,7 +610,7 @@ func GetHTTP(t *testing.T, req *http.Request, statusCode int) *http.Response {
 	var httpClient http.Client
 	url := req.URL.String()
 
-	for i := 0; i <= 3; i++ {
+	for i := 0; i <= 10; i++ {
 
 		resp, err = httpClient.Do(req)
 		if err == nil && resp.StatusCode == statusCode {
