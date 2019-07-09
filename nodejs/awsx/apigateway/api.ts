@@ -347,30 +347,39 @@ export class API extends pulumi.ComponentResource {
         super("aws:apigateway:x:API", name, {}, opts);
 
         let swaggerString: pulumi.Output<string>;
-        let swaggerSpec: SwaggerSpec | undefined;
+        let swaggerSpec: pulumi.Output<any>;
         let swaggerLambdas: SwaggerLambdas | undefined;
         if (args.swaggerString) {
-            swaggerString = pulumi.output(args.swaggerString);
+            swaggerSpec = pulumi.output(args.swaggerString).apply(s => {
+                const spec = JSON.parse(s);
+                if (spec.info === undefined) {
+                    spec.info = {};
+                }
+                if (spec.info.title === undefined) {
+                    spec.info.title = name;
+                }
+                return spec;
+            });
         }
         else if (args.routes) {
             const result = createSwaggerSpec(
                 this, name, args.routes, args.gatewayResponses, args.requestValidator,
                 args.apiKeySource, args.staticRoutesBucket);
-            swaggerSpec = result.swagger;
+            swaggerSpec = pulumi.output(result.swagger);
             swaggerLambdas = result.swaggerLambdas;
-            swaggerString = pulumi.output<any>(swaggerSpec).apply(s => JSON.stringify(s));
             this.staticRoutesBucket = result.staticRoutesBucket;
         }
         else {
             throw new pulumi.ResourceError(
                 "API must specify either [swaggerString] or as least one of the [route] options.", opts.parent);
         }
+        swaggerString = swaggerSpec.apply(s => JSON.stringify(s));
 
         const stageName = args.stageName || "stage";
 
         // Create the API Gateway Rest API, using a swagger spec.
         this.restAPI = new aws.apigateway.RestApi(name, {
-            name: swaggerString.apply(s => { const spec = JSON.parse(s); return spec.info.title; }),
+            name: swaggerSpec.apply(s => s.info.title),
             binaryMediaTypes: ["*/*"],
             body: swaggerString,
         }, { parent: this });
