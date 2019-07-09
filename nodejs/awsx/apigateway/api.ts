@@ -370,7 +370,7 @@ export class API extends pulumi.ComponentResource {
 
         // Create the API Gateway Rest API, using a swagger spec.
         this.restAPI = new aws.apigateway.RestApi(name, {
-            name: swaggerString.apply(s => { const spec = JSON.parse(s); return s.info.title; }),
+            name: swaggerString.apply(s => { const spec = JSON.parse(s); return spec.info.title; }),
             binaryMediaTypes: ["*/*"],
             body: swaggerString,
         }, { parent: this });
