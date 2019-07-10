@@ -8,8 +8,9 @@ CHANGELOG
   stacks, aliases have been provided to ensure proper tracking of the resources.
 * awsx.autoscaling.AutoScalingLaunchConfiguration can be passed an explicit imageId instead of
   only using and ecs-specific image name.
-
 * Specific cidr-blocks and availability zone locations can be provided for awsx.ec2.Vpc subnets.
+* FargateService will respect `subnets` explicitly passed in (fixes
+  [#360](https://github.com/pulumi/pulumi-awsx/issues/360)).
 
 ### Provider fixes + Reparenting
 
