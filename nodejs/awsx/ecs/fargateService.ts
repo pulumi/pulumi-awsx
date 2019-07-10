@@ -207,7 +207,7 @@ export class FargateService extends ecs.Service {
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
-        const subnets = assignPublicIp.apply(pub => pub ? cluster.vpc.publicSubnetIds : cluster.vpc.privateSubnetIds);
+        const subnets = getSubnets(cluster, args.subnets, assignPublicIp);
 
         super("awsx:x:ecs:FargateService", name, {
             ...args,
@@ -225,6 +225,21 @@ export class FargateService extends ecs.Service {
 
         this.registerOutputs();
     }
+}
+
+function getSubnets(
+        cluster: ecs.Cluster,
+        subnets: pulumi.Input<pulumi.Input<string>[]> | undefined,
+        assignPublicIp: pulumi.Output<boolean>) {
+
+    return pulumi.all([subnets, assignPublicIp])
+                 .apply(([subnets, assignPublicIp]) => {
+        if (subnets) {
+            return subnets;
+        }
+
+        return assignPublicIp ? cluster.vpc.publicSubnetIds : cluster.vpc.privateSubnetIds;
+    });
 }
 
 type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
