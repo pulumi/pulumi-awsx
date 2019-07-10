@@ -296,6 +296,7 @@ export class Vpc extends pulumi.ComponentResource {
 
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
+(<any>Vpc.prototype).partition.doNotCapture = true;
 
 function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): topology.AvailabilityZoneDescription[] {
     const result = utils.promiseResult(aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc }));
