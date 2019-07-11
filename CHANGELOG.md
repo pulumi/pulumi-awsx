@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.18.7 (2019-07-11)
+
 * LoadBalancers and TargetGroups will no longer create resources with 'hashed' names.  They will
   instead use the name provided (like nearly all other resources do).  To prevent impact on existing
   stacks, aliases have been provided to ensure proper tracking of the resources.
