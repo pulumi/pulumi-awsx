@@ -14,7 +14,7 @@
     },
     "dependencies": {
         "@pulumi/pulumi": "dev",
-        "@pulumi/aws": "dev",
+        "@pulumi/aws": "feature-liftProps",
         "aws-sdk": "^2.0.0",
         "builtin-modules": "3.0.0",
         "mime": "^2.0.0",
