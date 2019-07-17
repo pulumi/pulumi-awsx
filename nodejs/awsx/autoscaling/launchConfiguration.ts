@@ -117,7 +117,7 @@ function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): stri
         const ecsRecommendedAMI = aws.ssm.getParameter({
             name: "/aws/service/ecs/optimized-ami/amazon-linux/recommended",
         }, opts);
-        console.log("got ssm parameter");
+        console.log("got ssm parameter: " + JSON.stringify(ecsRecommendedAMI));
         return JSON.parse(ecsRecommendedAMI.value).image_id;
     }
 
@@ -135,7 +135,7 @@ function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): stri
         ],
         mostRecent: true,
     }, opts);
-    console.log("got ami");
+    console.log("got ami: " + JSON.stringify(result));
 
     return result.imageId;
 }
