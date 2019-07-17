@@ -302,7 +302,7 @@ export class Vpc extends pulumi.ComponentResource {
 (<any>Vpc.prototype).partition.doNotCapture = true;
 
 function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): topology.AvailabilityZoneDescription[] {
-    const result = utils.promiseResult(aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc }));
+    const result = aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc });
     if (result.names.length !== result.zoneIds.length) {
         throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", vpc);
     }
