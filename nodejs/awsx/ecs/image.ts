@@ -186,7 +186,7 @@ export function computeImageFromAsset(
     // the TaskDefinition get's replaced IFF the built image changes.
 
     const uniqueImageName = docker.buildAndPushImage(
-            imageName, pathOrBuild, repositoryUrl, parent, async () => {
+            imageName, pathOrBuild, repositoryUrl, parent, () => {
         // Construct Docker registry auth data by getting the short-lived authorizationToken from ECR, and
         // extracting the username/password pair after base64-decoding the token.
         //
@@ -194,7 +194,7 @@ export function computeImageFromAsset(
         if (!registryId) {
             throw new Error("Expected registry ID to be defined during push");
         }
-        const credentials = await aws.ecr.getCredentials({ registryId: registryId }, { parent });
+        const credentials = aws.ecr.getCredentials({ registryId: registryId }, { parent });
         const decodedCredentials = Buffer.from(credentials.authorizationToken, "base64").toString();
         const [username, password] = decodedCredentials.split(":");
         if (!password || !username) {

@@ -109,18 +109,18 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
 }
 
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
-async function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): Promise<string> {
+function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): string {
     // If a name was not provided, use the latest recommended version.
     if (!name) {
         // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/retrieve-ecs-optimized_AMI.html
-        const ecsRecommendedAMI = await aws.ssm.getParameter({
+        const ecsRecommendedAMI = aws.ssm.getParameter({
             name: "/aws/service/ecs/optimized-ami/amazon-linux/recommended",
         }, opts);
         return JSON.parse(ecsRecommendedAMI.value).image_id;
     }
 
     // Else, if a name was provided, look it up and use that imageId.
-    const result: aws.GetAmiResult = await aws.getAmi({
+    const result: aws.GetAmiResult = aws.getAmi({
         owners: [
             "591542846629", // Amazon
         ],
