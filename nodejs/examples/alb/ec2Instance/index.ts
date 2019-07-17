@@ -41,7 +41,7 @@ for (let i = 0; i < alb.vpc.publicSubnets.length; i++) {
             ],
             mostRecent: true,
             owners: [ "099720109477" ], // Canonical
-        }, providerOpts).then(ami => ami.id),
+        }, providerOpts).id,
         instanceType: "t2.micro",
         subnetId: alb.vpc.publicSubnets[i].subnet.id,
         availabilityZone: alb.vpc.publicSubnets[i].subnet.availabilityZone,
