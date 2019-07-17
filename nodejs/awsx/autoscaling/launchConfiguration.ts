@@ -113,16 +113,13 @@ function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): stri
     // If a name was not provided, use the latest recommended version.
     if (!name) {
         // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/retrieve-ecs-optimized_AMI.html
-        console.log("getting ssm parameter");
         const ecsRecommendedAMI = aws.ssm.getParameter({
             name: "/aws/service/ecs/optimized-ami/amazon-linux/recommended",
         }, opts);
-        console.log("got ssm parameter: " + JSON.stringify(ecsRecommendedAMI));
         return JSON.parse(ecsRecommendedAMI.value).image_id;
     }
 
     // Else, if a name was provided, look it up and use that imageId.
-    console.log("getting ami");
     const result: aws.GetAmiResult = aws.getAmi({
         owners: [
             "591542846629", // Amazon
@@ -135,7 +132,6 @@ function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): stri
         ],
         mostRecent: true,
     }, opts);
-    console.log("got ami: " + JSON.stringify(result));
 
     return result.imageId;
 }

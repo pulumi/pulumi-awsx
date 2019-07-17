@@ -229,18 +229,14 @@ export class Vpc extends pulumi.ComponentResource {
         // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
         // an account.  So we just map from the id to the Vpc instance we hydrate.  If asked again
         // for the same id we can just return the same instance.
-        console.log("Getting vpc");
         const vpcId = aws.ec2.getVpc({ default: true }, { provider }).id;
-        console.log("Got vpc: " + JSON.stringify(vpcId));
         let vpc = defaultVpcs.get(vpcId);
         if (!vpc) {
             // back compat.  We always would just use the first two public subnets of the region
             // we're in.  So preserve that, even though we could get all of them here.  Pulling in
             // more than the two we pulled in before could have deep implications for clients as
             // those subnets are used to make many downstream resource-creating decisions.
-            console.log("Getting subnetids");
             const publicSubnetIds = aws.ec2.getSubnetIds({ vpcId }, { provider }).ids.slice(0, 2);
-            console.log("got subnetids: " + JSON.stringify(publicSubnetIds));
 
             // Generate the name as `default-` + the actual name.  For back compat with how we
             // previously named things, also create an alias from "default-vpc" to this name for
