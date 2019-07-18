@@ -194,9 +194,10 @@ export function computeImageFromAsset(
         if (!registryId) {
             throw new Error("Expected registry ID to be defined during push");
         }
-        const promise = aws.ecr.getCredentials({ registryId: registryId }, <any>{ parent, async: true });
-        console.log("Is promise: " + (promise instanceof Promise));
-        const credentials = await promise;
+
+        // Use `async: true` to work around a crash we see when we try to call getCredentials
+        // synchronously.
+        const credentials = await aws.ecr.getCredentials({ registryId: registryId }, { parent, async: true });
         const decodedCredentials = Buffer.from(credentials.authorizationToken, "base64").toString();
         const [username, password] = decodedCredentials.split(":");
         if (!password || !username) {
