@@ -9,7 +9,7 @@
     },
     "dependencies": {
         "@pulumi/pulumi": "dev",
-        "@pulumi/aws": "feature-liftProps",
+        "@pulumi/aws": "dev",
         "node-fetch": "^2.2.0"
     },
     "devDependencies": {
