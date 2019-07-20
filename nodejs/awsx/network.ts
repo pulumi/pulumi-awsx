@@ -129,13 +129,13 @@ export class Network extends pulumi.ComponentResource implements ClusterNetworkA
     public static getDefault(opts?: pulumi.ComponentResourceOptions): Network {
         if (!defaultNetwork) {
             const vpc = aws.ec2.getVpc({default: true});
-            const vpcId = vpc.then(v => v.id);
-            const subnetIds = vpcId.then(id => aws.ec2.getSubnetIds({ vpcId: id })).then(subnets => subnets.ids);
-            const defaultSecurityGroup = vpcId.then(id => aws.ec2.getSecurityGroup(
-                { name: "default", vpcId: id },
-            )).then(sg => sg.id);
-            const subnet0 = subnetIds.then(ids => ids[0]);
-            const subnet1 = subnetIds.then(ids => ids[1]);
+            const vpcId = vpc.id;
+            const subnetIds = aws.ec2.getSubnetIds({ vpcId }).ids;
+            const defaultSecurityGroup = aws.ec2.getSecurityGroup(
+                { name: "default", vpcId },
+            ).id;
+            const subnet0 = subnetIds[0];
+            const subnet1 = subnetIds[1];
 
             defaultNetwork = this.fromVpc("default-vpc", {
                 vpcId: vpcId,

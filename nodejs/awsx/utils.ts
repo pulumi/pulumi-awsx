@@ -130,36 +130,6 @@ function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
     return region || aws.config.region;
 }
 
-/** @internal */
-export function promiseResult<T>(promise: Promise<T>): T {
-    enum State {
-        running,
-        finishedSuccessfully,
-        finishedWithError,
-    }
-
-    let result: T;
-    let error = undefined;
-    let state = <State>State.running;
-
-    promise.then(
-        val => {
-            result = val;
-            state = State.finishedSuccessfully;
-        },
-        err => {
-            error = err;
-            state = State.finishedWithError;
-        });
-
-    deasync.loopWhile(() => state === State.running);
-    if (state === State.finishedWithError) {
-        throw error;
-    }
-
-    return result!;
-}
-
 interface HasAliases { aliases?: pulumi.Input<pulumi.URN | pulumi.Alias>[]; }
 
 /** @internal */
