@@ -14,10 +14,10 @@
     },
     "files": [
         "index.ts",
+
         "aws.ts",
-        "cluster.ts",
-        "network.ts",
         "utils.ts",
+
         "acmpca/index.ts",
         "acmpca/metrics.ts",
         "apigateway/index.ts",

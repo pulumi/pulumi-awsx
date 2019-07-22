@@ -315,10 +315,6 @@ function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefin
     return descriptions.slice(0, count);
 }
 
-function shouldCreateNatGateways(vpc: Vpc, numberOfNatGateways: number) {
-    return vpc.privateSubnets.length > 0 && numberOfNatGateways > 0 && vpc.publicSubnets.length > 0;
-}
-
 function getExistingSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
     const subnets = vpc.getSubnets(type);
     const subnetIds = vpc.getSubnetIds(type);
@@ -452,10 +448,6 @@ export interface ExistingVpcIdArgs {
     internetGatewayId?: pulumi.Input<string>;
     /** The ids of the nat gateways for this VPC */
     natGatewayIds?: pulumi.Input<string>[];
-}
-
-function isExistingVpcIdArgs(obj: any): obj is ExistingVpcIdArgs {
-    return !!(<ExistingVpcIdArgs>obj).vpcId;
 }
 
 export interface ExistingVpcArgs {

@@ -12,30 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
-import { Output } from "@pulumi/pulumi";
 
 const prefix = "infratest";
-const numAvailabilityZones = 2;
+const numberOfAvailabilityZones = 2;
 const instanceType = "t2.small";
 
-let network = new awsx.Network(`${prefix}-net`, {
-    numberOfAvailabilityZones: numAvailabilityZones, // Create subnets in many AZs
-    usePrivateSubnets: true,                         // Run compute inside private subnets in each AZ
-});
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const cluster = new awsx.Cluster(prefix, {
-    minSize: numAvailabilityZones, // Ensure we keep at least one VM per AZ
-    network: network,              // The network to provision this cluster inside
-    addEFS: false,                 // Don't provision an EFS file system for this cluster
-    instanceType: instanceType,    // Use a configured value for cluster VM sizes
-});
+const vpc = new awsx.ec2.Vpc(`${prefix}-net`, { numberOfAvailabilityZones }, providerOpts);
+const cluster = new awsx.ecs.Cluster(prefix, { vpc }, providerOpts);
+
+cluster.createAutoScalingGroup(prefix, {
+    subnetIds: vpc.publicSubnetIds,
+    templateParameters: {
+        minSize: 10,
+    },
+    launchConfigurationArgs: {
+        instanceType,
+        associatePublicIpAddress: true,
+    },
+})
 
 // Export details of the network and cluster
-export let vpcId = network.vpcId;
-export let privateSubnetIds = pulumi.all(network.subnetIds).apply(ids => ids.join(","));
-export let publicSubnetIds = pulumi.all(network.publicSubnetIds).apply(ids => ids.join(","));
-export let securityGroupIds = pulumi.all(network.securityGroupIds).apply(ids => ids.join(","));
-export let ecsClusterARN = cluster.ecsClusterARN;
-export let ecsClusterSecurityGroup = cluster.securityGroupId;
+export let vpcId: pulumi.Output<string> = vpc.vpc.id;
+export let privateSubnetIds = pulumi.all(vpc.privateSubnetIds).apply(ids => ids.join(","));
+export let publicSubnetIds = pulumi.all(vpc.publicSubnetIds).apply(ids => ids.join(","));
+export let securityGroupIds = pulumi.all(cluster.securityGroups.map(g => g.id)).apply(ids => ids.join(","));
+export let ecsClusterARN: pulumi.Output<string> = cluster.cluster.arn;
