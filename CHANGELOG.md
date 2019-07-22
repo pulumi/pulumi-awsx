@@ -3,6 +3,11 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+### Compatibility issues
+
+* Removing the deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6). Code that uses
+  these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
+
 ## 0.18.7 (2019-07-11)
 
 * LoadBalancers and TargetGroups will no longer create resources with 'hashed' names.  They will
