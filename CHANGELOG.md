@@ -3,6 +3,9 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* ecs.TaskDefinition now accepts explicit `null` value for `.logGroup`, `.taskRole` and
+  `.executionRole` to explicitly opt out using or creating any default resources for them.
+
 ## 0.18.7 (2019-07-11)
 
 * LoadBalancers and TargetGroups will no longer create resources with 'hashed' names.  They will
