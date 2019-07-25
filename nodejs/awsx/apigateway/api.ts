@@ -373,7 +373,11 @@ export class API extends pulumi.ComponentResource {
             throw new pulumi.ResourceError(
                 "API must specify either [swaggerString] or as least one of the [route] options.", opts.parent);
         }
-        swaggerString = swaggerSpec.apply(s => JSON.stringify(s));
+        swaggerString = swaggerSpec.apply(s => {
+            const result = JSON.stringify(s);
+            console.log(result);
+            return result;
+        });
 
         const stageName = args.stageName || "stage";
 

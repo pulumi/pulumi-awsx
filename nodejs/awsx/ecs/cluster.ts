@@ -191,7 +191,7 @@ export interface ClusterArgs {
 
     /**
      * The security group to place new instances into.  If not provided, a default will be
-     * created.
+     * created. Pass an empty array to create no security groups.
      */
     securityGroups?: x.ec2.SecurityGroupOrId[];
 
