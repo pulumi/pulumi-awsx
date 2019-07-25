@@ -142,7 +142,10 @@ class ComputedLocationTopology extends VpcTopology {
                 // nat gateway we created.
                 for (let j = 0; j < numberOfAvailabilityZones; j++) {
                     const privateSubnetIndex = i + j;
-                    const natGatewayIndex = j < this.numberOfNatGateways ? j : roundRobinIndex++;
+                    const natGatewayIndex = j < this.numberOfNatGateways
+                        ? j
+                        : (roundRobinIndex++ % natGateways.length);
+
                     natRoutes.push({
                         name: `nat-${j}`,
                         privateSubnet: privateSubnets[privateSubnetIndex].subnetName,
