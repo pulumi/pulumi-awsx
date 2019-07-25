@@ -25,15 +25,15 @@ import { VpcSubnetArgs } from "../../ec2/vpc";
 import * as vpcTopology from "../../ec2/vpcTopology";
 
 function topology(
-    cidr: string, availabilityZones: vpcTopology.AvailabilityZoneDescription[],
-    numberOfNatGateways: number, subnets: VpcSubnetArgs[]) {
+        cidr: string, availabilityZones: vpcTopology.AvailabilityZoneDescription[],
+        numberOfNatGateways: number, subnets: VpcSubnetArgs[]) {
     return vpcTopology.create(
         undefined, "testing", cidr, undefined, availabilityZones,
         numberOfNatGateways, false, subnets);
 }
 
 function subnets(
-    cidr: string, availabilityZones: vpcTopology.AvailabilityZoneDescription[], subnets: VpcSubnetArgs[]) {
+        cidr: string, availabilityZones: vpcTopology.AvailabilityZoneDescription[], subnets: VpcSubnetArgs[]) {
     return topology(cidr, availabilityZones, availabilityZones.length, subnets).subnets;
 }
 
@@ -179,29 +179,29 @@ describe("topology", () => {
                 { type: "public" },
                 { type: "private" },
             ]), [
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/17",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.128.0/17",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/17",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.128.0/17",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
 
         it("2 AZs", async () => {
@@ -209,51 +209,51 @@ describe("topology", () => {
                 { type: "public" },
                 { type: "private" },
             ]), [
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/18",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.0.64.0/18",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.128.0/18",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.0.192.0/18",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/18",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.0.64.0/18",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.128.0/18",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.0.192.0/18",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
 
         it("3 AZs", async () => {
@@ -261,73 +261,73 @@ describe("topology", () => {
                 { type: "public" },
                 { type: "private" },
             ]), [
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/19",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.0.32.0/19",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-2",
-                        args: {
-                            "availabilityZone": AZ3.name,
-                            "availabilityZoneId": AZ3.id,
-                            "cidrBlock": "10.0.64.0/19",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.96.0/19",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.0.128.0/19",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-2",
-                        args: {
-                            "availabilityZone": AZ3.name,
-                            "availabilityZoneId": AZ3.id,
-                            "cidrBlock": "10.0.160.0/19",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/19",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.0.32.0/19",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-2",
+        args: {
+            "availabilityZone": AZ3.name,
+            "availabilityZoneId": AZ3.id,
+            "cidrBlock": "10.0.64.0/19",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.96.0/19",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.0.128.0/19",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-2",
+        args: {
+            "availabilityZone": AZ3.name,
+            "availabilityZoneId": AZ3.id,
+            "cidrBlock": "10.0.160.0/19",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
     });
 
@@ -337,51 +337,51 @@ describe("topology", () => {
                 { type: "public", cidrMask: 24 },
                 { type: "private", cidrMask: 28 },
             ]), [
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.10.0.0/24",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.10.1.0/24",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.10.2.0/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.10.2.16/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.10.0.0/24",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.10.1.0/24",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.10.2.0/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.10.2.16/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
 
         it("custom 2", async () => {
@@ -390,73 +390,73 @@ describe("topology", () => {
                 { type: "private" },
                 { type: "isolated", cidrMask: 28 },
             ]), [
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.10.0.0/26",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.10.0.64/26",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "isolated",
-                        "subnetName": "testing-isolated-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.10.0.128/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "isolated",
-                        "subnetName": "testing-isolated-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.10.0.144/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.10.0.160/18",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.10.64.160/18",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.10.0.0/26",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.10.0.64/26",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "isolated",
+        "subnetName": "testing-isolated-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.10.0.128/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "isolated",
+        "subnetName": "testing-isolated-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.10.0.144/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.10.0.160/18",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.10.64.160/18",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
 
         it("custom 3", async () => {
@@ -466,95 +466,95 @@ describe("topology", () => {
                 { type: "private", name: "private2" },
                 { type: "isolated", cidrMask: 24 },
             ]), [
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.10.0.0/24",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.10.1.0/24",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "isolated",
-                        "subnetName": "testing-isolated-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.10.2.0/24",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "isolated",
-                        "subnetName": "testing-isolated-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.10.3.0/24",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private1-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.10.4.0/19",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private1-private-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.10.36.0/19",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private2-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.10.68.0/19",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private2-private-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.10.100.0/19",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.10.0.0/24",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.10.1.0/24",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "isolated",
+        "subnetName": "testing-isolated-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.10.2.0/24",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "isolated",
+        "subnetName": "testing-isolated-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.10.3.0/24",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private1-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.10.4.0/19",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private1-private-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.10.36.0/19",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private2-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.10.68.0/19",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private2-private-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.10.100.0/19",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
     });
 
@@ -564,126 +564,126 @@ describe("topology", () => {
             await subnetsEqual(subnets("10.0.0.0/26", oneAZ, [
                 { type: "private" },
             ]), [
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/26",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/26",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
         it("1 AZ, 2 subnets", async () => {
             await subnetsEqual(subnets("10.0.0.0/26", oneAZ, [
                 { type: "public" },
                 { type: "private" },
             ]), [
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/27",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.32/27",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/27",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.32/27",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
         it("2 AZs, 1 subnets", async () => {
             await subnetsEqual(subnets("10.0.0.0/26", twoAZs, [
                 { type: "private" },
             ]), [
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/27",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.0.0.32/27",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/27",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.0.0.32/27",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
         it("2 AZs, 2 subnets", async () => {
             await subnetsEqual(subnets("10.0.0.0/26", twoAZs, [
                 { type: "public" },
                 { type: "private" },
             ]), [
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/28",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.0.0.16/28",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.32/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.0.0.48/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/28",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "public",
+        "subnetName": "testing-public-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.0.0.16/28",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.32/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.0.0.48/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
         it("2 AZs, 3 subnets", () => {
             assert.throws(() => subnets("10.0.0.0/26", twoAZs, [
@@ -700,75 +700,75 @@ describe("topology", () => {
             await subnetsEqual(subnets("10.0.0.0/27", oneAZ, [
                 { type: "private" },
             ]), [
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/27",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/27",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
         it("1 AZ, 2 subnets", async () => {
             await subnetsEqual(subnets("10.0.0.0/27", oneAZ, [
                 { type: "public" },
                 { type: "private" },
             ]), [
-                    {
-                        "type": "public",
-                        "subnetName": "testing-public-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/28",
-                            mapPublicIpOnLaunch: true,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.16/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "public",
+        "subnetName": "testing-public-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/28",
+            mapPublicIpOnLaunch: true,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.16/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
         it("2 AZs, 1 subnets", async () => {
             await subnetsEqual(subnets("10.0.0.0/27", twoAZs, [
                 { type: "private" },
             ]), [
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-1",
-                        args: {
-                            "availabilityZone": AZ2.name,
-                            "availabilityZoneId": AZ2.id,
-                            "cidrBlock": "10.0.0.16/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+    {
+        "type": "private",
+        "subnetName": "testing-private-1",
+        args: {
+            "availabilityZone": AZ2.name,
+            "availabilityZoneId": AZ2.id,
+            "cidrBlock": "10.0.0.16/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
         it("2 AZs, 2 subnets", () => {
             assert.throws(() => subnets("10.0.0.0/27", twoAZs, [
@@ -784,18 +784,18 @@ describe("topology", () => {
             await subnetsEqual(subnets("10.0.0.0/28", oneAZ, [
                 { type: "private" },
             ]), [
-                    {
-                        "type": "private",
-                        "subnetName": "testing-private-0",
-                        args: {
-                            "availabilityZone": AZ1.name,
-                            "availabilityZoneId": AZ1.id,
-                            "cidrBlock": "10.0.0.0/28",
-                            mapPublicIpOnLaunch: false,
-                            assignIpv6AddressOnCreation: false,
-                        },
-                    },
-                ]);
+    {
+        "type": "private",
+        "subnetName": "testing-private-0",
+        args: {
+            "availabilityZone": AZ1.name,
+            "availabilityZoneId": AZ1.id,
+            "cidrBlock": "10.0.0.0/28",
+            mapPublicIpOnLaunch: false,
+            assignIpv6AddressOnCreation: false,
+        },
+    },
+]);
         });
         it("1 AZ, 2 subnets", () => {
             assert.throws(() => subnets("10.0.0.0/28", oneAZ, [
@@ -824,58 +824,58 @@ describe("topology", () => {
                 { type: "isolated", name: "db", location: "10.0.2.0/24" },
                 { type: "isolated", name: "redis", location: "10.0.3.0/24" },
             ]), {
-                    "subnets": [
-                        {
-                            "subnetName": "public-0",
-                            "type": "public",
-                            "args": {
-                                "cidrBlock": "10.0.0.0/24",
-                                "mapPublicIpOnLaunch": true,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                "subnets": [
+                    {
+                        "subnetName": "public-0",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.0.0/24",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "private-1",
-                            "type": "private",
-                            "args": {
-                                "cidrBlock": "10.0.1.0/24",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "private-1",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.1.0/24",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "db",
-                            "type": "isolated",
-                            "args": {
-                                "cidrBlock": "10.0.2.0/24",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "db",
+                        "type": "isolated",
+                        "args": {
+                            "cidrBlock": "10.0.2.0/24",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "redis",
-                            "type": "isolated",
-                            "args": {
-                                "cidrBlock": "10.0.3.0/24",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "redis",
+                        "type": "isolated",
+                        "args": {
+                            "cidrBlock": "10.0.3.0/24",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                    ],
-                    "natGateways": [
-                        {
-                            "name": "testing-0",
-                            "publicSubnet": "public-0",
-                        },
-                    ],
-                    "natRoutes": [
-                        {
-                            "name": "nat-0",
-                            "privateSubnet": "private-1",
-                            "natGateway": "testing-0",
-                        },
-                    ],
-                });
+                    },
+                ],
+                "natGateways": [
+                    {
+                        "name": "testing-0",
+                        "publicSubnet": "public-0",
+                    },
+                ],
+                "natRoutes": [
+                    {
+                        "name": "nat-0",
+                        "privateSubnet": "private-1",
+                        "natGateway": "testing-0",
+                    },
+                ],
+            });
         });
 
         it("custom two private one public", async () => {
@@ -884,56 +884,56 @@ describe("topology", () => {
                 { type: "private", location: { cidrBlock: "10.0.1.0/24", availabilityZone: AZ1.name } },
                 { type: "private", location: { cidrBlock: "10.0.2.0/24", availabilityZone: AZ2.name } },
             ]), {
-                    "subnets": [
-                        {
-                            "subnetName": "public-0",
-                            "type": "public",
-                            "args": {
-                                "cidrBlock": "10.0.0.0/24",
-                                "mapPublicIpOnLaunch": true,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                "subnets": [
+                    {
+                        "subnetName": "public-0",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.0.0/24",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "private-1",
-                            "type": "private",
-                            "args": {
-                                "cidrBlock": "10.0.1.0/24",
-                                "availabilityZone": "name_a",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "private-1",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.1.0/24",
+                            "availabilityZone": "name_a",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "private-2",
-                            "type": "private",
-                            "args": {
-                                "cidrBlock": "10.0.2.0/24",
-                                "availabilityZone": "name_b",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "private-2",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.2.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                    ],
-                    "natGateways": [
-                        {
-                            "name": "testing-0",
-                            "publicSubnet": "public-0",
-                        },
-                    ],
-                    "natRoutes": [
-                        {
-                            "name": "nat-0",
-                            "privateSubnet": "private-1",
-                            "natGateway": "testing-0",
-                        },
-                        {
-                            "name": "nat-1",
-                            "privateSubnet": "private-2",
-                            "natGateway": "testing-0",
-                        },
-                    ],
-                });
+                    },
+                ],
+                "natGateways": [
+                    {
+                        "name": "testing-0",
+                        "publicSubnet": "public-0",
+                    },
+                ],
+                "natRoutes": [
+                    {
+                        "name": "nat-0",
+                        "privateSubnet": "private-1",
+                        "natGateway": "testing-0",
+                    },
+                    {
+                        "name": "nat-1",
+                        "privateSubnet": "private-2",
+                        "natGateway": "testing-0",
+                    },
+                ],
+            });
         });
 
         it("custom two private two public", async () => {
@@ -943,71 +943,71 @@ describe("topology", () => {
                 { type: "private", location: { cidrBlock: "10.0.3.0/24", availabilityZone: AZ1.name } },
                 { type: "private", location: { cidrBlock: "10.0.4.0/24", availabilityZone: AZ2.name } },
             ]), {
-                    "subnets": [
-                        {
-                            "subnetName": "public-0",
-                            "type": "public",
-                            "args": {
-                                "cidrBlock": "10.0.1.0/24",
-                                "availabilityZone": "name_a",
-                                "mapPublicIpOnLaunch": true,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                "subnets": [
+                    {
+                        "subnetName": "public-0",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.1.0/24",
+                            "availabilityZone": "name_a",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "public-1",
-                            "type": "public",
-                            "args": {
-                                "cidrBlock": "10.0.2.0/24",
-                                "availabilityZone": "name_b",
-                                "mapPublicIpOnLaunch": true,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "public-1",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.2.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "private-2",
-                            "type": "private",
-                            "args": {
-                                "cidrBlock": "10.0.3.0/24",
-                                "availabilityZone": "name_a",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "private-2",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.3.0/24",
+                            "availabilityZone": "name_a",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "private-3",
-                            "type": "private",
-                            "args": {
-                                "cidrBlock": "10.0.4.0/24",
-                                "availabilityZone": "name_b",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "private-3",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.4.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                    ],
-                    "natGateways": [
-                        {
-                            "name": "testing-0",
-                            "publicSubnet": "public-0",
-                        },
-                        {
-                            "name": "testing-1",
-                            "publicSubnet": "public-1",
-                        },
-                    ],
-                    "natRoutes": [
-                        {
-                            "name": "nat-0",
-                            "privateSubnet": "private-2",
-                            "natGateway": "testing-0",
-                        },
-                        {
-                            "name": "nat-1",
-                            "privateSubnet": "private-3",
-                            "natGateway": "testing-1",
-                        },
-                    ],
-                });
+                    },
+                ],
+                "natGateways": [
+                    {
+                        "name": "testing-0",
+                        "publicSubnet": "public-0",
+                    },
+                    {
+                        "name": "testing-1",
+                        "publicSubnet": "public-1",
+                    },
+                ],
+                "natRoutes": [
+                    {
+                        "name": "nat-0",
+                        "privateSubnet": "private-2",
+                        "natGateway": "testing-0",
+                    },
+                    {
+                        "name": "nat-1",
+                        "privateSubnet": "private-3",
+                        "natGateway": "testing-1",
+                    },
+                ],
+            });
         });
 
         it("custom two private three public", async () => {
@@ -1022,101 +1022,101 @@ describe("topology", () => {
                 { type: "private", location: { cidrBlock: "10.0.5.0/24", availabilityZone: AZ4.name } },
                 { type: "private", location: { cidrBlock: "10.0.6.0/24", availabilityZone: AZ5.name } },
             ]), {
-                    "subnets": [
-                        {
-                            "subnetName": "public-0",
-                            "type": "public",
-                            "args": {
-                                "cidrBlock": "10.0.1.0/24",
-                                "availabilityZone": "name_a",
-                                "mapPublicIpOnLaunch": true,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                "subnets": [
+                    {
+                        "subnetName": "public-0",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.1.0/24",
+                            "availabilityZone": "name_a",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "public-1",
-                            "type": "public",
-                            "args": {
-                                "cidrBlock": "10.0.2.0/24",
-                                "availabilityZone": "name_b",
-                                "mapPublicIpOnLaunch": true,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "public-1",
+                        "type": "public",
+                        "args": {
+                            "cidrBlock": "10.0.2.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "private-2",
-                            "type": "private",
-                            "args": {
-                                "cidrBlock": "10.0.3.0/24",
-                                "availabilityZone": "name_b",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "private-2",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.3.0/24",
+                            "availabilityZone": "name_b",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "private-3",
-                            "type": "private",
-                            "args": {
-                                "cidrBlock": "10.0.4.0/24",
-                                "availabilityZone": "name_c",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "private-3",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.4.0/24",
+                            "availabilityZone": "name_c",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "private-4",
-                            "type": "private",
-                            "args": {
-                                "cidrBlock": "10.0.5.0/24",
-                                "availabilityZone": "name_d",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "private-4",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.5.0/24",
+                            "availabilityZone": "name_d",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                        {
-                            "subnetName": "private-5",
-                            "type": "private",
-                            "args": {
-                                "cidrBlock": "10.0.6.0/24",
-                                "availabilityZone": "name_e",
-                                "mapPublicIpOnLaunch": false,
-                                "assignIpv6AddressOnCreation": false,
-                            },
+                    },
+                    {
+                        "subnetName": "private-5",
+                        "type": "private",
+                        "args": {
+                            "cidrBlock": "10.0.6.0/24",
+                            "availabilityZone": "name_e",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
                         },
-                    ],
-                    "natGateways": [
-                        {
-                            "name": "testing-0",
-                            "publicSubnet": "public-1",
-                        },
-                        {
-                            "name": "testing-1",
-                            "publicSubnet": "public-0",
-                        },
-                    ],
-                    "natRoutes": [
-                        {
-                            "name": "nat-0",
-                            "privateSubnet": "private-2",
-                            "natGateway": "testing-0",
-                        },
-                        {
-                            "name": "nat-1",
-                            "privateSubnet": "private-3",
-                            "natGateway": "testing-1",
-                        },
-                        {
-                            "name": "nat-2",
-                            "privateSubnet": "private-4",
-                            "natGateway": "testing-0",
-                        },
-                        {
-                            "name": "nat-3",
-                            "privateSubnet": "private-5",
-                            "natGateway": "testing-1",
-                        },
-                    ],
-                });
+                    },
+                ],
+                "natGateways": [
+                    {
+                        "name": "testing-0",
+                        "publicSubnet": "public-1",
+                    },
+                    {
+                        "name": "testing-1",
+                        "publicSubnet": "public-0",
+                    },
+                ],
+                "natRoutes": [
+                    {
+                        "name": "nat-0",
+                        "privateSubnet": "private-2",
+                        "natGateway": "testing-0",
+                    },
+                    {
+                        "name": "nat-1",
+                        "privateSubnet": "private-3",
+                        "natGateway": "testing-1",
+                    },
+                    {
+                        "name": "nat-2",
+                        "privateSubnet": "private-4",
+                        "natGateway": "testing-0",
+                    },
+                    {
+                        "name": "nat-3",
+                        "privateSubnet": "private-5",
+                        "natGateway": "testing-1",
+                    },
+                ],
+            });
         });
     });
 
