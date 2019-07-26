@@ -62,33 +62,33 @@ func Test_Examples(t *testing.T) {
 	}
 
 	shortTests := []integration.ProgramTestOptions{
-		integration.ProgramTestOptions{
-			Config: map[string]string{"aws:region": envRegion},
-			Dir:    path.Join(cwd, "../examples/cluster"),
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
-			Quick:       true,
-			SkipRefresh: true,
-		},
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/dashboards"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/ecr"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/metrics"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/vpc"),
-			StackName: addRandomSuffix("vpc"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
-			StackName:              addRandomSuffix("fargate"),
-			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
-		}),
+		// integration.ProgramTestOptions{
+		// 	Config: map[string]string{"aws:region": envRegion},
+		// 	Dir:    path.Join(cwd, "../examples/cluster"),
+		// 	Dependencies: []string{
+		// 		"@pulumi/awsx",
+		// 	},
+		// 	Quick:       true,
+		// 	SkipRefresh: true,
+		// },
+		// testBase.With(integration.ProgramTestOptions{
+		// 	Dir: path.Join(cwd, "../examples/dashboards"),
+		// }),
+		// testBase.With(integration.ProgramTestOptions{
+		// 	Dir: path.Join(cwd, "../examples/ecr"),
+		// }),
+		// testBase.With(integration.ProgramTestOptions{
+		// 	Dir: path.Join(cwd, "../examples/metrics"),
+		// }),
+		// testBase.With(integration.ProgramTestOptions{
+		// 	Dir:       path.Join(cwd, "../examples/vpc"),
+		// 	StackName: addRandomSuffix("vpc"),
+		// }),
+		// testBase.With(integration.ProgramTestOptions{
+		// 	Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
+		// 	StackName:              addRandomSuffix("fargate"),
+		// 	ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
+		// }),
 		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/api"),
 			Dependencies: []string{
@@ -540,7 +540,13 @@ type requiredParameters struct {
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 		for _, tt := range apiTests {
-			url := stack.Outputs[tt.urlStackOutputKey].(string) + tt.urlPath
+			var url string
+			if stackOutput, success := stack.Outputs[tt.urlStackOutputKey].(string); success {
+				url = stackOutput + tt.urlPath
+			} else {
+				msg := fmt.Sprintf("stack.Outputs: %v", stack.Outputs)
+				panic(msg)
+			}
 
 			req, err := http.NewRequest(http.MethodGet, url, nil)
 			if err != nil {
