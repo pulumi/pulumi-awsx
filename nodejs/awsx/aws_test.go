@@ -575,7 +575,11 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 				resp := GetHTTP(t, req, 403)
 				assertRequestBody(t, `{"message":"Forbidden"}`, false /*skipBodyValidation*/, resp)
 
-				apikey := stack.Outputs[tt.requiredAPIKey.stackOutput].(string)
+				propertyMap := resource.NewPropertyMapFromMap(stack.Outputs)
+				propertyValue := propertyMap[resource.PropertyKey(tt.requiredAPIKey.stackOutput)]
+				assert.True(t, propertyValue.IsSecret())
+				apikey := propertyValue.SecretValue().Element.StringValue()
+
 				req.Header.Add("x-api-key", apikey)
 			}
 
