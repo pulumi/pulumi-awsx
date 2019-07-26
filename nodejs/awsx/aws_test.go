@@ -541,7 +541,6 @@ type requiredParameters struct {
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 		for _, tt := range apiTests {
-			fmt.Printf("stack.Outputs: %v\n", stack.Outputs)
 			url := stack.Outputs[tt.urlStackOutputKey].(string)
 
 			req, err := http.NewRequest(http.MethodGet, url, nil)
@@ -580,6 +579,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 				propertyValue := propertyMap[resource.PropertyKey(tt.requiredAPIKey.stackOutput)]
 				assert.True(t, propertyValue.IsSecret())
 				apikey := propertyValue.SecretValue().Element.StringValue()
+				fmt.Printf("Decryped apiKey: %v\n", apikey)
 
 				req.Header.Add("x-api-key", apikey)
 			}
