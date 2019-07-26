@@ -284,8 +284,9 @@ func getLogs(t *testing.T, region string, stackInfo integration.RuntimeValidatio
 	query operations.LogQuery) *[]operations.LogEntry {
 
 	var states []*resource.State
+	dec := config.NewPanicCrypter()
 	for _, res := range stackInfo.Deployment.Resources {
-		state, err := stack.DeserializeResource(res)
+		state, err := stack.DeserializeResource(res, dec)
 		if !assert.NoError(t, err) {
 			return nil
 		}
