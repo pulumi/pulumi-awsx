@@ -23,7 +23,7 @@ export function computeContainerDefinition(
     name: string,
     containerName: string,
     container: Container,
-    logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition> {
+    logGroup: aws.cloudwatch.LogGroup | undefined): pulumi.Output<aws.ecs.ContainerDefinition> {
 
     const image = isContainerImageProvider(container.image)
         ? container.image.image(name, parent)
@@ -34,30 +34,29 @@ export function computeContainerDefinition(
         : container.environment;
 
     const portMappings = getPortMappings(name, container, parent);
-    const region = utils.getRegion(logGroup);
+    const region = utils.getRegion(parent);
 
-    return pulumi.all([container, logGroup.id, image, environment, portMappings, region])
+    const logGroupId = logGroup ? logGroup.id : undefined;
+    return pulumi.all([container, logGroupId, image, environment, portMappings, region])
                  .apply(([container, logGroupId, image, environment, portMappings, region]) => {
-        const containerDefinition = {
+        const containerDefinition: aws.ecs.ContainerDefinition = {
             ...container,
             image,
             environment,
             portMappings,
             name: containerName,
-            // todo(cyrusn): mount points.
-            // mountPoints: (container.volumes || []).map(v => ({
-            //     containerPath: v.containerPath,
-            //     sourceVolume: (v.sourceVolume as Volume).getVolumeName(),
-            // })),
-            logConfiguration: container.logConfiguration || {
+        };
+
+        if (logGroupId !== undefined) {
+            containerDefinition.logConfiguration = {
                 logDriver: "awslogs",
                 options: {
                     "awslogs-group": logGroupId,
                     "awslogs-region": region,
                     "awslogs-stream-prefix": containerName,
                 },
-            },
-        };
+            };
+        }
 
         return containerDefinition;
     });

@@ -23,10 +23,10 @@ import * as utils from "../utils";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly taskDefinition: aws.ecs.TaskDefinition;
-    public readonly logGroup: aws.cloudwatch.LogGroup;
+    public readonly logGroup?: aws.cloudwatch.LogGroup;
     public readonly containers: Record<string, ecs.Container>;
-    public readonly taskRole: aws.iam.Role;
-    public readonly executionRole: aws.iam.Role;
+    public readonly taskRole?: aws.iam.Role;
+    public readonly executionRole?: aws.iam.Role;
 
     /**
      * Run one or more instances of this TaskDefinition using the ECS `runTask` API, returning the Task instances.
@@ -44,13 +44,17 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
                 opts?: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
-        this.logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
+        this.logGroup = args.logGroup === null ? undefined :
+                        args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
         }, { parent: this });
 
-        this.taskRole = args.taskRole || TaskDefinition.createTaskRole(
+        this.taskRole = args.taskRole === null ? undefined :
+                        args.taskRole ? args.taskRole : TaskDefinition.createTaskRole(
             `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
-        this.executionRole = args.executionRole || TaskDefinition.createExecutionRole(
+
+        this.executionRole = args.taskRole === null ? undefined :
+                             args.executionRole ? args.executionRole : TaskDefinition.createExecutionRole(
             `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
 //         // todo(cyrusn): volumes.
@@ -79,8 +83,8 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         this.taskDefinition = new aws.ecs.TaskDefinition(name, {
             ...args,
             family,
-            taskRoleArn: this.taskRole.arn,
-            executionRoleArn: this.executionRole.arn,
+            taskRoleArn: this.taskRole ? this.taskRole.arn : undefined,
+            executionRoleArn: this.executionRole ? this.executionRole.arn : undefined,
             containerDefinitions: containerString,
         }, { parent: this });
 
@@ -248,7 +252,7 @@ function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
     containers: Record<string, ecs.Container>,
-    logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
+    logGroup: aws.cloudwatch.LogGroup | undefined): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
 
@@ -297,21 +301,21 @@ export interface TaskDefinitionArgs {
     // Properties we've added/changed.
 
     /**
-     * Log group for logging information related to the service.  If not provided a default instance
-     * with a one-day retention policy will be created.
+     * Log group for logging information related to the service.  If `undefined` a default instance
+     * with a one-day retention policy will be created.  If `null`, no log group will be created.
      */
     logGroup?: aws.cloudwatch.LogGroup;
 
     /**
-     * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
-     * If not provided, a default will be created for the task.
+     * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
+     * `undefined`, a default will be created for the task.  If `null`, no task will be created.
      */
     taskRole?: aws.iam.Role;
 
     /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
      *
-     * If not provided, a default will be created for the task.
+     * If `undefined`, a default will be created for the task.  If `null`, no task will be created.
      */
     executionRole?: aws.iam.Role;
 
