@@ -540,13 +540,8 @@ type requiredParameters struct {
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 		for _, tt := range apiTests {
-			var url string
-			if stackOutput, success := stack.Outputs[tt.urlStackOutputKey].(string); success {
-				url = stackOutput + tt.urlPath
-			} else {
-				msg := fmt.Sprintf("stack.Outputs: %v", stack.Outputs)
-				panic(msg)
-			}
+			fmt.Printf("stack.Outputs: %v\n", stack.Outputs)
+			url := stack.Outputs[tt.urlStackOutputKey].(string)
 
 			req, err := http.NewRequest(http.MethodGet, url, nil)
 			if err != nil {
