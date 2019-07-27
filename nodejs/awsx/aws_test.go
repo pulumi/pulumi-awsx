@@ -547,9 +547,9 @@ type requiredParameters struct {
 }
 
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
-	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
+	return func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
 		for _, tt := range apiTests {
-			url := stack.Outputs[tt.urlStackOutputKey].(string) + tt.urlPath
+			url := stackInfo.Outputs[tt.urlStackOutputKey].(string) + tt.urlPath
 
 			req, err := http.NewRequest(http.MethodGet, url, nil)
 			if err != nil {
@@ -575,7 +575,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 				resp := GetHTTP(t, req, 401)
 				assertRequestBody(t, `{"message":"401 Unauthorized"}`, false /*skipBodyValidation*/, resp)
 
-				token := tt.requiredToken.getAuthToken(t, stack)
+				token := tt.requiredToken.getAuthToken(t, stackInfo)
 				req.Header.Add(tt.requiredToken.header, token)
 			}
 
@@ -583,17 +583,21 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 				resp := GetHTTP(t, req, 403)
 				assertRequestBody(t, `{"message":"Forbidden"}`, false /*skipBodyValidation*/, resp)
 
-				dec, err := getDecrypter(stack.Deployment)
+				snapshot, err := stack.DeserializeDeploymentV3(*stackInfo.Deployment)
 				assert.NoError(t, err)
 
-				topPropertyMap := resource.NewPropertyMapFromMap(stack.Outputs)
-				topPropertyValue := topPropertyMap[resource.PropertyKey(tt.requiredAPIKey.stackOutput)]
+				var rootResource *resource.State
+				for _, res := range(snapshot.Resources) {
+					if (res.Type == resource.RootStackType) {
+						rootResource = res
+					}
+				}
 
-				propertyMap := topPropertyValue.V.(resource.PropertyMap)
-				propertyValue := propertyMap["ciphertext"]
+				propertyMap := rootResource.Outputs
+				propertyValue := propertyMap[resource.PropertyKey(tt.requiredAPIKey.stackOutput)]
 
-				apikey, err := dec.DecryptValue(propertyValue.StringValue())
-				assert.NoError(t, err)
+				assert.True(t, propertyValue.IsSecret())
+				apikey := propertyValue.SecretValue().Element.StringValue()
 				fmt.Printf("Decrypted apiKey: %v\n", apikey)
 
 				req.Header.Add("x-api-key", apikey)
@@ -656,41 +660,4 @@ func GetHTTP(t *testing.T, req *http.Request, statusCode int) *http.Response {
 	}
 
 	return nil
-}
-
-func getDecrypter(deployment *apitype.DeploymentV3) (config.Decrypter, error) {
-	var secretsManager secrets.Manager
-	if deployment.SecretsProviders != nil && deployment.SecretsProviders.Type != "" {
-		var provider secrets.ManagerProvider
-
-		switch deployment.SecretsProviders.Type {
-		case b64.Type:
-			provider = b64.NewProvider()
-		case passphrase.Type:
-			provider = passphrase.NewProvider()
-		case service.Type:
-			provider = service.NewProvider()
-		default:
-			return nil, errors.Errorf("unknown secrets provider type %s", deployment.SecretsProviders.Type)
-		}
-
-		sm, err := provider.FromState(deployment.SecretsProviders.State)
-		if err != nil {
-			return nil, errors.Wrap(err, "creating secrets manager from existing state")
-		}
-		secretsManager = sm
-	}
-
-	var dec config.Decrypter
-	if secretsManager == nil {
-		dec = config.NewPanicCrypter()
-	} else {
-		d, err := secretsManager.Decrypter()
-		if err != nil {
-			return nil, err
-		}
-		dec = d
-	}
-
-	return dec, nil
 }
