@@ -27,8 +27,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"github.com/stretchr/testify/assert"
 
+	"github.com/pulumi/pulumi/pkg/secrets"
+	"github.com/pulumi/pulumi/pkg/secrets/b64"
+	"github.com/pulumi/pulumi/pkg/secrets/passphrase"
+	"github.com/pulumi/pulumi/pkg/secrets/service"
+
+	"github.com/pulumi/pulumi/pkg/apitype"
 	"github.com/pulumi/pulumi/pkg/operations"
 	"github.com/pulumi/pulumi/pkg/resource"
 	"github.com/pulumi/pulumi/pkg/resource/config"
@@ -575,10 +583,17 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 				resp := GetHTTP(t, req, 403)
 				assertRequestBody(t, `{"message":"Forbidden"}`, false /*skipBodyValidation*/, resp)
 
-				propertyMap := resource.NewPropertyMapFromMap(stack.Outputs)
-				propertyValue := propertyMap[resource.PropertyKey(tt.requiredAPIKey.stackOutput)]
-				assert.True(t, propertyValue.IsSecret())
-				apikey := propertyValue.SecretValue().Element.StringValue()
+				dec, err := getDecrypter(stack.Deployment)
+				assert.NoError(t, err)
+
+				topPropertyMap := resource.NewPropertyMapFromMap(stack.Outputs)
+				topPropertyValue := topPropertyMap[resource.PropertyKey(tt.requiredAPIKey.stackOutput)]
+
+				propertyMap := topPropertyValue.V.(resource.PropertyMap)
+				propertyValue := propertyMap["ciphertext"]
+
+				apikey, err := dec.DecryptValue(propertyValue.StringValue())
+				assert.NoError(t, err)
 				fmt.Printf("Decrypted apiKey: %v\n", apikey)
 
 				req.Header.Add("x-api-key", apikey)
@@ -641,4 +656,41 @@ func GetHTTP(t *testing.T, req *http.Request, statusCode int) *http.Response {
 	}
 
 	return nil
+}
+
+func getDecrypter(deployment *apitype.DeploymentV3) (config.Decrypter, error) {
+	var secretsManager secrets.Manager
+	if deployment.SecretsProviders != nil && deployment.SecretsProviders.Type != "" {
+		var provider secrets.ManagerProvider
+
+		switch deployment.SecretsProviders.Type {
+		case b64.Type:
+			provider = b64.NewProvider()
+		case passphrase.Type:
+			provider = passphrase.NewProvider()
+		case service.Type:
+			provider = service.NewProvider()
+		default:
+			return nil, errors.Errorf("unknown secrets provider type %s", deployment.SecretsProviders.Type)
+		}
+
+		sm, err := provider.FromState(deployment.SecretsProviders.State)
+		if err != nil {
+			return nil, errors.Wrap(err, "creating secrets manager from existing state")
+		}
+		secretsManager = sm
+	}
+
+	var dec config.Decrypter
+	if secretsManager == nil {
+		dec = config.NewPanicCrypter()
+	} else {
+		d, err := secretsManager.Decrypter()
+		if err != nil {
+			return nil, err
+		}
+		dec = d
+	}
+
+	return dec, nil
 }
