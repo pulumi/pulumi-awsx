@@ -27,16 +27,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pkg/errors"
-
 	"github.com/stretchr/testify/assert"
 
-	"github.com/pulumi/pulumi/pkg/secrets"
-	"github.com/pulumi/pulumi/pkg/secrets/b64"
-	"github.com/pulumi/pulumi/pkg/secrets/passphrase"
-	"github.com/pulumi/pulumi/pkg/secrets/service"
-
-	"github.com/pulumi/pulumi/pkg/apitype"
 	"github.com/pulumi/pulumi/pkg/operations"
 	"github.com/pulumi/pulumi/pkg/resource"
 	"github.com/pulumi/pulumi/pkg/resource/config"
@@ -587,8 +579,8 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 				assert.NoError(t, err)
 
 				var rootResource *resource.State
-				for _, res := range(snapshot.Resources) {
-					if (res.Type == resource.RootStackType) {
+				for _, res := range snapshot.Resources {
+					if res.Type == resource.RootStackType {
 						rootResource = res
 					}
 				}
