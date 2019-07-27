@@ -109,53 +109,53 @@ func Test_Examples(t *testing.T) {
 					},
 					expectedBody: "<h1>Hello world!</h1>",
 				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/b",
-					requiredAuth: &requiredAuth{
-						queryParameters: map[string]string{
-							"auth": "password",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					expectedBody: "Hello, world!",
-				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/www/file1.txt",
-					requiredParameters: &requiredParameters{
-						queryParameters:             []string{"key"},
-						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-					},
-					requiredAuth: &requiredAuth{
-						headers: map[string]string{
-							"Authorization": "Allow",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					expectedBody: "contents1\n",
-				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/integration",
-					requiredParameters: &requiredParameters{
-						queryParameters:             []string{"key"},
-						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-					},
-					requiredAuth: &requiredAuth{
-						queryParameters: map[string]string{
-							"auth": "password",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					skipBodyValidation: true,
-				},
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/b",
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "Hello, world!",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/www/file1.txt",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		headers: map[string]string{
+				// 			"Authorization": "Allow",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "contents1\n",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/integration",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	skipBodyValidation: true,
+				// },
 				{
 					urlStackOutputKey: "authorizerUrl",
 					urlPath:           "/www_old/file1.txt",
@@ -284,9 +284,8 @@ func getLogs(t *testing.T, region string, stackInfo integration.RuntimeValidatio
 	query operations.LogQuery) *[]operations.LogEntry {
 
 	var states []*resource.State
-	dec := config.NewPanicCrypter()
 	for _, res := range stackInfo.Deployment.Resources {
-		state, err := stack.DeserializeResource(res, dec)
+		state, err := stack.DeserializeResource(res)
 		if !assert.NoError(t, err) {
 			return nil
 		}
@@ -539,9 +538,9 @@ type requiredParameters struct {
 }
 
 func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
-	return func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
+	return func(t *testing.T, stack integration.RuntimeValidationStackInfo) {
 		for _, tt := range apiTests {
-			url := stackInfo.Outputs[tt.urlStackOutputKey].(string) + tt.urlPath
+			url := stack.Outputs[tt.urlStackOutputKey].(string) + tt.urlPath
 
 			req, err := http.NewRequest(http.MethodGet, url, nil)
 			if err != nil {
@@ -567,7 +566,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 				resp := GetHTTP(t, req, 401)
 				assertRequestBody(t, `{"message":"401 Unauthorized"}`, false /*skipBodyValidation*/, resp)
 
-				token := tt.requiredToken.getAuthToken(t, stackInfo)
+				token := tt.requiredToken.getAuthToken(t, stack)
 				req.Header.Add(tt.requiredToken.header, token)
 			}
 
@@ -575,23 +574,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 				resp := GetHTTP(t, req, 403)
 				assertRequestBody(t, `{"message":"Forbidden"}`, false /*skipBodyValidation*/, resp)
 
-				snapshot, err := stack.DeserializeDeploymentV3(*stackInfo.Deployment)
-				assert.NoError(t, err)
-
-				var rootResource *resource.State
-				for _, res := range snapshot.Resources {
-					if res.Type == resource.RootStackType {
-						rootResource = res
-					}
-				}
-
-				propertyMap := rootResource.Outputs
-				propertyValue := propertyMap[resource.PropertyKey(tt.requiredAPIKey.stackOutput)]
-
-				assert.True(t, propertyValue.IsSecret())
-				apikey := propertyValue.SecretValue().Element.StringValue()
-				fmt.Printf("Decrypted apiKey: %v\n", apikey)
-
+				apikey := stack.Outputs[tt.requiredAPIKey.stackOutput].(string)
 				req.Header.Add("x-api-key", apikey)
 			}
 
