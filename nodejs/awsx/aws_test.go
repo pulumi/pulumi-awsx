@@ -109,53 +109,53 @@ func Test_Examples(t *testing.T) {
 					},
 					expectedBody: "<h1>Hello world!</h1>",
 				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/b",
-					requiredAuth: &requiredAuth{
-						queryParameters: map[string]string{
-							"auth": "password",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					expectedBody: "Hello, world!",
-				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/www/file1.txt",
-					requiredParameters: &requiredParameters{
-						queryParameters:             []string{"key"},
-						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-					},
-					requiredAuth: &requiredAuth{
-						headers: map[string]string{
-							"Authorization": "Allow",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					expectedBody: "contents1\n",
-				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/integration",
-					requiredParameters: &requiredParameters{
-						queryParameters:             []string{"key"},
-						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-					},
-					requiredAuth: &requiredAuth{
-						queryParameters: map[string]string{
-							"auth": "password",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					skipBodyValidation: true,
-				},
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/b",
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "Hello, world!",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/www/file1.txt",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		headers: map[string]string{
+				// 			"Authorization": "Allow",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "contents1\n",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/integration",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	skipBodyValidation: true,
+				// },
 				{
 					urlStackOutputKey: "authorizerUrl",
 					urlPath:           "/www_old/file1.txt",
