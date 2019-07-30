@@ -197,6 +197,13 @@ func Test_Examples(t *testing.T) {
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/fargate"),
 			StackName: addRandomSuffix("fargate"),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:      "step2",
+					Additive: true,
+					ExpectNoChanges: true,
+				},
+			},
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/ec2"),
@@ -222,6 +229,13 @@ func Test_Examples(t *testing.T) {
 				"--diff",
 			},
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:      "step2",
+					Additive: true,
+					ExpectNoChanges: true,
+				},
+			},
 		}),
 
 		// {
