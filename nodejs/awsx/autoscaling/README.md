@@ -140,11 +140,11 @@ autoScalingGroup.scaleToTrackAverageNetworkOut("scaleDownOnMonday", {
 });
 ```
 
-3. Scaling based on the average number of requests completed per `awsx.elasticloadbalancinv2.ApplicationTargetGroup` in the ASG.  In order to do this, the ASG must be informed of that particular `TargetGroup` at creation time. Scaling for `TargetGroup`s is only supported if the `TargetGroup.targetType` is set to `"instance"`.
+3. Scaling based on the average number of requests completed per `awsx.lb.ApplicationTargetGroup` in the ASG.  In order to do this, the ASG must be informed of that particular `TargetGroup` at creation time. Scaling for `TargetGroup`s is only supported if the `TargetGroup.targetType` is set to `"instance"`.
 
 ```ts
 const cluster = new awsx.ecs.Cluster("testing");
-const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("testing", { external: true });
+const loadBalancer = new awsx.lb.ApplicationLoadBalancer("testing", { external: true });
 
 const targetGroup = loadBalancer.createTargetGroup("testing", { port: 80, targetType: "instance" });
 
