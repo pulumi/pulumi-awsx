@@ -29,22 +29,24 @@ import * as utils from "./../utils";
  * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-rules.html
  */
 export class ListenerRule extends pulumi.ComponentResource {
-    public readonly listenerRule: aws.elasticloadbalancingv2.ListenerRule;
+    public readonly listenerRule: aws.lb.ListenerRule;
 
-    constructor(name: string, listener: x.elasticloadbalancingv2.Listener,
+    constructor(name: string, listener: x.lb.Listener,
                 args: ListenerRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
         // We forgot to add the `ListenerRule` part of the name.  Add it in and create an alias from
         // the previous incorrect name.
-        super("awsx:x:elasticloadbalancingv2:ListenerRule", name, {}, {
+        super("awsx:lb:ListenerRule", name, {}, {
             parent: listener,
-            ...utils.withAlias(opts, { type: "awsx:x:elasticloadbalancingv2" }),
+            ...pulumi.mergeOptions(opts, { aliases: [
+                { type: "awsx:x:elasticloadbalancingv2" },
+                { type: "awsx:x:elasticloadbalancingv2:ListenerRule" }] }),
         });
 
-        const actions = x.elasticloadbalancingv2.isListenerActions(args.actions)
+        const actions = x.lb.isListenerActions(args.actions)
             ? args.actions.actions()
             : args.actions;
 
-        this.listenerRule = new aws.elasticloadbalancingv2.ListenerRule(name, {
+        this.listenerRule = new aws.lb.ListenerRule(name, {
             ...args,
             actions,
             listenerArn: listener.listener.arn,
@@ -53,7 +55,7 @@ export class ListenerRule extends pulumi.ComponentResource {
         // If this is a rule hooking up this listener to a target group, then add our listener to
         // the set of listeners the target group knows about.  This is necessary so that anything
         // that depends on the target group will end up depending on this rule getting created.
-        if (x.elasticloadbalancingv2.isListenerActions(args.actions)) {
+        if (x.lb.isListenerActions(args.actions)) {
             args.actions.registerListener(listener);
         }
 
@@ -61,20 +63,20 @@ export class ListenerRule extends pulumi.ComponentResource {
     }
 }
 
-type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerRuleArgs, {
+type OverwriteShape = utils.Overwrite<aws.lb.ListenerRuleArgs, {
     listenerArn?: never;
-    actions: aws.elasticloadbalancingv2.ListenerRuleArgs["actions"] | x.elasticloadbalancingv2.ListenerActions;
+    actions: aws.lb.ListenerRuleArgs["actions"] | x.lb.ListenerActions;
 }>;
 
 export interface ListenerRuleArgs {
     /**
      * An Action block. Action blocks are documented below.
      */
-    actions: aws.elasticloadbalancingv2.ListenerRuleArgs["actions"] | x.elasticloadbalancingv2.ListenerActions;
+    actions: aws.lb.ListenerRuleArgs["actions"] | x.lb.ListenerActions;
     /**
      * A Condition block. Condition blocks are documented below.
      */
-    conditions: aws.elasticloadbalancingv2.ListenerRuleArgs["conditions"];
+    conditions: aws.lb.ListenerRuleArgs["conditions"];
     /**
      * The priority for the rule between `1` and `50000`. Leaving it unset will automatically set the rule with next available priority after currently existing highest rule. A listener can't have multiple rules with the same priority.
      */

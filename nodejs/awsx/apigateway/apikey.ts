@@ -143,7 +143,7 @@ function getUsagePlan(name: string, args: APIKeyArgs, opts: pulumi.CustomResourc
         // We previously did not parent the UsagePlan. We now do. Provide an alias so this doesn't
         // cause resources to be destroyed/recreated for existing stacks.
         return new aws.apigateway.UsagePlan(name, usagePlanArgs,
-            utils.withAlias(opts, { parent: pulumi.rootStackResource }));
+            pulumi.mergeOptions(opts, { aliases: [{ parent: pulumi.rootStackResource }] }));
     }
 }
 

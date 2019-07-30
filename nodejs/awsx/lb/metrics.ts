@@ -28,14 +28,14 @@ export namespace metrics {
         /**
          * Filters the metric data by load balancer.
          */
-        loadBalancer?: aws.elasticloadbalancingv2.LoadBalancer | LoadBalancer;
+        loadBalancer?: aws.lb.LoadBalancer | LoadBalancer;
 
         /**
          * Filters the metric data by target group.  If this is a [NetworkTargetGroup] then
          * [loadBalancer] does not have to be provided.  If this is an
-         * [aws.elasticloadbalancingv2.TargetGroup] then [loadBalancer] must be provided.
+         * [aws.lb.TargetGroup] then [loadBalancer] must be provided.
          */
-        targetGroup?: aws.elasticloadbalancingv2.TargetGroup | TargetGroup;
+        targetGroup?: aws.lb.TargetGroup | TargetGroup;
 
         /**
          * Filters the metric data by Availability Zone.
@@ -61,7 +61,7 @@ export namespace metrics {
             }
             else {
                 if (!change.loadBalancer) {
-                    throw new Error("[change.loadBalancer] must be provided if [change.targetGroup] is an [aws.elasticloadbalancingv2.TargetGroup]");
+                    throw new Error("[change.loadBalancer] must be provided if [change.targetGroup] is an [aws.lb.TargetGroup]");
                 }
 
                 dimensions.TargetGroup = change.targetGroup.arnSuffix;
@@ -115,14 +115,14 @@ export namespace metrics {
             /**
              * Filters the metric data by load balancer.
              */
-            loadBalancer?: aws.elasticloadbalancingv2.LoadBalancer | ApplicationLoadBalancer;
+            loadBalancer?: aws.lb.LoadBalancer | ApplicationLoadBalancer;
 
             /**
              * Filters the metric data by target group.  If this is an [ApplicationTargetGroup] then
              * [loadBalancer] does not have to be provided.  If this is an
-             * [aws.elasticloadbalancingv2.TargetGroup] then [loadBalancer] must be provided.
+             * [aws.lb.TargetGroup] then [loadBalancer] must be provided.
              */
-            targetGroup?: aws.elasticloadbalancingv2.TargetGroup | ApplicationTargetGroup;
+            targetGroup?: aws.lb.TargetGroup | ApplicationTargetGroup;
 
             /**
              * Filters the metric data by Availability Zone.
@@ -594,14 +594,14 @@ export namespace metrics {
             /**
              * Filters the metric data by load balancer.
              */
-            loadBalancer?: aws.elasticloadbalancingv2.LoadBalancer | NetworkLoadBalancer;
+            loadBalancer?: aws.lb.LoadBalancer | NetworkLoadBalancer;
 
             /**
              * Filters the metric data by target group.  If this is a [NetworkTargetGroup] then
              * [loadBalancer] does not have to be provided.  If this is an
-             * [aws.elasticloadbalancingv2.TargetGroup] then [loadBalancer] must be provided.
+             * [aws.lb.TargetGroup] then [loadBalancer] must be provided.
              */
-            targetGroup?: aws.elasticloadbalancingv2.TargetGroup | NetworkTargetGroup;
+            targetGroup?: aws.lb.TargetGroup | NetworkTargetGroup;
 
             /**
              * Filters the metric data by Availability Zone.

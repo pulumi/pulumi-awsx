@@ -30,7 +30,7 @@ export class LifecyclePolicy extends aws.ecr.LifecyclePolicy {
             repository: repository.name,
         }, {
             parent: repository,
-            ...utils.withAlias(opts, { parent: opts.parent }),
+            ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
     }
 
