@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.18.8 (2019-07-29)
+
 * ecs.TaskDefinition now accepts explicit `null` value for `.logGroup`, `.taskRole` and
   `.executionRole` to explicitly opt out using or creating any default resources for them.
 * The `elasticloadbalancingv2` module has been renamed to align with its `@pulumi/aws` equivalent.
