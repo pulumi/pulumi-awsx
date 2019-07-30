@@ -278,7 +278,7 @@ function isRawDataRoute(route: Route): route is RawDataRoute {
 export interface Endpoint {
     hostname: string;
     port: number;
-    loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
+    loadBalancer: aws.lb.LoadBalancer;
 }
 
 export interface APIArgs {

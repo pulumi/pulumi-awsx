@@ -18,22 +18,21 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
-import * as x from "..";
-import * as utils from "./../utils";
 
 export class TargetGroupAttachment extends pulumi.ComponentResource {
-    public readonly targetGroupAttachment: aws.elasticloadbalancingv2.TargetGroupAttachment;
+    public readonly targetGroupAttachment: aws.lb.TargetGroupAttachment;
     public readonly permission?: aws.lambda.Permission;
     public readonly func?: aws.lambda.Function;
 
     constructor(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:elasticloadbalancingv2:TargetGroupAttachment", name, undefined, { parent: targetGroup, ...opts });
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:elasticloadbalancingv2:TargetGroupAttachment" }] });
+        super("awsx:lb:TargetGroupAttachment", name, undefined, { parent: targetGroup, ...opts });
 
         const { targetInfo, func, permission } = getTargetInfo(this, targetGroup, name, args);
 
         const dependsOn = permission ? [permission] : [];
 
-        this.targetGroupAttachment = new aws.elasticloadbalancingv2.TargetGroupAttachment(name, {
+        this.targetGroupAttachment = new aws.lb.TargetGroupAttachment(name, {
             availabilityZone: <pulumi.Input<string>>targetInfo.availabilityZone,
             port: <pulumi.Input<number>>targetInfo.port,
             targetGroupArn: targetGroup.targetGroup.arn,

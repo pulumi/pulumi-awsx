@@ -20,7 +20,7 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
-    public readonly loadBalancer: aws.elasticloadbalancingv2.LoadBalancer;
+    public readonly loadBalancer: aws.lb.LoadBalancer;
     public readonly vpc: x.ec2.Vpc;
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
@@ -39,7 +39,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         // people didn't have direct control over creating the LB.  In awsx though creating the LB
         // is easy to do, so we just let the user pass in the name they want.  We simply add an
         // alias from the old name to the new one to keep things from being recreated.
-        this.loadBalancer = new aws.elasticloadbalancingv2.LoadBalancer(name, {
+        this.loadBalancer = new aws.lb.LoadBalancer(name, {
             ...args,
             subnets: getSubnets(args, this.vpc, external),
             internal: external.apply(ex => !ex),
@@ -138,7 +138,7 @@ export interface LoadBalancerArgs {
     /**
      * A subnet mapping block as documented below.
      */
-    subnetMappings?: aws.elasticloadbalancingv2.LoadBalancerArgs["subnetMappings"];
+    subnetMappings?: aws.lb.LoadBalancerArgs["subnetMappings"];
 
     /**
      * A mapping of tags to assign to the resource.

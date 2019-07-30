@@ -38,7 +38,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
     public readonly targetGroups: ApplicationTargetGroup[];
 
     constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
+        const argsCopy: x.lb.LoadBalancerArgs = {
             vpc: args.vpc || x.ec2.Vpc.getDefault(opts),
             ...args,
             loadBalancerType: "application",
@@ -51,7 +51,8 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
             }, opts)];
         }
 
-        super("awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer", name, argsCopy, opts);
+        super("aws:lb:ApplicationLoadBalancer", name, argsCopy,
+            pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer"}] }));
 
         this.listeners = [];
         this.targetGroups = [];
@@ -92,20 +93,21 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
 export class ApplicationTargetGroup extends mod.TargetGroup {
     public readonly loadBalancer: ApplicationLoadBalancer;
 
-    public readonly listeners: x.elasticloadbalancingv2.ApplicationListener[];
+    public readonly listeners: x.lb.ApplicationListener[];
 
     /** @internal */
     // tslint:disable-next-line:variable-name
     public readonly __isApplicationTargetGroup: boolean;
 
-    constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {
             vpc: args.vpc,
             name: args.name,
         }, opts);
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
-        super("awsx:x:elasticloadbalancingv2:ApplicationTargetGroup", name, loadBalancer, {
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationTargetGroup" }] });
+        super("awsx:lb:ApplicationTargetGroup", name, loadBalancer, {
             ...args,
             vpc: loadBalancer.vpc,
             port,
@@ -179,7 +181,7 @@ function computePortInfo(
 
 export class ApplicationListener extends mod.Listener {
     public readonly loadBalancer: ApplicationLoadBalancer;
-    public readonly defaultTargetGroup?: x.elasticloadbalancingv2.ApplicationTargetGroup;
+    public readonly defaultTargetGroup?: x.lb.ApplicationTargetGroup;
 
     constructor(name: string,
                 args: ApplicationListenerArgs,
@@ -202,7 +204,8 @@ export class ApplicationListener extends mod.Listener {
         // to defer to it for ContainerPortMappings information.  this allows this listener to be
         // passed in as the portMappings information needed for a Service.
 
-        super("awsx:x:elasticloadbalancingv2:ApplicationListener", name, defaultListener, {
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationListener" }] });
+        super("awsx:lb:ApplicationListener", name, defaultListener, {
             ...args,
             defaultActions,
             loadBalancer,
@@ -249,7 +252,7 @@ function getDefaultActions(
     }
 
     if (args.defaultAction) {
-        return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
+        return x.lb.isListenerDefaultAction(args.defaultAction)
             ? { defaultActions: [args.defaultAction.listenerDefaultAction()], defaultListener: args.defaultAction }
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
@@ -301,14 +304,14 @@ export interface ApplicationLoadBalancerArgs {
     /**
      * A subnet mapping block as documented below.
      */
-    subnetMappings?: aws.elasticloadbalancingv2.LoadBalancerArgs["subnetMappings"];
+    subnetMappings?: aws.lb.LoadBalancerArgs["subnetMappings"];
 
     /**
      * A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of
      * type `network`. Changing this value for load balancers of type `network` will force a
      * recreation of the resource.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.elasticloadbalancingv2.LoadBalancerSubnets;
+    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.lb.LoadBalancerSubnets;
 
     /**
      * A mapping of tags to assign to the resource.
@@ -320,7 +323,7 @@ export interface ApplicationLoadBalancerArgs {
     /**
      * An Access Logs block. Access Logs documented below.
      */
-    accessLogs?: aws.elasticloadbalancingv2.LoadBalancerArgs["accessLogs"];
+    accessLogs?: aws.lb.LoadBalancerArgs["accessLogs"];
 
     /**
      * Indicates whether HTTP/2 is enabled. Defaults to `true`.
@@ -418,7 +421,7 @@ export interface ApplicationTargetGroupArgs {
      * A Stickiness block. Stickiness blocks are documented below. `stickiness` is only valid if
      * used with Load Balancers of type `Application`
      */
-    stickiness?: aws.elasticloadbalancingv2.TargetGroupArgs["stickiness"];
+    stickiness?: aws.lb.TargetGroupArgs["stickiness"];
 
     /**
      * A mapping of tags to assign to the resource.
@@ -486,7 +489,7 @@ export interface ApplicationListenerArgs {
      *
      * Do not provide both [defaultAction] and [defaultActions].
      */
-    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.elasticloadbalancingv2.ListenerDefaultAction;
+    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.lb.ListenerDefaultAction;
 
     /**
      * An list of Action blocks. If neither this nor [defaultActions] is provided, a suitable

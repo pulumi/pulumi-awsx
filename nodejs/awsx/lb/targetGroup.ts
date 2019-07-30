@@ -25,13 +25,13 @@ export abstract class TargetGroup
     extends pulumi.ComponentResource
     implements x.ecs.ContainerPortMappingProvider,
     x.ecs.ContainerLoadBalancerProvider,
-    x.elasticloadbalancingv2.ListenerDefaultAction {
+    x.lb.ListenerDefaultAction {
 
     public readonly loadBalancer: mod.LoadBalancer;
-    public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
+    public readonly targetGroup: aws.lb.TargetGroup;
     public readonly vpc: x.ec2.Vpc;
 
-    public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
+    public readonly listeners: x.lb.Listener[] = [];
 
     constructor(type: string, name: string, loadBalancer: mod.LoadBalancer,
                 args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
@@ -49,7 +49,7 @@ export abstract class TargetGroup
         // people didn't have direct control over creating the TG.  In awsx though creating the TG
         // is easy to do, so we just let the user pass in the name they want.  We simply add an
         // alias from the old name to the new one to keep things from being recreated.
-        this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(name, {
+        this.targetGroup = new aws.lb.TargetGroup(name, {
             ...args,
             vpcId: this.vpc.id,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
@@ -91,7 +91,7 @@ export abstract class TargetGroup
     }
 
     /** Do not call directly.  Intended for use by [Listener] and [ListenerRule] */
-    public registerListener(listener: x.elasticloadbalancingv2.Listener) {
+    public registerListener(listener: x.lb.Listener) {
         this.listeners.push(listener);
     }
 
@@ -220,7 +220,7 @@ export interface TargetGroupArgs {
      * A Stickiness block. Stickiness blocks are documented below. `stickiness` is only valid if
      * used with Load Balancers of type `Application`
      */
-    stickiness?: aws.elasticloadbalancingv2.TargetGroupArgs["stickiness"];
+    stickiness?: aws.lb.TargetGroupArgs["stickiness"];
 
     /**
      * A mapping of tags to assign to the resource.
