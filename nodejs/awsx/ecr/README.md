@@ -30,7 +30,7 @@ Now that we have an image, it can be easily referenced from an ECS Service like 
 const repository = new awsx.ecr.Repository("app");
 const image = repository.buildAndPushImage("./app");
 
-const listener = new awsx.elasticloadbalancingv2.NetworkListener("app", { port: 80 });
+const listener = new awsx.lb.NetworkListener("app", { port: 80 });
 const nginx = new awsx.ecs.FargateService("app", {
     taskDefinitionArgs: {
         containers: {
