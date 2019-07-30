@@ -133,7 +133,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             ...args,
         }, {
             parent: this,
-            ...utils.withAlias(opts, { parent: opts.parent }),
+            ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
     }
 

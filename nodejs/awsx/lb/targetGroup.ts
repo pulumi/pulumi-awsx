@@ -40,7 +40,7 @@ export abstract class TargetGroup
         // resources from being created/destroyed.
         super(type, name, {}, {
             parent: loadBalancer,
-            ...utils.withAlias(opts, { parent: opts.parent }),
+            ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
 
         this.vpc = args.vpc;
