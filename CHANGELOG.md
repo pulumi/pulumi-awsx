@@ -8,6 +8,15 @@ CHANGELOG
 * Removing the deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6). Code that uses
   these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
 
+## 0.18.8 (2019-07-29)
+
+* ecs.TaskDefinition now accepts explicit `null` value for `.logGroup`, `.taskRole` and
+  `.executionRole` to explicitly opt out using or creating any default resources for them.
+* The `elasticloadbalancingv2` module has been renamed to align with its `@pulumi/aws` equivalent.
+  The existing module is still available, but will be deprecated and removed in the future.
+  'Aliases' have been used to ensure that moving to the new modules will not result in any changes
+  to existing resources.
+
 ## 0.18.7 (2019-07-11)
 
 * LoadBalancers and TargetGroups will no longer create resources with 'hashed' names.  They will

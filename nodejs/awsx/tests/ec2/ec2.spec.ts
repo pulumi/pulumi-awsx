@@ -1119,4 +1119,92 @@ describe("topology", () => {
             });
         });
     });
+
+    describe("no locations", () => {
+        it("less nat gateways", async () => {
+            await jsonEqual(topology("10.0.0.0/16", threeAZs, 1, [
+                { type: "public" },
+                { type: "private" },
+            ]), {
+                    "subnets": [{
+                        "type": "public",
+                        "subnetName": "testing-public-0",
+                        "args": {
+                            "availabilityZone": "name_a",
+                            "availabilityZoneId": "id_a",
+                            "cidrBlock": "10.0.0.0/19",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    }, {
+                        "type": "public",
+                        "subnetName": "testing-public-1",
+                        "args": {
+                            "availabilityZone": "name_b",
+                            "availabilityZoneId": "id_b",
+                            "cidrBlock": "10.0.32.0/19",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    }, {
+                        "type": "public",
+                        "subnetName": "testing-public-2",
+                        "args": {
+                            "availabilityZone": "name_c",
+                            "availabilityZoneId": "id_c",
+                            "cidrBlock": "10.0.64.0/19",
+                            "mapPublicIpOnLaunch": true,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    }, {
+                        "type": "private",
+                        "subnetName": "testing-private-0",
+                        "args": {
+                            "availabilityZone": "name_a",
+                            "availabilityZoneId": "id_a",
+                            "cidrBlock": "10.0.96.0/19",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    }, {
+                        "type": "private",
+                        "subnetName": "testing-private-1",
+                        "args": {
+                            "availabilityZone": "name_b",
+                            "availabilityZoneId": "id_b",
+                            "cidrBlock": "10.0.128.0/19",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    }, {
+                        "type": "private",
+                        "subnetName": "testing-private-2",
+                        "args": {
+                            "availabilityZone": "name_c",
+                            "availabilityZoneId": "id_c",
+                            "cidrBlock": "10.0.160.0/19",
+                            "mapPublicIpOnLaunch": false,
+                            "assignIpv6AddressOnCreation": false,
+                        },
+                    }],
+                    "natGateways": [{
+                        "name": "testing-0",
+                        "publicSubnet": "testing-public-0",
+                    }],
+                    "natRoutes": [{
+                        "name": "nat-0",
+                        "privateSubnet": "testing-private-0",
+                        "natGateway": "testing-0",
+                    }, {
+                        "name": "nat-1",
+                        "privateSubnet": "testing-private-1",
+                        "natGateway": "testing-0",
+                    }, {
+                        "name": "nat-2",
+                        "privateSubnet": "testing-private-2",
+                        "natGateway": "testing-0",
+                    }],
+                });
+        });
+    });
 });

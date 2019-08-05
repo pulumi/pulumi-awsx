@@ -133,7 +133,7 @@ export function createRoleWithAuthorizerInvocationPolicy(
     // appropriate alias to prevent resources from being destroyed/created.
     const role = new aws.iam.Role(authorizerName + "-authorizer-role", {
         assumeRolePolicy: JSON.stringify(policy),
-    }, utils.withAlias(opts, { parent: pulumi.rootStackResource }));
+    }, pulumi.mergeOptions(opts, { aliases: [{ parent: pulumi.rootStackResource }] }));
 
     // Add invocation policy to lambda role
     const invocationPolicy = new aws.iam.RolePolicy(authorizerName + "-invocation-policy", {
@@ -148,7 +148,7 @@ export function createRoleWithAuthorizerInvocationPolicy(
                 ]
             }`,
         role: role.id,
-    }, utils.withAlias(opts, { parent: pulumi.rootStackResource }));
+    }, pulumi.mergeOptions(opts, { aliases: [{ parent: pulumi.rootStackResource }] }));
 
     return role;
 }

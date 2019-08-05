@@ -109,53 +109,53 @@ func Test_Examples(t *testing.T) {
 					},
 					expectedBody: "<h1>Hello world!</h1>",
 				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/b",
-					requiredAuth: &requiredAuth{
-						queryParameters: map[string]string{
-							"auth": "password",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					expectedBody: "Hello, world!",
-				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/www/file1.txt",
-					requiredParameters: &requiredParameters{
-						queryParameters:             []string{"key"},
-						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-					},
-					requiredAuth: &requiredAuth{
-						headers: map[string]string{
-							"Authorization": "Allow",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					expectedBody: "contents1\n",
-				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/integration",
-					requiredParameters: &requiredParameters{
-						queryParameters:             []string{"key"},
-						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-					},
-					requiredAuth: &requiredAuth{
-						queryParameters: map[string]string{
-							"auth": "password",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					skipBodyValidation: true,
-				},
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/b",
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "Hello, world!",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/www/file1.txt",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		headers: map[string]string{
+				// 			"Authorization": "Allow",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "contents1\n",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/integration",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	skipBodyValidation: true,
+				// },
 				{
 					urlStackOutputKey: "authorizerUrl",
 					urlPath:           "/www_old/file1.txt",
@@ -197,6 +197,13 @@ func Test_Examples(t *testing.T) {
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/fargate"),
 			StackName: addRandomSuffix("fargate"),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:      "step2",
+					Additive: true,
+					ExpectNoChanges: true,
+				},
+			},
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/ec2"),
@@ -222,6 +229,13 @@ func Test_Examples(t *testing.T) {
 				"--diff",
 			},
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:      "step2",
+					Additive: true,
+					ExpectNoChanges: true,
+				},
+			},
 		}),
 
 		// {
@@ -285,7 +299,7 @@ func getLogs(t *testing.T, region string, stackInfo integration.RuntimeValidatio
 
 	var states []*resource.State
 	for _, res := range stackInfo.Deployment.Resources {
-		state, err := stack.DeserializeResource(res)
+		state, err := stack.DeserializeResource(res, config.NewPanicCrypter())
 		if !assert.NoError(t, err) {
 			return nil
 		}

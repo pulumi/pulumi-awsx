@@ -8,7 +8,7 @@ To start with, here's a simple example of how one can create a Fargate service:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const listener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { port: 80 });
+const listener = new awsx.lb.NetworkListener("nginx", { port: 80 });
 const nginx = new awsx.ecs.FargateService("nginx", {
     taskDefinitionArgs: {
         containers: {
@@ -186,7 +186,7 @@ A Task Definition is built from a collection of [Container Definitions](https://
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const listener = new awsx.elasticloadbalancingv2.NetworkListener("listener", { port: 80 });
+const listener = new awsx.lb.NetworkListener("listener", { port: 80 });
 const task = new awsx.ecs.FargateTaskDefinition("task", {
     containers: {
         nginx: {
@@ -234,8 +234,8 @@ Finally, Pulumi offers a way to create a Container from a callback function.  Th
 
 ```ts
 const listener =
-    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { port: 8080 })
-                                   .createListener("custom", { port: 80 });
+    new awsx.lb.NetworkTargetGroup("custom", { port: 8080 })
+               .createListener("custom", { port: 80 });
 
 const service = new awsx.ecs.EC2Service("custom", {
     cluster,
