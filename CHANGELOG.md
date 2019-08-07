@@ -3,6 +3,10 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.18.9 (2019-08-06)
+
+* Updated `@pulumi/awsx` to use the latest versions of `@pulumi/pulumi` and `@pulumi/aws`.
+
 ## 0.18.8 (2019-07-29)
 
 * ecs.TaskDefinition now accepts explicit `null` value for `.logGroup`, `.taskRole` and
