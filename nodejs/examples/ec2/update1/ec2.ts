@@ -33,7 +33,7 @@ const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
         minSize: 10,
     },
     launchConfigurationArgs: {
-        instanceType: "t2.medium",
+        instanceType: "m5.large",
         associatePublicIpAddress: true,
     },
 });

@@ -18,7 +18,7 @@ import { Output } from "@pulumi/pulumi";
 
 const prefix = "infratest";
 const numAvailabilityZones = 2;
-const instanceType = "t2.small";
+const instanceType = "m5.large";
 
 let network = new awsx.Network(`${prefix}-net`, {
     numberOfAvailabilityZones: numAvailabilityZones, // Create subnets in many AZs
