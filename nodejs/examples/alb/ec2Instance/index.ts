@@ -22,8 +22,16 @@ const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>
 // Create a security group to let traffic flow.
 const sg = new awsx.ec2.SecurityGroup("web-sg", {
     vpc: awsx.ec2.Vpc.getDefault(providerOpts),
-    egress: [{ protocol: "-1", fromPort: 0, toPort: 0, cidrBlocks: [ "0.0.0.0/0" ] }],
 }, providerOpts);
+
+const ipv4egress = sg.createEgressRule("ipv4-egress", {
+    ports: new awsx.ec2.AllTraffic(),
+    location: new awsx.ec2.AnyIPv4Location(),
+});
+const ipv6egress = sg.createEgressRule("ipv6-egress", {
+    ports: new awsx.ec2.AllTraffic(),
+    location: new awsx.ec2.AnyIPv6Location(),
+});
 
 // Creates an ALB associated with the default VPC for this region and listen on port 80.
 const alb = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("web-traffic",
@@ -52,7 +60,7 @@ nohup python -m SimpleHTTPServer 80 &`,
     }, providerOpts);
     publicIps.push(vm.publicIp);
 
-    alb.attachTarget("target-" + i, vm);
+    alb.attachTarget("target-" + i, <any>vm);
 }
 
 // Export the resulting URL so that it's easy to access.
