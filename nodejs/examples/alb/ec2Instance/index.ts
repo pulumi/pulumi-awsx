@@ -60,7 +60,7 @@ nohup python -m SimpleHTTPServer 80 &`,
     }, providerOpts);
     publicIps.push(vm.publicIp);
 
-    alb.attachTarget("target-" + i, <any>vm);
+    alb.attachTarget("target-" + i, vm);
 }
 
 // Export the resulting URL so that it's easy to access.
