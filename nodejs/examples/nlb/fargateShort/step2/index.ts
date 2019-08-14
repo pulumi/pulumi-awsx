@@ -22,7 +22,7 @@ const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>
 const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
 const cluster = new awsx.ecs.Cluster("testing", { vpc }, providerOpts);
 
-// A simple NGINX service, scaled out over two containers.
+// Changed from step1 from using the elasticloadbalancingv2 module to the lb module.
 const nginxListener = new awsx.lb.NetworkListener("nginx", { port: 80 }, providerOpts);
 const nginx = new awsx.ecs.FargateService("nginx", {
     cluster,
