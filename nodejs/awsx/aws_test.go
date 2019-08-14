@@ -71,15 +71,9 @@ func Test_Examples(t *testing.T) {
 			Quick:       true,
 			SkipRefresh: true,
 		},
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/dashboards"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/ecr"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/metrics"),
-		}),
+		testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/dashboards")}),
+		testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/ecr")}),
+		testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/metrics")}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
@@ -88,6 +82,13 @@ func Test_Examples(t *testing.T) {
 			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
 			StackName:              addRandomSuffix("fargate"),
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
+			},
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/api"),
@@ -199,8 +200,8 @@ func Test_Examples(t *testing.T) {
 			StackName: addRandomSuffix("fargate"),
 			EditDirs: []integration.EditDir{
 				{
-					Dir:      "step2",
-					Additive: true,
+					Dir:             "step2",
+					Additive:        true,
 					ExpectNoChanges: true,
 				},
 			},
@@ -229,13 +230,6 @@ func Test_Examples(t *testing.T) {
 				"--diff",
 			},
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
-			EditDirs: []integration.EditDir{
-				{
-					Dir:      "step2",
-					Additive: true,
-					ExpectNoChanges: true,
-				},
-			},
 		}),
 
 		// {
