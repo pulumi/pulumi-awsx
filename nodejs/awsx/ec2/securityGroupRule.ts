@@ -59,7 +59,9 @@ export class AnyIPv4Location implements SecurityGroupRuleLocation {
 }
 
 export class AnyIPv6Location implements SecurityGroupRuleLocation {
-    public readonly ipv6CidrBlocks = ["::0/0"];
+    // From https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
+    // "::/0" - Allow all outbound IPv6 traffic.
+    public readonly ipv6CidrBlocks = ["::/0"];
 }
 
 export class TcpPorts implements SecurityGroupRulePorts {
