@@ -291,6 +291,33 @@ export class Vpc extends pulumi.ComponentResource {
 
         return vpc;
     }
+
+    /**
+     * Returns the necessary information about this Vpc to allow easy recreation of it in another
+     * Pulumi stack.  To use, just export like so in one stack:
+     *
+     * ```ts
+     * export const vpcIdArgs = myVpc.getVpcIdArgs();
+     * ```
+     *
+     * Then, from another stack call:
+     *
+     * ```ts
+     * const stackReference = new pulumi.StackReference(...);
+     * const vpcIdArgs: awsx.ec2.ExistingVpcIdArgs = stackReference.getOutputSync("vpcIdArgs");
+     * const vpc = awsx.ec2.Vpc.fromExistingIds(vpcIdArgs);
+     * ```
+     */
+    public getVpcIdArgs(): ExistingVpcIdArgs {
+        return {
+            vpcId: this.vpc.id,
+            publicSubnetIds: this.publicSubnetIds,
+            privateSubnetIds: this.privateSubnetIds,
+            isolatedSubnetIds: this.isolatedSubnetIds,
+            natGatewayIds: this.natGateways.map(ng => ng.natGateway.id),
+            internetGatewayId: this.internetGateway ? this.internetGateway.internetGateway.id : undefined,
+        };
+    }
 }
 
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
