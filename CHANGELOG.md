@@ -3,6 +3,10 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.18.10 (2019-08-21)
+
+* Updated `@pulumi/awsx` to use the latest version of `@pulumi/docker`.
+
 ## 0.18.9 (2019-08-06)
 
 * Updated `@pulumi/awsx` to use the latest versions of `@pulumi/pulumi` and `@pulumi/aws`.
