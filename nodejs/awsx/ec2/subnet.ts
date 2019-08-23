@@ -59,7 +59,7 @@ export class Subnet extends pulumi.ComponentResource {
                 vpcId: vpc.id,
                 ...args,
                 assignIpv6AddressOnCreation,
-            }, { parent: this });
+            }, { ...opts, parent: this });
 
             this.routeTable = new aws.ec2.RouteTable(name, {
                 vpcId: vpc.id,
