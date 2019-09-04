@@ -85,7 +85,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
             vpc: args.vpc,
             name: args.name,
         }, opts);
-        const protocol = utils.ifUndefined(args.protocol, "TCP");
+        const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
         super("awsx:lb:NetworkTargetGroup", name, loadBalancer, {
@@ -139,7 +139,7 @@ export class NetworkListener
             name: args.name,
         }, opts);
         const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
-        const protocol = utils.ifUndefined(args.protocol, "TCP");
+        const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }] });
         super("awsx:lb:NetworkListener", name, defaultListener, {
