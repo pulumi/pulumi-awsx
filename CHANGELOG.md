@@ -5,6 +5,8 @@ CHANGELOG
 
 * Allow passing `ignoreChanges` into `Subnet`s created as part of an `awsx.ec2.Vpc`.
 
+* Updated `@pulumi/awsx` to use the latest versions of `@pulumi/pulumi` and `@pulumi/aws`.
+
 ## 0.18.10 (2019-08-21)
 
 * Updated `@pulumi/awsx` to use the latest version of `@pulumi/docker`.
