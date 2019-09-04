@@ -79,6 +79,17 @@ func Test_Examples(t *testing.T) {
 			StackName: addRandomSuffix("vpc"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/vpcIgnoreSubnetChanges"),
+			StackName: addRandomSuffix("vpcIgnoreSubnetChanges"),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
+			},
+		}),
+		testBase.With(integration.ProgramTestOptions{
 			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
 			StackName:              addRandomSuffix("fargate"),
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
