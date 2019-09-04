@@ -117,7 +117,7 @@ export class Vpc extends pulumi.ComponentResource {
                 availabilityZone,
                 availabilityZoneId,
                 tags: utils.mergeTags({ type: desc.type, Name: desc.subnetName }, desc.args.tags),
-            }, { aliases: [{ parent: opts.parent }], parent: this });
+            }, { aliases: [{ parent: opts.parent }], ignoreChanges: desc.ignoreChanges, parent: this });
 
             this.addSubnet(desc.type, subnet);
         }
@@ -412,6 +412,11 @@ export interface VpcSubnetArgs {
     mapPublicIpOnLaunch?: pulumi.Input<boolean>;
 
     tags?: pulumi.Input<aws.Tags>;
+
+    /**
+     * Ignore changes to any of the specified properties of the Subnet.
+     */
+    ignoreChanges?: string[];
 }
 
 /**
