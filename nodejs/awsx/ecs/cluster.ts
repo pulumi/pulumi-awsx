@@ -179,8 +179,10 @@ export interface ClusterArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * An existing Cluster (or Cluster-Id) to use for this awsx Cluster.  If not provided, a default
-     * one will be created.
+     * An existing aws.ecs.Cluster (or the name of an existing aws.ecs.Cluster) to use for this
+     * awsx.ecs.Cluster.  If not provided, a default one will be created.
+     *
+     * Note: if passing a string, it must be the *name* of an existing Cluster, not the *id* of one.
      */
     cluster?: aws.ecs.Cluster | pulumi.Input<string>;
 
