@@ -12,22 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import * as awsx from "@pulumi/awsx";
 
-import { Config } from "@pulumi/pulumi";
+import * as ec2 from "./ec2";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
-
-console.log("EC2: Original");
-
-const vpc = new awsx.ec2.Vpc("testing-1", {}, providerOpts);
-const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
-const topic = new aws.sns.Topic("top", undefined, providerOpts);
-export const clusterId = cluster1.id;
-export const boo = topic.id;
-export const vpcInfo = vpc.getVpcIdArgs();
-
-const vpc2 = awsx.ec2.Vpc.fromExistingIds("vpc2", vpcInfo, providerOpts);
+export let clusterId = ec2.clusterId;
