@@ -25,7 +25,4 @@ console.log("EC2: Original");
 
 const vpc = new awsx.ec2.Vpc("testing-1", {}, providerOpts);
 const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
-const topic = new aws.sns.Topic("top", undefined, providerOpts);
-// export const clusterId = cluster1.id;
-// export const boo = topic.id;
-// export const vpcInfo = vpc.getVpcIdArgs();
+export const clusterId = cluster1.id;
