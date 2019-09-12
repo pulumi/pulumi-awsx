@@ -31,7 +31,7 @@ publish() {
     # If the package doesn't have a pre-release tag, use the tag of latest instead of
     # dev. NPM uses this tag as the default version to add, so we want it to mean
     # the newest released version.
-    if [[ "${PGK_VERSION}" != *-* ]]; then
+    if [[ "${PKG_VERSION}" != *-* ]]; then
         NPM_TAG="latest"
     fi
 
