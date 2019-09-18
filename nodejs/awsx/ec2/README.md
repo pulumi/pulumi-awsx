@@ -67,6 +67,7 @@ const vpc = new awsx.ec2.Vpc("custom", {
    ...
    subnets: [{ type: "public" }, { type: "private" }],
 });
+```
 
 To specify your own subnet configuration you can do the following:
 
