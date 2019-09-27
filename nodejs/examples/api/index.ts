@@ -253,18 +253,3 @@ const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-api", {
 export const cognitoUrl = apiWithCognitoAuthorizer.url;
 export const cognitoPoolId = cognitoUserPool.id;
 export const cognitoClientId = cognitoClient.id;
-
-
-const routes = elasticBeanstalkEnvironment.loadBalancers.apply(lbs => {
-    const dnsNames = lbs.map(arn => aws.lb.getLoadBalancer({ arn }).dnsName);
-    return dnsNames.map(dnsName => <awsx.apigateway.IntegrationRoute>{
-        path: "/greeting",
-        method: "GET",
-        target: {
-            type: "http_proxy",
-            uri: `http://${dnsName}`,
-        }
-    });
-});
-
-const api = new awsx.apigateway.API("yourname", { routes });
