@@ -905,7 +905,7 @@ function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperat
 function addStaticRouteToSwaggerSpec(
     api: API, name: string, swagger: SwaggerSpec, route: StaticRoute,
     bucket: aws.s3.Bucket,
-    apiAuthorizers: Record<string, Authorizer>): void {
+    apiAuthorizers: Record<string, Authorizer>) {
 
     checkRoute(api, route, "localPath");
 
