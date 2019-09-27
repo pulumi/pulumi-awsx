@@ -9,6 +9,8 @@ CHANGELOG
 
 * Updated `@pulumi/awsx` to use the latest versions of `@pulumi/pulumi` and `@pulumi/aws`.
 
+* Allow passing additional parameters from `aws.apigateway.RestAPI` to `awsx.apigateway.API`.
+
 ## 0.18.10 (2019-08-21)
 
 * Updated `@pulumi/awsx` to use the latest version of `@pulumi/docker`.
