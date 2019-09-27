@@ -57,6 +57,11 @@ export type Response = awslambda.APIGatewayProxyResult;
  */
 export type Route = EventHandlerRoute | StaticRoute | IntegrationRoute | RawDataRoute;
 
+/**
+ * Subset of `Route` types that can be passed in in `Output` form to the API.  These Route types
+ * will not themselves cause other Resources to be created.
+ */
+export type AdditionalRoute = IntegrationRoute | RawDataRoute;
 
 export interface BaseRoute {
     /**
@@ -283,18 +288,26 @@ export interface Endpoint {
 
 export interface APIArgs {
     /**
-     * Routes to use to initialize the APIGateway.
+     * Routes to use to initialize the APIGateway.  These will be used to create the Swagger
+     * specification for the API.
      *
-     * Note: `routes` is allowed to be an `Output<Route[]>`, not just an explicit `Route[]`.
-     * However, there are restrictions if this is passed in as an `Output`. Specifically, none of
-     * the routes passed in are allowed to cause specific resources to be created just for them.
-     *
-     * Because of this, the only routes supported when passing in an `Output<Route[]>` are currently
-     * `IntegrationRoute`s and `RawDataRoute`s.
-     *
-     * Either [swaggerString] or [routes] must be specified.
+     * Either [swaggerString] or [routes] or [additionalRoutes] must be specified.  [routes] can be
+     * provided along with [additionalRoutes].
      */
-    routes?: pulumi.Input<Route[]>;
+    routes?: Route[];
+
+    /**
+     * Routes to use to initialize the APIGateway.  These will be used to create the Swagger
+     * specification for the API.
+     *
+     * Unlike `routes`, these can be provided in `Input` form (i.e. `pulumi.Output` are allowed).
+     * However, because they can be `Output`s, they are restricted to a subset of `Route` types
+     * that will not cause resources to be created.
+     *
+     * Either [swaggerString] or [routes] or [additionalRoutes] must be specified.  [routes] can be
+     * provided along with [additionalRoutes].
+     */
+    additionalRoutes?: pulumi.Input<pulumi.Input<AdditionalRoute>[]>;
 
     /**
      * A Swagger specification already in string form to use to initialize the APIGateway.  Note
@@ -368,8 +381,10 @@ export class API extends pulumi.ComponentResource {
                 return <SwaggerSpec>spec;
             });
         }
-        else if (args.routes) {
-            const routesResult = processRoutes(this, name, args);
+        else if (args.routes || args.additionalRoutes) {
+            const routesResult = createSwaggerSpec(
+                this, name, args.routes || [], pulumi.output(args.additionalRoutes || []),
+                args.gatewayResponses, args.requestValidator, args.apiKeySource, args.staticRoutesBucket);
             swaggerSpec = routesResult.swagger;
             swaggerLambdas = routesResult.swaggerLambdas;
             this.staticRoutesBucket = routesResult.staticRoutesBucket;
@@ -479,45 +494,6 @@ export class API extends pulumi.ComponentResource {
     }
 }
 
-interface RoutesResult {
-    swagger: pulumi.Output<SwaggerSpec>;
-    swaggerLambdas: SwaggerLambdas;
-    staticRoutesBucket: aws.s3.Bucket | undefined;
-}
-
-function processRoutes(api: API, name: string, args: APIArgs): RoutesResult {
-    if (!args.routes) {
-        throw new Error("Should not have been called.");
-    }
-
-    // If we have an array of routes up front, then it's ok to create resources that depend on it.
-    if (Array.isArray(args.routes)) {
-        const { swagger, swaggerLambdas, staticRoutesBucket } = processRoutesWorker(args.routes, /*allowResourceCreation:*/ true);
-        return {
-            swagger: <pulumi.Output<SwaggerSpec>>pulumi.output(swagger),
-            swaggerLambdas,
-            staticRoutesBucket,
-        };
-    }
-
-    // We can't examine the routes yet (they're an input).  As such, we can't have sub-resource
-    // creation contingent on the contents of that output.
-    const result = pulumi.output(args.routes).apply(
-        rs => processRoutesWorker(rs, /*allowResourceCreation:*/ false));
-
-    return {
-        swagger: result.apply(r => r.swagger),
-        swaggerLambdas: new Map(),
-        staticRoutesBucket: undefined,
-    };
-
-    function processRoutesWorker(routes: Route[], allowResourceCreation: boolean): SwaggerSpecResult {
-        return createSwaggerSpec(
-            api, name, routes, allowResourceCreation,
-            args.gatewayResponses, args.requestValidator, args.apiKeySource, args.staticRoutesBucket);
-    }
-}
-
 function createLambdaPermissions(api: API, name: string, swaggerLambdas: SwaggerLambdas) {
     const permissions: aws.lambda.Permission[] = [];
     for (const [path, lambdas] of swaggerLambdas) {
@@ -542,21 +518,15 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
 
 type SwaggerLambdas = Map<string, Map<Method, aws.lambda.Function>>;
 
-interface SwaggerSpecResult {
-    swagger: SwaggerSpec;
-    swaggerLambdas: SwaggerLambdas;
-    staticRoutesBucket: aws.s3.Bucket | undefined;
-}
-
 function createSwaggerSpec(
     api: API,
     name: string,
     routes: Route[],
-    allowResourceCreation: boolean,
+    additionalRoutes1: pulumi.Input<pulumi.Input<AdditionalRoute>[]>,
     gatewayResponses: Record<string, SwaggerGatewayResponse> | undefined,
     requestValidator: RequestValidator | undefined,
     apikeySource: APIKeySource | undefined,
-    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined): SwaggerSpecResult {
+    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined) {
 
     // Default API Key source to "HEADER"
     apikeySource = apikeySource || "HEADER";
@@ -601,6 +571,9 @@ function createSwaggerSpec(
 
     let staticRoutesBucket: aws.s3.Bucket | undefined;
 
+    const additionalRoutes2: AdditionalRoute[] = [];
+
+    // First, process the routes that create contingent resources.
     for (const route of routes) {
         checkRoute(api, route, "path");
 
@@ -611,19 +584,9 @@ function createSwaggerSpec(
         }
 
         if (isEventHandler(route)) {
-            if (!allowResourceCreation) {
-                throw new pulumi.ResourceError(
-                    "[EventHandlerRoute]s are only supported when passed in a non-Output routes array to the API.", api);
-            }
-
             addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
         }
         else if (isStaticRoute(route)) {
-            if (!allowResourceCreation) {
-                throw new pulumi.ResourceError(
-                    "[StaticRoute]s are only supported when passed in a non-Output routes array to the API.", api);
-            }
-
             if (!staticRoutesBucket) {
                 staticRoutesBucket = pulumi.Resource.isInstance(bucketOrArgs)
                     ? bucketOrArgs
@@ -632,11 +595,10 @@ function createSwaggerSpec(
 
             addStaticRouteToSwaggerSpec(api, name, swagger, route, staticRoutesBucket, apiAuthorizers);
         }
-        else if (isIntegrationRoute(route)) {
-            addIntegrationRouteToSwaggerSpec(api, name, swagger, route, apiAuthorizers);
-        }
-        else if (isRawDataRoute(route)) {
-            addRawDataRouteToSwaggerSpec(api, name, swagger, route);
+        else if (isIntegrationRoute(route) || isRawDataRoute(route)) {
+            // these routes don't produce resources.  Process them at the end with any specific
+            // 'additionalRoutes' passed in by the caller.
+            additionalRoutes2.push(route);
         }
         else {
             const exhaustiveMatch: never = route;
@@ -644,7 +606,20 @@ function createSwaggerSpec(
         }
     }
 
-    return { swagger, swaggerLambdas, staticRoutesBucket };
+    const swaggerOutput = pulumi.all([additionalRoutes1, additionalRoutes2]).apply(
+        ([routes1, routes2]) => {
+            for (const route of [...routes1, ...routes2]) {
+                if (isIntegrationRoute(route)) {
+                    addIntegrationRouteToSwaggerSpec(api, name, swagger, route, apiAuthorizers);
+                } else {
+                    addRawDataRouteToSwaggerSpec(api, name, swagger, route);
+                }
+            }
+
+            return swagger;
+        });
+
+    return { swagger: swaggerOutput, swaggerLambdas, staticRoutesBucket };
 }
 
 function generateGatewayResponses(responses: Record<string, SwaggerGatewayResponse> | undefined): Record<string, SwaggerGatewayResponse> {
