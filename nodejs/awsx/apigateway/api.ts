@@ -369,7 +369,7 @@ export class API extends pulumi.ComponentResource {
             });
         }
         else if (args.routes) {
-            var routesResult = processRoutes(this, name, args);
+            const routesResult = processRoutes(this, name, args);
             swaggerSpec = routesResult.swagger;
             swaggerLambdas = routesResult.swaggerLambdas;
             this.staticRoutesBucket = routesResult.staticRoutesBucket;
