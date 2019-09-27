@@ -513,8 +513,8 @@ function processRoutes(api: API, name: string, args: APIArgs): RoutesResult {
 
     function processRoutesWorker(routes: Route[], allowResourceCreation: boolean): SwaggerSpecResult {
         return createSwaggerSpec(
-            api, name, routes, allowResourceCreation, args.staticRoutesBucket,
-            args.gatewayResponses, args.requestValidator, args.apiKeySource);
+            api, name, routes, allowResourceCreation,
+            args.gatewayResponses, args.requestValidator, args.apiKeySource, args.staticRoutesBucket);
     }
 }
 
