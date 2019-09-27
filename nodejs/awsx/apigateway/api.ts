@@ -285,6 +285,13 @@ export interface APIArgs {
     /**
      * Routes to use to initialize the APIGateway.
      *
+     * Note: `routes` is allowed to be an `Output<Route[]>`, not just an explicit `Route[]`.
+     * However, there are restrictions if this is passed in as an `Output`. Specifically, none of
+     * the routes passed in are allowed to cause specific resources to be created just for them.
+     *
+     * Because of this, the only routes supported when passing in an `Output<Route[]>` are currently
+     * `IntegrationRoute`s and `RawDataRoute`s.
+     *
      * Either [swaggerString] or [routes] must be specified.
      */
     routes?: pulumi.Input<Route[]>;
@@ -604,12 +611,17 @@ function createSwaggerSpec(
         }
 
         if (isEventHandler(route)) {
-            addEventHandlerRouteToSwaggerSpec(api, name, allowResourceCreation, swagger, swaggerLambdas, route, apiAuthorizers);
+            if (!allowResourceCreation) {
+                throw new pulumi.ResourceError(
+                    "[EventHandlerRoute]s are only supported when passed in a non-Output routes array to the API.", api);
+            }
+
+            addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
         }
         else if (isStaticRoute(route)) {
             if (!allowResourceCreation) {
                 throw new pulumi.ResourceError(
-                    "Static routes are only supported when passed in a non-Output routes array to the API.", api);
+                    "[StaticRoute]s are only supported when passed in a non-Output routes array to the API.", api);
             }
 
             if (!staticRoutesBucket) {
@@ -671,16 +683,11 @@ function checkRoute<TRoute>(api: API, route: TRoute, propName: keyof TRoute) {
 }
 
 function addEventHandlerRouteToSwaggerSpec(
-    api: API, name: string, allowResourceCreation: boolean,
+    api: API, name: string,
     swagger: SwaggerSpec,
     swaggerLambdas: SwaggerLambdas,
     route: EventHandlerRoute,
     apiAuthorizers: Record<string, Authorizer>) {
-
-    if (!allowResourceCreation && !pulumi.Resource.isInstance(route.eventHandler)) {
-        throw new pulumi.ResourceError(
-            "Event handler routes must provide an explicit [aws.lambda.Function] when passed in an [Output] routes array.", api);
-    }
 
     checkRoute(api, route, "eventHandler");
     checkRoute(api, route, "method");
