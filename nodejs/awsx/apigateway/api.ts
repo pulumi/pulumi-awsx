@@ -382,12 +382,12 @@ export class API extends pulumi.ComponentResource {
             });
         }
         else if (args.routes || args.additionalRoutes) {
-            const routesResult = createSwaggerSpec(
+            const result = createSwaggerSpec(
                 this, name, args.routes || [], pulumi.output(args.additionalRoutes || []),
                 args.gatewayResponses, args.requestValidator, args.apiKeySource, args.staticRoutesBucket);
-            swaggerSpec = routesResult.swagger;
-            swaggerLambdas = routesResult.swaggerLambdas;
-            this.staticRoutesBucket = routesResult.staticRoutesBucket;
+            swaggerSpec = result.swagger;
+            swaggerLambdas = result.swaggerLambdas;
+            this.staticRoutesBucket = result.staticRoutesBucket;
         }
         else {
             throw new pulumi.ResourceError(
