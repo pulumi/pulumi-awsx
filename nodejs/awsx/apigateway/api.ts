@@ -326,6 +326,27 @@ export interface APIArgs {
      * CORS for Lambda Authorizers.
      */
     gatewayResponses?: Record<string, SwaggerGatewayResponse>;
+
+    /**
+     * JSON formatted policy document that controls access to the API Gateway.
+     */
+    policy?:  pulumi.Input<string>;
+
+    /**
+     * Minimum response size to compress for the REST API. Integer between -1 and 10485760 (10MB).
+     * Setting a value greater than -1 will enable compression, -1 disables compression (default).
+     */
+    minimumCompressionSize?: pulumi.Input<number>;
+
+    /**
+     * Nested argument defining API endpoint configuration including endpoint type. Defined below.
+     */
+    endpointConfiguration?: pulumi.Input<aws.types.input.apigateway.RestApiEndpointConfiguration>;
+
+    /**
+     * The description of the REST API
+     */
+    description?: pulumi.Input<string>;
 }
 
 export class API extends pulumi.ComponentResource {
@@ -382,6 +403,10 @@ export class API extends pulumi.ComponentResource {
             name: swaggerSpec.apply(s => s.info.title),
             binaryMediaTypes: ["*/*"],
             body: swaggerString,
+            policy: args.policy,
+            minimumCompressionSize: args.minimumCompressionSize,
+            endpointConfiguration: args.endpointConfiguration,
+            description: args.description,
         }, { parent: this });
 
         // Create a deployment of the Rest API.
