@@ -505,21 +505,9 @@ function processRoutes(api: API, name: string, args: APIArgs): RoutesResult {
     };
 
     function processRoutesWorker(routes: Route[], allowResourceCreation: boolean): SwaggerSpecResult {
-        const result = createSwaggerSpec(
+        return createSwaggerSpec(
             api, name, routes, allowResourceCreation, args.staticRoutesBucket,
             args.gatewayResponses, args.requestValidator, args.apiKeySource);
-
-        if (!allowResourceCreation) {
-            if (result.swaggerLambdas.size > 0) {
-                throw new Error("Created lambdas when that should not have been allowed.")
-            }
-
-            if (result.staticRoutesBucket) {
-                throw new Error("Created bucket when that should not have been allowed.")
-            }
-        }
-
-        return result
     }
 }
 
@@ -616,11 +604,7 @@ function createSwaggerSpec(
         }
 
         if (isEventHandler(route)) {
-            if (!allowResourceCreation) {
-                throw new pulumi.ResourceError(
-                    "Event handler routes are only supported when passed in a non-Output routes array to the API.", api);
-            }
-            addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
+            addEventHandlerRouteToSwaggerSpec(api, name, allowResourceCreation, swagger, swaggerLambdas, route, apiAuthorizers);
         }
         else if (isStaticRoute(route)) {
             if (!allowResourceCreation) {
@@ -687,11 +671,16 @@ function checkRoute<TRoute>(api: API, route: TRoute, propName: keyof TRoute) {
 }
 
 function addEventHandlerRouteToSwaggerSpec(
-    api: API, name: string,
+    api: API, name: string, allowResourceCreation: boolean,
     swagger: SwaggerSpec,
     swaggerLambdas: SwaggerLambdas,
     route: EventHandlerRoute,
     apiAuthorizers: Record<string, Authorizer>) {
+
+    if (!allowResourceCreation && !pulumi.Resource.isInstance(route.eventHandler)) {
+        throw new pulumi.ResourceError(
+            "Event handler routes must provide an explicit [aws.lambda.Function] when passed in an [Output] routes array.", api);
+    }
 
     checkRoute(api, route, "eventHandler");
     checkRoute(api, route, "method");
