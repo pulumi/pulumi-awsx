@@ -287,7 +287,7 @@ export interface APIArgs {
      *
      * Either [swaggerString] or [routes] must be specified.
      */
-    routes?: Route[];
+    routes?: pulumi.Input<Route[]>;
 
     /**
      * A Swagger specification already in string form to use to initialize the APIGateway.  Note
@@ -347,7 +347,7 @@ export class API extends pulumi.ComponentResource {
         super("aws:apigateway:x:API", name, {}, opts);
 
         let swaggerString: pulumi.Output<string>;
-        let swaggerSpec: pulumi.Output<any>;
+        let swaggerSpec: pulumi.Output<SwaggerSpec>;
         let swaggerLambdas: SwaggerLambdas | undefined;
         if (args.swaggerString) {
             swaggerSpec = pulumi.output(args.swaggerString).apply(s => {
@@ -358,16 +358,14 @@ export class API extends pulumi.ComponentResource {
                 if (spec.info.title === undefined) {
                     spec.info.title = name;
                 }
-                return spec;
+                return <SwaggerSpec>spec;
             });
         }
         else if (args.routes) {
-            const result = createSwaggerSpec(
-                this, name, args.routes, args.gatewayResponses, args.requestValidator,
-                args.apiKeySource, args.staticRoutesBucket);
-            swaggerSpec = pulumi.output(result.swagger);
-            swaggerLambdas = result.swaggerLambdas;
-            this.staticRoutesBucket = result.staticRoutesBucket;
+            var routesResult = processRoutes(this, name, args);
+            swaggerSpec = routesResult.swagger;
+            swaggerLambdas = routesResult.swaggerLambdas;
+            this.staticRoutesBucket = routesResult.staticRoutesBucket;
         }
         else {
             throw new pulumi.ResourceError(
@@ -474,6 +472,57 @@ export class API extends pulumi.ComponentResource {
     }
 }
 
+interface RoutesResult {
+    swagger: pulumi.Output<SwaggerSpec>;
+    swaggerLambdas: SwaggerLambdas;
+    staticRoutesBucket: aws.s3.Bucket | undefined;
+}
+
+function processRoutes(api: API, name: string, args: APIArgs): RoutesResult {
+    if (!args.routes) {
+        throw new Error("Should not have been called.");
+    }
+
+    // If we have an array of routes up front, then it's ok to create resources that depend on it.
+    if (Array.isArray(args.routes)) {
+        const { swagger, swaggerLambdas, staticRoutesBucket } = processRoutesWorker(args.routes, /*allowResourceCreation:*/ true);
+        return {
+            swagger: <pulumi.Output<SwaggerSpec>>pulumi.output(swagger),
+            swaggerLambdas,
+            staticRoutesBucket,
+        };
+    }
+
+    // We can't examine the routes yet (they're an input).  And we can't have sub-resource creation
+    // continent on the contents of that output.
+    const result = pulumi.output(args.routes).apply(
+        rs => processRoutesWorker(rs, /*allowResourceCreation:*/ false));
+
+    return {
+        swagger: result.apply(r => r.swagger),
+        swaggerLambdas: new Map(),
+        staticRoutesBucket: undefined,
+    };
+
+    function processRoutesWorker(routes: Route[], allowResourceCreation: boolean): SwaggerSpecResult {
+        const result = createSwaggerSpec(
+            api, name, routes, allowResourceCreation, args.staticRoutesBucket,
+            args.gatewayResponses, args.requestValidator, args.apiKeySource);
+
+        if (!allowResourceCreation) {
+            if (result.swaggerLambdas.size > 0) {
+                throw new Error("Created lambdas when that should not have been allowed.")
+            }
+
+            if (result.staticRoutesBucket) {
+                throw new Error("Created bucket when that should not have been allowed.")
+            }
+        }
+
+        return result
+    }
+}
+
 function createLambdaPermissions(api: API, name: string, swaggerLambdas: SwaggerLambdas) {
     const permissions: aws.lambda.Permission[] = [];
     for (const [path, lambdas] of swaggerLambdas) {
@@ -498,14 +547,21 @@ function createLambdaPermissions(api: API, name: string, swaggerLambdas: Swagger
 
 type SwaggerLambdas = Map<string, Map<Method, aws.lambda.Function>>;
 
+interface SwaggerSpecResult {
+    swagger: SwaggerSpec;
+    swaggerLambdas: SwaggerLambdas;
+    staticRoutesBucket: aws.s3.Bucket | undefined;
+}
+
 function createSwaggerSpec(
     api: API,
     name: string,
     routes: Route[],
+    allowResourceCreation: boolean,
+    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined,
     gatewayResponses: Record<string, SwaggerGatewayResponse> | undefined,
     requestValidator: RequestValidator | undefined,
-    apikeySource: APIKeySource | undefined,
-    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined) {
+    apikeySource: APIKeySource | undefined): SwaggerSpecResult {
 
     // Default API Key source to "HEADER"
     apikeySource = apikeySource || "HEADER";
@@ -548,6 +604,8 @@ function createSwaggerSpec(
     // reference the same authorizer.
     const apiAuthorizers: Record<string, Authorizer> = {};
 
+    let staticRoutesBucket: aws.s3.Bucket | undefined;
+
     for (const route of routes) {
         checkRoute(api, route, "path");
 
@@ -558,10 +616,25 @@ function createSwaggerSpec(
         }
 
         if (isEventHandler(route)) {
+            if (!allowResourceCreation) {
+                throw new pulumi.ResourceError(
+                    "Event handler routes are only supported when passed in a non-Output routes array to the API.", api);
+            }
             addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
         }
         else if (isStaticRoute(route)) {
-            bucketOrArgs = addStaticRouteToSwaggerSpec(api, name, swagger, route, bucketOrArgs, apiAuthorizers);
+            if (!allowResourceCreation) {
+                throw new pulumi.ResourceError(
+                    "Static routes are only supported when passed in a non-Output routes array to the API.", api);
+            }
+
+            if (!staticRoutesBucket) {
+                staticRoutesBucket = pulumi.Resource.isInstance(bucketOrArgs)
+                    ? bucketOrArgs
+                    : new aws.s3.Bucket(safeS3BucketName(name), bucketOrArgs, { parent: api });
+            }
+
+            addStaticRouteToSwaggerSpec(api, name, swagger, route, staticRoutesBucket, apiAuthorizers);
         }
         else if (isIntegrationRoute(route)) {
             addIntegrationRouteToSwaggerSpec(api, name, swagger, route, apiAuthorizers);
@@ -575,7 +648,7 @@ function createSwaggerSpec(
         }
     }
 
-    return { swagger, swaggerLambdas, staticRoutesBucket: pulumi.Resource.isInstance(bucketOrArgs) ? bucketOrArgs : undefined };
+    return { swagger, swaggerLambdas, staticRoutesBucket };
 }
 
 function generateGatewayResponses(responses: Record<string, SwaggerGatewayResponse> | undefined): Record<string, SwaggerGatewayResponse> {
@@ -835,17 +908,12 @@ function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperat
 
 function addStaticRouteToSwaggerSpec(
     api: API, name: string, swagger: SwaggerSpec, route: StaticRoute,
-    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined,
-    apiAuthorizers: Record<string, Authorizer>) {
+    bucket: aws.s3.Bucket,
+    apiAuthorizers: Record<string, Authorizer>): void {
 
     checkRoute(api, route, "localPath");
 
     const method = swaggerMethod("GET");
-
-    // Create a bucket to place all the static data under.
-    const bucket = pulumi.Resource.isInstance(bucketOrArgs)
-        ? bucketOrArgs
-        : new aws.s3.Bucket(safeS3BucketName(name), bucketOrArgs, { parent: api });
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
     // that routes from the file path to the arn for the bucket object.
@@ -859,8 +927,6 @@ function addStaticRouteToSwaggerSpec(
     else if (stat.isDirectory()) {
         processDirectory(route);
     }
-
-    return bucket;
 
     function createRole(key: string) {
         // Create a role and attach it so that this route can access the AWS bucket.
@@ -967,10 +1033,10 @@ function addStaticRouteToSwaggerSpec(
         role: aws.iam.Role,
         pathParameter?: string): SwaggerOperation {
 
-        const region = getRegion(bucket!);
+        const region = getRegion(bucket);
 
         const uri = pulumi.interpolate
-            `arn:aws:apigateway:${region}:s3:path/${bucket!.bucket}/${objectKey}${(pathParameter ? `/{${pathParameter}}` : ``)}`;
+            `arn:aws:apigateway:${region}:s3:path/${bucket.bucket}/${objectKey}${(pathParameter ? `/{${pathParameter}}` : ``)}`;
 
         const result: SwaggerOperation = {
             responses: {
