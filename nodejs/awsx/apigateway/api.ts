@@ -553,10 +553,10 @@ function createSwaggerSpec(
     name: string,
     routes: Route[],
     allowResourceCreation: boolean,
-    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined,
     gatewayResponses: Record<string, SwaggerGatewayResponse> | undefined,
     requestValidator: RequestValidator | undefined,
-    apikeySource: APIKeySource | undefined): SwaggerSpecResult {
+    apikeySource: APIKeySource | undefined,
+    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined): SwaggerSpecResult {
 
     // Default API Key source to "HEADER"
     apikeySource = apikeySource || "HEADER";
