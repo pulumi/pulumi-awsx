@@ -500,8 +500,8 @@ function processRoutes(api: API, name: string, args: APIArgs): RoutesResult {
         };
     }
 
-    // We can't examine the routes yet (they're an input).  And we can't have sub-resource creation
-    // continent on the contents of that output.
+    // We can't examine the routes yet (they're an input).  As such, we can't have sub-resource
+    // creation contingent on the contents of that output.
     const result = pulumi.output(args.routes).apply(
         rs => processRoutesWorker(rs, /*allowResourceCreation:*/ false));
 
