@@ -522,7 +522,7 @@ function createSwaggerSpec(
     api: API,
     name: string,
     routes: Route[],
-    additionalRoutes1: pulumi.Input<pulumi.Input<AdditionalRoute>[]>,
+    additionalRoutes: pulumi.Input<pulumi.Input<AdditionalRoute>[]>,
     gatewayResponses: Record<string, SwaggerGatewayResponse> | undefined,
     requestValidator: RequestValidator | undefined,
     apikeySource: APIKeySource | undefined,
@@ -571,8 +571,6 @@ function createSwaggerSpec(
 
     let staticRoutesBucket: aws.s3.Bucket | undefined;
 
-    const additionalRoutes2: AdditionalRoute[] = [];
-
     // First, process the routes that create contingent resources.
     for (const route of routes) {
         checkRoute(api, route, "path");
@@ -596,9 +594,7 @@ function createSwaggerSpec(
             addStaticRouteToSwaggerSpec(api, name, swagger, route, staticRoutesBucket, apiAuthorizers);
         }
         else if (isIntegrationRoute(route) || isRawDataRoute(route)) {
-            // these routes don't produce resources.  Process them at the end with any specific
-            // 'additionalRoutes' passed in by the caller.
-            additionalRoutes2.push(route);
+            addIntegrationOrRawDataRouteToSwaggerSpec(route);
         }
         else {
             const exhaustiveMatch: never = route;
@@ -606,20 +602,24 @@ function createSwaggerSpec(
         }
     }
 
-    const swaggerOutput = pulumi.all([additionalRoutes1, additionalRoutes2]).apply(
-        ([routes1, routes2]) => {
-            for (const route of [...routes1, ...routes2]) {
-                if (isIntegrationRoute(route)) {
-                    addIntegrationRouteToSwaggerSpec(api, name, swagger, route, apiAuthorizers);
-                } else {
-                    addRawDataRouteToSwaggerSpec(api, name, swagger, route);
-                }
+    const swaggerOutput = pulumi.output(additionalRoutes).apply(
+        routes => {
+            for (const route of routes) {
+                addIntegrationOrRawDataRouteToSwaggerSpec(route);
             }
 
             return swagger;
         });
 
     return { swagger: swaggerOutput, swaggerLambdas, staticRoutesBucket };
+
+    function addIntegrationOrRawDataRouteToSwaggerSpec(route: IntegrationRoute | RawDataRoute): void {
+        if (isIntegrationRoute(route)) {
+            addIntegrationRouteToSwaggerSpec(api, name, swagger, route, apiAuthorizers);
+        } else {
+            addRawDataRouteToSwaggerSpec(api, name, swagger, route);
+        }
+    }
 }
 
 function generateGatewayResponses(responses: Record<string, SwaggerGatewayResponse> | undefined): Record<string, SwaggerGatewayResponse> {
