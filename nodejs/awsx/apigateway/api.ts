@@ -635,8 +635,8 @@ function createSwaggerSpec(
         }
     }
 
-    const swaggerText = pulumi.output(additionalRoutes).apply(
-        routes => {
+    const swaggerText = pulumi.all([swagger, additionalRoutes]).apply(
+        ([_, routes]) => {
             for (const route of routes) {
                 addIntegrationOrRawDataRouteToSwaggerSpec(route);
             }
