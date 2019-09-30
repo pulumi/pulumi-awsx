@@ -58,8 +58,42 @@ export type Response = awslambda.APIGatewayProxyResult;
 export type Route = EventHandlerRoute | StaticRoute | IntegrationRoute | RawDataRoute;
 
 /**
- * Subset of `Route` types that can be passed in in `Output` form to the API.  These Route types
- * will not themselves cause other Resources to be created.
+ * Subset of `Route` types that can be passed in as an `Output` to the API.  These Route types will
+ * not themselves cause other Resources to be created.
+ *
+ * Unlike `routes`, these can be provided as an `Output` of an `array` instead of having to just be
+ * an `array`. However, because they can be `Output`s, they are restricted to a subset of `Route`
+ * types that will not cause resources to be created.
+ *
+ * This can be useful, for example, when creating an API that needs to create an indeterminate
+ * number of integration-routes based on the `Output` of some other resource.  For example:
+ *
+ * ```ts
+ * const additionalRoutes = elasticBeanstalkEnvironment.loadBalancers.apply(lbs =>
+ *   lbs.map(arn => <awsx.apigateway.IntegrationRoute>{
+ *     path: "/greeting",
+ *     method: "GET",
+ *     target: {
+ *         type: "http_proxy",
+ *         uri: `http://${aws.lb.getLoadBalancer({ arn }).dnsName}`,
+ *     }
+ *   }));
+ *
+ * const api = new awsx.apigateway.API("apiName", { additionalRoutes });
+ * ```
+ *
+ * In this example computing all of the individual `additionalRoutes` depends on the individual
+ * array values in `elasticBeanstalkEnvironment.loadBalancers` (which is itself an `Output`).  These
+ * could not normally be converted into the reified `Route[]` array since computing a value off of
+ * an `Output` produces yet another `Output`.  `routes` itself cannot be an `Output` because it will
+ * often create additional AWS resources, and creating those resources dependent on some other
+ * resource value would mean not being able to create and present a preview plan because the actual
+ * resources created would depend on previous resources.
+ *
+ * So `additionalRoutes` serves as a way to bridge both approaches.  `Routes` is used when the
+ * values are known up-front (or when it would cause Resources to be created).  `additionalRoutes`
+ * is used when values are not a-priori known, and when they will not create additional Resources
+ * themselves.
  */
 export type AdditionalRoute = IntegrationRoute | RawDataRoute;
 
@@ -299,10 +333,6 @@ export interface APIArgs {
     /**
      * Routes to use to initialize the APIGateway.  These will be used to create the Swagger
      * specification for the API.
-     *
-     * Unlike `routes`, these can be provided in `Input` form (i.e. `pulumi.Output` are allowed).
-     * However, because they can be `Output`s, they are restricted to a subset of `Route` types
-     * that will not cause resources to be created.
      *
      * Either [swaggerString] or [routes] or [additionalRoutes] must be specified.  [routes] can be
      * provided along with [additionalRoutes].
