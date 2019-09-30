@@ -397,10 +397,10 @@ export class API extends pulumi.ComponentResource {
         super("aws:apigateway:x:API", name, {}, opts);
 
         let swaggerString: pulumi.Output<string>;
-        let swaggerSpec: pulumi.Output<pulumi.UnwrappedObject<SwaggerSpec>>;
         let swaggerLambdas: SwaggerLambdas | undefined;
+        let title: pulumi.Output<string>;
         if (args.swaggerString) {
-            swaggerSpec = <any>pulumi.output(args.swaggerString).apply(s => {
+            const swaggerSpec = pulumi.output(args.swaggerString).apply(s => {
                 const spec = JSON.parse(s);
                 if (spec.info === undefined) {
                     spec.info = {};
@@ -408,14 +408,18 @@ export class API extends pulumi.ComponentResource {
                 if (spec.info.title === undefined) {
                     spec.info.title = name;
                 }
-                return spec;
+                return <SwaggerSpec>spec;
             });
+            title = swaggerSpec.info.title;
+            swaggerString = swaggerSpec.apply(s => JSON.stringify(s));
         }
         else if (args.routes || args.additionalRoutes) {
             const result = createSwaggerSpec(
                 this, name, args.routes || [], pulumi.output(args.additionalRoutes || []),
                 args.gatewayResponses, args.requestValidator, args.apiKeySource, args.staticRoutesBucket);
-            swaggerSpec = result.swagger;
+
+            title = pulumi.output(name);
+            swaggerString = result.swagger;
             swaggerLambdas = result.swaggerLambdas;
             this.staticRoutesBucket = result.staticRoutesBucket;
         }
@@ -423,13 +427,12 @@ export class API extends pulumi.ComponentResource {
             throw new pulumi.ResourceError(
                 "API must specify either [swaggerString] or as least one of the [route] options.", opts.parent);
         }
-        swaggerString = swaggerSpec.apply(s => JSON.stringify(s));
 
         const stageName = args.stageName || "stage";
 
         // Create the API Gateway Rest API, using a swagger spec.
         this.restAPI = new aws.apigateway.RestApi(name, {
-            name: swaggerSpec.apply(s => s.info.title),
+            name: title,
             binaryMediaTypes: ["*/*"],
             body: swaggerString,
         }, { parent: this });
@@ -632,16 +635,16 @@ function createSwaggerSpec(
         }
     }
 
-    const swaggerOutput = pulumi.output(additionalRoutes).apply(
+    const swaggerText = pulumi.output(additionalRoutes).apply(
         routes => {
             for (const route of routes) {
                 addIntegrationOrRawDataRouteToSwaggerSpec(route);
             }
 
-            return pulumi.output(swagger);
+            return pulumi.output(swagger).apply(s => JSON.stringify(s));
         });
 
-    return { swagger: swaggerOutput, swaggerLambdas, staticRoutesBucket };
+    return { swagger: swaggerText, swaggerLambdas, staticRoutesBucket };
 
     function addIntegrationOrRawDataRouteToSwaggerSpec(route: IntegrationRoute | RawDataRoute): void {
         if (isIntegrationRoute(route)) {
