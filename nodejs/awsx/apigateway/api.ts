@@ -57,6 +57,45 @@ export type Response = awslambda.APIGatewayProxyResult;
  */
 export type Route = EventHandlerRoute | StaticRoute | IntegrationRoute | RawDataRoute;
 
+/**
+ * Subset of `Route` types that can be passed in as an `Output` to the API.  These Route types will
+ * not themselves cause other Resources to be created.
+ *
+ * Unlike `routes`, these can be provided as an `Output` of an `array` instead of having to just be
+ * an `array`. However, because they can be `Output`s, they are restricted to a subset of `Route`
+ * types that will not cause resources to be created.
+ *
+ * This can be useful, for example, when creating an API that needs to create an indeterminate
+ * number of integration-routes based on the `Output` of some other resource.  For example:
+ *
+ * ```ts
+ * const additionalRoutes = elasticBeanstalkEnvironment.loadBalancers.apply(lbs =>
+ *   lbs.map(arn => <awsx.apigateway.IntegrationRoute>{
+ *     path: "/greeting",
+ *     method: "GET",
+ *     target: {
+ *         type: "http_proxy",
+ *         uri: `http://${aws.lb.getLoadBalancer({ arn }).dnsName}`,
+ *     }
+ *   }));
+ *
+ * const api = new awsx.apigateway.API("apiName", { additionalRoutes });
+ * ```
+ *
+ * In this example computing all of the individual `additionalRoutes` depends on the individual
+ * array values in `elasticBeanstalkEnvironment.loadBalancers` (which is itself an `Output`).  These
+ * could not normally be converted into the reified `Route[]` array since computing a value off of
+ * an `Output` produces yet another `Output`.  `routes` itself cannot be an `Output` because it will
+ * often create additional AWS resources, and creating those resources dependent on some other
+ * resource value would mean not being able to create and present a preview plan because the actual
+ * resources created would depend on previous resources.
+ *
+ * So `additionalRoutes` serves as a way to bridge both approaches.  `Routes` is used when the
+ * values are known up-front (or when it would cause Resources to be created).  `additionalRoutes`
+ * is used when values are not a-priori known, and when they will not create additional Resources
+ * themselves.
+ */
+export type AdditionalRoute = IntegrationRoute | RawDataRoute;
 
 export interface BaseRoute {
     /**
@@ -283,11 +322,22 @@ export interface Endpoint {
 
 export interface APIArgs {
     /**
-     * Routes to use to initialize the APIGateway.
+     * Routes to use to initialize the APIGateway.  These will be used to create the Swagger
+     * specification for the API.
      *
-     * Either [swaggerString] or [routes] must be specified.
+     * Either [swaggerString] or [routes] or [additionalRoutes] must be specified.  [routes] can be
+     * provided along with [additionalRoutes].
      */
     routes?: Route[];
+
+    /**
+     * Routes to use to initialize the APIGateway.  These will be used to create the Swagger
+     * specification for the API.
+     *
+     * Either [swaggerString] or [routes] or [additionalRoutes] must be specified.  [routes] can be
+     * provided along with [additionalRoutes].
+     */
+    additionalRoutes?: pulumi.Input<pulumi.Input<AdditionalRoute>[]>;
 
     /**
      * A Swagger specification already in string form to use to initialize the APIGateway.  Note
@@ -347,10 +397,10 @@ export class API extends pulumi.ComponentResource {
         super("aws:apigateway:x:API", name, {}, opts);
 
         let swaggerString: pulumi.Output<string>;
-        let swaggerSpec: pulumi.Output<any>;
         let swaggerLambdas: SwaggerLambdas | undefined;
+        let title: pulumi.Output<string>;
         if (args.swaggerString) {
-            swaggerSpec = pulumi.output(args.swaggerString).apply(s => {
+            const swaggerSpec = pulumi.output(args.swaggerString).apply(s => {
                 const spec = JSON.parse(s);
                 if (spec.info === undefined) {
                     spec.info = {};
@@ -358,14 +408,18 @@ export class API extends pulumi.ComponentResource {
                 if (spec.info.title === undefined) {
                     spec.info.title = name;
                 }
-                return spec;
+                return <SwaggerSpec>spec;
             });
+            title = swaggerSpec.info.title;
+            swaggerString = swaggerSpec.apply(s => JSON.stringify(s));
         }
-        else if (args.routes) {
+        else if (args.routes || args.additionalRoutes) {
             const result = createSwaggerSpec(
-                this, name, args.routes, args.gatewayResponses, args.requestValidator,
-                args.apiKeySource, args.staticRoutesBucket);
-            swaggerSpec = pulumi.output(result.swagger);
+                this, name, args.routes || [], pulumi.output(args.additionalRoutes || []),
+                args.gatewayResponses, args.requestValidator, args.apiKeySource, args.staticRoutesBucket);
+
+            title = pulumi.output(name);
+            swaggerString = result.swagger;
             swaggerLambdas = result.swaggerLambdas;
             this.staticRoutesBucket = result.staticRoutesBucket;
         }
@@ -373,13 +427,12 @@ export class API extends pulumi.ComponentResource {
             throw new pulumi.ResourceError(
                 "API must specify either [swaggerString] or as least one of the [route] options.", opts.parent);
         }
-        swaggerString = swaggerSpec.apply(s => JSON.stringify(s));
 
         const stageName = args.stageName || "stage";
 
         // Create the API Gateway Rest API, using a swagger spec.
         this.restAPI = new aws.apigateway.RestApi(name, {
-            name: swaggerSpec.apply(s => s.info.title),
+            name: title,
             binaryMediaTypes: ["*/*"],
             body: swaggerString,
         }, { parent: this });
@@ -502,6 +555,7 @@ function createSwaggerSpec(
     api: API,
     name: string,
     routes: Route[],
+    additionalRoutes: pulumi.Input<pulumi.Input<AdditionalRoute>[]>,
     gatewayResponses: Record<string, SwaggerGatewayResponse> | undefined,
     requestValidator: RequestValidator | undefined,
     apikeySource: APIKeySource | undefined,
@@ -548,6 +602,9 @@ function createSwaggerSpec(
     // reference the same authorizer.
     const apiAuthorizers: Record<string, Authorizer> = {};
 
+    let staticRoutesBucket: aws.s3.Bucket | undefined;
+
+    // First, process the routes that create contingent resources.
     for (const route of routes) {
         checkRoute(api, route, "path");
 
@@ -561,13 +618,16 @@ function createSwaggerSpec(
             addEventHandlerRouteToSwaggerSpec(api, name, swagger, swaggerLambdas, route, apiAuthorizers);
         }
         else if (isStaticRoute(route)) {
-            bucketOrArgs = addStaticRouteToSwaggerSpec(api, name, swagger, route, bucketOrArgs, apiAuthorizers);
+            if (!staticRoutesBucket) {
+                staticRoutesBucket = pulumi.Resource.isInstance(bucketOrArgs)
+                    ? bucketOrArgs
+                    : new aws.s3.Bucket(safeS3BucketName(name), bucketOrArgs, { parent: api });
+            }
+
+            addStaticRouteToSwaggerSpec(api, name, swagger, route, staticRoutesBucket, apiAuthorizers);
         }
-        else if (isIntegrationRoute(route)) {
-            addIntegrationRouteToSwaggerSpec(api, name, swagger, route, apiAuthorizers);
-        }
-        else if (isRawDataRoute(route)) {
-            addRawDataRouteToSwaggerSpec(api, name, swagger, route);
+        else if (isIntegrationRoute(route) || isRawDataRoute(route)) {
+            addIntegrationOrRawDataRouteToSwaggerSpec(route);
         }
         else {
             const exhaustiveMatch: never = route;
@@ -575,7 +635,24 @@ function createSwaggerSpec(
         }
     }
 
-    return { swagger, swaggerLambdas, staticRoutesBucket: pulumi.Resource.isInstance(bucketOrArgs) ? bucketOrArgs : undefined };
+    const swaggerText = pulumi.all([swagger, additionalRoutes]).apply(
+        ([_, routes]) => {
+            for (const route of routes) {
+                addIntegrationOrRawDataRouteToSwaggerSpec(route);
+            }
+
+            return pulumi.output(swagger).apply(s => JSON.stringify(s));
+        });
+
+    return { swagger: swaggerText, swaggerLambdas, staticRoutesBucket };
+
+    function addIntegrationOrRawDataRouteToSwaggerSpec(route: IntegrationRoute | RawDataRoute): void {
+        if (isIntegrationRoute(route)) {
+            addIntegrationRouteToSwaggerSpec(api, name, swagger, route, apiAuthorizers);
+        } else {
+            addRawDataRouteToSwaggerSpec(api, name, swagger, route);
+        }
+    }
 }
 
 function generateGatewayResponses(responses: Record<string, SwaggerGatewayResponse> | undefined): Record<string, SwaggerGatewayResponse> {
@@ -835,17 +912,12 @@ function addRequiredParametersToSwaggerOperation(swaggerOperation: SwaggerOperat
 
 function addStaticRouteToSwaggerSpec(
     api: API, name: string, swagger: SwaggerSpec, route: StaticRoute,
-    bucketOrArgs: aws.s3.Bucket | aws.s3.BucketArgs | undefined,
+    bucket: aws.s3.Bucket,
     apiAuthorizers: Record<string, Authorizer>) {
 
     checkRoute(api, route, "localPath");
 
     const method = swaggerMethod("GET");
-
-    // Create a bucket to place all the static data under.
-    const bucket = pulumi.Resource.isInstance(bucketOrArgs)
-        ? bucketOrArgs
-        : new aws.s3.Bucket(safeS3BucketName(name), bucketOrArgs, { parent: api });
 
     // For each static file, just make a simple bucket object to hold it, and create a swagger path
     // that routes from the file path to the arn for the bucket object.
@@ -859,8 +931,6 @@ function addStaticRouteToSwaggerSpec(
     else if (stat.isDirectory()) {
         processDirectory(route);
     }
-
-    return bucket;
 
     function createRole(key: string) {
         // Create a role and attach it so that this route can access the AWS bucket.
@@ -967,10 +1037,10 @@ function addStaticRouteToSwaggerSpec(
         role: aws.iam.Role,
         pathParameter?: string): SwaggerOperation {
 
-        const region = getRegion(bucket!);
+        const region = getRegion(bucket);
 
         const uri = pulumi.interpolate
-            `arn:aws:apigateway:${region}:s3:path/${bucket!.bucket}/${objectKey}${(pathParameter ? `/{${pathParameter}}` : ``)}`;
+            `arn:aws:apigateway:${region}:s3:path/${bucket.bucket}/${objectKey}${(pathParameter ? `/{${pathParameter}}` : ``)}`;
 
         const result: SwaggerOperation = {
             responses: {
