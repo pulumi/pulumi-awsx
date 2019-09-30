@@ -367,10 +367,10 @@ export class API extends pulumi.ComponentResource {
         super("aws:apigateway:x:API", name, {}, opts);
 
         let swaggerString: pulumi.Output<string>;
-        let swaggerSpec: pulumi.Output<SwaggerSpec>;
+        let swaggerSpec: pulumi.Output<pulumi.UnwrappedObject<SwaggerSpec>>;
         let swaggerLambdas: SwaggerLambdas | undefined;
         if (args.swaggerString) {
-            swaggerSpec = pulumi.output(args.swaggerString).apply(s => {
+            swaggerSpec = <any>pulumi.output(args.swaggerString).apply(s => {
                 const spec = JSON.parse(s);
                 if (spec.info === undefined) {
                     spec.info = {};
@@ -378,7 +378,7 @@ export class API extends pulumi.ComponentResource {
                 if (spec.info.title === undefined) {
                     spec.info.title = name;
                 }
-                return <SwaggerSpec>spec;
+                return spec;
             });
         }
         else if (args.routes || args.additionalRoutes) {
@@ -608,7 +608,7 @@ function createSwaggerSpec(
                 addIntegrationOrRawDataRouteToSwaggerSpec(route);
             }
 
-            return swagger;
+            return pulumi.output(swagger);
         });
 
     return { swagger: swaggerOutput, swaggerLambdas, staticRoutesBucket };
