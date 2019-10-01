@@ -23,7 +23,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as awslambda from "aws-lambda";
 
-import { getRegion, sha1hash } from "../utils";
+import { getRegion, ifUndefined, sha1hash } from "../utils";
 
 import { apiKeySecurityDefinition } from "./apikey";
 import * as cognitoAuthorizer from "./cognitoAuthorizer";
@@ -376,6 +376,120 @@ export interface APIArgs {
      * CORS for Lambda Authorizers.
      */
     gatewayResponses?: Record<string, SwaggerGatewayResponse>;
+
+    /**
+     * Additional optional args that can be passed along to the aws.apigateway.RestApi created by the
+     * awsx.apigateway.API.
+     */
+    restApiArgs?: RestApiArgs;
+
+    /**
+     * Additional optional args that can be passed along to the aws.apigateway.Stage created by the
+     * awsx.apigateway.API.
+     */
+    stageArgs?: StageArgs;
+
+    /**
+     * Additional optional args that can be passed along to the aws.apigateway.Deployment created by
+     * the awsx.apigateway.API.
+     */
+    deploymentArgs?: DeploymentArgs;
+}
+
+/**
+ * Additional optional args that can be passed along to the RestApi created by the
+ * awsx.apigateway.API.
+ */
+export interface RestApiArgs {
+    /**
+     * The name of the REST API.  Defaults to the name of the awsx.apigateway.Api if unspecified.
+     */
+    name?: pulumi.Input<string>;
+
+    /**
+     * The list of binary media types supported by the RestApi. Defaults to `* / *` if unspecified.
+     */
+    binaryMediaTypes?: pulumi.Input<pulumi.Input<string>[]>;
+
+    /**
+     * The source of the API key for requests. Valid values are HEADER (default) and AUTHORIZER.
+     */
+    apiKeySource?: pulumi.Input<string>;
+    /**
+     * The description of the REST API
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * Nested argument defining API endpoint configuration including endpoint type. Defined below.
+     */
+    endpointConfiguration?: pulumi.Input<aws.types.input.apigateway.RestApiEndpointConfiguration>;
+    /**
+     * Minimum response size to compress for the REST API. Integer between -1 and 10485760 (10MB). Setting a value greater than -1 will enable compression, -1 disables compression (default).
+     */
+    minimumCompressionSize?: pulumi.Input<number>;
+    /**
+     * JSON formatted policy document that controls access to the API Gateway.
+     */
+    policy?: pulumi.Input<string>;
+}
+
+/**
+ * Additional optional args that can be passed along to the Stage created by the
+ * awsx.apigateway.API.
+ */
+export interface StageArgs {
+    /**
+     * Enables access logs for the API stage. Detailed below.
+     */
+    accessLogSettings?: pulumi.Input<aws.types.input.apigateway.StageAccessLogSettings>;
+    /**
+     * Specifies whether a cache cluster is enabled for the stage
+     */
+    cacheClusterEnabled?: pulumi.Input<boolean>;
+    /**
+     * The size of the cache cluster for the stage, if enabled.
+     * Allowed values include `0.5`, `1.6`, `6.1`, `13.5`, `28.4`, `58.2`, `118` and `237`.
+     */
+    cacheClusterSize?: pulumi.Input<string>;
+    /**
+     * The identifier of a client certificate for the stage.
+     */
+    clientCertificateId?: pulumi.Input<string>;
+    /**
+     * The description of the stage
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * The version of the associated API documentation
+     */
+    documentationVersion?: pulumi.Input<string>;
+    /**
+     * A mapping of tags to assign to the resource.
+     */
+    tags?: pulumi.Input<{ [key: string]: any; }>;
+    /**
+     * A map that defines the stage variables
+     */
+    variables?: pulumi.Input<{ [key: string]: any; }>;
+    /**
+     * Whether active tracing with X-ray is enabled. Defaults to `false`.
+     */
+    xrayTracingEnabled?: pulumi.Input<boolean>;
+}
+
+/**
+ * Additional optional args that can be passed along to the Deployment created by the
+ * awsx.apigateway.API.
+ */
+export interface DeploymentArgs {
+    /**
+     * The description of the deployment
+     */
+    description?: pulumi.Input<string>;
+    /**
+     * The description of the stage
+     */
+    stageDescription?: pulumi.Input<string>;
 }
 
 export class API extends pulumi.ComponentResource {
@@ -430,15 +544,18 @@ export class API extends pulumi.ComponentResource {
 
         const stageName = args.stageName || "stage";
 
+        const restApiArgs = args.restApiArgs || {};
         // Create the API Gateway Rest API, using a swagger spec.
         this.restAPI = new aws.apigateway.RestApi(name, {
-            name: title,
-            binaryMediaTypes: ["*/*"],
+            ...args.restApiArgs,
+            name: ifUndefined(restApiArgs.name, title),
+            binaryMediaTypes: ifUndefined(restApiArgs.binaryMediaTypes, ["*/*"]),
             body: swaggerString,
         }, { parent: this });
 
         // Create a deployment of the Rest API.
         this.deployment = new aws.apigateway.Deployment(name, {
+            ...args.deploymentArgs,
             restApi: this.restAPI,
             // Note: Set to empty to avoid creating an implicit stage, we'll create it explicitly below instead.
             stageName: "",
@@ -461,6 +578,7 @@ export class API extends pulumi.ComponentResource {
 
         // Create a stage, which is an addressable instance of the Rest API. Set it to point at the latest deployment.
         this.stage = new aws.apigateway.Stage(name, {
+            ...args.stageArgs,
             restApi: this.restAPI,
             deployment: this.deployment,
             stageName: stageName,
