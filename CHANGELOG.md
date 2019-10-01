@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Added options to customize the Deployent, RestApi or Stage produced by an awsx.apigateway.API.
+
 ## 0.18.11 (2019-09-19)
 
 * Allow passing `ignoreChanges` into `Subnet`s created as part of an `awsx.ec2.Vpc`.
