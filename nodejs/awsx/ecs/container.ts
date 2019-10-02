@@ -71,9 +71,11 @@ export function computeContainerDefinition(
 function getPortMappings(
     parent: pulumi.Resource, name: string, container: Container, listeners: Record<string, x.lb.Listener>) {
 
-    const hasApplicationLoadBalancerInfo = !!container.applicationListener;
+    if (container.applicationListener && container.networkListener) {
+        throw new pulumi.ResourceError(`Container '${name}' supplied [applicationListener] and [networkListener]`, parent);
+    }
 
-    const hasLoadBalancerInfo = hasApplicationLoadBalancerInfo;
+    const hasLoadBalancerInfo = !!container.applicationListener || !!container.networkListener;
     if (!container.portMappings && !hasLoadBalancerInfo) {
         return undefined;
     }
@@ -96,16 +98,23 @@ function getPortMappings(
             }
         }
     }
-    else if (hasApplicationLoadBalancerInfo) {
-        if (!container.applicationListener) {
-            throw new pulumi.ResourceError(`Container '${name}' supplied [applicationTargetGroup] but did not supply [applicationListener]`, parent);
-        }
-
+    else {
         const opts = { parent };
 
-        const listener = pulumi.Resource.isInstance(container.applicationListener)
-            ? container.applicationListener
-            : new x.lb.ApplicationListener(name, container.applicationListener, opts);
+        let listener: x.lb.Listener;
+        if (container.applicationListener) {
+            listener = pulumi.Resource.isInstance(container.applicationListener)
+                ? container.applicationListener
+                : new x.lb.ApplicationListener(name, container.applicationListener, opts);
+        }
+        else if (container.networkListener) {
+            listener = pulumi.Resource.isInstance(container.networkListener)
+                ? container.networkListener
+                : new x.lb.NetworkListener(name, container.networkListener, opts);
+        }
+        else {
+            throw new Error("Unreachable");
+        }
 
         listeners[name] = listener;
         result.push(pulumi.output(listener.containerPortMapping(name, parent)));
@@ -239,9 +248,8 @@ export interface Container {
      *
      * Alternatively, to simplify the common case of having these `lb` constructs created solely for
      * this purpose, the information to create the `lb` constructs can be provided directly in the
-     * container definition using `applicationTargetGroup`, `applicationListener`,
-     * `networkTargetGroup` or `networkListener`.  If those properties are provided, then
-     * `portMappings` should not be provided.
+     * container definition using `applicationListener` or `networkListener`.  If those properties
+     * are provided, then `portMappings` should not be provided.
      */
     portMappings?: (pulumi.Input<aws.ecs.PortMapping> | ContainerPortMappingProvider)[];
 
@@ -250,6 +258,12 @@ export interface Container {
      * passed in, it will be used instead.
      */
     applicationListener?: x.lb.ApplicationListener | x.lb.ApplicationListenerArgs;
+
+    /**
+     * Alternative to passing in `portMappings`.  If a listener (or args to create a listener) is
+     * passed in, it will be used instead.
+     */
+    networkListener?: x.lb.NetworkListener | x.lb.NetworkListenerArgs;
 }
 
 export interface ContainerImageProvider {

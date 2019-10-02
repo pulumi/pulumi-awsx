@@ -130,14 +130,22 @@ export class NetworkListener
                 args: NetworkListenerArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
 
-        if (args.defaultAction && args.defaultActions) {
-            throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
+        const argCount = (args.defaultAction ? 1 : 0) +
+            (args.defaultActions ? 1 : 0) +
+            (args.targetGroup ? 1 : 0);
+
+        if (argCount >= 2) {
+            throw new Error("Only provide one of [defaultAction], [defaultActions] or [targetGroup].");
         }
 
-        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {
-            vpc: args.vpc,
-            name: args.name,
-        }, opts);
+        const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
+            ? args.loadBalancer
+            : new NetworkLoadBalancer(name, {
+                ...args.loadBalancer,
+                vpc: args.vpc,
+                name: args.name,
+            }, opts);
+
         const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
@@ -186,12 +194,33 @@ function getDefaultActions(
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
-    const targetGroup = new NetworkTargetGroup(name, {
-        loadBalancer,
-        name: args.name,
-        port: args.port,
-    }, opts);
+    // User didn't provide default actions for this listener.  Create a reasonable target group for
+    // us and use that as our default action.
+    const targetGroup = createTargetGroup();
+
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
+
+    function createTargetGroup() {
+        // Use the target group if provided by the client.  Otherwise, create a reasonable default
+        // one for our LB that will connect to this listener's port.
+        if (pulumi.Resource.isInstance(args.targetGroup)) {
+            return args.targetGroup;
+        }
+        else if (args.targetGroup) {
+            return new NetworkTargetGroup(name, {
+                ...args.targetGroup,
+                loadBalancer,
+                name: args.targetGroup.name || args.name,
+            }, opts);
+        }
+        else {
+            return new NetworkTargetGroup(name, {
+                loadBalancer,
+                name: args.name,
+                port: args.port,
+            }, opts);
+        }
+    }
 }
 
 export interface NetworkLoadBalancerArgs {
@@ -389,7 +418,7 @@ export interface NetworkListenerArgs {
      * The load balancer this listener is associated with.  If not provided, a new load balancer
      * will be automatically created.
      */
-    loadBalancer?: NetworkLoadBalancer;
+    loadBalancer?: NetworkLoadBalancer | NetworkLoadBalancerArgs;
 
     /**
      * The port. Specify a value from `1` to `65535`.
@@ -406,7 +435,7 @@ export interface NetworkListenerArgs {
      * An Action block. If neither this nor [defaultActions] is provided, a suitable defaultAction
      * will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
      *
-     * Do not provide both [defaultAction] and [defaultActions].
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
     defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.lb.ListenerDefaultAction;
 
@@ -415,9 +444,17 @@ export interface NetworkListenerArgs {
      * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from
      * [port].
      *
-     * Do not provide both [defaultAction] and [defaultActions].
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
     defaultActions?: pulumi.Input<pulumi.Input<mod.ListenerDefaultActionArgs>[]>;
+
+    /**
+     * Target group this listener is associated with.  This is used to determine the [defaultAction]
+     * for the listener.
+     *
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
+     */
+    targetGroup?: x.lb.NetworkTargetGroup | x.lb.NetworkTargetGroupArgs;
 
     /**
      * The ARN of the default SSL server certificate. Exactly one certificate is required if the

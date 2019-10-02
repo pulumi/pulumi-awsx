@@ -264,26 +264,34 @@ function getDefaultActions(
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
-    let targetGroup: ApplicationTargetGroup;
-    if (pulumi.Resource.isInstance(args.targetGroup)) {
-        targetGroup = args.targetGroup;
-    }
-    else if (args.targetGroup) {
-        targetGroup = new ApplicationTargetGroup(name, {
-            ...args.targetGroup,
-            loadBalancer,
-            name: args.name,
-        }, opts);
-    }
-    else {
-        targetGroup = new ApplicationTargetGroup(name, {
-            port,
-            protocol,
-            loadBalancer,
-            name: args.name,
-        }, opts);
-    }
+    // User didn't provide default actions for this listener.  Create a reasonable target group for
+    // us and use that as our default action.
+    const targetGroup = createTargetGroup();
+
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
+
+    function createTargetGroup() {
+        // Use the target group if provided by the client.  Otherwise, create a reasonable default
+        // one for our LB that will connect to this listener's port using our app protocol.
+        if (pulumi.Resource.isInstance(args.targetGroup)) {
+            return args.targetGroup;
+        }
+        else if (args.targetGroup) {
+            return new ApplicationTargetGroup(name, {
+                ...args.targetGroup,
+                loadBalancer,
+                name: args.targetGroup.name || args.name,
+            }, opts);
+        }
+        else {
+            return new ApplicationTargetGroup(name, {
+                port,
+                protocol,
+                loadBalancer,
+                name: args.name,
+            }, opts);
+        }
+    }
 }
 
 export interface ApplicationLoadBalancerArgs {
