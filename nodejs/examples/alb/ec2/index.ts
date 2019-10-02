@@ -43,7 +43,6 @@ const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTa
     targetGroup: targetGroup,
 });
 
-const nginxListener = targetGroup.createListener("nginx", { port: 80, external: true });
 const service = new awsx.ecs.EC2Service("nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -52,7 +51,8 @@ const service = new awsx.ecs.EC2Service("nginx", {
             nginx: {
                 image: "nginx",
                 memory: 128,
-                portMappings: [nginxListener],
+                applicationTargetGroup: targetGroup,
+                applicationListener: { port: 80, external: true },
             },
         },
     },
@@ -72,4 +72,4 @@ const stepScalingPolicy = autoScalingGroup.scaleInSteps("scale-in-out", {
     },
 });
 
-export const nginxEndpoint = nginxListener.endpoint;
+export const nginxEndpoint = service.listeners["nginx"].endpoint;

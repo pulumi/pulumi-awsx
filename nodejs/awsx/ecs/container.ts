@@ -15,6 +15,9 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as ecs from ".";
+import * as x from "..";
+
 import * as utils from "../utils";
 
 /** @internal */
@@ -23,7 +26,8 @@ export function computeContainerDefinition(
     name: string,
     containerName: string,
     container: Container,
-    logGroup: aws.cloudwatch.LogGroup | undefined): pulumi.Output<aws.ecs.ContainerDefinition> {
+    listeners: Record<string, x.lb.Listener>,
+    logGroup: aws.cloudwatch.LogGroup | undefined) {
 
     const image = isContainerImageProvider(container.image)
         ? container.image.image(name, parent)
@@ -33,11 +37,11 @@ export function computeContainerDefinition(
         ? utils.combineArrays(container.environment, container.image.environment(name, parent))
         : container.environment;
 
-    const portMappings = getPortMappings(name, container, parent);
+    const portMappings = getPortMappings(parent, name, container, listeners);
     const region = utils.getRegion(parent);
 
     const logGroupId = logGroup ? logGroup.id : undefined;
-    return pulumi.all([container, logGroupId, image, environment, portMappings, region])
+    const containerDefinition = pulumi.all([container, logGroupId, image, environment, portMappings, region])
                  .apply(([container, logGroupId, image, environment, portMappings, region]) => {
         const containerDefinition: aws.ecs.ContainerDefinition = {
             ...container,
@@ -60,11 +64,22 @@ export function computeContainerDefinition(
 
         return containerDefinition;
     });
+
+    return containerDefinition;
 }
 
-function getPortMappings(name: string, container: Container, parent: pulumi.Resource) {
-    if (!container.portMappings) {
+function getPortMappings(
+    parent: pulumi.Resource, name: string, container: Container, listeners: Record<string, x.lb.Listener>) {
+
+    const hasApplicationLoadBalancerInfo = !!container.applicationListener;
+
+    const hasLoadBalancerInfo = hasApplicationLoadBalancerInfo;
+    if (!container.portMappings && !hasLoadBalancerInfo) {
         return undefined;
+    }
+
+    if (container.portMappings && hasLoadBalancerInfo) {
+        throw new pulumi.ResourceError(`Container '${name}' supplied [portMappings] and load balancer info`, parent);
     }
 
     const result: pulumi.Output<aws.ecs.PortMapping>[] = [];
@@ -75,7 +90,25 @@ function getPortMappings(name: string, container: Container, parent: pulumi.Reso
                 ? obj.containerPortMapping(name, parent)
                 : obj);
             result.push(pulumi.output(portMapping));
+
+            if (x.lb.Listener.isListenerInstance(obj)) {
+                listeners[name] = obj;
+            }
         }
+    }
+    else if (hasApplicationLoadBalancerInfo) {
+        if (!container.applicationListener) {
+            throw new pulumi.ResourceError(`Container '${name}' supplied [applicationTargetGroup] but did not supply [applicationListener]`, parent);
+        }
+
+        const opts = { parent };
+
+        const listener = pulumi.Resource.isInstance(container.applicationListener)
+            ? container.applicationListener
+            : new x.lb.ApplicationListener(name, container.applicationListener, opts);
+
+        listeners[name] = listener;
+        result.push(pulumi.output(listener.containerPortMapping(name, parent)));
     }
 
     return pulumi.all(result).apply(mappings => convertMappings(mappings));
@@ -196,7 +229,27 @@ export interface Container {
      */
     image: pulumi.Input<string> | ContainerImageProvider;
 
+    /**
+     * The `portMappings` property specifies a port mapping. Port mappings allow containers to
+     * access ports on the host container instance to send or receive traffic.
+     *
+     * If this container will be run in an `ecs.Service` that will be hooked up to an
+     * `lb.LoadBalancer` (either an ALB or NLB) the appropriate `lb.Listener` or `lb.TargetGroup`
+     * can be passed in here instead and the port mapping will be computed from it.
+     *
+     * Alternatively, to simplify the common case of having these `lb` constructs created solely for
+     * this purpose, the information to create the `lb` constructs can be provided directly in the
+     * container definition using `applicationTargetGroup`, `applicationListener`,
+     * `networkTargetGroup` or `networkListener`.  If those properties are provided, then
+     * `portMappings` should not be provided.
+     */
     portMappings?: (pulumi.Input<aws.ecs.PortMapping> | ContainerPortMappingProvider)[];
+
+    /**
+     * Alternative to passing in `portMappings`.  If a listener (or args to create a listener) is
+     * passed in, it will be used instead.
+     */
+    applicationListener?: x.lb.ApplicationListener | x.lb.ApplicationListenerArgs;
 }
 
 export interface ContainerImageProvider {

@@ -187,14 +187,21 @@ export class ApplicationListener extends mod.Listener {
                 args: ApplicationListenerArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
 
-        if (args.defaultAction && args.defaultActions) {
-            throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
+        const argCount = (args.defaultAction ? 1 : 0) +
+                         (args.defaultActions ? 1 : 0) +
+                         (args.targetGroup ? 1 : 0);
+
+        if (argCount >= 2) {
+            throw new Error("Only provide one of [defaultAction], [defaultActions] or [targetGroup].");
         }
 
-        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {
-            vpc: args.vpc,
-            name: args.name,
-        }, opts);
+        const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
+            ? args.loadBalancer
+            : new ApplicationLoadBalancer(name, {
+                ...args.loadBalancer,
+                vpc: args.vpc,
+                name: args.name,
+            }, opts);
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultActions, defaultListener } = getDefaultActions(
@@ -257,12 +264,25 @@ function getDefaultActions(
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
-    const targetGroup = new ApplicationTargetGroup(name, {
-        loadBalancer,
-        port,
-        protocol,
-        name: args.name,
-    }, opts);
+    let targetGroup: ApplicationTargetGroup;
+    if (pulumi.Resource.isInstance(args.targetGroup)) {
+        targetGroup = args.targetGroup;
+    }
+    else if (args.targetGroup) {
+        targetGroup = new ApplicationTargetGroup(name, {
+            ...args.targetGroup,
+            loadBalancer,
+            name: args.name,
+        }, opts);
+    }
+    else {
+        targetGroup = new ApplicationTargetGroup(name, {
+            port,
+            protocol,
+            loadBalancer,
+            name: args.name,
+        }, opts);
+    }
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 }
 
@@ -471,7 +491,7 @@ export interface ApplicationListenerArgs {
      * The load balancer this listener is associated with.  If not provided, a new load balancer
      * will be automatically created.
      */
-    loadBalancer?: ApplicationLoadBalancer;
+    loadBalancer?: ApplicationLoadBalancer | ApplicationLoadBalancerArgs;
 
     /**
      * The port. Specify a value from `1` to `65535`.  Computed from "protocol" if not provided.
@@ -487,7 +507,7 @@ export interface ApplicationListenerArgs {
      * An Action block. If neither this nor [defaultActions] is provided, a suitable defaultAction
      * will be chosen that forwards to a new [ApplicationTargetGroup] created from [port].
      *
-     * Do not provide both [defaultAction] and [defaultActions].
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
     defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.lb.ListenerDefaultAction;
 
@@ -496,9 +516,17 @@ export interface ApplicationListenerArgs {
      * defaultAction will be chosen that forwards to a new [ApplicationTargetGroup] created from
      * [port].
      *
-     * Do not provide both [defaultAction] and [defaultActions].
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
     defaultActions?: pulumi.Input<pulumi.Input<mod.ListenerDefaultActionArgs>[]>;
+
+    /**
+     * Target group this listener is associated with.  This is used to determine the [defaultAction]
+     * for the listener.
+     *
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
+     */
+    targetGroup?: x.lb.ApplicationTargetGroup | x.lb.ApplicationTargetGroupArgs;
 
     // TODO: consider extracting out an HttpsApplicationListener.
 

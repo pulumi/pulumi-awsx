@@ -24,6 +24,13 @@ export abstract class Service extends pulumi.ComponentResource {
     public readonly cluster: ecs.Cluster;
     public readonly taskDefinition: ecs.TaskDefinition;
 
+    /**
+     * Mapping from container in this service to the ELB listener exposing it through a load
+     * balancer. Only present if a listener was provided in [Container.portMappings] or in
+     * [Container.applicationListener] or [Container.networkListener].
+     */
+    public readonly listeners: Record<string, x.lb.Listener> = {};
+
     constructor(type: string, name: string,
                 args: ServiceArgs, isFargate: boolean,
                 opts: pulumi.ComponentResourceOptions = {}) {
@@ -35,6 +42,7 @@ export abstract class Service extends pulumi.ComponentResource {
         // created.
         const loadBalancers = getLoadBalancers(this, name, args);
 
+        this.listeners = args.taskDefinition.listeners;
         this.service = new aws.ecs.Service(name, {
             ...args,
             loadBalancers,
@@ -85,72 +93,6 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 
     return pulumi.output(result);
 }
-
-// const volumeNames = new Set<string>();
-
-// export interface Volume extends cloud.Volume {
-//     getVolumeName(): any;
-//     getHostPath(): any;
-// }
-
-// // _Note_: In the current EFS-backed model, a Volume is purely virtual - it
-// // doesn't actually manage any underlying resource.  It is used just to provide
-// // a handle to a folder on the EFS share which can be mounted by container(s).
-// // On platforms like ACI, we may be able to actually provision a unique File
-// // Share per Volume to keep these independently manageable.  For now, on AWS
-// // though, we rely on this File Share having been set up as part of the ECS
-// // Cluster outside of @pulumi/cloud, and assume that that data has a lifetime
-// // longer than any individual deployment.
-// export class SharedVolume extends pulumi.ComponentResource implements Volume, cloud.SharedVolume {
-//     public readonly kind: cloud.VolumeKind;
-//     public readonly name: string;
-
-//     constructor(name: string, opts?: pulumi.ComponentResourceOptions) {
-//         if (volumeNames.has(name)) {
-//             throw new Error("Must provide a unique volume name");
-//         }
-//         super("cloud:volume:Volume", name, {}, opts);
-//         this.kind = "SharedVolume";
-//         this.name = name;
-//         volumeNames.add(name);
-//     }
-
-//     getVolumeName() {
-//         // Ensure this is unique to avoid conflicts both in EFS and in the
-//         // TaskDefinition we pass to ECS.
-//         return utils.sha1hash(`${pulumi.getProject()}:${pulumi.getStack()}:${this.kind}:${this.name}`);
-//     }
-
-//     getHostPath() {
-//         const cluster = getCluster();
-//         if (!cluster || !cluster.efsMountPath) {
-//             throw new Error(
-//                 "Cannot use 'Volume'.  Configured cluster does not support EFS.",
-//             );
-//         }
-//         // Include the unique `getVolumeName` in the EFS host path to ensure this doesn't
-//         // clash with other deployments.
-//         return `${cluster.efsMountPath}/${this.name}_${this.getVolumeName()}`;
-//     }
-// }
-
-// export class HostPathVolume implements cloud.HostPathVolume {
-//     public readonly kind: cloud.VolumeKind;
-//     public readonly path: string;
-
-//     constructor(path: string) {
-//         this.kind = "HostPathVolume";
-//         this.path = path;
-//     }
-
-//     getVolumeName() {
-//         return utils.sha1hash(`${this.kind}:${this.path}`);
-//     }
-
-//     getHostPath() {
-//         return this.path;
-//     }
-// }
 
 export interface ServiceLoadBalancer {
     containerName: pulumi.Input<string>;
