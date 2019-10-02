@@ -121,23 +121,37 @@ function getPortMappings(
     return pulumi.all(result).apply(mappings => convertMappings(mappings));
 
     function createListener() {
+
         const opts = { parent };
 
+        const errorMessage = `[vpc] must be supplied to task definition in order to create a listener for container ${name}`;
         if (container.applicationListener) {
-            return pulumi.Resource.isInstance(container.applicationListener)
-                ? container.applicationListener
-                : new x.lb.ApplicationListener(name, {
-                    ...container.applicationListener,
-                    vpc,
-                }, opts);
+            if (pulumi.Resource.isInstance(container.applicationListener)) {
+                return container.applicationListener;
+            }
+
+            if (!vpc) {
+                throw new pulumi.ResourceError(errorMessage, parent);
+            }
+
+            return new x.lb.ApplicationListener(name, {
+                ...container.applicationListener,
+                vpc,
+            }, opts);
         }
         else if (container.networkListener) {
-            return pulumi.Resource.isInstance(container.networkListener)
-                ? container.networkListener
-                : new x.lb.NetworkListener(name, {
-                    ...container.networkListener,
-                    vpc,
-                }, opts);
+            if (pulumi.Resource.isInstance(container.networkListener)) {
+                return container.networkListener;
+            }
+
+            if (!vpc) {
+                throw new pulumi.ResourceError(errorMessage, parent);
+            }
+
+            return new x.lb.NetworkListener(name, {
+                ...container.networkListener,
+                vpc,
+            }, opts);
         }
         else {
             throw new Error("Unreachable");

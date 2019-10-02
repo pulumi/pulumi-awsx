@@ -46,7 +46,7 @@ const simpleNginx = new awsx.ecs.FargateTaskDefinition("simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
-        networkListener: { port: 80 },
+        networkListener: { vpc: cluster.vpc, port: 80 },
     },
 }, providerOpts).createService("simple-nginx", { cluster, desiredCount: 2});
 
