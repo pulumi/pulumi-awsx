@@ -90,13 +90,17 @@ const multistageCachedNginx = new awsx.ecs.FargateService("multistage-cached-ngi
     desiredCount: 2,
 }, providerOpts);
 
+const customWebServerListener =
+    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { port: 8080 }, providerOpts)
+         .createListener("custom", { port: 80 });
+
 const customWebServer = new awsx.ecs.FargateService("custom", {
     cluster,
     taskDefinitionArgs: {
         containers: {
             webserver: {
                 memory: 128,
-                networkListener: { port: 80, targetGroup: { port: 8080 } }
+                portMappings: [customWebServerListener],
                 image: awsx.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
                     const http = require("http");

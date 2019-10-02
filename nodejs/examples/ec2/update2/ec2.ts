@@ -51,6 +51,7 @@ autoScalingGroup.scaleOnSchedule("scaleUpAt6amUTC", {
 export const autoScalingGroupId = autoScalingGroup.stack.id;
 
 // A simple NGINX service, scaled out over two containers.
+const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { vpc, port: 80 }, providerOpts);
 const nginx = new awsx.ecs.EC2Service("nginx", {
     cluster: cluster1,
     taskDefinitionArgs: {
@@ -58,14 +59,14 @@ const nginx = new awsx.ecs.EC2Service("nginx", {
             nginx: {
                 image: "nginx",
                 memory: 64,
-                networkListener: { port: 80 },
+                portMappings: [nginxListener],
             },
         },
     },
     desiredCount: 1,
 }, providerOpts);
 
-const nginxEndpoint = nginx.listener["nginx"].endpoint;
+const nginxEndpoint = nginxListener.endpoint;
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
 const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("simple-nginx", { vpc, port: 80 }, providerOpts);
@@ -116,13 +117,16 @@ const multistageCachedNginx = new awsx.ecs.EC2Service("multistage-cached-nginx",
     desiredCount: 1,
 }, providerOpts);
 
+const customWebServerListener =
+    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { vpc, port: 8080 }, providerOpts)
+         .createListener("custom", { port: 80 });
+
 const customWebServer = new awsx.ecs.EC2Service("custom", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
             webserver: {
                 memory: 64,
-                networkListener: { vpc, port: 80, targetGroup: { port: 8080 } }
                 portMappings: [customWebServerListener],
                 image: awsx.ecs.Image.fromFunction(() => {
                     const rand = Math.random();
