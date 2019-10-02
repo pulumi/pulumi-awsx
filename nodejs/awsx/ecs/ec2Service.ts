@@ -122,6 +122,11 @@ type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
 
 export interface EC2TaskDefinitionArgs {
     // Properties from ecs.TaskDefinitionArgs
+
+    /**
+     * The vpc that the service for this task will run in.  Does not need to be explicitly provided
+     * as it will be inferred from the cluster the service is associated with.
+     */
     vpc?: x.ec2.Vpc;
 
     /**
