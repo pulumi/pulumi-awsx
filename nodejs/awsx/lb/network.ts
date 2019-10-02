@@ -169,7 +169,7 @@ export class NetworkListener
 
     /** @internal */
     public static isNetworkListenerInstance(obj: any): obj is NetworkListener {
-        return !!(<NetworkListener>obj).__isNetworkListenerInstance;
+        return obj && !!(<NetworkListener>obj).__isNetworkListenerInstance;
     }
 
     public target(name: string, parent: pulumi.Resource): pulumi.Input<x.apigateway.IntegrationTarget> {

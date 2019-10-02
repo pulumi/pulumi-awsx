@@ -93,6 +93,8 @@ function getPortMappings(
 
     const result: pulumi.Output<aws.ecs.PortMapping>[] = [];
 
+    let possibleListener: any;
+
     if (container.portMappings) {
         for (const obj of container.portMappings) {
             const portMapping = pulumi.output(isContainerPortMappingProvider(obj)
@@ -100,46 +102,47 @@ function getPortMappings(
                 : obj);
             result.push(pulumi.output(portMapping));
 
-            if (x.lb.ApplicationListener.isApplicationListenerInstance(obj)) {
-                applicationListeners[name] = obj;
-            }
-            else if (x.lb.NetworkListener.isNetworkListenerInstance(obj)) {
-                networkListeners[name] = obj;
-            }
+            possibleListener = obj;
         }
     }
     else {
+        const listener = createListener();
+        possibleListener = listener;
+        result.push(pulumi.output(listener.containerPortMapping(name, parent)));
+    }
+
+    if (x.lb.ApplicationListener.isApplicationListenerInstance(possibleListener)) {
+        applicationListeners[name] = possibleListener;
+    }
+    else if (x.lb.NetworkListener.isNetworkListenerInstance(possibleListener)) {
+        networkListeners[name] = possibleListener;
+    }
+
+    return pulumi.all(result).apply(mappings => convertMappings(mappings));
+
+    function createListener() {
         const opts = { parent };
 
-        let listener: x.lb.Listener;
         if (container.applicationListener) {
-            const appListener = pulumi.Resource.isInstance(container.applicationListener)
+            return pulumi.Resource.isInstance(container.applicationListener)
                 ? container.applicationListener
                 : new x.lb.ApplicationListener(name, {
                     ...container.applicationListener,
                     vpc,
                 }, opts);
-            listener = appListener;
-            applicationListeners[name] = appListener;
         }
         else if (container.networkListener) {
-            const networkListener = pulumi.Resource.isInstance(container.networkListener)
+            return pulumi.Resource.isInstance(container.networkListener)
                 ? container.networkListener
                 : new x.lb.NetworkListener(name, {
                     ...container.networkListener,
                     vpc,
                 }, opts);
-            listener = networkListener;
-            networkListeners[name] = networkListener;
         }
         else {
             throw new Error("Unreachable");
         }
-
-        result.push(pulumi.output(listener.containerPortMapping(name, parent)));
     }
-
-    return pulumi.all(result).apply(mappings => convertMappings(mappings));
 }
 
 function convertMappings(mappings: aws.ecs.PortMapping[]) {

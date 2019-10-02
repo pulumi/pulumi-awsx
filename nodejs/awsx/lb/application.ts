@@ -252,7 +252,7 @@ export class ApplicationListener extends mod.Listener {
 
     /** @internal */
     public static isApplicationListenerInstance(obj: any): obj is ApplicationListener {
-        return !!(<ApplicationListener>obj).__isApplicationListenerInstance;
+        return obj && !!(<ApplicationListener>obj).__isApplicationListenerInstance;
     }
 }
 
