@@ -118,15 +118,14 @@ class FargateCache {
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { port: 6379 }, providerOpts);
-        const redis = new awsx.ecs.FargateService(name, {
+        const service = new awsx.ecs.FargateService(name, {
             cluster,
             taskDefinitionArgs: {
                 containers: {
                     redis: {
                         image: "redis:alpine",
                         memory: memory,
-                        portMappings: [redisListener],
+                        networkListener: { port: 6379 },
                         command: ["redis-server", "--requirepass", redisPassword],
                     },
                 },
@@ -134,7 +133,7 @@ class FargateCache {
         }, providerOpts);
 
         this.get = (key: string) => {
-            const endpoint = redisListener.endpoint.get();
+            const endpoint = service.listeners["redis"].endpoint.get();
             console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
             const client = require("redis").createClient(
                 endpoint.port,
@@ -153,7 +152,7 @@ class FargateCache {
             });
         };
         this.set = (key: string, value: string) => {
-            const endpoint = redisListener.endpoint.get();
+            const endpoint = service.listeners["redis"].endpoint.get();
             console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
             const client = require("redis").createClient(
                 endpoint.port,
