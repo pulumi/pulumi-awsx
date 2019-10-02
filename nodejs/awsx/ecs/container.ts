@@ -261,17 +261,17 @@ export interface Container {
     image: pulumi.Input<string> | ContainerImageProvider;
 
     /**
-     * The `portMappings` property specifies a port mapping. Port mappings allow containers to
-     * access ports on the host container instance to send or receive traffic.
+     * Port mappings allow containers to access ports on the host container instance to send or
+     * receive traffic.
      *
      * If this container will be run in an `ecs.Service` that will be hooked up to an
      * `lb.LoadBalancer` (either an ALB or NLB) the appropriate `lb.Listener` or `lb.TargetGroup`
      * can be passed in here instead and the port mapping will be computed from it.
      *
-     * Alternatively, to simplify the common case of having these `lb` constructs created solely for
-     * this purpose, the information to create the `lb` constructs can be provided directly in the
-     * container definition using `applicationListener` or `networkListener`.  If those properties
-     * are provided, then `portMappings` should not be provided.
+     * Alternatively, to simplify the common case of having to create load balancer listeners solely
+     * for this purpose, the information listener can be provided directly in the container
+     * definition using `applicationListener` or `networkListener`.  If those properties are
+     * provided, then `portMappings` should not be provided.
      */
     portMappings?: (pulumi.Input<aws.ecs.PortMapping> | ContainerPortMappingProvider)[];
 
