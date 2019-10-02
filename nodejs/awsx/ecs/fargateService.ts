@@ -257,8 +257,8 @@ export interface FargateTaskDefinitionArgs {
     // Properties copied from ecs.TaskDefinitionArgs
 
     /**
-     * The vpc that the service for this task will run in.  Does not need to be explicitly provided
-     * as it will be inferred from the cluster the service is associated with.
+     * The vpc that the service for this task will run in.  Does not normally need to be explicitly
+     * provided as it will be inferred from the cluster the service is associated with.
      */
     vpc?: x.ec2.Vpc;
 
