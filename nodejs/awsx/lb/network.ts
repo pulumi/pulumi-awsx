@@ -219,7 +219,6 @@ function getDefaultActions(
             return new NetworkTargetGroup(name, {
                 ...args.targetGroup,
                 loadBalancer,
-                name: args.targetGroup.name || args.name,
             }, opts);
         }
         else {

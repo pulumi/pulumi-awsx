@@ -289,7 +289,6 @@ function getDefaultActions(
             return new ApplicationTargetGroup(name, {
                 ...args.targetGroup,
                 loadBalancer,
-                name: args.targetGroup.name || args.name,
             }, opts);
         }
         else {
