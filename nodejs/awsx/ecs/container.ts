@@ -24,6 +24,7 @@ import * as utils from "../utils";
 export function computeContainerDefinition(
     parent: pulumi.Resource,
     name: string,
+    vpc: x.ec2.Vpc | undefined,
     containerName: string,
     container: Container,
     listeners: Record<string, x.lb.Listener>,
@@ -37,7 +38,7 @@ export function computeContainerDefinition(
         ? utils.combineArrays(container.environment, container.image.environment(name, parent))
         : container.environment;
 
-    const portMappings = getPortMappings(parent, name, container, listeners);
+    const portMappings = getPortMappings(parent, name, vpc, container, listeners);
     const region = utils.getRegion(parent);
 
     const logGroupId = logGroup ? logGroup.id : undefined;
@@ -69,7 +70,11 @@ export function computeContainerDefinition(
 }
 
 function getPortMappings(
-    parent: pulumi.Resource, name: string, container: Container, listeners: Record<string, x.lb.Listener>) {
+    parent: pulumi.Resource,
+    name: string,
+    vpc: x.ec2.Vpc | undefined,
+    container: Container,
+    listeners: Record<string, x.lb.Listener>) {
 
     if (container.applicationListener && container.networkListener) {
         throw new pulumi.ResourceError(`Container '${name}' supplied [applicationListener] and [networkListener]`, parent);
@@ -105,12 +110,18 @@ function getPortMappings(
         if (container.applicationListener) {
             listener = pulumi.Resource.isInstance(container.applicationListener)
                 ? container.applicationListener
-                : new x.lb.ApplicationListener(name, container.applicationListener, opts);
+                : new x.lb.ApplicationListener(name, {
+                    ...container.applicationListener,
+                    vpc,
+                }, opts);
         }
         else if (container.networkListener) {
             listener = pulumi.Resource.isInstance(container.networkListener)
                 ? container.networkListener
-                : new x.lb.NetworkListener(name, container.networkListener, opts);
+                : new x.lb.NetworkListener(name, {
+                    ...container.networkListener,
+                    vpc,
+                }, opts);
         }
         else {
             throw new Error("Unreachable");

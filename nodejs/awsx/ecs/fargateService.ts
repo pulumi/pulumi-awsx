@@ -200,10 +200,14 @@ export class FargateService extends ecs.Service {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const taskDefinition = args.taskDefinition ||
-            new ecs.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
-
         const cluster = args.cluster || x.ecs.Cluster.getDefault();
+
+        const taskDefinition = args.taskDefinition ||
+            new ecs.FargateTaskDefinition(name, {
+                ...args.taskDefinitionArgs,
+                vpc: cluster.vpc,
+            }, opts);
+
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
@@ -251,6 +255,7 @@ type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs
 
 export interface FargateTaskDefinitionArgs {
     // Properties copied from ecs.TaskDefinitionArgs
+    vpc?: x.ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.

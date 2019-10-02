@@ -67,7 +67,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
         this.containers = args.containers;
 
-        const containerDefinitions = computeContainerDefinitions(this, name, this.containers, this.listeners, this.logGroup);
+        const containerDefinitions = computeContainerDefinitions(this, name, args.vpc, this.containers, this.listeners, this.logGroup);
         const containerString = containerDefinitions.apply(d => JSON.stringify(d));
         const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
 
@@ -242,6 +242,7 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
+    vpc: x.ec2.Vpc | undefined,
     containers: Record<string, ecs.Container>,
     listeners: Record<string, x.lb.Listener>,
     logGroup: aws.cloudwatch.LogGroup | undefined): pulumi.Output<aws.ecs.ContainerDefinition[]> {
@@ -252,7 +253,7 @@ function computeContainerDefinitions(
         const container = containers[containerName];
 
         result.push(ecs.computeContainerDefinition(
-            parent, name, containerName, container, listeners, logGroup));
+            parent, name, vpc, containerName, container, listeners, logGroup));
     }
 
     return pulumi.all(result);
@@ -279,6 +280,7 @@ type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
 
 export interface TaskDefinitionArgs {
     // Properties copied from aws.ecs.TaskDefinitionArgs
+    vpc?: x.ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
