@@ -266,21 +266,21 @@ export interface FargateTaskDefinitionArgs {
     // Properties we've added/changed.
 
     /**
-     * Log group for logging information related to the service.  If not provided a default instance
-     * with a one-day retention policy will be created.
+     * Log group for logging information related to the service.  If `undefined` a default instance
+     * with a one-day retention policy will be created.  If `null` no log group will be created.
      */
     logGroup?: aws.cloudwatch.LogGroup;
 
     /**
-     * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
-     * If not provided, a default will be created for the task.
+     * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
+     * `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
     taskRole?: aws.iam.Role;
 
     /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
      *
-     * If not provided, a default will be created for the task.
+     *  If `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
     executionRole?: aws.iam.Role;
 

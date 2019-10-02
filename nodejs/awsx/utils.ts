@@ -122,63 +122,11 @@ export function getRegionFromOpts(opts: pulumi.CustomResourceOptions): pulumi.Ou
 export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
     // A little strange, but all we're doing is passing a fake type-token simply to get
     // the AWS provider from this resource.
-    return getRegionFromProvider(res.getProvider("aws::"));
+    const provider = res.getProvider ? res.getProvider("aws::") : undefined;
+    return getRegionFromProvider(provider);
 }
 
 function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
     const region = provider ? (<any>provider).region : undefined;
     return region || aws.config.region;
-}
-
-/** @internal */
-export function promiseResult<T>(promise: Promise<T>): T {
-    enum State {
-        running,
-        finishedSuccessfully,
-        finishedWithError,
-    }
-
-    let result: T;
-    let error = undefined;
-    let state = <State>State.running;
-
-    promise.then(
-        val => {
-            result = val;
-            state = State.finishedSuccessfully;
-        },
-        err => {
-            error = err;
-            state = State.finishedWithError;
-        });
-
-    deasync.loopWhile(() => state === State.running);
-    if (state === State.finishedWithError) {
-        throw error;
-    }
-
-    return result!;
-}
-
-interface HasAliases { aliases?: pulumi.Input<pulumi.URN | pulumi.Alias>[]; }
-
-/** @internal */
-export function withAlias<T extends HasAliases>(opts: T, alias: pulumi.Input<pulumi.URN | pulumi.Alias>): T {
-  return withAliases(opts, [alias]);
-}
-
-/** @internal */
-export function withAliases<T extends HasAliases>(opts: T, aliases: pulumi.Input<pulumi.URN | pulumi.Alias>[]): T {
-    const allAliases: pulumi.Input<pulumi.URN | pulumi.Alias>[] = [];
-    if (opts.aliases) {
-        for (const alias of opts.aliases) {
-            allAliases.push(alias);
-        }
-    }
-
-    for (const alias of aliases) {
-        allAliases.push(alias);
-    }
-
-    return { ...opts, aliases };
 }

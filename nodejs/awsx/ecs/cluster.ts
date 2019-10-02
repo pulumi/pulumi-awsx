@@ -179,8 +179,10 @@ export interface ClusterArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * An existing Cluster (or Cluster-Id) to use for this awsx Cluster.  If not provided, a default
-     * one will be created.
+     * An existing aws.ecs.Cluster (or the name of an existing aws.ecs.Cluster) to use for this
+     * awsx.ecs.Cluster.  If not provided, a default one will be created.
+     *
+     * Note: If passing a string, use the *name* of an existing ECS Cluster instead of its *id*.
      */
     cluster?: aws.ecs.Cluster | pulumi.Input<string>;
 
@@ -191,7 +193,7 @@ export interface ClusterArgs {
 
     /**
      * The security group to place new instances into.  If not provided, a default will be
-     * created.
+     * created. Pass an empty array to create no security groups.
      */
     securityGroups?: x.ec2.SecurityGroupOrId[];
 

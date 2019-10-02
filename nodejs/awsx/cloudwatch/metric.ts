@@ -240,7 +240,10 @@ export class Metric {
     }
 
     public createAlarm(name: string, args: AlarmArgs, opts: pulumi.CustomResourceOptions = {}) {
-        const comparisonOperator = utils.ifUndefined(args.comparisonOperator, "GreaterThanOrEqualToThreshold");
+        const comparisonOperator = utils.ifUndefined(
+            args.comparisonOperator,
+            "GreaterThanOrEqualToThreshold" as AlarmComparisonOperator,
+        );
         return new aws.cloudwatch.MetricAlarm(name, {
             ...args,
 

@@ -48,7 +48,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * https://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html
      * for more details.
      */
-    public readonly targetGroups: x.elasticloadbalancingv2.TargetGroup[];
+    public readonly targetGroups: x.lb.TargetGroup[];
 
     constructor(name: string,
                 args: AutoScalingGroupArgs,
@@ -338,7 +338,7 @@ export interface AutoScalingGroupArgs {
      * A list of target groups to associate with the Auto Scaling group.  All target groups must
      * have the "instance" [targetType].
      */
-    targetGroups?: x.elasticloadbalancingv2.TargetGroup[];
+    targetGroups?: x.lb.TargetGroup[];
 
     /**
      * Set to true to disable rollback of the underlying aws.cloudformation.Stack if that Stack

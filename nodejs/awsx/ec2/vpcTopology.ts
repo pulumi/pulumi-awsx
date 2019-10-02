@@ -142,7 +142,10 @@ class ComputedLocationTopology extends VpcTopology {
                 // nat gateway we created.
                 for (let j = 0; j < numberOfAvailabilityZones; j++) {
                     const privateSubnetIndex = i + j;
-                    const natGatewayIndex = j < this.numberOfNatGateways ? j : roundRobinIndex++;
+                    const natGatewayIndex = j < this.numberOfNatGateways
+                        ? j
+                        : (roundRobinIndex++ % natGateways.length);
+
                     natRoutes.push({
                         name: `nat-${j}`,
                         privateSubnet: privateSubnets[privateSubnetIndex].subnetName,
@@ -248,6 +251,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                     assignIpv6AddressOnCreation,
                     tags: subnetArgs.tags,
                 },
+                ignoreChanges: subnetArgs.ignoreChanges,
             });
         }
 
@@ -338,6 +342,7 @@ class ExplicitLocationTopology extends VpcTopology {
                         assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, this.assignGeneratedIpv6CidrBlock),
                         tags: subnetArgs.tags,
                     },
+                    ignoreChanges: subnetArgs.ignoreChanges,
                 };
                 subnetDescriptions.push(subnetDesc);
 
@@ -451,6 +456,7 @@ export interface SubnetDescription {
     type: x.ec2.VpcSubnetType;
     subnetName: string;
     args: x.ec2.SubnetArgs;
+    ignoreChanges?: string[];
 }
 
 

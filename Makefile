@@ -6,6 +6,7 @@ include build/common.mk
 publish_packages:
 	$(call STEP_MESSAGE)
 	./scripts/publish_packages.sh
+	$$(go env GOPATH)/src/github.com/pulumi/scripts/ci/build-package-docs.sh awsx
 
 .PHONY: check_clean_worktree
 check_clean_worktree:

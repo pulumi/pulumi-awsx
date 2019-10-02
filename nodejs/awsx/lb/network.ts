@@ -29,12 +29,13 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     public readonly targetGroups: NetworkTargetGroup[];
 
     constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
-        const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
+        const argsCopy: x.lb.LoadBalancerArgs = {
             ...args,
             loadBalancerType: "network",
         };
 
-        super("awsx:x:elasticloadbalancingv2:NetworkLoadBalancer", name, argsCopy, opts);
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer" }] });
+        super("awsx:lb:NetworkLoadBalancer", name, argsCopy, opts);
 
         this.listeners = [];
         this.targetGroups = [];
@@ -77,16 +78,17 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
 export class NetworkTargetGroup extends mod.TargetGroup {
     public readonly loadBalancer: NetworkLoadBalancer;
 
-    public readonly listeners: x.elasticloadbalancingv2.NetworkListener[];
+    public readonly listeners: x.lb.NetworkListener[];
 
     constructor(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {
             vpc: args.vpc,
             name: args.name,
         }, opts);
-        const protocol = utils.ifUndefined(args.protocol, "TCP");
+        const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
-        super("awsx:x:elasticloadbalancingv2:NetworkTargetGroup", name, loadBalancer, {
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
+        super("awsx:lb:NetworkTargetGroup", name, loadBalancer, {
             ...args,
             protocol,
             vpc: loadBalancer.vpc,
@@ -122,7 +124,7 @@ export class NetworkListener
         implements x.apigateway.IntegrationRouteTargetProvider {
 
     public readonly loadBalancer: NetworkLoadBalancer;
-    public readonly defaultTargetGroup?: x.elasticloadbalancingv2.NetworkTargetGroup;
+    public readonly defaultTargetGroup?: x.lb.NetworkTargetGroup;
 
     constructor(name: string,
                 args: NetworkListenerArgs,
@@ -137,9 +139,10 @@ export class NetworkListener
             name: args.name,
         }, opts);
         const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
-        const protocol = utils.ifUndefined(args.protocol, "TCP");
+        const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
-        super("awsx:x:elasticloadbalancingv2:NetworkListener", name, defaultListener, {
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }] });
+        super("awsx:lb:NetworkListener", name, defaultListener, {
             ...args,
             protocol,
             loadBalancer,
@@ -178,7 +181,7 @@ function getDefaultActions(
     }
 
     if (args.defaultAction) {
-        return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
+        return x.lb.isListenerDefaultAction(args.defaultAction)
             ? { defaultActions: [args.defaultAction.listenerDefaultAction()], defaultListener: args.defaultAction }
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
@@ -229,14 +232,14 @@ export interface NetworkLoadBalancerArgs {
     /**
      * A subnet mapping block as documented below.
      */
-    subnetMappings?: aws.elasticloadbalancingv2.LoadBalancerArgs["subnetMappings"];
+    subnetMappings?: aws.lb.LoadBalancerArgs["subnetMappings"];
 
     /**
      * A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of
      * type `network`. Changing this value for load balancers of type `network` will force a
      * recreation of the resource.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.elasticloadbalancingv2.LoadBalancerSubnets;
+    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.lb.LoadBalancerSubnets;
 
     /**
      * A mapping of tags to assign to the resource.
@@ -348,7 +351,7 @@ export interface NetworkTargetGroupArgs {
      * A Stickiness block. Stickiness blocks are documented below. `stickiness` is only valid if
      * used with Load Balancers of type `Application`
      */
-    stickiness?: aws.elasticloadbalancingv2.TargetGroupArgs["stickiness"];
+    stickiness?: aws.lb.TargetGroupArgs["stickiness"];
 
     /**
      * A mapping of tags to assign to the resource.
@@ -405,7 +408,7 @@ export interface NetworkListenerArgs {
      *
      * Do not provide both [defaultAction] and [defaultActions].
      */
-    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.elasticloadbalancingv2.ListenerDefaultAction;
+    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.lb.ListenerDefaultAction;
 
     /**
      * An list of Action blocks. If neither this nor [defaultAction] is provided, a suitable

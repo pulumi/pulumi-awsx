@@ -3,6 +3,33 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.18.12 (2019-10-02)
+
+* Added options to customize the Deployment, RestApi or Stage produced by an awsx.apigateway.API.
+
+## 0.18.11 (2019-09-19)
+
+* Allow passing `ignoreChanges` into `Subnet`s created as part of an `awsx.ec2.Vpc`.
+
+* Updated `@pulumi/awsx` to use the latest versions of `@pulumi/pulumi` and `@pulumi/aws`.
+
+## 0.18.10 (2019-08-21)
+
+* Updated `@pulumi/awsx` to use the latest version of `@pulumi/docker`.
+
+## 0.18.9 (2019-08-06)
+
+* Updated `@pulumi/awsx` to use the latest versions of `@pulumi/pulumi` and `@pulumi/aws`.
+
+## 0.18.8 (2019-07-29)
+
+* ecs.TaskDefinition now accepts explicit `null` value for `.logGroup`, `.taskRole` and
+  `.executionRole` to explicitly opt out using or creating any default resources for them.
+* The `elasticloadbalancingv2` module has been renamed to align with its `@pulumi/aws` equivalent.
+  The existing module is still available, but will be deprecated and removed in the future.
+  'Aliases' have been used to ensure that moving to the new modules will not result in any changes
+  to existing resources.
+
 ## 0.18.7 (2019-07-11)
 
 * LoadBalancers and TargetGroups will no longer create resources with 'hashed' names.  They will

@@ -62,7 +62,7 @@ export interface ApplicationTargetGroupTrackingPolicyArgs extends TargetTracking
      * This must be a [TargetGroup] that the [AutoScalingGroup] was created with.  These can
      * be provided to the [AutoScalingGroup] using [AutoScalingGroupArgs.targetGroups].
      */
-    targetGroup: x.elasticloadbalancingv2.ApplicationTargetGroup;
+    targetGroup: x.lb.ApplicationTargetGroup;
 }
 
 /**

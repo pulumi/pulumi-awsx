@@ -70,16 +70,15 @@ class FunctionImage extends Image {
         super();
     }
 
-    public image(name: string, parent: pulumi.Resource): pulumi.Input<string> {
+    public image(): pulumi.Input<string> {
         // TODO[pulumi/pulumi-cloud#85]: move this to a Pulumi Docker Hub account.
         return "lukehoban/nodejsrunner";
     }
 
-    public environment(name: string, parent: pulumi.Resource): pulumi.Input<ecs.KeyValuePair[]> {
-        const serialized = pulumi.runtime.serializeFunctionAsync(this.func);
-        return serialized.then(value => [{
+    public environment(): pulumi.Input<ecs.KeyValuePair[]> {
+        return pulumi.runtime.serializeFunction(this.func).then(value => [{
             name: "PULUMI_SRC",
-            value: value,
+            value: value.text,
         }]);
     }
 }
@@ -194,7 +193,8 @@ export function computeImageFromAsset(
         if (!registryId) {
             throw new Error("Expected registry ID to be defined during push");
         }
-        const credentials = await aws.ecr.getCredentials({ registryId: registryId }, { parent });
+
+        const credentials = aws.ecr.getCredentials({ registryId: registryId }, { parent });
         const decodedCredentials = Buffer.from(credentials.authorizationToken, "base64").toString();
         const [username, password] = decodedCredentials.split(":");
         if (!password || !username) {

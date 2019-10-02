@@ -16,26 +16,26 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-import { Config } from "@pulumi/pulumi";
-
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-console.log("EC2: Update1");
+const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
+const loadBalancer = new awsx.lb.ApplicationLoadBalancer("nginx", { external: true }, providerOpts);
 
-const vpc = new awsx.ec2.Vpc("testing-1", {}, providerOpts);
-const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
-export const clusterId = cluster1.id;
-
-const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
-    subnetIds: vpc.publicSubnetIds,
-    templateParameters: {
-        minSize: 10,
+// A simple NGINX service, scaled out over two containers.
+const nginxListener = loadBalancer.createListener("nginx", { port: 80, external: true });
+const nginx = new awsx.ecs.FargateService("nginx", {
+    cluster,
+    taskDefinitionArgs: {
+        containers: {
+            nginx: {
+                image: "nginx",
+                memory: 128,
+                portMappings: [nginxListener],
+            },
+        },
     },
-    launchConfigurationArgs: {
-        instanceType: "m5.large",
-        associatePublicIpAddress: true,
-    },
-});
+    desiredCount: 2,
+}, providerOpts);
 
-export const autoScalingGroupId = autoScalingGroup.stack.id;
+export const nginxEndpoint = nginxListener.endpoint;

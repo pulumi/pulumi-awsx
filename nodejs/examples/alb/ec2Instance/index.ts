@@ -22,8 +22,16 @@ const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>
 // Create a security group to let traffic flow.
 const sg = new awsx.ec2.SecurityGroup("web-sg", {
     vpc: awsx.ec2.Vpc.getDefault(providerOpts),
-    egress: [{ protocol: "-1", fromPort: 0, toPort: 0, cidrBlocks: [ "0.0.0.0/0" ] }],
 }, providerOpts);
+
+const ipv4egress = sg.createEgressRule("ipv4-egress", {
+    ports: new awsx.ec2.AllTraffic(),
+    location: new awsx.ec2.AnyIPv4Location(),
+});
+const ipv6egress = sg.createEgressRule("ipv6-egress", {
+    ports: new awsx.ec2.AllTraffic(),
+    location: new awsx.ec2.AnyIPv6Location(),
+});
 
 // Creates an ALB associated with the default VPC for this region and listen on port 80.
 const alb = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("web-traffic",
@@ -41,8 +49,8 @@ for (let i = 0; i < alb.vpc.publicSubnets.length; i++) {
             ],
             mostRecent: true,
             owners: [ "099720109477" ], // Canonical
-        }, providerOpts).then(ami => ami.id),
-        instanceType: "t2.micro",
+        }, providerOpts).id,
+        instanceType: "m5.large",
         subnetId: alb.vpc.publicSubnets[i].subnet.id,
         availabilityZone: alb.vpc.publicSubnets[i].subnet.availabilityZone,
         vpcSecurityGroupIds: [ sg.id ],

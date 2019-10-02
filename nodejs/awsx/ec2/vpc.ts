@@ -117,7 +117,7 @@ export class Vpc extends pulumi.ComponentResource {
                 availabilityZone,
                 availabilityZoneId,
                 tags: utils.mergeTags({ type: desc.type, Name: desc.subnetName }, desc.args.tags),
-            }, { aliases: [{ parent: opts.parent }], parent: this });
+            }, { aliases: [{ parent: opts.parent }], ignoreChanges: desc.ignoreChanges, parent: this });
 
             this.addSubnet(desc.type, subnet);
         }
@@ -229,15 +229,14 @@ export class Vpc extends pulumi.ComponentResource {
         // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
         // an account.  So we just map from the id to the Vpc instance we hydrate.  If asked again
         // for the same id we can just return the same instance.
-        const vpcId = utils.promiseResult(aws.ec2.getVpc({ default: true }, { provider }).then(v => v.id));
+        const vpcId = aws.ec2.getVpc({ default: true }, { provider }).id;
         let vpc = defaultVpcs.get(vpcId);
         if (!vpc) {
             // back compat.  We always would just use the first two public subnets of the region
             // we're in.  So preserve that, even though we could get all of them here.  Pulling in
             // more than the two we pulled in before could have deep implications for clients as
             // those subnets are used to make many downstream resource-creating decisions.
-            const publicSubnetIds = utils.promiseResult(aws.ec2.getSubnetIds({ vpcId }, { provider }).then(subnets => subnets.ids))
-                                         .slice(0, 2);
+            const publicSubnetIds = aws.ec2.getSubnetIds({ vpcId }, { provider }).ids.slice(0, 2);
 
             // Generate the name as `default-` + the actual name.  For back compat with how we
             // previously named things, also create an alias from "default-vpc" to this name for
@@ -299,7 +298,7 @@ export class Vpc extends pulumi.ComponentResource {
 (<any>Vpc.prototype).partition.doNotCapture = true;
 
 function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): topology.AvailabilityZoneDescription[] {
-    const result = utils.promiseResult(aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc }));
+    const result = aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc });
     if (result.names.length !== result.zoneIds.length) {
         throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", vpc);
     }
@@ -413,6 +412,11 @@ export interface VpcSubnetArgs {
     mapPublicIpOnLaunch?: pulumi.Input<boolean>;
 
     tags?: pulumi.Input<aws.Tags>;
+
+    /**
+     * Ignore changes to any of the specified properties of the Subnet.
+     */
+    ignoreChanges?: string[];
 }
 
 /**

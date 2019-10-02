@@ -30,9 +30,9 @@ export abstract class Listener
         extends pulumi.ComponentResource
         implements x.ecs.ContainerPortMappingProvider,
                    x.ecs.ContainerLoadBalancerProvider {
-    public readonly listener: aws.elasticloadbalancingv2.Listener;
-    public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
-    public readonly defaultTargetGroup?: x.elasticloadbalancingv2.TargetGroup;
+    public readonly listener: aws.lb.Listener;
+    public readonly loadBalancer: x.lb.LoadBalancer;
+    public readonly defaultTargetGroup?: x.lb.TargetGroup;
 
     public readonly endpoint: pulumi.Output<ListenerEndpoint>;
 
@@ -46,7 +46,7 @@ export abstract class Listener
         // created/destroyed.
         super(type, name, args, {
             parent: args.loadBalancer,
-            ...utils.withAlias(opts, { parent: opts.parent }),
+            ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
@@ -55,7 +55,7 @@ export abstract class Listener
         const defaultSslPolicy = pulumi.output(args.certificateArn)
                                        .apply(a => a ? "ELBSecurityPolicy-2016-08" : undefined!);
 
-        this.listener = new aws.elasticloadbalancingv2.Listener(name, {
+        this.listener = new aws.lb.Listener(name, {
             ...args,
             loadBalancerArn: args.loadBalancer.loadBalancer.arn,
             sslPolicy: utils.ifUndefined(args.sslPolicy, defaultSslPolicy),
@@ -99,8 +99,8 @@ export abstract class Listener
         return this.defaultListenerAction.containerLoadBalancer(name, parent);
     }
 
-    public addListenerRule(name: string, args: x.elasticloadbalancingv2.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new x.elasticloadbalancingv2.ListenerRule(name, this, args, opts);
+    public addListenerRule(name: string, args: x.lb.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        return new x.lb.ListenerRule(name, this, args, opts);
     }
 
     /**
@@ -280,7 +280,7 @@ export interface ListenerDefaultAction {
 }
 
 export interface ListenerActions {
-    actions(): aws.elasticloadbalancingv2.ListenerRuleArgs["actions"];
+    actions(): aws.lb.ListenerRuleArgs["actions"];
     registerListener(listener: Listener): void;
 }
 
@@ -298,8 +298,8 @@ export function isListenerActions(obj: any): obj is ListenerActions {
         (<ListenerActions>obj).registerListener instanceof Function;
 }
 
-type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
-    loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
+type OverwriteShape = utils.Overwrite<aws.lb.ListenerArgs, {
+    loadBalancer: x.lb.LoadBalancer;
     certificateArn?: pulumi.Input<string>;
     defaultActions: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
     loadBalancerArn?: never;
@@ -309,7 +309,7 @@ type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
 }>;
 
 export interface ListenerArgs {
-    loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
+    loadBalancer: x.lb.LoadBalancer;
 
     /**
      * The ARN of the default SSL server certificate. Exactly one certificate is required if the
