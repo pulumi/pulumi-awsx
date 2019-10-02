@@ -30,8 +30,8 @@ export abstract class Service extends pulumi.ComponentResource {
      * [Container.applicationListener] or [Container.networkListener].
      */
     public readonly listeners: Record<string, x.lb.Listener> = {};
-    public readonly applicationListeners: Record<string, x.lb.Listener> = {};
-    public readonly networkListeners: Record<string, x.lb.Listener> = {};
+    public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
+    public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
     constructor(type: string, name: string,
                 args: ServiceArgs, isFargate: boolean,

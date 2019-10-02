@@ -76,7 +76,7 @@ function getPortMappings(
     vpc: x.ec2.Vpc | undefined,
     container: Container,
     applicationListeners: Record<string, x.lb.ApplicationListener>,
-    networkListeners: Record<string, x.lb.NetworkListener>,) {
+    networkListeners: Record<string, x.lb.NetworkListener>) {
 
     if (container.applicationListener && container.networkListener) {
         throw new pulumi.ResourceError(`Container '${name}' supplied [applicationListener] and [networkListener]`, parent);
