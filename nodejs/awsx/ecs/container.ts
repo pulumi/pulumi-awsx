@@ -88,7 +88,7 @@ function getPortMappings(
     }
 
     if (container.portMappings && hasLoadBalancerInfo) {
-        throw new pulumi.ResourceError(`Container '${name}' supplied [portMappings] and load balancer info`, parent);
+        throw new pulumi.ResourceError(`Container '${name}' supplied [portMappings] and a listener`, parent);
     }
 
     const result: pulumi.Output<aws.ecs.PortMapping>[] = [];
