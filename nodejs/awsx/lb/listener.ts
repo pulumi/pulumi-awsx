@@ -39,7 +39,7 @@ export abstract class Listener
     private readonly defaultListenerAction?: ListenerDefaultAction;
 
     // tslint:disable-next-line:variable-name
-    private readonly __isSubnetInstance = true;
+    private readonly __isListenerInstance = true;
 
     constructor(type: string, name: string,
                 defaultListenerAction: ListenerDefaultAction | undefined,
@@ -88,7 +88,7 @@ export abstract class Listener
 
     /** @internal */
     public static isListenerInstance(obj: any): obj is Listener {
-        return !!(<Listener>obj).__isSubnetInstance;
+        return !!(<Listener>obj).__isListenerInstance;
     }
 
     public containerPortMapping(name: string, parent: pulumi.Resource) {

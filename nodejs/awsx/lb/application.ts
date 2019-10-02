@@ -183,6 +183,9 @@ export class ApplicationListener extends mod.Listener {
     public readonly loadBalancer: ApplicationLoadBalancer;
     public readonly defaultTargetGroup?: x.lb.ApplicationTargetGroup;
 
+    // tslint:disable-next-line:variable-name
+    private readonly __isApplicationListenerInstance: boolean;
+
     constructor(name: string,
                 args: ApplicationListenerArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
@@ -220,6 +223,7 @@ export class ApplicationListener extends mod.Listener {
             protocol,
         }, opts);
 
+        this.__isApplicationListenerInstance = true;
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
@@ -244,6 +248,11 @@ export class ApplicationListener extends mod.Listener {
         }
 
         this.registerOutputs();
+    }
+
+    /** @internal */
+    public static isApplicationListenerInstance(obj: any): obj is ApplicationListener {
+        return !!(<ApplicationListener>obj).__isApplicationListenerInstance;
     }
 }
 

@@ -30,6 +30,8 @@ export abstract class Service extends pulumi.ComponentResource {
      * [Container.applicationListener] or [Container.networkListener].
      */
     public readonly listeners: Record<string, x.lb.Listener> = {};
+    public readonly applicationListeners: Record<string, x.lb.Listener> = {};
+    public readonly networkListeners: Record<string, x.lb.Listener> = {};
 
     constructor(type: string, name: string,
                 args: ServiceArgs, isFargate: boolean,
@@ -43,6 +45,8 @@ export abstract class Service extends pulumi.ComponentResource {
         const loadBalancers = getLoadBalancers(this, name, args);
 
         this.listeners = args.taskDefinition.listeners;
+        this.applicationListeners = args.taskDefinition.applicationListeners;
+        this.networkListeners = args.taskDefinition.networkListeners;
         this.service = new aws.ecs.Service(name, {
             ...args,
             loadBalancers,

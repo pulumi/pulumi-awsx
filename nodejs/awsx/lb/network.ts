@@ -126,6 +126,9 @@ export class NetworkListener
     public readonly loadBalancer: NetworkLoadBalancer;
     public readonly defaultTargetGroup?: x.lb.NetworkTargetGroup;
 
+    // tslint:disable-next-line:variable-name
+    private readonly __isNetworkListenerInstance: boolean;
+
     constructor(name: string,
                 args: NetworkListenerArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
@@ -157,10 +160,16 @@ export class NetworkListener
             defaultActions,
         }, opts);
 
+        this.__isNetworkListenerInstance = true;
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
         this.registerOutputs();
+    }
+
+    /** @internal */
+    public static isNetworkListenerInstance(obj: any): obj is NetworkListener {
+        return !!(<NetworkListener>obj).__isNetworkListenerInstance;
     }
 
     public target(name: string, parent: pulumi.Resource): pulumi.Input<x.apigateway.IntegrationTarget> {

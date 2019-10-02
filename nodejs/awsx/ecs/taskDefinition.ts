@@ -35,6 +35,8 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
      * [Container.applicationListener] or [Container.networkListener].
      */
     public readonly listeners: Record<string, x.lb.Listener> = {};
+    public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
+    public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
     /**
      * Run one or more instances of this TaskDefinition using the ECS `runTask` API, returning the Task instances.
@@ -67,7 +69,10 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
         this.containers = args.containers;
 
-        const containerDefinitions = computeContainerDefinitions(this, name, args.vpc, this.containers, this.listeners, this.logGroup);
+        const containerDefinitions = computeContainerDefinitions(
+            this, name, args.vpc, this.containers, this.applicationListeners, this.networkListeners, this.logGroup);
+        this.listeners = {...this.applicationListeners, ...this.networkListeners };
+
         const containerString = containerDefinitions.apply(d => JSON.stringify(d));
         const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
 
@@ -244,7 +249,8 @@ function computeContainerDefinitions(
     name: string,
     vpc: x.ec2.Vpc | undefined,
     containers: Record<string, ecs.Container>,
-    listeners: Record<string, x.lb.Listener>,
+    applicationListeners: Record<string, x.lb.ApplicationListener>,
+    networkListeners: Record<string, x.lb.NetworkListener>,
     logGroup: aws.cloudwatch.LogGroup | undefined): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
@@ -253,7 +259,8 @@ function computeContainerDefinitions(
         const container = containers[containerName];
 
         result.push(ecs.computeContainerDefinition(
-            parent, name, vpc, containerName, container, listeners, logGroup));
+            parent, name, vpc, containerName, container,
+            applicationListeners, networkListeners, logGroup));
     }
 
     return pulumi.all(result);

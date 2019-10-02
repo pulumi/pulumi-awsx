@@ -102,6 +102,18 @@ func Test_Examples(t *testing.T) {
 			},
 		}),
 		testBase.With(integration.ProgramTestOptions{
+			Dir:                    path.Join(cwd, "../examples/nlb/fargateShortInlineListener"),
+			StackName:              addRandomSuffix("fargate"),
+			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
+			},
+		}),
+		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/api"),
 			Dependencies: []string{
 				"@pulumi/awsx",
@@ -218,7 +230,22 @@ func Test_Examples(t *testing.T) {
 			},
 		}),
 		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/fargateInlineListener"),
+			StackName: addRandomSuffix("fargate"),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
+			},
+		}),
+		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/ec2"),
+			StackName: addRandomSuffix("ec2"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/ec2InlineListener"),
 			StackName: addRandomSuffix("ec2"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
@@ -231,6 +258,19 @@ func Test_Examples(t *testing.T) {
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/nlb/fargate"),
+			StackName: addRandomSuffix("fargate"),
+			Config: map[string]string{
+				"aws:region":               "INVALID_REGION",
+				"aws:envRegion":            envRegion,
+				"containers:redisPassword": "SECRETPASSWORD",
+			},
+			PreviewCommandlineFlags: []string{
+				"--diff",
+			},
+			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/nlb/fargateInlineListener"),
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
 				"aws:region":               "INVALID_REGION",

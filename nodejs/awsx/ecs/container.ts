@@ -27,7 +27,8 @@ export function computeContainerDefinition(
     vpc: x.ec2.Vpc | undefined,
     containerName: string,
     container: Container,
-    listeners: Record<string, x.lb.Listener>,
+    applicationListeners: Record<string, x.lb.ApplicationListener>,
+    networkListeners: Record<string, x.lb.NetworkListener>,
     logGroup: aws.cloudwatch.LogGroup | undefined) {
 
     const image = isContainerImageProvider(container.image)
@@ -38,7 +39,7 @@ export function computeContainerDefinition(
         ? utils.combineArrays(container.environment, container.image.environment(name, parent))
         : container.environment;
 
-    const portMappings = getPortMappings(parent, name, vpc, container, listeners);
+    const portMappings = getPortMappings(parent, name, vpc, container, applicationListeners, networkListeners);
     const region = utils.getRegion(parent);
 
     const logGroupId = logGroup ? logGroup.id : undefined;
@@ -74,7 +75,8 @@ function getPortMappings(
     name: string,
     vpc: x.ec2.Vpc | undefined,
     container: Container,
-    listeners: Record<string, x.lb.Listener>) {
+    applicationListeners: Record<string, x.lb.ApplicationListener>,
+    networkListeners: Record<string, x.lb.NetworkListener>,) {
 
     if (container.applicationListener && container.networkListener) {
         throw new pulumi.ResourceError(`Container '${name}' supplied [applicationListener] and [networkListener]`, parent);
@@ -98,8 +100,11 @@ function getPortMappings(
                 : obj);
             result.push(pulumi.output(portMapping));
 
-            if (x.lb.Listener.isListenerInstance(obj)) {
-                listeners[name] = obj;
+            if (x.lb.ApplicationListener.isApplicationListenerInstance(obj)) {
+                applicationListeners[name] = obj;
+            }
+            else if (x.lb.NetworkListener.isNetworkListenerInstance(obj)) {
+                networkListeners[name] = obj;
             }
         }
     }
@@ -108,26 +113,29 @@ function getPortMappings(
 
         let listener: x.lb.Listener;
         if (container.applicationListener) {
-            listener = pulumi.Resource.isInstance(container.applicationListener)
+            const appListener = pulumi.Resource.isInstance(container.applicationListener)
                 ? container.applicationListener
                 : new x.lb.ApplicationListener(name, {
                     ...container.applicationListener,
                     vpc,
                 }, opts);
+            listener = appListener;
+            applicationListeners[name] = appListener;
         }
         else if (container.networkListener) {
-            listener = pulumi.Resource.isInstance(container.networkListener)
+            const networkListener = pulumi.Resource.isInstance(container.networkListener)
                 ? container.networkListener
                 : new x.lb.NetworkListener(name, {
                     ...container.networkListener,
                     vpc,
                 }, opts);
+            listener = networkListener;
+            networkListeners[name] = networkListener;
         }
         else {
             throw new Error("Unreachable");
         }
 
-        listeners[name] = listener;
         result.push(pulumi.output(listener.containerPortMapping(name, parent)));
     }
 
