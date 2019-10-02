@@ -88,7 +88,7 @@ export abstract class Listener
 
     /** @internal */
     public static isListenerInstance(obj: any): obj is Listener {
-        return !!(<Listener>obj).__isListenerInstance;
+        return obj && !!(<Listener>obj).__isListenerInstance;
     }
 
     public containerPortMapping(name: string, parent: pulumi.Resource) {
