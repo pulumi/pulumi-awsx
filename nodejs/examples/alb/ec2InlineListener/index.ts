@@ -71,4 +71,4 @@ const stepScalingPolicy = autoScalingGroup.scaleInSteps("scale-in-out", {
     },
 });
 
-export const nginxEndpoint = service.listeners["nginx"].endpoint;
+export const nginxEndpoint = service.listeners.nginx.endpoint;

@@ -39,7 +39,7 @@ const nginx = new awsx.ecs.FargateService("nginx", {
     desiredCount: 2,
 }, providerOpts);
 
-const nginxEndpoint = nginx.listeners["nginx"].endpoint;
+const nginxEndpoint = nginx.listeners.nginx.endpoint;
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
 const simpleNginx = new awsx.ecs.FargateTaskDefinition("simple-nginx", {
@@ -50,7 +50,7 @@ const simpleNginx = new awsx.ecs.FargateTaskDefinition("simple-nginx", {
     },
 }, providerOpts).createService("simple-nginx", { cluster, desiredCount: 2});
 
-const simpleNginxEndpoint = simpleNginx.listeners["nginx"].endpoint;
+const simpleNginxEndpoint = simpleNginx.listeners.nginx.endpoint;
 
 const cachedNginx = new awsx.ecs.FargateService("cached-nginx", {
     cluster,
@@ -132,8 +132,9 @@ class FargateCache {
             },
         }, providerOpts);
 
+        const redisEndpoint = service.listeners.redis.endpoint;
         this.get = (key: string) => {
-            const endpoint = service.listeners["redis"].endpoint.get();
+            const endpoint = redisEndpoint.get();
             console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
             const client = require("redis").createClient(
                 endpoint.port,
@@ -151,8 +152,9 @@ class FargateCache {
                 });
             });
         };
+
         this.set = (key: string, value: string) => {
-            const endpoint = service.listeners["redis"].endpoint.get();
+            const endpoint = redisEndpoint.get();
             console.log(`Endpoint: ${JSON.stringify(endpoint)}`);
             const client = require("redis").createClient(
                 endpoint.port,
@@ -223,8 +225,8 @@ const api = new awsx.apigateway.API("containers", {
                 return {
                     statusCode: 200,
                     body: JSON.stringify({
-                        nginx: nginx.listeners["nginx"].endpoint.get(),
-                        nginx2: builtService.listeners["nginx"].endpoint.get(),
+                        nginx: nginx.listeners.nginx.endpoint.get(),
+                        nginx2: builtService.listeners.nginx.endpoint.get(),
                     }),
                 };
             } catch (err) {
@@ -248,7 +250,7 @@ const api = new awsx.apigateway.API("containers", {
                     };
                 }
 
-                const endpoint = nginx.listeners["nginx"].endpoint.get();
+                const endpoint = nginx.listeners.nginx.endpoint.get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();
@@ -287,7 +289,7 @@ const api = new awsx.apigateway.API("containers", {
         eventHandler: async (req): Promise<awsx.apigateway.Response> => {
             try {
                 const fetch = (await import("node-fetch")).default;
-                const endpoint = customWebServer.listeners["webserver"].endpoint.get();
+                const endpoint = customWebServer.listeners.webserver.endpoint.get();
                 console.log(`got host and port: ${JSON.stringify(endpoint)}`);
                 const resp = await fetch(`http://${endpoint.hostname}:${endpoint.port}/`);
                 const buffer = await resp.buffer();
@@ -305,7 +307,7 @@ const api = new awsx.apigateway.API("containers", {
         },
     }, {
         path: "/nginx",
-        target: nginx.networkListeners["nginx"],
+        target: nginx.networkListeners.nginx,
     }],
 }, providerOpts);
 

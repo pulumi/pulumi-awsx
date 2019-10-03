@@ -35,4 +35,4 @@ const service = new awsx.ecs.FargateService("nginx", {
     desiredCount: 2,
 }, providerOpts);
 
-export const endpoint = service.listeners["nginx"].endpoint;
+export const endpoint = service.listeners.nginx.endpoint;

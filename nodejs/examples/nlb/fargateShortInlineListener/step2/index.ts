@@ -62,7 +62,7 @@ const api = new awsx.apigateway.API("containers", {
                 return {
                     statusCode: 200,
                     body: JSON.stringify({
-                        nginx: service.listeners["nginx"].endpoint.get(),
+                        nginx: service.listeners.nginx.endpoint.get(),
                     }),
                 };
             } catch (err) {
@@ -71,7 +71,7 @@ const api = new awsx.apigateway.API("containers", {
         },
     }, {
         path: "/nginx",
-        target: service.networkListeners["nginx"],
+        target: service.networkListeners.nginx,
     }],
 }, providerOpts);
 
