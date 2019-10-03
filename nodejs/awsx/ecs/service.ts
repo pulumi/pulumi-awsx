@@ -40,13 +40,14 @@ export abstract class Service extends pulumi.ComponentResource {
 
         this.cluster = args.cluster || x.ecs.Cluster.getDefault();
 
-        // If the cluster has any autoscaling groups, ensure the service depends on it being
-        // created.
-        const loadBalancers = getLoadBalancers(this, name, args);
-
         this.listeners = args.taskDefinition.listeners;
         this.applicationListeners = args.taskDefinition.applicationListeners;
         this.networkListeners = args.taskDefinition.networkListeners;
+
+        // Determine which load balancers we're attached to based on the information supplied to the
+        // containers for this service.
+        const loadBalancers = getLoadBalancers(this, name, args);
+
         this.service = new aws.ecs.Service(name, {
             ...args,
             loadBalancers,
@@ -57,6 +58,7 @@ export abstract class Service extends pulumi.ComponentResource {
             waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),
         }, {
             parent: this,
+            // If the cluster has any autoscaling groups, ensure the service depends on it being created.
             dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
         });
 
@@ -67,7 +69,7 @@ export abstract class Service extends pulumi.ComponentResource {
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
     const result: pulumi.Output<ServiceLoadBalancer>[] = [];
 
-    // Get the initial set of load balancers if specified.
+    // Get the initial set of load balancers if specified directly in our args.
     if (args.loadBalancers) {
         for (const obj of args.loadBalancers) {
             const loadBalancer = isServiceLoadBalancerProvider(obj)
@@ -86,16 +88,26 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 
         for (const obj of container.portMappings) {
             if (x.ecs.isContainerLoadBalancerProvider(obj)) {
-                // Containers don't know their own name.  So we add the name in here on their behalf.
-                const containerLoadBalancer = obj.containerLoadBalancer(name, service);
-                const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
-                    lb => ({...lb, containerName}));
-                result.push(serviceLoadBalancer);
+                processContainerLoadBalancerProvider(containerName, obj);
             }
         }
     }
 
+    // Finally see if we were directly given load balancing listeners to associate our containers
+    // with. If so, use their information to populate our LB information.
+    for (const containerName of Object.keys(service.listeners)) {
+        processContainerLoadBalancerProvider(containerName, service.listeners[containerName]);
+    }
+
     return pulumi.output(result);
+
+    function processContainerLoadBalancerProvider(containerName: string, prov: ecs.ContainerLoadBalancerProvider) {
+        // Containers don't know their own name.  So we add the name in here on their behalf.
+        const containerLoadBalancer = prov.containerLoadBalancer(name, service);
+        const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
+            lb => ({...lb, containerName}));
+        result.push(serviceLoadBalancer);
+    }
 }
 
 export interface ServiceLoadBalancer {
