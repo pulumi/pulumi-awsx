@@ -29,7 +29,7 @@ const service = new awsx.ecs.FargateService("nginx", {
             nginx: {
                 image: "nginx",
                 memory: 128,
-                applicationListener: { port: 80, external: true, loadBalancer: { external: true } }
+                applicationListener: { port: 80, external: true, loadBalancer: { external: true } },
             },
         },
     },

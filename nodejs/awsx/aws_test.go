@@ -225,13 +225,6 @@ func Test_Examples(t *testing.T) {
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/fargateInlineListener"),
 			StackName: addRandomSuffix("fargate"),
-			EditDirs: []integration.EditDir{
-				{
-					Dir:             "step2",
-					Additive:        true,
-					ExpectNoChanges: true,
-				},
-			},
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/ec2"),
