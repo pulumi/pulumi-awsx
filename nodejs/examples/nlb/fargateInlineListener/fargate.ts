@@ -32,7 +32,7 @@ const nginx = new awsx.ecs.FargateService("nginx", {
             nginx: {
                 image: "nginx",
                 memory: 128,
-                networkListener: { port: 80 }
+                networkListener: { port: 80 },
             },
         },
     },
