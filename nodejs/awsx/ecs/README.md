@@ -63,7 +63,7 @@ The `networkListener:` or `applicationListener:` provided can be fully configure
     },
 ```
 
-See the doc for more details on what can be configured here.
+See the respective docs for more details on what can be configured here.
 
 ### Clusters
 
