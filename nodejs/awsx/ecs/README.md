@@ -59,7 +59,7 @@ The `networkListener:` or `applicationListener:` provided can be fully configure
     nginx: {
         image: "nginx",
         memory: 128,
-        networkListener: { port: 80, /*more args*/, targetGroup: { /*...*/ }, loadBalancer: { /*...*/ }  },
+        networkListener: { port: 80, /*more listener args*/, targetGroup: { /*...*/ }, loadBalancer: { /*...*/ }  },
     },
 ```
 
