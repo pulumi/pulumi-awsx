@@ -105,13 +105,6 @@ func Test_Examples(t *testing.T) {
 			Dir:                    path.Join(cwd, "../examples/nlb/fargateShortInlineListener"),
 			StackName:              addRandomSuffix("fargate"),
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
-			EditDirs: []integration.EditDir{
-				{
-					Dir:             "step2",
-					Additive:        true,
-					ExpectNoChanges: true,
-				},
-			},
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/api"),
