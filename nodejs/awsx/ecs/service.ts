@@ -24,6 +24,15 @@ export abstract class Service extends pulumi.ComponentResource {
     public readonly cluster: ecs.Cluster;
     public readonly taskDefinition: ecs.TaskDefinition;
 
+    /**
+     * Mapping from container in this service to the ELB listener exposing it through a load
+     * balancer. Only present if a listener was provided in [Container.portMappings] or in
+     * [Container.applicationListener] or [Container.networkListener].
+     */
+    public readonly listeners: Record<string, x.lb.Listener> = {};
+    public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
+    public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
+
     constructor(type: string, name: string,
                 args: ServiceArgs, isFargate: boolean,
                 opts: pulumi.ComponentResourceOptions = {}) {
@@ -31,8 +40,12 @@ export abstract class Service extends pulumi.ComponentResource {
 
         this.cluster = args.cluster || x.ecs.Cluster.getDefault();
 
-        // If the cluster has any autoscaling groups, ensure the service depends on it being
-        // created.
+        this.listeners = args.taskDefinition.listeners;
+        this.applicationListeners = args.taskDefinition.applicationListeners;
+        this.networkListeners = args.taskDefinition.networkListeners;
+
+        // Determine which load balancers we're attached to based on the information supplied to the
+        // containers for this service.
         const loadBalancers = getLoadBalancers(this, name, args);
 
         this.service = new aws.ecs.Service(name, {
@@ -45,6 +58,7 @@ export abstract class Service extends pulumi.ComponentResource {
             waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),
         }, {
             parent: this,
+            // If the cluster has any autoscaling groups, ensure the service depends on it being created.
             dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
         });
 
@@ -55,7 +69,7 @@ export abstract class Service extends pulumi.ComponentResource {
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
     const result: pulumi.Output<ServiceLoadBalancer>[] = [];
 
-    // Get the initial set of load balancers if specified.
+    // Get the initial set of load balancers if specified directly in our args.
     if (args.loadBalancers) {
         for (const obj of args.loadBalancers) {
             const loadBalancer = isServiceLoadBalancerProvider(obj)
@@ -74,83 +88,27 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 
         for (const obj of container.portMappings) {
             if (x.ecs.isContainerLoadBalancerProvider(obj)) {
-                // Containers don't know their own name.  So we add the name in here on their behalf.
-                const containerLoadBalancer = obj.containerLoadBalancer(name, service);
-                const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
-                    lb => ({...lb, containerName}));
-                result.push(serviceLoadBalancer);
+                processContainerLoadBalancerProvider(containerName, obj);
             }
         }
     }
 
+    // Finally see if we were directly given load balancing listeners to associate our containers
+    // with. If so, use their information to populate our LB information.
+    for (const containerName of Object.keys(service.listeners)) {
+        processContainerLoadBalancerProvider(containerName, service.listeners[containerName]);
+    }
+
     return pulumi.output(result);
+
+    function processContainerLoadBalancerProvider(containerName: string, prov: ecs.ContainerLoadBalancerProvider) {
+        // Containers don't know their own name.  So we add the name in here on their behalf.
+        const containerLoadBalancer = prov.containerLoadBalancer(name, service);
+        const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
+            lb => ({...lb, containerName}));
+        result.push(serviceLoadBalancer);
+    }
 }
-
-// const volumeNames = new Set<string>();
-
-// export interface Volume extends cloud.Volume {
-//     getVolumeName(): any;
-//     getHostPath(): any;
-// }
-
-// // _Note_: In the current EFS-backed model, a Volume is purely virtual - it
-// // doesn't actually manage any underlying resource.  It is used just to provide
-// // a handle to a folder on the EFS share which can be mounted by container(s).
-// // On platforms like ACI, we may be able to actually provision a unique File
-// // Share per Volume to keep these independently manageable.  For now, on AWS
-// // though, we rely on this File Share having been set up as part of the ECS
-// // Cluster outside of @pulumi/cloud, and assume that that data has a lifetime
-// // longer than any individual deployment.
-// export class SharedVolume extends pulumi.ComponentResource implements Volume, cloud.SharedVolume {
-//     public readonly kind: cloud.VolumeKind;
-//     public readonly name: string;
-
-//     constructor(name: string, opts?: pulumi.ComponentResourceOptions) {
-//         if (volumeNames.has(name)) {
-//             throw new Error("Must provide a unique volume name");
-//         }
-//         super("cloud:volume:Volume", name, {}, opts);
-//         this.kind = "SharedVolume";
-//         this.name = name;
-//         volumeNames.add(name);
-//     }
-
-//     getVolumeName() {
-//         // Ensure this is unique to avoid conflicts both in EFS and in the
-//         // TaskDefinition we pass to ECS.
-//         return utils.sha1hash(`${pulumi.getProject()}:${pulumi.getStack()}:${this.kind}:${this.name}`);
-//     }
-
-//     getHostPath() {
-//         const cluster = getCluster();
-//         if (!cluster || !cluster.efsMountPath) {
-//             throw new Error(
-//                 "Cannot use 'Volume'.  Configured cluster does not support EFS.",
-//             );
-//         }
-//         // Include the unique `getVolumeName` in the EFS host path to ensure this doesn't
-//         // clash with other deployments.
-//         return `${cluster.efsMountPath}/${this.name}_${this.getVolumeName()}`;
-//     }
-// }
-
-// export class HostPathVolume implements cloud.HostPathVolume {
-//     public readonly kind: cloud.VolumeKind;
-//     public readonly path: string;
-
-//     constructor(path: string) {
-//         this.kind = "HostPathVolume";
-//         this.path = path;
-//     }
-
-//     getVolumeName() {
-//         return utils.sha1hash(`${this.kind}:${this.path}`);
-//     }
-
-//     getHostPath() {
-//         return this.path;
-//     }
-// }
 
 export interface ServiceLoadBalancer {
     containerName: pulumi.Input<string>;

@@ -18,6 +18,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as awssdk from "aws-sdk";
 
 import * as ecs from ".";
+import * as x from "..";
 import * as role from "../role";
 import * as utils from "../utils";
 
@@ -27,6 +28,15 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly containers: Record<string, ecs.Container>;
     public readonly taskRole?: aws.iam.Role;
     public readonly executionRole?: aws.iam.Role;
+
+    /**
+     * Mapping from container in this task to the ELB listener exposing it through a load balancer.
+     * Only present if a listener was provided in [Container.portMappings] or in
+     * [Container.applicationListener] or [Container.networkListener].
+     */
+    public readonly listeners: Record<string, x.lb.Listener> = {};
+    public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
+    public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
     /**
      * Run one or more instances of this TaskDefinition using the ECS `runTask` API, returning the Task instances.
@@ -57,26 +67,12 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
                              args.executionRole ? args.executionRole : TaskDefinition.createExecutionRole(
             `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
-//         // todo(cyrusn): volumes.
-//         //     // Find all referenced Volumes.
-// //     const volumes: { hostPath?: string; name: string }[] = [];
-// //     for (const containerName of Object.keys(containers)) {
-// //         const container = containers[containerName];
-
-// //         // Collect referenced Volumes.
-// //         if (container.volumes) {
-// //             for (const volumeMount of container.volumes) {
-// //                 const volume = volumeMount.sourceVolume;
-// //                 volumes.push({
-// //                     hostPath: (volume as Volume).getHostPath(),
-// //                     name: (volume as Volume).getVolumeName(),
-// //                 });
-// //             }
-// //         }
-// //     }
-
         this.containers = args.containers;
-        const containerDefinitions = computeContainerDefinitions(this, name, this.containers, this.logGroup);
+
+        const containerDefinitions = computeContainerDefinitions(
+            this, name, args.vpc, this.containers, this.applicationListeners, this.networkListeners, this.logGroup);
+        this.listeners = {...this.applicationListeners, ...this.networkListeners };
+
         const containerString = containerDefinitions.apply(d => JSON.stringify(d));
         const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
 
@@ -251,7 +247,10 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
+    vpc: x.ec2.Vpc | undefined,
     containers: Record<string, ecs.Container>,
+    applicationListeners: Record<string, x.lb.ApplicationListener>,
+    networkListeners: Record<string, x.lb.NetworkListener>,
     logGroup: aws.cloudwatch.LogGroup | undefined): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
@@ -259,7 +258,9 @@ function computeContainerDefinitions(
     for (const containerName of Object.keys(containers)) {
         const container = containers[containerName];
 
-        result.push(ecs.computeContainerDefinition(parent, name, containerName, container, logGroup));
+        result.push(ecs.computeContainerDefinition(
+            parent, name, vpc, containerName, container,
+            applicationListeners, networkListeners, logGroup));
     }
 
     return pulumi.all(result);
@@ -286,6 +287,12 @@ type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
 
 export interface TaskDefinitionArgs {
     // Properties copied from aws.ecs.TaskDefinitionArgs
+
+    /**
+     * The vpc that the service for this task will run in.  Does not normally need to be explicitly
+     * provided as it will be inferred from the cluster the service is associated with.
+     */
+    vpc?: x.ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
