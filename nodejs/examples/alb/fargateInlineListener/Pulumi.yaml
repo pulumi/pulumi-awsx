@@ -1,0 +1,3 @@
+name: alb
+runtime: nodejs
+description: A simple application load balancer example.

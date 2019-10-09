@@ -3,6 +3,9 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Added a simpler way to create a load balanced (NLB or ALB) `aws.ecs.EC2Service` or
+  `awsx.ecs.FargateService`
+
 ## 0.18.12 (2019-10-02)
 
 * Added options to customize the Deployment, RestApi or Stage produced by an awsx.apigateway.API.

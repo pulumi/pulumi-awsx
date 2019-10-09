@@ -73,10 +73,14 @@ export class EC2Service extends ecs.Service {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const taskDefinition = args.taskDefinition ||
-            new ecs.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
-
         const cluster = args.cluster || x.ecs.Cluster.getDefault();
+
+        const taskDefinition = args.taskDefinition ||
+            new ecs.EC2TaskDefinition(name, {
+                ...args.taskDefinitionArgs,
+                vpc: cluster.vpc,
+            }, opts);
+
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = args.subnets || cluster.vpc.publicSubnetIds;
@@ -118,6 +122,12 @@ type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
 
 export interface EC2TaskDefinitionArgs {
     // Properties from ecs.TaskDefinitionArgs
+
+    /**
+     * The vpc that the service for this task will run in.  Does not normally need to be explicitly
+     * provided as it will be inferred from the cluster the service is associated with.
+     */
+    vpc?: x.ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
