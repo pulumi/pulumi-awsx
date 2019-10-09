@@ -3,6 +3,9 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Added `secrets` property to `awsx.ecs.Container` to allow injecting sensitive data into a
+  container.
+
 ## 0.18.12 (2019-10-02)
 
 * Added options to customize the Deployment, RestApi or Stage produced by an awsx.apigateway.API.
