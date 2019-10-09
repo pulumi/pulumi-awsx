@@ -44,28 +44,28 @@ export function computeContainerDefinition(
 
     const logGroupId = logGroup ? logGroup.id : undefined;
     const containerDefinition = pulumi.all([container, logGroupId, image, environment, portMappings, region])
-                 .apply(([container, logGroupId, image, environment, portMappings, region]) => {
-        const containerDefinition: aws.ecs.ContainerDefinition = {
-            ...container,
-            image,
-            environment,
-            portMappings,
-            name: containerName,
-        };
-
-        if (logGroupId !== undefined) {
-            containerDefinition.logConfiguration = {
-                logDriver: "awslogs",
-                options: {
-                    "awslogs-group": logGroupId,
-                    "awslogs-region": region,
-                    "awslogs-stream-prefix": containerName,
-                },
+        .apply(([container, logGroupId, image, environment, portMappings, region]) => {
+            const containerDefinition: aws.ecs.ContainerDefinition = {
+                ...container,
+                image,
+                environment,
+                portMappings,
+                name: containerName,
             };
-        }
 
-        return containerDefinition;
-    });
+            if (logGroupId !== undefined) {
+                containerDefinition.logConfiguration = {
+                    logDriver: "awslogs",
+                    options: {
+                        "awslogs-group": logGroupId,
+                        "awslogs-region": region,
+                        "awslogs-stream-prefix": containerName,
+                    },
+                };
+            }
+
+            return containerDefinition;
+        });
 
     return containerDefinition;
 }
@@ -595,7 +595,7 @@ export interface Container {
     /**
      * The list of port mappings for the container. Port mappings allow containers to access ports
      * on the host container instance to send or receive traffic.
-     *     
+     *
      * If this container will be run in an `ecs.Service` that will be hooked up to an
      * `lb.LoadBalancer` (either an ALB or NLB) the appropriate `lb.Listener` or `lb.TargetGroup`
      * can be passed in here instead and the port mapping will be computed from it.
