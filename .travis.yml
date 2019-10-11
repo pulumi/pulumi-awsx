@@ -18,7 +18,7 @@ install:
     - sudo apt-get --allow-downgrades -y install docker-ce=17.09.0~ce-0~ubuntu
     - docker version
     # Install Pulumi
-    - curl -sSL https://get.pulumi.com | bash -s -- --version "$(curl -sSL http://registry.npmjs.org/-/package/@pulumi/pulumi/dist-tags | jq -r .latest)"
+    - curl -sSL https://get.pulumi.com | bash -s -- --version 1.4.0-alpha.1570831407
     - export PATH=$HOME/.pulumi/bin:$PATH
 before_script:
     - ${PULUMI_SCRIPTS}/ci/ensure-dependencies
