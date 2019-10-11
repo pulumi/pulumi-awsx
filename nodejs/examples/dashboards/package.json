@@ -8,8 +8,8 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@pulumi/pulumi": "^1.0.0",
-        "@pulumi/aws": "^1.0.0",
+        "@pulumi/pulumi": "feature-synchronousInvokes2",
+        "@pulumi/aws": "feature-synchronousInvokes2",
         "node-fetch": "^2.2.0"
     },
     "devDependencies": {
