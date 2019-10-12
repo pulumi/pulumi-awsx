@@ -22,9 +22,27 @@ const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>
 const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
 const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true }, providerOpts);
 
-// A simple NGINX service, scaled out over two containers.
 const targetGroup = loadBalancer.createTargetGroup("nginx", { port: 80, targetType: "instance" });
 
+// A simple NGINX service, scaled out over two containers.  Create a listener to connect the load
+// balancer to the service.
+const nginxListener = targetGroup.createListener("nginx", { port: 80, external: true });
+const service = new awsx.ecs.EC2Service("nginx", {
+    cluster,
+    taskDefinitionArgs: {
+        networkMode: "bridge",
+        containers: {
+            nginx: {
+                image: "nginx",
+                memory: 128,
+                portMappings: [nginxListener],
+            },
+        },
+    },
+    desiredCount: 2,
+}, providerOpts);
+
+// Now setup an asg for the cluster to control how it will respond under load.
 const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
     subnetIds: awsx.ec2.Vpc.getDefault(providerOpts).publicSubnetIds,
     targetGroups: [targetGroup],
@@ -42,22 +60,6 @@ const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTa
     estimatedInstanceWarmup: 120,
     targetGroup: targetGroup,
 });
-
-const nginxListener = targetGroup.createListener("nginx", { port: 80, external: true });
-const service = new awsx.ecs.EC2Service("nginx", {
-    cluster,
-    taskDefinitionArgs: {
-        networkMode: "bridge",
-        containers: {
-            nginx: {
-                image: "nginx",
-                memory: 128,
-                portMappings: [nginxListener],
-            },
-        },
-    },
-    desiredCount: 2,
-}, providerOpts);
 
 // Create a policy that scales the ASG in response to the average memory utilization of the service.
 // When memory goes above 60%, scale up the ASG by 10%.  If it goes above 70%, scale it up by 30%.
