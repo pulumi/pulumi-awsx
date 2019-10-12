@@ -79,6 +79,8 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
         }
     }
 
+    const containerLoadBalancerProviders = new Map<string, ecs.ContainerLoadBalancerProvider>();
+
     // Now walk each container and see if it wants to add load balancer information as well.
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
         const container = args.taskDefinition.containers[containerName];
@@ -88,7 +90,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 
         for (const obj of container.portMappings) {
             if (x.ecs.isContainerLoadBalancerProvider(obj)) {
-                processContainerLoadBalancerProvider(containerName, obj);
+                containerLoadBalancerProviders.set(containerName, obj);
             }
         }
     }
@@ -96,7 +98,11 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
     // Finally see if we were directly given load balancing listeners to associate our containers
     // with. If so, use their information to populate our LB information.
     for (const containerName of Object.keys(service.listeners)) {
-        processContainerLoadBalancerProvider(containerName, service.listeners[containerName]);
+        containerLoadBalancerProviders.set(containerName, service.listeners[containerName]);
+    }
+
+    for (const [containerName, provider] of containerLoadBalancerProviders) {
+        processContainerLoadBalancerProvider(containerName, provider);
     }
 
     return pulumi.output(result);
