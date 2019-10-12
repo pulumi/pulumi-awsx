@@ -90,7 +90,6 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 
         for (const obj of container.portMappings) {
             if (x.ecs.isContainerLoadBalancerProvider(obj)) {
-                console.log(containerName + " had port mapping");
                 containerLoadBalancerProviders.set(containerName, obj);
             }
         }
