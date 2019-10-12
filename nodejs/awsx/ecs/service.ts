@@ -100,10 +100,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
     // with. If so, use their information to populate our LB information.
     for (const containerName of Object.keys(service.listeners)) {
         if (!containerLoadBalancerProviders.has(containerName)) {
-            console.log(containerName + " had listener and used it");
             containerLoadBalancerProviders.set(containerName, service.listeners[containerName]);
-        } else {
-            console.log(containerName + " had listener and skipped it");
         }
     }
 
