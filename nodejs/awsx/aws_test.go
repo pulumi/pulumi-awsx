@@ -91,7 +91,7 @@ func Test_Examples(t *testing.T) {
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
-			StackName:              addRandomSuffix("fargate"),
+			StackName:              addRandomSuffix("nlbfargateShort"),
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
 			EditDirs: []integration.EditDir{
 				{
@@ -103,12 +103,12 @@ func Test_Examples(t *testing.T) {
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:                    path.Join(cwd, "../examples/nlb/fargateShortInlineListener"),
-			StackName:              addRandomSuffix("fargate"),
+			StackName:              addRandomSuffix("nlbfargateShortInlineListener"),
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/ec2"),
-			StackName: addRandomSuffix("ec2"),
+			StackName: addRandomSuffix("albec2"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/api"),
@@ -217,7 +217,7 @@ func Test_Examples(t *testing.T) {
 	longTests := []integration.ProgramTestOptions{
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/fargate"),
-			StackName: addRandomSuffix("fargate"),
+			StackName: addRandomSuffix("albfargate"),
 			EditDirs: []integration.EditDir{
 				{
 					Dir:             "step2",
@@ -228,19 +228,19 @@ func Test_Examples(t *testing.T) {
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/fargateInlineListener"),
-			StackName: addRandomSuffix("fargate"),
+			StackName: addRandomSuffix("albfargateInlineListener"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/ec2Instance"),
-			StackName: addRandomSuffix("ec2Instance"),
+			StackName: addRandomSuffix("albec2Instance"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/lambdaTarget"),
-			StackName: addRandomSuffix("lambdaTarget"),
+			StackName: addRandomSuffix("alblambdaTarget"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/nlb/fargate"),
-			StackName: addRandomSuffix("fargate"),
+			StackName: addRandomSuffix("nlbfargate"),
 			Config: map[string]string{
 				"aws:region":               "INVALID_REGION",
 				"aws:envRegion":            envRegion,
