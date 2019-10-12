@@ -62,195 +62,195 @@ func Test_Examples(t *testing.T) {
 	}
 
 	shortTests := []integration.ProgramTestOptions{
-		// integration.ProgramTestOptions{
-		// 	Config: map[string]string{"aws:region": envRegion},
-		// 	Dir:    path.Join(cwd, "../examples/cluster"),
-		// 	Dependencies: []string{
-		// 		"@pulumi/awsx",
-		// 	},
-		// 	Quick:       true,
-		// 	SkipRefresh: true,
-		// },
+		integration.ProgramTestOptions{
+			Config: map[string]string{"aws:region": envRegion},
+			Dir:    path.Join(cwd, "../examples/cluster"),
+			Dependencies: []string{
+				"@pulumi/awsx",
+			},
+			Quick:       true,
+			SkipRefresh: true,
+		},
+		testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/dashboards")}),
+		testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/ecr")}),
+		testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/metrics")}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/vpc"),
+			StackName: addRandomSuffix("vpc"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/vpcIgnoreSubnetChanges"),
+			StackName: addRandomSuffix("vpcIgnoreSubnetChanges"),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
+			},
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
+			StackName:              addRandomSuffix("fargate"),
+			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
+			},
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:                    path.Join(cwd, "../examples/nlb/fargateShortInlineListener"),
+			StackName:              addRandomSuffix("fargate"),
+			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
+		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/ec2"),
 			StackName: addRandomSuffix("ec2"),
 		}),
-		// testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/dashboards")}),
-		// testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/ecr")}),
-		// testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/metrics")}),
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir:       path.Join(cwd, "../examples/vpc"),
-		// 	StackName: addRandomSuffix("vpc"),
-		// }),
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir:       path.Join(cwd, "../examples/vpcIgnoreSubnetChanges"),
-		// 	StackName: addRandomSuffix("vpcIgnoreSubnetChanges"),
-		// 	EditDirs: []integration.EditDir{
-		// 		{
-		// 			Dir:             "step2",
-		// 			Additive:        true,
-		// 			ExpectNoChanges: true,
-		// 		},
-		// 	},
-		// }),
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
-		// 	StackName:              addRandomSuffix("fargate"),
-		// 	ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
-		// 	EditDirs: []integration.EditDir{
-		// 		{
-		// 			Dir:             "step2",
-		// 			Additive:        true,
-		// 			ExpectNoChanges: true,
-		// 		},
-		// 	},
-		// }),
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir:                    path.Join(cwd, "../examples/nlb/fargateShortInlineListener"),
-		// 	StackName:              addRandomSuffix("fargate"),
-		// 	ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
-		// }),
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir: path.Join(cwd, "../examples/api"),
-		// 	Dependencies: []string{
-		// 		"@pulumi/awsx",
-		// 	},
-		// 	ExtraRuntimeValidation: validateAPITests([]apiTest{
-		// 		{
-		// 			urlStackOutputKey: "url",
-		// 			urlPath:           "/a",
-		// 			requiredParameters: &requiredParameters{
-		// 				queryParameters:             []string{"key"},
-		// 				expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-		// 			},
-		// 			requiredAuth: &requiredAuth{
-		// 				queryParameters: map[string]string{
-		// 					"auth": "password",
-		// 				},
-		// 			},
-		// 			expectedBody: "<h1>Hello world!</h1>",
-		// 		},
-		// 		// {
-		// 		// 	urlStackOutputKey: "url",
-		// 		// 	urlPath:           "/b",
-		// 		// 	requiredAuth: &requiredAuth{
-		// 		// 		queryParameters: map[string]string{
-		// 		// 			"auth": "password",
-		// 		// 		},
-		// 		// 	},
-		// 		// 	requiredAPIKey: &requiredAPIKey{
-		// 		// 		stackOutput: "apiKeyValue",
-		// 		// 	},
-		// 		// 	expectedBody: "Hello, world!",
-		// 		// },
-		// 		// {
-		// 		// 	urlStackOutputKey: "url",
-		// 		// 	urlPath:           "/www/file1.txt",
-		// 		// 	requiredParameters: &requiredParameters{
-		// 		// 		queryParameters:             []string{"key"},
-		// 		// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-		// 		// 	},
-		// 		// 	requiredAuth: &requiredAuth{
-		// 		// 		headers: map[string]string{
-		// 		// 			"Authorization": "Allow",
-		// 		// 		},
-		// 		// 	},
-		// 		// 	requiredAPIKey: &requiredAPIKey{
-		// 		// 		stackOutput: "apiKeyValue",
-		// 		// 	},
-		// 		// 	expectedBody: "contents1\n",
-		// 		// },
-		// 		// {
-		// 		// 	urlStackOutputKey: "url",
-		// 		// 	urlPath:           "/integration",
-		// 		// 	requiredParameters: &requiredParameters{
-		// 		// 		queryParameters:             []string{"key"},
-		// 		// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-		// 		// 	},
-		// 		// 	requiredAuth: &requiredAuth{
-		// 		// 		queryParameters: map[string]string{
-		// 		// 			"auth": "password",
-		// 		// 		},
-		// 		// 	},
-		// 		// 	requiredAPIKey: &requiredAPIKey{
-		// 		// 		stackOutput: "apiKeyValue",
-		// 		// 	},
-		// 		// 	skipBodyValidation: true,
-		// 		// },
-		// 		{
-		// 			urlStackOutputKey: "authorizerUrl",
-		// 			urlPath:           "/www_old/file1.txt",
-		// 			requiredAuth: &requiredAuth{
-		// 				queryParameters: map[string]string{
-		// 					"auth": "Allow",
-		// 				},
-		// 				headers: map[string]string{
-		// 					"secret": "test",
-		// 				},
-		// 			},
-		// 			expectedBody: "contents1\n",
-		// 		},
-		// 		{
-		// 			urlStackOutputKey: "cognitoUrl",
-		// 			urlPath:           "/www_old/sub/file1.txt",
-		// 			requiredToken: &requiredToken{
-		// 				header:       "Authorization",
-		// 				getAuthToken: getCognitoUserToken,
-		// 			},
-		// 			expectedBody: "othercontents1\n",
-		// 		},
-		// 	}),
-		// 	EditDirs: []integration.EditDir{{
-		// 		Dir:      "../examples/api/step2",
-		// 		Additive: true,
-		// 		ExtraRuntimeValidation: validateAPITests([]apiTest{
-		// 			{
-		// 				urlStackOutputKey: "url",
-		// 				urlPath:           "/b",
-		// 				expectedBody:      "<h1>Hello world!</h1>",
-		// 			},
-		// 		}),
-		// 	}},
-		// }),
+		testBase.With(integration.ProgramTestOptions{
+			Dir: path.Join(cwd, "../examples/api"),
+			Dependencies: []string{
+				"@pulumi/awsx",
+			},
+			ExtraRuntimeValidation: validateAPITests([]apiTest{
+				{
+					urlStackOutputKey: "url",
+					urlPath:           "/a",
+					requiredParameters: &requiredParameters{
+						queryParameters:             []string{"key"},
+						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+					},
+					requiredAuth: &requiredAuth{
+						queryParameters: map[string]string{
+							"auth": "password",
+						},
+					},
+					expectedBody: "<h1>Hello world!</h1>",
+				},
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/b",
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "Hello, world!",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/www/file1.txt",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		headers: map[string]string{
+				// 			"Authorization": "Allow",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "contents1\n",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/integration",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	skipBodyValidation: true,
+				// },
+				{
+					urlStackOutputKey: "authorizerUrl",
+					urlPath:           "/www_old/file1.txt",
+					requiredAuth: &requiredAuth{
+						queryParameters: map[string]string{
+							"auth": "Allow",
+						},
+						headers: map[string]string{
+							"secret": "test",
+						},
+					},
+					expectedBody: "contents1\n",
+				},
+				{
+					urlStackOutputKey: "cognitoUrl",
+					urlPath:           "/www_old/sub/file1.txt",
+					requiredToken: &requiredToken{
+						header:       "Authorization",
+						getAuthToken: getCognitoUserToken,
+					},
+					expectedBody: "othercontents1\n",
+				},
+			}),
+			EditDirs: []integration.EditDir{{
+				Dir:      "../examples/api/step2",
+				Additive: true,
+				ExtraRuntimeValidation: validateAPITests([]apiTest{
+					{
+						urlStackOutputKey: "url",
+						urlPath:           "/b",
+						expectedBody:      "<h1>Hello world!</h1>",
+					},
+				}),
+			}},
+		}),
 	}
 
 	longTests := []integration.ProgramTestOptions{
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir:       path.Join(cwd, "../examples/alb/fargate"),
-		// 	StackName: addRandomSuffix("fargate"),
-		// 	EditDirs: []integration.EditDir{
-		// 		{
-		// 			Dir:             "step2",
-		// 			Additive:        true,
-		// 			ExpectNoChanges: true,
-		// 		},
-		// 	},
-		// }),
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir:       path.Join(cwd, "../examples/alb/fargateInlineListener"),
-		// 	StackName: addRandomSuffix("fargate"),
-		// }),
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir:       path.Join(cwd, "../examples/alb/ec2Instance"),
-		// 	StackName: addRandomSuffix("ec2Instance"),
-		// }),
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir:       path.Join(cwd, "../examples/alb/lambdaTarget"),
-		// 	StackName: addRandomSuffix("lambdaTarget"),
-		// }),
-		// testBase.With(integration.ProgramTestOptions{
-		// 	Dir:       path.Join(cwd, "../examples/nlb/fargate"),
-		// 	StackName: addRandomSuffix("fargate"),
-		// 	Config: map[string]string{
-		// 		"aws:region":               "INVALID_REGION",
-		// 		"aws:envRegion":            envRegion,
-		// 		"containers:redisPassword": "SECRETPASSWORD",
-		// 	},
-		// 	PreviewCommandlineFlags: []string{
-		// 		"--diff",
-		// 	},
-		// 	ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
-		// }),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/fargate"),
+			StackName: addRandomSuffix("fargate"),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
+			},
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/fargateInlineListener"),
+			StackName: addRandomSuffix("fargate"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/ec2Instance"),
+			StackName: addRandomSuffix("ec2Instance"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/lambdaTarget"),
+			StackName: addRandomSuffix("lambdaTarget"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/nlb/fargate"),
+			StackName: addRandomSuffix("fargate"),
+			Config: map[string]string{
+				"aws:region":               "INVALID_REGION",
+				"aws:envRegion":            envRegion,
+				"containers:redisPassword": "SECRETPASSWORD",
+			},
+			PreviewCommandlineFlags: []string{
+				"--diff",
+			},
+			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
+		}),
 
 		// {
 		// 	Dir:       path.Join(cwd, "../examples/ec2"),
