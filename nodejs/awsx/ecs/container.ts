@@ -121,7 +121,6 @@ function getPortMappings(
     return pulumi.all(result).apply(mappings => convertMappings(mappings));
 
     function createListener() {
-
         const opts = { parent };
 
         const errorMessage = `[vpc] must be supplied to task definition in order to create a listener for container ${name}`;
