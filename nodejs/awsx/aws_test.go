@@ -231,10 +231,6 @@ func Test_Examples(t *testing.T) {
 			StackName: addRandomSuffix("ec2"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/ec2InlineListener"),
-			StackName: addRandomSuffix("ec2"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/ec2Instance"),
 			StackName: addRandomSuffix("ec2Instance"),
 		}),
@@ -244,19 +240,6 @@ func Test_Examples(t *testing.T) {
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/nlb/fargate"),
-			StackName: addRandomSuffix("fargate"),
-			Config: map[string]string{
-				"aws:region":               "INVALID_REGION",
-				"aws:envRegion":            envRegion,
-				"containers:redisPassword": "SECRETPASSWORD",
-			},
-			PreviewCommandlineFlags: []string{
-				"--diff",
-			},
-			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/nlb/fargateInlineListener"),
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
 				"aws:region":               "INVALID_REGION",
