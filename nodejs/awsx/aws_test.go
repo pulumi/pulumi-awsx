@@ -71,6 +71,10 @@ func Test_Examples(t *testing.T) {
 		// 	Quick:       true,
 		// 	SkipRefresh: true,
 		// },
+		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/ec2"),
+			StackName: addRandomSuffix("ec2"),
+		}),
 		// testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/dashboards")}),
 		// testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/ecr")}),
 		// testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/metrics")}),
@@ -226,10 +230,6 @@ func Test_Examples(t *testing.T) {
 		// 	Dir:       path.Join(cwd, "../examples/alb/fargateInlineListener"),
 		// 	StackName: addRandomSuffix("fargate"),
 		// }),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/ec2"),
-			StackName: addRandomSuffix("ec2"),
-		}),
 		// testBase.With(integration.ProgramTestOptions{
 		// 	Dir:       path.Join(cwd, "../examples/alb/ec2Instance"),
 		// 	StackName: addRandomSuffix("ec2Instance"),
