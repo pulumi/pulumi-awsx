@@ -126,7 +126,7 @@ export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
     return getRegionFromProvider(provider);
 }
 
-function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
-    const region = provider ? (<any>provider).region : undefined;
+function getRegionFromProvider(provider: pulumi.ProviderResourceOrRef | undefined) {
+    const region = pulumi.Resource.isInstance(provider) ? (<any>provider).region : undefined;
     return region || aws.config.region;
 }
