@@ -34,8 +34,8 @@ export abstract class Service extends pulumi.ComponentResource {
     public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
     constructor(type: string, name: string,
-        args: ServiceArgs, isFargate: boolean,
-        opts: pulumi.ComponentResourceOptions = {}) {
+                args: ServiceArgs, isFargate: boolean,
+                opts: pulumi.ComponentResourceOptions = {}) {
         super(type, name, args, opts);
 
         this.cluster = args.cluster || x.ecs.Cluster.getDefault();
