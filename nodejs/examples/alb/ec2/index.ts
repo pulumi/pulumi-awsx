@@ -47,7 +47,7 @@ const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
     subnetIds: awsx.ec2.Vpc.getDefault(providerOpts).publicSubnetIds,
     targetGroups: [targetGroup],
     templateParameters: {
-        minSize: 10,
+        minSize: 5,
     },
     launchConfigurationArgs: {
         instanceType: "m5.large",
@@ -56,7 +56,7 @@ const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
 });
 
 const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
-    targetValue: 10,
+    targetValue: 5,
     estimatedInstanceWarmup: 120,
     targetGroup: targetGroup,
 });

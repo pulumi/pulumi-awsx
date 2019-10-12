@@ -30,7 +30,7 @@ export const clusterId = cluster1.id;
 const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
     subnetIds: vpc.publicSubnetIds,
     templateParameters: {
-        minSize: 10,
+        minSize: 5,
     },
     launchConfigurationArgs: {
         instanceType: "m5.large",
