@@ -39,7 +39,7 @@ export function computeContainerDefinition(
         ? utils.combineArrays(container.environment, container.image.environment(name, parent))
         : container.environment;
 
-    const portMappings = getPortMappings(parent, name, vpc, container, applicationListeners, networkListeners);
+    const portMappings = getPortMappings(parent, name, vpc, container, containerName, applicationListeners, networkListeners);
     const region = utils.getRegion(parent);
 
     const logGroupId = logGroup ? logGroup.id : undefined;
@@ -75,6 +75,7 @@ function getPortMappings(
     name: string,
     vpc: x.ec2.Vpc | undefined,
     container: Container,
+    containerName: string,
     applicationListeners: Record<string, x.lb.ApplicationListener>,
     networkListeners: Record<string, x.lb.NetworkListener>) {
 
@@ -112,10 +113,10 @@ function getPortMappings(
     }
 
     if (x.lb.ApplicationListener.isApplicationListenerInstance(possibleListener)) {
-        applicationListeners[name] = possibleListener;
+        applicationListeners[containerName] = possibleListener;
     }
     else if (x.lb.NetworkListener.isNetworkListenerInstance(possibleListener)) {
-        networkListeners[name] = possibleListener;
+        networkListeners[containerName] = possibleListener;
     }
 
     return pulumi.all(result).apply(mappings => convertMappings(mappings));
