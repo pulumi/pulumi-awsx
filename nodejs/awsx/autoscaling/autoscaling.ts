@@ -195,7 +195,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             predefinedMetricType: "ALBRequestCountPerTarget",
             resourceLabel: pulumi.interpolate `${loadBalancerSuffix}/${targetGroupSuffix}`,
             ...args,
-        }, opts);
+        }, pulumi.mergeOptions(opts, { dependsOn: targetGroup.getListenersAsync() }));
     }
 
     /**
