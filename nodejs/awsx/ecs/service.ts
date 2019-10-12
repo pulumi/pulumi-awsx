@@ -98,7 +98,9 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
     // Finally see if we were directly given load balancing listeners to associate our containers
     // with. If so, use their information to populate our LB information.
     for (const containerName of Object.keys(service.listeners)) {
-        containerLoadBalancerProviders.set(containerName, service.listeners[containerName]);
+        if (!containerLoadBalancerProviders.has(containerName)) {
+            containerLoadBalancerProviders.set(containerName, service.listeners[containerName]);
+        }
     }
 
     for (const [containerName, provider] of containerLoadBalancerProviders) {
@@ -111,7 +113,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
         // Containers don't know their own name.  So we add the name in here on their behalf.
         const containerLoadBalancer = prov.containerLoadBalancer(name, service);
         const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
-            lb => ({...lb, containerName}));
+            lb => ({ ...lb, containerName }));
         result.push(serviceLoadBalancer);
     }
 }

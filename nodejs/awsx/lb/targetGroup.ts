@@ -70,6 +70,11 @@ export abstract class TargetGroup
         return pulumi.output(this.listeners.map(r => r.listener.urn));
     }
 
+    /** @internal */
+    public async getListenersAsync() {
+        return this.listeners;
+    }
+
     public containerPortMapping(): pulumi.Input<aws.ecs.PortMapping> {
         return pulumi.output([this.targetGroup.port, this.dependencies()]).apply(([port]) => ({
             containerPort: +port!,
