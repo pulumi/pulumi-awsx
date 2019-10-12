@@ -107,6 +107,10 @@ func Test_Examples(t *testing.T) {
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
 		}),
 		testBase.With(integration.ProgramTestOptions{
+			Dir:       path.Join(cwd, "../examples/alb/ec2"),
+			StackName: addRandomSuffix("ec2"),
+		}),
+		testBase.With(integration.ProgramTestOptions{
 			Dir: path.Join(cwd, "../examples/api"),
 			Dependencies: []string{
 				"@pulumi/awsx",
@@ -225,10 +229,6 @@ func Test_Examples(t *testing.T) {
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/fargateInlineListener"),
 			StackName: addRandomSuffix("fargate"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/ec2"),
-			StackName: addRandomSuffix("ec2"),
 		}),
 		testBase.With(integration.ProgramTestOptions{
 			Dir:       path.Join(cwd, "../examples/alb/ec2Instance"),
