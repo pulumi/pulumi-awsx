@@ -90,7 +90,6 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 
         for (const obj of container.portMappings) {
             if (x.ecs.isContainerLoadBalancerProvider(obj)) {
-                console.log("portMapping: " + containerName);
                 containerLoadBalancerProviders.set(containerName, obj);
             }
         }
@@ -99,7 +98,6 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
     // Finally see if we were directly given load balancing listeners to associate our containers
     // with. If so, use their information to populate our LB information.
     for (const containerName of Object.keys(service.listeners)) {
-        console.log("listener: " + containerName);
         containerLoadBalancerProviders.set(containerName, service.listeners[containerName]);
     }
 
