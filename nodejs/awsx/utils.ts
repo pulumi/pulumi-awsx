@@ -15,8 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as deasync from "deasync";
-
 import * as crypto from "crypto";
 
 type Diff<T extends string | number | symbol, U extends string | number | symbol> =
@@ -117,7 +115,6 @@ export function getRegionFromOpts(opts: pulumi.CustomResourceOptions): pulumi.Ou
     return getRegionFromProvider(opts.provider);
 }
 
-
 /** @internal */
 export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
     // A little strange, but all we're doing is passing a fake type-token simply to get
@@ -126,7 +123,7 @@ export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
     return getRegionFromProvider(provider);
 }
 
-function getRegionFromProvider(provider: pulumi.ProviderResourceOrRef | undefined) {
-    const region = pulumi.Resource.isInstance(provider) ? (<any>provider).region : undefined;
+function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
+    const region = provider ? (<any>provider).region : undefined;
     return region || aws.config.region;
 }
