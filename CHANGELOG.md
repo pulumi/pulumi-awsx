@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.18.13 (2019-10-15)
+
 * Added a simpler way to create a load balanced (NLB or ALB) `aws.ecs.EC2Service` or
   `awsx.ecs.FargateService`
 
