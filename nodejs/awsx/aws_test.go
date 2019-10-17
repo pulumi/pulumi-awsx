@@ -37,49 +37,46 @@ import (
 	"github.com/pulumi/pulumi/pkg/util/contract"
 )
 
-func Test_Examples(t *testing.T) {
-	envRegion := os.Getenv("AWS_REGION")
-	if envRegion == "" {
-		t.Skipf("Skipping test due to missing AWS_REGION environment variable")
-	}
-	fmt.Printf("AWS Region: %v\n", envRegion)
+func TestAccCluster(t *testing.T) {
+	test := getDefaultProviderOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/cluster"),
+		})
 
-	cwd, err := os.Getwd()
-	if !assert.NoError(t, err, "expected a valid working directory: %v", err) {
-		return
-	}
+	integration.ProgramTest(t, &test)
+}
 
-	testBase := integration.ProgramTestOptions{
-		Config: map[string]string{
-			"aws:region":    "INVALID_REGION",
-			"aws:envRegion": envRegion,
-		},
-		Dependencies: []string{
-			"@pulumi/awsx",
-		},
-		Quick:       true,
-		SkipRefresh: true,
-	}
+func TestAccDashboards(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/dashboards"),
+		})
 
-	shortTests := []integration.ProgramTestOptions{
-		integration.ProgramTestOptions{
-			Config: map[string]string{"aws:region": envRegion},
-			Dir:    path.Join(cwd, "../examples/cluster"),
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
-			Quick:       true,
-			SkipRefresh: true,
-		},
-		testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/dashboards")}),
-		testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/ecr")}),
-		testBase.With(integration.ProgramTestOptions{Dir: path.Join(cwd, "../examples/metrics")}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/vpc"),
-			StackName: addRandomSuffix("vpc"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/vpcIgnoreSubnetChanges"),
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccEcr(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/ecr"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccMetrics(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/metrics"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccVpcIgnoreSubnetChanges(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/vpcIgnoreSubnetChanges"),
 			StackName: addRandomSuffix("vpcIgnoreSubnetChanges"),
 			EditDirs: []integration.EditDir{
 				{
@@ -88,9 +85,26 @@ func Test_Examples(t *testing.T) {
 					ExpectNoChanges: true,
 				},
 			},
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccVpc(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/vpc"),
+			StackName: addRandomSuffix("vpc"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccNlb_fargateShort(t *testing.T) {
+	envRegion := getEnvRegion(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:                    path.Join(getCwd(t), "../examples/nlb/fargateShort"),
 			StackName:              addRandomSuffix("fargate"),
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
 			EditDirs: []integration.EditDir{
@@ -100,21 +114,37 @@ func Test_Examples(t *testing.T) {
 					ExpectNoChanges: true,
 				},
 			},
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:                    path.Join(cwd, "../examples/nlb/fargateShortInlineListener"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccNlb_fargateShortInlineListener(t *testing.T) {
+	envRegion := getEnvRegion(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:                    path.Join(getCwd(t), "../examples/nlb/fargateShortInlineListener"),
 			StackName:              addRandomSuffix("fargate"),
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/ec2"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_ec2(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/ec2"),
 			StackName: addRandomSuffix("ec2"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/api"),
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccApi(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/api"),
 			ExtraRuntimeValidation: validateAPITests([]apiTest{
 				{
 					urlStackOutputKey: "url",
@@ -211,12 +241,16 @@ func Test_Examples(t *testing.T) {
 					},
 				}),
 			}},
-		}),
-	}
+		})
 
-	longTests := []integration.ProgramTestOptions{
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/fargate"),
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_fargate(t *testing.T) {
+	skipIfShort(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/fargate"),
 			StackName: addRandomSuffix("fargate"),
 			EditDirs: []integration.EditDir{
 				{
@@ -225,21 +259,50 @@ func Test_Examples(t *testing.T) {
 					ExpectNoChanges: true,
 				},
 			},
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/fargateInlineListener"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_fargateInlineListener(t *testing.T) {
+	skipIfShort(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/fargateInlineListener"),
 			StackName: addRandomSuffix("fargate"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/ec2Instance"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_ec2Instance(t *testing.T) {
+	skipIfShort(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/ec2Instance"),
 			StackName: addRandomSuffix("ec2Instance"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/lambdaTarget"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_lambdaTarget(t *testing.T) {
+	skipIfShort(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/lambdaTarget"),
 			StackName: addRandomSuffix("lambdaTarget"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/nlb/fargate"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccNlb_fargate(t *testing.T) {
+	skipIfShort(t)
+	envRegion := getEnvRegion(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/nlb/fargate"),
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
 				"aws:region":               "INVALID_REGION",
@@ -250,54 +313,68 @@ func Test_Examples(t *testing.T) {
 				"--diff",
 			},
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
-		}),
-
-		// {
-		// 	Dir:       path.Join(cwd, "../examples/ec2"),
-		// 	StackName: addRandomSuffix("ec2"),
-		// 	Config: map[string]string{
-		// 		"aws:region":               region,
-		// 		"cloud:provider":           "aws",
-		// 		"containers:redisPassword": "SECRETPASSWORD",
-		// 	},
-		// 	Dependencies: []string{
-		// 		"@pulumi/awsx",
-		// 	},
-		// 	Quick:       true,
-		// 	SkipRefresh: true,
-		// 	PreviewCommandlineFlags: []string{
-		// 		"--diff",
-		// 	},
-		// 	EditDirs: []integration.EditDir{
-		// 		{
-		// 			Additive: true,
-		// 			Dir:      path.Join(cwd, "../examples/ec2/update1"),
-		// 		},
-		// 		{
-		// 			Additive:               true,
-		// 			Dir:                    path.Join(cwd, "../examples/ec2/update2"),
-		// 			ExtraRuntimeValidation: containersRuntimeValidator(region, false /*isFargate*/),
-		// 		},
-		// 	},
-		// },
-	}
-
-	tests := shortTests
-	if !testing.Short() {
-		tests = append(tests, longTests...)
-	}
-
-	for _, ex := range tests {
-		example := ex.With(integration.ProgramTestOptions{
-			ReportStats: integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
-			// TODO[pulumi/pulumi#1900]: This should be the default value, every test we have causes some sort of
-			// change during a `pulumi refresh` for reasons outside our control.
-			ExpectRefreshChanges: true,
 		})
-		t.Run(example.Dir, func(t *testing.T) {
-			integration.ProgramTest(t, &example)
-		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func skipIfShort(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping long-running test in short mode")
 	}
+}
+
+func getEnvRegion(t *testing.T) string {
+	envRegion := os.Getenv("AWS_REGION")
+	if envRegion == "" {
+		t.Skipf("Skipping test due to missing AWS_REGION environment variable")
+	}
+	fmt.Printf("AWS Region: %v\n", envRegion)
+
+	return envRegion
+}
+
+func getCwd(t *testing.T) string {
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.FailNow()
+	}
+
+	return cwd
+}
+
+func getBaseOptions(t *testing.T) integration.ProgramTestOptions {
+	envRegion := getEnvRegion(t)
+	baseJS := integration.ProgramTestOptions{
+		Config: map[string]string{
+			"aws:envRegion": envRegion,
+		},
+		Dependencies: []string{
+			"@pulumi/awsx",
+		},
+		Quick:                true,
+		SkipRefresh:          true,
+		ExpectRefreshChanges: true,
+		ReportStats:          integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
+	}
+
+	return baseJS
+}
+
+func getDefaultProviderOptions(t *testing.T) integration.ProgramTestOptions {
+	baseJS := integration.ProgramTestOptions{
+		Dependencies: []string{
+			"@pulumi/awsx",
+		},
+		Quick:       true,
+		SkipRefresh: true,
+		// TODO[pulumi/pulumi#1900]: This should be the default value, every test we have causes some sort of
+		// change during a `pulumi refresh` for reasons outside our control.
+		ExpectRefreshChanges: true,
+		ReportStats:          integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
+	}
+
+	return baseJS
 }
 
 func getAllMessageText(logs []operations.LogEntry) string {
