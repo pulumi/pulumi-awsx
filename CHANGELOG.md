@@ -2,6 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+* Allow the user to pass `family` to the `ecs.TaskDefinition`
 
 ## 0.18.13 (2019-10-15)
 
