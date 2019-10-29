@@ -74,11 +74,11 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         this.listeners = {...this.applicationListeners, ...this.networkListeners };
 
         const containerString = containerDefinitions.apply(d => JSON.stringify(d));
-        const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
+        const defaultFamily = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
 
         this.taskDefinition = new aws.ecs.TaskDefinition(name, {
             ...args,
-            family,
+            family: args.family || defaultFamily,
             taskRoleArn: this.taskRole ? this.taskRole.arn : undefined,
             executionRoleArn: this.executionRole ? this.executionRole.arn : undefined,
             containerDefinitions: containerString,
@@ -270,7 +270,7 @@ function computeContainerDefinitions(
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
-    family?: never;
+    family?: pulumi.Input<string>;
     containerDefinitions?: never;
     logGroup?: aws.cloudwatch.LogGroup
     taskRoleArn?: never;
@@ -325,6 +325,11 @@ export interface TaskDefinitionArgs {
      * If `undefined`, a default will be created for the task.  If `null`, no task will be created.
      */
     executionRole?: aws.iam.Role;
+
+    /**
+     * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
+     */
+    family?: pulumi.Input<string>;
 
     /**
      * The number of cpu units used by the task.  If not provided, a default will be computed
