@@ -75,10 +75,11 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
         const containerString = containerDefinitions.apply(d => JSON.stringify(d));
         const defaultFamily = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
+        const family = utils.ifUndefined(args.family, defaultFamily);
 
         this.taskDefinition = new aws.ecs.TaskDefinition(name, {
             ...args,
-            family: args.family || defaultFamily,
+            family: family,
             taskRoleArn: this.taskRole ? this.taskRole.arn : undefined,
             executionRoleArn: this.executionRole ? this.executionRole.arn : undefined,
             containerDefinitions: containerString,
