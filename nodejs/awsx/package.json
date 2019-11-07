@@ -24,7 +24,6 @@
         "@types/node": "^10.0.0",
         "@types/deasync": "^0.1.0",
         "tslint": "^5.11.0",
-        "typedoc": "^0.13.0",
-        "typescript": "^3.4.5"
+        "typedoc": "^0.13.0"
     }
 }

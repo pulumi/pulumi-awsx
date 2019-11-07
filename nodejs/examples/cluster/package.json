@@ -12,8 +12,7 @@
         "@pulumi/aws": "^1.0.0"
     },
     "devDependencies": {
-        "@types/node": "^8.0.0",
-        "typescript": "^3.4.1"
+        "@types/node": "^8.0.0"
     },
     "peerDependencies": {
         "@pulumi/awsx": "latest"
