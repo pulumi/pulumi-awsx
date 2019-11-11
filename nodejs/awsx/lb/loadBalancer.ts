@@ -39,7 +39,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         // people didn't have direct control over creating the LB.  In awsx though creating the LB
         // is easy to do, so we just let the user pass in the name they want.  We simply add an
         // alias from the old name to the new one to keep things from being recreated.
-        this.loadBalancer = new aws.lb.LoadBalancer(name, {
+        this.loadBalancer = args.loadBalancer || new aws.lb.LoadBalancer(name, {
             ...args,
             subnets: getSubnets(args, this.vpc, external),
             internal: external.apply(ex => !ex),
@@ -116,6 +116,11 @@ export interface LoadBalancerArgs {
      * The type of load balancer to create. Possible values are `application` or `network`.
      */
     loadBalancerType: pulumi.Input<"application" | "network">;
+    
+    /**
+     * The existing AWS load balancer to use when creating the crosswalk load balancer
+     */
+    loadBalancer?: aws.lb.LoadBalancer
 
     /**
      * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent
