@@ -116,7 +116,7 @@ export interface LoadBalancerArgs {
      * The type of load balancer to create. Possible values are `application` or `network`.
      */
     loadBalancerType: pulumi.Input<"application" | "network">;
-    
+
     /**
      * The existing AWS load balancer to use when creating the crosswalk load balancer
      */
