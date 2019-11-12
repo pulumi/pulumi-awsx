@@ -120,7 +120,7 @@ export interface LoadBalancerArgs {
     /**
      * The existing AWS load balancer to use when creating the crosswalk load balancer
      */
-    loadBalancer?: aws.lb.LoadBalancer
+    loadBalancer?: aws.lb.LoadBalancer;
 
     /**
      * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent
