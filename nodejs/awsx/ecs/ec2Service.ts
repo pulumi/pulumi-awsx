@@ -155,6 +155,11 @@ export interface EC2TaskDefinitionArgs {
     taskRole?: aws.iam.Role;
 
     /**
+     * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
+     */
+    family?: pulumi.Input<string>;
+
+    /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
      *
      * If `undefined`, a default will be created for the task.  If `null` no role will be created.
