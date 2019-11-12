@@ -3,6 +3,7 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 * Allow the user to pass `family` to the `ecs.TaskDefinition`
+* Allow an existing load balancer be passed to `awsx.lb.LoadBalancer`'s
 
 ## 0.18.13 (2019-10-15)
 
