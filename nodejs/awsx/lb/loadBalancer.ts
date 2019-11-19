@@ -118,7 +118,7 @@ export interface LoadBalancerArgs {
     loadBalancerType: pulumi.Input<"application" | "network">;
 
     /**
-     * The existing AWS load balancer to use when creating the crosswalk load balancer
+     * An existing aws.lb.LoadBalancer to use when creating the awsx.lb.LoadBalancer.  If this is not provided one will be automatically created.
      */
     loadBalancer?: aws.lb.LoadBalancer;
 
