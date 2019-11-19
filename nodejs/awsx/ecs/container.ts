@@ -46,7 +46,9 @@ export function computeContainerDefinition(
     const containerDefinition = pulumi.all([container, logGroupId, image, environment, portMappings, region])
         .apply(([container, logGroupId, image, environment, portMappings, region]) => {
             const containerDefinition: aws.ecs.ContainerDefinition = {
-                ...container,
+                // TODO[pulumi/aws#796]: Cast to `<any>` needed until the type of `dependsOn` is
+                // fixed in the AWS provider.
+                ...(<any>container),
                 image,
                 environment,
                 portMappings,
@@ -222,6 +224,9 @@ type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     image: pulumi.Input<string> | ContainerImageProvider;
     portMappings?: (pulumi.Input<aws.ecs.PortMapping> | ContainerPortMappingProvider)[];
     environment?: pulumi.Input<KeyValuePair[]>;
+    // TODO[pulumi/aws#796]: This overwrite is needed until the type of `dependsOn` is fixed in the
+    // AWS provider.
+    dependsOn?: pulumi.Input<ContainerDependency[]>;
 }>;
 
 /**
@@ -229,13 +234,42 @@ type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
  * for more details.
  */
 export interface KeyValuePair {
-    /** The name of the key-value pair. For environment variables, this is the name of the
-     * environment variable. */
+    /**
+     * The name of the key-value pair. For environment variables, this is the name of the
+     * environment variable.
+     */
     name: pulumi.Input<string>;
-    /** The value of the key-value pair. For environment variables, this is the value of the
-     * environment variable. */
+    /**
+     * The value of the key-value pair. For environment variables, this is the value of the
+     * environment variable.
+     */
     value: pulumi.Input<string>;
 }
+
+/**
+ * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html
+ * for more details.
+ */
+export interface ContainerDependency {
+    /**
+     * The dependency condition of the container. The following are the available conditions and
+     *    their behavior: START - This condition emulates the behavior of links and volumes today.
+     *    It validates that a dependent container is started before permitting other containers to
+     *    start. COMPLETE - This condition validates that a dependent container runs to completion
+     *    (exits) before permitting other containers to start. This can be useful for nonessential
+     *    containers that run a script and then exit. SUCCESS - This condition is the same as
+     *    COMPLETE, but it also requires that the container exits with a zero status. HEALTHY - This
+     *    condition validates that the dependent container passes its Docker health check before
+     *    permitting other containers to start. This requires that the dependent container has
+     *    health checks configured. This condition is confirmed only at task startup.
+     */
+    condition?: pulumi.Input<"START" | "COMPLETE" | "SUCCESS" | "HEALTHY">;
+    /**
+     * The name of a container.
+     */
+    containerName: pulumi.Input<string>;
+}
+
 
 /**
  * [Container]s are used in [awsx.ec2.TaskDefinition] to describe the different containers that are
@@ -270,6 +304,26 @@ export interface Container {
      * `--cpu-shared` parameter to [docker-run](https://docs.docker.com/engine/reference/run/).
      */
     cpu?: pulumi.Input<number>;
+
+    /**
+     * The dependencies defined for container startup and shutdown. A container can contain multiple
+     * dependencies. When a dependency is defined for container startup, for container shutdown it
+     * is reversed.
+     *
+     * For tasks using the EC2 launch type, the container instances require at least version 1.26.0
+     * of the container agent to enable container dependencies. However, we recommend using the
+     * latest container agent version. For information about checking your agent version and
+     * updating to the latest version, see Updating the Amazon ECS Container Agent in the Amazon
+     * Elastic Container Service Developer Guide. If you are using an Amazon ECS-optimized Linux
+     * AMI, your instance needs at least version 1.26.0-1 of the ecs-init package. If your container
+     * instances are launched from version 20190301 or later, then they contain the required
+     * versions of the container agent and ecs-init. For more information, see Amazon ECS-optimized
+     * Linux AMI in the Amazon Elastic Container Service Developer Guide.
+     *
+     * For tasks using the Fargate launch type, the task or service requires platform version 1.3.0
+     * or later.
+     */
+    dependsOn?: pulumi.Input<ContainerDependency[]>;
 
     /**
      * When this parameter is true, networking is disabled within the container.
@@ -383,6 +437,15 @@ export interface Container {
      * network mode.
      */
     extraHosts?: pulumi.Input<aws.ecs.HostEntry[]>;
+
+    /**
+     * The health check command and associated configuration parameters for the container. This
+     * parameter maps to `HealthCheck` in the
+     * [Create-a-container](https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate)
+     * section of the [Docker-Remote-API](https://docs.docker.com/engine/api/v1.35/) and the
+     * `HEALTHCHECK` parameter to [docker-run](https://docs.docker.com/engine/reference/run/).
+     */
+    healthCheck?: pulumi.Input<aws.ecs.HealthCheck>;
 
     /**
      * The hostname to use for your container. container.
@@ -517,6 +580,14 @@ export interface Container {
     privileged?: pulumi.Input<boolean>;
 
     /**
+     * When this parameter is true, a TTY is allocated. This parameter maps to `Tty` in the [Create
+     * a container](https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of
+     * the [Docker Remote API](https://docs.docker.com/engine/api/v1.35/) and the `--tty` option to
+     * [docker run](https://docs.docker.com/engine/reference/run/).
+     */
+    pseudoTerminal?: pulumi.Input<boolean>;
+
+    /**
      * When this parameter is true, the container is given read-only access to its root file system.
      *
      * This parameter maps to `ReadonlyRootfs` in the
@@ -529,11 +600,88 @@ export interface Container {
     readonlyRootFilesystem?: pulumi.Input<boolean>;
 
     /**
+     * The private repository authentication credentials to use.
+     */
+    repositoryCredentials?: pulumi.Input<aws.ecs.RepositoryCredentials>;
+
+    /**
+     * The type and amount of a resource to assign to a container. The only supported resource is a
+     * GPU.
+     */
+    resourceRequirements?: pulumi.Input<aws.ecs.ResourceRequirements[]>;
+
+    /**
      * The secrets to pass to the container. For more information, see
      * [Specifying-Sensitive-Data](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/specifying-sensitive-data.html)
      * in the Amazon Elastic Container Service Developer Guide.
      */
     secrets?: pulumi.Input<aws.ecs.Secret[]>;
+
+    /**
+     * Time duration (in seconds) to wait before giving up on resolving dependencies for a
+     * container. For example, you specify two containers in a task definition with containerA
+     * having a dependency on containerB reaching a `COMPLETE`, `SUCCESS`, or `HEALTHY` status. If a
+     * startTimeout value is specified for containerB and it does not reach the desired status
+     * within that time then containerA will give up and not start. This results in the task
+     * transitioning to a `STOPPED` state.
+     *
+     * For tasks using the EC2 launch type, the container instances require at least version 1.26.0
+     * of the container agent to enable a container start timeout value. However, we recommend using
+     * the latest container agent version. For information about checking your agent version and
+     * updating to the latest version, see [Updating the Amazon ECS Container
+     * Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in
+     * the Amazon Elastic Container Service Developer Guide. If you are using an Amazon
+     * ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the ecs-init
+     * package. If your container instances are launched from version 20190301 or later, then they
+     * contain the required versions of the container agent and ecs-init. For more information, see
+     * [Amazon ECS-optimized Linux
+     * AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in
+     * the Amazon Elastic Container Service Developer Guide.
+     *
+     * For tasks using the Fargate launch type, the task or service requires platform version
+     * `1.3.0` or later.
+     */
+    startTimeout?: pulumi.Input<number>;
+
+    /**
+     * Time duration (in seconds) to wait before the container is forcefully killed if it doesn't
+     * exit normally on its own.
+     *
+     * For tasks using the Fargate launch type, the max `stopTimeout` value is 2 minutes and the
+     * task or service requires platform version `1.3.0` or later.
+     *
+     * For tasks using the EC2 launch type, the stop timeout value for the container takes
+     * precedence over the `ECS_CONTAINER_STOP_TIMEOUT` container agent configuration parameter, if
+     * used. Container instances require at least version 1.26.0 of the container agent to enable a
+     * container stop timeout value. However, we recommend using the latest container agent version.
+     * For information about checking your agent version and updating to the latest version, see
+     * [Updating the Amazon ECS Container
+     * Agent](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-update.html) in
+     * the Amazon Elastic Container Service Developer Guide. If you are using an Amazon
+     * ECS-optimized Linux AMI, your instance needs at least version 1.26.0-1 of the ecs-init
+     * package. If your container instances are launched from version 20190301 or later, then they
+     * contain the required versions of the container agent and ecs-init. For more information, see
+     * [Amazon ECS-optimized Linux
+     * AMI](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-optimized_AMI.html) in
+     * the Amazon Elastic Container Service Developer Guide.
+     */
+    stopTimeout?: pulumi.Input<number>;
+
+    /**
+     * A list of namespaced kernel parameters to set in the container. This parameter maps to
+     * `Sysctls` in the [Create a
+     * container](https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of
+     * the [Docker Remote API](https://docs.docker.com/engine/api/v1.35/) and the `--sysctl` option
+     * to [`docker run`](https://docs.docker.com/engine/reference/run/).
+     *
+     * *Note*: It is not recommended that you specify network-related `systemControls` parameters
+     * for multiple containers in a single task that also uses either the `awsvpc` or `host` network
+     * modes. For tasks that use the `awsvpc` network mode, the container that is started last
+     * determines which `systemControls` parameters take effect. For tasks that use the host network
+     * mode, it changes the container instance's namespaced kernel parameters as well as the
+     * containers.
+     */
+    systemControls?: pulumi.Input<aws.ecs.SystemControl[]>;
 
     /**
      * A list of ulimits to set in the container.
