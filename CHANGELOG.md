@@ -3,6 +3,7 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 * Allow the user to pass `family` to the `ecs.TaskDefinition`
+* Update `Container` interface to support the full set of supported ECS container properties
 
 ## 0.18.13 (2019-10-15)
 
