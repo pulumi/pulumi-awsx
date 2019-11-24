@@ -80,11 +80,12 @@ export class Cluster
             opts: pulumi.ComponentResourceOptions = {}) {
 
         args.vpc = args.vpc || this.vpc;
-        args.launchConfigurationArgs = args.launchConfigurationArgs || {};
-
-        const launchConfigurationArgs = args.launchConfigurationArgs;
-        launchConfigurationArgs.securityGroups = this.securityGroups;
-        launchConfigurationArgs.userData = this;
+        args.launchConfigurationArgs = {
+            // default to our security groups if the caller didn't provide their own.
+            securityGroups: this.securityGroups,
+            userData: this,
+            ...args.launchConfigurationArgs,
+        };
 
         const group = new x.autoscaling.AutoScalingGroup(name, args, { parent: this, ...opts });
         this.addAutoScalingGroup(group);
