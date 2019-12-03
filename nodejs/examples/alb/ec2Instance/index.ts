@@ -16,52 +16,54 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+export default async () => {
+    const config = new pulumi.Config("aws");
+    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-// Create a security group to let traffic flow.
-const sg = awsx.ec2.SecurityGroup.create("web-sg", {
-    vpc: awsx.ec2.Vpc.getDefault(providerOpts),
-}, providerOpts);
-
-const ipv4egress = sg.createEgressRule("ipv4-egress", {
-    ports: new awsx.ec2.AllTraffic(),
-    location: new awsx.ec2.AnyIPv4Location(),
-});
-const ipv6egress = sg.createEgressRule("ipv6-egress", {
-    ports: new awsx.ec2.AllTraffic(),
-    location: new awsx.ec2.AnyIPv6Location(),
-});
-
-// Creates an ALB associated with the default VPC for this region and listen on port 80.
-const alb = awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("web-traffic",
-    { external: true, securityGroups: [ sg ] }, providerOpts);
-const listener = alb.createListener("web-listener", { port: 80 });
-
-// For each subnet, and each subnet/zone, create a VM and a listener.
-export const publicIps: pulumi.Output<string>[] = [];
-for (let i = 0; i < alb.vpc.publicSubnets.length; i++) {
-    const vm = new aws.ec2.Instance(`web-${i}`, {
-        ami: aws.getAmi({
-            filters: [
-                { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*" ] },
-                { name: "virtualization-type", values: [ "hvm" ] },
-            ],
-            mostRecent: true,
-            owners: [ "099720109477" ], // Canonical
-        }, providerOpts).id,
-        instanceType: "m5.large",
-        subnetId: alb.vpc.publicSubnets[i].subnet.id,
-        availabilityZone: alb.vpc.publicSubnets[i].subnet.availabilityZone,
-        vpcSecurityGroupIds: [ sg.id ],
-        userData: `#!/bin/bash
-echo "Hello World, from Server ${i+1}!" > index.html
-nohup python -m SimpleHTTPServer 80 &`,
+    // Create a security group to let traffic flow.
+    const sg = await awsx.ec2.SecurityGroup.create("web-sg", {
+        vpc: await awsx.ec2.Vpc.getDefault(providerOpts),
     }, providerOpts);
-    publicIps.push(vm.publicIp);
 
-    alb.attachTarget("target-" + i, vm);
-}
+    const ipv4egress = sg.createEgressRule("ipv4-egress", {
+        ports: new awsx.ec2.AllTraffic(),
+        location: new awsx.ec2.AnyIPv4Location(),
+    });
+    const ipv6egress = sg.createEgressRule("ipv6-egress", {
+        ports: new awsx.ec2.AllTraffic(),
+        location: new awsx.ec2.AnyIPv6Location(),
+    });
 
-// Export the resulting URL so that it's easy to access.
-export const endpoint = listener.endpoint;
+    // Creates an ALB associated with the default VPC for this region and listen on port 80.
+    const alb = await awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("web-traffic",
+        { external: true, securityGroups: [ sg ] }, providerOpts);
+    const listener = await alb.createListener("web-listener", { port: 80 });
+
+    // For each subnet, and each subnet/zone, create a VM and a listener.
+    const publicIps: pulumi.Output<string>[] = [];
+    for (let i = 0; i < alb.vpc.publicSubnets.length; i++) {
+        const vm = new aws.ec2.Instance(`web-${i}`, {
+            ami: aws.getAmi({
+                filters: [
+                    { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*" ] },
+                    { name: "virtualization-type", values: [ "hvm" ] },
+                ],
+                mostRecent: true,
+                owners: [ "099720109477" ], // Canonical
+            }, providerOpts).id,
+            instanceType: "m5.large",
+            subnetId: alb.vpc.publicSubnets[i].subnet.id,
+            availabilityZone: alb.vpc.publicSubnets[i].subnet.availabilityZone,
+            vpcSecurityGroupIds: [ sg.id ],
+            userData: `#!/bin/bash
+    echo "Hello World, from Server ${i+1}!" > index.html
+    nohup python -m SimpleHTTPServer 80 &`,
+        }, providerOpts);
+        publicIps.push(vm.publicIp);
+
+        alb.attachTarget("target-" + i, vm);
+    }
+
+    // Export the resulting URL so that it's easy to access.
+    return { endpoint: listener.endpoint, publicIps: publicIps };
+};

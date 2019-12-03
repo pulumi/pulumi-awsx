@@ -16,62 +16,66 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+export default async () => {
+    const config = new pulumi.Config("aws");
+    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const cluster = awsx.ecs.Cluster.create("testing", {}, providerOpts);
-const loadBalancer = awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("nginx", { external: true }, providerOpts);
+    const cluster = await awsx.ecs.Cluster.create("testing", {}, providerOpts);
+    const loadBalancer = await awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("nginx", { external: true }, providerOpts);
 
-const targetGroup = loadBalancer.createTargetGroup("nginx", { port: 80, targetType: "instance" });
+    const targetGroup = await loadBalancer.createTargetGroup("nginx", { port: 80, targetType: "instance" });
 
-// A simple NGINX service, scaled out over two containers.  Create a listener to connect the load
-// balancer to the service.
-const nginxListener = targetGroup.createListener("nginx", { port: 80, external: true });
-const service = awsx.ecs.EC2Service.create("nginx", {
-    cluster,
-    taskDefinitionArgs: {
-        networkMode: "bridge",
-        containers: {
-            nginx: {
-                image: "nginx",
-                memory: 128,
-                portMappings: [nginxListener],
+    // A simple NGINX service, scaled out over two containers.  Create a listener to connect the load
+    // balancer to the service.
+    const nginxListener = await targetGroup.createListener("nginx", { port: 80, external: true });
+    const service = await awsx.ecs.EC2Service.create("nginx", {
+        cluster,
+        taskDefinitionArgs: {
+            networkMode: "bridge",
+            containers: {
+                nginx: {
+                    image: "nginx",
+                    memory: 128,
+                    portMappings: [nginxListener],
+                },
             },
         },
-    },
-    desiredCount: 2,
-}, providerOpts);
+        desiredCount: 2,
+    }, providerOpts);
 
-// Now setup an asg for the cluster to control how it will respond under load.
-const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
-    subnetIds: awsx.ec2.Vpc.getDefault(providerOpts).publicSubnetIds,
-    targetGroups: [targetGroup],
-    templateParameters: {
-        minSize: 5,
-    },
-    launchConfigurationArgs: {
-        instanceType: "m5.large",
-        associatePublicIpAddress: true,
-    },
-});
+    const vpc = await awsx.ec2.Vpc.getDefault(providerOpts);
 
-const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
-    targetValue: 5,
-    estimatedInstanceWarmup: 120,
-    targetGroup: targetGroup,
-});
+    // Now setup an asg for the cluster to control how it will respond under load.
+    const autoScalingGroup = await cluster.createAutoScalingGroup("testing-1", {
+        subnetIds: vpc.publicSubnetIds,
+        targetGroups: [targetGroup],
+        templateParameters: {
+            minSize: 5,
+        },
+        launchConfigurationArgs: {
+            instanceType: "m5.large",
+            associatePublicIpAddress: true,
+        },
+    });
 
-// Create a policy that scales the ASG in response to the average memory utilization of the service.
-// When memory goes above 60%, scale up the ASG by 10%.  If it goes above 70%, scale it up by 30%.
-// Similarly, if memory goes below 40%, scale down by 10%.  If it goes below 30%, scale it down by
-// 30%.
-const stepScalingPolicy = autoScalingGroup.scaleInSteps("scale-in-out", {
-    metric: awsx.ecs.metrics.memoryUtilization({ service, unit: "Percent", statistic: "Average" }),
-    adjustmentType: "PercentChangeInCapacity",
-    steps: {
-        upper: [{ value: 60, adjustment: 10 }, { value: 70, adjustment: 30 }],
-        lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }]
-    },
-});
+    const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
+        targetValue: 5,
+        estimatedInstanceWarmup: 120,
+        targetGroup: targetGroup,
+    });
 
-export const nginxEndpoint = nginxListener.endpoint;
+    // Create a policy that scales the ASG in response to the average memory utilization of the service.
+    // When memory goes above 60%, scale up the ASG by 10%.  If it goes above 70%, scale it up by 30%.
+    // Similarly, if memory goes below 40%, scale down by 10%.  If it goes below 30%, scale it down by
+    // 30%.
+    const stepScalingPolicy = autoScalingGroup.scaleInSteps("scale-in-out", {
+        metric: awsx.ecs.metrics.memoryUtilization({ service, unit: "Percent", statistic: "Average" }),
+        adjustmentType: "PercentChangeInCapacity",
+        steps: {
+            upper: [{ value: 60, adjustment: 10 }, { value: 70, adjustment: 30 }],
+            lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }]
+        },
+    });
+
+    return { nginxEndpoint: nginxListener.endpoint };
+};

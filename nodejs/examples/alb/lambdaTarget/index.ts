@@ -16,33 +16,36 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+export default async () => {
+    const config = new pulumi.Config("aws");
+    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-// Create a security group to let traffic flow.
-const sg = awsx.ec2.SecurityGroup.create("web-sg", {
-    vpc: awsx.ec2.Vpc.getDefault(providerOpts),
-    egress: [{ protocol: "-1", fromPort: 0, toPort: 0, cidrBlocks: [ "0.0.0.0/0" ] }],
-}, providerOpts);
+    // Create a security group to let traffic flow.
+    const sg = await awsx.ec2.SecurityGroup.create("web-sg", {
+        vpc: await awsx.ec2.Vpc.getDefault(providerOpts),
+        egress: [{ protocol: "-1", fromPort: 0, toPort: 0, cidrBlocks: [ "0.0.0.0/0" ] }],
+    }, providerOpts);
 
-// Creates an ALB associated with the default VPC for this region and listen on port 80.
-const alb = awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("web-traffic",
-    { external: true, securityGroups: [ sg ] }, providerOpts);
-const listener = alb.createTargetGroup("web-target-group", { targetType: "lambda", port: 80 })
-                    .createListener("web-listener", { port: 80 });
+    // Creates an ALB associated with the default VPC for this region and listen on port 80.
+    const alb = await awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("web-traffic",
+        { external: true, securityGroups: [ sg ] }, providerOpts);
 
-alb.attachTarget("lambda-target", async (request) => {
-    console.log(JSON.stringify(request));
-    return {
-        isBase64Encoded: false,
-        statusCode: 200,
-        headers: {
-            "Set-cookie": "cookies",
-            "Content-Type": "application/json"
-        },
-        body: "Hello from Lambda (optional)",
-    };
-});
+    const tg = await alb.createTargetGroup("web-target-group", { targetType: "lambda", port: 80 });
+    const listener = await tg.createListener("web-listener", { port: 80 });
 
-// Export the resulting URL so that it's easy to access.
-export const endpoint = listener.endpoint;
+    alb.attachTarget("lambda-target", async (request) => {
+        console.log(JSON.stringify(request));
+        return {
+            isBase64Encoded: false,
+            statusCode: 200,
+            headers: {
+                "Set-cookie": "cookies",
+                "Content-Type": "application/json"
+            },
+            body: "Hello from Lambda (optional)",
+        };
+    });
+
+    // Export the resulting URL so that it's easy to access.
+    return { endpoint: listener.endpoint };
+};

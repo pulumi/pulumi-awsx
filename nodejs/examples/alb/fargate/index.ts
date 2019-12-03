@@ -16,26 +16,28 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+export default async () => {
+    const config = new pulumi.Config("aws");
+    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const cluster = awsx.ecs.Cluster.create("testing", {}, providerOpts);
-const loadBalancer = awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("nginx", { external: true }, providerOpts);
+    const cluster = await awsx.ecs.Cluster.create("testing", {}, providerOpts);
+    const loadBalancer = await awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("nginx", { external: true }, providerOpts);
 
-// A simple NGINX service, scaled out over two containers.
-const nginxListener = loadBalancer.createListener("nginx", { port: 80, external: true });
-const nginx = awsx.ecs.FargateService.create("nginx", {
-    cluster,
-    taskDefinitionArgs: {
-        containers: {
-            nginx: {
-                image: "nginx",
-                memory: 128,
-                portMappings: [nginxListener],
+    // A simple NGINX service, scaled out over two containers.
+    const nginxListener = await loadBalancer.createListener("nginx", { port: 80, external: true });
+    const nginx = await awsx.ecs.FargateService.create("nginx", {
+        cluster,
+        taskDefinitionArgs: {
+            containers: {
+                nginx: {
+                    image: "nginx",
+                    memory: 128,
+                    portMappings: [nginxListener],
+                },
             },
         },
-    },
-    desiredCount: 2,
-}, providerOpts);
+        desiredCount: 2,
+    }, providerOpts);
 
-export const nginxEndpoint = nginxListener.endpoint;
+    return { nginxEndpoint: nginxListener.endpoint };
+};
