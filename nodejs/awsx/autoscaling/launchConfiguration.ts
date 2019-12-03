@@ -20,21 +20,36 @@ import * as roleUtils from "../role";
 import * as utils from "./../utils";
 
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
-    public readonly launchConfiguration: aws.ec2.LaunchConfiguration;
-    public readonly id: pulumi.Output<string>;
-    public readonly securityGroups: x.ec2.SecurityGroup[];
+    public launchConfiguration!: aws.ec2.LaunchConfiguration;
+    public id!: pulumi.Output<string>;
+    public securityGroups!: x.ec2.SecurityGroup[];
 
-    public readonly instanceProfile: aws.iam.InstanceProfile;
+    public instanceProfile!: aws.iam.InstanceProfile;
 
     /**
      * Name to give the auto-scaling-group's cloudformation stack name.
      */
-    public readonly stackName: pulumi.Output<string>;
+    public stackName!: pulumi.Output<string>;
 
-    constructor(name: string, vpc: x.ec2.Vpc,
-                args: AutoScalingLaunchConfigurationArgs = {},
-                opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version:number, name: string, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingLaunchConfiguration", name, {}, opts);
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new AutoScalingLaunchConfiguration] directly. Use [AutoScalingLaunchConfiguration.create] instead.", this);
+        }
+    }
+
+    public static create(name: string, vpc: x.ec2.Vpc,
+                         args: AutoScalingLaunchConfigurationArgs = {},
+                         opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new AutoScalingLaunchConfiguration(1, name, opts);
+        result.initialize(name, vpc, args);
+        return result;
+    }
+
+    private initialize(name: string, vpc: x.ec2.Vpc,
+                       args: AutoScalingLaunchConfigurationArgs = {}) {
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.

@@ -30,8 +30,8 @@ export class Vpc extends pulumi.ComponentResource {
     public readonly privateSubnetIds: pulumi.Output<string>[] = [];
     public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
 
-    public readonly vpc: aws.ec2.Vpc;
-    public readonly id: pulumi.Output<string>;
+    public vpc!: aws.ec2.Vpc;
+    public id!: pulumi.Output<string>;
 
     public readonly publicSubnets: x.ec2.Subnet[] = [];
     public readonly privateSubnets: x.ec2.Subnet[] = [];
@@ -49,11 +49,24 @@ export class Vpc extends pulumi.ComponentResource {
      */
     public readonly natGateways: x.ec2.NatGateway[] = [];
 
-    constructor(name: string, args?: VpcArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new Vpc] directly. Use [Vpc.create] instead.", this);
+        }
+    }
+
+    public static create(name: string, args?: VpcArgs, opts?: pulumi.ComponentResourceOptions): Vpc;
+    public static create(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions): Vpc;
+    public static create(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts: pulumi.ComponentResourceOptions = {}): Vpc {
+        const vpc = new Vpc(1, name, opts);
+        vpc.initialize(args, opts);
+        return vpc;
+    }
+
+    private initialize(args: VpcArgs | ExistingVpcArgs, opts: pulumi.ComponentResourceOptions): void {
         if (isExistingVpcArgs(args)) {
             this.vpc = args.vpc;
             this.id = this.vpc.id;
@@ -262,7 +275,7 @@ export class Vpc extends pulumi.ComponentResource {
      * sub-resources) to be destroyed.
      */
     public static fromExistingIds(name: string, idArgs: ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions) {
-        const vpc = new Vpc(name, {
+        const vpc = Vpc.create(name, {
             vpc: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
         }, opts);
 

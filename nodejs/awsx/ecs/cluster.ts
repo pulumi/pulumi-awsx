@@ -87,7 +87,7 @@ export class Cluster
             ...args.launchConfigurationArgs,
         };
 
-        const group = new x.autoscaling.AutoScalingGroup(name, args, { parent: this, ...opts });
+        const group = x.autoscaling.AutoScalingGroup.create(name, args, { parent: this, ...opts });
         this.addAutoScalingGroup(group);
 
         return group;
