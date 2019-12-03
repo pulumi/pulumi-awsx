@@ -20,24 +20,32 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export abstract class Service extends pulumi.ComponentResource {
-    public readonly service: aws.ecs.Service;
-    public readonly cluster: ecs.Cluster;
-    public readonly taskDefinition: ecs.TaskDefinition;
+    public service!: aws.ecs.Service;
+    public cluster!: ecs.Cluster;
+    public taskDefinition!: ecs.TaskDefinition;
 
     /**
      * Mapping from container in this service to the ELB listener exposing it through a load
      * balancer. Only present if a listener was provided in [Container.portMappings] or in
      * [Container.applicationListener] or [Container.networkListener].
      */
-    public readonly listeners: Record<string, x.lb.Listener> = {};
-    public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
-    public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
+    public listeners: Record<string, x.lb.Listener> = {};
+    public applicationListeners: Record<string, x.lb.ApplicationListener> = {};
+    public networkListeners: Record<string, x.lb.NetworkListener> = {};
 
-    constructor(type: string, name: string,
-                args: ServiceArgs, isFargate: boolean,
-                opts: pulumi.ComponentResourceOptions = {}) {
-        super(type, name, args, opts);
+    /** @internal */
+    constructor(version: number, type: string, name: string,
+                opts: pulumi.ComponentResourceOptions) {
 
+        super(type, name, opts);
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not construct a Service directly. Use [EC2Service.create] or [FargateService.create] instead.", this);
+        }
+    }
+
+    protected initialize(name: string,
+                         args: ServiceArgs, isFargate: boolean) {
         this.cluster = args.cluster || x.ecs.Cluster.getDefault();
 
         this.listeners = args.taskDefinition.listeners;

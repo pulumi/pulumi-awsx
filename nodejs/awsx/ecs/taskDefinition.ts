@@ -23,18 +23,18 @@ import * as role from "../role";
 import * as utils from "../utils";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
-    public readonly taskDefinition: aws.ecs.TaskDefinition;
-    public readonly logGroup?: aws.cloudwatch.LogGroup;
-    public readonly containers: Record<string, ecs.Container>;
-    public readonly taskRole?: aws.iam.Role;
-    public readonly executionRole?: aws.iam.Role;
+    public taskDefinition!: aws.ecs.TaskDefinition;
+    public logGroup?: aws.cloudwatch.LogGroup;
+    public containers!: Record<string, ecs.Container>;
+    public taskRole?: aws.iam.Role;
+    public executionRole?: aws.iam.Role;
 
     /**
      * Mapping from container in this task to the ELB listener exposing it through a load balancer.
      * Only present if a listener was provided in [Container.portMappings] or in
      * [Container.applicationListener] or [Container.networkListener].
      */
-    public readonly listeners: Record<string, x.lb.Listener> = {};
+    public listeners: Record<string, x.lb.Listener> = {};
     public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
     public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
@@ -45,14 +45,22 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
      *
      * This API is designed for use at runtime.
      */
-    public readonly run: (
+    public run!: (
         params: RunTaskRequest,
     ) => Promise<awssdk.ECS.Types.RunTaskResponse>;
 
-    constructor(type: string, name: string,
-                isFargate: boolean, args: TaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    constructor(version: number, type: string, name: string,
+                opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not construct a TaskDefinition directly. Use [EC2TaskDefinition.create] or [FargateTaskDefinition.create] instead.", this);
+        }
+    }
+
+    protected initialize(name: string,
+                         isFargate: boolean, args: TaskDefinitionArgs) {
 
         this.logGroup = args.logGroup === null ? undefined :
                         args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {

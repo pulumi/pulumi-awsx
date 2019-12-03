@@ -20,9 +20,26 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class EC2TaskDefinition extends ecs.TaskDefinition {
-    constructor(name: string,
-                args: EC2TaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    constructor(version: number, name: string,
+                opts: pulumi.ComponentResourceOptions) {
+        super(version, "awsx:x:ecs:EC2TaskDefinition", name, opts);
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new EC2TaskDefinition] directly. Use [EC2TaskDefinition.create] instead.", this);
+        }
+    }
+
+    public static create(name: string,
+                         args: EC2TaskDefinitionArgs,
+                         opts: pulumi.ComponentResourceOptions = {}) {
+
+        const result = new EC2TaskDefinition(1, name, opts);
+        result.initializeTaskDefinition(name, args);
+        return result;
+    }
+
+    private initializeTaskDefinition(name: string, args: EC2TaskDefinitionArgs) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -38,7 +55,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 
         delete (<any>argsCopy).container;
 
-        super("awsx:x:ecs:EC2TaskDefinition", name, /*isFargate:*/ false, argsCopy, opts);
+        super.initialize(name, /*isFargate:*/ false, argsCopy);
 
         this.registerOutputs();
     }
@@ -55,7 +72,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new ecs.EC2Service(name, {
+        return ecs.EC2Service.create(name, {
             ...args,
             taskDefinition: this,
         }, { parent: this, ...opts });
@@ -63,11 +80,29 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 }
 
 export class EC2Service extends ecs.Service {
-    public readonly taskDefinition: EC2TaskDefinition;
+    public taskDefinition!: EC2TaskDefinition;
 
-    constructor(name: string,
-                args: EC2ServiceArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    constructor(version: number, name: string,
+                opts: pulumi.ComponentResourceOptions) {
+        super(version, "awsx:x:ecs:EC2Service", name, opts);
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new EC2Service] directly. Use [EC2Service.create] instead.", this);
+        }
+    }
+
+    public static create(name: string,
+                         args: EC2ServiceArgs,
+                         opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new EC2Service(1, name, opts);
+        result.initializeService(name, args, opts);
+        return result;
+    }
+
+    private initializeService(name: string,
+                              args: EC2ServiceArgs,
+                              opts: pulumi.ComponentResourceOptions) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
@@ -76,7 +111,7 @@ export class EC2Service extends ecs.Service {
         const cluster = args.cluster || x.ecs.Cluster.getDefault();
 
         const taskDefinition = args.taskDefinition ||
-            new ecs.EC2TaskDefinition(name, {
+            ecs.EC2TaskDefinition.create(name, {
                 ...args.taskDefinitionArgs,
                 vpc: cluster.vpc,
             }, opts);
@@ -85,7 +120,7 @@ export class EC2Service extends ecs.Service {
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = args.subnets || cluster.vpc.publicSubnetIds;
 
-        super("awsx:x:ecs:EC2Service", name, {
+        super.initialize(name, {
             ...args,
             taskDefinition,
             securityGroups,
@@ -104,7 +139,7 @@ export class EC2Service extends ecs.Service {
                     securityGroups: securityGroups.map(g => g.id),
                 };
             }),
-        }, /*isFargate:*/ false, opts);
+        }, /*isFargate:*/ false);
 
         this.taskDefinition = taskDefinition;
 

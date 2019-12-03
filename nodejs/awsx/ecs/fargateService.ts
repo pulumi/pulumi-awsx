@@ -20,10 +20,26 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
-    constructor(name: string,
-                args: ecs.FargateTaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    constructor(version: number, name: string,
+                opts: pulumi.ComponentResourceOptions) {
 
+        super(version, "awsx:x:ecs:FargateTaskDefinition", name, opts);
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new FargateTaskDefinition] directly. Use [FargateTaskDefinition.create] instead.", this);
+        }
+    }
+
+    public static create(name: string,
+                         args: ecs.FargateTaskDefinitionArgs,
+                         opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new FargateTaskDefinition(1, name, opts);
+        result.initializeTaskDefinition(name, args);
+        return result;
+    }
+
+    private initializeTaskDefinition(name: string, args: ecs.FargateTaskDefinitionArgs) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -45,7 +61,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
 
         delete (<any>argsCopy).container;
 
-        super("awsx:x:ecs:FargateTaskDefinition", name, /*isFargate:*/ true, argsCopy, opts);
+        super.initialize(name, /*isFargate:*/ true, argsCopy);
 
         this.registerOutputs();
     }
@@ -63,7 +79,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new ecs.FargateService(name, {
+        return ecs.FargateService.create(name, {
             ...args,
             taskDefinition: this,
         }, { parent: this, ...opts });
@@ -190,11 +206,32 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
 }
 
 export class FargateService extends ecs.Service {
-    public readonly taskDefinition: FargateTaskDefinition;
+    public taskDefinition!: FargateTaskDefinition;
 
-    constructor(name: string,
-                args: FargateServiceArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    constructor(version: number,
+                name: string,
+                opts: pulumi.ComponentResourceOptions) {
+
+        super(version, "awsx:x:ecs:FargateService", name, opts);
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new FargateService] directly. Use [FargateService.create] instead.", this);
+        }
+    }
+
+    public static create(name: string,
+                         args: FargateServiceArgs,
+                         opts: pulumi.ComponentResourceOptions = {}) {
+
+        const result = new FargateService(1, name, opts);
+        result.initializeService(name, args, opts);
+        return result;
+    }
+
+    private initializeService(name: string,
+                              args: FargateServiceArgs,
+                              opts: pulumi.ComponentResourceOptions) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
@@ -203,7 +240,7 @@ export class FargateService extends ecs.Service {
         const cluster = args.cluster || x.ecs.Cluster.getDefault();
 
         const taskDefinition = args.taskDefinition ||
-            new ecs.FargateTaskDefinition(name, {
+            ecs.FargateTaskDefinition.create(name, {
                 ...args.taskDefinitionArgs,
                 vpc: cluster.vpc,
             }, opts);
@@ -213,7 +250,7 @@ export class FargateService extends ecs.Service {
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = getSubnets(cluster, args.subnets, assignPublicIp);
 
-        super("awsx:x:ecs:FargateService", name, {
+        this.initialize(name, {
             ...args,
             taskDefinition,
             securityGroups,
@@ -223,7 +260,7 @@ export class FargateService extends ecs.Service {
                 assignPublicIp,
                 securityGroups: securityGroups.map(g => g.id),
             },
-        },  /*isFargate:*/ true, opts);
+        }, /*isFargate:*/ true);
 
         this.taskDefinition = taskDefinition;
 
