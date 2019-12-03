@@ -32,7 +32,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     public stackName!: pulumi.Output<string>;
 
     /** @internal */
-    constructor(version:number, name: string, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
         super("awsx:x:autoscaling:AutoScalingLaunchConfiguration", name, {}, opts);
 
         if (typeof version !== "number") {
@@ -49,7 +49,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     }
 
     private initialize(name: string, vpc: x.ec2.Vpc,
-                       args: AutoScalingLaunchConfigurationArgs = {}) {
+                       args: AutoScalingLaunchConfigurationArgs) {
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.

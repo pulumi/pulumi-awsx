@@ -53,7 +53,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     /** @internal */
     constructor(version: number,
                 name: string,
-                opts: pulumi.ComponentResourceOptions = {}) {
+                opts: pulumi.ComponentResourceOptions) {
         super("awsx:x:autoscaling:AutoScalingGroup", name, {}, opts);
 
         if (typeof version !== "number") {

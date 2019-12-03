@@ -50,7 +50,7 @@ export class Vpc extends pulumi.ComponentResource {
     public readonly natGateways: x.ec2.NatGateway[] = [];
 
     /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
         if (typeof version !== "number") {
@@ -306,6 +306,7 @@ export class Vpc extends pulumi.ComponentResource {
     }
 }
 
+(<any>Vpc.prototype).initialize.doNotCapture = true;
 (<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
 (<any>Vpc.prototype.addNatGateway).doNotCapture = true;
 (<any>Vpc.prototype).partition.doNotCapture = true;

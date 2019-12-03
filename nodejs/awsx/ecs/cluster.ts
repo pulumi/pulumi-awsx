@@ -26,25 +26,38 @@ let defaultCluster: Cluster;
 export class Cluster
         extends pulumi.ComponentResource
         implements x.autoscaling.AutoScalingUserData {
-    public readonly cluster: aws.ecs.Cluster;
-    public readonly id: pulumi.Output<string>;
+    public cluster!: aws.ecs.Cluster;
+    public id!: pulumi.Output<string>;
 
     /**
      * The network in which to create this cluster.
      */
-    public readonly vpc: x.ec2.Vpc;
+    public vpc!: x.ec2.Vpc;
     /**
      * Security groups associated with this this ECS Cluster.
      */
-    public readonly securityGroups: x.ec2.SecurityGroup[];
+    public securityGroups!: x.ec2.SecurityGroup[];
 
-    public readonly extraBootcmdLines: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
+    public extraBootcmdLines!: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
 
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 
-    constructor(name: string, args: ClusterArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ecs:Cluster", name, {}, opts);
 
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new Cluster] directly. Use [Cluster.create] instead.", this);
+        }
+    }
+
+    public static create(name: string, args: ClusterArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new Cluster(1, name, opts);
+        result.initialize(name, args);
+        return result;
+    }
+
+    private initialize(name: string, args: ClusterArgs) {
         // First create an ECS cluster.
         const cluster = getOrCreateCluster(name, args, this);
         this.cluster = cluster;
@@ -100,7 +113,7 @@ export class Cluster
      */
     public static getDefault(opts?: pulumi.ComponentResourceOptions): Cluster {
         if (!defaultCluster) {
-            defaultCluster = new Cluster("default-cluster", { }, opts);
+            defaultCluster = Cluster.create("default-cluster", {}, opts);
         }
 
         return defaultCluster;
@@ -145,7 +158,8 @@ export class Cluster
     }
 }
 
-(<any>Cluster.prototype.createAutoScalingGroup).doNotCapture = true;
+(<any>Cluster.prototype).initialize.doNotCapture = true;
+(<any>Cluster.prototype).createAutoScalingGroup.doNotCapture = true;
 
 function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
     if (args.cluster === undefined) {
