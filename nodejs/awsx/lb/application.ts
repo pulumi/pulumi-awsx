@@ -47,27 +47,27 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
         }
     }
 
-    public static create(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         const result = new ApplicationLoadBalancer(1, name, opts);
-        result.initializeLoadBalancer(name, args, opts);
+        await result.initializeLoadBalancer(name, args, opts);
         return result;
     }
 
-    private initializeLoadBalancer(name: string, args: ApplicationLoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
+    private async initializeLoadBalancer(name: string, args: ApplicationLoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
         const argsCopy: x.lb.LoadBalancerArgs = {
-            vpc: args.vpc || x.ec2.Vpc.getDefault(opts),
+            vpc: args.vpc || await x.ec2.Vpc.getDefault(opts),
             ...args,
             loadBalancerType: "application",
         };
 
         if (!argsCopy.securityGroups) {
-            argsCopy.securityGroups = [x.ec2.SecurityGroup.create(name, {
+            argsCopy.securityGroups = [await x.ec2.SecurityGroup.create(name, {
                 description: `Default security group for ALB: ${name}`,
                 vpc: argsCopy.vpc,
             }, opts)];
         }
 
-        super.initialize(name, argsCopy);
+        await this.initialize(name, argsCopy);
 
         this.registerOutputs();
     }
@@ -120,23 +120,23 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
         }
     }
 
-    public static create(name: string, args: ApplicationTargetGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string, args: ApplicationTargetGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
 
-        const loadBalancer = args.loadBalancer || ApplicationLoadBalancer.create(name, {
+        const loadBalancer = args.loadBalancer || await ApplicationLoadBalancer.create(name, {
             vpc: args.vpc,
             name: args.name,
         }, opts);
 
         const result = new ApplicationTargetGroup(1, name, loadBalancer, opts);
-        result.initializeTG(name, loadBalancer, args, opts);
+        await result.initializeTargetGroup(name, loadBalancer, args, opts);
         return result;
     }
 
-    private initializeTG(name: string, loadBalancer: ApplicationLoadBalancer, args: ApplicationTargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
+    private async initializeTargetGroup(name: string, loadBalancer: ApplicationLoadBalancer, args: ApplicationTargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationTargetGroup" }] });
-        super.initialize(name, loadBalancer, {
+        await this.initialize(name, loadBalancer, {
             ...args,
             vpc: loadBalancer.vpc,
             port,
@@ -150,7 +150,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     }
 
     public createListener(name: string, args: ApplicationListenerArgs,
-                          opts: pulumi.ComponentResourceOptions = {}): ApplicationListener {
+                          opts: pulumi.ComponentResourceOptions = {}): Promise<ApplicationListener> {
         // We didn't use to parent the listener to the target group.  Now we do.  Create an alias
         // from the old parent to the current one if this moves over.
         return ApplicationListener.create(name, {
@@ -220,9 +220,9 @@ export class ApplicationListener extends mod.Listener {
         this.loadBalancer = loadBalancer;
     }
 
-    public static create(name: string,
-                         args: ApplicationListenerArgs,
-                         opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string,
+                               args: ApplicationListenerArgs,
+                               opts: pulumi.ComponentResourceOptions = {}) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
                          (args.defaultActions ? 1 : 0) +
@@ -234,20 +234,20 @@ export class ApplicationListener extends mod.Listener {
 
         const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
             ? args.loadBalancer
-            : ApplicationLoadBalancer.create(name, {
+            : await ApplicationLoadBalancer.create(name, {
                 ...args.loadBalancer,
                 vpc: args.vpc,
                 name: args.name,
             }, opts);
 
         const result = new ApplicationListener(1, name, loadBalancer, opts);
-        result.initializeListener(name, args, opts);
+        await result.initializeListener(name, args, opts);
         return result;
     }
 
-    private initializeListener(name: string,
-                               args: ApplicationListenerArgs,
-                               opts: pulumi.ComponentResourceOptions) {
+    private async initializeListener(name: string,
+                                     args: ApplicationListenerArgs,
+                                     opts: pulumi.ComponentResourceOptions) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
                          (args.defaultActions ? 1 : 0) +
@@ -259,21 +259,21 @@ export class ApplicationListener extends mod.Listener {
 
         const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
             ? args.loadBalancer
-            : ApplicationLoadBalancer.create(name, {
+            : await ApplicationLoadBalancer.create(name, {
                 ...args.loadBalancer,
                 vpc: args.vpc,
                 name: args.name,
             }, opts);
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
-        const { defaultActions, defaultListener } = getDefaultActions(
+        const { defaultActions, defaultListener } = await getDefaultActions(
             name, loadBalancer, args, port, protocol, opts);
 
         // Pass along the target as the defaultTarget for this listener.  This allows this listener
         // to defer to it for ContainerPortMappings information.  this allows this listener to be
         // passed in as the portMappings information needed for a Service.
 
-        super.initialize(name, defaultListener, {
+        await this.initialize(name, defaultListener, {
             ...args,
             defaultActions,
             loadBalancer,
@@ -312,7 +312,7 @@ export class ApplicationListener extends mod.Listener {
     }
 }
 
-function getDefaultActions(
+async function getDefaultActions(
         name: string, loadBalancer: ApplicationLoadBalancer,
         args: ApplicationListenerArgs,
         port: pulumi.Input<number>,
@@ -331,7 +331,7 @@ function getDefaultActions(
 
     // User didn't provide default actions for this listener.  Create a reasonable target group for
     // us and use that as our default action.
-    const targetGroup = createTargetGroup();
+    const targetGroup = await createTargetGroup();
 
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 

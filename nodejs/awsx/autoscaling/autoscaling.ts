@@ -61,16 +61,16 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         }
     }
 
-    public static create(name: string,
-                         args: AutoScalingGroupArgs,
-                         opts: pulumi.ComponentResourceOptions = {}): AutoScalingGroup {
+    public static async create(name: string,
+                               args: AutoScalingGroupArgs,
+                               opts: pulumi.ComponentResourceOptions = {}): Promise<AutoScalingGroup> {
         const result = new AutoScalingGroup(1, name, opts);
-        result.initialize(args);
+        await result.initialize(args);
         return result;
     }
 
-    private initialize(args: AutoScalingGroupArgs) {
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
+    private async initialize(args: AutoScalingGroupArgs) {
+        this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
         const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
         this.targetGroups = args.targetGroups || [];
         const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
@@ -80,7 +80,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             this.launchConfiguration = args.launchConfiguration;
         }
         else {
-            this.launchConfiguration = AutoScalingLaunchConfiguration.create(
+            this.launchConfiguration = await AutoScalingLaunchConfiguration.create(
                 name, this.vpc, args.launchConfigurationArgs, { parent: this });
         }
 

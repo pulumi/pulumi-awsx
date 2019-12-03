@@ -31,7 +31,7 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     /** @internal */
     constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
         super(version, "awsx:lb:NetworkLoadBalancer", name, pulumi.mergeOptions(opts, {
-            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer" }]
+            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer" }],
         }));
 
         if (typeof version !== "number") {
@@ -39,14 +39,14 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
         }
     }
 
-    public static create(name: string, args: NetworkLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string, args: NetworkLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         const result = new NetworkLoadBalancer(1, name, opts);
-        result.initializeLoadBalancer(name, args);
+        await result.initializeLoadBalancer(name, args);
         return result;
     }
 
-    private initializeLoadBalancer(name: string, args: NetworkLoadBalancerArgs) {
-        super.initialize(name, {
+    private async initializeLoadBalancer(name: string, args: NetworkLoadBalancerArgs) {
+        await this.initialize(name, {
             ...args,
             loadBalancerType: "network",
         });
@@ -96,7 +96,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
                 opts: pulumi.ComponentResourceOptions) {
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
         super(version, "awsx:lb:NetworkTargetGroup", name, loadBalancer, {
-            parent: loadBalancer, ...opts
+            parent: loadBalancer, ...opts,
         });
 
         if (typeof version !== "number") {
@@ -107,21 +107,21 @@ export class NetworkTargetGroup extends mod.TargetGroup {
         this.listeners = [];
     }
 
-    public static create(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const loadBalancer = args.loadBalancer || NetworkLoadBalancer.create(name, {
+    public static async create(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        const loadBalancer = args.loadBalancer || await NetworkLoadBalancer.create(name, {
             vpc: args.vpc,
             name: args.name,
         }, opts);
 
         const result = new NetworkTargetGroup(1, name, loadBalancer, opts);
-        result.initializeTargetGroup(name, loadBalancer, args);
+        await result.initializeTargetGroup(name, loadBalancer, args);
         return result;
     }
 
-    private initializeTargetGroup(name: string, loadBalancer: NetworkLoadBalancer, args: NetworkTargetGroupArgs) {
+    private async initializeTargetGroup(name: string, loadBalancer: NetworkLoadBalancer, args: NetworkTargetGroupArgs) {
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
-        super.initialize(name, loadBalancer, {
+        await this.initialize(name, loadBalancer, {
             ...args,
             protocol,
             vpc: loadBalancer.vpc,
@@ -133,7 +133,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     }
 
     public createListener(name: string, args: NetworkListenerArgs,
-                          opts: pulumi.ComponentResourceOptions = {}): NetworkListener {
+                          opts: pulumi.ComponentResourceOptions = {}): Promise<NetworkListener> {
         return NetworkListener.create(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
@@ -167,7 +167,7 @@ export class NetworkListener
                 opts: pulumi.ComponentResourceOptions) {
 
         super(version, "awsx:lb:NetworkListener", name, loadBalancer, pulumi.mergeOptions(opts, {
-            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }]
+            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }],
         }));
 
         if (typeof version !== "number") {
@@ -177,13 +177,13 @@ export class NetworkListener
         this.loadBalancer = loadBalancer;
     }
 
-    public static create(name: string,
-                         args: NetworkListenerArgs,
-                         opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string,
+                               args: NetworkListenerArgs,
+                               opts: pulumi.ComponentResourceOptions = {}) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
-            (args.defaultActions ? 1 : 0) +
-            (args.targetGroup ? 1 : 0);
+                         (args.defaultActions ? 1 : 0) +
+                         (args.targetGroup ? 1 : 0);
 
         if (argCount >= 2) {
             throw new Error("Only provide one of [defaultAction], [defaultActions] or [targetGroup].");
@@ -191,26 +191,26 @@ export class NetworkListener
 
         const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
             ? args.loadBalancer
-            : NetworkLoadBalancer.create(name, {
+            : await NetworkLoadBalancer.create(name, {
                 ...args.loadBalancer,
                 vpc: args.vpc,
                 name: args.name,
             }, opts);
 
         const result = new NetworkListener(1, name, loadBalancer, opts);
-        result.initializeListener(name, loadBalancer, args, opts);
+        await result.initializeListener(name, loadBalancer, args, opts);
         return result;
     }
 
-    private initializeListener(name: string,
-                               loadBalancer: NetworkLoadBalancer,
-                               args: NetworkListenerArgs,
-                               opts: pulumi.ComponentResourceOptions) {
+    private async initializeListener(name: string,
+                                     loadBalancer: NetworkLoadBalancer,
+                                     args: NetworkListenerArgs,
+                                     opts: pulumi.ComponentResourceOptions) {
 
-        const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
+        const { defaultActions, defaultListener } = await getDefaultActions(name, loadBalancer, args, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
-        super.initialize(name, defaultListener, {
+        await this.initialize(name, defaultListener, {
             ...args,
             protocol,
             loadBalancer,
@@ -241,7 +241,7 @@ export class NetworkListener
     }
 }
 
-function getDefaultActions(
+async function getDefaultActions(
         name: string,
         loadBalancer: NetworkLoadBalancer,
         args: NetworkListenerArgs,
@@ -259,7 +259,7 @@ function getDefaultActions(
 
     // User didn't provide default actions for this listener.  Create a reasonable target group for
     // us and use that as our default action.
-    const targetGroup = createTargetGroup();
+    const targetGroup = await createTargetGroup();
 
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 

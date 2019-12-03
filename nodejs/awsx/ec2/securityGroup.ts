@@ -38,13 +38,13 @@ export class SecurityGroup extends pulumi.ComponentResource {
         }
     }
 
-    public static create(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}): Promise<SecurityGroup> {
         const result = new SecurityGroup(1, name, opts);
-        result.initialize(name, args);
+        await result.initialize(name, args);
         return result;
     }
 
-    private initialize(name: string, args: SecurityGroupArgs) {
+    private async initialize(name: string, args: SecurityGroupArgs): Promise<void> {
         // We allow egress/ingress rules to be defined in-line for SecurityGroup (like terraform
         // does). However, we handle these by explicitly *not* passing this to the security group,
         // and instead manually making SecurityGroupRules.  This ensures that rules can be added
@@ -60,7 +60,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
         delete args.egress;
         delete args.ingress;
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
+        this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
             vpcId: this.vpc.id,
@@ -119,7 +119,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 
 /** @internal */
-export function getSecurityGroups(
+export async function getSecurityGroups(
         vpc: x.ec2.Vpc, name: string, args: SecurityGroupOrId[] | undefined,
         opts: pulumi.ResourceOptions | undefined) {
     if (!args) {
@@ -133,7 +133,7 @@ export function getSecurityGroups(
             result.push(obj);
         }
         else {
-            result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, { vpc }, opts));
+            result.push(await x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, { vpc }, opts));
         }
     }
 

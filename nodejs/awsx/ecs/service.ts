@@ -44,9 +44,8 @@ export abstract class Service extends pulumi.ComponentResource {
         }
     }
 
-    protected initialize(name: string,
-                         args: ServiceArgs, isFargate: boolean) {
-        this.cluster = args.cluster || x.ecs.Cluster.getDefault();
+    protected async initialize(name: string, args: ServiceArgs, isFargate: boolean) {
+        this.cluster = args.cluster || await x.ecs.Cluster.getDefault();
 
         this.listeners = args.taskDefinition.listeners;
         this.applicationListeners = args.taskDefinition.applicationListeners;

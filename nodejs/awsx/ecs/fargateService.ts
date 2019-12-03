@@ -31,15 +31,15 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
         }
     }
 
-    public static create(name: string,
-                         args: ecs.FargateTaskDefinitionArgs,
-                         opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string,
+                               args: ecs.FargateTaskDefinitionArgs,
+                               opts: pulumi.ComponentResourceOptions = {}) {
         const result = new FargateTaskDefinition(1, name, opts);
-        result.initializeTaskDefinition(name, args);
+        await result.initializeTaskDefinition(name, args);
         return result;
     }
 
-    private initializeTaskDefinition(name: string, args: ecs.FargateTaskDefinitionArgs) {
+    private async initializeTaskDefinition(name: string, args: ecs.FargateTaskDefinitionArgs) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -61,7 +61,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
 
         delete (<any>argsCopy).container;
 
-        super.initialize(name, /*isFargate:*/ true, argsCopy);
+        await this.initialize(name, /*isFargate:*/ true, argsCopy);
 
         this.registerOutputs();
     }
@@ -220,37 +220,37 @@ export class FargateService extends ecs.Service {
         }
     }
 
-    public static create(name: string,
-                         args: FargateServiceArgs,
-                         opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string,
+                               args: FargateServiceArgs,
+                               opts: pulumi.ComponentResourceOptions = {}) {
 
         const result = new FargateService(1, name, opts);
-        result.initializeService(name, args, opts);
+        await result.initializeService(name, args, opts);
         return result;
     }
 
-    private initializeService(name: string,
-                              args: FargateServiceArgs,
-                              opts: pulumi.ComponentResourceOptions) {
+    private async initializeService(name: string,
+                                    args: FargateServiceArgs,
+                                    opts: pulumi.ComponentResourceOptions) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const cluster = args.cluster || x.ecs.Cluster.getDefault();
+        const cluster = args.cluster || await x.ecs.Cluster.getDefault();
 
         const taskDefinition = args.taskDefinition ||
-            ecs.FargateTaskDefinition.create(name, {
+            await ecs.FargateTaskDefinition.create(name, {
                 ...args.taskDefinitionArgs,
                 vpc: cluster.vpc,
             }, opts);
 
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
-        const securityGroups = x.ec2.getSecurityGroups(
+        const securityGroups = await x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = getSubnets(cluster, args.subnets, assignPublicIp);
 
-        this.initialize(name, {
+        await this.initialize(name, {
             ...args,
             taskDefinition,
             securityGroups,

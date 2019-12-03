@@ -21,7 +21,7 @@ import * as x from "..";
 import * as utils from "../utils";
 
 /** @internal */
-export function computeContainerDefinition(
+export async function computeContainerDefinition(
     parent: pulumi.Resource,
     name: string,
     vpc: x.ec2.Vpc | undefined,
@@ -39,7 +39,7 @@ export function computeContainerDefinition(
         ? utils.combineArrays(container.environment, container.image.environment(name, parent))
         : container.environment;
 
-    const portMappings = getPortMappings(parent, name, vpc, container, containerName, applicationListeners, networkListeners);
+    const portMappings = await getPortMappings(parent, name, vpc, container, containerName, applicationListeners, networkListeners);
     const region = utils.getRegion(parent);
 
     const logGroupId = logGroup ? logGroup.id : undefined;
@@ -72,7 +72,7 @@ export function computeContainerDefinition(
     return containerDefinition;
 }
 
-function getPortMappings(
+async function getPortMappings(
     parent: pulumi.Resource,
     name: string,
     vpc: x.ec2.Vpc | undefined,
@@ -109,7 +109,7 @@ function getPortMappings(
         }
     }
     else {
-        const listener = createListener();
+        const listener = await createListener();
         possibleListener = listener;
         result.push(pulumi.output(listener.containerPortMapping(name, parent)));
     }

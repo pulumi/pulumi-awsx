@@ -40,16 +40,16 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         }
     }
 
-    public static create(name: string, vpc: x.ec2.Vpc,
-                         args: AutoScalingLaunchConfigurationArgs = {},
-                         opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string, vpc: x.ec2.Vpc,
+                               args: AutoScalingLaunchConfigurationArgs = {},
+                               opts: pulumi.ComponentResourceOptions = {}): Promise<AutoScalingLaunchConfiguration> {
         const result = new AutoScalingLaunchConfiguration(1, name, opts);
-        result.initialize(name, vpc, args);
+        await result.initialize(name, vpc, args);
         return result;
     }
 
-    private initialize(name: string, vpc: x.ec2.Vpc,
-                       args: AutoScalingLaunchConfigurationArgs) {
+    private async initialize(name: string, vpc: x.ec2.Vpc,
+                             args: AutoScalingLaunchConfigurationArgs) {
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.
@@ -62,7 +62,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             AutoScalingLaunchConfiguration.createInstanceProfile(
                 name, /*assumeRolePolicy:*/ undefined, /*policyArns:*/ undefined, { parent: this });
 
-        this.securityGroups = x.ec2.getSecurityGroups(vpc, name, args.securityGroups, { parent: this }) || [];
+        this.securityGroups = await x.ec2.getSecurityGroups(vpc, name, args.securityGroups, { parent: this }) || [];
 
         this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             ...args,

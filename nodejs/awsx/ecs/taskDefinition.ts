@@ -59,9 +59,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         }
     }
 
-    protected initialize(name: string,
-                         isFargate: boolean, args: TaskDefinitionArgs) {
-
+    protected async initialize(name: string, isFargate: boolean, args: TaskDefinitionArgs) {
         this.logGroup = args.logGroup === null ? undefined :
                         args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
@@ -77,7 +75,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
         this.containers = args.containers;
 
-        const containerDefinitions = computeContainerDefinitions(
+        const containerDefinitions = await computeContainerDefinitions(
             this, name, args.vpc, this.containers, this.applicationListeners, this.networkListeners, this.logGroup);
         this.listeners = {...this.applicationListeners, ...this.networkListeners };
 
@@ -253,21 +251,21 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
     };
 }
 
-function computeContainerDefinitions(
+async function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
     vpc: x.ec2.Vpc | undefined,
     containers: Record<string, ecs.Container>,
     applicationListeners: Record<string, x.lb.ApplicationListener>,
     networkListeners: Record<string, x.lb.NetworkListener>,
-    logGroup: aws.cloudwatch.LogGroup | undefined): pulumi.Output<aws.ecs.ContainerDefinition[]> {
+    logGroup: aws.cloudwatch.LogGroup | undefined): Promise<pulumi.Output<aws.ecs.ContainerDefinition[]>> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
 
     for (const containerName of Object.keys(containers)) {
         const container = containers[containerName];
 
-        result.push(ecs.computeContainerDefinition(
+        result.push(await ecs.computeContainerDefinition(
             parent, name, vpc, containerName, container,
             applicationListeners, networkListeners, logGroup));
     }

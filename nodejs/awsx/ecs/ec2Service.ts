@@ -30,16 +30,16 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
         }
     }
 
-    public static create(name: string,
-                         args: EC2TaskDefinitionArgs,
-                         opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string,
+                               args: EC2TaskDefinitionArgs,
+                               opts: pulumi.ComponentResourceOptions = {}) {
 
         const result = new EC2TaskDefinition(1, name, opts);
-        result.initializeTaskDefinition(name, args);
+        await result.initializeTaskDefinition(name, args);
         return result;
     }
 
-    private initializeTaskDefinition(name: string, args: EC2TaskDefinitionArgs) {
+    private async initializeTaskDefinition(name: string, args: EC2TaskDefinitionArgs): Promise<void> {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -55,7 +55,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 
         delete (<any>argsCopy).container;
 
-        super.initialize(name, /*isFargate:*/ false, argsCopy);
+        await this.initialize(name, /*isFargate:*/ false, argsCopy);
 
         this.registerOutputs();
     }
@@ -92,35 +92,35 @@ export class EC2Service extends ecs.Service {
         }
     }
 
-    public static create(name: string,
-                         args: EC2ServiceArgs,
-                         opts: pulumi.ComponentResourceOptions = {}) {
+    public static async create(name: string,
+                               args: EC2ServiceArgs,
+                               opts: pulumi.ComponentResourceOptions = {}) {
         const result = new EC2Service(1, name, opts);
-        result.initializeService(name, args, opts);
+        await result.initializeService(name, args, opts);
         return result;
     }
 
-    private initializeService(name: string,
-                              args: EC2ServiceArgs,
-                              opts: pulumi.ComponentResourceOptions) {
+    private async initializeService(name: string,
+                                    args: EC2ServiceArgs,
+                                    opts: pulumi.ComponentResourceOptions) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const cluster = args.cluster || x.ecs.Cluster.getDefault();
+        const cluster = args.cluster || await x.ecs.Cluster.getDefault();
 
         const taskDefinition = args.taskDefinition ||
-            ecs.EC2TaskDefinition.create(name, {
+            await ecs.EC2TaskDefinition.create(name, {
                 ...args.taskDefinitionArgs,
                 vpc: cluster.vpc,
             }, opts);
 
-        const securityGroups = x.ec2.getSecurityGroups(
-            cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
+        const securityGroups = (await x.ec2.getSecurityGroups(
+            cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts)) || [];
         const subnets = args.subnets || cluster.vpc.publicSubnetIds;
 
-        super.initialize(name, {
+        await this.initialize(name, {
             ...args,
             taskDefinition,
             securityGroups,

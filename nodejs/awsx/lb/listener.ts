@@ -60,9 +60,9 @@ export abstract class Listener
         this.loadBalancer = loadBalancer;
     }
 
-    protected initialize(name: string,
-                         defaultListenerAction: ListenerDefaultAction | undefined,
-                         args: ListenerArgs) {
+    protected async initialize(name: string,
+                               defaultListenerAction: ListenerDefaultAction | undefined,
+                               args: ListenerArgs) {
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
         // security policy from:

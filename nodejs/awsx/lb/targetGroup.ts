@@ -50,9 +50,7 @@ export abstract class TargetGroup
         }
     }
 
-    protected initialize(name: string, loadBalancer: mod.LoadBalancer,
-                         args: TargetGroupArgs) {
-
+    protected async initialize(name: string, loadBalancer: mod.LoadBalancer, args: TargetGroupArgs) {
         this.vpc = args.vpc;
 
         // We used to hash the name of an TG to keep the name short.  This was necessary back when
