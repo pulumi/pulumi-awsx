@@ -30,27 +30,39 @@ export abstract class Listener
         extends pulumi.ComponentResource
         implements x.ecs.ContainerPortMappingProvider,
                    x.ecs.ContainerLoadBalancerProvider {
-    public readonly listener: aws.lb.Listener;
     public readonly loadBalancer: x.lb.LoadBalancer;
-    public readonly defaultTargetGroup?: x.lb.TargetGroup;
+    public listener!: aws.lb.Listener;
+    public defaultTargetGroup?: x.lb.TargetGroup;
 
-    public readonly endpoint: pulumi.Output<ListenerEndpoint>;
+    public endpoint!: pulumi.Output<ListenerEndpoint>;
 
-    private readonly defaultListenerAction?: ListenerDefaultAction;
+    private defaultListenerAction?: ListenerDefaultAction;
 
     // tslint:disable-next-line:variable-name
     private readonly __isListenerInstance = true;
 
-    constructor(type: string, name: string,
-                defaultListenerAction: ListenerDefaultAction | undefined,
-                args: ListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(version: number, type: string, name: string,
+                loadBalancer: mod.LoadBalancer,
+                opts: pulumi.ComponentResourceOptions) {
+
         // By default, we'd like to be parented by the LB .  However, we didn't use to do this.
         // Create an alias from teh old urn to the new one so that we don't cause these to eb
         // created/destroyed.
-        super(type, name, args, {
-            parent: args.loadBalancer,
+        super(type, name, {}, {
+            parent: loadBalancer,
             ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not construct a TargetGroup directly. Use [ApplicationTargetGroup.create] or [NetworkTargetGroup.create] instead.", this);
+        }
+
+        this.loadBalancer = loadBalancer;
+    }
+
+    protected initialize(name: string,
+                         defaultListenerAction: ListenerDefaultAction | undefined,
+                         args: ListenerArgs) {
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
         // security policy from:
@@ -70,7 +82,6 @@ export abstract class Listener
             port: args.port,
         }));
 
-        this.loadBalancer = args.loadBalancer;
         this.defaultListenerAction = defaultListenerAction;
 
         if (defaultListenerAction instanceof mod.TargetGroup) {

@@ -125,7 +125,7 @@ export class Cluster
             opts: pulumi.ComponentResourceOptions = {}): x.ec2.SecurityGroup {
 
         vpc = vpc || x.ec2.Vpc.getDefault(opts);
-        const securityGroup = new x.ec2.SecurityGroup(name, {
+        const securityGroup = x.ec2.SecurityGroup.create(name, {
             vpc,
             tags: { Name: name },
         }, opts);

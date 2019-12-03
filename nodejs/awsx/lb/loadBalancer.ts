@@ -20,16 +20,23 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
-    public readonly loadBalancer: aws.lb.LoadBalancer;
-    public readonly vpc: x.ec2.Vpc;
-    public readonly securityGroups: x.ec2.SecurityGroup[];
+    public loadBalancer!: aws.lb.LoadBalancer;
+    public vpc!: x.ec2.Vpc;
+    public securityGroups!: x.ec2.SecurityGroup[];
 
     public readonly listeners: mod.Listener[] = [];
     public readonly targetGroups: mod.TargetGroup[] = [];
 
-    constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    constructor(version: number, type: string, name: string, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not construct a LoadBalancer directly. Use [ApplicationLoadBalancer.create] or [NetworkLoadBalancer.create] instead.", this);
+        }
+    }
+
+    protected initialize(name: string, args: LoadBalancerArgs) {
         this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 

@@ -27,14 +27,16 @@ export abstract class TargetGroup
     x.ecs.ContainerLoadBalancerProvider,
     x.lb.ListenerDefaultAction {
 
-    public readonly loadBalancer: mod.LoadBalancer;
-    public readonly targetGroup: aws.lb.TargetGroup;
-    public readonly vpc: x.ec2.Vpc;
+    public loadBalancer!: mod.LoadBalancer;
+    public targetGroup!: aws.lb.TargetGroup;
+    public vpc!: x.ec2.Vpc;
 
     public readonly listeners: x.lb.Listener[] = [];
 
-    constructor(type: string, name: string, loadBalancer: mod.LoadBalancer,
-                args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, type: string, name: string, loadBalancer: mod.LoadBalancer,
+                opts: pulumi.ComponentResourceOptions) {
+
         // We want our parent to the be the ALB by default if nothing else is specified.
         // Create an alias from our old name where we didn't parent by default to keep
         // resources from being created/destroyed.
@@ -42,6 +44,14 @@ export abstract class TargetGroup
             parent: loadBalancer,
             ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not construct a TargetGroup directly. Use [ApplicationTargetGroup.create] or [NetworkTargetGroup.create] instead.", this);
+        }
+    }
+
+    protected initialize(name: string, loadBalancer: mod.LoadBalancer,
+                         args: TargetGroupArgs) {
 
         this.vpc = args.vpc;
 

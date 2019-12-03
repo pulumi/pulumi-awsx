@@ -34,10 +34,26 @@ export type ApplicationProtocol = "HTTP" | "HTTPS";
  * more details.
  */
 export class ApplicationLoadBalancer extends mod.LoadBalancer {
-    public readonly listeners: ApplicationListener[];
-    public readonly targetGroups: ApplicationTargetGroup[];
+    public readonly listeners: ApplicationListener[] = [];
+    public readonly targetGroups: ApplicationTargetGroup[] = [];
 
-    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
+        super(version, "aws:lb:ApplicationLoadBalancer", name,
+            pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer"}] }));
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new ApplicationLoadBalancer] directly. Use [ApplicationLoadBalancer.create] instead.", this);
+        }
+    }
+
+    public static create(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new ApplicationLoadBalancer(1, name, opts);
+        result.initializeLoadBalancer(name, args, opts);
+        return result;
+    }
+
+    private initializeLoadBalancer(name: string, args: ApplicationLoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
         const argsCopy: x.lb.LoadBalancerArgs = {
             vpc: args.vpc || x.ec2.Vpc.getDefault(opts),
             ...args,
@@ -45,17 +61,13 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
         };
 
         if (!argsCopy.securityGroups) {
-            argsCopy.securityGroups = [new x.ec2.SecurityGroup(name, {
+            argsCopy.securityGroups = [x.ec2.SecurityGroup.create(name, {
                 description: `Default security group for ALB: ${name}`,
                 vpc: argsCopy.vpc,
             }, opts)];
         }
 
-        super("aws:lb:ApplicationLoadBalancer", name, argsCopy,
-            pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer"}] }));
-
-        this.listeners = [];
-        this.targetGroups = [];
+        super.initialize(name, argsCopy);
 
         this.registerOutputs();
     }
@@ -65,7 +77,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
      * details.
      */
     public createListener(name: string, args: ApplicationListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        return new ApplicationListener(name, {
+        return ApplicationListener.create(name, {
             loadBalancer: this,
             ...args,
         }, { parent: this, ...opts });
@@ -76,7 +88,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
      * details.
      */
     public createTargetGroup(name: string, args: ApplicationTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        return new ApplicationTargetGroup(name, {
+        return ApplicationTargetGroup.create(name, {
             loadBalancer: this,
             ...args,
         }, { parent: this, ...opts });
@@ -91,32 +103,46 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
  * balancer.
  */
 export class ApplicationTargetGroup extends mod.TargetGroup {
-    public readonly loadBalancer: ApplicationLoadBalancer;
+    public loadBalancer!: ApplicationLoadBalancer;
 
-    public readonly listeners: x.lb.ApplicationListener[];
+    public readonly listeners: x.lb.ApplicationListener[] = [];
 
     /** @internal */
     // tslint:disable-next-line:variable-name
-    public readonly __isApplicationTargetGroup: boolean;
+    public readonly __isApplicationTargetGroup: boolean = true;
 
-    constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {
+    /** @internal */
+    constructor(version: number, name: string, loadBalancer: ApplicationLoadBalancer, opts: pulumi.ComponentResourceOptions) {
+        super(version, "awsx:lb:ApplicationTargetGroup", name, loadBalancer, opts);
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new ApplicationTargetGroup] directly. Use [ApplicationTargetGroup.create] instead.", this);
+        }
+    }
+
+    public static create(name: string, args: ApplicationTargetGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+
+        const loadBalancer = args.loadBalancer || ApplicationLoadBalancer.create(name, {
             vpc: args.vpc,
             name: args.name,
         }, opts);
+
+        const result = new ApplicationTargetGroup(1, name, loadBalancer, opts);
+        result.initializeTG(name, loadBalancer, args, opts);
+        return result;
+    }
+
+    private initializeTG(name: string, loadBalancer: ApplicationLoadBalancer, args: ApplicationTargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationTargetGroup" }] });
-        super("awsx:lb:ApplicationTargetGroup", name, loadBalancer, {
+        super.initialize(name, loadBalancer, {
             ...args,
             vpc: loadBalancer.vpc,
             port,
             protocol,
-        }, opts);
+        });
 
-        this.__isApplicationTargetGroup = true;
-
-        this.listeners = [];
         this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
@@ -127,7 +153,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
                           opts: pulumi.ComponentResourceOptions = {}): ApplicationListener {
         // We didn't use to parent the listener to the target group.  Now we do.  Create an alias
         // from the old parent to the current one if this moves over.
-        return new ApplicationListener(name, {
+        return ApplicationListener.create(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
             ...args,
@@ -184,11 +210,19 @@ export class ApplicationListener extends mod.Listener {
     public readonly defaultTargetGroup?: x.lb.ApplicationTargetGroup;
 
     // tslint:disable-next-line:variable-name
-    private readonly __isApplicationListenerInstance: boolean;
+    private readonly __isApplicationListenerInstance: boolean = true;
 
-    constructor(name: string,
-                args: ApplicationListenerArgs,
-                opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, loadBalancer: ApplicationLoadBalancer,
+                opts: pulumi.ComponentResourceOptions) {
+
+        super(version, "awsx:lb:ApplicationListener", name, loadBalancer, opts);
+        this.loadBalancer = loadBalancer;
+    }
+
+    public static create(name: string,
+                         args: ApplicationListenerArgs,
+                         opts: pulumi.ComponentResourceOptions = {}) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
                          (args.defaultActions ? 1 : 0) +
@@ -200,7 +234,32 @@ export class ApplicationListener extends mod.Listener {
 
         const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
             ? args.loadBalancer
-            : new ApplicationLoadBalancer(name, {
+            : ApplicationLoadBalancer.create(name, {
+                ...args.loadBalancer,
+                vpc: args.vpc,
+                name: args.name,
+            }, opts);
+
+        const result = new ApplicationListener(1, name, loadBalancer, opts);
+        result.initializeListener(name, args, opts);
+        return result;
+    }
+
+    private initializeListener(name: string,
+                               args: ApplicationListenerArgs,
+                               opts: pulumi.ComponentResourceOptions) {
+
+        const argCount = (args.defaultAction ? 1 : 0) +
+                         (args.defaultActions ? 1 : 0) +
+                         (args.targetGroup ? 1 : 0);
+
+        if (argCount >= 2) {
+            throw new Error("Only provide one of [defaultAction], [defaultActions] or [targetGroup].");
+        }
+
+        const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
+            ? args.loadBalancer
+            : ApplicationLoadBalancer.create(name, {
                 ...args.loadBalancer,
                 vpc: args.vpc,
                 name: args.name,
@@ -214,17 +273,14 @@ export class ApplicationListener extends mod.Listener {
         // to defer to it for ContainerPortMappings information.  this allows this listener to be
         // passed in as the portMappings information needed for a Service.
 
-        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationListener" }] });
-        super("awsx:lb:ApplicationListener", name, defaultListener, {
+        super.initialize(name, defaultListener, {
             ...args,
             defaultActions,
             loadBalancer,
             port,
             protocol,
-        }, opts);
+        });
 
-        this.__isApplicationListenerInstance = true;
-        this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
         // As per https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html
@@ -286,13 +342,13 @@ function getDefaultActions(
             return args.targetGroup;
         }
         else if (args.targetGroup) {
-            return new ApplicationTargetGroup(name, {
+            return ApplicationTargetGroup.create(name, {
                 ...args.targetGroup,
                 loadBalancer,
             }, opts);
         }
         else {
-            return new ApplicationTargetGroup(name, {
+            return ApplicationTargetGroup.create(name, {
                 port,
                 protocol,
                 loadBalancer,

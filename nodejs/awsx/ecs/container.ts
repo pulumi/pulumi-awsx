@@ -136,7 +136,7 @@ function getPortMappings(
                 throw new pulumi.ResourceError(errorMessage, parent);
             }
 
-            return new x.lb.ApplicationListener(name, {
+            return x.lb.ApplicationListener.create(name, {
                 ...container.applicationListener,
                 vpc,
             }, opts);
@@ -150,7 +150,7 @@ function getPortMappings(
                 throw new pulumi.ResourceError(errorMessage, parent);
             }
 
-            return new x.lb.NetworkListener(name, {
+            return x.lb.NetworkListener.create(name, {
                 ...container.networkListener,
                 vpc,
             }, opts);

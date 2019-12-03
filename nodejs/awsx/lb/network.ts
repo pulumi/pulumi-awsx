@@ -25,33 +25,44 @@ import * as utils from "./../utils";
 export type NetworkProtocol = "TCP" | "TLS" | "HTTP" | "HTTPS";
 
 export class NetworkLoadBalancer extends mod.LoadBalancer {
-    public readonly listeners: NetworkListener[];
-    public readonly targetGroups: NetworkTargetGroup[];
+    public readonly listeners: NetworkListener[] = [];
+    public readonly targetGroups: NetworkTargetGroup[] = [];
 
-    constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
-        const argsCopy: x.lb.LoadBalancerArgs = {
+    /** @internal */
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
+        super(version, "awsx:lb:NetworkLoadBalancer", name, pulumi.mergeOptions(opts, {
+            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer" }]
+        }));
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new NetworkLoadBalancer] directly. Use [NetworkLoadBalancer.create] instead.", this);
+        }
+    }
+
+    public static create(name: string, args: NetworkLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new NetworkLoadBalancer(1, name, opts);
+        result.initializeLoadBalancer(name, args);
+        return result;
+    }
+
+    private initializeLoadBalancer(name: string, args: NetworkLoadBalancerArgs) {
+        super.initialize(name, {
             ...args,
             loadBalancerType: "network",
-        };
-
-        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer" }] });
-        super("awsx:lb:NetworkLoadBalancer", name, argsCopy, opts);
-
-        this.listeners = [];
-        this.targetGroups = [];
+        });
 
         this.registerOutputs();
     }
 
     public createListener(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        return new NetworkListener(name, {
+        return NetworkListener.create(name, {
             loadBalancer: this,
             ...args,
         }, { parent: this, ...opts });
     }
 
     public createTargetGroup(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        return new NetworkTargetGroup(name, {
+        return NetworkTargetGroup.create(name, {
             loadBalancer: this,
             ...args,
         }, { parent: this, ...opts });
@@ -76,26 +87,46 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
  * for more details.
  */
 export class NetworkTargetGroup extends mod.TargetGroup {
-    public readonly loadBalancer: NetworkLoadBalancer;
+    public readonly loadBalancer!: NetworkLoadBalancer;
 
     public readonly listeners: x.lb.NetworkListener[];
 
-    constructor(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {
+    /** @internal */
+    constructor(version: number, name: string, loadBalancer: NetworkLoadBalancer,
+                opts: pulumi.ComponentResourceOptions) {
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
+        super(version, "awsx:lb:NetworkTargetGroup", name, loadBalancer, {
+            parent: loadBalancer, ...opts
+        });
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new NetworkTargetGroup] directly. Use [NetworkTargetGroup.create] instead.", this);
+        }
+
+        this.loadBalancer = loadBalancer;
+        this.listeners = [];
+    }
+
+    public static create(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        const loadBalancer = args.loadBalancer || NetworkLoadBalancer.create(name, {
             vpc: args.vpc,
             name: args.name,
         }, opts);
+
+        const result = new NetworkTargetGroup(1, name, loadBalancer, opts);
+        result.initializeTargetGroup(name, loadBalancer, args);
+        return result;
+    }
+
+    private initializeTargetGroup(name: string, loadBalancer: NetworkLoadBalancer, args: NetworkTargetGroupArgs) {
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
-        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
-        super("awsx:lb:NetworkTargetGroup", name, loadBalancer, {
+        super.initialize(name, loadBalancer, {
             ...args,
             protocol,
             vpc: loadBalancer.vpc,
-        }, { parent: loadBalancer, ...opts });
+        });
 
-        this.listeners = [];
-        this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
         this.registerOutputs();
@@ -103,7 +134,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
 
     public createListener(name: string, args: NetworkListenerArgs,
                           opts: pulumi.ComponentResourceOptions = {}): NetworkListener {
-        return new NetworkListener(name, {
+        return NetworkListener.create(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
             ...args,
@@ -127,11 +158,28 @@ export class NetworkListener
     public readonly defaultTargetGroup?: x.lb.NetworkTargetGroup;
 
     // tslint:disable-next-line:variable-name
-    private readonly __isNetworkListenerInstance: boolean;
+    private readonly __isNetworkListenerInstance: boolean = true;
 
-    constructor(name: string,
-                args: NetworkListenerArgs,
-                opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number,
+                name: string,
+                loadBalancer: NetworkLoadBalancer,
+                opts: pulumi.ComponentResourceOptions) {
+
+        super(version, "awsx:lb:NetworkListener", name, loadBalancer, pulumi.mergeOptions(opts, {
+            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }]
+        }));
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new NetworkListener] directly. Use [NetworkListener.create] instead.", this);
+        }
+
+        this.loadBalancer = loadBalancer;
+    }
+
+    public static create(name: string,
+                         args: NetworkListenerArgs,
+                         opts: pulumi.ComponentResourceOptions = {}) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
             (args.defaultActions ? 1 : 0) +
@@ -143,27 +191,33 @@ export class NetworkListener
 
         const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
             ? args.loadBalancer
-            : new NetworkLoadBalancer(name, {
+            : NetworkLoadBalancer.create(name, {
                 ...args.loadBalancer,
                 vpc: args.vpc,
                 name: args.name,
             }, opts);
 
+        const result = new NetworkListener(1, name, loadBalancer, opts);
+        result.initializeListener(name, loadBalancer, args, opts);
+        return result;
+    }
+
+    private initializeListener(name: string,
+                               loadBalancer: NetworkLoadBalancer,
+                               args: NetworkListenerArgs,
+                               opts: pulumi.ComponentResourceOptions) {
+
         const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
-        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }] });
-        super("awsx:lb:NetworkListener", name, defaultListener, {
+        super.initialize(name, defaultListener, {
             ...args,
             protocol,
             loadBalancer,
             defaultActions,
-        }, opts);
+        });
 
-        this.__isNetworkListenerInstance = true;
-        this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
-
         this.registerOutputs();
     }
 
@@ -216,13 +270,13 @@ function getDefaultActions(
             return args.targetGroup;
         }
         else if (args.targetGroup) {
-            return new NetworkTargetGroup(name, {
+            return NetworkTargetGroup.create(name, {
                 ...args.targetGroup,
                 loadBalancer,
             }, opts);
         }
         else {
-            return new NetworkTargetGroup(name, {
+            return NetworkTargetGroup.create(name, {
                 loadBalancer,
                 name: args.name,
                 port: args.port,

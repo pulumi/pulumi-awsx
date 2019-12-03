@@ -19,9 +19,9 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class SecurityGroup extends pulumi.ComponentResource {
-    public readonly securityGroup: aws.ec2.SecurityGroup;
-    public readonly id: pulumi.Output<string>;
-    public readonly vpc: x.ec2.Vpc;
+    public securityGroup!: aws.ec2.SecurityGroup;
+    public id!: pulumi.Output<string>;
+    public vpc!: x.ec2.Vpc;
 
     public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
@@ -29,9 +29,22 @@ export class SecurityGroup extends pulumi.ComponentResource {
     // tslint:disable-next-line:variable-name
     private readonly __isSecurityGroupInstance = true;
 
-    constructor(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
         super("awsx:x:ec2:SecurityGroup", name, {}, opts);
 
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new SecurityGroup] directly. Use [SecurityGroup.create] instead.", this);
+        }
+    }
+
+    public static create(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new SecurityGroup(1, name, opts);
+        result.initialize(name, args);
+        return result;
+    }
+
+    private initialize(name: string, args: SecurityGroupArgs) {
         // We allow egress/ingress rules to be defined in-line for SecurityGroup (like terraform
         // does). However, we handle these by explicitly *not* passing this to the security group,
         // and instead manually making SecurityGroupRules.  This ensures that rules can be added
@@ -80,7 +93,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
         name: string, id: pulumi.Input<string>,
         args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
 
-        return new SecurityGroup(name, {
+        return SecurityGroup.create(name, {
             ...args,
             securityGroup: aws.ec2.SecurityGroup.get(name, id, {}, opts),
         }, opts);
