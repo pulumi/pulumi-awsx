@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/pulumi/pulumi-awsx.svg?token=eHg7Zp5zdDDJfTjY8ejq&branch=master)](https://travis-ci.com/pulumi/pulumi-awsx)
 
-# Pulumi AWS Infrastructure Components
+## Pulumi AWS Infrastructure Components
 
 Pulumi's framework for Amazon Web Services (AWS) infrastructure.
 
@@ -29,7 +29,7 @@ The AWS Infrastructure package exposes many high level abstractions.  Including,
 * ~~`Cluster`~~. Deprecated.  Use [ecs.Cluster](https://www.pulumi.com/docs/reference/pkg/nodejs/pulumi/awsx/ecs/#clusters) instead.
 
 
-## Installing
+### Installing
 
 This package is available in JavaScript/TypeScript for use with Node.js.  Install it using either `npm`:
 
@@ -39,7 +39,7 @@ or `yarn`:
 
     $ yarn add @pulumi/awsx
 
-## Reference
+### Reference
 
 For detailed reference documentation, please visit [the API docs](
 https://pulumi.io/reference/pkg/nodejs/@pulumi/awsx/index.html).
