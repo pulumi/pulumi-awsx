@@ -19,10 +19,10 @@ import * as awsx from "@pulumi/awsx";
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
+const cluster = awsx.ecs.Cluster.create("testing", {}, providerOpts);
 
 // A simple NGINX service, scaled out over two containers.
-const service = new awsx.ecs.FargateService("nginx", {
+const service = awsx.ecs.FargateService.create("nginx", {
     cluster,
     taskDefinitionArgs: {
         containers: {

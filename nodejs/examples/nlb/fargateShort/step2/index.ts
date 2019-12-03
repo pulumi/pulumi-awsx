@@ -20,11 +20,11 @@ const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
 const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
-const cluster = new awsx.ecs.Cluster("testing", { vpc }, providerOpts);
+const cluster = awsx.ecs.Cluster.create("testing", { vpc }, providerOpts);
 
 // Changed from step1 from using the elasticloadbalancingv2 module to the lb module.
-const nginxListener = new awsx.lb.NetworkListener("nginx", { port: 80 }, providerOpts);
-const nginx = new awsx.ecs.FargateService("nginx", {
+const nginxListener = awsx.lb.NetworkListener.create("nginx", { port: 80 }, providerOpts);
+const nginx = awsx.ecs.FargateService.create("nginx", {
     cluster,
     taskDefinitionArgs: {
         containers: {

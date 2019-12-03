@@ -20,13 +20,13 @@ const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
 // Create a security group to let traffic flow.
-const sg = new awsx.ec2.SecurityGroup("web-sg", {
+const sg = awsx.ec2.SecurityGroup.create("web-sg", {
     vpc: awsx.ec2.Vpc.getDefault(providerOpts),
     egress: [{ protocol: "-1", fromPort: 0, toPort: 0, cidrBlocks: [ "0.0.0.0/0" ] }],
 }, providerOpts);
 
 // Creates an ALB associated with the default VPC for this region and listen on port 80.
-const alb = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("web-traffic",
+const alb = awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("web-traffic",
     { external: true, securityGroups: [ sg ] }, providerOpts);
 const listener = alb.createTargetGroup("web-target-group", { targetType: "lambda", port: 80 })
                     .createListener("web-listener", { port: 80 });

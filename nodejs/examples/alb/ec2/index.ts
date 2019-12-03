@@ -19,15 +19,15 @@ import * as awsx from "@pulumi/awsx";
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
-const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true }, providerOpts);
+const cluster = awsx.ecs.Cluster.create("testing", {}, providerOpts);
+const loadBalancer = awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("nginx", { external: true }, providerOpts);
 
 const targetGroup = loadBalancer.createTargetGroup("nginx", { port: 80, targetType: "instance" });
 
 // A simple NGINX service, scaled out over two containers.  Create a listener to connect the load
 // balancer to the service.
 const nginxListener = targetGroup.createListener("nginx", { port: 80, external: true });
-const service = new awsx.ecs.EC2Service("nginx", {
+const service = awsx.ecs.EC2Service.create("nginx", {
     cluster,
     taskDefinitionArgs: {
         networkMode: "bridge",

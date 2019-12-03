@@ -20,11 +20,11 @@ const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
 const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
-const cluster = new awsx.ecs.Cluster("testing", { vpc }, providerOpts);
+const cluster = awsx.ecs.Cluster.create("testing", { vpc }, providerOpts);
 
 // A simple NGINX service, scaled out over two containers. we'll also switch this module from
 // 'elasticloadbalancingv2' in step2 to make sure that our module move worked properly.
-const service = new awsx.ecs.FargateService("nginx", {
+const service = awsx.ecs.FargateService.create("nginx", {
     cluster,
     taskDefinitionArgs: {
         containers: {

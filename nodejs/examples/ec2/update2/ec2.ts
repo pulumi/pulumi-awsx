@@ -23,8 +23,8 @@ const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>
 
 console.log("EC2: Update2");
 
-const vpc = new awsx.ec2.Vpc("testing-1", {}, providerOpts);
-const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
+const vpc = awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
+const cluster1 = awsx.ecs.Cluster.create("testing-1", { vpc }, providerOpts);
 export const clusterId = cluster1.id;
 
 const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
@@ -51,8 +51,8 @@ autoScalingGroup.scaleOnSchedule("scaleUpAt6amUTC", {
 export const autoScalingGroupId = autoScalingGroup.stack.id;
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { vpc, port: 80 }, providerOpts);
-const nginx = new awsx.ecs.EC2Service("nginx", {
+const nginxListener = awsx.lb.NetworkListener.create("nginx", { vpc, port: 80 }, providerOpts);
+const nginx = awsx.ecs.EC2Service.create("nginx", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
@@ -69,8 +69,8 @@ const nginx = new awsx.ecs.EC2Service("nginx", {
 const nginxEndpoint = nginxListener.endpoint;
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("simple-nginx", { vpc, port: 80 }, providerOpts);
-const simpleNginx = new awsx.ecs.EC2TaskDefinition("simple-nginx", {
+const simpleNginxListener = awsx.lb.NetworkListener.create("simple-nginx", { vpc, port: 80 }, providerOpts);
+const simpleNginx = awsx.ecs.EC2TaskDefinition.create("simple-nginx", {
     container: {
         image: "nginx",
         memory: 64,
@@ -80,7 +80,7 @@ const simpleNginx = new awsx.ecs.EC2TaskDefinition("simple-nginx", {
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint;
 
-const cachedNginx = new awsx.ecs.EC2Service("cached-nginx", {
+const cachedNginx = awsx.ecs.EC2Service.create("cached-nginx", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
@@ -90,7 +90,7 @@ const cachedNginx = new awsx.ecs.EC2Service("cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 64,
-                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
+                portMappings: [awsx.lb.NetworkListener.create(
                     "cached-nginx", { vpc, port: 80 }, providerOpts)],
             },
         },
@@ -98,7 +98,7 @@ const cachedNginx = new awsx.ecs.EC2Service("cached-nginx", {
     desiredCount: 1,
 }, providerOpts);
 
-const multistageCachedNginx = new awsx.ecs.EC2Service("multistage-cached-nginx", {
+const multistageCachedNginx = awsx.ecs.EC2Service.create("multistage-cached-nginx", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
@@ -109,7 +109,7 @@ const multistageCachedNginx = new awsx.ecs.EC2Service("multistage-cached-nginx",
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 64,
-                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
+                portMappings: [awsx.lb.NetworkListener.create(
                     "multistage-cached-nginx", { vpc, port: 80 }, providerOpts)],
             },
         },
@@ -118,10 +118,10 @@ const multistageCachedNginx = new awsx.ecs.EC2Service("multistage-cached-nginx",
 }, providerOpts);
 
 const customWebServerListener =
-    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { vpc, port: 8080 }, providerOpts)
+    awsx.lb.NetworkTargetGroup.create("custom", { vpc, port: 8080 }, providerOpts)
          .createListener("custom", { port: 80 });
 
-const customWebServer = new awsx.ecs.EC2Service("custom", {
+const customWebServer = awsx.ecs.EC2Service.create("custom", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {
@@ -152,8 +152,8 @@ class Ec2Cache {
     set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { vpc, port: 6379 }, providerOpts);
-        const redis = new awsx.ecs.EC2Service(name, {
+        const redisListener = awsx.lb.NetworkListener.create(name, { vpc, port: 6379 }, providerOpts);
+        const redis = awsx.ecs.EC2Service.create(name, {
             cluster: cluster1,
             taskDefinitionArgs: {
                 containers: {
@@ -210,7 +210,7 @@ class Ec2Cache {
 
 const cache = new Ec2Cache("mycache");
 
-const helloTask = new awsx.ecs.EC2TaskDefinition("hello-world", {
+const helloTask = awsx.ecs.EC2TaskDefinition.create("hello-world", {
     container: {
         image: "hello-world",
         memory: 20,
@@ -218,8 +218,8 @@ const helloTask = new awsx.ecs.EC2TaskDefinition("hello-world", {
 }, providerOpts);
 
 // build an anonymous image:
-const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx2", { vpc, port: 80 }, providerOpts);
-const builtService = new awsx.ecs.EC2Service("nginx2", {
+const builtServiceListener = awsx.lb.NetworkListener.create("nginx2", { vpc, port: 80 }, providerOpts);
+const builtService = awsx.ecs.EC2Service.create("nginx2", {
     cluster: cluster1,
     taskDefinitionArgs: {
         containers: {

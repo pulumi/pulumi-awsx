@@ -19,12 +19,12 @@ import * as awsx from "@pulumi/awsx";
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
-const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true }, providerOpts);
+const cluster = awsx.ecs.Cluster.create("testing", {}, providerOpts);
+const loadBalancer = awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("nginx", { external: true }, providerOpts);
 
 // A simple NGINX service, scaled out over two containers.
 const nginxListener = loadBalancer.createListener("nginx", { port: 80, external: true });
-const nginx = new awsx.ecs.FargateService("nginx", {
+const nginx = awsx.ecs.FargateService.create("nginx", {
     cluster,
     taskDefinitionArgs: {
         containers: {

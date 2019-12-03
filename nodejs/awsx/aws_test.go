@@ -37,15 +37,6 @@ import (
 	"github.com/pulumi/pulumi/pkg/util/contract"
 )
 
-func TestAccCluster(t *testing.T) {
-	test := getDefaultProviderOptions(t).
-		With(integration.ProgramTestOptions{
-			Dir: path.Join(getCwd(t), "../examples/cluster"),
-		})
-
-	integration.ProgramTest(t, &test)
-}
-
 func TestAccDashboards(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{

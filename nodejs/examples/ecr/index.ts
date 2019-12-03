@@ -19,12 +19,12 @@ import * as awsx from "@pulumi/awsx";
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
+const cluster = awsx.ecs.Cluster.create("testing", {}, providerOpts);
 
 // build an anonymous image:
-const listener = new awsx.elasticloadbalancingv2.NetworkListener("service", { vpc: cluster.vpc, port: 80 }, providerOpts);
+const listener = awsx.elasticloadbalancingv2.NetworkListener.create("service", { vpc: cluster.vpc, port: 80 }, providerOpts);
 const repository = new awsx.ecr.Repository("repository", {}, providerOpts);
-const service = new awsx.ecs.FargateService("service", {
+const service = awsx.ecs.FargateService.create("service", {
     cluster,
     taskDefinitionArgs: {
         containers: {
@@ -43,6 +43,6 @@ export let vpcId = cluster.vpc.id;
 export let serviceId = service.service.id;
 export let endpoint = listener.endpoint;
 
-const cluster2 = new awsx.ecs.Cluster("testing2", undefined, { provider: new aws.Provider("prov2", {
+const cluster2 = awsx.ecs.Cluster.create("testing2", undefined, { provider: new aws.Provider("prov2", {
     region: "us-west-1"
 })});
