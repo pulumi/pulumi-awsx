@@ -10,7 +10,7 @@ To create an NLB
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     // Creates an NLB associated with the default Vpc for this region.  Pass 'external: true' to make the NLB
     // externally accessible
     const nlb1 = await awsx.lb.NetworkLoadBalancer.create("nlb1", { external: true });

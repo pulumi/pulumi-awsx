@@ -17,7 +17,7 @@ import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 import { Config } from "@pulumi/pulumi";
 
-export default async () => {
+export = async () => {
     const config1 = new pulumi.Config("aws");
     const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config1.require("envRegion") }) };
 

@@ -11,7 +11,7 @@ By default, Amazon will create a 'Default VPC' in all regions of your account.  
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
    const vpc = await awsx.ec2.Vpc.getDefault();
 };
 ```
@@ -28,7 +28,7 @@ When you create a VPC, you must specify a range of IPv4 addresses for the VPC in
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
    const vpc = await awsx.ec2.Vpc.create("custom", {
       cidrBlock: "10.0.0.0/16",
       // other args
@@ -49,7 +49,7 @@ If not provided `numberOfAvailabilityZones` will default to `2`, but a different
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
    const vpc = await awsx.ec2.Vpc.create("custom", {
       cidrBlock: "10.0.0.0/16",
       numberOfAvailabilityZones: 3,
@@ -69,7 +69,7 @@ By default, if unspecified, a VPC will automatically partition each availability
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
    const vpc = await awsx.ec2.Vpc.create("custom", {
       ...
       subnets: [{ type: "public" }, { type: "private" }],
@@ -83,7 +83,7 @@ To specify your own subnet configuration you can do the following:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
    const vpc = await awsx.ec2.Vpc.create("custom", {
       cidrBlock: "10.0.0.0/16",
       numberOfAvailabilityZones: 3,
@@ -98,7 +98,7 @@ There is no restriction on the number of public/private/isolated subnets in an a
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
    const vpc = await awsx.ec2.Vpc.create("custom", {
       cidrBlock: "10.0.0.0/16",
       numberOfAvailabilityZones: 3,
@@ -123,7 +123,7 @@ To allow connections from `private` subnets to the internet, NAT gateways will b
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
    const vpc = await awsx.ec2.Vpc.create("custom", {
       cidrBlock: "10.0.0.0/16",
       numberOfAvailabilityZones: 3,
@@ -142,7 +142,7 @@ All traffic in and out of a VPC is controlled by [Security Groups](https://docs.
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
    const vpc = await awsx.ec2.Vpc.create("custom", {
       // ...
    });

@@ -8,7 +8,7 @@ To start with, here's a simple example of how one can create a Fargate service:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     const listener = new awsx.lb.NetworkListener("nginx", { port: 80 });
     const nginx = new awsx.ecs.FargateService("nginx", {
         taskDefinitionArgs: {
@@ -39,7 +39,7 @@ Here's how we can simplify the above using those techniques:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     const nginx = new awsx.ecs.FargateService("nginx", {
         taskDefinitionArgs: {
             containers: {
@@ -77,7 +77,7 @@ A Cluster defines the infrastructure to run Services and Tasks in.  If a Cluster
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     const vpc = // ... create custom vpc
     const cluster = new awsx.ecs.Cluster("custom", { vpc });
 
@@ -94,7 +94,7 @@ A Cluster created in this manner is ready for use by Fargate.  In order to be us
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     const vpc = // ... create custom vpc
     const cluster = new awsx.ecs.Cluster("custom", { vpc });
 
@@ -124,7 +124,7 @@ You can define multiple containers in a task definition. Tasks can easily be cre
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     const vpc = // ... create custom vpc
     const cluster = new awsx.ecs.Cluster("custom", { vpc });
 
@@ -177,7 +177,7 @@ Services can be simply be made for Fargate and EC2 like so:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     const vpc = // ... create custom vpc
     const cluster = new awsx.ecs.Cluster("custom", { vpc });
 
@@ -211,7 +211,7 @@ In the case where a Task is both expected to run in a Service and a 'fire and fo
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     const vpc = // ... create custom vpc
     const cluster = await awsx.ecs.Cluster.create("custom", { vpc });
 
@@ -238,7 +238,7 @@ A Task Definition is built from a collection of [Container Definitions](https://
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     const listener = await awsx.lb.NetworkListener.create("listener", { port: 80 });
     const task = await awsx.ecs.FargateTaskDefinition.create("task", {
         containers: {

@@ -10,7 +10,7 @@ To start with, here's a simple example of how one can create a simple ECR Reposi
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export default async () => {
+export = async () => {
     const repository = await awsx.ecr.Repository.create("app");
 };
 ```
