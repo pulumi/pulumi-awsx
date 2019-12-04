@@ -200,9 +200,8 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
     }
 
     public static async create(name: string, securityGroup: x.ec2.SecurityGroup,
-            args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs,
-            opts: pulumi.ComponentResourceOptions = {}) {
-
+                               args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs,
+                               opts: pulumi.ComponentResourceOptions = {}) {
         const result = new EgressSecurityGroupRule(1, name, securityGroup, opts);
         await result.initializeRule(name, securityGroup, args);
         return result;
