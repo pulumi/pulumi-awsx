@@ -237,8 +237,8 @@ export class IngressSecurityGroupRule extends SecurityGroupRule {
     }
 
     public static async create(name: string, securityGroup: x.ec2.SecurityGroup,
-        args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs,
-        opts: pulumi.ComponentResourceOptions = {}) {
+                               args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs,
+                               opts: pulumi.ComponentResourceOptions = {}) {
 
         const result = new IngressSecurityGroupRule(1, name, securityGroup, opts);
         await result.initializeRule(name, securityGroup, args);

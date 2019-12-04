@@ -68,7 +68,7 @@ export default async () => {
     // When memory goes above 60%, scale up the ASG by 10%.  If it goes above 70%, scale it up by 30%.
     // Similarly, if memory goes below 40%, scale down by 10%.  If it goes below 30%, scale it down by
     // 30%.
-    const stepScalingPolicy = autoScalingGroup.scaleInSteps("scale-in-out", {
+    const stepScalingPolicy = await autoScalingGroup.scaleInSteps("scale-in-out", {
         metric: awsx.ecs.metrics.memoryUtilization({ service, unit: "Percent", statistic: "Average" }),
         adjustmentType: "PercentChangeInCapacity",
         steps: {

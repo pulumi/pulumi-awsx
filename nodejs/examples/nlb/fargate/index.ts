@@ -95,7 +95,7 @@ export default async () => {
     const customWebServerTG = await awsx.lb.NetworkTargetGroup.create("custom", { port: 8080 }, providerOpts);
     const customWebServerListener = await customWebServerTG.createListener("custom", { port: 80 });
 
-    const customWebServer = awsx.ecs.FargateService.create("custom", {
+    const customWebServer = await awsx.ecs.FargateService.create("custom", {
         cluster,
         taskDefinitionArgs: {
             containers: {

@@ -49,7 +49,7 @@ export default async () => {
 
     // A simple NGINX service, scaled out over two containers.
     const nginxListener = await awsx.lb.NetworkListener.create("nginx", { vpc, port: 80 }, providerOpts);
-    const nginx = awsx.ecs.EC2Service.create("nginx", {
+    const nginx = await awsx.ecs.EC2Service.create("nginx", {
         cluster: cluster1,
         taskDefinitionArgs: {
             containers: {
