@@ -8,19 +8,21 @@ To start with, here's a simple example of how one can create a Fargate service:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const listener = new awsx.lb.NetworkListener("nginx", { port: 80 });
-const nginx = new awsx.ecs.FargateService("nginx", {
-    taskDefinitionArgs: {
-        containers: {
-            nginx: {
-                image: "nginx",
-                memory: 128,
-                portMappings: [listener],
+export default async () => {
+    const listener = new awsx.lb.NetworkListener("nginx", { port: 80 });
+    const nginx = new awsx.ecs.FargateService("nginx", {
+        taskDefinitionArgs: {
+            containers: {
+                nginx: {
+                    image: "nginx",
+                    memory: 128,
+                    portMappings: [listener],
+                },
             },
         },
-    },
-    desiredCount: 2,
-});
+        desiredCount: 2,
+    });
+};
 ```
 
 This single call will create a Cluster on your behalf in [The Default VPC](https://github.com/pulumi/pulumi-awsx/tree/master/nodejs/awsx/ec2#the-default-vpc) for your region.  It will also create an internet-facing [NLB](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html) that will listen for connections and route requests appropriate to spawned instances in the cluster.  Because we have used [`Fargate`](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html), there is no need to create any sort of [Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/AutoScalingGroup.html) or otherwise specify what sort of machine instances will be run.  Instead, Fargate will manage that for us automatically based on the optional `memory` and `cpu` values we request for our containers.
@@ -37,18 +39,20 @@ Here's how we can simplify the above using those techniques:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const nginx = new awsx.ecs.FargateService("nginx", {
-    taskDefinitionArgs: {
-        containers: {
-            nginx: {
-                image: "nginx",
-                memory: 128,
-                networkListener: { port: 80 },
+export default async () => {
+    const nginx = new awsx.ecs.FargateService("nginx", {
+        taskDefinitionArgs: {
+            containers: {
+                nginx: {
+                    image: "nginx",
+                    memory: 128,
+                    networkListener: { port: 80 },
+                },
             },
         },
-    },
-    desiredCount: 2,
-});
+        desiredCount: 2,
+    });
+};
 ```
 
 Like before, this will create an [awsx.lb.NetworkListener] named `"nginx"`, but will not require that resource to be directly declared beforehand.
@@ -73,13 +77,15 @@ A Cluster defines the infrastructure to run Services and Tasks in.  If a Cluster
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = // ... create custom vpc
-const cluster = new awsx.ecs.Cluster("custom", { vpc });
+export default async () => {
+    const vpc = // ... create custom vpc
+    const cluster = new awsx.ecs.Cluster("custom", { vpc });
 
-const nginx = new awsx.ecs.FargateService("nginx", {
-    cluster,
-    // ... additional args
-});
+    const nginx = new awsx.ecs.FargateService("nginx", {
+        cluster,
+        // ... additional args
+    });
+};
 ```
 
 A Cluster created in this manner is ready for use by Fargate.  In order to be used by EC2 though scaling capacity needs to be added to the Cluster.  This can be done simply like so:
@@ -88,13 +94,15 @@ A Cluster created in this manner is ready for use by Fargate.  In order to be us
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = // ... create custom vpc
-const cluster = new awsx.ecs.Cluster("custom", { vpc });
+export default async () => {
+    const vpc = // ... create custom vpc
+    const cluster = new awsx.ecs.Cluster("custom", { vpc });
 
-const asg = cluster.createAutoScalingGroup("custom", {
-    templateParameters: { minSize: 20 },
-    launchConfigurationArgs: { instanceType: "t2.medium" },
-});
+    const asg = cluster.createAutoScalingGroup("custom", {
+        templateParameters: { minSize: 20 },
+        launchConfigurationArgs: { instanceType: "t2.medium" },
+    });
+};
 ```
 
 ### Task Definitions
@@ -116,22 +124,24 @@ You can define multiple containers in a task definition. Tasks can easily be cre
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = // ... create custom vpc
-const cluster = new awsx.ecs.Cluster("custom", { vpc });
+export default async () => {
+    const vpc = // ... create custom vpc
+    const cluster = new awsx.ecs.Cluster("custom", { vpc });
 
-// optionally create an auto scaling group for EC2 tasks.
+    // optionally create an auto scaling group for EC2 tasks.
 
-const fargateTask = new awsx.ecs.FargateTaskDefinition("fargate-nginx", {
-    containers: {
-        nginx: // ...
-    },
-});
+    const fargateTask = new awsx.ecs.FargateTaskDefinition("fargate-nginx", {
+        containers: {
+            nginx: // ...
+        },
+    });
 
-const ec2Task = new awsx.ecs.FargateTaskDefinition("ec2-nginx", {
-    containers: {
-        nginx: // ...
-    },
-});
+    const ec2Task = new awsx.ecs.FargateTaskDefinition("ec2-nginx", {
+        containers: {
+            nginx: // ...
+        },
+    });
+};
 ```
 
 A Task Definition can be used to define a Service, or it can be run on demand in a 'fire and forget' manner (for example, from within a Lambda callback). This can be done by calling the `run` method on the Task instance.  This `run` call must be supplied a Cluster to run in.  For example. continuing from above:
@@ -167,30 +177,32 @@ Services can be simply be made for Fargate and EC2 like so:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = // ... create custom vpc
-const cluster = new awsx.ecs.Cluster("custom", { vpc });
+export default async () => {
+    const vpc = // ... create custom vpc
+    const cluster = new awsx.ecs.Cluster("custom", { vpc });
 
-// optionally create an auto scaling group for EC2 tasks.
+    // optionally create an auto scaling group for EC2 tasks.
 
-const fargateService = new awsx.ecs.FargateService("fargate-nginx", {
-    cluster,
-    desiredCount: 2,
-    taskDefinitionArgs: {
-      containers: {
-        nginx: // ...
-      },
-    },
-});
+    const fargateService = new awsx.ecs.FargateService("fargate-nginx", {
+        cluster,
+        desiredCount: 2,
+        taskDefinitionArgs: {
+        containers: {
+            nginx: // ...
+        },
+        },
+    });
 
-const ec2Service = new awsx.ecs.FargateService("ec2-nginx", {
-    cluster,
-    desiredCount: 2,
-    taskDefinitionArgs: {
-      containers: {
-        nginx: // ...
-      },
-    },
-});
+    const ec2Service = new awsx.ecs.FargateService("ec2-nginx", {
+        cluster,
+        desiredCount: 2,
+        taskDefinitionArgs: {
+        containers: {
+            nginx: // ...
+        },
+        },
+    });
+};
 ```
 
 In the case where a Task is both expected to run in a Service and a 'fire and forget' manner, then the following pattern can be used:
@@ -199,21 +211,23 @@ In the case where a Task is both expected to run in a Service and a 'fire and fo
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = // ... create custom vpc
-const cluster = await awsx.ecs.Cluster.create("custom", { vpc });
+export default async () => {
+    const vpc = // ... create custom vpc
+    const cluster = await awsx.ecs.Cluster.create("custom", { vpc });
 
-// optionally create an auto scaling group for EC2 tasks.
+    // optionally create an auto scaling group for EC2 tasks.
 
-const fargateTask = await awsx.ecs.FargateTaskDefinition.create("fargate-nginx", {
-    containers: {
-        nginx: // ...
-    },
-});
+    const fargateTask = await awsx.ecs.FargateTaskDefinition.create("fargate-nginx", {
+        containers: {
+            nginx: // ...
+        },
+    });
 
-const fargateService = await fargateTask.createService("fargate-nginx", {
-    cluster,
-    desiredCount: 2,
-});
+    const fargateService = await fargateTask.createService("fargate-nginx", {
+        cluster,
+        desiredCount: 2,
+    });
+};
 ```
 
 ### Containers
@@ -224,16 +238,18 @@ A Task Definition is built from a collection of [Container Definitions](https://
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const listener = await awsx.lb.NetworkListener.create("listener", { port: 80 });
-const task = await awsx.ecs.FargateTaskDefinition.create("task", {
-    containers: {
-        nginx: {
-            image: "nginx",
-            memory: 128,
-            portMappings: [listener],
+export default async () => {
+    const listener = await awsx.lb.NetworkListener.create("listener", { port: 80 });
+    const task = await awsx.ecs.FargateTaskDefinition.create("task", {
+        containers: {
+            nginx: {
+                image: "nginx",
+                memory: 128,
+                portMappings: [listener],
+            },
         },
-    },
-});
+    });
+};
 ```
 
 However, `image` is far more flexible than that.  Beyond just accepting a string a [ContainerImageProvider](https://github.com/pulumi/pulumi-awsx/blob/8d651854ba3821644eabff66c0f6fe6d85e61160/nodejs/awsx/ecs/container.ts#L188) can also be provided.  Instances of this interface can be used to dynamically compute and pass in an ECR repository path.  Pulumi provides several convenient ways to do this.

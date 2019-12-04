@@ -10,13 +10,15 @@ To create an NLB
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-// Creates an NLB associated with the default Vpc for this region.  Pass 'external: true' to make the NLB
-// externally accessible
-const nlb1 = await awsx.lb.NetworkLoadBalancer.create("nlb1", { external: true });
+export default async () => {
+    // Creates an NLB associated with the default Vpc for this region.  Pass 'external: true' to make the NLB
+    // externally accessible
+    const nlb1 = await awsx.lb.NetworkLoadBalancer.create("nlb1", { external: true });
 
-// To create an NLB for a different Vpc, simply pass it in:
-const vpc = await awsx.ec2.Vpc.create(...);
-const nlb2 = await awsx.lb.NetworkLoadBalancer.create("nlb2", { vpc, external: true });
+    // To create an NLB for a different Vpc, simply pass it in:
+    const vpc = await awsx.ec2.Vpc.create(...);
+    const nlb2 = await awsx.lb.NetworkLoadBalancer.create("nlb2", { vpc, external: true });
+};
 ```
 
 Once created, an NLB can be used to create both [`Listeners`](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html) and [`TargetGroups`](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html).  By default, a Listener needs at least one TargetGroup that it can route requests to.  So, if a Listener is created without specifying a TargetGroup, one will be automatically created.  For example:

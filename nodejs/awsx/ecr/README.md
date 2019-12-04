@@ -10,7 +10,9 @@ To start with, here's a simple example of how one can create a simple ECR Reposi
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const repository = await awsx.ecr.Repository.create("app");
+export default async () => {
+    const repository = await awsx.ecr.Repository.create("app");
+};
 ```
 
 With a repository available, it's easy to build an push a Docker Image that will be stored in the cloud:
