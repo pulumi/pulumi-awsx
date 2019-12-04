@@ -11,7 +11,9 @@ By default, Amazon will create a 'Default VPC' in all regions of your account.  
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = await awsx.ec2.Vpc.getDefault();
+export default async () => {
+   const vpc = await awsx.ec2.Vpc.getDefault();
+};
 ```
 
 Many components in awsx work with a specific VPC (for example, Clusters and LoadBalancers).  However, if a specific VPC is not provided, they will use this default VPC instead.  This makes it simple to set up infrastructure for the default VPC without having to explicitly provide it all the time.
@@ -26,11 +28,13 @@ When you create a VPC, you must specify a range of IPv4 addresses for the VPC in
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = await awsx.ec2.Vpc.create("custom", {
-   cidrBlock: "10.0.0.0/16",
-   // other args
-   // ...
-});
+export default async () => {
+   const vpc = await awsx.ec2.Vpc.create("custom", {
+      cidrBlock: "10.0.0.0/16",
+      // other args
+      // ...
+   });
+};
 ```
 
 This range will then be partitioned accordingly into the VPC depending on the other arguments provided.  The additional arguments that affect this partitioning are `subnets` and `numberOfAvailabilityZones`.
@@ -45,10 +49,12 @@ If not provided `numberOfAvailabilityZones` will default to `2`, but a different
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = await awsx.ec2.Vpc.create("custom", {
-   cidrBlock: "10.0.0.0/16",
-   numberOfAvailabilityZones: 3,
-});
+export default async () => {
+   const vpc = await awsx.ec2.Vpc.create("custom", {
+      cidrBlock: "10.0.0.0/16",
+      numberOfAvailabilityZones: 3,
+   });
+};
 ```
 
 Each availability zone will get an approximately equal share of the total CIDR address space for the VPC.
@@ -63,10 +69,12 @@ By default, if unspecified, a VPC will automatically partition each availability
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = await awsx.ec2.Vpc.create("custom", {
-   ...
-   subnets: [{ type: "public" }, { type: "private" }],
-});
+export default async () => {
+   const vpc = await awsx.ec2.Vpc.create("custom", {
+      ...
+      subnets: [{ type: "public" }, { type: "private" }],
+   });
+};
 ```
 
 To specify your own subnet configuration you can do the following:
@@ -75,11 +83,13 @@ To specify your own subnet configuration you can do the following:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = await awsx.ec2.Vpc.create("custom", {
-   cidrBlock: "10.0.0.0/16",
-   numberOfAvailabilityZones: 3,
-   subnets: [{ type: "public" }, { type: "private" }, { type: isolated }],
-});
+export default async () => {
+   const vpc = await awsx.ec2.Vpc.create("custom", {
+      cidrBlock: "10.0.0.0/16",
+      numberOfAvailabilityZones: 3,
+      subnets: [{ type: "public" }, { type: "private" }, { type: isolated }],
+   });
+};
 ```
 
 There is no restriction on the number of public/private/isolated subnets in an availability zone.  For example, it might be useful to have multiple isolated subnets, one for DB instances and another for Redis instances.  To facilitate this sort of arrangement, subnets can be named for clarity.  i.e.:
@@ -88,15 +98,17 @@ There is no restriction on the number of public/private/isolated subnets in an a
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = await awsx.ec2.Vpc.create("custom", {
-   cidrBlock: "10.0.0.0/16",
-   numberOfAvailabilityZones: 3,
-   subnets: [
-     { type: "public" },
-     { type: "private" },
-     { type: isolated, name: "db" },
-     { type: isolated, name: "redis" }],
-});
+export default async () => {
+   const vpc = await awsx.ec2.Vpc.create("custom", {
+      cidrBlock: "10.0.0.0/16",
+      numberOfAvailabilityZones: 3,
+      subnets: [
+      { type: "public" },
+      { type: "private" },
+      { type: isolated, name: "db" },
+      { type: isolated, name: "redis" }],
+   });
+};
 ```
 
 By default the subnets will divide the CIDR space for each availability zone equally.  If this is not desired, a particular size for each zone can be requested by passing in an appropriate netmask value between 16 and 28.  See [VPC and Subnet Sizing](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html#VPC_Sizing) for more details.  This value can be provided for specific subnets you know the number of instances you want IP addresses for.  Whatever IP addresses are remaining in the availability zone will be split over the subnets that do not provide a defined size.
@@ -111,11 +123,13 @@ To allow connections from `private` subnets to the internet, NAT gateways will b
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = await awsx.ec2.Vpc.create("custom", {
-   cidrBlock: "10.0.0.0/16",
-   numberOfAvailabilityZones: 3,
-   numberOfNatGateways: 1,
-});
+export default async () => {
+   const vpc = await awsx.ec2.Vpc.create("custom", {
+      cidrBlock: "10.0.0.0/16",
+      numberOfAvailabilityZones: 3,
+      numberOfNatGateways: 1,
+   });
+};
 ```
 
 In the case where there is one NAT gateway per availability zone, then routing is very simple.  Each `private` subnet will have have connections routed through gateway in that availability zone.  In the case where there are less NAT gateways than availability zones, then routing works slightly differently.  If there are N NAT gateways requested, then the first N availability zones will get a NAT gateway.  Routing to `private` subnets in those availability zones works as above.  However, all remaining availability zones will have their `private` subnets routed to in a round-robin fashion from the availability zones with NAT gateways.  While this can save money, it also introduces higher risk as failure of one availability zone may impact others.
@@ -128,19 +142,21 @@ All traffic in and out of a VPC is controlled by [Security Groups](https://docs.
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = await awsx.ec2.Vpc.create("custom", {
-   // ...
-});
+export default async () => {
+   const vpc = await awsx.ec2.Vpc.create("custom", {
+      // ...
+   });
 
-const sg = await awsx.ec2.SecurityGroup.create(`sg`, { vpc });
-await SecurityGroupRule.ingress("https-access", sg,
-   new awsx.ec2.AnyIPv4Location(),
-   new awsx.ec2.TcpPorts(443),
-   "allow https access");
-await SecurityGroupRule.ingress("ssd-access", sg,
-   new awsx.ec2.AnyIPv4Location(),
-   new awsx.ec2.TcpPorts(22),
-   "allow ssh access");
+   const sg = await awsx.ec2.SecurityGroup.create(`sg`, { vpc });
+   await SecurityGroupRule.ingress("https-access", sg,
+      new awsx.ec2.AnyIPv4Location(),
+      new awsx.ec2.TcpPorts(443),
+      "allow https access");
+   await SecurityGroupRule.ingress("ssd-access", sg,
+      new awsx.ec2.AnyIPv4Location(),
+      new awsx.ec2.TcpPorts(22),
+      "allow ssh access");
+};
 ```
 
 For detailed reference documentation, please visit [the API docs](
