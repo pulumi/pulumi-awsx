@@ -29,21 +29,34 @@ export class Subnet extends pulumi.ComponentResource {
      * Underlying id for the aws subnet.  This should be used over [this.subnet.id] as this
      * Output will only resolve once the route table and all associations are resolved.
      */
-    public readonly id: pulumi.Output<string>;
-    public readonly subnet: aws.ec2.Subnet;
-    public readonly routeTable: aws.ec2.RouteTable | undefined;
-    public readonly routeTableAssociation: aws.ec2.RouteTableAssociation | undefined;
+    public id!: pulumi.Output<string>;
+    public subnet!: aws.ec2.Subnet;
+    public routeTable!: aws.ec2.RouteTable | undefined;
+    public routeTableAssociation!: aws.ec2.RouteTableAssociation | undefined;
 
     public readonly routes: aws.ec2.Route[] = [];
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, vpc: x.ec2.Vpc, opts: pulumi.ComponentResourceOptions) {
         super("awsx:x:ec2:Subnet", name, {}, { parent: vpc, ...opts });
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new Subnet] directly. Use [Subnet.create] instead.", this);
+        }
 
         this.vpc = vpc;
         this.subnetName = name;
+    }
 
+    public static async create(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions): Promise<Subnet>;
+    public static async create(name: string, vpc: x.ec2.Vpc, args: ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions): Promise<Subnet>;
+    public static async create(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}): Promise<Subnet> {
+        const result = new Subnet(1, name, vpc, opts);
+        await result.initialize(name, vpc, args, opts);
+        return result;
+    }
+
+    private async initialize(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (isExistingSubnetArgs(args)) {
             this.subnet = args.subnet;
             this.id = args.subnet.id;

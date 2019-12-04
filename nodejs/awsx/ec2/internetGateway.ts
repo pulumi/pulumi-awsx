@@ -22,15 +22,28 @@ export class InternetGateway
         extends pulumi.ComponentResource
         implements x.ec2.SubnetRouteProvider {
     public readonly vpc: x.ec2.Vpc;
-    public readonly internetGateway: aws.ec2.InternetGateway;
+    public internetGateway!: aws.ec2.InternetGateway;
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingInternetGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:InternetGateway", name, {}, { parent: vpc, ...opts });
 
-        this.vpc = vpc;
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new InternetGateway] directly. Use [InternetGateway.create] instead.", this);
+        }
 
+        this.vpc = vpc;
+    }
+
+    public static async create(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs, opts?: pulumi.ComponentResourceOptions): Promise<InternetGateway>;
+    public static async create(name: string, vpc: x.ec2.Vpc, args: ExistingInternetGatewayArgs, opts?: pulumi.ComponentResourceOptions): Promise<InternetGateway>;
+    public static async create(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs, opts: pulumi.ComponentResourceOptions = {}): Promise<InternetGateway> {
+        const result = new InternetGateway(1, name, vpc, args, opts);
+        await result.initialize(name, vpc, args);
+        return result;
+    }
+
+    private async initialize(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs) {
         if (isExistingInternetGatewayArgs(args)) {
             this.internetGateway = args.internetGateway;
         }

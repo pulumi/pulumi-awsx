@@ -191,29 +191,42 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
     /**
      * Underlying [Policy] created to define the scaling strategy for the upper set of steps.
      */
-    public readonly upperPolicy: aws.autoscaling.Policy | undefined;
+    public upperPolicy: aws.autoscaling.Policy | undefined;
 
     /**
      * Alarm that invokes [upperPolicy] when the metric goes above the lowest value of the upper
      * range of steps.
      */
-    public readonly upperAlarm: aws.cloudwatch.MetricAlarm | undefined;
+    public upperAlarm: aws.cloudwatch.MetricAlarm | undefined;
 
     /**
      * Underlying [Policy] created to define the scaling strategy for the lower set of steps.
      */
-    public readonly lowerPolicy: aws.autoscaling.Policy | undefined;
+    public lowerPolicy: aws.autoscaling.Policy | undefined;
 
     /**
      * Alarm that invokes [lowerPolicy] when the metric goes below the highest value of the lower
      * range of steps.
      */
-    public readonly lowerAlarm: aws.cloudwatch.MetricAlarm | undefined;
+    public lowerAlarm: aws.cloudwatch.MetricAlarm | undefined;
 
-    constructor(name: string, group: AutoScalingGroup,
-                args: StepScalingPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, group: AutoScalingGroup, opts: pulumi.ComponentResourceOptions) {
         super("awsx:autoscaling:StepScalingPolicy", name, undefined, { parent: group, ...opts });
 
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new StepScalingPolicy] directly. Use [StepScalingPolicy.create] instead.", this);
+        }
+    }
+
+    public static async create(name: string, group: AutoScalingGroup,
+                               args: StepScalingPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new StepScalingPolicy(1, name, group, opts);
+        await result.initialize(name, group, args);
+        return result;
+    }
+
+    private async initialize(name: string, group: AutoScalingGroup, args: StepScalingPolicyArgs) {
         if (!args.steps.upper && !args.steps.lower) {
             throw new Error("At least one of [args.steps.upper] and [args.steps.lower] must be provided.");
         }

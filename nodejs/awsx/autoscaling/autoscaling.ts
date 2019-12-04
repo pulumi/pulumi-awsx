@@ -219,7 +219,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * See [StepScalingPolicy] for more details.
      */
     public scaleInSteps(name: string, args: stepScaling.StepScalingPolicyArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new stepScaling.StepScalingPolicy(name, this, args, opts);
+        return stepScaling.StepScalingPolicy.create(name, this, args, opts);
     }
 }
 

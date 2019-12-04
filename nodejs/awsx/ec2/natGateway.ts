@@ -16,7 +16,6 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
 
 export class NatGateway
         extends pulumi.ComponentResource
@@ -24,17 +23,30 @@ export class NatGateway
 
     public readonly natGatewayName: string;
     public readonly vpc: x.ec2.Vpc;
-    public readonly elasticIP: aws.ec2.Eip | undefined;
-    public readonly natGateway: aws.ec2.NatGateway;
+    public elasticIP: aws.ec2.Eip | undefined;
+    public natGateway!: aws.ec2.NatGateway;
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, vpc: x.ec2.Vpc, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:NatGateway", name, {}, { parent: vpc, ...opts });
+
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new NatGateway] directly. Use [NatGateway.create] instead.", this);
+        }
 
         this.vpc = vpc;
         this.natGatewayName = name;
+    }
 
+    public static async create(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions): Promise<NatGateway>;
+    public static async create(name: string, vpc: x.ec2.Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions): Promise<NatGateway>;
+    public static async create(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}): Promise<NatGateway> {
+        const result = new NatGateway(1, name, vpc, opts);
+        await result.initialize(name, vpc, args, opts);
+        return result;
+    }
+
+    private async initialize(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (isExistingNatGatewayArgs(args)) {
             this.natGateway = args.natGateway;
         }
