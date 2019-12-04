@@ -29,12 +29,25 @@ import { RepositoryImage } from "./repositoryImage";
  * destination registry.
  */
 export class Repository extends pulumi.ComponentResource {
-    public readonly repository: aws.ecr.Repository;
-    public readonly lifecyclePolicy: aws.ecr.LifecyclePolicy | undefined;
+    public repository!: aws.ecr.Repository;
+    public lifecyclePolicy: aws.ecr.LifecyclePolicy | undefined;
 
-    constructor(name: string, args: RepositoryArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
         super("awsx:ecr:Repository", name, undefined, opts);
 
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new Repository] directly. Use [Repository.create] instead.", this);
+        }
+    }
+
+    public static async create(name: string, args: RepositoryArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new Repository(1, name, opts);
+        await result.initialize(name, args);
+        return result;
+    }
+
+    private async initialize(name: string, args: RepositoryArgs) {
         const lowerCaseName = name.toLowerCase();
 
         this.repository = args.repository || new aws.ecr.Repository(lowerCaseName, args, { parent: this });
@@ -62,10 +75,10 @@ export class Repository extends pulumi.ComponentResource {
  * repo.  This result type can be passed in as `image: ecr.buildAndPushImage(...)` for an
  * `ecs.Container`
  */
-export function buildAndPushImage(
+export async function buildAndPushImage(
     name: string, pathOrBuild: pulumi.Input<string | docker.DockerBuild>, args?: RepositoryArgs, opts?: pulumi.ComponentResourceOptions) {
 
-    const repo = new Repository(name, args, opts);
+    const repo = await Repository.create(name, args, opts);
     const image = repo.buildAndPushImage(pathOrBuild);
     return new RepositoryImage(repo, image);
 }
