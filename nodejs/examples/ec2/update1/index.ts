@@ -12,8 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
 
-import * as ec2 from "./ec2";
+export default async () => {
+    const config = new pulumi.Config("aws");
+    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-export let clusterId = ec2.clusterId;
+    console.log("EC2: Update1");
+
+    const vpc = await awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
+    const cluster1 = await awsx.ecs.Cluster.create("testing-1", { vpc }, providerOpts);
+
+    const autoScalingGroup = await cluster1.createAutoScalingGroup("testing-1", {
+        subnetIds: vpc.publicSubnetIds,
+        templateParameters: {
+            minSize: 5,
+        },
+        launchConfigurationArgs: {
+            instanceType: "m5.large",
+            associatePublicIpAddress: true,
+        },
+    });
+
+    const autoScalingGroupId = autoScalingGroup.stack.id;
+
+    return { clusterId: cluster1.id };
+};

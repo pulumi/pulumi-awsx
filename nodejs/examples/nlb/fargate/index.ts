@@ -122,12 +122,12 @@ export default async () => {
      * A simple Cache abstration, built on top of a Redis container Service.
      */
     class FargateCache {
-        get: (key: string) => Promise<string>;
-        set: (key: string, value: string) => Promise<void>;
+        get!: (key: string) => Promise<string>;
+        set!: (key: string, value: string) => Promise<void>;
 
-        constructor(name: string, memory: number = 128) {
-            const redisListener = awsx.lb.NetworkListener.create(name, { port: 6379 }, providerOpts);
-            const redis = awsx.ecs.FargateService.create(name, {
+        async initialize(name: string, memory: number = 128) {
+            const redisListener = await awsx.lb.NetworkListener.create(name, { port: 6379 }, providerOpts);
+            const redis = await awsx.ecs.FargateService.create(name, {
                 cluster,
                 taskDefinitionArgs: {
                     containers: {
@@ -182,7 +182,8 @@ export default async () => {
         }
     }
 
-    const cache = new FargateCache("mycache");
+    const cache = new FargateCache();
+    await cache.initialize("mycache");
 
     const helloTask = await awsx.ecs.FargateTaskDefinition.create("hello-world", {
         container: {

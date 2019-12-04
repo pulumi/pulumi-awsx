@@ -16,24 +16,26 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+export default async () => {
+    const config = new pulumi.Config("aws");
+    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const cluster = awsx.ecs.Cluster.create("testing", {}, providerOpts);
+    const cluster = await awsx.ecs.Cluster.create("testing", {}, providerOpts);
 
-// A simple NGINX service, scaled out over two containers.
-const service = awsx.ecs.FargateService.create("nginx", {
-    cluster,
-    taskDefinitionArgs: {
-        containers: {
-            nginx: {
-                image: "nginx",
-                memory: 128,
-                applicationListener: { port: 80, external: true, loadBalancer: { external: true } },
+    // A simple NGINX service, scaled out over two containers.
+    const service = await awsx.ecs.FargateService.create("nginx", {
+        cluster,
+        taskDefinitionArgs: {
+            containers: {
+                nginx: {
+                    image: "nginx",
+                    memory: 128,
+                    applicationListener: { port: 80, external: true, loadBalancer: { external: true } },
+                },
             },
         },
-    },
-    desiredCount: 2,
-}, providerOpts);
+        desiredCount: 2,
+    }, providerOpts);
 
-export const endpoint = service.listeners.nginx.endpoint;
+    return { endpoint: service.listeners.nginx.endpoint };
+};
