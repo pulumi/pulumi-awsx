@@ -37,7 +37,7 @@ export abstract class Service extends pulumi.ComponentResource {
     constructor(version: number, type: string, name: string,
                 opts: pulumi.ComponentResourceOptions) {
 
-        super(type, name, opts);
+        super(type, name, {}, opts);
 
         if (typeof version !== "number") {
             throw new pulumi.ResourceError("Do not construct a Service directly. Use [EC2Service.create] or [FargateService.create] instead.", this);

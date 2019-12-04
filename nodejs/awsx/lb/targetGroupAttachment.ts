@@ -27,7 +27,7 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     /** @internal */
     constructor(version: number, name: string, targetGroup: mod.TargetGroup, opts: pulumi.ComponentResourceOptions) {
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:elasticloadbalancingv2:TargetGroupAttachment" }] });
-        super("awsx:lb:TargetGroupAttachment", name, undefined, { parent: targetGroup, ...opts });
+        super("awsx:lb:TargetGroupAttachment", name, {}, { parent: targetGroup, ...opts });
 
         if (typeof version !== "number") {
             throw new pulumi.ResourceError("Do not call [new TargetGroupAttachment] directly. Use [TargetGroupAttachment.create] instead.", this);

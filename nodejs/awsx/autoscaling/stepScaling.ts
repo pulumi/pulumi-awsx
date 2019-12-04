@@ -212,7 +212,7 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
 
     /** @internal */
     constructor(version: number, name: string, group: AutoScalingGroup, opts: pulumi.ComponentResourceOptions) {
-        super("awsx:autoscaling:StepScalingPolicy", name, undefined, { parent: group, ...opts });
+        super("awsx:autoscaling:StepScalingPolicy", name, {}, { parent: group, ...opts });
 
         if (typeof version !== "number") {
             throw new pulumi.ResourceError("Do not call [new StepScalingPolicy] directly. Use [StepScalingPolicy.create] instead.", this);

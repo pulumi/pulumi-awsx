@@ -34,7 +34,7 @@ export class Repository extends pulumi.ComponentResource {
 
     /** @internal */
     constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
-        super("awsx:ecr:Repository", name, undefined, opts);
+        super("awsx:ecr:Repository", name, {}, opts);
 
         if (typeof version !== "number") {
             throw new pulumi.ResourceError("Do not call [new Repository] directly. Use [Repository.create] instead.", this);
