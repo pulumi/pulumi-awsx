@@ -130,28 +130,28 @@ export class Cluster
             tags: { Name: name },
         }, opts);
 
-        Cluster.createDefaultSecurityGroupEgressRules(name, securityGroup);
-        Cluster.createDefaultSecurityGroupIngressRules(name, securityGroup);
+        await Cluster.createDefaultSecurityGroupEgressRules(name, securityGroup);
+        await Cluster.createDefaultSecurityGroupIngressRules(name, securityGroup);
 
         return securityGroup;
     }
 
-    public static createDefaultSecurityGroupEgressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
-        return [x.ec2.SecurityGroupRule.egress(`${name}-egress`, securityGroup,
+    public static async createDefaultSecurityGroupEgressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
+        return [await x.ec2.SecurityGroupRule.egress(`${name}-egress`, securityGroup,
             new x.ec2.AnyIPv4Location(),
             new x.ec2.AllTraffic(),
             "allow output to any ipv4 address using any protocol")];
     }
 
-    public static createDefaultSecurityGroupIngressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
-        return [x.ec2.SecurityGroupRule.ingress(`${name}-ssh`, securityGroup,
+    public static async createDefaultSecurityGroupIngressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
+        return [await x.ec2.SecurityGroupRule.ingress(`${name}-ssh`, securityGroup,
                     new x.ec2.AnyIPv4Location(),
                     new x.ec2.TcpPorts(22),
                     "allow ssh in from any ipv4 address"),
 
                 // Expose ephemeral container ports to Internet.
                 // TODO: Limit to load balancer(s).
-                x.ec2.SecurityGroupRule.ingress(`${name}-containers`, securityGroup,
+                await x.ec2.SecurityGroupRule.ingress(`${name}-containers`, securityGroup,
                     new x.ec2.AnyIPv4Location(),
                     new x.ec2.AllTcpPorts(),
                     "allow incoming tcp on any port from any ipv4 address")];

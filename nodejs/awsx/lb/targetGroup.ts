@@ -50,6 +50,7 @@ export abstract class TargetGroup
         }
     }
 
+    /** @internal */
     protected async initialize(name: string, loadBalancer: mod.LoadBalancer, args: TargetGroupArgs) {
         this.vpc = args.vpc;
 

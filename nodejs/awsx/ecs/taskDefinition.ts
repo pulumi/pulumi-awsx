@@ -59,6 +59,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         }
     }
 
+    /** @internal */
     protected async initialize(name: string, isFargate: boolean, args: TaskDefinitionArgs) {
         this.logGroup = args.logGroup === null ? undefined :
                         args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {

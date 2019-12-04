@@ -25,11 +25,11 @@ export default async () => {
         vpc: await awsx.ec2.Vpc.getDefault(providerOpts),
     }, providerOpts);
 
-    const ipv4egress = sg.createEgressRule("ipv4-egress", {
+    const ipv4egress = await sg.createEgressRule("ipv4-egress", {
         ports: new awsx.ec2.AllTraffic(),
         location: new awsx.ec2.AnyIPv4Location(),
     });
-    const ipv6egress = sg.createEgressRule("ipv6-egress", {
+    const ipv6egress = await sg.createEgressRule("ipv6-egress", {
         ports: new awsx.ec2.AllTraffic(),
         location: new awsx.ec2.AnyIPv6Location(),
     });

@@ -36,6 +36,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         }
     }
 
+    /** @internal */
     protected async initialize(name: string, args: LoadBalancerArgs) {
         this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
         this.securityGroups = await x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];

@@ -23,7 +23,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public id!: pulumi.Output<string>;
     public vpc!: x.ec2.Vpc;
 
-    public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
+    public readonly egressRules: x.ec2.EgressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
     // tslint:disable-next-line:variable-name
@@ -71,11 +71,11 @@ export class SecurityGroup extends pulumi.ComponentResource {
         this.registerOutputs();
 
         for (let i = 0, n = egressRules.length; i < n; i++) {
-            this.createEgressRule(`${name}-egress-${i}`, egressRules[i]);
+            await this.createEgressRule(`${name}-egress-${i}`, egressRules[i]);
         }
 
         for (let i = 0, n = ingressRules.length; i < n; i++) {
-            this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i]);
+            await this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i]);
         }
     }
 
@@ -99,16 +99,16 @@ export class SecurityGroup extends pulumi.ComponentResource {
         }, opts);
     }
 
-    public createEgressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.EgressSecurityGroupRule;
-    public createEgressRule(name: string, args: x.ec2.EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.EgressSecurityGroupRule;
+    public createEgressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): Promise<x.ec2.EgressSecurityGroupRule>;
+    public createEgressRule(name: string, args: x.ec2.EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): Promise<x.ec2.EgressSecurityGroupRule>;
     public createEgressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs | x.ec2.EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new x.ec2.EgressSecurityGroupRule(name, this, args, opts);
+        return x.ec2.EgressSecurityGroupRule.create(name, this, args, opts);
     }
 
-    public createIngressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.IngressSecurityGroupRule;
-    public createIngressRule(name: string, args: x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.IngressSecurityGroupRule;
+    public createIngressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): Promise<x.ec2.IngressSecurityGroupRule>;
+    public createIngressRule(name: string, args: x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): Promise<x.ec2.IngressSecurityGroupRule>;
     public createIngressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs | x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new x.ec2.IngressSecurityGroupRule(name, this, args, opts);
+        return x.ec2.IngressSecurityGroupRule.create(name, this, args, opts);
     }
 }
 

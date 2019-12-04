@@ -60,6 +60,7 @@ export abstract class Listener
         this.loadBalancer = loadBalancer;
     }
 
+    /** @internal */
     protected async initialize(name: string,
                                defaultListenerAction: ListenerDefaultAction | undefined,
                                args: ListenerArgs) {
