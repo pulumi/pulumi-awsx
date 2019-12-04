@@ -33,7 +33,7 @@ export default async () => {
     const tg = await alb.createTargetGroup("web-target-group", { targetType: "lambda", port: 80 });
     const listener = await tg.createListener("web-listener", { port: 80 });
 
-    alb.attachTarget("lambda-target", async (request) => {
+    await alb.attachTarget("lambda-target", async (request) => {
         console.log(JSON.stringify(request));
         return {
             isBase64Encoded: false,

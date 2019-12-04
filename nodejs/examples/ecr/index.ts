@@ -24,7 +24,7 @@ export default async () => {
 
     // build an anonymous image:
     const listener = await awsx.elasticloadbalancingv2.NetworkListener.create("service", { vpc: cluster.vpc, port: 80 }, providerOpts);
-    const repository = new awsx.ecr.Repository("repository", {}, providerOpts);
+    const repository = await awsx.ecr.Repository.create("repository", {}, providerOpts);
     const service = await awsx.ecs.FargateService.create("service", {
         cluster,
         taskDefinitionArgs: {

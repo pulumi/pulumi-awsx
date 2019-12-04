@@ -119,7 +119,7 @@ export abstract class Listener
     }
 
     public addListenerRule(name: string, args: x.lb.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new x.lb.ListenerRule(name, this, args, opts);
+        return x.lb.ListenerRule.create(name, this, args, opts);
     }
 
     /**

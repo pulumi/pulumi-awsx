@@ -61,7 +61,7 @@ export default async () => {
         }, providerOpts);
         publicIps.push(vm.publicIp);
 
-        alb.attachTarget("target-" + i, vm);
+        await alb.attachTarget("target-" + i, vm);
     }
 
     // Export the resulting URL so that it's easy to access.
