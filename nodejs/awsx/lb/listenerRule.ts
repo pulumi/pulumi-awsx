@@ -29,10 +29,10 @@ import * as utils from "./../utils";
  * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-rules.html
  */
 export class ListenerRule extends pulumi.ComponentResource {
-    public readonly listenerRule: aws.lb.ListenerRule;
+    public listenerRule!: aws.lb.ListenerRule;
 
-    constructor(name: string, listener: x.lb.Listener,
-                args: ListenerRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, listener: x.lb.Listener, opts: pulumi.ComponentResourceOptions) {
         // We forgot to add the `ListenerRule` part of the name.  Add it in and create an alias from
         // the previous incorrect name.
         super("awsx:lb:ListenerRule", name, {}, {
@@ -42,6 +42,20 @@ export class ListenerRule extends pulumi.ComponentResource {
                 { type: "awsx:x:elasticloadbalancingv2:ListenerRule" }] }),
         });
 
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new ListenerRule] directly. Use [ListenerRule.create] instead.", this);
+        }
+    }
+
+    public static async create(name: string, listener: x.lb.Listener,
+                               args: ListenerRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
+
+        const result = new ListenerRule(1, name, listener, opts);
+        await result.initialize(name, listener, args);
+        return result;
+    }
+
+    private async initialize(name: string, listener: x.lb.Listener, args: ListenerRuleArgs) {
         const actions = x.lb.isListenerActions(args.actions)
             ? args.actions.actions()
             : args.actions;

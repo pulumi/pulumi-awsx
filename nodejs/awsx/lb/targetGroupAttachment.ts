@@ -20,14 +20,27 @@ import * as pulumi from "@pulumi/pulumi";
 import * as mod from ".";
 
 export class TargetGroupAttachment extends pulumi.ComponentResource {
-    public readonly targetGroupAttachment: aws.lb.TargetGroupAttachment;
-    public readonly permission?: aws.lambda.Permission;
-    public readonly func?: aws.lambda.Function;
+    public targetGroupAttachment!: aws.lb.TargetGroupAttachment;
+    public permission?: aws.lambda.Permission;
+    public func?: aws.lambda.Function;
 
-    constructor(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(version: number, name: string, targetGroup: mod.TargetGroup, opts: pulumi.ComponentResourceOptions) {
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:elasticloadbalancingv2:TargetGroupAttachment" }] });
         super("awsx:lb:TargetGroupAttachment", name, undefined, { parent: targetGroup, ...opts });
 
+        if (typeof version !== "number") {
+            throw new pulumi.ResourceError("Do not call [new TargetGroupAttachment] directly. Use [TargetGroupAttachment.create] instead.", this);
+        }
+    }
+
+    public static async create(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget, opts: pulumi.ComponentResourceOptions = {}) {
+        const result = new TargetGroupAttachment(1, name, targetGroup, opts);
+        await result.initialize(name, targetGroup, args);
+        return result;
+    }
+
+    private async initialize(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget) {
         const { targetInfo, func, permission } = getTargetInfo(this, targetGroup, name, args);
 
         const dependsOn = permission ? [permission] : [];
