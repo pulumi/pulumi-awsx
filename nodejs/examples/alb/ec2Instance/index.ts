@@ -42,15 +42,17 @@ export default async () => {
     // For each subnet, and each subnet/zone, create a VM and a listener.
     const publicIps: pulumi.Output<string>[] = [];
     for (let i = 0; i < alb.vpc.publicSubnets.length; i++) {
+        const getAmiResult = await aws.getAmi({
+            filters: [
+                { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*" ] },
+                { name: "virtualization-type", values: [ "hvm" ] },
+            ],
+            mostRecent: true,
+            owners: [ "099720109477" ], // Canonical
+        }, providerOpts);
+
         const vm = new aws.ec2.Instance(`web-${i}`, {
-            ami: aws.getAmi({
-                filters: [
-                    { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*" ] },
-                    { name: "virtualization-type", values: [ "hvm" ] },
-                ],
-                mostRecent: true,
-                owners: [ "099720109477" ], // Canonical
-            }, providerOpts).id,
+            ami: getAmiResult.id,
             instanceType: "m5.large",
             subnetId: alb.vpc.publicSubnets[i].subnet.id,
             availabilityZone: alb.vpc.publicSubnets[i].subnet.availabilityZone,
