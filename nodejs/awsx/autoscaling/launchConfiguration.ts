@@ -130,7 +130,7 @@ async function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions)
         // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/retrieve-ecs-optimized_AMI.html
         const ecsRecommendedAMI = await aws.ssm.getParameter({
             name: "/aws/service/ecs/optimized-ami/amazon-linux/recommended",
-        }, { ...opts, async: true });
+        }, opts);
         return JSON.parse(ecsRecommendedAMI.value).image_id;
     }
 
@@ -146,7 +146,7 @@ async function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions)
             },
         ],
         mostRecent: true,
-    }, { ...opts, async: true });
+    }, opts);
 
     return result.imageId;
 }

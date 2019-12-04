@@ -231,7 +231,7 @@ export class Vpc extends pulumi.ComponentResource {
      * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
      * version be used instead.  This version will properly respect providers.
      */
-    public static getDefault(opts: pulumi.InvokeOptions = {}): Promise<Vpc> {
+    public static async getDefault(opts: pulumi.InvokeOptions = {}): Promise<Vpc> {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
         // logically by hte stack.
@@ -242,7 +242,7 @@ export class Vpc extends pulumi.ComponentResource {
         // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
         // an account.  So we just map from the id to the Vpc instance we hydrate.  If asked again
         // for the same id we can just return the same instance.
-        const getVpcResult = aws.ec2.getVpc({ default: true }, { provider });
+        const getVpcResult = await aws.ec2.getVpc({ default: true }, { provider });
         const vpcId = getVpcResult.id;
         let vpc = defaultVpcs.get(vpcId);
         if (!vpc) {
