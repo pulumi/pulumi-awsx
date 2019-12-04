@@ -11,7 +11,7 @@ By default, Amazon will create a 'Default VPC' in all regions of your account.  
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = awsx.ec2.Vpc.getDefault();
+const vpc = await awsx.ec2.Vpc.getDefault();
 ```
 
 Many components in awsx work with a specific VPC (for example, Clusters and LoadBalancers).  However, if a specific VPC is not provided, they will use this default VPC instead.  This makes it simple to set up infrastructure for the default VPC without having to explicitly provide it all the time.
@@ -26,7 +26,7 @@ When you create a VPC, you must specify a range of IPv4 addresses for the VPC in
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = new awsx.ec2.Vpc("custom", {
+const vpc = await awsx.ec2.Vpc.create("custom", {
    cidrBlock: "10.0.0.0/16",
    // other args
    // ...
@@ -45,7 +45,7 @@ If not provided `numberOfAvailabilityZones` will default to `2`, but a different
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = new awsx.ec2.Vpc("custom", {
+const vpc = await awsx.ec2.Vpc.create("custom", {
    cidrBlock: "10.0.0.0/16",
    numberOfAvailabilityZones: 3,
 });
@@ -63,7 +63,7 @@ By default, if unspecified, a VPC will automatically partition each availability
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = new awsx.ec2.Vpc("custom", {
+const vpc = await awsx.ec2.Vpc.create("custom", {
    ...
    subnets: [{ type: "public" }, { type: "private" }],
 });
@@ -75,7 +75,7 @@ To specify your own subnet configuration you can do the following:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = new awsx.ec2.Vpc("custom", {
+const vpc = await awsx.ec2.Vpc.create("custom", {
    cidrBlock: "10.0.0.0/16",
    numberOfAvailabilityZones: 3,
    subnets: [{ type: "public" }, { type: "private" }, { type: isolated }],
@@ -88,7 +88,7 @@ There is no restriction on the number of public/private/isolated subnets in an a
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = new awsx.ec2.Vpc("custom", {
+const vpc = await awsx.ec2.Vpc.create("custom", {
    cidrBlock: "10.0.0.0/16",
    numberOfAvailabilityZones: 3,
    subnets: [
@@ -111,7 +111,7 @@ To allow connections from `private` subnets to the internet, NAT gateways will b
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = new awsx.ec2.Vpc("custom", {
+const vpc = await awsx.ec2.Vpc.create("custom", {
    cidrBlock: "10.0.0.0/16",
    numberOfAvailabilityZones: 3,
    numberOfNatGateways: 1,
@@ -128,16 +128,16 @@ All traffic in and out of a VPC is controlled by [Security Groups](https://docs.
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = new awsx.ec2.Vpc("custom", {
+const vpc = await awsx.ec2.Vpc.create("custom", {
    // ...
 });
 
-const sg = new awsx.ec2.SecurityGroup(`sg`, { vpc });
-SecurityGroupRule.ingress("https-access", sg,
+const sg = await awsx.ec2.SecurityGroup.create(`sg`, { vpc });
+await SecurityGroupRule.ingress("https-access", sg,
    new awsx.ec2.AnyIPv4Location(),
    new awsx.ec2.TcpPorts(443),
    "allow https access");
-SecurityGroupRule.ingress("ssd-access", sg,
+await SecurityGroupRule.ingress("ssd-access", sg,
    new awsx.ec2.AnyIPv4Location(),
    new awsx.ec2.TcpPorts(22),
    "allow ssh access");
