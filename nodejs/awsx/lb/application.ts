@@ -241,29 +241,14 @@ export class ApplicationListener extends mod.Listener {
             }, opts);
 
         const result = new ApplicationListener(1, name, loadBalancer, opts);
-        await result.initializeListener(name, args, opts);
+        await result.initializeListener(name, loadBalancer, args, opts);
         return result;
     }
 
     private async initializeListener(name: string,
+                                     loadBalancer: ApplicationLoadBalancer,
                                      args: ApplicationListenerArgs,
                                      opts: pulumi.ComponentResourceOptions) {
-
-        const argCount = (args.defaultAction ? 1 : 0) +
-                         (args.defaultActions ? 1 : 0) +
-                         (args.targetGroup ? 1 : 0);
-
-        if (argCount >= 2) {
-            throw new Error("Only provide one of [defaultAction], [defaultActions] or [targetGroup].");
-        }
-
-        const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
-            ? args.loadBalancer
-            : await ApplicationLoadBalancer.create(name, {
-                ...args.loadBalancer,
-                vpc: args.vpc,
-                name: args.name,
-            }, opts);
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultActions, defaultListener } = await getDefaultActions(
