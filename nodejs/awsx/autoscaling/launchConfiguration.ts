@@ -48,9 +48,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         return result;
     }
 
-    private async initialize(name: string, vpc: x.ec2.Vpc,
-                             args: AutoScalingLaunchConfigurationArgs) {
-
+    private async initialize(name: string, vpc: x.ec2.Vpc, args: AutoScalingLaunchConfigurationArgs) {
         const _this = utils.Mutable(this);
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
