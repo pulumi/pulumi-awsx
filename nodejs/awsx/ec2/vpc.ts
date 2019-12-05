@@ -30,8 +30,8 @@ export class Vpc extends pulumi.ComponentResource {
     public readonly privateSubnetIds: pulumi.Output<string>[] = [];
     public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
 
-    public vpc!: aws.ec2.Vpc;
-    public id!: pulumi.Output<string>;
+    public readonly vpc!: aws.ec2.Vpc;
+    public readonly id!: pulumi.Output<string>;
 
     public readonly publicSubnets: x.ec2.Subnet[] = [];
     public readonly privateSubnets: x.ec2.Subnet[] = [];
@@ -67,9 +67,11 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     private async initialize(name: string, args: VpcArgs | ExistingVpcArgs, opts: pulumi.ComponentResourceOptions): Promise<void> {
+        const _this = utils.Mutable(this);
+
         if (isExistingVpcArgs(args)) {
-            this.vpc = args.vpc;
-            this.id = this.vpc.id;
+            _this.vpc = args.vpc;
+            _this.id = this.vpc.id;
         }
         else {
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
@@ -81,7 +83,7 @@ export class Vpc extends pulumi.ComponentResource {
             // We previously did not parent the underlying Vpc to this component. We now do. Provide
             // an alias so this doesn't cause resources to be destroyed/recreated for existing
             // stacks.
-            this.vpc = new aws.ec2.Vpc(name, {
+            _this.vpc = new aws.ec2.Vpc(name, {
                 ...args,
                 cidrBlock,
                 enableDnsHostnames: utils.ifUndefined(args.enableDnsHostnames, true),
@@ -89,7 +91,7 @@ export class Vpc extends pulumi.ComponentResource {
                 instanceTenancy: utils.ifUndefined(args.instanceTenancy, "default"),
                 assignGeneratedIpv6CidrBlock,
             }, { parent: this, aliases: [{ parent: pulumi.rootStackResource }] });
-            this.id = this.vpc.id;
+            _this.id = this.vpc.id;
 
             const subnets = args.subnets || [
                 { type: "public" },

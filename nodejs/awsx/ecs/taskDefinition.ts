@@ -23,9 +23,9 @@ import * as role from "../role";
 import * as utils from "../utils";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
-    public taskDefinition!: aws.ecs.TaskDefinition;
+    public readonly taskDefinition!: aws.ecs.TaskDefinition;
     public logGroup?: aws.cloudwatch.LogGroup;
-    public containers!: Record<string, ecs.Container>;
+    public readonly containers!: Record<string, ecs.Container>;
     public taskRole?: aws.iam.Role;
     public executionRole?: aws.iam.Role;
 
@@ -45,7 +45,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
      *
      * This API is designed for use at runtime.
      */
-    public run!: (
+    public readonly run!: (
         params: RunTaskRequest,
     ) => Promise<awssdk.ECS.Types.RunTaskResponse>;
 
@@ -61,6 +61,8 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
     /** @internal */
     protected async initialize(name: string, isFargate: boolean, args: TaskDefinitionArgs) {
+        const _this = utils.Mutable(this);
+
         this.logGroup = args.logGroup === null ? undefined :
                         args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
@@ -74,7 +76,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
                              args.executionRole ? args.executionRole : TaskDefinition.createExecutionRole(
             `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
-        this.containers = args.containers;
+        _this.containers = args.containers;
 
         const containerDefinitions = await computeContainerDefinitions(
             this, name, args.vpc, this.containers, this.applicationListeners, this.networkListeners, this.logGroup);
@@ -84,7 +86,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         const defaultFamily = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
         const family = utils.ifUndefined(args.family, defaultFamily);
 
-        this.taskDefinition = new aws.ecs.TaskDefinition(name, {
+        _this.taskDefinition = new aws.ecs.TaskDefinition(name, {
             ...args,
             family: family,
             taskRoleArn: this.taskRole ? this.taskRole.arn : undefined,
@@ -92,7 +94,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerString,
         }, { parent: this });
 
-        this.run = createRunFunction(isFargate, this.taskDefinition.arn);
+        _this.run = createRunFunction(isFargate, this.taskDefinition.arn);
     }
 
     /**

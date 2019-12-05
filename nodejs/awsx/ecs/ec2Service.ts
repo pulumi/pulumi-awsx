@@ -82,7 +82,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 (<any>EC2TaskDefinition.prototype).initializeTaskDefinition.doNotCapture = true;
 
 export class EC2Service extends ecs.Service {
-    public taskDefinition!: EC2TaskDefinition;
+    public readonly taskDefinition!: EC2TaskDefinition;
 
     /** @internal */
     constructor(version: number, name: string,
@@ -105,6 +105,7 @@ export class EC2Service extends ecs.Service {
     private async initializeService(name: string,
                                     args: EC2ServiceArgs,
                                     opts: pulumi.ComponentResourceOptions) {
+        const _this = utils.Mutable(this);
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
@@ -143,7 +144,7 @@ export class EC2Service extends ecs.Service {
             }),
         }, /*isFargate:*/ false);
 
-        this.taskDefinition = taskDefinition;
+        _this.taskDefinition = taskDefinition;
 
         this.registerOutputs();
     }

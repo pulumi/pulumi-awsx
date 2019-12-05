@@ -22,7 +22,7 @@ export class InternetGateway
         extends pulumi.ComponentResource
         implements x.ec2.SubnetRouteProvider {
     public readonly vpc: x.ec2.Vpc;
-    public internetGateway!: aws.ec2.InternetGateway;
+    public readonly internetGateway!: aws.ec2.InternetGateway;
 
     /** @internal */
     constructor(version: number, name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
@@ -44,11 +44,13 @@ export class InternetGateway
     }
 
     private async initialize(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs) {
+        const _this = utils.Mutable(this);
+
         if (isExistingInternetGatewayArgs(args)) {
-            this.internetGateway = args.internetGateway;
+            _this.internetGateway = args.internetGateway;
         }
         else {
-            this.internetGateway = new aws.ec2.InternetGateway(name, {
+            _this.internetGateway = new aws.ec2.InternetGateway(name, {
                 ...args,
                 vpcId: vpc.vpc.id,
             }, { parent: this });

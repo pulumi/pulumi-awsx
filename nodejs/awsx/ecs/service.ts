@@ -20,9 +20,9 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export abstract class Service extends pulumi.ComponentResource {
-    public service!: aws.ecs.Service;
-    public cluster!: ecs.Cluster;
-    public taskDefinition!: ecs.TaskDefinition;
+    public readonly service!: aws.ecs.Service;
+    public readonly cluster!: ecs.Cluster;
+    public readonly taskDefinition!: ecs.TaskDefinition;
 
     /**
      * Mapping from container in this service to the ELB listener exposing it through a load
@@ -46,7 +46,9 @@ export abstract class Service extends pulumi.ComponentResource {
 
     /** @internal */
     protected async initialize(name: string, args: ServiceArgs, isFargate: boolean) {
-        this.cluster = args.cluster || await x.ecs.Cluster.getDefault();
+        const _this = utils.Mutable(this);
+
+        _this.cluster = args.cluster || await x.ecs.Cluster.getDefault();
 
         this.listeners = args.taskDefinition.listeners;
         this.applicationListeners = args.taskDefinition.applicationListeners;
@@ -56,7 +58,7 @@ export abstract class Service extends pulumi.ComponentResource {
         // containers for this service.
         const loadBalancers = getLoadBalancers(this, name, args);
 
-        this.service = new aws.ecs.Service(name, {
+        _this.service = new aws.ecs.Service(name, {
             ...args,
             loadBalancers,
             cluster: this.cluster.cluster.arn,
@@ -70,7 +72,7 @@ export abstract class Service extends pulumi.ComponentResource {
             dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
         });
 
-        this.taskDefinition = args.taskDefinition;
+        _this.taskDefinition = args.taskDefinition;
     }
 }
 

@@ -27,9 +27,9 @@ export abstract class TargetGroup
     x.ecs.ContainerLoadBalancerProvider,
     x.lb.ListenerDefaultAction {
 
-    public loadBalancer!: mod.LoadBalancer;
-    public targetGroup!: aws.lb.TargetGroup;
-    public vpc!: x.ec2.Vpc;
+    public readonly loadBalancer!: mod.LoadBalancer;
+    public readonly targetGroup!: aws.lb.TargetGroup;
+    public readonly vpc!: x.ec2.Vpc;
 
     public readonly listeners: x.lb.Listener[] = [];
 
@@ -52,13 +52,15 @@ export abstract class TargetGroup
 
     /** @internal */
     protected async initialize(name: string, loadBalancer: mod.LoadBalancer, args: TargetGroupArgs) {
-        this.vpc = args.vpc;
+        const _this = utils.Mutable(this);
+
+        _this.vpc = args.vpc;
 
         // We used to hash the name of an TG to keep the name short.  This was necessary back when
         // people didn't have direct control over creating the TG.  In awsx though creating the TG
         // is easy to do, so we just let the user pass in the name they want.  We simply add an
         // alias from the old name to the new one to keep things from being recreated.
-        this.targetGroup = new aws.lb.TargetGroup(name, {
+        _this.targetGroup = new aws.lb.TargetGroup(name, {
             ...args,
             vpcId: this.vpc.id,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
@@ -70,7 +72,7 @@ export abstract class TargetGroup
             aliases: [{ name: args.name || utils.sha1hash(name) }],
         });
 
-        this.loadBalancer = loadBalancer;
+        _this.loadBalancer = loadBalancer;
     }
 
     private dependencies() {

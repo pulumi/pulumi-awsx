@@ -20,9 +20,9 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
-    public loadBalancer!: aws.lb.LoadBalancer;
-    public vpc!: x.ec2.Vpc;
-    public securityGroups!: x.ec2.SecurityGroup[];
+    public readonly loadBalancer!: aws.lb.LoadBalancer;
+    public readonly vpc!: x.ec2.Vpc;
+    public readonly securityGroups!: x.ec2.SecurityGroup[];
 
     public readonly listeners: mod.Listener[] = [];
     public readonly targetGroups: mod.TargetGroup[] = [];
@@ -38,8 +38,10 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 
     /** @internal */
     protected async initialize(name: string, args: LoadBalancerArgs) {
-        this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
-        this.securityGroups = await x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
+        const _this = utils.Mutable(this);
+
+        _this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
+        _this.securityGroups = await x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 
         const external = utils.ifUndefined(args.external, true);
 
@@ -47,7 +49,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         // people didn't have direct control over creating the LB.  In awsx though creating the LB
         // is easy to do, so we just let the user pass in the name they want.  We simply add an
         // alias from the old name to the new one to keep things from being recreated.
-        this.loadBalancer = new aws.lb.LoadBalancer(name, {
+        _this.loadBalancer = new aws.lb.LoadBalancer(name, {
             ...args,
             subnets: getSubnets(args, this.vpc, external),
             internal: external.apply(ex => !ex),

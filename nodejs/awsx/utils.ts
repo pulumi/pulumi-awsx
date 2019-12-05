@@ -31,6 +31,11 @@ export type Mutable<T> = {
     -readonly [P in keyof T]: T[P];
 };
 
+/** @internal */
+export function Mutable<T>(val: T): Mutable<T> {
+    return val;
+}
+
 // sha1hash returns a partial SHA1 hash of the input string.
 /** @internal */
 export function sha1hash(s: string): string {

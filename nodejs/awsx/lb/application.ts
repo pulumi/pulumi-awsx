@@ -105,7 +105,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
  * balancer.
  */
 export class ApplicationTargetGroup extends mod.TargetGroup {
-    public loadBalancer!: ApplicationLoadBalancer;
+    public readonly loadBalancer!: ApplicationLoadBalancer;
 
     public readonly listeners: x.lb.ApplicationListener[] = [];
 
@@ -135,6 +135,8 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     }
 
     private async initializeTargetGroup(name: string, loadBalancer: ApplicationLoadBalancer, args: ApplicationTargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
+        const _this = utils.Mutable(this);
+
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationTargetGroup" }] });
@@ -145,7 +147,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             protocol,
         });
 
-        this.loadBalancer = loadBalancer;
+        _this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
         this.registerOutputs();

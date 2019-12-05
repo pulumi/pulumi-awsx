@@ -31,10 +31,10 @@ export abstract class Listener
         implements x.ecs.ContainerPortMappingProvider,
                    x.ecs.ContainerLoadBalancerProvider {
     public readonly loadBalancer: x.lb.LoadBalancer;
-    public listener!: aws.lb.Listener;
+    public readonly listener!: aws.lb.Listener;
     public defaultTargetGroup?: x.lb.TargetGroup;
 
-    public endpoint!: pulumi.Output<ListenerEndpoint>;
+    public readonly endpoint!: pulumi.Output<ListenerEndpoint>;
 
     private defaultListenerAction?: ListenerDefaultAction;
 
@@ -64,6 +64,7 @@ export abstract class Listener
     protected async initialize(name: string,
                                defaultListenerAction: ListenerDefaultAction | undefined,
                                args: ListenerArgs) {
+        const _this = utils.Mutable(this);
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
         // security policy from:
@@ -71,14 +72,14 @@ export abstract class Listener
         const defaultSslPolicy = pulumi.output(args.certificateArn)
                                        .apply(a => a ? "ELBSecurityPolicy-2016-08" : undefined!);
 
-        this.listener = new aws.lb.Listener(name, {
+        _this.listener = new aws.lb.Listener(name, {
             ...args,
             loadBalancerArn: args.loadBalancer.loadBalancer.arn,
             sslPolicy: utils.ifUndefined(args.sslPolicy, defaultSslPolicy),
         }, { parent: this });
 
         const loadBalancer = args.loadBalancer.loadBalancer;
-        this.endpoint = this.listener.urn.apply(_ => pulumi.output({
+        _this.endpoint = this.listener.urn.apply(_ => pulumi.output({
             hostname: loadBalancer.dnsName,
             port: args.port,
         }));

@@ -208,7 +208,7 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
 }
 
 export class FargateService extends ecs.Service {
-    public taskDefinition!: FargateTaskDefinition;
+    public readonly taskDefinition!: FargateTaskDefinition;
 
     /** @internal */
     constructor(version: number,
@@ -234,6 +234,8 @@ export class FargateService extends ecs.Service {
     private async initializeService(name: string,
                                     args: FargateServiceArgs,
                                     opts: pulumi.ComponentResourceOptions) {
+
+        const _this = utils.Mutable(this);
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
@@ -264,7 +266,7 @@ export class FargateService extends ecs.Service {
             },
         }, /*isFargate:*/ true);
 
-        this.taskDefinition = taskDefinition;
+        _this.taskDefinition = taskDefinition;
 
         this.registerOutputs();
     }

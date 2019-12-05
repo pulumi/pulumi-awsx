@@ -29,7 +29,7 @@ import * as utils from "./../utils";
  * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-rules.html
  */
 export class ListenerRule extends pulumi.ComponentResource {
-    public listenerRule!: aws.lb.ListenerRule;
+    public readonly listenerRule!: aws.lb.ListenerRule;
 
     /** @internal */
     constructor(version: number, name: string, listener: x.lb.Listener, opts: pulumi.ComponentResourceOptions) {
@@ -56,11 +56,13 @@ export class ListenerRule extends pulumi.ComponentResource {
     }
 
     private async initialize(name: string, listener: x.lb.Listener, args: ListenerRuleArgs) {
+        const _this = utils.Mutable(this);
+
         const actions = x.lb.isListenerActions(args.actions)
             ? args.actions.actions()
             : args.actions;
 
-        this.listenerRule = new aws.lb.ListenerRule(name, {
+        _this.listenerRule = new aws.lb.ListenerRule(name, {
             ...args,
             actions,
             listenerArn: listener.listener.arn,

@@ -16,6 +16,8 @@ import * as aws from "@pulumi/aws";
 import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as utils from "../utils";
+
 import { computeImageFromAsset } from "../ecs";
 import { LifecyclePolicy, LifecyclePolicyArgs } from "./lifecyclePolicy";
 import { RepositoryImage } from "./repositoryImage";
@@ -29,7 +31,7 @@ import { RepositoryImage } from "./repositoryImage";
  * destination registry.
  */
 export class Repository extends pulumi.ComponentResource {
-    public repository!: aws.ecr.Repository;
+    public readonly repository!: aws.ecr.Repository;
     public lifecyclePolicy: aws.ecr.LifecyclePolicy | undefined;
 
     /** @internal */
@@ -48,9 +50,11 @@ export class Repository extends pulumi.ComponentResource {
     }
 
     private async initialize(name: string, args: RepositoryArgs) {
+        const _this = utils.Mutable(this);
+
         const lowerCaseName = name.toLowerCase();
 
-        this.repository = args.repository || new aws.ecr.Repository(lowerCaseName, args, { parent: this });
+        _this.repository = args.repository || new aws.ecr.Repository(lowerCaseName, args, { parent: this });
         this.lifecyclePolicy = new LifecyclePolicy(lowerCaseName, this.repository, args.lifeCyclePolicyArgs, { parent: this });
 
         this.registerOutputs();

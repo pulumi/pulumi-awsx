@@ -18,9 +18,10 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
+import * as utils from "../utils";
 
 export class TargetGroupAttachment extends pulumi.ComponentResource {
-    public targetGroupAttachment!: aws.lb.TargetGroupAttachment;
+    public readonly targetGroupAttachment!: aws.lb.TargetGroupAttachment;
     public permission?: aws.lambda.Permission;
     public func?: aws.lambda.Function;
 
@@ -41,11 +42,13 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     }
 
     private async initialize(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget) {
+        const _this = utils.Mutable(this);
+
         const { targetInfo, func, permission } = getTargetInfo(this, targetGroup, name, args);
 
         const dependsOn = permission ? [permission] : [];
 
-        this.targetGroupAttachment = new aws.lb.TargetGroupAttachment(name, {
+        _this.targetGroupAttachment = new aws.lb.TargetGroupAttachment(name, {
             availabilityZone: <pulumi.Input<string>>targetInfo.availabilityZone,
             port: <pulumi.Input<number>>targetInfo.port,
             targetGroupArn: targetGroup.targetGroup.arn,

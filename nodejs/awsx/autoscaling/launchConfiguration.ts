@@ -20,16 +20,16 @@ import * as roleUtils from "../role";
 import * as utils from "./../utils";
 
 export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
-    public launchConfiguration!: aws.ec2.LaunchConfiguration;
-    public id!: pulumi.Output<string>;
-    public securityGroups!: x.ec2.SecurityGroup[];
+    public readonly launchConfiguration!: aws.ec2.LaunchConfiguration;
+    public readonly id!: pulumi.Output<string>;
+    public readonly securityGroups!: x.ec2.SecurityGroup[];
 
-    public instanceProfile!: aws.iam.InstanceProfile;
+    public readonly instanceProfile!: aws.iam.InstanceProfile;
 
     /**
      * Name to give the auto-scaling-group's cloudformation stack name.
      */
-    public stackName!: pulumi.Output<string>;
+    public readonly stackName!: pulumi.Output<string>;
 
     /** @internal */
     constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
@@ -51,20 +51,22 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     private async initialize(name: string, vpc: x.ec2.Vpc,
                              args: AutoScalingLaunchConfigurationArgs) {
 
+        const _this = utils.Mutable(this);
+
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.
         // TODO[pulumi/pulumi#381]: Creating an S3 bucket is an inelegant way to get a durable,
         // unique name.
-        this.stackName = pulumi.output(args.stackName).apply(sn => sn ? pulumi.output(sn) : new aws.s3.Bucket(name, {}, { parent: this }).id);
+        _this.stackName = pulumi.output(args.stackName).apply(sn => sn ? pulumi.output(sn) : new aws.s3.Bucket(name, {}, { parent: this }).id);
 
         // Use the instance provided, or create a new one.
-        this.instanceProfile = args.instanceProfile ||
+        _this.instanceProfile = args.instanceProfile ||
             AutoScalingLaunchConfiguration.createInstanceProfile(
                 name, /*assumeRolePolicy:*/ undefined, /*policyArns:*/ undefined, { parent: this });
 
-        this.securityGroups = await x.ec2.getSecurityGroups(vpc, name, args.securityGroups, { parent: this }) || [];
+        _this.securityGroups = await x.ec2.getSecurityGroups(vpc, name, args.securityGroups, { parent: this }) || [];
 
-        this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
+        _this.launchConfiguration = new aws.ec2.LaunchConfiguration(name, {
             ...args,
             securityGroups: this.securityGroups.map(g => g.id),
             imageId: utils.ifUndefined(args.imageId, getEcsAmiId(args.ecsOptimizedAMIName, { parent: this })),
@@ -76,7 +78,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
             ebsBlockDevices: utils.ifUndefined(args.ebsBlockDevices, defaultEbsBlockDevices),
             userData: getInstanceUserData(args, this.stackName),
         }, { parent: this });
-        this.id = this.launchConfiguration.id;
+        _this.id = this.launchConfiguration.id;
 
         this.registerOutputs();
     }

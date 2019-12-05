@@ -16,6 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
+import * as utils from "../utils";
 
 export class NatGateway
         extends pulumi.ComponentResource
@@ -23,8 +24,8 @@ export class NatGateway
 
     public readonly natGatewayName: string;
     public readonly vpc: x.ec2.Vpc;
-    public elasticIP: aws.ec2.Eip | undefined;
-    public natGateway!: aws.ec2.NatGateway;
+    public readonly elasticIP: aws.ec2.Eip | undefined;
+    public readonly natGateway!: aws.ec2.NatGateway;
 
     /** @internal */
     constructor(version: number, name: string, vpc: x.ec2.Vpc, opts: pulumi.ComponentResourceOptions = {}) {
@@ -47,8 +48,10 @@ export class NatGateway
     }
 
     private async initialize(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        const _this = utils.Mutable(this);
+
         if (isExistingNatGatewayArgs(args)) {
-            this.natGateway = args.natGateway;
+            _this.natGateway = args.natGateway;
         }
         else {
             // from https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
@@ -59,7 +62,7 @@ export class NatGateway
             // traffic to the NAT gateway. This enables instances in your private subnets to
             // communicate with the internet.
 
-            this.elasticIP = new aws.ec2.Eip(name, {
+            _this.elasticIP = new aws.ec2.Eip(name, {
                 vpc: true,
                 tags: { Name: name },
             }, { parent: this });
@@ -68,10 +71,10 @@ export class NatGateway
                 ? args.subnet.id
                 : args.subnet;
 
-            this.natGateway = new aws.ec2.NatGateway(name, {
+            _this.natGateway = new aws.ec2.NatGateway(name, {
                 ...args,
                 subnetId,
-                allocationId: this.elasticIP.id,
+                allocationId: _this.elasticIP.id,
             }, { parent: this });
         }
 
