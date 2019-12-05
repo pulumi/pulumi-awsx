@@ -38,7 +38,7 @@ export function Mutable<T>(val: T): Mutable<T> {
 
 /** @internal */
 export type Capture<T> = {
-    [P in keyof T]: T[P] & { doNotCapture: boolean }
+    [P in keyof T]: T[P] extends Function ? { doNotCapture: boolean } : never;
 };
 
 /** @internal */

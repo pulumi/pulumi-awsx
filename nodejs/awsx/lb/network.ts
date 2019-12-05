@@ -205,9 +205,9 @@ export class NetworkListener
 
     /** @internal */
     public async initializeListener(name: string,
-                                     loadBalancer: NetworkLoadBalancer,
-                                     args: NetworkListenerArgs,
-                                     opts: pulumi.ComponentResourceOptions) {
+                                    loadBalancer: NetworkLoadBalancer,
+                                    args: NetworkListenerArgs,
+                                    opts: pulumi.ComponentResourceOptions) {
 
         const { defaultActions, defaultListener } = await getDefaultActions(name, loadBalancer, args, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);

@@ -63,8 +63,8 @@ export abstract class Listener
 
     /** @internal */
     public async initialize(name: string,
-                               defaultListenerAction: ListenerDefaultAction | undefined,
-                               args: ListenerArgs) {
+                            defaultListenerAction: ListenerDefaultAction | undefined,
+                            args: ListenerArgs) {
         const _this = utils.Mutable(this);
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
