@@ -119,6 +119,9 @@ export class Subnet extends pulumi.ComponentResource {
     }
 }
 
+(<any>Subnet.prototype).initialize.doNotCapture = true;
+(<any>Subnet.prototype).createRoute.doNotCapture = true;
+
 export interface SubnetRouteProvider {
     route(name: string, opts: pulumi.ComponentResourceOptions): RouteArgs;
 }
@@ -128,8 +131,6 @@ function isSubnetRouteProvider(obj: any): obj is SubnetRouteProvider {
 }
 
 export type SubnetOrId = Subnet | pulumi.Input<string>;
-
-(<any>Subnet.prototype.createRoute).doNotCapture = true;
 
 export interface ExistingSubnetArgs {
     /**

@@ -123,6 +123,8 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     }
 }
 
+(<any>AutoScalingLaunchConfiguration.prototype).initialize.doNotCapture = true;
+
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
 async function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): Promise<string> {
     // If a name was not provided, use the latest recommended version.

@@ -89,6 +89,8 @@ export class NatGateway
     }
 }
 
+(<any>NatGateway.prototype).initialize.doNotCapture = true;
+
 export interface NatGatewayArgs {
     /**
      * The subnet the NatGateway should be placed in.

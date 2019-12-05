@@ -166,6 +166,8 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 }
 
+(<any>TaskDefinition.prototype).initialize.doNotCapture = true;
+
 export interface RunTaskRequest {
     /**
      * The Cluster to run the Task within.

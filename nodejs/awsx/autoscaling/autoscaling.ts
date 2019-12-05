@@ -223,6 +223,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     }
 }
 
+(<any>AutoScalingGroup.prototype).initialize.doNotCapture = true;
+
 function ifUndefined<T>(val: T | undefined, defVal: T) {
     return val !== undefined ? val : defVal;
 }

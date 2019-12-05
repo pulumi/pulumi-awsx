@@ -68,6 +68,8 @@ export class Repository extends pulumi.ComponentResource {
     }
 }
 
+(<any>Repository.prototype).initialize.doNotCapture = true;
+
 /**
  * Creates a new [Repository] (optionally configured using [args]), builds the docker container
  * specified by [pathOrBuild] and then pushes the built image to the repository.  The result

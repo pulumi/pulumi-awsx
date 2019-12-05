@@ -287,6 +287,8 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
     }
 }
 
+(<any>StepScalingPolicy.prototype).initialize.doNotCapture = true;
+
 interface AwsStepAdjustment {
     metricIntervalLowerBound: string | undefined;
     metricIntervalUpperBound: string | undefined;

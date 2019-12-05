@@ -135,6 +135,8 @@ export abstract class Listener
     }
 }
 
+(<any>Listener.prototype).initialize.doNotCapture = true;
+
 /**
  * See https://www.terraform.io/docs/providers/aws/r/lb_listener.html#default_action
  */

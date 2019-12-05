@@ -74,6 +74,8 @@ export abstract class Service extends pulumi.ComponentResource {
     }
 }
 
+(<any>Service.prototype).initialize.doNotCapture = true;
+
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
     const result: pulumi.Output<ServiceLoadBalancer>[] = [];
 

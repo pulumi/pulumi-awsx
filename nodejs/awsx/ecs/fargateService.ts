@@ -86,6 +86,8 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
     }
 }
 
+(<any>FargateTaskDefinition.prototype).initializeTaskDefinition.doNotCapture = true;
+
 /**
  * Gets the list of all supported fargate configs.  We'll compute the amount of memory/vcpu
  * needed by the containers and we'll return the cheapest fargate config that supplies at
@@ -267,6 +269,8 @@ export class FargateService extends ecs.Service {
         this.registerOutputs();
     }
 }
+
+(<any>FargateService.prototype).initializeService.doNotCapture = true;
 
 function getSubnets(
         cluster: ecs.Cluster,

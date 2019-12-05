@@ -67,6 +67,8 @@ export class InternetGateway
     }
 }
 
+(<any>InternetGateway.prototype).initialize.doNotCapture = true;
+
 export interface ExistingInternetGatewayArgs {
     /**
      * Optional existing instance to use to make the [awsx.ec2.InternetGateway] out of.

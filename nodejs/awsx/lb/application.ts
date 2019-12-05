@@ -95,6 +95,8 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
     }
 }
 
+(<any>ApplicationLoadBalancer.prototype).initializeLoadBalancer.doNotCapture = true;
+
 /**
  * Each target group routes requests to one or more registered targets, such as EC2 instances, using
  * the protocol and port number that you specify. You can register a target with multiple target
@@ -167,6 +169,8 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
         return utils.isInstance<ApplicationTargetGroup>(obj, "__isApplicationTargetGroup");
     }
 }
+
+(<any>ApplicationTargetGroup.prototype).initializeTargetGroup.doNotCapture = true;
 
 function computePortInfo(
     port: pulumi.Input<number> | undefined,
@@ -296,6 +300,8 @@ export class ApplicationListener extends mod.Listener {
         return obj && !!(<ApplicationListener>obj).__isApplicationListenerInstance;
     }
 }
+
+(<any>ApplicationListener.prototype).initializeListener.doNotCapture = true;
 
 async function getDefaultActions(
         name: string, loadBalancer: ApplicationLoadBalancer,

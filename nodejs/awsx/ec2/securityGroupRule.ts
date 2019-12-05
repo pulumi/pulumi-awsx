@@ -188,6 +188,8 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     }
 }
 
+(<any>SecurityGroupRule.prototype).initialize.doNotCapture = true;
+
 export class EgressSecurityGroupRule extends SecurityGroupRule {
     constructor(version: number, name: string, securityGroup: x.ec2.SecurityGroup,
                 opts: pulumi.ComponentResourceOptions) {
@@ -222,6 +224,8 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
         securityGroup.egressRules.push(this);
     }
 }
+
+(<any>EgressSecurityGroupRule.prototype).initializeRule.doNotCapture = true;
 
 export class IngressSecurityGroupRule extends SecurityGroupRule {
     /** @internal */
@@ -259,6 +263,8 @@ export class IngressSecurityGroupRule extends SecurityGroupRule {
         securityGroup.ingressRules.push(this);
     }
 }
+
+(<any>IngressSecurityGroupRule.prototype).initializeRule.doNotCapture = true;
 
 type OverwriteSecurityGroupRuleArgs = utils.Overwrite<aws.ec2.SecurityGroupRuleArgs, {
     securityGroupId?: never;

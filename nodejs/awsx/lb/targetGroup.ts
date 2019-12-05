@@ -119,6 +119,8 @@ export abstract class TargetGroup
     }
 }
 
+(<any>TargetGroup.prototype).initialize.doNotCapture = true;
+
 /**
  * A Health Check block.
  *

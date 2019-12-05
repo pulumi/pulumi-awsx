@@ -76,6 +76,8 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     }
 }
 
+(<any>LoadBalancer.prototype).initialize.doNotCapture = true;
+
 function getSubnets(
     args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
 

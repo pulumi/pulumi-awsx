@@ -59,6 +59,8 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     }
 }
 
+(<any>TargetGroupAttachment.prototype).initialize.doNotCapture = true;
+
 function getTargetInfo(parent: TargetGroupAttachment, targetGroup: mod.TargetGroup, name: string, args: mod.LoadBalancerTarget) {
     if (aws.ec2.Instance.isInstance(args)) {
         return { targetInfo: getEc2InstanceTargetInfo(targetGroup, args), permission: undefined, func: undefined };

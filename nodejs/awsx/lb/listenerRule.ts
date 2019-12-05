@@ -77,6 +77,8 @@ export class ListenerRule extends pulumi.ComponentResource {
     }
 }
 
+(<any>ListenerRule.prototype).initialize.doNotCapture = true;
+
 type OverwriteShape = utils.Overwrite<aws.lb.ListenerRuleArgs, {
     listenerArn?: never;
     actions: aws.lb.ListenerRuleArgs["actions"] | x.lb.ListenerActions;

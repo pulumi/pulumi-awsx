@@ -69,6 +69,8 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     }
 }
 
+(<any>NetworkLoadBalancer.prototype).initializeLoadBalancer.doNotCapture = true;
+
 /**
  * Each target group is used to route requests to one or more registered targets. When you create
  * each listener rule, you specify a target group and conditions. When a rule condition is met,
@@ -141,6 +143,8 @@ export class NetworkTargetGroup extends mod.TargetGroup {
         }, { parent: this, ...opts });
     }
 }
+
+(<any>NetworkTargetGroup.prototype).initializeTargetGroup.doNotCapture = true;
 
 /**
  * A listener is a process that checks for connection requests, using the protocol and port that you
@@ -240,6 +244,8 @@ export class NetworkListener
         }));
     }
 }
+
+(<any>NetworkListener.prototype).initializeListener.doNotCapture = true;
 
 async function getDefaultActions(
         name: string,

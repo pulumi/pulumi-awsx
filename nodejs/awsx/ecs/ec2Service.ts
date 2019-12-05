@@ -79,6 +79,8 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
     }
 }
 
+(<any>EC2TaskDefinition.prototype).initializeTaskDefinition.doNotCapture = true;
+
 export class EC2Service extends ecs.Service {
     public taskDefinition!: EC2TaskDefinition;
 
@@ -146,6 +148,8 @@ export class EC2Service extends ecs.Service {
         this.registerOutputs();
     }
 }
+
+(<any>EC2Service.prototype).initializeService.doNotCapture = true;
 
 type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
     requiresCompatibilities?: never;
