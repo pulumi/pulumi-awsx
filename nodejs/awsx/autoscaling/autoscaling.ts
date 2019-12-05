@@ -65,11 +65,11 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                                args: AutoScalingGroupArgs,
                                opts: pulumi.ComponentResourceOptions = {}): Promise<AutoScalingGroup> {
         const result = new AutoScalingGroup(1, name, opts);
-        await result.initialize(args);
+        await result.initialize(name, args);
         return result;
     }
 
-    private async initialize(args: AutoScalingGroupArgs) {
+    private async initialize(name: string, args: AutoScalingGroupArgs) {
         this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
         const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
         this.targetGroups = args.targetGroups || [];
