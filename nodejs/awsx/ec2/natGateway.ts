@@ -47,7 +47,8 @@ export class NatGateway
         return result;
     }
 
-    private async initialize(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    public async initialize(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const _this = utils.Mutable(this);
 
         if (isExistingNatGatewayArgs(args)) {
@@ -92,7 +93,7 @@ export class NatGateway
     }
 }
 
-(<any>NatGateway.prototype).initialize.doNotCapture = true;
+utils.Capture(NatGateway.prototype).initialize.doNotCapture = true;
 
 export interface NatGatewayArgs {
     /**

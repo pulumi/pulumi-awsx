@@ -67,7 +67,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         return result;
     }
 
-    private async initialize(name: string, args: AutoScalingGroupArgs) {
+    /** @internal */
+    public async initialize(name: string, args: AutoScalingGroupArgs) {
         const _this = utils.Mutable(this);
 
         _this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
@@ -223,7 +224,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     }
 }
 
-(<any>AutoScalingGroup.prototype).initialize.doNotCapture = true;
+utils.Capture(AutoScalingGroup.prototype).initialize.doNotCapture = true;
 
 function ifUndefined<T>(val: T | undefined, defVal: T) {
     return val !== undefined ? val : defVal;

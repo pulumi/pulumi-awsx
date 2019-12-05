@@ -44,7 +44,8 @@ export class SecurityGroup extends pulumi.ComponentResource {
         return result;
     }
 
-    private async initialize(name: string, args: SecurityGroupArgs): Promise<void> {
+    /** @internal */
+    public async initialize(name: string, args: SecurityGroupArgs): Promise<void> {
         const _this = utils.Mutable(this);
 
         // We allow egress/ingress rules to be defined in-line for SecurityGroup (like terraform
@@ -114,9 +115,9 @@ export class SecurityGroup extends pulumi.ComponentResource {
     }
 }
 
-(<any>SecurityGroup.prototype).initialize.doNotCapture = true;
-(<any>SecurityGroup.prototype).createEgressRule.doNotCapture = true;
-(<any>SecurityGroup.prototype).createIngressRule.doNotCapture = true;
+utils.Capture(SecurityGroup.prototype).initialize.doNotCapture = true;
+utils.Capture(SecurityGroup.prototype).createEgressRule.doNotCapture = true;
+utils.Capture(SecurityGroup.prototype).createIngressRule.doNotCapture = true;
 
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 

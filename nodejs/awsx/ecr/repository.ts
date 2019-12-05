@@ -49,7 +49,8 @@ export class Repository extends pulumi.ComponentResource {
         return result;
     }
 
-    private async initialize(name: string, args: RepositoryArgs) {
+    /** @internal */
+    public async initialize(name: string, args: RepositoryArgs) {
         const _this = utils.Mutable(this);
 
         const lowerCaseName = name.toLowerCase();
@@ -72,7 +73,7 @@ export class Repository extends pulumi.ComponentResource {
     }
 }
 
-(<any>Repository.prototype).initialize.doNotCapture = true;
+utils.Capture(Repository.prototype).initialize.doNotCapture = true;
 
 /**
  * Creates a new [Repository] (optionally configured using [args]), builds the docker container

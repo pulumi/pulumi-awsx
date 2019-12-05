@@ -38,7 +38,8 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
         return result;
     }
 
-    private async initializeTaskDefinition(name: string, args: ecs.FargateTaskDefinitionArgs) {
+    /** @internal */
+    public async initializeTaskDefinition(name: string, args: ecs.FargateTaskDefinitionArgs) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -85,7 +86,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
     }
 }
 
-(<any>FargateTaskDefinition.prototype).initializeTaskDefinition.doNotCapture = true;
+utils.Capture(FargateTaskDefinition.prototype).initializeTaskDefinition.doNotCapture = true;
 
 /**
  * Gets the list of all supported fargate configs.  We'll compute the amount of memory/vcpu
@@ -224,7 +225,8 @@ export class FargateService extends ecs.Service {
         return result;
     }
 
-    private async initializeService(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    public async initializeService(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions) {
         const _this = utils.Mutable(this);
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
@@ -262,7 +264,7 @@ export class FargateService extends ecs.Service {
     }
 }
 
-(<any>FargateService.prototype).initializeService.doNotCapture = true;
+utils.Capture(FargateService.prototype).initializeService.doNotCapture = true;
 
 function getSubnets(
         cluster: ecs.Cluster,

@@ -37,7 +37,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     }
 
     /** @internal */
-    protected async initialize(name: string, args: LoadBalancerArgs) {
+    public async initialize(name: string, args: LoadBalancerArgs) {
         const _this = utils.Mutable(this);
 
         _this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
@@ -78,7 +78,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     }
 }
 
-(<any>LoadBalancer.prototype).initialize.doNotCapture = true;
+utils.Capture(LoadBalancer.prototype).initialize.doNotCapture = true;
 
 function getSubnets(
     args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {

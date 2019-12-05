@@ -57,7 +57,8 @@ export class Cluster
         return result;
     }
 
-    private async initialize(name: string, args: ClusterArgs): Promise<void> {
+    /** @internal */
+    public async initialize(name: string, args: ClusterArgs): Promise<void> {
         const _this = utils.Mutable(this);
 
         // First create an ECS cluster.
@@ -160,8 +161,8 @@ export class Cluster
     }
 }
 
-(<any>Cluster.prototype).initialize.doNotCapture = true;
-(<any>Cluster.prototype).createAutoScalingGroup.doNotCapture = true;
+utils.Capture(Cluster.prototype).initialize.doNotCapture = true;
+utils.Capture(Cluster.prototype).createAutoScalingGroup.doNotCapture = true;
 
 function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
     if (args.cluster === undefined) {

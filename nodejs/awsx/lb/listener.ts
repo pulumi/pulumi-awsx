@@ -62,7 +62,7 @@ export abstract class Listener
     }
 
     /** @internal */
-    protected async initialize(name: string,
+    public async initialize(name: string,
                                defaultListenerAction: ListenerDefaultAction | undefined,
                                args: ListenerArgs) {
         const _this = utils.Mutable(this);
@@ -137,7 +137,7 @@ export abstract class Listener
     }
 }
 
-(<any>Listener.prototype).initialize.doNotCapture = true;
+utils.Capture(Listener.prototype).initialize.doNotCapture = true;
 
 /**
  * See https://www.terraform.io/docs/providers/aws/r/lb_listener.html#default_action

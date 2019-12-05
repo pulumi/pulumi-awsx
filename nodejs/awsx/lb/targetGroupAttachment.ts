@@ -41,7 +41,8 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
         return result;
     }
 
-    private async initialize(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget) {
+    /** @internal */
+    public async initialize(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget) {
         const _this = utils.Mutable(this);
 
         const { targetInfo, func, permission } = getTargetInfo(this, targetGroup, name, args);
@@ -62,7 +63,7 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     }
 }
 
-(<any>TargetGroupAttachment.prototype).initialize.doNotCapture = true;
+utils.Capture(TargetGroupAttachment.prototype).initialize.doNotCapture = true;
 
 function getTargetInfo(parent: TargetGroupAttachment, targetGroup: mod.TargetGroup, name: string, args: mod.LoadBalancerTarget) {
     if (aws.ec2.Instance.isInstance(args)) {

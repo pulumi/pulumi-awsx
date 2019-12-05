@@ -59,7 +59,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 
     /** @internal */
-    protected async initialize(name: string, isFargate: boolean, args: TaskDefinitionArgs) {
+    public async initialize(name: string, isFargate: boolean, args: TaskDefinitionArgs) {
         const _this = utils.Mutable(this);
 
         _this.logGroup = args.logGroup === null ? undefined :
@@ -167,7 +167,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     }
 }
 
-(<any>TaskDefinition.prototype).initialize.doNotCapture = true;
+utils.Capture(TaskDefinition.prototype).initialize.doNotCapture = true;
 
 export interface RunTaskRequest {
     /**

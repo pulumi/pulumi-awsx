@@ -55,7 +55,8 @@ export class ListenerRule extends pulumi.ComponentResource {
         return result;
     }
 
-    private async initialize(name: string, listener: x.lb.Listener, args: ListenerRuleArgs) {
+    /** @internal */
+    public async initialize(name: string, listener: x.lb.Listener, args: ListenerRuleArgs) {
         const _this = utils.Mutable(this);
 
         const actions = x.lb.isListenerActions(args.actions)
@@ -79,7 +80,7 @@ export class ListenerRule extends pulumi.ComponentResource {
     }
 }
 
-(<any>ListenerRule.prototype).initialize.doNotCapture = true;
+utils.Capture(ListenerRule.prototype).initialize.doNotCapture = true;
 
 type OverwriteShape = utils.Overwrite<aws.lb.ListenerRuleArgs, {
     listenerArn?: never;

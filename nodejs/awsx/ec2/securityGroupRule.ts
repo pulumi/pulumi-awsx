@@ -124,7 +124,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     }
 
     /** @internal */
-    protected async initialize(name: string, securityGroup: x.ec2.SecurityGroup, args: SecurityGroupRuleArgs) {
+    public async initialize(name: string, securityGroup: x.ec2.SecurityGroup, args: SecurityGroupRuleArgs) {
         const _this = utils.Mutable(this);
 
         _this.securityGroupRule = new aws.ec2.SecurityGroupRule(name, {
@@ -188,7 +188,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     }
 }
 
-(<any>SecurityGroupRule.prototype).initialize.doNotCapture = true;
+utils.Capture(SecurityGroupRule.prototype).initialize.doNotCapture = true;
 
 export class EgressSecurityGroupRule extends SecurityGroupRule {
     constructor(version: number, name: string, securityGroup: x.ec2.SecurityGroup, opts: pulumi.ComponentResourceOptions) {
@@ -207,8 +207,9 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
         return result;
     }
 
-    private async initializeRule(name: string, securityGroup: x.ec2.SecurityGroup,
-                                 args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs) {
+    /** @internal */
+    public async initializeRule(name: string, securityGroup: x.ec2.SecurityGroup,
+                                args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
             args = x.ec2.SecurityGroupRule.egressArgs(args.location, args.ports, args.description);
@@ -223,7 +224,7 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
     }
 }
 
-(<any>EgressSecurityGroupRule.prototype).initializeRule.doNotCapture = true;
+utils.Capture(EgressSecurityGroupRule.prototype).initializeRule.doNotCapture = true;
 
 export class IngressSecurityGroupRule extends SecurityGroupRule {
     /** @internal */
@@ -244,8 +245,9 @@ export class IngressSecurityGroupRule extends SecurityGroupRule {
         return result;
     }
 
-    private async initializeRule(name: string, securityGroup: x.ec2.SecurityGroup,
-                                 args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs) {
+    /** @internal */
+    public async initializeRule(name: string, securityGroup: x.ec2.SecurityGroup,
+                                args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
             args = x.ec2.SecurityGroupRule.ingressArgs(args.location, args.ports, args.description);
@@ -260,7 +262,7 @@ export class IngressSecurityGroupRule extends SecurityGroupRule {
     }
 }
 
-(<any>IngressSecurityGroupRule.prototype).initializeRule.doNotCapture = true;
+utils.Capture(IngressSecurityGroupRule.prototype).initializeRule.doNotCapture = true;
 
 type OverwriteSecurityGroupRuleArgs = utils.Overwrite<aws.ec2.SecurityGroupRuleArgs, {
     securityGroupId?: never;

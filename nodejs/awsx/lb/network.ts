@@ -45,7 +45,8 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
         return result;
     }
 
-    private async initializeLoadBalancer(name: string, args: NetworkLoadBalancerArgs) {
+    /** @internal */
+    public async initializeLoadBalancer(name: string, args: NetworkLoadBalancerArgs) {
         await this.initialize(name, {
             ...args,
             loadBalancerType: "network",
@@ -69,7 +70,7 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     }
 }
 
-(<any>NetworkLoadBalancer.prototype).initializeLoadBalancer.doNotCapture = true;
+utils.Capture(NetworkLoadBalancer.prototype).initializeLoadBalancer.doNotCapture = true;
 
 /**
  * Each target group is used to route requests to one or more registered targets. When you create
@@ -119,7 +120,8 @@ export class NetworkTargetGroup extends mod.TargetGroup {
         return result;
     }
 
-    private async initializeTargetGroup(name: string, loadBalancer: NetworkLoadBalancer, args: NetworkTargetGroupArgs) {
+    /** @internal */
+    public async initializeTargetGroup(name: string, loadBalancer: NetworkLoadBalancer, args: NetworkTargetGroupArgs) {
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
         await this.initialize(name, loadBalancer, {
@@ -142,7 +144,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     }
 }
 
-(<any>NetworkTargetGroup.prototype).initializeTargetGroup.doNotCapture = true;
+utils.Capture(NetworkTargetGroup.prototype).initializeTargetGroup.doNotCapture = true;
 
 /**
  * A listener is a process that checks for connection requests, using the protocol and port that you
@@ -201,7 +203,8 @@ export class NetworkListener
         return result;
     }
 
-    private async initializeListener(name: string,
+    /** @internal */
+    public async initializeListener(name: string,
                                      loadBalancer: NetworkLoadBalancer,
                                      args: NetworkListenerArgs,
                                      opts: pulumi.ComponentResourceOptions) {
@@ -240,7 +243,7 @@ export class NetworkListener
     }
 }
 
-(<any>NetworkListener.prototype).initializeListener.doNotCapture = true;
+utils.Capture(NetworkListener.prototype).initializeListener.doNotCapture = true;
 
 async function getDefaultActions(
         name: string,

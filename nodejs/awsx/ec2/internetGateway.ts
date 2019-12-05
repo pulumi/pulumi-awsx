@@ -43,7 +43,8 @@ export class InternetGateway
         return result;
     }
 
-    private async initialize(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs) {
+    /** @internal */
+    public async initialize(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs) {
         const _this = utils.Mutable(this);
 
         if (isExistingInternetGatewayArgs(args)) {
@@ -69,7 +70,7 @@ export class InternetGateway
     }
 }
 
-(<any>InternetGateway.prototype).initialize.doNotCapture = true;
+utils.Capture(InternetGateway.prototype).initialize.doNotCapture = true;
 
 export interface ExistingInternetGatewayArgs {
     /**

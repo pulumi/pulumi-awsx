@@ -226,7 +226,8 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
         return result;
     }
 
-    private async initialize(name: string, group: AutoScalingGroup, args: StepScalingPolicyArgs) {
+    /** @internal */
+    public async initialize(name: string, group: AutoScalingGroup, args: StepScalingPolicyArgs) {
         const _this = utils.Mutable(this);
 
         if (!args.steps.upper && !args.steps.lower) {
@@ -289,7 +290,7 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
     }
 }
 
-(<any>StepScalingPolicy.prototype).initialize.doNotCapture = true;
+utils.Capture(StepScalingPolicy.prototype).initialize.doNotCapture = true;
 
 interface AwsStepAdjustment {
     metricIntervalLowerBound: string | undefined;

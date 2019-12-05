@@ -48,7 +48,8 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
         return result;
     }
 
-    private async initialize(name: string, vpc: x.ec2.Vpc, args: AutoScalingLaunchConfigurationArgs) {
+    /** @internal */
+    public async initialize(name: string, vpc: x.ec2.Vpc, args: AutoScalingLaunchConfigurationArgs) {
         const _this = utils.Mutable(this);
 
         // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
@@ -123,7 +124,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     }
 }
 
-(<any>AutoScalingLaunchConfiguration.prototype).initialize.doNotCapture = true;
+utils.Capture(AutoScalingLaunchConfiguration.prototype).initialize.doNotCapture = true;
 
 // http://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_agent_versions.html
 async function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions): Promise<string> {

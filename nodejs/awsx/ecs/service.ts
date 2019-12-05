@@ -43,7 +43,7 @@ export abstract class Service extends pulumi.ComponentResource {
     }
 
     /** @internal */
-    protected async initialize(name: string, args: ServiceArgs, isFargate: boolean) {
+    public async initialize(name: string, args: ServiceArgs, isFargate: boolean) {
         const _this = utils.Mutable(this);
 
         _this.cluster = args.cluster || await x.ecs.Cluster.getDefault();
@@ -74,7 +74,7 @@ export abstract class Service extends pulumi.ComponentResource {
     }
 }
 
-(<any>Service.prototype).initialize.doNotCapture = true;
+utils.Capture(Service.prototype).initialize.doNotCapture = true;
 
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
     const result: pulumi.Output<ServiceLoadBalancer>[] = [];

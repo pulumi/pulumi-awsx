@@ -56,7 +56,8 @@ export class Subnet extends pulumi.ComponentResource {
         return result;
     }
 
-    private async initialize(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    public async initialize(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const _this = utils.Mutable(this);
 
         if (isExistingSubnetArgs(args)) {
@@ -121,8 +122,8 @@ export class Subnet extends pulumi.ComponentResource {
     }
 }
 
-(<any>Subnet.prototype).initialize.doNotCapture = true;
-(<any>Subnet.prototype).createRoute.doNotCapture = true;
+utils.Capture(Subnet.prototype).initialize.doNotCapture = true;
+utils.Capture(Subnet.prototype).createRoute.doNotCapture = true;
 
 export interface SubnetRouteProvider {
     route(name: string, opts: pulumi.ComponentResourceOptions): RouteArgs;

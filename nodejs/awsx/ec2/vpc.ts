@@ -66,7 +66,8 @@ export class Vpc extends pulumi.ComponentResource {
         return vpc;
     }
 
-    private async initialize(name: string, args: VpcArgs | ExistingVpcArgs, opts: pulumi.ComponentResourceOptions): Promise<void> {
+    /** @internal */
+    public async initialize(name: string, args: VpcArgs | ExistingVpcArgs, opts: pulumi.ComponentResourceOptions): Promise<void> {
         const _this = utils.Mutable(this);
 
         if (isExistingVpcArgs(args)) {
@@ -109,7 +110,8 @@ export class Vpc extends pulumi.ComponentResource {
         this.registerOutputs();
     }
 
-    private async partition(
+    /** @internal */
+    public async partition(
             name: string, cidrBlock: CidrBlock, availabilityZones: topology.AvailabilityZoneDescription[],
             numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
             subnetArgs: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
@@ -313,10 +315,10 @@ export class Vpc extends pulumi.ComponentResource {
     }
 }
 
-(<any>Vpc.prototype).initialize.doNotCapture = true;
-(<any>Vpc.prototype).addInternetGateway.doNotCapture = true;
-(<any>Vpc.prototype).addNatGateway.doNotCapture = true;
-(<any>Vpc.prototype).partition.doNotCapture = true;
+utils.Capture(Vpc.prototype).initialize.doNotCapture = true;
+utils.Capture(Vpc.prototype).addInternetGateway.doNotCapture = true;
+utils.Capture(Vpc.prototype).addNatGateway.doNotCapture = true;
+utils.Capture(Vpc.prototype).partition.doNotCapture = true;
 
 async function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): Promise<topology.AvailabilityZoneDescription[]> {
     const result = await aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc });

@@ -51,7 +51,7 @@ export abstract class TargetGroup
     }
 
     /** @internal */
-    protected async initialize(name: string, loadBalancer: mod.LoadBalancer, args: TargetGroupArgs) {
+    public async initialize(name: string, loadBalancer: mod.LoadBalancer, args: TargetGroupArgs) {
         const _this = utils.Mutable(this);
 
         _this.vpc = args.vpc;
@@ -121,7 +121,7 @@ export abstract class TargetGroup
     }
 }
 
-(<any>TargetGroup.prototype).initialize.doNotCapture = true;
+utils.Capture(TargetGroup.prototype).initialize.doNotCapture = true;
 
 /**
  * A Health Check block.

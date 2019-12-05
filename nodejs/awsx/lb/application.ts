@@ -53,7 +53,8 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
         return result;
     }
 
-    private async initializeLoadBalancer(name: string, args: ApplicationLoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    public async initializeLoadBalancer(name: string, args: ApplicationLoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
         const argsCopy: x.lb.LoadBalancerArgs = {
             vpc: args.vpc || await x.ec2.Vpc.getDefault(opts),
             ...args,
@@ -95,7 +96,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
     }
 }
 
-(<any>ApplicationLoadBalancer.prototype).initializeLoadBalancer.doNotCapture = true;
+utils.Capture(ApplicationLoadBalancer.prototype).initializeLoadBalancer.doNotCapture = true;
 
 /**
  * Each target group routes requests to one or more registered targets, such as EC2 instances, using
@@ -133,7 +134,8 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
         return result;
     }
 
-    private async initializeTargetGroup(name: string, loadBalancer: ApplicationLoadBalancer, args: ApplicationTargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    public async initializeTargetGroup(name: string, loadBalancer: ApplicationLoadBalancer, args: ApplicationTargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
         const _this = utils.Mutable(this);
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
@@ -171,7 +173,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     }
 }
 
-(<any>ApplicationTargetGroup.prototype).initializeTargetGroup.doNotCapture = true;
+utils.Capture(ApplicationTargetGroup.prototype).initializeTargetGroup.doNotCapture = true;
 
 function computePortInfo(
     port: pulumi.Input<number> | undefined,
@@ -248,10 +250,11 @@ export class ApplicationListener extends mod.Listener {
         return result;
     }
 
-    private async initializeListener(name: string,
-                                     loadBalancer: ApplicationLoadBalancer,
-                                     args: ApplicationListenerArgs,
-                                     opts: pulumi.ComponentResourceOptions) {
+    /** @internal */
+    public async initializeListener(name: string,
+                                    loadBalancer: ApplicationLoadBalancer,
+                                    args: ApplicationListenerArgs,
+                                    opts: pulumi.ComponentResourceOptions) {
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultActions, defaultListener } = await getDefaultActions(
@@ -300,7 +303,7 @@ export class ApplicationListener extends mod.Listener {
     }
 }
 
-(<any>ApplicationListener.prototype).initializeListener.doNotCapture = true;
+utils.Capture(ApplicationListener.prototype).initializeListener.doNotCapture = true;
 
 async function getDefaultActions(
         name: string, loadBalancer: ApplicationLoadBalancer,
