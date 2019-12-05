@@ -62,11 +62,11 @@ export class Vpc extends pulumi.ComponentResource {
     public static async create(name: string, args?: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions): Promise<Vpc>;
     public static async create(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts: pulumi.ComponentResourceOptions = {}): Promise<Vpc> {
         const vpc = new Vpc(1, name, opts);
-        await vpc.initialize(args, opts);
+        await vpc.initialize(name, args, opts);
         return vpc;
     }
 
-    private async initialize(args: VpcArgs | ExistingVpcArgs, opts: pulumi.ComponentResourceOptions): Promise<void> {
+    private async initialize(name: string, args: VpcArgs | ExistingVpcArgs, opts: pulumi.ComponentResourceOptions): Promise<void> {
         if (isExistingVpcArgs(args)) {
             this.vpc = args.vpc;
             this.id = this.vpc.id;
