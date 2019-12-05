@@ -22,8 +22,8 @@ import * as utils from "../utils";
 
 export class TargetGroupAttachment extends pulumi.ComponentResource {
     public readonly targetGroupAttachment!: aws.lb.TargetGroupAttachment;
-    public permission?: aws.lambda.Permission;
-    public func?: aws.lambda.Function;
+    public readonly permission?: aws.lambda.Permission;
+    public readonly func?: aws.lambda.Function;
 
     /** @internal */
     constructor(version: number, name: string, targetGroup: mod.TargetGroup, opts: pulumi.ComponentResourceOptions) {
@@ -55,8 +55,8 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
             targetId: targetInfo.targetId,
         }, { parent: this, dependsOn });
 
-        this.func = func;
-        this.permission = permission;
+        _this.func = func;
+        _this.permission = permission;
 
         this.registerOutputs();
     }

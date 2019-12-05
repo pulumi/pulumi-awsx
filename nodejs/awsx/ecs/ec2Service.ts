@@ -21,8 +21,7 @@ import * as utils from "./../utils";
 
 export class EC2TaskDefinition extends ecs.TaskDefinition {
     /** @internal */
-    constructor(version: number, name: string,
-                opts: pulumi.ComponentResourceOptions) {
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
         super(version, "awsx:x:ecs:EC2TaskDefinition", name, opts);
 
         if (typeof version !== "number") {
@@ -85,8 +84,7 @@ export class EC2Service extends ecs.Service {
     public readonly taskDefinition!: EC2TaskDefinition;
 
     /** @internal */
-    constructor(version: number, name: string,
-                opts: pulumi.ComponentResourceOptions) {
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
         super(version, "awsx:x:ecs:EC2Service", name, opts);
 
         if (typeof version !== "number") {

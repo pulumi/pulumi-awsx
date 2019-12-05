@@ -124,9 +124,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     }
 
     /** @internal */
-    protected async initialize(name: string,
-                               securityGroup: x.ec2.SecurityGroup,
-                               args: SecurityGroupRuleArgs) {
+    protected async initialize(name: string, securityGroup: x.ec2.SecurityGroup, args: SecurityGroupRuleArgs) {
         const _this = utils.Mutable(this);
 
         _this.securityGroupRule = new aws.ec2.SecurityGroupRule(name, {
@@ -193,9 +191,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 (<any>SecurityGroupRule.prototype).initialize.doNotCapture = true;
 
 export class EgressSecurityGroupRule extends SecurityGroupRule {
-    constructor(version: number, name: string, securityGroup: x.ec2.SecurityGroup,
-                opts: pulumi.ComponentResourceOptions) {
-
+    constructor(version: number, name: string, securityGroup: x.ec2.SecurityGroup, opts: pulumi.ComponentResourceOptions) {
         super(version, "awsx:x:ec2:EgressSecurityGroupRule", name, securityGroup, opts);
 
         if (typeof version !== "number") {
@@ -231,9 +227,7 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
 
 export class IngressSecurityGroupRule extends SecurityGroupRule {
     /** @internal */
-    constructor(version: number, name: string, securityGroup: x.ec2.SecurityGroup,
-                opts: pulumi.ComponentResourceOptions) {
-
+    constructor(version: number, name: string, securityGroup: x.ec2.SecurityGroup, opts: pulumi.ComponentResourceOptions) {
         super(version, "awsx:x:ec2:IngressSecurityGroupRule", name, securityGroup, opts);
 
         if (typeof version !== "number") {

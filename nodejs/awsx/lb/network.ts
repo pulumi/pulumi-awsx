@@ -94,8 +94,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     public readonly listeners: x.lb.NetworkListener[];
 
     /** @internal */
-    constructor(version: number, name: string, loadBalancer: NetworkLoadBalancer,
-                opts: pulumi.ComponentResourceOptions) {
+    constructor(version: number, name: string, loadBalancer: NetworkLoadBalancer, opts: pulumi.ComponentResourceOptions) {
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
         super(version, "awsx:lb:NetworkTargetGroup", name, loadBalancer, {
             parent: loadBalancer, ...opts,
@@ -134,8 +133,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
         this.registerOutputs();
     }
 
-    public createListener(name: string, args: NetworkListenerArgs,
-                          opts: pulumi.ComponentResourceOptions = {}): Promise<NetworkListener> {
+    public createListener(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
         return NetworkListener.create(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
@@ -181,10 +179,7 @@ export class NetworkListener
         this.loadBalancer = loadBalancer;
     }
 
-    public static async create(name: string,
-                               args: NetworkListenerArgs,
-                               opts: pulumi.ComponentResourceOptions = {}) {
-
+    public static async create(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const argCount = (args.defaultAction ? 1 : 0) +
                          (args.defaultActions ? 1 : 0) +
                          (args.targetGroup ? 1 : 0);

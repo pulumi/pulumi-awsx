@@ -21,8 +21,7 @@ import * as utils from "./../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
     /** @internal */
-    constructor(version: number, name: string,
-                opts: pulumi.ComponentResourceOptions) {
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
 
         super(version, "awsx:x:ecs:FargateTaskDefinition", name, opts);
 
@@ -211,10 +210,7 @@ export class FargateService extends ecs.Service {
     public readonly taskDefinition!: FargateTaskDefinition;
 
     /** @internal */
-    constructor(version: number,
-                name: string,
-                opts: pulumi.ComponentResourceOptions) {
-
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
         super(version, "awsx:x:ecs:FargateService", name, opts);
 
         if (typeof version !== "number") {
@@ -222,19 +218,13 @@ export class FargateService extends ecs.Service {
         }
     }
 
-    public static async create(name: string,
-                               args: FargateServiceArgs,
-                               opts: pulumi.ComponentResourceOptions = {}) {
-
+    public static async create(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const result = new FargateService(1, name, opts);
         await result.initializeService(name, args, opts);
         return result;
     }
 
-    private async initializeService(name: string,
-                                    args: FargateServiceArgs,
-                                    opts: pulumi.ComponentResourceOptions) {
-
+    private async initializeService(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions) {
         const _this = utils.Mutable(this);
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {

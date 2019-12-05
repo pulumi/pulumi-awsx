@@ -29,14 +29,12 @@ export abstract class Service extends pulumi.ComponentResource {
      * balancer. Only present if a listener was provided in [Container.portMappings] or in
      * [Container.applicationListener] or [Container.networkListener].
      */
-    public listeners: Record<string, x.lb.Listener> = {};
-    public applicationListeners: Record<string, x.lb.ApplicationListener> = {};
-    public networkListeners: Record<string, x.lb.NetworkListener> = {};
+    public readonly listeners: Record<string, x.lb.Listener> = {};
+    public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
+    public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
     /** @internal */
-    constructor(version: number, type: string, name: string,
-                opts: pulumi.ComponentResourceOptions) {
-
+    constructor(version: number, type: string, name: string, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
         if (typeof version !== "number") {
@@ -50,9 +48,9 @@ export abstract class Service extends pulumi.ComponentResource {
 
         _this.cluster = args.cluster || await x.ecs.Cluster.getDefault();
 
-        this.listeners = args.taskDefinition.listeners;
-        this.applicationListeners = args.taskDefinition.applicationListeners;
-        this.networkListeners = args.taskDefinition.networkListeners;
+        _this.listeners = args.taskDefinition.listeners;
+        _this.applicationListeners = args.taskDefinition.applicationListeners;
+        _this.networkListeners = args.taskDefinition.networkListeners;
 
         // Determine which load balancers we're attached to based on the information supplied to the
         // containers for this service.

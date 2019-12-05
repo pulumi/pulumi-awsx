@@ -32,7 +32,7 @@ import { RepositoryImage } from "./repositoryImage";
  */
 export class Repository extends pulumi.ComponentResource {
     public readonly repository!: aws.ecr.Repository;
-    public lifecyclePolicy: aws.ecr.LifecyclePolicy | undefined;
+    public readonly lifecyclePolicy: aws.ecr.LifecyclePolicy | undefined;
 
     /** @internal */
     constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
@@ -55,7 +55,7 @@ export class Repository extends pulumi.ComponentResource {
         const lowerCaseName = name.toLowerCase();
 
         _this.repository = args.repository || new aws.ecr.Repository(lowerCaseName, args, { parent: this });
-        this.lifecyclePolicy = new LifecyclePolicy(lowerCaseName, this.repository, args.lifeCyclePolicyArgs, { parent: this });
+        _this.lifecyclePolicy = new LifecyclePolicy(lowerCaseName, this.repository, args.lifeCyclePolicyArgs, { parent: this });
 
         this.registerOutputs();
     }

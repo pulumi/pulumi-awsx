@@ -24,17 +24,17 @@ import * as utils from "../utils";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly taskDefinition!: aws.ecs.TaskDefinition;
-    public logGroup?: aws.cloudwatch.LogGroup;
+    public readonly logGroup?: aws.cloudwatch.LogGroup;
     public readonly containers!: Record<string, ecs.Container>;
-    public taskRole?: aws.iam.Role;
-    public executionRole?: aws.iam.Role;
+    public readonly taskRole?: aws.iam.Role;
+    public readonly executionRole?: aws.iam.Role;
 
     /**
      * Mapping from container in this task to the ELB listener exposing it through a load balancer.
      * Only present if a listener was provided in [Container.portMappings] or in
      * [Container.applicationListener] or [Container.networkListener].
      */
-    public listeners: Record<string, x.lb.Listener> = {};
+    public readonly listeners: Record<string, x.lb.Listener> = {};
     public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
     public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
@@ -50,8 +50,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     ) => Promise<awssdk.ECS.Types.RunTaskResponse>;
 
     /** @internal */
-    constructor(version: number, type: string, name: string,
-                opts: pulumi.ComponentResourceOptions) {
+    constructor(version: number, type: string, name: string, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
         if (typeof version !== "number") {
@@ -63,24 +62,24 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     protected async initialize(name: string, isFargate: boolean, args: TaskDefinitionArgs) {
         const _this = utils.Mutable(this);
 
-        this.logGroup = args.logGroup === null ? undefined :
-                        args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {
+        _this.logGroup = args.logGroup === null ? undefined :
+                         args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
         }, { parent: this });
 
-        this.taskRole = args.taskRole === null ? undefined :
-                        args.taskRole ? args.taskRole : TaskDefinition.createTaskRole(
+        _this.taskRole = args.taskRole === null ? undefined :
+                         args.taskRole ? args.taskRole : TaskDefinition.createTaskRole(
             `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
-        this.executionRole = args.taskRole === null ? undefined :
-                             args.executionRole ? args.executionRole : TaskDefinition.createExecutionRole(
+        _this.executionRole = args.taskRole === null ? undefined :
+                              args.executionRole ? args.executionRole : TaskDefinition.createExecutionRole(
             `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
         _this.containers = args.containers;
 
         const containerDefinitions = await computeContainerDefinitions(
             this, name, args.vpc, this.containers, this.applicationListeners, this.networkListeners, this.logGroup);
-        this.listeners = {...this.applicationListeners, ...this.networkListeners };
+        _this.listeners = {...this.applicationListeners, ...this.networkListeners };
 
         const containerString = containerDefinitions.apply(d => JSON.stringify(d));
         const defaultFamily = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));

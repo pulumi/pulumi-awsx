@@ -32,11 +32,12 @@ export abstract class Listener
                    x.ecs.ContainerLoadBalancerProvider {
     public readonly loadBalancer: x.lb.LoadBalancer;
     public readonly listener!: aws.lb.Listener;
-    public defaultTargetGroup?: x.lb.TargetGroup;
+    public readonly defaultTargetGroup?: x.lb.TargetGroup;
 
     public readonly endpoint!: pulumi.Output<ListenerEndpoint>;
 
-    private defaultListenerAction?: ListenerDefaultAction;
+    /** @internal */
+    public readonly defaultListenerAction?: ListenerDefaultAction;
 
     // tslint:disable-next-line:variable-name
     private readonly __isListenerInstance = true;
@@ -84,10 +85,10 @@ export abstract class Listener
             port: args.port,
         }));
 
-        this.defaultListenerAction = defaultListenerAction;
+        _this.defaultListenerAction = defaultListenerAction;
 
         if (defaultListenerAction instanceof mod.TargetGroup) {
-            this.defaultTargetGroup = defaultListenerAction;
+            _this.defaultTargetGroup = defaultListenerAction;
         }
 
         if (defaultListenerAction) {

@@ -123,7 +123,6 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     }
 
     public static async create(name: string, args: ApplicationTargetGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-
         const loadBalancer = args.loadBalancer || await ApplicationLoadBalancer.create(name, {
             vpc: args.vpc,
             name: args.name,
@@ -219,9 +218,7 @@ export class ApplicationListener extends mod.Listener {
     private readonly __isApplicationListenerInstance: boolean = true;
 
     /** @internal */
-    constructor(version: number, name: string, loadBalancer: ApplicationLoadBalancer,
-                opts: pulumi.ComponentResourceOptions) {
-
+    constructor(version: number, name: string, loadBalancer: ApplicationLoadBalancer, opts: pulumi.ComponentResourceOptions) {
         super(version, "awsx:lb:ApplicationListener", name, loadBalancer, opts);
         this.loadBalancer = loadBalancer;
     }
