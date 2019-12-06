@@ -1,8 +1,8 @@
-# Pulumi Autoscaling Components
+## Pulumi Autoscaling Components
 
 AutoScalingGroups (ASGs) allow you to allocate a set of EC2 instances on which to run code (like ECS Services) for a `Cluster`.  Groups can define hard constraints in terms of the minimum, maximum and desired number of instances that should be running.  They can also specify [Scaling Schedules](#scaling-schedules) that control changing these desired values (for example, to scale up on certain days with high expected load), as well as specifying [Scaling Policies](#scaling-policies) that will adjust how the group scales in response to events happening in the system.
 
-## Creating an AutoScalingGroup
+### Creating an AutoScalingGroup
 
 AutoScalingGroups are created for a corresponding `awsx.ecs.Cluster`.  This can be done by either manually creating a cluster, or using `Cluster.getDefault()` to get to the default cluster for the default VPC for the account.  The simplest way to create a `AutoScalingGroup` is to just do:
 
@@ -27,7 +27,7 @@ const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
 
 Here we place in the public subnets of the VPC and provide `associatePublicIpAddress: true` so that instances will have IPs that are externally reachable.
 
-## Template parameters
+### Template parameters
 
 The `templateParameters` allows one to control additional aspects of the ASG.  For example, the following are supported:
 
@@ -35,7 +35,7 @@ The `templateParameters` allows one to control additional aspects of the ASG.  F
 2. Controlling how health checks are performed to determine if new instances should be created.
 3. Specifying an appropriate `defaultCooldown` period which controls how often the ASG actually scales things.  This cooldown period helps avoid rapid runaway scaling scenarios from happening.
 
-## Launch configuration
+### Launch configuration
 
 The `launchConfiguration` (or `launchConfigurationArgs`) properties help control the configuration
 of the actual instances that are launched by the ASG.  A launch configuration is an instance
@@ -47,7 +47,7 @@ launch the instance.
 
 If you don't provide either of these properties, a default configuration will be created on your behalf with basic values set as appropriate.
 
-## Scaling schedules
+### Scaling schedules
 
 Scaling based on a schedule allows you to set your own scaling schedule for predictable load changes. For example, every week the traffic to your web application starts to increase on Wednesday, remains high on Thursday, and starts to decrease on Friday. You can plan your scaling actions based on the predictable traffic patterns of your web application. Scaling actions are performed automatically as a function of time and date.
 
@@ -79,7 +79,7 @@ autoScalingGroup.scaleOnSchedule("scaleDownOnMonday", {
 });
 ```
 
-## Scaling policies
+### Scaling policies
 
 A more advanced way to scale; scaling policies lets you define parameters that control the scaling process. For example, you could have a web application that currently runs on two EC2 instances and you want the CPU utilization of the group to stay at around 50 percent when the load on the application changes. This is useful for scaling in response to changing conditions, when you don't necessarily know a specific schedule when those conditions will change.
 
@@ -98,7 +98,7 @@ There are two main ways to scale on demand:
    target based on a set of scaling adjustments, known as step adjustments. The adjustments vary
    based on the size of the alarm breach.
 
-### Target tracking scaling
+#### Target tracking scaling
 
 With target tracking scaling policies, you select a scaling metric and set a target value. Amazon
 EC2 Auto Scaling creates and manages the CloudWatch alarms that trigger the scaling policy and
@@ -107,7 +107,7 @@ or removes capacity as required to keep the metric at, or close to, the specifie
 addition to keeping the metric close to the target value, a target tracking scaling policy also
 adjusts to the changes in the metric due to a changing load pattern.
 
-#### Predefined target tracking scaling
+##### Predefined target tracking scaling
 
 AutoScalingGroups provide several predefined scaling metrics.
 
@@ -161,7 +161,7 @@ const policy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest
 });
 ```
 
-#### Custom metric target tracking scaling
+##### Custom metric target tracking scaling
 
 On top of the predefined targets defined above, you can also scale to any arbitrary
 [awsx.cloudwatch.Metric].  Note: not all metrics work for target tracking. This can be important
@@ -187,7 +187,7 @@ autoScalingGroup.scaleToTrackMetric("keepAround50Percent", {
 });
 ```
 
-### Step scaling
+#### Step scaling
 
 Step scaling policies increase or decrease the current capacity of your Auto Scaling group based on
 a set of scaling adjustments, known as step adjustments. The adjustments vary based on the size of
