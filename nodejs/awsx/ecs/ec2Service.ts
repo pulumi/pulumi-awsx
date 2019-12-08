@@ -33,7 +33,6 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
             ...args,
             containers,
             requiresCompatibilities: ["EC2"],
-            networkMode: utils.ifUndefined(args.networkMode, "awsvpc"),
         };
 
         delete (<any>argsCopy).container;
