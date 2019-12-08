@@ -2,7 +2,9 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-_(none)_
+* Fix networkMode for Windows ecs ec2 task definition. Removed the default assignment of 
+  networkMode = 'awsvpc' when networkMode is undefined. It is required to leave networkMode
+  undefined for Windows container task definitions.
 
 ## 0.18.14 (2019-11-21)
 * Allow the user to pass `family` to the `ecs.TaskDefinition`
