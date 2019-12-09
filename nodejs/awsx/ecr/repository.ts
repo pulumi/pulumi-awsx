@@ -34,29 +34,13 @@ export class Repository extends pulumi.ComponentResource {
     public readonly repository!: aws.ecr.Repository;
     public readonly lifecyclePolicy: aws.ecr.LifecyclePolicy | undefined;
 
-    /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: RepositoryArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:ecr:Repository", name, {}, opts);
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new Repository] directly. Use [Repository.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, args: RepositoryArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        const result = new Repository(1, name, opts);
-        await result.initialize(name, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initialize(name: string, args: RepositoryArgs) {
-        const _this = utils.Mutable(this);
 
         const lowerCaseName = name.toLowerCase();
 
-        _this.repository = args.repository || new aws.ecr.Repository(lowerCaseName, args, { parent: this });
-        _this.lifecyclePolicy = new LifecyclePolicy(lowerCaseName, this.repository, args.lifeCyclePolicyArgs, { parent: this });
+        this.repository = args.repository || new aws.ecr.Repository(lowerCaseName, args, { parent: this });
+        this.lifecyclePolicy = new LifecyclePolicy(lowerCaseName, this.repository, args.lifeCyclePolicyArgs, { parent: this });
 
         this.registerOutputs();
     }
@@ -73,8 +57,6 @@ export class Repository extends pulumi.ComponentResource {
     }
 }
 
-utils.Capture(Repository.prototype).initialize.doNotCapture = true;
-
 /**
  * Creates a new [Repository] (optionally configured using [args]), builds the docker container
  * specified by [pathOrBuild] and then pushes the built image to the repository.  The result
@@ -82,10 +64,10 @@ utils.Capture(Repository.prototype).initialize.doNotCapture = true;
  * repo.  This result type can be passed in as `image: ecr.buildAndPushImage(...)` for an
  * `ecs.Container`
  */
-export async function buildAndPushImage(
+export function buildAndPushImage(
     name: string, pathOrBuild: pulumi.Input<string | docker.DockerBuild>, args?: RepositoryArgs, opts?: pulumi.ComponentResourceOptions) {
 
-    const repo = await Repository.create(name, args, opts);
+    const repo = new Repository(name, args, opts);
     const image = repo.buildAndPushImage(pathOrBuild);
     return new RepositoryImage(repo, image);
 }
