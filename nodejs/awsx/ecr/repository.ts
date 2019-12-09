@@ -16,8 +16,6 @@ import * as aws from "@pulumi/aws";
 import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as utils from "../utils";
-
 import { computeImageFromAsset } from "../ecs";
 import { LifecyclePolicy, LifecyclePolicyArgs } from "./lifecyclePolicy";
 import { RepositoryImage } from "./repositoryImage";
@@ -31,11 +29,11 @@ import { RepositoryImage } from "./repositoryImage";
  * destination registry.
  */
 export class Repository extends pulumi.ComponentResource {
-    public readonly repository!: aws.ecr.Repository;
+    public readonly repository: aws.ecr.Repository;
     public readonly lifecyclePolicy: aws.ecr.LifecyclePolicy | undefined;
 
     constructor(name: string, args: RepositoryArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecr:Repository", name, {}, opts);
+        super("awsx:ecr:Repository", name, undefined, opts);
 
         const lowerCaseName = name.toLowerCase();
 
