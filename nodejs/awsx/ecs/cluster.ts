@@ -74,7 +74,7 @@ export class Cluster
      * this cluster as well as using this cluster to initialize both its securityGroups and
      * launchConfiguration userData.
      */
-    public async createAutoScalingGroup(
+    public createAutoScalingGroup(
             name: string,
             args: x.autoscaling.AutoScalingGroupArgs = {},
             opts: pulumi.ComponentResourceOptions = {}) {
@@ -100,7 +100,7 @@ export class Cluster
      */
     public static getDefault(opts?: pulumi.ComponentResourceOptions): Cluster {
         if (!defaultCluster) {
-            defaultCluster = new Cluster("default-cluster", {}, opts);
+            defaultCluster = new Cluster("default-cluster", { }, opts);
         }
 
         return defaultCluster;
