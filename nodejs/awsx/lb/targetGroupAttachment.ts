@@ -25,45 +25,28 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     public readonly permission?: aws.lambda.Permission;
     public readonly func?: aws.lambda.Function;
 
-    /** @internal */
-    constructor(version: number, name: string, targetGroup: mod.TargetGroup, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, targetGroup: mod.TargetGroup,
+                args: mod.LoadBalancerTarget, opts: pulumi.ComponentResourceOptions = {}) {
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:elasticloadbalancingv2:TargetGroupAttachment" }] });
         super("awsx:lb:TargetGroupAttachment", name, {}, { parent: targetGroup, ...opts });
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new TargetGroupAttachment] directly. Use [TargetGroupAttachment.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget, opts: pulumi.ComponentResourceOptions = {}) {
-        const result = new TargetGroupAttachment(1, name, targetGroup, opts);
-        await result.initialize(name, targetGroup, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initialize(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget) {
-        const _this = utils.Mutable(this);
 
         const { targetInfo, func, permission } = getTargetInfo(this, targetGroup, name, args);
 
         const dependsOn = permission ? [permission] : [];
 
-        _this.targetGroupAttachment = new aws.lb.TargetGroupAttachment(name, {
+        this.targetGroupAttachment = new aws.lb.TargetGroupAttachment(name, {
             availabilityZone: <pulumi.Input<string>>targetInfo.availabilityZone,
             port: <pulumi.Input<number>>targetInfo.port,
             targetGroupArn: targetGroup.targetGroup.arn,
             targetId: targetInfo.targetId,
         }, { parent: this, dependsOn });
 
-        _this.func = func;
-        _this.permission = permission;
+        this.func = func;
+        this.permission = permission;
 
         this.registerOutputs();
     }
 }
-
-utils.Capture(TargetGroupAttachment.prototype).initialize.doNotCapture = true;
 
 function getTargetInfo(parent: TargetGroupAttachment, targetGroup: mod.TargetGroup, name: string, args: mod.LoadBalancerTarget) {
     if (aws.ec2.Instance.isInstance(args)) {
