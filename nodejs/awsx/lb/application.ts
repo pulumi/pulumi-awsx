@@ -99,28 +99,25 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     // tslint:disable-next-line:variable-name
     public readonly __isApplicationTargetGroup: boolean;
 
-    constructor(name: string,
-                args: ApplicationTargetGroupArgs = {},
-                opts: pulumi.ComponentResourceOptions = {}) {
-
+    constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {
             vpc: args.vpc,
             name: args.name,
         }, opts);
-
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationTargetGroup" }] });
         super("awsx:lb:ApplicationTargetGroup", name, loadBalancer, {
             ...args,
             vpc: loadBalancer.vpc,
             port,
             protocol,
-        }, pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationTargetGroup" }] }));
+        }, opts);
 
-        this.loadBalancer = loadBalancer;
-        this.listeners = [];
         this.__isApplicationTargetGroup = true;
 
+        this.listeners = [];
+        this.loadBalancer = loadBalancer;
         loadBalancer.targetGroups.push(this);
 
         this.registerOutputs();
@@ -189,8 +186,8 @@ export class ApplicationListener extends mod.Listener {
     // tslint:disable-next-line:variable-name
     private readonly __isApplicationListenerInstance: boolean;
 
-    /** @internal */
-    constructor(name: string, args: ApplicationListenerArgs,
+    constructor(name: string,
+                args: ApplicationListenerArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
@@ -217,6 +214,7 @@ export class ApplicationListener extends mod.Listener {
         // to defer to it for ContainerPortMappings information.  this allows this listener to be
         // passed in as the portMappings information needed for a Service.
 
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationListener" }] });
         super("awsx:lb:ApplicationListener", name, loadBalancer, defaultListener, {
             ...args,
             defaultActions,
@@ -225,8 +223,8 @@ export class ApplicationListener extends mod.Listener {
             protocol,
         }, opts);
 
-        this.loadBalancer = loadBalancer;
         this.__isApplicationListenerInstance = true;
+        this.loadBalancer = loadBalancer;
 
         loadBalancer.listeners.push(this);
 
