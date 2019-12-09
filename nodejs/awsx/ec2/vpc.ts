@@ -49,9 +49,11 @@ export class Vpc extends pulumi.ComponentResource {
      */
     public readonly natGateways: x.ec2.NatGateway[] = [];
 
-    constructor(name: string, args: VpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args: ExistingVpcArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, args: VpcArgs | ExistingVpcArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+    /** @internal */
+    constructor(name: string, args: InternalVpcArgs, opts?: pulumi.ComponentResourceOptions);
+    /** @internal */
+    constructor(name: string, args: InternalVpcArgs | ExistingVpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
@@ -59,8 +61,12 @@ export class Vpc extends pulumi.ComponentResource {
             this.id = this.vpc.id;
         }
         else {
+            if (!args.availabilityZones) {
+                throw new pulumi.ResourceError("Do not call [new Vpc]. Use [Vpc.create] instead.", this);
+            }
+
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
-            const availabilityZones = getAvailabilityZones(this, args.numberOfAvailabilityZones);
+            const availabilityZones = args.availabilityZones;
 
             const numberOfNatGateways = args.numberOfNatGateways === undefined ? availabilityZones.length : args.numberOfNatGateways;
             const assignGeneratedIpv6CidrBlock = utils.ifUndefined(args.assignGeneratedIpv6CidrBlock, false);
@@ -92,6 +98,14 @@ export class Vpc extends pulumi.ComponentResource {
         }
 
         this.registerOutputs();
+    }
+
+    public static async create(name: string, args: VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        const availabilityZones = await getAvailabilityZones(opts.parent, args.numberOfAvailabilityZones);
+        return new Vpc(name, {
+            ...args,
+            availabilityZones,
+        }, opts);
     }
 
     /** @internal */
@@ -308,10 +322,10 @@ utils.Capture(Vpc.prototype).addInternetGateway.doNotCapture = true;
 utils.Capture(Vpc.prototype).addNatGateway.doNotCapture = true;
 utils.Capture(Vpc.prototype).partition.doNotCapture = true;
 
-async function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): Promise<topology.AvailabilityZoneDescription[]> {
-    const result = await aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc });
+async function getAvailabilityZones(parent: pulumi.Resource | undefined, requestedCount: "all" | number | undefined): Promise<topology.AvailabilityZoneDescription[]> {
+    const result = await aws.getAvailabilityZones(/*args:*/ undefined, { parent });
     if (result.names.length !== result.zoneIds.length) {
-        throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", vpc);
+        throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", parent);
     }
 
     const descriptions: topology.AvailabilityZoneDescription[] = [];
@@ -559,6 +573,10 @@ export interface VpcArgs {
      * A mapping of tags to assign to the resource.
      */
     tags?: pulumi.Input<aws.Tags>;
+}
+
+interface InternalVpcArgs extends VpcArgs {
+    availabilityZones: topology.AvailabilityZoneDescription[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
