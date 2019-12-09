@@ -13,7 +13,7 @@
     "dependencies": {
         "@pulumi/pulumi": "dev",
         "@pulumi/aws": "dev",
-        "@pulumi/docker": "dev",
+        "@pulumi/docker": "=1.1.0-alpha.1575929538",
         "@types/aws-lambda": "^8.10.23",
         "mime": "^2.0.0"
     },
@@ -21,7 +21,6 @@
         "@types/aws-sdk": "^2.7.0",
         "@types/mime": "^2.0.0",
         "@types/node": "^10.0.0",
-        "@types/deasync": "^0.1.0",
         "tslint": "^5.11.0",
         "typedoc": "^0.13.0",
         "typescript": "=3.6.4"

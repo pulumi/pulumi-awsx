@@ -15,8 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as deasync from "deasync";
-
 import * as crypto from "crypto";
 
 type Diff<T extends string | number | symbol, U extends string | number | symbol> =
