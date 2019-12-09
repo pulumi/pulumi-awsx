@@ -31,17 +31,17 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * is used here as the existing AWS apis for creating [AutoScalingGroup]s are not rich enough to
      * express everything that can be configured through [CloudFormation] itself.
      */
-    public readonly stack!: aws.cloudformation.Stack;
+    public readonly stack: aws.cloudformation.Stack;
 
     /**
      * The launch configuration for this auto scaling group.
      */
-    public readonly launchConfiguration!: AutoScalingLaunchConfiguration;
+    public readonly launchConfiguration: AutoScalingLaunchConfiguration;
 
     /**
      * Underlying [autoscaling.Group] that is created by cloudformation.
      */
-    public readonly group!: aws.autoscaling.Group;
+    public readonly group: aws.autoscaling.Group;
 
     /**
      * Target groups this [AutoScalingGroup] is attached to.  See
