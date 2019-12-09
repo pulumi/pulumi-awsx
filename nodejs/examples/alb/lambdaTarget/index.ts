@@ -28,7 +28,6 @@ const sg = new awsx.ec2.SecurityGroup("web-sg", {
 // Creates an ALB associated with the default VPC for this region and listen on port 80.
 const alb = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("web-traffic",
     { external: true, securityGroups: [ sg ] }, providerOpts);
-
 const listener = alb.createTargetGroup("web-target-group", { targetType: "lambda", port: 80 })
                     .createListener("web-listener", { port: 80 });
 
