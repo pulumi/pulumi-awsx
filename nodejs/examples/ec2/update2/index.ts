@@ -24,9 +24,9 @@ export = async () => {
     console.log("EC2: Update2");
 
     const vpc = await awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
-    const cluster1 = await awsx.ecs.Cluster.create("testing-1", { vpc }, providerOpts);
+    const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
 
-    const autoScalingGroup = await cluster1.createAutoScalingGroup("testing-1", {
+    const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
         subnetIds: vpc.publicSubnetIds,
         templateParameters: {
             minSize: 5,
@@ -48,8 +48,8 @@ export = async () => {
     });
 
     // A simple NGINX service, scaled out over two containers.
-    const nginxListener = await awsx.lb.NetworkListener.create("nginx", { vpc, port: 80 }, providerOpts);
-    const nginx = await awsx.ecs.EC2Service.create("nginx", {
+    const nginxListener = new awsx.lb.NetworkListener("nginx", { vpc, port: 80 }, providerOpts);
+    const nginx = new awsx.ecs.EC2Service("nginx", {
         cluster: cluster1,
         taskDefinitionArgs: {
             containers: {
@@ -66,19 +66,19 @@ export = async () => {
     const nginxEndpoint = nginxListener.endpoint;
 
     // A simple NGINX service, scaled out over two containers, starting with a task definition.
-    const simpleNginxListener = await awsx.lb.NetworkListener.create("simple-nginx", { vpc, port: 80 }, providerOpts);
-    const simpleNginxTask = await awsx.ecs.EC2TaskDefinition.create("simple-nginx", {
+    const simpleNginxListener = new awsx.lb.NetworkListener("simple-nginx", { vpc, port: 80 }, providerOpts);
+    const simpleNginxTask = new awsx.ecs.EC2TaskDefinition("simple-nginx", {
         container: {
             image: "nginx",
             memory: 64,
             portMappings: [simpleNginxListener],
         },
     }, providerOpts);
-    const simpleNginx = await simpleNginxTask.createService("examples-simple-nginx", { cluster: cluster1, desiredCount: 1});
+    const simpleNginx = simpleNginxTask.createService("examples-simple-nginx", { cluster: cluster1, desiredCount: 1});
 
     const simpleNginxEndpoint = simpleNginxListener.endpoint;
 
-    const cachedNginx = await awsx.ecs.EC2Service.create("cached-nginx", {
+    const cachedNginx = new awsx.ecs.EC2Service("cached-nginx", {
         cluster: cluster1,
         taskDefinitionArgs: {
             containers: {
@@ -88,7 +88,7 @@ export = async () => {
                         cacheFrom: true,
                     }),
                     memory: 64,
-                    portMappings: [await awsx.lb.NetworkListener.create(
+                    portMappings: [new awsx.lb.NetworkListener(
                         "cached-nginx", { vpc, port: 80 }, providerOpts)],
                 },
             },
@@ -96,7 +96,7 @@ export = async () => {
         desiredCount: 1,
     }, providerOpts);
 
-    const multistageCachedNginx = await awsx.ecs.EC2Service.create("multistage-cached-nginx", {
+    const multistageCachedNginx = new awsx.ecs.EC2Service("multistage-cached-nginx", {
         cluster: cluster1,
         taskDefinitionArgs: {
             containers: {
@@ -107,7 +107,7 @@ export = async () => {
                         cacheFrom: {stages: ["build"]},
                     }),
                     memory: 64,
-                    portMappings: [await awsx.lb.NetworkListener.create(
+                    portMappings: [new awsx.lb.NetworkListener(
                         "multistage-cached-nginx", { vpc, port: 80 }, providerOpts)],
                 },
             },
@@ -115,10 +115,10 @@ export = async () => {
         desiredCount: 1,
     }, providerOpts);
 
-    const customServerTG = await awsx.lb.NetworkTargetGroup.create("custom", { vpc, port: 8080 }, providerOpts);
-    const customWebServerListener = await customServerTG.createListener("custom", { port: 80 });
+    const customWebServerListener = new awsx.lb.NetworkTargetGroup("custom", { vpc, port: 8080 }, providerOpts)
+        .createListener("custom", { port: 80 });
 
-    const customWebServer = await awsx.ecs.EC2Service.create("custom", {
+    const customWebServer = new awsx.ecs.EC2Service("custom", {
         cluster: cluster1,
         taskDefinitionArgs: {
             containers: {
@@ -148,9 +148,9 @@ export = async () => {
         get!: (key: string) => Promise<string>;
         set!: (key: string, value: string) => Promise<void>;
 
-        async initialize(name: string, memory: number = 128) {
-            const redisListener = await awsx.lb.NetworkListener.create(name, { vpc, port: 6379 }, providerOpts);
-            const redis = await awsx.ecs.EC2Service.create(name, {
+        constructor(name: string, memory: number = 128) {
+            const redisListener = new awsx.lb.NetworkListener(name, { vpc, port: 6379 }, providerOpts);
+            const redis = new awsx.ecs.EC2Service(name, {
                 cluster: cluster1,
                 taskDefinitionArgs: {
                     containers: {
@@ -205,10 +205,9 @@ export = async () => {
         }
     }
 
-    const cache = new Ec2Cache();
-    await cache.initialize("mycache");
+    const cache = new Ec2Cache("mycache");
 
-    const helloTask = await awsx.ecs.EC2TaskDefinition.create("hello-world", {
+    const helloTask = new awsx.ecs.EC2TaskDefinition("hello-world", {
         container: {
             image: "hello-world",
             memory: 20,
@@ -216,8 +215,8 @@ export = async () => {
     }, providerOpts);
 
     // build an anonymous image:
-    const builtServiceListener = await awsx.lb.NetworkListener.create("nginx2", { vpc, port: 80 }, providerOpts);
-    const builtService = await awsx.ecs.EC2Service.create("nginx2", {
+    const builtServiceListener = new awsx.lb.NetworkListener("nginx2", { vpc, port: 80 }, providerOpts);
+    const builtService = new awsx.ecs.EC2Service("nginx2", {
         cluster: cluster1,
         taskDefinitionArgs: {
             containers: {

@@ -23,6 +23,6 @@ export = async () => {
     console.log("EC2: Original");
 
     const vpc = await awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
-    const cluster1 = await awsx.ecs.Cluster.create("testing-1", { vpc }, providerOpts);
+    const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
     return { clusterId: cluster1.id };
 };

@@ -23,9 +23,9 @@ export = async () => {
     console.log("EC2: Update1");
 
     const vpc = await awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
-    const cluster1 = await awsx.ecs.Cluster.create("testing-1", { vpc }, providerOpts);
+    const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
 
-    const autoScalingGroup = await cluster1.createAutoScalingGroup("testing-1", {
+    const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
         subnetIds: vpc.publicSubnetIds,
         templateParameters: {
             minSize: 5,
