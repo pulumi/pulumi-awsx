@@ -77,4 +77,4 @@ const api = new awsx.apigateway.API("containers", {
     }],
 }, providerOpts);
 
-export const frontendURL = api.url;
+export let frontendURL = api.url;
