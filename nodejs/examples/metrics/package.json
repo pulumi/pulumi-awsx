@@ -8,8 +8,8 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@pulumi/pulumi": "feature-dedeasync",
-        "@pulumi/aws": "feature-dedeasync",
+        "@pulumi/pulumi": "dev",
+        "@pulumi/aws": "dev",
         "node-fetch": "^2.2.0"
     },
     "devDependencies": {
