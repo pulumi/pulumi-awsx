@@ -99,7 +99,7 @@ export interface LoadBalancerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc>;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
 
     /**
      * @deprecated Not used.  Supply the name you want for a LoadBalancer through the [name]

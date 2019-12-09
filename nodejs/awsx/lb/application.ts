@@ -498,7 +498,7 @@ export interface ApplicationListenerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
 
     /**
      * An explicit name to use for dependent resources.  Specifically, if a LoadBalancer or

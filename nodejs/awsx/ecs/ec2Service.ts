@@ -54,7 +54,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return ecs.EC2Service.create(name, {
+        return new ecs.EC2Service(name, {
             ...args,
             taskDefinition: this,
         }, { parent: this, ...opts });
@@ -128,7 +128,7 @@ export interface EC2TaskDefinitionArgs {
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
      * provided as it will be inferred from the cluster the service is associated with.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc>;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.

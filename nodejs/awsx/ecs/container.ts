@@ -24,7 +24,7 @@ import * as utils from "../utils";
 export function computeContainerDefinition(
     parent: pulumi.Resource,
     name: string,
-    vpc: x.ec2.Vpc | undefined,
+    vpc: pulumi.Output<x.ec2.Vpc | undefined>,
     containerName: string,
     container: Container,
     applicationListeners: Record<string, x.lb.ApplicationListener>,
@@ -75,7 +75,7 @@ export function computeContainerDefinition(
 function getPortMappings(
     parent: pulumi.Resource,
     name: string,
-    vpc: x.ec2.Vpc | undefined,
+    vpc: pulumi.Output<x.ec2.Vpc | undefined>,
     container: Container,
     containerName: string,
     applicationListeners: Record<string, x.lb.ApplicationListener>,
