@@ -20,7 +20,10 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
-    constructor(name: string, args: ecs.FargateTaskDefinitionArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string,
+                args: ecs.FargateTaskDefinitionArgs,
+                opts: pulumi.ComponentResourceOptions = {}) {
+
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -187,10 +190,13 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
 }
 
 export class FargateService extends ecs.Service {
-    public readonly taskDefinition!: FargateTaskDefinition;
+    public readonly taskDefinition: FargateTaskDefinition;
 
     /** @internal */
-    constructor(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string,
+                args: FargateServiceArgs,
+                opts: pulumi.ComponentResourceOptions = {}) {
+
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
