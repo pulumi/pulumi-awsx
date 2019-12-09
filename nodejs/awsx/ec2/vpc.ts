@@ -272,8 +272,8 @@ export class Vpc extends pulumi.ComponentResource {
      * this Vpc from your pulumi application will not cause the existing cloud resource (or
      * sub-resources) to be destroyed.
      */
-    public static async fromExistingIds(name: string, idArgs: ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions) {
-        const vpc = await Vpc.create(name, {
+    public static fromExistingIds(name: string, idArgs: ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions) {
+        const vpc = new Vpc(name, {
             vpc: aws.ec2.Vpc.get(name, idArgs.vpcId, {}, opts),
         }, opts);
 
