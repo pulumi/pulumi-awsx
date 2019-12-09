@@ -20,7 +20,6 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class EC2TaskDefinition extends ecs.TaskDefinition {
-    /** @internal */
     constructor(name: string, args: EC2TaskDefinitionArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
@@ -61,12 +60,9 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
     }
 }
 
-(<any>EC2TaskDefinition.prototype).initializeTaskDefinition.doNotCapture = true;
-
 export class EC2Service extends ecs.Service {
     public readonly taskDefinition: EC2TaskDefinition;
 
-    /** @internal */
     constructor(name: string, args: EC2ServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
