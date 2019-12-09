@@ -163,7 +163,7 @@ function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
     cluster?: aws.ecs.Cluster | pulumi.Input<string>;
     securityGroups?: x.ec2.SecurityGroupOrId[];
     tags?: pulumi.Input<aws.Tags>;
@@ -177,7 +177,7 @@ export interface ClusterArgs {
      * The network in which to create this cluster.  If not provided, Vpc.getDefault() will be
      * used.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
 
     /**
      * An existing aws.ecs.Cluster (or the name of an existing aws.ecs.Cluster) to use for this

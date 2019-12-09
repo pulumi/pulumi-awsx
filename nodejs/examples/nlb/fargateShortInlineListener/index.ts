@@ -16,66 +16,64 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export = async () => {
-    const config = new pulumi.Config("aws");
-    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-    const vpc = await awsx.ec2.Vpc.getDefault(providerOpts);
-    const cluster = await awsx.ecs.Cluster.create("testing", { vpc }, providerOpts);
+const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
+const cluster = new awsx.ecs.Cluster("testing", { vpc }, providerOpts);
 
-    // A simple NGINX service, scaled out over two containers. we'll also switch this module from
-    // 'elasticloadbalancingv2' in step2 to make sure that our module move worked properly.
-    const service = await awsx.ecs.FargateService.create("nginx", {
-        cluster,
-        taskDefinitionArgs: {
-            containers: {
-                nginx: {
-                    image: "nginx",
-                    memory: 128,
-                    networkListener: { port: 80 },
-                },
+// A simple NGINX service, scaled out over two containers. we'll also switch this module from
+// 'elasticloadbalancingv2' in step2 to make sure that our module move worked properly.
+const service = new awsx.ecs.FargateService("nginx", {
+    cluster,
+    taskDefinitionArgs: {
+        containers: {
+            nginx: {
+                image: "nginx",
+                memory: 128,
+                networkListener: { port: 80 },
             },
         },
-        desiredCount: 2,
-    }, providerOpts);
+    },
+    desiredCount: 2,
+}, providerOpts);
 
-    function errorJSON(err: any) {
-        const result: any = Object.create(null);
-        Object.getOwnPropertyNames(err).forEach(key => result[key] = err[key]);
-        result.florp = "blopr";
-        return result;
-    }
+function errorJSON(err: any) {
+    const result: any = Object.create(null);
+    Object.getOwnPropertyNames(err).forEach(key => result[key] = err[key]);
+    result.florp = "blopr";
+    return result;
+}
 
-    function handleError(err: Error) {
-        console.error(errorJSON(err));
-        return {
-            statusCode: 500,
-            body: JSON.stringify(errorJSON(err)),
-        };
-    }
+function handleError(err: Error) {
+    console.error(errorJSON(err));
+    return {
+        statusCode: 500,
+        body: JSON.stringify(errorJSON(err)),
+    };
+}
 
-    // expose some APIs meant for testing purposes.
-    const api = new awsx.apigateway.API("containers", {
-        routes: [{
-            path: "/test",
-            method: "GET",
-            eventHandler: async (req) => {
-                try {
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify({
-                            nginx: service.listeners.nginx.endpoint.get(),
-                        }),
-                    };
-                } catch (err) {
-                    return handleError(err);
-                }
-            },
-        }, {
-            path: "/nginx",
-            target: service.networkListeners.nginx,
-        }],
-    }, providerOpts);
+// expose some APIs meant for testing purposes.
+const api = new awsx.apigateway.API("containers", {
+    routes: [{
+        path: "/test",
+        method: "GET",
+        eventHandler: async (req) => {
+            try {
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({
+                        nginx: service.listeners.nginx.endpoint.get(),
+                    }),
+                };
+            } catch (err) {
+                return handleError(err);
+            }
+        },
+    }, {
+        path: "/nginx",
+        target: service.networkListeners.nginx,
+    }],
+}, providerOpts);
 
-    return { frontendURL: api.url };
-};
+export const frontendURL = api.url;
