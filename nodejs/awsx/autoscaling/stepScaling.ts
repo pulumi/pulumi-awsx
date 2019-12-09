@@ -211,24 +211,8 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
     public readonly lowerAlarm: aws.cloudwatch.MetricAlarm | undefined;
 
     /** @internal */
-    constructor(name: string, group: AutoScalingGroup, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, group: AutoScalingGroup, args: StepScalingPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:autoscaling:StepScalingPolicy", name, {}, { parent: group, ...opts });
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new StepScalingPolicy] directly. Use [StepScalingPolicy.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, group: AutoScalingGroup,
-                               args: StepScalingPolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const result = new StepScalingPolicy(1, name, group, opts);
-        await result.initialize(name, group, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initialize(name: string, group: AutoScalingGroup, args: StepScalingPolicyArgs) {
-        const _this = utils.Mutable(this);
 
         if (!args.steps.upper && !args.steps.lower) {
             throw new Error("At least one of [args.steps.upper] and [args.steps.lower] must be provided.");
@@ -257,40 +241,38 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
         const evaluationPeriods = utils.ifUndefined(args.evaluationPeriods, 1);
 
         if (args.steps.upper) {
-            _this.upperPolicy = new aws.autoscaling.Policy(`${name}-upper`, {
+            this.upperPolicy = new aws.autoscaling.Policy(`${name}-upper`, {
                 ...commonArgs,
                 stepAdjustments: convertedSteps.upper.stepAdjustments,
             }, { parent: this });
 
-            _this.upperAlarm = metric.createAlarm(`${name}-upper`, {
+            this.upperAlarm = metric.createAlarm(`${name}-upper`, {
                 evaluationPeriods,
                 // step ranges and alarms are inclusive on the lower end.
                 comparisonOperator: "GreaterThanOrEqualToThreshold",
                 threshold: convertedSteps.upper.threshold,
-                alarmActions: [_this.upperPolicy.arn],
+                alarmActions: [this.upperPolicy.arn],
             }, { parent: this });
         }
 
         if (args.steps.lower) {
-            _this.lowerPolicy = new aws.autoscaling.Policy(`${name}-lower`, {
+            this.lowerPolicy = new aws.autoscaling.Policy(`${name}-lower`, {
                 ...commonArgs,
                 stepAdjustments: convertedSteps.lower.stepAdjustments,
             }, { parent: this });
 
-            _this.lowerAlarm = metric.createAlarm(`${name}-lower`, {
+            this.lowerAlarm = metric.createAlarm(`${name}-lower`, {
                 evaluationPeriods,
                 // step ranges and alarms are inclusive on the upper end.
                 comparisonOperator: "LessThanOrEqualToThreshold",
                 threshold: convertedSteps.lower.threshold,
-                alarmActions: [_this.lowerPolicy.arn],
+                alarmActions: [this.lowerPolicy.arn],
             }, { parent: this });
         }
 
         this.registerOutputs();
     }
 }
-
-utils.Capture(StepScalingPolicy.prototype).initialize.doNotCapture = true;
 
 interface AwsStepAdjustment {
     metricIntervalLowerBound: string | undefined;
