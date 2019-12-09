@@ -29,10 +29,10 @@ import * as utils from "./../utils";
  * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-update-rules.html
  */
 export class ListenerRule extends pulumi.ComponentResource {
-    public readonly listenerRule!: aws.lb.ListenerRule;
+    public readonly listenerRule: aws.lb.ListenerRule;
 
-    /** @internal */
-    constructor(version: number, name: string, listener: x.lb.Listener, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, listener: x.lb.Listener,
+                args: ListenerRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
         // We forgot to add the `ListenerRule` part of the name.  Add it in and create an alias from
         // the previous incorrect name.
         super("awsx:lb:ListenerRule", name, {}, {
@@ -42,28 +42,11 @@ export class ListenerRule extends pulumi.ComponentResource {
                 { type: "awsx:x:elasticloadbalancingv2:ListenerRule" }] }),
         });
 
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new ListenerRule] directly. Use [ListenerRule.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, listener: x.lb.Listener,
-                               args: ListenerRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
-
-        const result = new ListenerRule(1, name, listener, opts);
-        await result.initialize(name, listener, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initialize(name: string, listener: x.lb.Listener, args: ListenerRuleArgs) {
-        const _this = utils.Mutable(this);
-
         const actions = x.lb.isListenerActions(args.actions)
             ? args.actions.actions()
             : args.actions;
 
-        _this.listenerRule = new aws.lb.ListenerRule(name, {
+        this.listenerRule = new aws.lb.ListenerRule(name, {
             ...args,
             actions,
             listenerArn: listener.listener.arn,
@@ -79,8 +62,6 @@ export class ListenerRule extends pulumi.ComponentResource {
         this.registerOutputs();
     }
 }
-
-utils.Capture(ListenerRule.prototype).initialize.doNotCapture = true;
 
 type OverwriteShape = utils.Overwrite<aws.lb.ListenerRuleArgs, {
     listenerArn?: never;
