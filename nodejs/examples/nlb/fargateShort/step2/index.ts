@@ -16,66 +16,64 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export = async () => {
-    const config = new pulumi.Config("aws");
-    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-    const vpc = await awsx.ec2.Vpc.getDefault(providerOpts);
-    const cluster = await awsx.ecs.Cluster.create("testing", { vpc }, providerOpts);
+const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
+const cluster = new awsx.ecs.Cluster("testing", { vpc }, providerOpts);
 
-    // Changed from step1 from using the elasticloadbalancingv2 module to the lb module.
-    const nginxListener = await awsx.lb.NetworkListener.create("nginx", { port: 80 }, providerOpts);
-    const nginx = await awsx.ecs.FargateService.create("nginx", {
-        cluster,
-        taskDefinitionArgs: {
-            containers: {
-                nginx: {
-                    image: "nginx",
-                    memory: 128,
-                    portMappings: [nginxListener],
-                },
+// Changed from step1 from using the elasticloadbalancingv2 module to the lb module.
+const nginxListener = new awsx.lb.NetworkListener("nginx", { port: 80 }, providerOpts);
+const nginx = new awsx.ecs.FargateService("nginx", {
+    cluster,
+    taskDefinitionArgs: {
+        containers: {
+            nginx: {
+                image: "nginx",
+                memory: 128,
+                portMappings: [nginxListener],
             },
         },
-        desiredCount: 2,
-    }, providerOpts);
+    },
+    desiredCount: 2,
+}, providerOpts);
 
-    function errorJSON(err: any) {
-        const result: any = Object.create(null);
-        Object.getOwnPropertyNames(err).forEach(key => result[key] = err[key]);
-        result.florp = "blopr";
-        return result;
-    }
+function errorJSON(err: any) {
+    const result: any = Object.create(null);
+    Object.getOwnPropertyNames(err).forEach(key => result[key] = err[key]);
+    result.florp = "blopr";
+    return result;
+}
 
-    function handleError(err: Error) {
-        console.error(errorJSON(err));
-        return {
-            statusCode: 500,
-            body: JSON.stringify(errorJSON(err)),
-        };
-    }
+function handleError(err: Error) {
+    console.error(errorJSON(err));
+    return {
+        statusCode: 500,
+        body: JSON.stringify(errorJSON(err)),
+    };
+}
 
-    // expose some APIs meant for testing purposes.
-    const api = new awsx.apigateway.API("containers", {
-        routes: [{
-            path: "/test",
-            method: "GET",
-            eventHandler: async (req) => {
-                try {
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify({
-                            nginx: nginxListener.endpoint.get(),
-                        }),
-                    };
-                } catch (err) {
-                    return handleError(err);
-                }
-            },
-        }, {
-            path: "/nginx",
-            target: nginxListener,
-        }],
-    }, providerOpts);
+// expose some APIs meant for testing purposes.
+const api = new awsx.apigateway.API("containers", {
+    routes: [{
+        path: "/test",
+        method: "GET",
+        eventHandler: async (req) => {
+            try {
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({
+                        nginx: nginxListener.endpoint.get(),
+                    }),
+                };
+            } catch (err) {
+                return handleError(err);
+            }
+        },
+    }, {
+        path: "/nginx",
+        target: nginxListener,
+    }],
+}, providerOpts);
 
-    return { frontendURL: api.url };
-};
+export const frontendURL = api.url;
