@@ -60,7 +60,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return ecs.FargateService.create(name, {
+        return new ecs.FargateService(name, {
             ...args,
             taskDefinition: this,
         }, { parent: this, ...opts });
@@ -231,13 +231,13 @@ function getSubnets(
         subnets: pulumi.Input<pulumi.Input<string>[]> | undefined,
         assignPublicIp: pulumi.Output<boolean>) {
 
-    return pulumi.all([subnets, assignPublicIp])
-                 .apply(([subnets, assignPublicIp]) => {
+    return pulumi.all([cluster.vpc, subnets, assignPublicIp])
+                 .apply(([vpc, subnets, assignPublicIp]) => {
         if (subnets) {
             return subnets;
         }
 
-        return assignPublicIp ? cluster.vpc.publicSubnetIds : cluster.vpc.privateSubnetIds;
+        return assignPublicIp ? vpc.publicSubnetIds : vpc.privateSubnetIds;
     });
 }
 
