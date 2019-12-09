@@ -109,7 +109,6 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     public readonly securityGroupRule: aws.ec2.SecurityGroupRule;
     public readonly securityGroup: x.ec2.SecurityGroup;
 
-    /** @internal */
     constructor(type: string, name: string,
                 securityGroup: x.ec2.SecurityGroup,
                 args: SecurityGroupRuleArgs, opts: pulumi.ComponentResourceOptions) {
