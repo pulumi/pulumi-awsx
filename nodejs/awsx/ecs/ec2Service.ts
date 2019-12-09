@@ -20,7 +20,9 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class EC2TaskDefinition extends ecs.TaskDefinition {
-    constructor(name: string, args: EC2TaskDefinitionArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string,
+                args: EC2TaskDefinitionArgs,
+                opts: pulumi.ComponentResourceOptions = {}) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -63,7 +65,10 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 export class EC2Service extends ecs.Service {
     public readonly taskDefinition: EC2TaskDefinition;
 
-    constructor(name: string, args: EC2ServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string,
+                args: EC2ServiceArgs,
+                opts: pulumi.ComponentResourceOptions = {}) {
+
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
@@ -106,8 +111,6 @@ export class EC2Service extends ecs.Service {
         this.registerOutputs();
     }
 }
-
-(<any>EC2Service.prototype).initializeService.doNotCapture = true;
 
 type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
     requiresCompatibilities?: never;
