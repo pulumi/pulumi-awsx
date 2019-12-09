@@ -78,7 +78,7 @@ export class EC2Service extends ecs.Service {
 
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
-        const subnets = args.subnets || cluster.vpc.publicSubnetIds;
+        const subnets = utils.ifUndefined(args.subnets, cluster.vpc.apply(v => v.publicSubnetIds));
 
         super("awsx:x:ecs:EC2Service", name, {
             ...args,
