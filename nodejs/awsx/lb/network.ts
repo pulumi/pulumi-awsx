@@ -25,19 +25,20 @@ import * as utils from "./../utils";
 export type NetworkProtocol = "TCP" | "TLS" | "HTTP" | "HTTPS";
 
 export class NetworkLoadBalancer extends mod.LoadBalancer {
-    public readonly listeners: NetworkListener[] = [];
-    public readonly targetGroups: NetworkTargetGroup[] = [];
+    public readonly listeners: NetworkListener[];
+    public readonly targetGroups: NetworkTargetGroup[];
 
-    constructor(name: string,
-                args: NetworkLoadBalancerArgs = {},
-                opts: pulumi.ComponentResourceOptions = {}) {
-
-        super("awsx:lb:NetworkLoadBalancer", name, {
+    constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        const argsCopy: x.lb.LoadBalancerArgs = {
             ...args,
             loadBalancerType: "network",
-        }, pulumi.mergeOptions(opts, {
-            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer" }],
-        }));
+        };
+
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer" }] });
+        super("awsx:lb:NetworkLoadBalancer", name, argsCopy, opts);
+
+        this.listeners = [];
+        this.targetGroups = [];
 
         this.registerOutputs();
     }
@@ -84,7 +85,6 @@ export class NetworkTargetGroup extends mod.TargetGroup {
             vpc: args.vpc,
             name: args.name,
         }, opts);
-
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
@@ -92,19 +92,18 @@ export class NetworkTargetGroup extends mod.TargetGroup {
             ...args,
             protocol,
             vpc: loadBalancer.vpc,
-        }, {
-            parent: loadBalancer, ...opts,
-        });
+        }, { parent: loadBalancer, ...opts, });
 
-        this.loadBalancer = loadBalancer;
         this.listeners = [];
+        this.loadBalancer = loadBalancer;
 
         loadBalancer.targetGroups.push(this);
 
         this.registerOutputs();
     }
 
-    public createListener(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    public createListener(name: string, args: NetworkListenerArgs,
+                          opts: pulumi.ComponentResourceOptions = {}) {
         return new NetworkListener(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
@@ -126,12 +125,14 @@ export class NetworkListener
         implements x.apigateway.IntegrationRouteTargetProvider {
 
     public readonly loadBalancer: NetworkLoadBalancer;
-    public readonly defaultTargetGroup: x.lb.NetworkTargetGroup | undefined;
+    public readonly defaultTargetGroup?: x.lb.NetworkTargetGroup;
 
     // tslint:disable-next-line:variable-name
     private readonly __isNetworkListenerInstance: boolean;
 
-    constructor(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string,
+                args: NetworkListenerArgs,
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
                          (args.defaultActions ? 1 : 0) +
@@ -152,19 +153,18 @@ export class NetworkListener
         const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
-        super("awsx:lb:NetworkListener", name, loadBalancer, defaultListener, {
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }] });
+        super("awsx:lb:NetworkListener", name, defaultListener, {
             ...args,
             protocol,
             loadBalancer,
             defaultActions,
-        }, pulumi.mergeOptions(opts, {
-            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }],
-        }));
+        }, opts);
 
         this.__isNetworkListenerInstance = true;
         this.loadBalancer = loadBalancer;
-
         loadBalancer.listeners.push(this);
+
         this.registerOutputs();
     }
 
