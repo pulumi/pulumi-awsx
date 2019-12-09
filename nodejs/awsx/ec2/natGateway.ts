@@ -28,31 +28,16 @@ export class NatGateway
     public readonly natGateway!: aws.ec2.NatGateway;
 
     /** @internal */
-    constructor(version: number, name: string, vpc: x.ec2.Vpc, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:NatGateway", name, {}, { parent: vpc, ...opts });
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new NatGateway] directly. Use [NatGateway.create] instead.", this);
-        }
 
         this.vpc = vpc;
         this.natGatewayName = name;
-    }
-
-    public static async create(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions): Promise<NatGateway>;
-    public static async create(name: string, vpc: x.ec2.Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions): Promise<NatGateway>;
-    public static async create(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}): Promise<NatGateway> {
-        const result = new NatGateway(1, name, vpc, opts);
-        await result.initialize(name, vpc, args, opts);
-        return result;
-    }
-
-    /** @internal */
-    public async initialize(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const _this = utils.Mutable(this);
 
         if (isExistingNatGatewayArgs(args)) {
-            _this.natGateway = args.natGateway;
+            this.natGateway = args.natGateway;
         }
         else {
             // from https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
@@ -63,7 +48,7 @@ export class NatGateway
             // traffic to the NAT gateway. This enables instances in your private subnets to
             // communicate with the internet.
 
-            _this.elasticIP = new aws.ec2.Eip(name, {
+            this.elasticIP = new aws.ec2.Eip(name, {
                 vpc: true,
                 tags: { Name: name },
             }, { parent: this });
@@ -72,10 +57,10 @@ export class NatGateway
                 ? args.subnet.id
                 : args.subnet;
 
-            _this.natGateway = new aws.ec2.NatGateway(name, {
+            this.natGateway = new aws.ec2.NatGateway(name, {
                 ...args,
                 subnetId,
-                allocationId: _this.elasticIP.id,
+                allocationId: this.elasticIP.id,
             }, { parent: this });
         }
 
@@ -92,8 +77,6 @@ export class NatGateway
         };
     }
 }
-
-utils.Capture(NatGateway.prototype).initialize.doNotCapture = true;
 
 export interface NatGatewayArgs {
     /**
