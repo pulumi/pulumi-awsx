@@ -20,9 +20,9 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export abstract class Service extends pulumi.ComponentResource {
-    public readonly service!: aws.ecs.Service;
-    public readonly cluster!: ecs.Cluster;
-    public readonly taskDefinition!: ecs.TaskDefinition;
+    public readonly service: aws.ecs.Service;
+    public readonly cluster: ecs.Cluster;
+    public readonly taskDefinition: ecs.TaskDefinition;
 
     /**
      * Mapping from container in this service to the ELB listener exposing it through a load
@@ -34,29 +34,20 @@ export abstract class Service extends pulumi.ComponentResource {
     public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
     /** @internal */
-    constructor(version: number, type: string, name: string, opts: pulumi.ComponentResourceOptions) {
+    constructor(type: string, name: string, args: ServiceArgs, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not construct a Service directly. Use [EC2Service.create] or [FargateService.create] instead.", this);
-        }
-    }
+        this.cluster = args.cluster || x.ecs.Cluster.getDefault();
 
-    /** @internal */
-    public async initialize(name: string, args: ServiceArgs, isFargate: boolean) {
-        const _this = utils.Mutable(this);
-
-        _this.cluster = args.cluster || await x.ecs.Cluster.getDefault();
-
-        _this.listeners = args.taskDefinition.listeners;
-        _this.applicationListeners = args.taskDefinition.applicationListeners;
-        _this.networkListeners = args.taskDefinition.networkListeners;
+        this.listeners = args.taskDefinition.listeners;
+        this.applicationListeners = args.taskDefinition.applicationListeners;
+        this.networkListeners = args.taskDefinition.networkListeners;
 
         // Determine which load balancers we're attached to based on the information supplied to the
         // containers for this service.
         const loadBalancers = getLoadBalancers(this, name, args);
 
-        _this.service = new aws.ecs.Service(name, {
+        this.service = new aws.ecs.Service(name, {
             ...args,
             loadBalancers,
             cluster: this.cluster.cluster.arn,
@@ -70,11 +61,9 @@ export abstract class Service extends pulumi.ComponentResource {
             dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
         });
 
-        _this.taskDefinition = args.taskDefinition;
+        this.taskDefinition = args.taskDefinition;
     }
 }
-
-utils.Capture(Service.prototype).initialize.doNotCapture = true;
 
 function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
     const result: pulumi.Output<ServiceLoadBalancer>[] = [];
