@@ -16,37 +16,33 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export = async () => {
-    const config = new pulumi.Config("aws");
-    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-    const cluster = await awsx.ecs.Cluster.create("testing", {}, providerOpts);
+const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
 
-    // build an anonymous image:
-    const listener = await awsx.elasticloadbalancingv2.NetworkListener.create("service", { vpc: cluster.vpc, port: 80 }, providerOpts);
-    const repository = await awsx.ecr.Repository.create("repository", {}, providerOpts);
-    const service = await awsx.ecs.FargateService.create("service", {
-        cluster,
-        taskDefinitionArgs: {
-            containers: {
-                service: {
-                    image: repository.buildAndPushImage("./app"),
-                    memory: 128,
-                    portMappings: [listener],
-                },
+// build an anonymous image:
+const listener = new awsx.elasticloadbalancingv2.NetworkListener("service", { vpc: cluster.vpc, port: 80 }, providerOpts);
+const repository = new awsx.ecr.Repository("repository", {}, providerOpts);
+const service = new awsx.ecs.FargateService("service", {
+    cluster,
+    taskDefinitionArgs: {
+        containers: {
+            service: {
+                image: repository.buildAndPushImage("./app"),
+                memory: 128,
+                portMappings: [listener],
             },
         },
-        desiredCount: 2,
-        waitForSteadyState: false,
-    }, providerOpts);
+    },
+    desiredCount: 2,
+    waitForSteadyState: false,
+}, providerOpts);
 
-    const cluster2 = await awsx.ecs.Cluster.create("testing2", undefined, { provider: new aws.Provider("prov2", {
-        region: "us-west-1"
-    })});
+const cluster2 = new awsx.ecs.Cluster("testing2", undefined, { provider: new aws.Provider("prov2", {
+    region: "us-west-1"
+})});
 
-    return {
-        vpcId: cluster.vpc.id,
-        serviceId: service.service.id,
-        endpoint: listener.endpoint,
-    };
-};
+export const vpcId = cluster.vpc.apply(v => v.id);
+export const serviceId = service.service.id;
+export const endpoint = listener.endpoint;
