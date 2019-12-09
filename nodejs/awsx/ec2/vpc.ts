@@ -143,7 +143,7 @@ export class Vpc extends pulumi.ComponentResource {
                 throw new pulumi.ResourceError(`Could not find public subnet named ${desc.publicSubnet}`, this);
             }
 
-            await this.addNatGateway(desc.name, { subnet: publicSubnet });
+            this.addNatGateway(desc.name, { subnet: publicSubnet });
         }
 
         for (const desc of natRoutes) {
