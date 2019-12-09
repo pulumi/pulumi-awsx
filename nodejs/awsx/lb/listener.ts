@@ -31,19 +31,21 @@ export abstract class Listener
         implements x.ecs.ContainerPortMappingProvider,
                    x.ecs.ContainerLoadBalancerProvider {
     public readonly loadBalancer: x.lb.LoadBalancer;
-    public readonly listener!: aws.lb.Listener;
-    public readonly defaultTargetGroup?: x.lb.TargetGroup;
+    public readonly listener: aws.lb.Listener;
+    public readonly defaultTargetGroup: x.lb.TargetGroup | undefined;
 
-    public readonly endpoint!: pulumi.Output<ListenerEndpoint>;
+    public readonly endpoint: pulumi.Output<ListenerEndpoint>;
 
     /** @internal */
-    public readonly defaultListenerAction?: ListenerDefaultAction;
+    public readonly defaultListenerAction: ListenerDefaultAction | undefined;
 
     // tslint:disable-next-line:variable-name
     private readonly __isListenerInstance = true;
 
-    constructor(version: number, type: string, name: string,
+    constructor(type: string, name: string,
                 loadBalancer: mod.LoadBalancer,
+                defaultListenerAction: ListenerDefaultAction | undefined,
+                args: ListenerArgs,
                 opts: pulumi.ComponentResourceOptions) {
 
         // By default, we'd like to be parented by the LB .  However, we didn't use to do this.
@@ -54,18 +56,7 @@ export abstract class Listener
             ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
 
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not construct a TargetGroup directly. Use [ApplicationTargetGroup.create] or [NetworkTargetGroup.create] instead.", this);
-        }
-
         this.loadBalancer = loadBalancer;
-    }
-
-    /** @internal */
-    public async initialize(name: string,
-                            defaultListenerAction: ListenerDefaultAction | undefined,
-                            args: ListenerArgs) {
-        const _this = utils.Mutable(this);
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
         // security policy from:
@@ -73,22 +64,22 @@ export abstract class Listener
         const defaultSslPolicy = pulumi.output(args.certificateArn)
                                        .apply(a => a ? "ELBSecurityPolicy-2016-08" : undefined!);
 
-        _this.listener = new aws.lb.Listener(name, {
+        this.listener = new aws.lb.Listener(name, {
             ...args,
             loadBalancerArn: args.loadBalancer.loadBalancer.arn,
             sslPolicy: utils.ifUndefined(args.sslPolicy, defaultSslPolicy),
         }, { parent: this });
 
-        const loadBalancer = args.loadBalancer.loadBalancer;
-        _this.endpoint = this.listener.urn.apply(_ => pulumi.output({
-            hostname: loadBalancer.dnsName,
+        // const loadBalancer = args.loadBalancer.loadBalancer;
+        this.endpoint = this.listener.urn.apply(_ => pulumi.output({
+            hostname: loadBalancer.loadBalancer.dnsName,
             port: args.port,
         }));
 
-        _this.defaultListenerAction = defaultListenerAction;
+        this.defaultListenerAction = defaultListenerAction;
 
         if (defaultListenerAction instanceof mod.TargetGroup) {
-            _this.defaultTargetGroup = defaultListenerAction;
+            this.defaultTargetGroup = defaultListenerAction;
         }
 
         if (defaultListenerAction) {
@@ -136,8 +127,6 @@ export abstract class Listener
         return this.defaultTargetGroup.attachTarget(name, args, opts);
     }
 }
-
-utils.Capture(Listener.prototype).initialize.doNotCapture = true;
 
 /**
  * See https://www.terraform.io/docs/providers/aws/r/lb_listener.html#default_action

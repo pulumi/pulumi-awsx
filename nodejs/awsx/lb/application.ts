@@ -34,41 +34,28 @@ export type ApplicationProtocol = "HTTP" | "HTTPS";
  * more details.
  */
 export class ApplicationLoadBalancer extends mod.LoadBalancer {
-    public readonly listeners: ApplicationListener[] = [];
-    public readonly targetGroups: ApplicationTargetGroup[] = [];
+    public readonly listeners: ApplicationListener[];
+    public readonly targetGroups: ApplicationTargetGroup[];
 
-    /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
-        super(version, "aws:lb:ApplicationLoadBalancer", name,
-            pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer"}] }));
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new ApplicationLoadBalancer] directly. Use [ApplicationLoadBalancer.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        const result = new ApplicationLoadBalancer(1, name, opts);
-        await result.initializeLoadBalancer(name, args, opts);
-        return result;
-    }
-
-    /** @internal */
-    public async initializeLoadBalancer(name: string, args: ApplicationLoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         const argsCopy: x.lb.LoadBalancerArgs = {
-            vpc: args.vpc || await x.ec2.Vpc.getDefault(opts),
+            vpc: utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault(opts)),
             ...args,
             loadBalancerType: "application",
         };
 
         if (!argsCopy.securityGroups) {
-            argsCopy.securityGroups = [await x.ec2.SecurityGroup.create(name, {
+            argsCopy.securityGroups = [new x.ec2.SecurityGroup(name, {
                 description: `Default security group for ALB: ${name}`,
                 vpc: argsCopy.vpc,
             }, opts)];
         }
 
-        await this.initialize(name, argsCopy);
+        super("aws:lb:ApplicationLoadBalancer", name, argsCopy,
+            pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer"}] }));
+
+        this.listeners = [];
+        this.targetGroups = [];
 
         this.registerOutputs();
     }

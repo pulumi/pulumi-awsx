@@ -20,28 +20,19 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
-    public readonly loadBalancer!: aws.lb.LoadBalancer;
-    public readonly vpc!: x.ec2.Vpc;
+    public readonly loadBalancer: aws.lb.LoadBalancer;
+    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
     public readonly securityGroups!: x.ec2.SecurityGroup[];
 
     public readonly listeners: mod.Listener[] = [];
     public readonly targetGroups: mod.TargetGroup[] = [];
 
     /** @internal */
-    constructor(version: number, type: string, name: string, opts: pulumi.ComponentResourceOptions) {
+    constructor(type: string, name: string, args: LoadBalancerArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super(type, name, {}, opts);
 
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not construct a LoadBalancer directly. Use [ApplicationLoadBalancer.create] or [NetworkLoadBalancer.create] instead.", this);
-        }
-    }
-
-    /** @internal */
-    public async initialize(name: string, args: LoadBalancerArgs) {
-        const _this = utils.Mutable(this);
-
-        _this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
-        _this.securityGroups = await x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
+        this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
+        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 
         const external = utils.ifUndefined(args.external, true);
 
@@ -49,7 +40,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         // people didn't have direct control over creating the LB.  In awsx though creating the LB
         // is easy to do, so we just let the user pass in the name they want.  We simply add an
         // alias from the old name to the new one to keep things from being recreated.
-        _this.loadBalancer = new aws.lb.LoadBalancer(name, {
+        this.loadBalancer = new aws.lb.LoadBalancer(name, {
             ...args,
             subnets: getSubnets(args, this.vpc, external),
             internal: external.apply(ex => !ex),
@@ -78,17 +69,15 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     }
 }
 
-utils.Capture(LoadBalancer.prototype).initialize.doNotCapture = true;
-
 function getSubnets(
-    args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
+    args: LoadBalancerArgs, vpc: pulumi.Output<x.ec2.Vpc>, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
 
     // console.log("Getting subnets for LB");
     if (!args.subnets) {
         // console.log("no subnets provided");
         // No subnets requested.  Determine the subnets automatically from the vpc.
-        return external.apply(e => {
-            if (e) {
+        return pulumi.all([vpc, external]).apply(([vpc, external]) => {
+            if (external) {
                 // console.log("Using public subnets:");
                 return vpc.publicSubnetIds;
             } else {
@@ -110,7 +99,7 @@ export interface LoadBalancerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc>;
 
     /**
      * @deprecated Not used.  Supply the name you want for a LoadBalancer through the [name]
