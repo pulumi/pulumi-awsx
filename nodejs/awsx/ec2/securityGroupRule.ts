@@ -110,24 +110,16 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     public readonly securityGroup: x.ec2.SecurityGroup;
 
     /** @internal */
-    constructor(version: number, type: string, name: string,
+    constructor(type: string, name: string,
                 securityGroup: x.ec2.SecurityGroup,
+                args: SecurityGroupRuleArgs,
                 opts: pulumi.ComponentResourceOptions) {
 
         super(type, name, {}, { parent: securityGroup, ...opts });
 
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not construct a SecurityGroupRule directly. Use [EgressSecurityGroupRule.create] or [IngressSecurityGroupRule.create] instead.", this);
-        }
-
         this.securityGroup = securityGroup;
-    }
 
-    /** @internal */
-    public async initialize(name: string, securityGroup: x.ec2.SecurityGroup, args: SecurityGroupRuleArgs) {
-        const _this = utils.Mutable(this);
-
-        _this.securityGroupRule = new aws.ec2.SecurityGroupRule(name, {
+        this.securityGroupRule = new aws.ec2.SecurityGroupRule(name, {
             ...args,
             securityGroupId: securityGroup.id,
         }, { parent: this });
@@ -168,7 +160,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
         description?: pulumi.Input<string>,
         opts?: pulumi.ComponentResourceOptions) {
 
-        return EgressSecurityGroupRule.create(
+        return new EgressSecurityGroupRule(
             name, securityGroup,
             SecurityGroupRule.egressArgs(destination, ports, description),
             opts);
@@ -181,88 +173,49 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
         description?: pulumi.Input<string>,
         opts?: pulumi.ComponentResourceOptions) {
 
-        return IngressSecurityGroupRule.create(
+        return new IngressSecurityGroupRule(
             name, securityGroup,
             SecurityGroupRule.ingressArgs(source, ports, description),
             opts);
     }
 }
 
-utils.Capture(SecurityGroupRule.prototype).initialize.doNotCapture = true;
-
 export class EgressSecurityGroupRule extends SecurityGroupRule {
-    constructor(version: number, name: string, securityGroup: x.ec2.SecurityGroup, opts: pulumi.ComponentResourceOptions) {
-        super(version, "awsx:x:ec2:EgressSecurityGroupRule", name, securityGroup, opts);
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new EgressSecurityGroupRule] directly. Use [EgressSecurityGroupRule.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, securityGroup: x.ec2.SecurityGroup,
-                               args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs,
-                               opts: pulumi.ComponentResourceOptions = {}) {
-        const result = new EgressSecurityGroupRule(1, name, securityGroup, opts);
-        await result.initializeRule(name, securityGroup, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initializeRule(name: string, securityGroup: x.ec2.SecurityGroup,
-                                args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs) {
+    constructor(name: string, securityGroup: x.ec2.SecurityGroup,
+                args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs,
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
             args = x.ec2.SecurityGroupRule.egressArgs(args.location, args.ports, args.description);
         }
 
-        await this.initialize(name, securityGroup, {
+        super("awsx:x:ec2:EgressSecurityGroupRule", name, securityGroup, {
             ...args,
             type: "egress",
-        });
+        }, opts);
 
         securityGroup.egressRules.push(this);
     }
 }
 
-utils.Capture(EgressSecurityGroupRule.prototype).initializeRule.doNotCapture = true;
-
 export class IngressSecurityGroupRule extends SecurityGroupRule {
     /** @internal */
-    constructor(version: number, name: string, securityGroup: x.ec2.SecurityGroup, opts: pulumi.ComponentResourceOptions) {
-        super(version, "awsx:x:ec2:IngressSecurityGroupRule", name, securityGroup, opts);
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new IngressSecurityGroupRule] directly. Use [IngressSecurityGroupRule.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, securityGroup: x.ec2.SecurityGroup,
-                               args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs,
-                               opts: pulumi.ComponentResourceOptions = {}) {
-
-        const result = new IngressSecurityGroupRule(1, name, securityGroup, opts);
-        await result.initializeRule(name, securityGroup, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initializeRule(name: string, securityGroup: x.ec2.SecurityGroup,
-                                args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs) {
+    constructor(name: string, securityGroup: x.ec2.SecurityGroup,
+                args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs,
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
             args = x.ec2.SecurityGroupRule.ingressArgs(args.location, args.ports, args.description);
         }
 
-        await this.initialize(name, securityGroup, {
+        super("awsx:x:ec2:IngressSecurityGroupRule", name, securityGroup, {
             ...args,
             type: "ingress",
-        });
+        }, opts);
 
         securityGroup.ingressRules.push(this);
     }
 }
-
-utils.Capture(IngressSecurityGroupRule.prototype).initializeRule.doNotCapture = true;
 
 type OverwriteSecurityGroupRuleArgs = utils.Overwrite<aws.ec2.SecurityGroupRuleArgs, {
     securityGroupId?: never;
