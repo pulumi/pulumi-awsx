@@ -16,27 +16,25 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export = async () => {
-    const config = new pulumi.Config("aws");
-    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-    console.log("EC2: Update1");
+console.log("EC2: Update1");
 
-    const vpc = await awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
-    const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
+const vpc = awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
+const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
 
-    const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
-        subnetIds: vpc.publicSubnetIds,
-        templateParameters: {
-            minSize: 5,
-        },
-        launchConfigurationArgs: {
-            instanceType: "m5.large",
-            associatePublicIpAddress: true,
-        },
-    });
+const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
+    subnetIds: vpc.apply(v => v.publicSubnetIds),
+    templateParameters: {
+        minSize: 5,
+    },
+    launchConfigurationArgs: {
+        instanceType: "m5.large",
+        associatePublicIpAddress: true,
+    },
+});
 
-    const autoScalingGroupId = autoScalingGroup.stack.id;
+const autoScalingGroupId = autoScalingGroup.stack.id;
 
-    return { clusterId: cluster1.id };
-};
+export const clusterId = cluster1.id;
