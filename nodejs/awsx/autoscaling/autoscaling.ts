@@ -301,7 +301,7 @@ export interface AutoScalingGroupArgs {
      * The subnets to use for the autoscaling group.  If not provided, the `private` subnets of
      * the `vpc` will be used.
      */
-    subnetIds?: pulumi.Input<string>[];
+    subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
 
     /**
      * The config to use when creating the auto scaling group.
