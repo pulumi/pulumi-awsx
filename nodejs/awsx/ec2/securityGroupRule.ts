@@ -106,19 +106,17 @@ export class AllTraffic implements SecurityGroupRulePorts {
 }
 
 export abstract class SecurityGroupRule extends pulumi.ComponentResource {
-    public readonly securityGroupRule!: aws.ec2.SecurityGroupRule;
+    public readonly securityGroupRule: aws.ec2.SecurityGroupRule;
     public readonly securityGroup: x.ec2.SecurityGroup;
 
     /** @internal */
     constructor(type: string, name: string,
                 securityGroup: x.ec2.SecurityGroup,
-                args: SecurityGroupRuleArgs,
-                opts: pulumi.ComponentResourceOptions) {
+                args: SecurityGroupRuleArgs, opts: pulumi.ComponentResourceOptions) {
 
         super(type, name, {}, { parent: securityGroup, ...opts });
 
         this.securityGroup = securityGroup;
-
         this.securityGroupRule = new aws.ec2.SecurityGroupRule(name, {
             ...args,
             securityGroupId: securityGroup.id,
@@ -199,7 +197,6 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
 }
 
 export class IngressSecurityGroupRule extends SecurityGroupRule {
-    /** @internal */
     constructor(name: string, securityGroup: x.ec2.SecurityGroup,
                 args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
