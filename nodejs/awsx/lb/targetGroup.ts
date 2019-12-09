@@ -27,15 +27,14 @@ export abstract class TargetGroup
     x.ecs.ContainerLoadBalancerProvider,
     x.lb.ListenerDefaultAction {
 
-    public readonly loadBalancer!: mod.LoadBalancer;
-    public readonly targetGroup!: aws.lb.TargetGroup;
-    public readonly vpc!: x.ec2.Vpc;
+    public readonly loadBalancer: mod.LoadBalancer;
+    public readonly targetGroup: aws.lb.TargetGroup;
+    public readonly vpc: x.ec2.Vpc;
 
     public readonly listeners: x.lb.Listener[] = [];
 
-    /** @internal */
-    constructor(version: number, type: string, name: string, loadBalancer: mod.LoadBalancer,
-                opts: pulumi.ComponentResourceOptions) {
+    constructor(type: string, name: string, loadBalancer: mod.LoadBalancer,
+                args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
 
         // We want our parent to the be the ALB by default if nothing else is specified.
         // Create an alias from our old name where we didn't parent by default to keep
@@ -45,22 +44,13 @@ export abstract class TargetGroup
             ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
 
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not construct a TargetGroup directly. Use [ApplicationTargetGroup.create] or [NetworkTargetGroup.create] instead.", this);
-        }
-    }
-
-    /** @internal */
-    public async initialize(name: string, loadBalancer: mod.LoadBalancer, args: TargetGroupArgs) {
-        const _this = utils.Mutable(this);
-
-        _this.vpc = args.vpc;
+        this.vpc = args.vpc;
 
         // We used to hash the name of an TG to keep the name short.  This was necessary back when
         // people didn't have direct control over creating the TG.  In awsx though creating the TG
         // is easy to do, so we just let the user pass in the name they want.  We simply add an
         // alias from the old name to the new one to keep things from being recreated.
-        _this.targetGroup = new aws.lb.TargetGroup(name, {
+        this.targetGroup = new aws.lb.TargetGroup(name, {
             ...args,
             vpcId: this.vpc.id,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
@@ -72,7 +62,7 @@ export abstract class TargetGroup
             aliases: [{ name: args.name || utils.sha1hash(name) }],
         });
 
-        _this.loadBalancer = loadBalancer;
+        this.loadBalancer = loadBalancer;
     }
 
     private dependencies() {
@@ -120,8 +110,6 @@ export abstract class TargetGroup
         return mod.TargetGroupAttachment.create(name, this, args, opts);
     }
 }
-
-utils.Capture(TargetGroup.prototype).initialize.doNotCapture = true;
 
 /**
  * A Health Check block.

@@ -83,8 +83,6 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
     }
 }
 
-utils.Capture(ApplicationLoadBalancer.prototype).initializeLoadBalancer.doNotCapture = true;
-
 /**
  * Each target group routes requests to one or more registered targets, such as EC2 instances, using
  * the protocol and port number that you specify. You can register a target with multiple target

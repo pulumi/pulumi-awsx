@@ -22,7 +22,7 @@ import * as utils from "./../utils";
 export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly loadBalancer: aws.lb.LoadBalancer;
     public readonly vpc: pulumi.Output<x.ec2.Vpc>;
-    public readonly securityGroups!: x.ec2.SecurityGroup[];
+    public readonly securityGroups: x.ec2.SecurityGroup[];
 
     public readonly listeners: mod.Listener[] = [];
     public readonly targetGroups: mod.TargetGroup[] = [];
