@@ -18,7 +18,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import * as utils from "../utils";
 
-let defaultCluster: Promise<Cluster>;
+let defaultCluster: Cluster;
 
 /**
  * A Cluster is a general purpose ECS cluster configured to run in a provided Network.
@@ -26,55 +26,39 @@ let defaultCluster: Promise<Cluster>;
 export class Cluster
         extends pulumi.ComponentResource
         implements x.autoscaling.AutoScalingUserData {
-    public readonly cluster!: aws.ecs.Cluster;
-    public readonly id!: pulumi.Output<string>;
+    public readonly cluster: aws.ecs.Cluster;
+    public readonly id: pulumi.Output<string>;
 
     /**
      * The network in which to create this cluster.
      */
-    public readonly vpc!: x.ec2.Vpc;
+    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
     /**
      * Security groups associated with this this ECS Cluster.
      */
-    public readonly securityGroups!: x.ec2.SecurityGroup[];
+    public readonly securityGroups: x.ec2.SecurityGroup[];
 
-    public readonly extraBootcmdLines!: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
+    public readonly extraBootcmdLines: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
 
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
 
-    /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: ClusterArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ecs:Cluster", name, {}, opts);
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new Cluster] directly. Use [Cluster.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, args: ClusterArgs = {}, opts: pulumi.ComponentResourceOptions = {}): Promise<Cluster> {
-        const result = new Cluster(1, name, opts);
-        await result.initialize(name, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initialize(name: string, args: ClusterArgs): Promise<void> {
-        const _this = utils.Mutable(this);
 
         // First create an ECS cluster.
         const cluster = getOrCreateCluster(name, args, this);
-        _this.cluster = cluster;
-        _this.id = cluster.id;
+        this.cluster = cluster;
+        this.id = cluster.id;
 
-        _this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
+        this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
 
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        _this.securityGroups = (await x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this })) ||
-            [await Cluster.createDefaultSecurityGroup(name, this.vpc, { parent: this })];
+        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) ||
+            [Cluster.createDefaultSecurityGroup(name, this.vpc, { parent: this })];
 
-        _this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
+        this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
 
         this.registerOutputs();
@@ -114,18 +98,18 @@ export class Cluster
      * The cluster will use the default Vpc for the account and will be provisioned with a security
      * group created by [createDefaultSecurityGroup].
      */
-    public static getDefault(opts?: pulumi.ComponentResourceOptions): Promise<Cluster> {
+    public static getDefault(opts?: pulumi.ComponentResourceOptions): Cluster {
         if (!defaultCluster) {
-            defaultCluster = Cluster.create("default-cluster", {}, opts);
+            defaultCluster = new Cluster("default-cluster", {}, opts);
         }
 
         return defaultCluster;
     }
 
-    public static async createDefaultSecurityGroup(
+    public static createDefaultSecurityGroup(
             name: string,
             vpc?: x.ec2.Vpc,
-            opts: pulumi.ComponentResourceOptions = {}): Promise<x.ec2.SecurityGroup> {
+            opts: pulumi.ComponentResourceOptions = {}): x.ec2.SecurityGroup {
 
         vpc = vpc || await x.ec2.Vpc.getDefault(opts);
         const securityGroup = await x.ec2.SecurityGroup.create(name, {
@@ -161,7 +145,6 @@ export class Cluster
     }
 }
 
-utils.Capture(Cluster.prototype).initialize.doNotCapture = true;
 utils.Capture(Cluster.prototype).createAutoScalingGroup.doNotCapture = true;
 
 function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
