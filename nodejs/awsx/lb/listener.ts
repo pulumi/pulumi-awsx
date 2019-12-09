@@ -30,20 +30,18 @@ export abstract class Listener
         extends pulumi.ComponentResource
         implements x.ecs.ContainerPortMappingProvider,
                    x.ecs.ContainerLoadBalancerProvider {
-    public readonly loadBalancer: x.lb.LoadBalancer;
     public readonly listener: aws.lb.Listener;
+    public readonly loadBalancer: x.lb.LoadBalancer;
     public readonly defaultTargetGroup: x.lb.TargetGroup | undefined;
 
     public readonly endpoint: pulumi.Output<ListenerEndpoint>;
 
-    /** @internal */
-    public readonly defaultListenerAction: ListenerDefaultAction | undefined;
+    private readonly defaultListenerAction?: ListenerDefaultAction;
 
     // tslint:disable-next-line:variable-name
     private readonly __isListenerInstance = true;
 
     constructor(type: string, name: string,
-                loadBalancer: mod.LoadBalancer,
                 defaultListenerAction: ListenerDefaultAction | undefined,
                 args: ListenerArgs,
                 opts: pulumi.ComponentResourceOptions) {
@@ -52,11 +50,9 @@ export abstract class Listener
         // Create an alias from teh old urn to the new one so that we don't cause these to eb
         // created/destroyed.
         super(type, name, {}, {
-            parent: loadBalancer,
+            parent: args.loadBalancer,
             ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
-
-        this.loadBalancer = loadBalancer;
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
         // security policy from:
@@ -70,12 +66,13 @@ export abstract class Listener
             sslPolicy: utils.ifUndefined(args.sslPolicy, defaultSslPolicy),
         }, { parent: this });
 
-        // const loadBalancer = args.loadBalancer.loadBalancer;
+        const loadBalancer = args.loadBalancer.loadBalancer;
         this.endpoint = this.listener.urn.apply(_ => pulumi.output({
-            hostname: loadBalancer.loadBalancer.dnsName,
+            hostname: loadBalancer.dnsName,
             port: args.port,
         }));
 
+        this.loadBalancer = args.loadBalancer;
         this.defaultListenerAction = defaultListenerAction;
 
         if (defaultListenerAction instanceof mod.TargetGroup) {
