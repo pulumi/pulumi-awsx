@@ -131,7 +131,7 @@ type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
     namePrefix?: never;
     vpcId?: never;
 
-    vpc?: pulumi.Input<x.ec2.Vpc>;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
     egress?: x.ec2.EgressSecurityGroupRuleArgs[];
     ingress?: x.ec2.IngressSecurityGroupRuleArgs[];
 }>;
