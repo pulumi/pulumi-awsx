@@ -192,7 +192,6 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
 export class FargateService extends ecs.Service {
     public readonly taskDefinition: FargateTaskDefinition;
 
-    /** @internal */
     constructor(name: string,
                 args: FargateServiceArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
