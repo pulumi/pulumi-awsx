@@ -16,13 +16,12 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export = async () => {
-    const config = new pulumi.Config("aws");
-    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-    console.log("EC2: Original");
+console.log("EC2: Original");
 
-    const vpc = await awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
-    const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
-    return { clusterId: cluster1.id };
-};
+const vpc = awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
+const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
+export const clusterId = cluster1.id;
+
