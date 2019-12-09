@@ -49,7 +49,6 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         params: RunTaskRequest,
     ) => Promise<awssdk.ECS.Types.RunTaskResponse>;
 
-    /** @internal */
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
                 opts: pulumi.ComponentResourceOptions) {
