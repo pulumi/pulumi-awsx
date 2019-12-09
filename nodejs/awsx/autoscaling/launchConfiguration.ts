@@ -34,7 +34,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     constructor(name: string, vpc: pulumi.Input<x.ec2.Vpc>, args: AutoScalingLaunchConfigurationArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingLaunchConfiguration", name, {}, opts);
 
-                // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
+        // Create the full name of our CloudFormation stack here explicitly. Since the CFN stack
         // references the launch configuration and vice-versa, we use this to break the cycle.
         // TODO[pulumi/pulumi#381]: Creating an S3 bucket is an inelegant way to get a durable,
         // unique name.
