@@ -215,7 +215,7 @@ export class ApplicationListener extends mod.Listener {
         // passed in as the portMappings information needed for a Service.
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationListener" }] });
-        super("awsx:lb:ApplicationListener", name, loadBalancer, defaultListener, {
+        super("awsx:lb:ApplicationListener", name, defaultListener, {
             ...args,
             defaultActions,
             loadBalancer,
@@ -225,7 +225,6 @@ export class ApplicationListener extends mod.Listener {
 
         this.__isApplicationListenerInstance = true;
         this.loadBalancer = loadBalancer;
-
         loadBalancer.listeners.push(this);
 
         // As per https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html
