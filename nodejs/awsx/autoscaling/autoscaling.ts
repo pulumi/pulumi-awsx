@@ -293,7 +293,7 @@ export interface AutoScalingGroupArgs {
      * The vpc this autoscaling group is for.  If not provided this autoscaling group will be
      * created for the default vpc.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
 
     /**
      * The subnets to use for the autoscaling group.  If not provided, the `private` subnets of

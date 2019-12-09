@@ -79,7 +79,7 @@ export class Cluster
             args: x.autoscaling.AutoScalingGroupArgs = {},
             opts: pulumi.ComponentResourceOptions = {}) {
 
-        args.vpc = args.vpc || this.vpc;
+        args.vpc = utils.ifUndefined(args.vpc, this.vpc);
         args.launchConfigurationArgs = {
             // default to our security groups if the caller didn't provide their own.
             securityGroups: this.securityGroups,
@@ -87,7 +87,7 @@ export class Cluster
             ...args.launchConfigurationArgs,
         };
 
-        const group = await x.autoscaling.AutoScalingGroup.create(name, args, { parent: this, ...opts });
+        const group = new x.autoscaling.AutoScalingGroup(name, args, { parent: this, ...opts });
         this.addAutoScalingGroup(group);
 
         return group;
@@ -108,37 +108,37 @@ export class Cluster
 
     public static createDefaultSecurityGroup(
             name: string,
-            vpc?: x.ec2.Vpc,
+            vpc?: pulumi.Input<x.ec2.Vpc | undefined>,
             opts: pulumi.ComponentResourceOptions = {}): x.ec2.SecurityGroup {
 
-        vpc = vpc || await x.ec2.Vpc.getDefault(opts);
-        const securityGroup = await x.ec2.SecurityGroup.create(name, {
+        vpc = utils.ifUndefined(vpc, x.ec2.Vpc.getDefault(opts));
+        const securityGroup = new x.ec2.SecurityGroup(name, {
             vpc,
             tags: { Name: name },
         }, opts);
 
-        await Cluster.createDefaultSecurityGroupEgressRules(name, securityGroup);
-        await Cluster.createDefaultSecurityGroupIngressRules(name, securityGroup);
+        Cluster.createDefaultSecurityGroupEgressRules(name, securityGroup);
+        Cluster.createDefaultSecurityGroupIngressRules(name, securityGroup);
 
         return securityGroup;
     }
 
-    public static async createDefaultSecurityGroupEgressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
-        return [await x.ec2.SecurityGroupRule.egress(`${name}-egress`, securityGroup,
+    public static createDefaultSecurityGroupEgressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
+        return [x.ec2.SecurityGroupRule.egress(`${name}-egress`, securityGroup,
             new x.ec2.AnyIPv4Location(),
             new x.ec2.AllTraffic(),
             "allow output to any ipv4 address using any protocol")];
     }
 
-    public static async createDefaultSecurityGroupIngressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
-        return [await x.ec2.SecurityGroupRule.ingress(`${name}-ssh`, securityGroup,
+    public static createDefaultSecurityGroupIngressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
+        return [x.ec2.SecurityGroupRule.ingress(`${name}-ssh`, securityGroup,
                     new x.ec2.AnyIPv4Location(),
                     new x.ec2.TcpPorts(22),
                     "allow ssh in from any ipv4 address"),
 
                 // Expose ephemeral container ports to Internet.
                 // TODO: Limit to load balancer(s).
-                await x.ec2.SecurityGroupRule.ingress(`${name}-containers`, securityGroup,
+                x.ec2.SecurityGroupRule.ingress(`${name}-containers`, securityGroup,
                     new x.ec2.AnyIPv4Location(),
                     new x.ec2.AllTcpPorts(),
                     "allow incoming tcp on any port from any ipv4 address")];
