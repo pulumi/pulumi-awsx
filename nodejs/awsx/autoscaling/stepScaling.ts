@@ -211,7 +211,7 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
     public readonly lowerAlarm: aws.cloudwatch.MetricAlarm | undefined;
 
     /** @internal */
-    constructor(version: number, name: string, group: AutoScalingGroup, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, group: AutoScalingGroup, opts: pulumi.ComponentResourceOptions) {
         super("awsx:autoscaling:StepScalingPolicy", name, {}, { parent: group, ...opts });
 
         if (typeof version !== "number") {

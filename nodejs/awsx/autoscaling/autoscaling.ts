@@ -24,7 +24,7 @@ import * as stepScaling from "./stepScaling";
 import * as targetTracking from "./targetTracking";
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
-    public readonly vpc!: x.ec2.Vpc;
+    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
 
     /**
      * The [cloudformation.Stack] that was used to create this [AutoScalingGroup].  [CloudFormation]
@@ -51,55 +51,38 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     public readonly targetGroups!: x.lb.TargetGroup[];
 
     /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: AutoScalingGroupArgs, opts: pulumi.ComponentResourceOptions) {
         super("awsx:x:autoscaling:AutoScalingGroup", name, {}, opts);
 
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new AutoScalingGroup] directly. Use [AutoScalingGroup.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string,
-                               args: AutoScalingGroupArgs,
-                               opts: pulumi.ComponentResourceOptions = {}): Promise<AutoScalingGroup> {
-        const result = new AutoScalingGroup(1, name, opts);
-        await result.initialize(name, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initialize(name: string, args: AutoScalingGroupArgs) {
-        const _this = utils.Mutable(this);
-
-        _this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
-        const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
-        _this.targetGroups = args.targetGroups || [];
+        this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
+        const subnetIds = utils.ifUndefined(args.subnetIds, this.vpc.apply(v => v.privateSubnetIds));
+        this.targetGroups = args.targetGroups || [];
         const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
 
         // Use the autoscaling config provided, otherwise just create a default one for this cluster.
         if (args.launchConfiguration) {
-            _this.launchConfiguration = args.launchConfiguration;
+            this.launchConfiguration = args.launchConfiguration;
         }
         else {
-            _this.launchConfiguration = await AutoScalingLaunchConfiguration.create(
+            this.launchConfiguration = new AutoScalingLaunchConfiguration(
                 name, this.vpc, args.launchConfigurationArgs, { parent: this });
         }
 
         // Use cloudformation to actually construct the autoscaling group.
-        _this.stack = new aws.cloudformation.Stack(name, {
+        this.stack = new aws.cloudformation.Stack(name, {
             ...args,
             name: this.launchConfiguration.stackName,
             templateBody: getCloudFormationTemplate(
                 name,
                 this.launchConfiguration.id,
-                subnetIds,
+                <any>subnetIds,
                 targetGroupArns,
                 utils.ifUndefined(args.templateParameters, {})),
         }, { parent: this });
 
         // Now go and actually find the group created by cloudformation.  The id for the group will
         // be stored in `stack.outputs.Instances`.
-        _this.group = aws.autoscaling.Group.get(name, this.stack.outputs["Instances"], undefined, { parent: this });
+        this.group = aws.autoscaling.Group.get(name, this.stack.outputs["Instances"], undefined, { parent: this });
 
         this.registerOutputs();
     }
@@ -224,8 +207,6 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
     }
 }
 
-utils.Capture(AutoScalingGroup.prototype).initialize.doNotCapture = true;
-
 function ifUndefined<T>(val: T | undefined, defVal: T) {
     return val !== undefined ? val : defVal;
 }
@@ -235,12 +216,11 @@ function ifUndefined<T>(val: T | undefined, defVal: T) {
 function getCloudFormationTemplate(
     instanceName: string,
     instanceLaunchConfigurationId: pulumi.Output<string>,
-    subnetIds: pulumi.Input<string>[],
-    targetGroupArns: pulumi.Input<string>[],
+    subnetIds: pulumi.Output<string[]>,
+    targetGroupArns: pulumi.Output<string>[],
     parameters: pulumi.Output<TemplateParameters>): pulumi.Output<string> {
 
-    const subnetIdsArray = pulumi.all(subnetIds);
-    return pulumi.all([subnetIdsArray, targetGroupArns, instanceLaunchConfigurationId, parameters])
+    return pulumi.all([subnetIds, targetGroupArns, instanceLaunchConfigurationId, parameters])
                  .apply(([subnetIdsArray, targetGroupArns, instanceLaunchConfigurationId, parameters]) => {
 
     const minSize = ifUndefined(parameters.minSize, 2);

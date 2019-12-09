@@ -21,7 +21,7 @@ import * as utils from "./../utils";
 export class SecurityGroup extends pulumi.ComponentResource {
     public readonly securityGroup!: aws.ec2.SecurityGroup;
     public readonly id!: pulumi.Output<string>;
-    public readonly vpc!: x.ec2.Vpc;
+    public readonly vpc!: pulumi.Output<x.ec2.Vpc>;
 
     public readonly egressRules: x.ec2.EgressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
@@ -63,10 +63,10 @@ export class SecurityGroup extends pulumi.ComponentResource {
         delete args.egress;
         delete args.ingress;
 
-        _this.vpc = args.vpc || await x.ec2.Vpc.getDefault({ parent: this });
+        _this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
         _this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
-            vpcId: this.vpc.id,
+            vpcId: this.vpc.apply(v => v.id),
         }, { parent: this });
 
         _this.id = this.securityGroup.id;
@@ -94,7 +94,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
      */
     public static fromExistingId(
         name: string, id: pulumi.Input<string>,
-        args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}): SecurityGroup {
 
         return SecurityGroup.create(name, {
             ...args,
@@ -122,8 +122,8 @@ utils.Capture(SecurityGroup.prototype).createIngressRule.doNotCapture = true;
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 
 /** @internal */
-export async function getSecurityGroups(
-        vpc: x.ec2.Vpc, name: string, args: SecurityGroupOrId[] | undefined,
+export function getSecurityGroups(
+        vpc: pulumi.Input<x.ec2.Vpc>, name: string, args: SecurityGroupOrId[] | undefined,
         opts: pulumi.ResourceOptions | undefined) {
     if (!args) {
         return undefined;
@@ -136,7 +136,7 @@ export async function getSecurityGroups(
             result.push(obj);
         }
         else {
-            result.push(await x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, { vpc }, opts));
+            result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, { vpc }, opts));
         }
     }
 
@@ -148,7 +148,7 @@ type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
     namePrefix?: never;
     vpcId?: never;
 
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc>;
     egress?: x.ec2.EgressSecurityGroupRuleArgs[];
     ingress?: x.ec2.IngressSecurityGroupRuleArgs[];
 }>;
@@ -163,7 +163,7 @@ export interface SecurityGroupArgs {
     /**
      * The vpc this security group applies to.  Or [Vpc.getDefault] if unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc>;
 
     /**
      * The security group description. Defaults to "Managed by Terraform". Cannot be "". __NOTE__:

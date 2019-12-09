@@ -26,9 +26,9 @@ const defaultVpcs = new Map<string, Promise<Vpc>>();
 export class Vpc extends pulumi.ComponentResource {
     // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
     // properties.
-    public readonly publicSubnetIds: pulumi.Output<string>[] = [];
-    public readonly privateSubnetIds: pulumi.Output<string>[] = [];
-    public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
+    public readonly publicSubnetIds: pulumi.Output<string[]>;
+    public readonly privateSubnetIds: pulumi.Output<string[]>;
+    public readonly isolatedSubnetIds: pulumi.Output<string[]>;
 
     public readonly vpc!: aws.ec2.Vpc;
     public readonly id!: pulumi.Output<string>;
@@ -235,7 +235,12 @@ export class Vpc extends pulumi.ComponentResource {
      * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
      * version be used instead.  This version will properly respect providers.
      */
-    public static async getDefault(opts: pulumi.InvokeOptions = {}): Promise<Vpc> {
+
+    public static getDefault(opts: pulumi.InvokeOptions = {}): pulumi.Output<Vpc> {
+        return pulumi.output(Vpc.getDefaultAsync(opts));
+    }
+
+    private static async getDefaultAsync(opts: pulumi.InvokeOptions): Promise<Vpc> {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
         // logically by hte stack.
