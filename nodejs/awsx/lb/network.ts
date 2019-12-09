@@ -92,7 +92,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
             ...args,
             protocol,
             vpc: loadBalancer.vpc,
-        }, { parent: loadBalancer, ...opts, });
+        }, { parent: loadBalancer, ...opts });
 
         this.listeners = [];
         this.loadBalancer = loadBalancer;
