@@ -29,40 +29,24 @@ export class Subnet extends pulumi.ComponentResource {
      * Underlying id for the aws subnet.  This should be used over [this.subnet.id] as this
      * Output will only resolve once the route table and all associations are resolved.
      */
-    public readonly id!: pulumi.Output<string>;
-    public readonly subnet!: aws.ec2.Subnet;
-    public readonly routeTable!: aws.ec2.RouteTable | undefined;
-    public readonly routeTableAssociation!: aws.ec2.RouteTableAssociation | undefined;
+    public readonly id: pulumi.Output<string>;
+    public readonly subnet: aws.ec2.Subnet;
+    public readonly routeTable: aws.ec2.RouteTable | undefined;
+    public readonly routeTableAssociation: aws.ec2.RouteTableAssociation | undefined;
 
     public readonly routes: aws.ec2.Route[] = [];
 
-    /** @internal */
-    constructor(version: number, name: string, vpc: x.ec2.Vpc, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:Subnet", name, {}, { parent: vpc, ...opts });
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new Subnet] directly. Use [Subnet.create] instead.", this);
-        }
 
         this.vpc = vpc;
         this.subnetName = name;
-    }
-
-    public static async create(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions): Promise<Subnet>;
-    public static async create(name: string, vpc: x.ec2.Vpc, args: ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions): Promise<Subnet>;
-    public static async create(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}): Promise<Subnet> {
-        const result = new Subnet(1, name, vpc, opts);
-        await result.initialize(name, vpc, args, opts);
-        return result;
-    }
-
-    /** @internal */
-    public async initialize(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const _this = utils.Mutable(this);
 
         if (isExistingSubnetArgs(args)) {
-            _this.subnet = args.subnet;
-            _this.id = args.subnet.id;
+            this.subnet = args.subnet;
+            this.id = args.subnet.id;
             // TODO(cyrusn): We should be able to find the existing RouteTable and RouteTableAssociation
             // when importing a subnet.
         }
@@ -71,7 +55,7 @@ export class Subnet extends pulumi.ComponentResource {
             // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
             // it, don't assign otherwise.
             const assignIpv6AddressOnCreation = utils.ifUndefined(args.assignIpv6AddressOnCreation, vpc.vpc.assignGeneratedIpv6CidrBlock);
-            _this.subnet = new aws.ec2.Subnet(name, {
+            this.subnet = new aws.ec2.Subnet(name, {
                 vpcId: vpc.id,
                 ...args,
                 assignIpv6AddressOnCreation,
@@ -81,16 +65,16 @@ export class Subnet extends pulumi.ComponentResource {
                 ignoreChanges: opts.ignoreChanges,
             });
 
-            _this.routeTable = new aws.ec2.RouteTable(name, {
+            this.routeTable = new aws.ec2.RouteTable(name, {
                 vpcId: vpc.id,
             }, { parent: this });
 
-            _this.routeTableAssociation = new aws.ec2.RouteTableAssociation(name, {
-                routeTableId: _this.routeTable.id,
+            this.routeTableAssociation = new aws.ec2.RouteTableAssociation(name, {
+                routeTableId: this.routeTable.id,
                 subnetId: this.subnet.id,
             }, { parent: this });
 
-            _this.id = pulumi.all([this.subnet.id, _this.routeTableAssociation.id])
+            this.id = pulumi.all([this.subnet.id, this.routeTableAssociation.id])
                             .apply(([id]) => id);
         }
 
@@ -122,7 +106,6 @@ export class Subnet extends pulumi.ComponentResource {
     }
 }
 
-utils.Capture(Subnet.prototype).initialize.doNotCapture = true;
 utils.Capture(Subnet.prototype).createRoute.doNotCapture = true;
 
 export interface SubnetRouteProvider {
