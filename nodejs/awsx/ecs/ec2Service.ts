@@ -21,24 +21,7 @@ import * as utils from "./../utils";
 
 export class EC2TaskDefinition extends ecs.TaskDefinition {
     /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
-        super(version, "awsx:x:ecs:EC2TaskDefinition", name, opts);
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new EC2TaskDefinition] directly. Use [EC2TaskDefinition.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string,
-                               args: EC2TaskDefinitionArgs,
-                               opts: pulumi.ComponentResourceOptions = {}) {
-
-        const result = new EC2TaskDefinition(1, name, opts);
-        await result.initializeTaskDefinition(name, args);
-        return result;
-    }
-
-    private async initializeTaskDefinition(name: string, args: EC2TaskDefinitionArgs): Promise<void> {
+    constructor(name: string, args: EC2TaskDefinitionArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -54,7 +37,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 
         delete (<any>argsCopy).container;
 
-        await this.initialize(name, /*isFargate:*/ false, argsCopy);
+        super("awsx:x:ecs:EC2TaskDefinition", name, /*isFargate:*/ false, argsCopy, opts);
 
         this.registerOutputs();
     }
