@@ -90,45 +90,29 @@ utils.Capture(NetworkLoadBalancer.prototype).initializeLoadBalancer.doNotCapture
  * for more details.
  */
 export class NetworkTargetGroup extends mod.TargetGroup {
-    public readonly loadBalancer!: NetworkLoadBalancer;
+    public readonly loadBalancer: NetworkLoadBalancer;
 
     public readonly listeners: x.lb.NetworkListener[];
 
-    /** @internal */
-    constructor(version: number, name: string, loadBalancer: NetworkLoadBalancer, opts: pulumi.ComponentResourceOptions) {
-        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
-        super(version, "awsx:lb:NetworkTargetGroup", name, loadBalancer, {
-            parent: loadBalancer, ...opts,
-        });
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new NetworkTargetGroup] directly. Use [NetworkTargetGroup.create] instead.", this);
-        }
-
-        this.loadBalancer = loadBalancer;
-        this.listeners = [];
-    }
-
-    public static async create(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const loadBalancer = args.loadBalancer || await NetworkLoadBalancer.create(name, {
+    constructor(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {
             vpc: args.vpc,
             name: args.name,
         }, opts);
 
-        const result = new NetworkTargetGroup(1, name, loadBalancer, opts);
-        await result.initializeTargetGroup(name, loadBalancer, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initializeTargetGroup(name: string, loadBalancer: NetworkLoadBalancer, args: NetworkTargetGroupArgs) {
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
-        await this.initialize(name, loadBalancer, {
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
+        super("awsx:lb:NetworkTargetGroup", name, loadBalancer, {
             ...args,
             protocol,
             vpc: loadBalancer.vpc,
+        }, {
+            parent: loadBalancer, ...opts,
         });
+
+        this.loadBalancer = loadBalancer;
+        this.listeners = [];
 
         loadBalancer.targetGroups.push(this);
 
@@ -136,15 +120,13 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     }
 
     public createListener(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        return NetworkListener.create(name, {
+        return new NetworkListener(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
             ...args,
         }, { parent: this, ...opts });
     }
 }
-
-utils.Capture(NetworkTargetGroup.prototype).initializeTargetGroup.doNotCapture = true;
 
 /**
  * A listener is a process that checks for connection requests, using the protocol and port that you
@@ -159,29 +141,13 @@ export class NetworkListener
         implements x.apigateway.IntegrationRouteTargetProvider {
 
     public readonly loadBalancer: NetworkLoadBalancer;
-    public readonly defaultTargetGroup?: x.lb.NetworkTargetGroup;
+    public readonly defaultTargetGroup: x.lb.NetworkTargetGroup | undefined;
 
     // tslint:disable-next-line:variable-name
-    private readonly __isNetworkListenerInstance: boolean = true;
+    private readonly __isNetworkListenerInstance: boolean;
 
-    /** @internal */
-    constructor(version: number,
-                name: string,
-                loadBalancer: NetworkLoadBalancer,
-                opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
 
-        super(version, "awsx:lb:NetworkListener", name, loadBalancer, pulumi.mergeOptions(opts, {
-            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }],
-        }));
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new NetworkListener] directly. Use [NetworkListener.create] instead.", this);
-        }
-
-        this.loadBalancer = loadBalancer;
-    }
-
-    public static async create(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const argCount = (args.defaultAction ? 1 : 0) +
                          (args.defaultActions ? 1 : 0) +
                          (args.targetGroup ? 1 : 0);
@@ -192,32 +158,26 @@ export class NetworkListener
 
         const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
             ? args.loadBalancer
-            : await NetworkLoadBalancer.create(name, {
+            : new NetworkLoadBalancer(name, {
                 ...args.loadBalancer,
                 vpc: args.vpc,
                 name: args.name,
             }, opts);
 
-        const result = new NetworkListener(1, name, loadBalancer, opts);
-        await result.initializeListener(name, loadBalancer, args, opts);
-        return result;
-    }
-
-    /** @internal */
-    public async initializeListener(name: string,
-                                    loadBalancer: NetworkLoadBalancer,
-                                    args: NetworkListenerArgs,
-                                    opts: pulumi.ComponentResourceOptions) {
-
-        const { defaultActions, defaultListener } = await getDefaultActions(name, loadBalancer, args, opts);
+        const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
         const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
-        await this.initialize(name, defaultListener, {
+        super("awsx:lb:NetworkListener", name, loadBalancer, defaultListener, {
             ...args,
             protocol,
             loadBalancer,
             defaultActions,
-        });
+        }, pulumi.mergeOptions(opts, {
+            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }],
+        }));
+
+        this.__isNetworkListenerInstance = true;
+        this.loadBalancer = loadBalancer;
 
         loadBalancer.listeners.push(this);
         this.registerOutputs();
@@ -243,9 +203,7 @@ export class NetworkListener
     }
 }
 
-utils.Capture(NetworkListener.prototype).initializeListener.doNotCapture = true;
-
-async function getDefaultActions(
+function getDefaultActions(
         name: string,
         loadBalancer: NetworkLoadBalancer,
         args: NetworkListenerArgs,
@@ -263,7 +221,7 @@ async function getDefaultActions(
 
     // User didn't provide default actions for this listener.  Create a reasonable target group for
     // us and use that as our default action.
-    const targetGroup = await createTargetGroup();
+    const targetGroup = createTargetGroup();
 
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 
@@ -274,13 +232,13 @@ async function getDefaultActions(
             return args.targetGroup;
         }
         else if (args.targetGroup) {
-            return NetworkTargetGroup.create(name, {
+            return new NetworkTargetGroup(name, {
                 ...args.targetGroup,
                 loadBalancer,
             }, opts);
         }
         else {
-            return NetworkTargetGroup.create(name, {
+            return new NetworkTargetGroup(name, {
                 loadBalancer,
                 name: args.name,
                 port: args.port,
