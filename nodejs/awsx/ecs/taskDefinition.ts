@@ -23,9 +23,9 @@ import * as role from "../role";
 import * as utils from "../utils";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
-    public readonly taskDefinition!: aws.ecs.TaskDefinition;
+    public readonly taskDefinition: aws.ecs.TaskDefinition;
     public readonly logGroup?: aws.cloudwatch.LogGroup;
-    public readonly containers!: Record<string, ecs.Container>;
+    public readonly containers: Record<string, ecs.Container>;
     public readonly taskRole?: aws.iam.Role;
     public readonly executionRole?: aws.iam.Role;
 
@@ -45,47 +45,40 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
      *
      * This API is designed for use at runtime.
      */
-    public readonly run!: (
+    public readonly run: (
         params: RunTaskRequest,
     ) => Promise<awssdk.ECS.Types.RunTaskResponse>;
 
     /** @internal */
-    constructor(version: number, type: string, name: string, opts: pulumi.ComponentResourceOptions) {
+    constructor(type: string, name: string,
+                isFargate: boolean, args: TaskDefinitionArgs,
+                opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not construct a TaskDefinition directly. Use [EC2TaskDefinition.create] or [FargateTaskDefinition.create] instead.", this);
-        }
-    }
-
-    /** @internal */
-    public async initialize(name: string, isFargate: boolean, args: TaskDefinitionArgs) {
-        const _this = utils.Mutable(this);
-
-        _this.logGroup = args.logGroup === null ? undefined :
-                         args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {
+        this.logGroup = args.logGroup === null ? undefined :
+                        args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
         }, { parent: this });
 
-        _this.taskRole = args.taskRole === null ? undefined :
-                         args.taskRole ? args.taskRole : TaskDefinition.createTaskRole(
+        this.taskRole = args.taskRole === null ? undefined :
+                        args.taskRole ? args.taskRole : TaskDefinition.createTaskRole(
             `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
-        _this.executionRole = args.taskRole === null ? undefined :
-                              args.executionRole ? args.executionRole : TaskDefinition.createExecutionRole(
+        this.executionRole = args.taskRole === null ? undefined :
+                             args.executionRole ? args.executionRole : TaskDefinition.createExecutionRole(
             `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
-        _this.containers = args.containers;
+        this.containers = args.containers;
 
         const containerDefinitions = await computeContainerDefinitions(
             this, name, args.vpc, this.containers, this.applicationListeners, this.networkListeners, this.logGroup);
-        _this.listeners = {...this.applicationListeners, ...this.networkListeners };
+        this.listeners = {...this.applicationListeners, ...this.networkListeners };
 
         const containerString = containerDefinitions.apply(d => JSON.stringify(d));
         const defaultFamily = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
         const family = utils.ifUndefined(args.family, defaultFamily);
 
-        _this.taskDefinition = new aws.ecs.TaskDefinition(name, {
+        this.taskDefinition = new aws.ecs.TaskDefinition(name, {
             ...args,
             family: family,
             taskRoleArn: this.taskRole ? this.taskRole.arn : undefined,
@@ -93,7 +86,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             containerDefinitions: containerString,
         }, { parent: this });
 
-        _this.run = createRunFunction(isFargate, this.taskDefinition.arn);
+        this.run = createRunFunction(isFargate, this.taskDefinition.arn);
     }
 
     /**
