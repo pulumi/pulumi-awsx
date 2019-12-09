@@ -27,7 +27,6 @@ export class NatGateway
     public readonly elasticIP: aws.ec2.Eip | undefined;
     public readonly natGateway!: aws.ec2.NatGateway;
 
-    /** @internal */
     constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, vpc: x.ec2.Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {

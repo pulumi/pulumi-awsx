@@ -26,12 +26,12 @@ const defaultVpcs = new Map<string, Promise<Vpc>>();
 export class Vpc extends pulumi.ComponentResource {
     // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
     // properties.
-    public readonly publicSubnetIds: pulumi.Output<string[]>;
-    public readonly privateSubnetIds: pulumi.Output<string[]>;
-    public readonly isolatedSubnetIds: pulumi.Output<string[]>;
+    public readonly publicSubnetIds: pulumi.Output<string>[] = [];
+    public readonly privateSubnetIds: pulumi.Output<string>[] = [];
+    public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
 
-    public readonly vpc!: aws.ec2.Vpc;
-    public readonly id!: pulumi.Output<string>;
+    public readonly vpc: aws.ec2.Vpc;
+    public readonly id: pulumi.Output<string>;
 
     public readonly publicSubnets: x.ec2.Subnet[] = [];
     public readonly privateSubnets: x.ec2.Subnet[] = [];
@@ -49,8 +49,9 @@ export class Vpc extends pulumi.ComponentResource {
      */
     public readonly natGateways: x.ec2.NatGateway[] = [];
 
-    /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
+    constructor(version: number, name: string, opts?: pulumi.ComponentResourceOptions);
+    constructor(version: number, name: string, opts?: pulumi.ComponentResourceOptions);
+    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
         if (typeof version !== "number") {
