@@ -32,7 +32,7 @@ export abstract class Listener
                    x.ecs.ContainerLoadBalancerProvider {
     public readonly listener: aws.lb.Listener;
     public readonly loadBalancer: x.lb.LoadBalancer;
-    public readonly defaultTargetGroup: x.lb.TargetGroup | undefined;
+    public readonly defaultTargetGroup?: x.lb.TargetGroup;
 
     public readonly endpoint: pulumi.Output<ListenerEndpoint>;
 
