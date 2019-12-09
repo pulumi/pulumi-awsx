@@ -21,7 +21,7 @@ import * as x from "..";
 import * as utils from "../utils";
 
 /** @internal */
-export async function computeContainerDefinition(
+export function computeContainerDefinition(
     parent: pulumi.Resource,
     name: string,
     vpc: x.ec2.Vpc | undefined,
@@ -39,7 +39,7 @@ export async function computeContainerDefinition(
         ? utils.combineArrays(container.environment, container.image.environment(name, parent))
         : container.environment;
 
-    const portMappings = await getPortMappings(parent, name, vpc, container, containerName, applicationListeners, networkListeners);
+    const portMappings = getPortMappings(parent, name, vpc, container, containerName, applicationListeners, networkListeners);
     const region = utils.getRegion(parent);
 
     const logGroupId = logGroup ? logGroup.id : undefined;
@@ -72,7 +72,7 @@ export async function computeContainerDefinition(
     return containerDefinition;
 }
 
-async function getPortMappings(
+function getPortMappings(
     parent: pulumi.Resource,
     name: string,
     vpc: x.ec2.Vpc | undefined,
@@ -109,7 +109,7 @@ async function getPortMappings(
         }
     }
     else {
-        const listener = await createListener();
+        const listener = createListener();
         possibleListener = listener;
         result.push(pulumi.output(listener.containerPortMapping(name, parent)));
     }
@@ -136,7 +136,7 @@ async function getPortMappings(
                 throw new pulumi.ResourceError(errorMessage, parent);
             }
 
-            return x.lb.ApplicationListener.create(name, {
+            return new x.lb.ApplicationListener(name, {
                 ...container.applicationListener,
                 vpc,
             }, opts);
@@ -150,7 +150,7 @@ async function getPortMappings(
                 throw new pulumi.ResourceError(errorMessage, parent);
             }
 
-            return x.lb.NetworkListener.create(name, {
+            return new x.lb.NetworkListener(name, {
                 ...container.networkListener,
                 vpc,
             }, opts);
