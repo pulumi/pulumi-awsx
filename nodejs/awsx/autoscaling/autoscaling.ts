@@ -50,7 +50,9 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      */
     public readonly targetGroups: x.lb.TargetGroup[];
 
-    constructor(name: string, args: AutoScalingGroupArgs, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string,
+                args: AutoScalingGroupArgs,
+                opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingGroup", name, {}, opts);
 
         this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
