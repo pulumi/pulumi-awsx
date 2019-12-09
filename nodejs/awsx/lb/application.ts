@@ -411,7 +411,7 @@ export interface ApplicationTargetGroupArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
 
     /**
      * The name of the TargetGroup. If not specified, the [name] parameter passed into the
