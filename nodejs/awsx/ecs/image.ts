@@ -174,7 +174,7 @@ export function computeImageFromAsset(
         pathOrBuild: string | pulumi.Unwrap<docker.DockerBuild>,
         repositoryUrl: string,
         registryId: string,
-        parent: pulumi.Resource) {
+        parent: pulumi.Resource): pulumi.Output<string> {
 
     pulumi.log.debug(`Building container image at '${JSON.stringify(pathOrBuild)}'`, parent);
 

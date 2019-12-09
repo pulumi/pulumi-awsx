@@ -48,7 +48,7 @@ export class Repository extends pulumi.ComponentResource {
      * The result is the unique ID pointing to that pushed image in this repo.  This unique ID
      * can be passed as the value to `image: repo.buildAndPushImage(...)` in an `ecs.Container`.
      */
-    public buildAndPushImage(pathOrBuild: pulumi.Input<string | docker.DockerBuild>) {
+    public buildAndPushImage(pathOrBuild: pulumi.Input<string | docker.DockerBuild>): pulumi.Output<string> {
         return pulumi.all([pathOrBuild, this.repository.repositoryUrl, this.repository.registryId])
                      .apply(([pathOrBuild, repositoryUrl, registryId]) =>
                         computeImageFromAsset(pathOrBuild, repositoryUrl, registryId, this));
