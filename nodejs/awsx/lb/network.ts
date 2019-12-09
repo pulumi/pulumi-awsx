@@ -96,7 +96,6 @@ export class NetworkTargetGroup extends mod.TargetGroup {
 
         this.listeners = [];
         this.loadBalancer = loadBalancer;
-
         loadBalancer.targetGroups.push(this);
 
         this.registerOutputs();
