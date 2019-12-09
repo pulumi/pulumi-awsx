@@ -64,47 +64,27 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 (<any>EC2TaskDefinition.prototype).initializeTaskDefinition.doNotCapture = true;
 
 export class EC2Service extends ecs.Service {
-    public readonly taskDefinition!: EC2TaskDefinition;
+    public readonly taskDefinition: EC2TaskDefinition;
 
     /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
-        super(version, "awsx:x:ecs:EC2Service", name, opts);
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new EC2Service] directly. Use [EC2Service.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string,
-                               args: EC2ServiceArgs,
-                               opts: pulumi.ComponentResourceOptions = {}) {
-        const result = new EC2Service(1, name, opts);
-        await result.initializeService(name, args, opts);
-        return result;
-    }
-
-    private async initializeService(name: string,
-                                    args: EC2ServiceArgs,
-                                    opts: pulumi.ComponentResourceOptions) {
-        const _this = utils.Mutable(this);
-
+    constructor(name: string, args: EC2ServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const cluster = args.cluster || await x.ecs.Cluster.getDefault();
+        const cluster = args.cluster || x.ecs.Cluster.getDefault();
 
         const taskDefinition = args.taskDefinition ||
-            await ecs.EC2TaskDefinition.create(name, {
+            new ecs.EC2TaskDefinition(name, {
                 ...args.taskDefinitionArgs,
                 vpc: cluster.vpc,
             }, opts);
 
-        const securityGroups = (await x.ec2.getSecurityGroups(
-            cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts)) || [];
+        const securityGroups = x.ec2.getSecurityGroups(
+            cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = args.subnets || cluster.vpc.publicSubnetIds;
 
-        await this.initialize(name, {
+        super("awsx:x:ecs:EC2Service", name, {
             ...args,
             taskDefinition,
             securityGroups,
@@ -123,9 +103,9 @@ export class EC2Service extends ecs.Service {
                     securityGroups: securityGroups.map(g => g.id),
                 };
             }),
-        }, /*isFargate:*/ false);
+        }, opts);
 
-        _this.taskDefinition = taskDefinition;
+        this.taskDefinition = taskDefinition;
 
         this.registerOutputs();
     }
