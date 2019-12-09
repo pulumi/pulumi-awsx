@@ -19,9 +19,9 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class SecurityGroup extends pulumi.ComponentResource {
-    public readonly securityGroup!: aws.ec2.SecurityGroup;
-    public readonly id!: pulumi.Output<string>;
-    public readonly vpc!: pulumi.Output<x.ec2.Vpc>;
+    public readonly securityGroup: aws.ec2.SecurityGroup;
+    public readonly id: pulumi.Output<string>;
+    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
 
     public readonly egressRules: x.ec2.EgressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
@@ -29,24 +29,8 @@ export class SecurityGroup extends pulumi.ComponentResource {
     // tslint:disable-next-line:variable-name
     private readonly __isSecurityGroupInstance = true;
 
-    /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:SecurityGroup", name, {}, opts);
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new SecurityGroup] directly. Use [SecurityGroup.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}): Promise<SecurityGroup> {
-        const result = new SecurityGroup(1, name, opts);
-        await result.initialize(name, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initialize(name: string, args: SecurityGroupArgs): Promise<void> {
-        const _this = utils.Mutable(this);
 
         // We allow egress/ingress rules to be defined in-line for SecurityGroup (like terraform
         // does). However, we handle these by explicitly *not* passing this to the security group,
@@ -63,22 +47,22 @@ export class SecurityGroup extends pulumi.ComponentResource {
         delete args.egress;
         delete args.ingress;
 
-        _this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
-        _this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
+        this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
+        this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
             vpcId: this.vpc.apply(v => v.id),
         }, { parent: this });
 
-        _this.id = this.securityGroup.id;
+        this.id = this.securityGroup.id;
 
         this.registerOutputs();
 
         for (let i = 0, n = egressRules.length; i < n; i++) {
-            await this.createEgressRule(`${name}-egress-${i}`, egressRules[i]);
+            this.createEgressRule(`${name}-egress-${i}`, egressRules[i]);
         }
 
         for (let i = 0, n = ingressRules.length; i < n; i++) {
-            await this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i]);
+            this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i]);
         }
     }
 
@@ -96,7 +80,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
         name: string, id: pulumi.Input<string>,
         args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}): SecurityGroup {
 
-        return SecurityGroup.create(name, {
+        return new SecurityGroup(name, {
             ...args,
             securityGroup: aws.ec2.SecurityGroup.get(name, id, {}, opts),
         }, opts);
@@ -115,7 +99,6 @@ export class SecurityGroup extends pulumi.ComponentResource {
     }
 }
 
-utils.Capture(SecurityGroup.prototype).initialize.doNotCapture = true;
 utils.Capture(SecurityGroup.prototype).createEgressRule.doNotCapture = true;
 utils.Capture(SecurityGroup.prototype).createIngressRule.doNotCapture = true;
 
