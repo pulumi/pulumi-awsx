@@ -20,26 +20,7 @@ import * as x from "..";
 import * as utils from "./../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
-    /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
-
-        super(version, "awsx:x:ecs:FargateTaskDefinition", name, opts);
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new FargateTaskDefinition] directly. Use [FargateTaskDefinition.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string,
-                               args: ecs.FargateTaskDefinitionArgs,
-                               opts: pulumi.ComponentResourceOptions = {}) {
-        const result = new FargateTaskDefinition(1, name, opts);
-        await result.initializeTaskDefinition(name, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initializeTaskDefinition(name: string, args: ecs.FargateTaskDefinitionArgs) {
+    constructor(name: string, args: ecs.FargateTaskDefinitionArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -61,7 +42,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
 
         delete (<any>argsCopy).container;
 
-        await this.initialize(name, /*isFargate:*/ true, argsCopy);
+        super("awsx:x:ecs:FargateTaskDefinition", name, /*isFargate:*/ true, argsCopy, opts);
 
         this.registerOutputs();
     }
@@ -85,8 +66,6 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
         }, { parent: this, ...opts });
     }
 }
-
-utils.Capture(FargateTaskDefinition.prototype).initializeTaskDefinition.doNotCapture = true;
 
 /**
  * Gets the list of all supported fargate configs.  We'll compute the amount of memory/vcpu
@@ -211,42 +190,25 @@ export class FargateService extends ecs.Service {
     public readonly taskDefinition!: FargateTaskDefinition;
 
     /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
-        super(version, "awsx:x:ecs:FargateService", name, opts);
-
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new FargateService] directly. Use [FargateService.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const result = new FargateService(1, name, opts);
-        await result.initializeService(name, args, opts);
-        return result;
-    }
-
-    /** @internal */
-    public async initializeService(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions) {
-        const _this = utils.Mutable(this);
-
+    constructor(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const cluster = args.cluster || await x.ecs.Cluster.getDefault();
+        const cluster = args.cluster || x.ecs.Cluster.getDefault();
 
         const taskDefinition = args.taskDefinition ||
-            await ecs.FargateTaskDefinition.create(name, {
+            new ecs.FargateTaskDefinition(name, {
                 ...args.taskDefinitionArgs,
                 vpc: cluster.vpc,
             }, opts);
 
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
-        const securityGroups = await x.ec2.getSecurityGroups(
+        const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = getSubnets(cluster, args.subnets, assignPublicIp);
 
-        await this.initialize(name, {
+        super("awsx:x:ecs:FargateService", name, {
             ...args,
             taskDefinition,
             securityGroups,
@@ -256,15 +218,13 @@ export class FargateService extends ecs.Service {
                 assignPublicIp,
                 securityGroups: securityGroups.map(g => g.id),
             },
-        }, /*isFargate:*/ true);
+        }, opts);
 
-        _this.taskDefinition = taskDefinition;
+        this.taskDefinition = taskDefinition;
 
         this.registerOutputs();
     }
 }
-
-utils.Capture(FargateService.prototype).initializeService.doNotCapture = true;
 
 function getSubnets(
         cluster: ecs.Cluster,
@@ -295,7 +255,7 @@ export interface FargateTaskDefinitionArgs {
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
      * provided as it will be inferred from the cluster the service is associated with.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
