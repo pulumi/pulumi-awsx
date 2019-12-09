@@ -146,7 +146,7 @@ export interface SecurityGroupArgs {
     /**
      * The vpc this security group applies to.  Or [Vpc.getDefault] if unspecified.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc>;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
 
     /**
      * The security group description. Defaults to "Managed by Terraform". Cannot be "". __NOTE__:

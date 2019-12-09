@@ -27,7 +27,6 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly listeners: mod.Listener[] = [];
     public readonly targetGroups: mod.TargetGroup[] = [];
 
-    /** @internal */
     constructor(type: string, name: string, args: LoadBalancerArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super(type, name, {}, opts);
 
