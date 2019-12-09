@@ -78,7 +78,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
      */
     public static fromExistingId(
         name: string, id: pulumi.Input<string>,
-        args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}): SecurityGroup {
+        args: SecurityGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
 
         return new SecurityGroup(name, {
             ...args,
