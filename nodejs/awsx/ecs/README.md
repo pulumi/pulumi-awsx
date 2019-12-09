@@ -271,8 +271,9 @@ const task = new awsx.ecs.FargateTaskDefinition("task", {
 Finally, Pulumi offers a way to create a Container from a callback function.  This allows for an infrastructure setup where the code that runs in a container is itself supplied as code directly in the Pulumi application like so.  This can be setup like so:
 
 ```ts
-const targetGroup = new awsx.lb.NetworkTargetGroup("custom", { port: 8080 });
-const listener = targetGroup.createListener("custom", { port: 80 });
+const listener =
+    new awsx.lb.NetworkTargetGroup("custom", { port: 8080 })
+               .createListener("custom", { port: 80 });
 
 const service = new awsx.ecs.EC2Service("custom", {
     cluster,
