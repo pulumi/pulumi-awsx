@@ -65,7 +65,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
      * details.
      */
     public createListener(name: string, args: ApplicationListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        return ApplicationListener.create(name, {
+        return new ApplicationListener(name, {
             loadBalancer: this,
             ...args,
         }, { parent: this, ...opts });
@@ -76,7 +76,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
      * details.
      */
     public createTargetGroup(name: string, args: ApplicationTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        return ApplicationTargetGroup.create(name, {
+        return new ApplicationTargetGroup(name, {
             loadBalancer: this,
             ...args,
         }, { parent: this, ...opts });
@@ -127,10 +127,10 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     }
 
     public createListener(name: string, args: ApplicationListenerArgs,
-                          opts: pulumi.ComponentResourceOptions = {}): Promise<ApplicationListener> {
+                          opts: pulumi.ComponentResourceOptions = {}): ApplicationListener {
         // We didn't use to parent the listener to the target group.  Now we do.  Create an alias
         // from the old parent to the current one if this moves over.
-        return ApplicationListener.create(name, {
+        return new ApplicationListener(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
             ...args,
@@ -184,20 +184,14 @@ function computePortInfo(
 
 export class ApplicationListener extends mod.Listener {
     public readonly loadBalancer: ApplicationLoadBalancer;
-    public readonly defaultTargetGroup?: x.lb.ApplicationTargetGroup;
+    public readonly defaultTargetGroup: x.lb.ApplicationTargetGroup | undefined;
 
     // tslint:disable-next-line:variable-name
-    private readonly __isApplicationListenerInstance: boolean = true;
+    private readonly __isApplicationListenerInstance: boolean;
 
     /** @internal */
-    constructor(version: number, name: string, loadBalancer: ApplicationLoadBalancer, opts: pulumi.ComponentResourceOptions) {
-        super(version, "awsx:lb:ApplicationListener", name, loadBalancer, opts);
-        this.loadBalancer = loadBalancer;
-    }
-
-    public static async create(name: string,
-                               args: ApplicationListenerArgs,
-                               opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: ApplicationListenerArgs,
+        opts: pulumi.ComponentResourceOptions = {}) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
                          (args.defaultActions ? 1 : 0) +
@@ -209,38 +203,30 @@ export class ApplicationListener extends mod.Listener {
 
         const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
             ? args.loadBalancer
-            : await ApplicationLoadBalancer.create(name, {
+            : new ApplicationLoadBalancer(name, {
                 ...args.loadBalancer,
                 vpc: args.vpc,
                 name: args.name,
             }, opts);
 
-        const result = new ApplicationListener(1, name, loadBalancer, opts);
-        await result.initializeListener(name, loadBalancer, args, opts);
-        return result;
-    }
-
-    /** @internal */
-    public async initializeListener(name: string,
-                                    loadBalancer: ApplicationLoadBalancer,
-                                    args: ApplicationListenerArgs,
-                                    opts: pulumi.ComponentResourceOptions) {
-
         const { port, protocol } = computePortInfo(args.port, args.protocol);
-        const { defaultActions, defaultListener } = await getDefaultActions(
+        const { defaultActions, defaultListener } = getDefaultActions(
             name, loadBalancer, args, port, protocol, opts);
 
         // Pass along the target as the defaultTarget for this listener.  This allows this listener
         // to defer to it for ContainerPortMappings information.  this allows this listener to be
         // passed in as the portMappings information needed for a Service.
 
-        await this.initialize(name, defaultListener, {
+        super("awsx:lb:ApplicationListener", name, loadBalancer, defaultListener, {
             ...args,
             defaultActions,
             loadBalancer,
             port,
             protocol,
-        });
+        }, opts);
+
+        this.loadBalancer = loadBalancer;
+        this.__isApplicationListenerInstance = true;
 
         loadBalancer.listeners.push(this);
 
@@ -259,8 +245,8 @@ export class ApplicationListener extends mod.Listener {
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
-                await securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, { parent: this });
-                await securityGroup.createEgressRule(`${name}-external-${i}-egress`, args, { parent: this });
+                securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, { parent: this });
+                securityGroup.createEgressRule(`${name}-external-${i}-egress`, args, { parent: this });
             }
         }
 
@@ -273,9 +259,7 @@ export class ApplicationListener extends mod.Listener {
     }
 }
 
-utils.Capture(ApplicationListener.prototype).initializeListener.doNotCapture = true;
-
-async function getDefaultActions(
+function getDefaultActions(
         name: string, loadBalancer: ApplicationLoadBalancer,
         args: ApplicationListenerArgs,
         port: pulumi.Input<number>,
@@ -294,7 +278,7 @@ async function getDefaultActions(
 
     // User didn't provide default actions for this listener.  Create a reasonable target group for
     // us and use that as our default action.
-    const targetGroup = await createTargetGroup();
+    const targetGroup = createTargetGroup();
 
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
 
@@ -305,13 +289,13 @@ async function getDefaultActions(
             return args.targetGroup;
         }
         else if (args.targetGroup) {
-            return ApplicationTargetGroup.create(name, {
+            return new ApplicationTargetGroup(name, {
                 ...args.targetGroup,
                 loadBalancer,
             }, opts);
         }
         else {
-            return ApplicationTargetGroup.create(name, {
+            return new ApplicationTargetGroup(name, {
                 port,
                 protocol,
                 loadBalancer,
