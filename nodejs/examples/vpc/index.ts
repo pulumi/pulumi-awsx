@@ -16,43 +16,41 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export = async () => {
-    const config = new pulumi.Config("aws");
-    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-    const vpcWithDifferentCidrBlock = await awsx.ec2.Vpc.create("custom1", {
-        cidrBlock: "192.168.0.0/16",
-    }, providerOpts);
+const vpcWithDifferentCidrBlock = awsx.ec2.Vpc.create("custom1", {
+    cidrBlock: "192.168.0.0/16",
+}, providerOpts);
 
-    const vpcWithOnlyPublicSubnets = await awsx.ec2.Vpc.create("custom2", {
-        cidrBlock: "193.168.0.0/16",
-        subnets: [{
-            type: "public"
-        }]
-    }, providerOpts);
+const vpcWithOnlyPublicSubnets = awsx.ec2.Vpc.create("custom2", {
+    cidrBlock: "193.168.0.0/16",
+    subnets: [{
+        type: "public"
+    }]
+}, providerOpts);
 
-    const vpcWithOnlyPrivateSubnets = await awsx.ec2.Vpc.create("custom3", {
-        cidrBlock: "194.168.0.0/16",
-        subnets: [{
-            type: "private"
-        }]
-    }, providerOpts);
+const vpcWithOnlyPrivateSubnets = awsx.ec2.Vpc.create("custom3", {
+    cidrBlock: "194.168.0.0/16",
+    subnets: [{
+        type: "private"
+    }]
+}, providerOpts);
 
-    const vpcWithIpv6 = await awsx.ec2.Vpc.create("custom4", {
-        assignGeneratedIpv6CidrBlock: true,
-    }, providerOpts);
+const vpcWithIpv6 = awsx.ec2.Vpc.create("custom4", {
+    assignGeneratedIpv6CidrBlock: true,
+}, providerOpts);
 
-    const vpcWithProvider = await awsx.ec2.Vpc.create("custom5", {
-        assignGeneratedIpv6CidrBlock: true,
-    }, { provider: new aws.Provider("prov2", { region: "us-east-1" }) });
+const vpcWithProvider = awsx.ec2.Vpc.create("custom5", {
+    assignGeneratedIpv6CidrBlock: true,
+}, { provider: new aws.Provider("prov2", { region: "us-east-1" }) });
 
-    const vpcWithLocations = await awsx.ec2.Vpc.create("custom6", {
-        cidrBlock: "10.0.0.0/16",
-        subnets: [
-            { type: "public", location: "10.0.0.0/24" },
-            { type: "private", location: "10.0.1.0/24" },
-            { type: "isolated", name: "db", location: "10.0.2.0/24" },
-            { type: "isolated", name: "redis", location: "10.0.3.0/24" },
-        ],
-    }, providerOpts);
-};
+const vpcWithLocations = awsx.ec2.Vpc.create("custom6", {
+    cidrBlock: "10.0.0.0/16",
+    subnets: [
+        { type: "public", location: "10.0.0.0/24" },
+        { type: "private", location: "10.0.1.0/24" },
+        { type: "isolated", name: "db", location: "10.0.2.0/24" },
+        { type: "isolated", name: "redis", location: "10.0.3.0/24" },
+    ],
+}, providerOpts);
