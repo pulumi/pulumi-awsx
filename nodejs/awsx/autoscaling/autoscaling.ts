@@ -48,7 +48,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * https://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html
      * for more details.
      */
-    public readonly targetGroups!: x.lb.TargetGroup[];
+    public readonly targetGroups: x.lb.TargetGroup[];
 
     constructor(name: string, args: AutoScalingGroupArgs, opts: pulumi.ComponentResourceOptions) {
         super("awsx:x:autoscaling:AutoScalingGroup", name, {}, opts);
