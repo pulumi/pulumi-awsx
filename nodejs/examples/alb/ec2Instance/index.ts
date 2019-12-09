@@ -20,24 +20,24 @@ export = async () => {
     const config = new pulumi.Config("aws");
     const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-    // Create a security group to let traffic flow.
-    const sg = await awsx.ec2.SecurityGroup.create("web-sg", {
-        vpc: await awsx.ec2.Vpc.getDefault(providerOpts),
-    }, providerOpts);
+    const vpc = await awsx.ec2.Vpc.getDefaultValue(providerOpts);
 
-    const ipv4egress = await sg.createEgressRule("ipv4-egress", {
+    // Create a security group to let traffic flow.
+    const sg = new awsx.ec2.SecurityGroup("web-sg", { vpc }, providerOpts);
+
+    const ipv4egress = sg.createEgressRule("ipv4-egress", {
         ports: new awsx.ec2.AllTraffic(),
         location: new awsx.ec2.AnyIPv4Location(),
     });
-    const ipv6egress = await sg.createEgressRule("ipv6-egress", {
+    const ipv6egress = sg.createEgressRule("ipv6-egress", {
         ports: new awsx.ec2.AllTraffic(),
         location: new awsx.ec2.AnyIPv6Location(),
     });
 
     // Creates an ALB associated with the default VPC for this region and listen on port 80.
-    const alb = await awsx.elasticloadbalancingv2.ApplicationLoadBalancer.create("web-traffic",
+    const alb = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("web-traffic",
         { external: true, securityGroups: [ sg ] }, providerOpts);
-    const listener = await alb.createListener("web-listener", { port: 80 });
+    const listener = alb.createListener("web-listener", { port: 80 });
 
     // For each subnet, and each subnet/zone, create a VM and a listener.
     const publicIps: pulumi.Output<string>[] = [];
@@ -63,7 +63,7 @@ export = async () => {
         }, providerOpts);
         publicIps.push(vm.publicIp);
 
-        await alb.attachTarget("target-" + i, vm);
+        alb.attachTarget("target-" + i, vm);
     }
 
     // Export the resulting URL so that it's easy to access.
