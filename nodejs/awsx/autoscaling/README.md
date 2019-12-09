@@ -150,7 +150,7 @@ const targetGroup = loadBalancer.createTargetGroup("testing", { port: 80, target
 
 const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     targetGroups: [targetGroup],
-    subnetIds: cluster.vpc.publicSubnetIds,
+    subnetIds: awsx.ec2.Vpc.getDefault().publicSubnetIds,
     templateParameters: { minSize: 10 },
     launchConfigurationArgs: { instanceType: "t2.medium", associatePublicIpAddress: true },
 });
