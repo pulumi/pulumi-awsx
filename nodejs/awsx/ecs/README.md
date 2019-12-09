@@ -241,7 +241,7 @@ However, `image` is far more flexible than that.  Beyond just accepting a string
 For example `fromPath` will run a Docker build in that path, push the result up to an ECR repository, and then pass the repository path to the container:
 
 ```ts
-const task = await awsx.ecs.FargateTaskDefinition.create("task", {
+const task = new awsx.ecs.FargateTaskDefinition("task", {
     containers: {
         nginx: {
             image: awsx.ecs.Image.fromPath(/*localPath*/"..."),
@@ -254,7 +254,7 @@ const task = await awsx.ecs.FargateTaskDefinition.create("task", {
 For more control over the Docker invocation `fromDockerBuild` an be used like so:
 
 ```ts
-const task = await awsx.ecs.FargateTaskDefinition.create("task", {
+const task = new awsx.ecs.FargateTaskDefinition("task", {
     containers: {
         nginx: {
             image: awsx.ecs.Image.fromDockerBuild({
@@ -271,10 +271,10 @@ const task = await awsx.ecs.FargateTaskDefinition.create("task", {
 Finally, Pulumi offers a way to create a Container from a callback function.  This allows for an infrastructure setup where the code that runs in a container is itself supplied as code directly in the Pulumi application like so.  This can be setup like so:
 
 ```ts
-const targetGroup = await awsx.lb.NetworkTargetGroup("custom", { port: 8080 });
-const listener = await targetGroup.createListener("custom", { port: 80 });
+const targetGroup = new awsx.lb.NetworkTargetGroup("custom", { port: 8080 });
+const listener = targetGroup.createListener("custom", { port: 80 });
 
-const service = await awsx.ecs.EC2Service.create("custom", {
+const service = new awsx.ecs.EC2Service("custom", {
     cluster,
     desiredCount: 2,
     taskDefinitionArgs: {

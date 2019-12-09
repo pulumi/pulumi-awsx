@@ -27,11 +27,11 @@ const image = repository.buildAndPushImage("./app");
 Now that we have an image, it can be easily referenced from an ECS Service like so:
 
 ```ts
-const repository = await awsx.ecr.Repository.create("app");
+const repository = new awsx.ecr.Repository("app");
 const image = repository.buildAndPushImage("./app");
 
-const listener = await awsx.lb.NetworkListener.create("app", { port: 80 });
-const nginx = await awsx.ecs.FargateService.create("app", {
+const listener = new awsx.lb.NetworkListener("app", { port: 80 });
+const nginx = new awsx.ecs.FargateService("app", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
@@ -49,11 +49,11 @@ In the case where you don't really need to use the repository (except as a place
 
 
 ```ts
-const nginx = await awsx.ecs.FargateService.create("app", {
+const nginx = new awsx.ecs.FargateService("app", {
     taskDefinitionArgs: {
         containers: {
             nginx: {
-                image: await awsx.ecr.buildAndPushImage("app", "./app"),
+                image: awsx.ecr.buildAndPushImage("app", "./app"),
                 // ...
             },
         },
@@ -76,8 +76,8 @@ Policies can apply to all images, 'untagged' images, or tagged images that match
 By default an awsx.ecr.Repository is created with a policy that will only keep at most one untagged image around.  In other words, the following are equivalent:
 
 ```ts
-const repository1 = await awsx.ecr.Repository.create("app1");
-const repository2 = await awsx.ecr.Repository.create("app2", {
+const repository1 = new awsx.ecr.Repository("app1");
+const repository2 = new awsx.ecr.Repository("app2", {
     lifeCyclePolicyArgs: {
         rules: [{
             selection: "untagged",
@@ -115,7 +115,7 @@ A Lifecycle Policy is built from a collection of `rules`.  These rules are order
 The following example shows the lifecycle policy syntax for a policy that expires untagged images older than 14 days:
 
 ```ts
-const repository = await awsx.ecr.Repository.create("app", {
+const repository = new awsx.ecr.Repository("app", {
     lifeCyclePolicyArgs: {
         rules: [{
             selection: "untagged",
@@ -130,7 +130,7 @@ const repository = await awsx.ecr.Repository.create("app", {
 The following examples use multiple rules in a lifecycle policy. An example repository and lifecycle policy are given along with an explanation of the outcome.
 
 ```ts
-const repository = await awsx.ecr.Repository.create("app", {
+const repository = new awsx.ecr.Repository("app", {
     lifeCyclePolicyArgs: {
         rules: [{
             selection: { tagPrefixList: ["prod"] },
@@ -165,7 +165,7 @@ Result: Image A is expired.
 This is the same repository as the previous example but the rule priority order is changed to illustrate the outcome.
 
 ```ts
-const repository = await awsx.ecr.Repository.create("app", {
+const repository = new awsx.ecr.Repository("app", {
     lifeCyclePolicyArgs: {
         rules: [{
             selection: { tagPrefixList: ["beta"] },
@@ -202,7 +202,7 @@ The following examples specify the lifecycle policy syntax for multiple tag pref
 When multiple tag prefixes are specified on a single rule, images must match all listed tag prefixes.
 
 ```ts
-const repository = await awsx.ecr.Repository.create("app", {
+const repository = new awsx.ecr.Repository("app", {
     lifeCyclePolicyArgs: {
         rules: [{
             selection: { tagPrefixList: ["alpha", "beta"] },
@@ -233,7 +233,7 @@ The following lifecycle policy examples specify all images with different filter
 
 
 ```ts
-const repository = await awsx.ecr.Repository.create("app", {
+const repository = new awsx.ecr.Repository("app", {
     lifeCyclePolicyArgs: {
         rules: [{
             selection: "any",

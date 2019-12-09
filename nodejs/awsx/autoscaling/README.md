@@ -7,9 +7,9 @@ AutoScalingGroups (ASGs) allow you to allocate a set of EC2 instances on which t
 AutoScalingGroups are created for a corresponding `awsx.ecs.Cluster`.  This can be done by either manually creating a cluster, or using `Cluster.getDefault()` to get to the default cluster for the default VPC for the account.  The simplest way to create a `AutoScalingGroup` is to just do:
 
 ```ts
-const cluster = await awsx.ecs.Cluster.create("testing", { vpc });
+const cluster = new awsx.ecs.Cluster("testing", { vpc });
 
-const autoScalingGroup = await cluster.createAutoScalingGroup("testing", {
+const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     templateParameters: { minSize: 10 },
     launchConfigurationArgs: { instanceType: "t2.medium" },
 });
@@ -18,7 +18,7 @@ const autoScalingGroup = await cluster.createAutoScalingGroup("testing", {
 This will create an ASG that use the private subnets of the VPC, attempting to keep around at least 10 instances running with the specified size.  If you want instances to be allowed access to the internet, this can be done by specifying:
 
 ```ts
-const autoScalingGroup = await cluster.createAutoScalingGroup("testing", {
+const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     // ... other parameters
     subnetIds: vpc.publicSubnetIds,
     launchConfigurationArgs: { instanceType: "t2.medium", associatePublicIpAddress: true },
@@ -143,12 +143,12 @@ autoScalingGroup.scaleToTrackAverageNetworkOut("scaleDownOnMonday", {
 3. Scaling based on the average number of requests completed per `awsx.lb.ApplicationTargetGroup` in the ASG.  In order to do this, the ASG must be informed of that particular `TargetGroup` at creation time. Scaling for `TargetGroup`s is only supported if the `TargetGroup.targetType` is set to `"instance"`.
 
 ```ts
-const cluster = await awsx.ecs.Cluster.create("testing");
-const loadBalancer = await awsx.lb.ApplicationLoadBalancer.create("testing", { external: true });
+const cluster = new awsx.ecs.Cluster("testing");
+const loadBalancer = new awsx.lb.ApplicationLoadBalancer("testing", { external: true });
 
-const targetGroup = await loadBalancer.createTargetGroup("testing", { port: 80, targetType: "instance" });
+const targetGroup = loadBalancer.createTargetGroup("testing", { port: 80, targetType: "instance" });
 
-const autoScalingGroup = await cluster.createAutoScalingGroup("testing", {
+const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     targetGroups: [targetGroup],
     subnetIds: cluster.vpc.publicSubnetIds,
     templateParameters: { minSize: 10 },
@@ -198,12 +198,12 @@ capacity and a desired capacity of 10. The current and desired capacity is maint
 aggregated metric value is greater than 40 and less than 60.
 
 ```ts
-const autoScalingGroup = await cluster.createAutoScalingGroup("testing", {
+const autoScalingGroup = cluster.createAutoScalingGroup("testing", {
     templateParameters: { minSize: 2, desiredCapacity: 10 },
     launchConfigurationArgs: { instanceType: "t2.medium" },
 });
 
-await autoScalingGroup.scaleInSteps("scale-in-out", {
+autoScalingGroup.scaleInSteps("scale-in-out", {
     metric: awsx.ecs.metrics.memoryUtilization({ service, statistic: "Average", unit: "Percent" }),
     adjustmentType: "PercentChangeInCapacity",
     steps: {
