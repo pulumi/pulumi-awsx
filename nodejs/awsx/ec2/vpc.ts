@@ -62,7 +62,7 @@ export class Vpc extends pulumi.ComponentResource {
         }
         else {
             if (!args.availabilityZones) {
-                throw new pulumi.ResourceError("Do not call [new Vpc]. Use [Vpc.create] instead.", this);
+                throw new pulumi.ResourceError("Do not call [new Vpc]. Use [Vpc.create] or [Vpc.createValue] instead.", this);
             }
 
             const cidrBlock = args.cidrBlock === undefined ? "10.0.0.0/16" : args.cidrBlock;
@@ -100,7 +100,11 @@ export class Vpc extends pulumi.ComponentResource {
         this.registerOutputs();
     }
 
-    public static async create(name: string, args: VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    public static create(name: string, args: VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        return pulumi.output(Vpc.createValue(name, args, opts));
+    }
+
+    public static async createValue(name: string, args: VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const availabilityZones = await getAvailabilityZones(opts.parent, args.numberOfAvailabilityZones);
         return new Vpc(name, {
             ...args,
