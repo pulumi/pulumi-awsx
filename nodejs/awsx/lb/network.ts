@@ -102,7 +102,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
     }
 
     public createListener(name: string, args: NetworkListenerArgs,
-                          opts: pulumi.ComponentResourceOptions = {}) {
+                          opts: pulumi.ComponentResourceOptions = {}): NetworkListener {
         return new NetworkListener(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
