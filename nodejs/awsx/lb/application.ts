@@ -191,7 +191,7 @@ export class ApplicationListener extends mod.Listener {
 
     /** @internal */
     constructor(name: string, args: ApplicationListenerArgs,
-        opts: pulumi.ComponentResourceOptions = {}) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
                          (args.defaultActions ? 1 : 0) +

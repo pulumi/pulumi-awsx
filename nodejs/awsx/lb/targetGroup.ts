@@ -29,7 +29,7 @@ export abstract class TargetGroup
 
     public readonly loadBalancer: mod.LoadBalancer;
     public readonly targetGroup: aws.lb.TargetGroup;
-    public readonly vpc: x.ec2.Vpc;
+    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
 
     public readonly listeners: x.lb.Listener[] = [];
 
@@ -44,7 +44,7 @@ export abstract class TargetGroup
             ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
 
-        this.vpc = args.vpc;
+        this.vpc = pulumi.output(args.vpc);
 
         // We used to hash the name of an TG to keep the name short.  This was necessary back when
         // people didn't have direct control over creating the TG.  In awsx though creating the TG
@@ -52,7 +52,7 @@ export abstract class TargetGroup
         // alias from the old name to the new one to keep things from being recreated.
         this.targetGroup = new aws.lb.TargetGroup(name, {
             ...args,
-            vpcId: this.vpc.id,
+            vpcId: this.vpc.apply(v => v.id),
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
             deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 300),
             targetType: utils.ifUndefined(args.targetType, "ip"),
@@ -178,7 +178,7 @@ export interface TargetGroupArgs {
     /**
      * The vpc for this target group.
      */
-    vpc: x.ec2.Vpc;
+    vpc: pulumi.Input<x.ec2.Vpc>;
 
     /**
      * @deprecated Not used.  Supply the name you want for a TargetGroup through the [name]

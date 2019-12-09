@@ -28,49 +28,34 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: NetworkListener[] = [];
     public readonly targetGroups: NetworkTargetGroup[] = [];
 
-    /** @internal */
-    constructor(version: number, name: string, opts: pulumi.ComponentResourceOptions) {
-        super(version, "awsx:lb:NetworkLoadBalancer", name, pulumi.mergeOptions(opts, {
-            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer" }],
-        }));
+    constructor(name: string,
+                args: NetworkLoadBalancerArgs = {},
+                opts: pulumi.ComponentResourceOptions = {}) {
 
-        if (typeof version !== "number") {
-            throw new pulumi.ResourceError("Do not call [new NetworkLoadBalancer] directly. Use [NetworkLoadBalancer.create] instead.", this);
-        }
-    }
-
-    public static async create(name: string, args: NetworkLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        const result = new NetworkLoadBalancer(1, name, opts);
-        await result.initializeLoadBalancer(name, args);
-        return result;
-    }
-
-    /** @internal */
-    public async initializeLoadBalancer(name: string, args: NetworkLoadBalancerArgs) {
-        await this.initialize(name, {
+        super("awsx:lb:NetworkLoadBalancer", name, {
             ...args,
             loadBalancerType: "network",
-        });
+        }, pulumi.mergeOptions(opts, {
+            aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer" }],
+        }));
 
         this.registerOutputs();
     }
 
     public createListener(name: string, args: NetworkListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        return NetworkListener.create(name, {
+        return new NetworkListener(name, {
             loadBalancer: this,
             ...args,
         }, { parent: this, ...opts });
     }
 
     public createTargetGroup(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        return NetworkTargetGroup.create(name, {
+        return new NetworkTargetGroup(name, {
             loadBalancer: this,
             ...args,
         }, { parent: this, ...opts });
     }
 }
-
-utils.Capture(NetworkLoadBalancer.prototype).initializeLoadBalancer.doNotCapture = true;
 
 /**
  * Each target group is used to route requests to one or more registered targets. When you create
