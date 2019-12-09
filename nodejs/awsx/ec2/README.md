@@ -11,9 +11,7 @@ By default, Amazon will create a 'Default VPC' in all regions of your account.  
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-export = async () => {
-   const vpc = await awsx.ec2.Vpc.getDefault();
-};
+const vpc = awsx.ec2.Vpc.getDefault();
 ```
 
 Many components in awsx work with a specific VPC (for example, Clusters and LoadBalancers).  However, if a specific VPC is not provided, they will use this default VPC instead.  This makes it simple to set up infrastructure for the default VPC without having to explicitly provide it all the time.

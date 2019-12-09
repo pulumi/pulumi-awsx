@@ -36,12 +36,12 @@ export = async () => {
 
     // Creates an ALB associated with the default VPC for this region and listen on port 80.
     const alb = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("web-traffic",
-        { external: true, securityGroups: [ sg ] }, providerOpts);
+        { vpc, external: true, securityGroups: [ sg ] }, providerOpts);
     const listener = alb.createListener("web-listener", { port: 80 });
 
     // For each subnet, and each subnet/zone, create a VM and a listener.
     const publicIps: pulumi.Output<string>[] = [];
-    for (let i = 0; i < alb.vpc.publicSubnets.length; i++) {
+    for (let i = 0; i < vpc.publicSubnets.length; i++) {
         const getAmiResult = await aws.getAmi({
             filters: [
                 { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*" ] },
@@ -54,8 +54,8 @@ export = async () => {
         const vm = new aws.ec2.Instance(`web-${i}`, {
             ami: getAmiResult.id,
             instanceType: "m5.large",
-            subnetId: alb.vpc.publicSubnets[i].subnet.id,
-            availabilityZone: alb.vpc.publicSubnets[i].subnet.availabilityZone,
+            subnetId: vpc.publicSubnets[i].subnet.id,
+            availabilityZone: vpc.publicSubnets[i].subnet.availabilityZone,
             vpcSecurityGroupIds: [ sg.id ],
             userData: `#!/bin/bash
     echo "Hello World, from Server ${i+1}!" > index.html
