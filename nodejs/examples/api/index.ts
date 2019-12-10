@@ -29,7 +29,7 @@ const lambda = new aws.lambda.Function("myfunction", {
     code: new pulumi.asset.FileArchive("./afunction"),
     role: role.arn,
     handler: "index.handler",
-    runtime: aws.lambda.NodeJS8d10Runtime,
+    runtime: aws.lambda.NodeJS10dXRuntime,
 }, providerOpts);
 
 // Define the Authorizers up here so we can use it for two routes. Note - if you are sharing an
