@@ -19,33 +19,33 @@ import * as awsx from "@pulumi/awsx";
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const vpcWithDifferentCidrBlock = awsx.ec2.Vpc.create("custom1", {
+const vpcWithDifferentCidrBlock = new awsx.ec2.Vpc("custom1", {
     cidrBlock: "192.168.0.0/16",
 }, providerOpts);
 
-const vpcWithOnlyPublicSubnets = awsx.ec2.Vpc.create("custom2", {
+const vpcWithOnlyPublicSubnets = new awsx.ec2.Vpc("custom2", {
     cidrBlock: "193.168.0.0/16",
     subnets: [{
         type: "public"
     }]
 }, providerOpts);
 
-const vpcWithOnlyPrivateSubnets = awsx.ec2.Vpc.create("custom3", {
+const vpcWithOnlyPrivateSubnets = new awsx.ec2.Vpc("custom3", {
     cidrBlock: "194.168.0.0/16",
     subnets: [{
         type: "private"
     }]
 }, providerOpts);
 
-const vpcWithIpv6 = awsx.ec2.Vpc.create("custom4", {
+const vpcWithIpv6 = new awsx.ec2.Vpc("custom4", {
     assignGeneratedIpv6CidrBlock: true,
 }, providerOpts);
 
-const vpcWithProvider = awsx.ec2.Vpc.create("custom5", {
+const vpcWithProvider = new awsx.ec2.Vpc("custom5", {
     assignGeneratedIpv6CidrBlock: true,
 }, { provider: new aws.Provider("prov2", { region: "us-east-1" }) });
 
-const vpcWithLocations = awsx.ec2.Vpc.create("custom6", {
+const vpcWithLocations = new awsx.ec2.Vpc("custom6", {
     cidrBlock: "10.0.0.0/16",
     subnets: [
         { type: "public", location: "10.0.0.0/24" },

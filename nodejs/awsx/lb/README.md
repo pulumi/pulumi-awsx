@@ -15,7 +15,7 @@ import * as awsx from "@pulumi/awsx";
 const nlb1 = new awsx.lb.NetworkLoadBalancer("nlb1", { external: true });
 
 // To create an NLB for a different Vpc, simply pass it in:
-const vpc = awsx.ec2.Vpc.create(...);
+const vpc = new awsx.ec2.Vpc(...);
 const nlb2 = new awsx.lb.NetworkLoadBalancer("nlb2", { vpc, external: true });
 };
 ```

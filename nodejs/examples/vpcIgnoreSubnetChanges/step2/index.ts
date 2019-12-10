@@ -19,7 +19,7 @@ import * as awsx from "@pulumi/awsx";
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const vpcWithIgnoredSubnetTags = awsx.ec2.Vpc.create("custom7", {
+const vpcWithIgnoredSubnetTags = new awsx.ec2.Vpc("custom7", {
     subnets: [{
         type: "public",
         ignoreChanges: ["tags"],

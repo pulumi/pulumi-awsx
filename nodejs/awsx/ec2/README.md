@@ -26,7 +26,7 @@ When you create a VPC, you must specify a range of IPv4 addresses for the VPC in
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = awsx.ec2.Vpc.create("custom", {
+const vpc = new awsx.ec2.Vpc("custom", {
    cidrBlock: "10.0.0.0/16",
    // other args
    // ...
@@ -45,7 +45,7 @@ If not provided `numberOfAvailabilityZones` will default to `2`, but a different
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = awsx.ec2.Vpc.create("custom", {
+const vpc = new awsx.ec2.Vpc("custom", {
    cidrBlock: "10.0.0.0/16",
    numberOfAvailabilityZones: 3,
 });
@@ -63,7 +63,7 @@ By default, if unspecified, a VPC will automatically partition each availability
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = awsx.ec2.Vpc.create("custom", {
+const vpc = new awsx.ec2.Vpc("custom", {
    ...
    subnets: [{ type: "public" }, { type: "private" }],
 });
@@ -75,7 +75,7 @@ To specify your own subnet configuration you can do the following:
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = awsx.ec2.Vpc.create("custom", {
+const vpc = new awsx.ec2.Vpc("custom", {
    cidrBlock: "10.0.0.0/16",
    numberOfAvailabilityZones: 3,
    subnets: [{ type: "public" }, { type: "private" }, { type: isolated }],
@@ -88,7 +88,7 @@ There is no restriction on the number of public/private/isolated subnets in an a
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = awsx.ec2.Vpc.create("custom", {
+const vpc = new awsx.ec2.Vpc("custom", {
    cidrBlock: "10.0.0.0/16",
    numberOfAvailabilityZones: 3,
    subnets: [
@@ -111,7 +111,7 @@ To allow connections from `private` subnets to the internet, NAT gateways will b
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = awsx.ec2.Vpc.create("custom", {
+const vpc = new awsx.ec2.Vpc("custom", {
    cidrBlock: "10.0.0.0/16",
    numberOfAvailabilityZones: 3,
    numberOfNatGateways: 1,
@@ -128,7 +128,7 @@ All traffic in and out of a VPC is controlled by [Security Groups](https://docs.
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = awsx.ec2.Vpc.create("custom", {
+const vpc = new awsx.ec2.Vpc("custom", {
    // ...
 });
 

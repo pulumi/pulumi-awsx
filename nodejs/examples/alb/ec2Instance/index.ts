@@ -20,7 +20,7 @@ export = async () => {
     const config = new pulumi.Config("aws");
     const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-    const vpc = await awsx.ec2.Vpc.getDefaultValue(providerOpts);
+    const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
 
     // Create a security group to let traffic flow.
     const sg = new awsx.ec2.SecurityGroup("web-sg", { vpc }, providerOpts);
@@ -41,7 +41,8 @@ export = async () => {
 
     // For each subnet, and each subnet/zone, create a VM and a listener.
     const publicIps: pulumi.Output<string>[] = [];
-    for (let i = 0; i < vpc.publicSubnets.length; i++) {
+    const subnets = await vpc.publicSubnets;
+    for (let i = 0; i < subnets.length; i++) {
         const getAmiResult = await aws.getAmi({
             filters: [
                 { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*" ] },
@@ -54,8 +55,8 @@ export = async () => {
         const vm = new aws.ec2.Instance(`web-${i}`, {
             ami: getAmiResult.id,
             instanceType: "m5.large",
-            subnetId: vpc.publicSubnets[i].subnet.id,
-            availabilityZone: vpc.publicSubnets[i].subnet.availabilityZone,
+            subnetId: subnets[i].subnet.id,
+            availabilityZone: subnets[i].subnet.availabilityZone,
             vpcSecurityGroupIds: [ sg.id ],
             userData: `#!/bin/bash
     echo "Hello World, from Server ${i+1}!" > index.html
