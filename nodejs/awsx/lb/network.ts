@@ -238,7 +238,7 @@ export interface NetworkLoadBalancerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
+    vpc?: x.ec2.Vpc;
 
     /**
      * The name of the LoadBalancer. This name must be unique within your AWS account, can have a
@@ -330,7 +330,7 @@ export interface NetworkTargetGroupArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
+    vpc?: x.ec2.Vpc;
 
     /**
      * The name of the TargetGroup. If not specified, the [name] parameter passed into the
@@ -414,7 +414,7 @@ export interface NetworkListenerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
+    vpc?: x.ec2.Vpc;
 
     /**
      * An explicit name to use for dependent resources.  Specifically, if a LoadBalancer or

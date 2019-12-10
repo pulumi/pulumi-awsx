@@ -20,8 +20,8 @@ import * as topology from "./vpcTopology";
 
 import * as utils from "./../utils";
 
-// Mapping from vpcId to Vpc.
-const defaultVpcs = new Map<string, Promise<VpcData>>();
+// Mapping from default vpc name to Vpc.
+const defaultVpcs = new Map<string, Vpc>();
 
 class VpcData {
     // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
@@ -120,19 +120,6 @@ class VpcData {
             this.addInternetGateway(name, this.publicSubnets);
         }
     }
-
-    // public static create(name: string, args: VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
-    //     return pulumi.output(Vpc.createValue(name, args, opts));
-    // }
-
-    // public static async createValue(name: string, args: VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
-    //     const provider = Vpc.getProvider(opts);
-    //     const availabilityZones = await getAvailabilityZones(opts.parent, provider, args.numberOfAvailabilityZones);
-    //     return new Vpc(name, {
-    //         ...args,
-    //         availabilityZones,
-    //     }, opts);
-    // }
 
     /** @internal */
     public async partition(
@@ -251,28 +238,6 @@ class VpcData {
         return natGateway;
     }
 
-    /**
-     * Gets the default vpc for the current aws account and region.
-     *
-     * See https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html for more details.
-     *
-     * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
-     * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
-     * version be used instead.  This version will properly respect providers.
-     */
-    // public static getDefault(opts: pulumi.InvokeOptions = {}): Vpc {
-    //     return pulumi.output(Vpc.getDefaultValue(opts));
-    // }
-
-    // private static getProvider(opts: pulumi.InvokeOptions = {}) {
-    //     // Pull out the provider to ensure we're looking up the default vpc in the right location.
-    //     // Note that we do not pass 'parent' along as we want the default vpc to always be parented
-    //     // logically by hte stack.
-    //     const provider = opts.provider ? opts.provider :
-    //                      opts.parent   ? opts.parent.getProvider("aws::") : undefined;
-    //     return provider;
-    // }
-
     public static async computeDefault(name: string, vpc: Vpc, vpcId: string, provider: pulumi.ProviderResource | undefined) {
         // back compat.  We always would just use the first two public subnets of the region
         // we're in.  So preserve that, even though we could get all of them here.  Pulling in
@@ -309,27 +274,41 @@ export class Vpc extends pulumi.ComponentResource {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
-            this._underlyingData = Promise.resolve(new VpcData(name, this, args, opts));
+            this._underlyingData = this.initializeExistingVpcArgs(name, args, opts);
         }
         else if (isExistingVpcIdArgs(args)) {
-            this._underlyingData = Promise.resolve(new VpcData(name, this, args, opts));
+            this._underlyingData = this.initializeExistingVpcIdArgs(name, args, opts);
         }
         else if (isDefaultVpcArgs(args)) {
-            this._underlyingData = this.getDefaultAsync(name, args.opts);
+            this._underlyingData = this.initializeDefaultVpcArgs(name, args.opts);
         }
         else {
-            const provider = Vpc.getProvider(opts);
-            const availabilityZones = getAvailabilityZones(opts.parent, provider, args.numberOfAvailabilityZones);
-            this._underlyingData = availabilityZones.then(azs => {
-                return new VpcData(name, this, {
-                    ...args,
-                    availabilityZones: azs,
-                }, opts);
-            });
+            this._underlyingData = this.initializeVpcArgs(name, args, opts);
         }
 
         this.id = pulumi.output(this._underlyingData.then(v => v.id));
         this._underlyingData.then(_ => this.registerOutputs());
+    }
+
+    /** @internal */
+    public async initializeExistingVpcArgs(name: string, args: x.ec2.ExistingVpcArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
+        return new VpcData(name, this, args, opts);
+    }
+
+    /** @internal */
+    public async initializeExistingVpcIdArgs(name: string, args: x.ec2.ExistingVpcIdArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
+        return new VpcData(name, this, args, opts);
+    }
+
+    /** @internal */
+    public async initializeVpcArgs(name: string, args: x.ec2.VpcArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
+        const provider = Vpc.getProvider(opts);
+        const availabilityZones = await getAvailabilityZones(opts.parent, provider, args.numberOfAvailabilityZones);
+
+        return new VpcData(name, this, {
+            ...args,
+            availabilityZones,
+        }, opts);
     }
 
     private static getProvider(opts: pulumi.InvokeOptions = {}) {
@@ -399,11 +378,18 @@ export class Vpc extends pulumi.ComponentResource {
      */
     public static getDefault(opts: pulumi.InvokeOptions = {}, name?: string): Vpc {
         name = name || "default-vpc";
-        return new Vpc(name, { isDefault: true, opts }, opts);
+
+        let vpc = defaultVpcs.get(name);
+        if (!vpc) {
+            vpc = new Vpc(name, { isDefault: true, opts }, opts);
+            defaultVpcs.set(name, vpc);
+        }
+
+        return vpc;
     }
 
     /** @internal */
-    public async getDefaultAsync(name: string, opts: pulumi.InvokeOptions = {}): Promise<VpcData> {
+    public async initializeDefaultVpcArgs(name: string, opts: pulumi.InvokeOptions = {}): Promise<VpcData> {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
         // logically by hte stack.
@@ -415,18 +401,16 @@ export class Vpc extends pulumi.ComponentResource {
         // for the same id we can just return the same instance.
         const getVpcResult = await aws.ec2.getVpc({ default: true }, { provider });
         const vpcId = getVpcResult.id;
-        let vpcData = defaultVpcs.get(vpcId);
-        if (!vpcData) {
-            vpcData = VpcData.computeDefault(name, this, vpcId, provider);
-            defaultVpcs.set(vpcId, vpcData);
-        }
-
-        return vpcData;
+        return VpcData.computeDefault(name, this, vpcId, provider);
     }
 }
 
 utils.Capture(Vpc.prototype).addInternetGateway.doNotCapture = true;
 utils.Capture(Vpc.prototype).addNatGateway.doNotCapture = true;
+utils.Capture(Vpc.prototype).initializeExistingVpcArgs.doNotCapture = true;
+utils.Capture(Vpc.prototype).initializeExistingVpcIdArgs.doNotCapture = true;
+utils.Capture(Vpc.prototype).initializeDefaultVpcArgs.doNotCapture = true;
+utils.Capture(Vpc.prototype).initializeVpcArgs.doNotCapture = true;
 
 async function getAvailabilityZones(
         parent: pulumi.Resource | undefined,

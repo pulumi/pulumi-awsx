@@ -31,7 +31,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
      */
     public readonly stackName: pulumi.Output<string>;
 
-    constructor(name: string, vpc: pulumi.Input<x.ec2.Vpc>,
+    constructor(name: string, vpc: x.ec2.Vpc,
                 args: AutoScalingLaunchConfigurationArgs = {},
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingLaunchConfiguration", name, {}, opts);

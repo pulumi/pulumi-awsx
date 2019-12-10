@@ -24,7 +24,7 @@ import * as stepScaling from "./stepScaling";
 import * as targetTracking from "./targetTracking";
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
-    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
+    public readonly vpc: x.ec2.Vpc;
 
     /**
      * The [cloudformation.Stack] that was used to create this [AutoScalingGroup].  [CloudFormation]
@@ -55,8 +55,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingGroup", name, {}, opts);
 
-        this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
-        const subnetIds = utils.ifUndefined(args.subnetIds, this.vpc.apply(v => v.privateSubnetIds));
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
+        const subnetIds = utils.ifUndefined(args.subnetIds, this.vpc.privateSubnetIds);
         this.targetGroups = args.targetGroups || [];
         const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
 
@@ -295,7 +295,7 @@ export interface AutoScalingGroupArgs {
      * The vpc this autoscaling group is for.  If not provided this autoscaling group will be
      * created for the default vpc.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
+    vpc?: x.ec2.Vpc;
 
     /**
      * The subnets to use for the autoscaling group.  If not provided, the `private` subnets of

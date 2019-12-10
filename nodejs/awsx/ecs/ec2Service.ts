@@ -83,7 +83,7 @@ export class EC2Service extends ecs.Service {
 
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
-        const subnets = utils.ifUndefined(args.subnets, cluster.vpc.apply(v => v.publicSubnetIds));
+        const subnets = utils.ifUndefined(args.subnets, cluster.vpc.publicSubnetIds);
 
         super("awsx:x:ecs:EC2Service", name, {
             ...args,
@@ -127,7 +127,7 @@ export interface EC2TaskDefinitionArgs {
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
      * provided as it will be inferred from the cluster the service is associated with.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc>;
+    vpc?: x.ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.

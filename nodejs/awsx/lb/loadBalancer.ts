@@ -21,7 +21,7 @@ import * as utils from "./../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly loadBalancer: aws.lb.LoadBalancer;
-    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
+    public readonly vpc: x.ec2.Vpc;
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
     public readonly listeners: mod.Listener[] = [];
@@ -30,7 +30,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     constructor(type: string, name: string, args: LoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
-        this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 
         const external = utils.ifUndefined(args.external, true);
@@ -69,7 +69,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 }
 
 function getSubnets(
-    args: LoadBalancerArgs, vpc: pulumi.Output<x.ec2.Vpc>, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
+    args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
 
     // console.log("Getting subnets for LB");
     if (!args.subnets) {
@@ -98,7 +98,7 @@ export interface LoadBalancerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
+    vpc?: x.ec2.Vpc;
 
     /**
      * @deprecated Not used.  Supply the name you want for a LoadBalancer through the [name]

@@ -32,7 +32,7 @@ export class Cluster
     /**
      * The network in which to create this cluster.
      */
-    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
+    public readonly vpc: x.ec2.Vpc;
     /**
      * Security groups associated with this this ECS Cluster.
      */
@@ -50,7 +50,7 @@ export class Cluster
         this.cluster = cluster;
         this.id = cluster.id;
 
-        this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
 
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
@@ -79,7 +79,7 @@ export class Cluster
             args: x.autoscaling.AutoScalingGroupArgs = {},
             opts: pulumi.ComponentResourceOptions = {}) {
 
-        args.vpc = utils.ifUndefined(args.vpc, this.vpc);
+        args.vpc = args.vpc || this.vpc;
         args.launchConfigurationArgs = {
             // default to our security groups if the caller didn't provide their own.
             securityGroups: this.securityGroups,
@@ -108,10 +108,10 @@ export class Cluster
 
     public static createDefaultSecurityGroup(
             name: string,
-            vpc?: pulumi.Input<x.ec2.Vpc | undefined>,
+            vpc?: x.ec2.Vpc,
             opts: pulumi.ComponentResourceOptions = {}): x.ec2.SecurityGroup {
 
-        vpc = utils.ifUndefined(vpc, x.ec2.Vpc.getDefault(opts));
+        vpc = vpc || x.ec2.Vpc.getDefault(opts);
         const securityGroup = new x.ec2.SecurityGroup(name, {
             vpc,
             tags: { Name: name },
@@ -163,7 +163,7 @@ function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
-    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
+    vpc?: x.ec2.Vpc;
     cluster?: aws.ecs.Cluster | pulumi.Input<string>;
     securityGroups?: x.ec2.SecurityGroupOrId[];
     tags?: pulumi.Input<aws.Tags>;
@@ -177,7 +177,7 @@ export interface ClusterArgs {
      * The network in which to create this cluster.  If not provided, Vpc.getDefault() will be
      * used.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
+    vpc?: x.ec2.Vpc;
 
     /**
      * An existing aws.ecs.Cluster (or the name of an existing aws.ecs.Cluster) to use for this
