@@ -56,7 +56,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         super("awsx:x:autoscaling:AutoScalingGroup", name, {}, opts);
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
-        const subnetIds = utils.ifUndefined(args.subnetIds, this.vpc.privateSubnetIds);
+        const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
         this.targetGroups = args.targetGroups || [];
         const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
 
@@ -76,7 +76,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             templateBody: getCloudFormationTemplate(
                 name,
                 this.launchConfiguration.id,
-                <any>subnetIds,
+                subnetIds,
                 targetGroupArns,
                 utils.ifUndefined(args.templateParameters, {})),
         }, { parent: this });
@@ -217,7 +217,7 @@ function ifUndefined<T>(val: T | undefined, defVal: T) {
 function getCloudFormationTemplate(
     instanceName: string,
     instanceLaunchConfigurationId: pulumi.Output<string>,
-    subnetIds: pulumi.Output<string[]>,
+    subnetIds: pulumi.Input<pulumi.Input<string>[]>,
     targetGroupArns: pulumi.Output<string>[],
     parameters: pulumi.Output<TemplateParameters>): pulumi.Output<string> {
 
