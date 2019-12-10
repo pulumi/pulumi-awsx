@@ -1,8 +1,8 @@
-# Pulumi Elastic Load Balancing Components
+## Pulumi Elastic Load Balancing Components
 
 Pulumi's API for simplifying [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/).  The API provides a simple way to create either Application (ALB) or Network (NLB) load balancers, and their associated Target Groups and Listeners.  For more details, see [Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) and [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html).
 
-## Network Load Balancer
+### Network Load Balancer
 
 To create an NLB
 
@@ -81,7 +81,7 @@ const nginx = new awsx.ecs.EC2Service("examples-nginx", {
 });
 ```
 
-# Application Load Balancers
+## Application Load Balancers
 
 ALBs follow the same pattern above as NLBs.  To create ad use them, simply replace usages of `Network` above with `Application`.  i.e. instead of `new awsx.lb.NetworkLoadBalancer` use `new awsx.lb.ApplicationLoadBalancer`.
 
