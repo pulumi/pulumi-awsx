@@ -105,7 +105,8 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     public static async createValue(name: string, args: VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const availabilityZones = await getAvailabilityZones(opts.parent, args.numberOfAvailabilityZones);
+        const provider = Vpc.getProvider(opts);
+        const availabilityZones = await getAvailabilityZones(opts.parent, provider, args.numberOfAvailabilityZones);
         return new Vpc(name, {
             ...args,
             availabilityZones,
@@ -254,8 +255,7 @@ export class Vpc extends pulumi.ComponentResource {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
         // logically by hte stack.
-        const provider = opts.provider ? opts.provider :
-                         opts.parent   ? opts.parent.getProvider("aws::") : undefined;
+        const provider = Vpc.getProvider(opts);
 
         // And we want to be able to return the same Vpc object instance if it represents the same
         // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
@@ -270,6 +270,15 @@ export class Vpc extends pulumi.ComponentResource {
         }
 
         return vpc;
+    }
+
+    private static getProvider(opts: pulumi.InvokeOptions = {}) {
+        // Pull out the provider to ensure we're looking up the default vpc in the right location.
+        // Note that we do not pass 'parent' along as we want the default vpc to always be parented
+        // logically by hte stack.
+        const provider = opts.provider ? opts.provider :
+                         opts.parent   ? opts.parent.getProvider("aws::") : undefined;
+        return provider;
     }
 
     private static async computeDefault(vpcId: string, provider: pulumi.ProviderResource | undefined) {
@@ -334,8 +343,12 @@ utils.Capture(Vpc.prototype).addInternetGateway.doNotCapture = true;
 utils.Capture(Vpc.prototype).addNatGateway.doNotCapture = true;
 utils.Capture(Vpc.prototype).partition.doNotCapture = true;
 
-async function getAvailabilityZones(parent: pulumi.Resource | undefined, requestedCount: "all" | number | undefined): Promise<topology.AvailabilityZoneDescription[]> {
-    const result = await aws.getAvailabilityZones(/*args:*/ undefined, { parent });
+async function getAvailabilityZones(
+        parent: pulumi.Resource | undefined,
+        provider: pulumi.ProviderResource | undefined,
+        requestedCount: "all" | number | undefined): Promise<topology.AvailabilityZoneDescription[]> {
+
+    const result = await aws.getAvailabilityZones(/*args:*/ undefined, { provider });
     if (result.names.length !== result.zoneIds.length) {
         throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", parent);
     }
