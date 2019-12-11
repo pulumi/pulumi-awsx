@@ -17,7 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as ecs from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export abstract class Service extends pulumi.ComponentResource {
     public readonly service: aws.ecs.Service;
@@ -34,7 +34,8 @@ export abstract class Service extends pulumi.ComponentResource {
     public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
     constructor(type: string, name: string,
-                args: ServiceArgs, opts: pulumi.ComponentResourceOptions) {
+                args: ServiceArgs,
+                opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
         this.cluster = args.cluster || x.ecs.Cluster.getDefault();

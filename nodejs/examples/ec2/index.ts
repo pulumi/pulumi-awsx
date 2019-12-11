@@ -21,7 +21,7 @@ const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>
 
 console.log("EC2: Original");
 
-const vpc = awsx.ec2.Vpc.create("testing-1", {}, providerOpts);
+const vpc = new awsx.ec2.Vpc("testing-1", {}, providerOpts);
 const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
-export const clusterId = cluster1.id;
 
+export let clusterId = cluster1.id;

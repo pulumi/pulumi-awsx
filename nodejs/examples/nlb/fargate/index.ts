@@ -25,7 +25,7 @@ const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
 const cluster = new awsx.ecs.Cluster("testing", { vpc }, providerOpts);
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = new awsx.lb.NetworkListener("nginx", { port: 80 }, providerOpts);
+const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { port: 80 }, providerOpts);
 const nginx = new awsx.ecs.FargateService("nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -43,15 +43,14 @@ const nginx = new awsx.ecs.FargateService("nginx", {
 const nginxEndpoint = nginxListener.endpoint;
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = new awsx.lb.NetworkListener("simple-nginx", { port: 80 }, providerOpts);
-const simpleNginxTask = new awsx.ecs.FargateTaskDefinition("simple-nginx", {
+const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("simple-nginx", { port: 80 }, providerOpts);
+const simpleNginx = new awsx.ecs.FargateTaskDefinition("simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
         portMappings: [simpleNginxListener],
     },
-}, providerOpts);
-const simpleNginx = simpleNginxTask.createService("simple-nginx", { cluster, desiredCount: 2});
+}, providerOpts).createService("simple-nginx", { cluster, desiredCount: 2});
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint;
 
@@ -65,7 +64,7 @@ const cachedNginx = new awsx.ecs.FargateService("cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                portMappings: [new awsx.lb.NetworkListener("cached-nginx", { port: 80 }, providerOpts)],
+                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener("cached-nginx", { port: 80 }, providerOpts)],
             },
         },
     },
@@ -83,7 +82,7 @@ const multistageCachedNginx = new awsx.ecs.FargateService("multistage-cached-ngi
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                portMappings: [new awsx.lb.NetworkListener(
+                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
                     "multistage-cached-nginx", { port: 80 }, providerOpts)],
             },
         },
@@ -91,8 +90,9 @@ const multistageCachedNginx = new awsx.ecs.FargateService("multistage-cached-ngi
     desiredCount: 2,
 }, providerOpts);
 
-const customWebServerListener = new awsx.lb.NetworkTargetGroup("custom", { port: 8080 }, providerOpts)
-    .createListener("custom", { port: 80 });
+const customWebServerListener =
+    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { port: 8080 }, providerOpts)
+         .createListener("custom", { port: 80 });
 
 const customWebServer = new awsx.ecs.FargateService("custom", {
     cluster,
@@ -121,11 +121,11 @@ const redisPassword = config.require("redisPassword");
  * A simple Cache abstration, built on top of a Redis container Service.
  */
 class FargateCache {
-    get!: (key: string) => Promise<string>;
-    set!: (key: string, value: string) => Promise<void>;
+    get: (key: string) => Promise<string>;
+    set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisListener = new awsx.lb.NetworkListener(name, { port: 6379 }, providerOpts);
+        const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { port: 6379 }, providerOpts);
         const redis = new awsx.ecs.FargateService(name, {
             cluster,
             taskDefinitionArgs: {
@@ -191,7 +191,7 @@ const helloTask = new awsx.ecs.FargateTaskDefinition("hello-world", {
 }, providerOpts);
 
 // build an anonymous image:
-const builtServiceListener = new awsx.lb.NetworkListener("nginx2", { port: 80 }, providerOpts);
+const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx2", { port: 80 }, providerOpts);
 const builtService = new awsx.ecs.FargateService("nginx2", {
     cluster,
     taskDefinitionArgs: {
@@ -319,8 +319,8 @@ const api = new awsx.apigateway.API("containers", {
     }],
 }, providerOpts);
 
-export const frontendURL = api.url;
-export const fargateVpcId = vpc.apply(v => v.id);
-export const fargatePublicSubnets = vpc.apply(v => v.publicSubnetIds);
-export const fargatePrivateSubnets = vpc.apply(v => v.privateSubnetIds);
-export const fargateIsolatedSubnets = vpc.apply(v => v.isolatedSubnetIds);
+export let frontendURL = api.url;
+export let fargateVpcId = vpc.apply(v => v.id);
+export let fargatePublicSubnets = vpc.apply(v => v.publicSubnetIds);
+export let fargatePrivateSubnets = vpc.apply(v => v.privateSubnetIds);
+export let fargateIsolatedSubnets = vpc.apply(v => v.isolatedSubnetIds);

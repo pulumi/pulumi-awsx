@@ -18,7 +18,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import { Cidr32Block, getIPv4Address } from "./cidr";
 
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 /** @internal */
 export interface AvailabilityZoneDescription {

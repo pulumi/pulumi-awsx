@@ -19,7 +19,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export interface ListenerEndpoint {
     hostname: string;
@@ -44,7 +44,6 @@ export abstract class Listener
     constructor(type: string, name: string,
                 defaultListenerAction: ListenerDefaultAction | undefined,
                 args: ListenerArgs, opts: pulumi.ComponentResourceOptions) {
-
         // By default, we'd like to be parented by the LB .  However, we didn't use to do this.
         // Create an alias from teh old urn to the new one so that we don't cause these to eb
         // created/destroyed.
