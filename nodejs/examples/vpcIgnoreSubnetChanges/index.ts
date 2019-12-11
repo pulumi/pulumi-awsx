@@ -27,4 +27,4 @@ const vpcWithIgnoredSubnetTags = new awsx.ec2.Vpc("custom7", {
         //     "Something": "Else",
         // }
     }],
-}, providerOpts)
+}, providerOpts);
