@@ -22,7 +22,7 @@ import * as utils from "../utils";
 export class EC2TaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
                 args: EC2TaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -67,7 +67,7 @@ export class EC2Service extends ecs.Service {
 
     constructor(name: string,
                 args: EC2ServiceArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
@@ -104,7 +104,7 @@ export class EC2Service extends ecs.Service {
                     securityGroups: securityGroups.map(g => g.id),
                 };
             }),
-        }, /*isFargate:*/ false, opts);
+        }, opts);
 
         this.taskDefinition = taskDefinition;
 

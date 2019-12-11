@@ -28,7 +28,7 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: NetworkListener[];
     public readonly targetGroups: NetworkTargetGroup[];
 
-    constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         const argsCopy: x.lb.LoadBalancerArgs = {
             ...args,
             loadBalancerType: "network",
@@ -134,8 +134,8 @@ export class NetworkListener
                 opts: pulumi.ComponentResourceOptions = {}) {
 
         const argCount = (args.defaultAction ? 1 : 0) +
-            (args.defaultActions ? 1 : 0) +
-            (args.targetGroup ? 1 : 0);
+                         (args.defaultActions ? 1 : 0) +
+                         (args.targetGroup ? 1 : 0);
 
         if (argCount >= 2) {
             throw new Error("Only provide one of [defaultAction], [defaultActions] or [targetGroup].");

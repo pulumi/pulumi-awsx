@@ -34,7 +34,7 @@ export abstract class TargetGroup
     public readonly listeners: x.lb.Listener[] = [];
 
     constructor(type: string, name: string, loadBalancer: mod.LoadBalancer,
-                args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
+                args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
         // We want our parent to the be the ALB by default if nothing else is specified.
         // Create an alias from our old name where we didn't parent by default to keep
         // resources from being created/destroyed.
