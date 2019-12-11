@@ -17,7 +17,6 @@ const nlb1 = new awsx.lb.NetworkLoadBalancer("nlb1", { external: true });
 // To create an NLB for a different Vpc, simply pass it in:
 const vpc = new awsx.ec2.Vpc(...);
 const nlb2 = new awsx.lb.NetworkLoadBalancer("nlb2", { vpc, external: true });
-};
 ```
 
 Once created, an NLB can be used to create both [`Listeners`](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html) and [`TargetGroups`](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html).  By default, a Listener needs at least one TargetGroup that it can route requests to.  So, if a Listener is created without specifying a TargetGroup, one will be automatically created.  For example:
