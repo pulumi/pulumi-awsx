@@ -39,6 +39,10 @@ const service = new awsx.ecs.FargateService("service", {
     waitForSteadyState: false,
 }, providerOpts);
 
+export let vpcId = cluster.vpc.id;
+export let serviceId = service.service.id;
+export let endpoint = listener.endpoint;
+
 const cluster2 = new awsx.ecs.Cluster("testing2", undefined, { provider: new aws.Provider("prov2", {
     region: "us-west-1"
 })});
