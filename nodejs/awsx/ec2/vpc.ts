@@ -242,7 +242,7 @@ class VpcData {
         // we're in.  So preserve that, even though we could get all of them here.  Pulling in
         // more than the two we pulled in before could have deep implications for clients as
         // those subnets are used to make many downstream resource-creating decisions.
-        const getSubnetIdsResult = await aws.ec2.getSubnetIds({ vpcId }, { provider });
+        const getSubnetIdsResult = await aws.ec2.getSubnetIds({ vpcId }, { provider, async: true });
         const publicSubnetIds = getSubnetIdsResult.ids.slice(0, 2);
 
         // // Generate the name as `default-` + the actual name.  For back compat with how we
@@ -377,7 +377,7 @@ export class Vpc extends pulumi.ComponentResource {
         // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
         // an account.  So we just map from the id to the Vpc instance we hydrate.  If asked again
         // for the same id we can just return the same instance.
-        const getVpcResult = await aws.ec2.getVpc({ default: true }, { provider });
+        const getVpcResult = await aws.ec2.getVpc({ default: true }, { provider, async: true });
         const vpcId = getVpcResult.id;
         return VpcData.computeDefault(name, this, vpcId, provider);
     }
@@ -418,7 +418,7 @@ async function getAvailabilityZones(
         provider: pulumi.ProviderResource | undefined,
         requestedCount: "all" | number | undefined): Promise<topology.AvailabilityZoneDescription[]> {
 
-    const result = await aws.getAvailabilityZones(/*args:*/ undefined, { provider });
+    const result = await aws.getAvailabilityZones(/*args:*/ undefined, { provider, async: true });
     if (result.names.length !== result.zoneIds.length) {
         throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", parent);
     }

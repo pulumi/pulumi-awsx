@@ -31,11 +31,11 @@ export function getAvailabilityZones(opts?: pulumi.InvokeOptions): Promise<strin
         // Only cache the results if 'opts' is not passed in.  If there are opts, it may change the
         // results and we can't necessarily reuse any previous results.
         if (!zones) {
-            zones = aws.getAvailabilityZones(/*args:*/ undefined).then(r => r.names);
+            zones = aws.getAvailabilityZones(/*args:*/ undefined, { async: true }).then(r => r.names);
         }
 
         return zones;
     }
 
-    return aws.getAvailabilityZones(/*args:*/ undefined, opts).then(r => r.names);
+    return aws.getAvailabilityZones(/*args:*/ undefined, { ...opts, async: true }).then(r => r.names);
 }
