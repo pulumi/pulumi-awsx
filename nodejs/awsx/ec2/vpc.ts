@@ -258,6 +258,7 @@ class VpcData {
     }
 }
 
+(<any>VpcData).doNotCapture = true;
 utils.Capture(VpcData).computeDefault.doNotCapture = true;
 utils.Capture(VpcData.prototype).addInternetGateway.doNotCapture = true;
 utils.Capture(VpcData.prototype).addNatGateway.doNotCapture = true;
@@ -467,6 +468,8 @@ function getExistingSubnets(vpcData: VpcData, vpc: Vpc, vpcName: string, type: V
         subnetIds.push(subnet.id);
     }
 }
+
+getExistingSubnets.doNotCapture = true;
 
 /**
  * The type of this subnet.
