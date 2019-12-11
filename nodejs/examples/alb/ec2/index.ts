@@ -42,11 +42,9 @@ const service = new awsx.ecs.EC2Service("nginx", {
     desiredCount: 2,
 }, providerOpts);
 
-const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
-
 // Now setup an asg for the cluster to control how it will respond under load.
 const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
-    subnetIds: vpc.apply(v => v.publicSubnetIds),
+    subnetIds: awsx.ec2.Vpc.getDefault(providerOpts).publicSubnetIds,
     targetGroups: [targetGroup],
     templateParameters: {
         minSize: 5,

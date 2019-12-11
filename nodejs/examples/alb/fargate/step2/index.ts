@@ -16,7 +16,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-    const config = new pulumi.Config("aws");
+const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
 const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
