@@ -176,9 +176,9 @@ const fargateService = new awsx.ecs.FargateService("fargate-nginx", {
     cluster,
     desiredCount: 2,
     taskDefinitionArgs: {
-    containers: {
-        nginx: // ...
-    },
+        containers: {
+            nginx: // ...
+        },
     },
 });
 
@@ -186,9 +186,9 @@ const ec2Service = new awsx.ecs.FargateService("ec2-nginx", {
     cluster,
     desiredCount: 2,
     taskDefinitionArgs: {
-    containers: {
-        nginx: // ...
-    },
+        containers: {
+            nginx: // ...
+        },
     },
 });
 ```
