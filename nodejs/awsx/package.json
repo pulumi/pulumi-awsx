@@ -22,7 +22,6 @@
         "@types/mime": "^2.0.0",
         "@types/node": "^10.0.0",
         "tslint": "^5.11.0",
-        "typedoc": "^0.13.0",
-        "typescript": "=3.6.4"
+        "typedoc": "^0.13.0"
     }
 }
