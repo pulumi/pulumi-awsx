@@ -92,10 +92,10 @@ const vpc = new awsx.ec2.Vpc("custom", {
    cidrBlock: "10.0.0.0/16",
    numberOfAvailabilityZones: 3,
    subnets: [
-   { type: "public" },
-   { type: "private" },
-   { type: isolated, name: "db" },
-   { type: isolated, name: "redis" }],
+     { type: "public" },
+     { type: "private" },
+     { type: isolated, name: "db" },
+     { type: isolated, name: "redis" }],
 });
 ```
 
