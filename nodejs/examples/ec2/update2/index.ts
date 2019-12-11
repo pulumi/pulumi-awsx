@@ -15,6 +15,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
+
 import { Config } from "@pulumi/pulumi";
 
 const config1 = new pulumi.Config("aws");
@@ -65,15 +66,14 @@ const nginx = new awsx.ecs.EC2Service("nginx", {
 const nginxEndpoint = nginxListener.endpoint;
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = new awsx.lb.NetworkListener("simple-nginx", { vpc, port: 80 }, providerOpts);
-const simpleNginxTask = new awsx.ecs.EC2TaskDefinition("simple-nginx", {
+const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("simple-nginx", { vpc, port: 80 }, providerOpts);
+const simpleNginx = new awsx.ecs.EC2TaskDefinition("simple-nginx", {
     container: {
         image: "nginx",
         memory: 64,
         portMappings: [simpleNginxListener],
     },
-}, providerOpts);
-const simpleNginx = simpleNginxTask.createService("examples-simple-nginx", { cluster: cluster1, desiredCount: 1});
+}, providerOpts).createService("examples-simple-nginx", { cluster: cluster1, desiredCount: 1});
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint;
 
@@ -114,8 +114,9 @@ const multistageCachedNginx = new awsx.ecs.EC2Service("multistage-cached-nginx",
     desiredCount: 1,
 }, providerOpts);
 
-const customWebServerListener = new awsx.lb.NetworkTargetGroup("custom", { vpc, port: 8080 }, providerOpts)
-    .createListener("custom", { port: 80 });
+const customWebServerListener =
+    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { vpc, port: 8080 }, providerOpts)
+         .createListener("custom", { port: 80 });
 
 const customWebServer = new awsx.ecs.EC2Service("custom", {
     cluster: cluster1,
@@ -144,11 +145,11 @@ const redisPassword = config.require("redisPassword");
  * A simple Cache abstration, built on top of a Redis container Service.
  */
 class Ec2Cache {
-    get!: (key: string) => Promise<string>;
-    set!: (key: string, value: string) => Promise<void>;
+    get: (key: string) => Promise<string>;
+    set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisListener = new awsx.lb.NetworkListener(name, { vpc, port: 6379 }, providerOpts);
+        const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { vpc, port: 6379 }, providerOpts);
         const redis = new awsx.ecs.EC2Service(name, {
             cluster: cluster1,
             taskDefinitionArgs: {
@@ -214,7 +215,7 @@ const helloTask = new awsx.ecs.EC2TaskDefinition("hello-world", {
 }, providerOpts);
 
 // build an anonymous image:
-const builtServiceListener = new awsx.lb.NetworkListener("nginx2", { vpc, port: 80 }, providerOpts);
+const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx2", { vpc, port: 80 }, providerOpts);
 const builtService = new awsx.ecs.EC2Service("nginx2", {
     cluster: cluster1,
     taskDefinitionArgs: {

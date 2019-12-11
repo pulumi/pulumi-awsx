@@ -43,15 +43,14 @@ const nginx = new awsx.ecs.FargateService("nginx", {
 const nginxEndpoint = nginxListener.endpoint;
 
 // A simple NGINX service, scaled out over two containers, starting with a task definition.
-const simpleNginxListener = new awsx.lb.NetworkListener("simple-nginx", { port: 80 }, providerOpts);
-const simpleNginxTask = new awsx.ecs.FargateTaskDefinition("simple-nginx", {
+const simpleNginxListener = new awsx.elasticloadbalancingv2.NetworkListener("simple-nginx", { port: 80 }, providerOpts);
+const simpleNginx = new awsx.ecs.FargateTaskDefinition("simple-nginx", {
     container: {
         image: "nginx",
         memory: 128,
         portMappings: [simpleNginxListener],
     },
-}, providerOpts);
-const simpleNginx = simpleNginxTask.createService("simple-nginx", { cluster, desiredCount: 2});
+}, providerOpts).createService("simple-nginx", { cluster, desiredCount: 2});
 
 const simpleNginxEndpoint = simpleNginxListener.endpoint;
 
@@ -91,8 +90,9 @@ const multistageCachedNginx = new awsx.ecs.FargateService("multistage-cached-ngi
     desiredCount: 2,
 }, providerOpts);
 
-const customWebServerListener = new awsx.lb.NetworkTargetGroup("custom", { port: 8080 }, providerOpts)
-    .createListener("custom", { port: 80 });
+const customWebServerListener =
+    new awsx.elasticloadbalancingv2.NetworkTargetGroup("custom", { port: 8080 }, providerOpts)
+         .createListener("custom", { port: 80 });
 
 const customWebServer = new awsx.ecs.FargateService("custom", {
     cluster,
@@ -121,11 +121,11 @@ const redisPassword = config.require("redisPassword");
  * A simple Cache abstration, built on top of a Redis container Service.
  */
 class FargateCache {
-    get!: (key: string) => Promise<string>;
-    set!: (key: string, value: string) => Promise<void>;
+    get: (key: string) => Promise<string>;
+    set: (key: string, value: string) => Promise<void>;
 
     constructor(name: string, memory: number = 128) {
-        const redisListener = new awsx.lb.NetworkListener(name, { port: 6379 }, providerOpts);
+        const redisListener = new awsx.elasticloadbalancingv2.NetworkListener(name, { port: 6379 }, providerOpts);
         const redis = new awsx.ecs.FargateService(name, {
             cluster,
             taskDefinitionArgs: {

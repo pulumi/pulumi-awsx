@@ -35,6 +35,4 @@ const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
     },
 });
 
-const autoScalingGroupId = autoScalingGroup.stack.id;
-
-export const clusterId = cluster1.id;
+export let clusterId = cluster1.id;
