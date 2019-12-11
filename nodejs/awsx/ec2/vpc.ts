@@ -265,6 +265,8 @@ utils.Capture(VpcData.prototype).partition.doNotCapture = true;
 export class Vpc extends pulumi.ComponentResource {
     public readonly id: pulumi.Output<string>;
 
+    public readonly vpc: pulumi.Output<aws.ec2.Vpc>;
+
     private readonly _underlyingData: Promise<VpcData>;
 
     constructor(name: string, args: VpcArgs | ExistingVpcArgs | ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions)
@@ -287,6 +289,7 @@ export class Vpc extends pulumi.ComponentResource {
 
         this.id = pulumi.output(this._underlyingData.then(v => v.id));
         this._underlyingData.then(_ => this.registerOutputs());
+        this.vpc = pulumi.output(this._underlyingData.then(d => d.vpc));
     }
 
     /** @internal */
@@ -318,30 +321,6 @@ export class Vpc extends pulumi.ComponentResource {
                          opts.parent   ? opts.parent.getProvider("aws::") : undefined;
         return provider;
     }
-
-    // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
-    // properties.
-    public get publicSubnetIds() { return this._underlyingData.then(v => v.publicSubnetIds); }
-    public get privateSubnetIds() { return this._underlyingData.then(v => v.privateSubnetIds); }
-    public get isolatedSubnetIds() { return this._underlyingData.then(v => v.isolatedSubnetIds); }
-
-    public get vpc() { return this._underlyingData.then(v => v.vpc); }
-
-    public get publicSubnets() { return this._underlyingData.then(v => v.publicSubnets); }
-    public get privateSubnets() { return this._underlyingData.then(v => v.privateSubnets); }
-    public get isolatedSubnets() { return this._underlyingData.then(v => v.isolatedSubnets); }
-
-    /**
-     * The internet gateway created to allow traffic to/from the internet to the public subnets.
-     * Only available if this was created using [VpcArgs].
-     */
-    public get internetGateway() { return this._underlyingData.then(v => v.internetGateway); }
-
-    /**
-     * The nat gateways created to allow private subnets access to the internet.
-     * Only available if this was created using [VpcArgs].
-     */
-    public get natGateways() { return this._underlyingData.then(v => v.natGateways); }
 
     public async addInternetGateway(
         name: string, subnets?: x.ec2.Subnet[],
@@ -402,6 +381,29 @@ export class Vpc extends pulumi.ComponentResource {
         const vpcId = getVpcResult.id;
         return VpcData.computeDefault(name, this, vpcId, provider);
     }
+
+    // lifted members of VpcData
+
+    public get publicSubnetIds() { return this._underlyingData.then(v => v.publicSubnetIds); }
+    public get privateSubnetIds() { return this._underlyingData.then(v => v.privateSubnetIds); }
+    public get isolatedSubnetIds() { return this._underlyingData.then(v => v.isolatedSubnetIds); }
+    public get publicSubnets() { return this._underlyingData.then(v => v.publicSubnets); }
+    public get privateSubnets() { return this._underlyingData.then(v => v.privateSubnets); }
+    public get isolatedSubnets() { return this._underlyingData.then(v => v.isolatedSubnets); }
+
+    /**
+     * The internet gateway created to allow traffic to/from the internet to the public subnets.
+     * Only available if this was created using [VpcArgs].
+     */
+    public get internetGateway() { return this._underlyingData.then(v => v.internetGateway); }
+
+    /**
+     * The nat gateways created to allow private subnets access to the internet.
+     * Only available if this was created using [VpcArgs].
+     */
+    public get natGateways() { return this._underlyingData.then(v => v.natGateways); }
+
+    // end lifting
 }
 
 utils.Capture(Vpc.prototype).addInternetGateway.doNotCapture = true;

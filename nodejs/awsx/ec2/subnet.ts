@@ -56,7 +56,7 @@ export class Subnet extends pulumi.ComponentResource {
             // it, don't assign otherwise.
             const assignIpv6AddressOnCreation = utils.ifUndefined(
                 args.assignIpv6AddressOnCreation,
-                pulumi.output(vpc.vpc).apply(v => v.assignGeneratedIpv6CidrBlock));
+                vpc.vpc.apply(v => v.assignGeneratedIpv6CidrBlock));
             this.subnet = new aws.ec2.Subnet(name, {
                 vpcId: vpc.id,
                 ...args,
