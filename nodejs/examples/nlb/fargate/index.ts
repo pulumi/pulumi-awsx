@@ -320,7 +320,7 @@ const api = new awsx.apigateway.API("containers", {
 }, providerOpts);
 
 export let frontendURL = api.url;
-export let fargateVpcId = vpc.apply(v => v.id);
-export let fargatePublicSubnets = vpc.apply(v => v.publicSubnetIds);
-export let fargatePrivateSubnets = vpc.apply(v => v.privateSubnetIds);
-export let fargateIsolatedSubnets = vpc.apply(v => v.isolatedSubnetIds);
+export let fargateVpcId = vpc.id;
+export let fargatePublicSubnets = vpc.publicSubnets;
+export let fargatePrivateSubnets = vpc.privateSubnetIds;
+export let fargateIsolatedSubnets = vpc.isolatedSubnetIds;

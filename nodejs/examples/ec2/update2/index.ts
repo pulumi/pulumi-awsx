@@ -343,7 +343,7 @@ const api = new awsx.apigateway.API("containers", {
 
 export let autoScalingGroupId = autoScalingGroup.stack.id;
 export let frontendURL = api.url;
-export let ec2VpcId = vpc.apply(v => v.id);
-export let ec2PublicSubnets = vpc.apply(v => v.publicSubnetIds);
-export let ec2PrivateSubnets = vpc.apply(v => v.privateSubnetIds);
-export let ec2IsolatedSubnets = vpc.apply(v => v.isolatedSubnetIds);
+export let ec2VpcId = vpc.id;
+export let ec2PublicSubnets = vpc.publicSubnetIds;
+export let ec2PrivateSubnets = vpc.privateSubnetIds;
+export let ec2IsolatedSubnets = vpc.isolatedSubnetIds;
