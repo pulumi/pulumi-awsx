@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class SecurityGroup extends pulumi.ComponentResource {
     public readonly securityGroup: aws.ec2.SecurityGroup;
@@ -99,8 +99,8 @@ export class SecurityGroup extends pulumi.ComponentResource {
     }
 }
 
-(<any>SecurityGroup.prototype.createEgressRule).doNotCapture = true;
-(<any>SecurityGroup.prototype.createIngressRule).doNotCapture = true;
+utils.Capture(SecurityGroup.prototype).createEgressRule.doNotCapture = true;
+utils.Capture(SecurityGroup.prototype).createIngressRule.doNotCapture = true;
 
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 

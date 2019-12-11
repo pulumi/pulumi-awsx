@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class Subnet extends pulumi.ComponentResource {
     // tslint:disable-next-line:variable-name
@@ -106,6 +106,8 @@ export class Subnet extends pulumi.ComponentResource {
     }
 }
 
+utils.Capture(Subnet.prototype).createRoute.doNotCapture = true;
+
 export interface SubnetRouteProvider {
     route(name: string, opts: pulumi.ComponentResourceOptions): RouteArgs;
 }
@@ -115,8 +117,6 @@ function isSubnetRouteProvider(obj: any): obj is SubnetRouteProvider {
 }
 
 export type SubnetOrId = Subnet | pulumi.Input<string>;
-
-(<any>Subnet.prototype.createRoute).doNotCapture = true;
 
 export interface ExistingSubnetArgs {
     /**
