@@ -258,6 +258,7 @@ class VpcData {
     }
 }
 
+utils.Capture(VpcData).computeDefault.doNotCapture = true;
 utils.Capture(VpcData.prototype).addInternetGateway.doNotCapture = true;
 utils.Capture(VpcData.prototype).addNatGateway.doNotCapture = true;
 utils.Capture(VpcData.prototype).partition.doNotCapture = true;
@@ -392,24 +393,33 @@ export class Vpc extends pulumi.ComponentResource {
 
     // lifted members of VpcData
 
-    public get publicSubnetIds() { return this._underlyingData.then(v => v.publicSubnetIds); }
-    public get privateSubnetIds() { return this._underlyingData.then(v => v.privateSubnetIds); }
-    public get isolatedSubnetIds() { return this._underlyingData.then(v => v.isolatedSubnetIds); }
-    public get publicSubnets() { return this._underlyingData.then(v => v.publicSubnets); }
-    public get privateSubnets() { return this._underlyingData.then(v => v.privateSubnets); }
-    public get isolatedSubnets() { return this._underlyingData.then(v => v.isolatedSubnets); }
+    private async liftMember<T>(func: (d: VpcData) => T, def: T): Promise<T> {
+        if (!this._underlyingData) {
+            return def;
+        }
+
+        const data = await this._underlyingData;
+        return func(data);
+    }
+
+    public get publicSubnetIds() { return this.liftMember(v => v.publicSubnetIds, []); }
+    public get privateSubnetIds() { return this.liftMember(v => v.privateSubnetIds, []); }
+    public get isolatedSubnetIds() { return this.liftMember(v => v.isolatedSubnetIds, []); }
+    public get publicSubnets() { return this.liftMember(v => v.publicSubnets, []); }
+    public get privateSubnets() { return this.liftMember(v => v.privateSubnets, []); }
+    public get isolatedSubnets() { return this.liftMember(v => v.isolatedSubnets, []); }
 
     /**
      * The internet gateway created to allow traffic to/from the internet to the public subnets.
      * Only available if this was created using [VpcArgs].
      */
-    public get internetGateway() { return this._underlyingData.then(v => v.internetGateway); }
+    public get internetGateway() { return this.liftMember(v => v.internetGateway, undefined); }
 
     /**
      * The nat gateways created to allow private subnets access to the internet.
      * Only available if this was created using [VpcArgs].
      */
-    public get natGateways() { return this._underlyingData.then(v => v.natGateways); }
+    public get natGateways() { return this.liftMember(v => v.natGateways, []); }
 
     // end lifting
 }
