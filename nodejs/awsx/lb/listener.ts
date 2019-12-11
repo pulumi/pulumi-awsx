@@ -43,11 +43,11 @@ export abstract class Listener
 
     constructor(type: string, name: string,
                 defaultListenerAction: ListenerDefaultAction | undefined,
-                args: ListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
+                args: ListenerArgs, opts: pulumi.ComponentResourceOptions) {
         // By default, we'd like to be parented by the LB .  However, we didn't use to do this.
         // Create an alias from teh old urn to the new one so that we don't cause these to eb
         // created/destroyed.
-        super(type, name, args, {
+        super(type, name, {}, {
             parent: args.loadBalancer,
             ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });

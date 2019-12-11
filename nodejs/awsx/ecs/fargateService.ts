@@ -22,7 +22,7 @@ import * as utils from "../utils";
 export class FargateTaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
                 args: ecs.FargateTaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
@@ -194,7 +194,7 @@ export class FargateService extends ecs.Service {
 
     constructor(name: string,
                 args: FargateServiceArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
@@ -223,7 +223,7 @@ export class FargateService extends ecs.Service {
                 assignPublicIp,
                 securityGroups: securityGroups.map(g => g.id),
             },
-        },  /*isFargate:*/ true, opts);
+        }, opts);
 
         this.taskDefinition = taskDefinition;
 

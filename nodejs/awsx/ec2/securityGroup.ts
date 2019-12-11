@@ -23,7 +23,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
     public readonly id: pulumi.Output<string>;
     public readonly vpc: x.ec2.Vpc;
 
-    public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
+    public readonly egressRules: x.ec2.EgressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
     // tslint:disable-next-line:variable-name

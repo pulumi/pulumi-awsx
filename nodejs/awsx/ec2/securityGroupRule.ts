@@ -111,7 +111,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 
     constructor(type: string, name: string,
                 securityGroup: x.ec2.SecurityGroup,
-                args: SecurityGroupRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
+                args: SecurityGroupRuleArgs, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, { parent: securityGroup, ...opts });
 
         this.securityGroup = securityGroup;
@@ -179,7 +179,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 export class EgressSecurityGroupRule extends SecurityGroupRule {
     constructor(name: string, securityGroup: x.ec2.SecurityGroup,
                 args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
             args = x.ec2.SecurityGroupRule.egressArgs(args.location, args.ports, args.description);
@@ -197,7 +197,7 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
 export class IngressSecurityGroupRule extends SecurityGroupRule {
     constructor(name: string, securityGroup: x.ec2.SecurityGroup,
                 args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
             args = x.ec2.SecurityGroupRule.ingressArgs(args.location, args.ports, args.description);
