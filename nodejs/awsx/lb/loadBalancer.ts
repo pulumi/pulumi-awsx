@@ -17,7 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly loadBalancer: aws.lb.LoadBalancer;

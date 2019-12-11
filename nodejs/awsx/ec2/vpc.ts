@@ -18,7 +18,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import * as topology from "./vpcTopology";
 
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 // Mapping from vpcId to Vpc.
 const defaultVpcs = new Map<string, Vpc>();
@@ -94,7 +94,8 @@ export class Vpc extends pulumi.ComponentResource {
         this.registerOutputs();
     }
 
-    private partition(
+    /** @internal */
+    public partition(
             name: string, cidrBlock: CidrBlock, availabilityZones: topology.AvailabilityZoneDescription[],
             numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
             subnetArgs: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
@@ -293,9 +294,9 @@ export class Vpc extends pulumi.ComponentResource {
     }
 }
 
-(<any>Vpc.prototype.addInternetGateway).doNotCapture = true;
-(<any>Vpc.prototype.addNatGateway).doNotCapture = true;
-(<any>Vpc.prototype).partition.doNotCapture = true;
+utils.Capture(Vpc.prototype).addInternetGateway.doNotCapture = true;
+utils.Capture(Vpc.prototype).addNatGateway.doNotCapture = true;
+utils.Capture(Vpc.prototype).partition.doNotCapture = true;
 
 function getAvailabilityZones(vpc: Vpc, requestedCount: "all" | number | undefined): topology.AvailabilityZoneDescription[] {
     const result = aws.getAvailabilityZones(/*args:*/ undefined, { parent: vpc });

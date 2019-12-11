@@ -145,7 +145,7 @@ export class Cluster
     }
 }
 
-(<any>Cluster.prototype.createAutoScalingGroup).doNotCapture = true;
+utils.Capture(Cluster.prototype).createAutoScalingGroup.doNotCapture = true;
 
 function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
     if (args.cluster === undefined) {

@@ -31,6 +31,16 @@ export type Mutable<T> = {
     -readonly [P in keyof T]: T[P];
 };
 
+/** @internal */
+export type Capture<T> = {
+    [P in keyof T]: T[P] extends Function ? { doNotCapture: boolean } : never;
+};
+
+/** @internal */
+export function Capture<T>(t: T): Capture<T> {
+    return <any>t;
+}
+
 // sha1hash returns a partial SHA1 hash of the input string.
 /** @internal */
 export function sha1hash(s: string): string {
