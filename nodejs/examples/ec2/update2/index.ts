@@ -25,6 +25,7 @@ console.log("EC2: Update2");
 
 const vpc = new awsx.ec2.Vpc("testing-1", {}, providerOpts);
 const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
+export const clusterId = cluster1.id;
 
 const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
     subnetIds: vpc.publicSubnetIds,
