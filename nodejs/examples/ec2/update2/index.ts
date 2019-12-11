@@ -48,7 +48,7 @@ autoScalingGroup.scaleOnSchedule("scaleUpAt6amUTC", {
 });
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = new awsx.lb.NetworkListener("nginx", { vpc, port: 80 }, providerOpts);
+const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { vpc, port: 80 }, providerOpts);
 const nginx = new awsx.ecs.EC2Service("nginx", {
     cluster: cluster1,
     taskDefinitionArgs: {
@@ -87,7 +87,7 @@ const cachedNginx = new awsx.ecs.EC2Service("cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 64,
-                portMappings: [new awsx.lb.NetworkListener(
+                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
                     "cached-nginx", { vpc, port: 80 }, providerOpts)],
             },
         },
@@ -106,7 +106,7 @@ const multistageCachedNginx = new awsx.ecs.EC2Service("multistage-cached-nginx",
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 64,
-                portMappings: [new awsx.lb.NetworkListener(
+                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
                     "multistage-cached-nginx", { vpc, port: 80 }, providerOpts)],
             },
         },
@@ -341,9 +341,9 @@ const api = new awsx.apigateway.API("containers", {
     }],
 }, providerOpts);
 
-export const autoScalingGroupId = autoScalingGroup.stack.id;
-export const frontendURL = api.url;
-export const ec2VpcId = vpc.apply(v => v.id);
-export const ec2PublicSubnets = vpc.apply(v => v.publicSubnetIds);
-export const ec2PrivateSubnets = vpc.apply(v => v.privateSubnetIds);
-export const ec2IsolatedSubnets = vpc.apply(v => v.isolatedSubnetIds);
+export let autoScalingGroupId = autoScalingGroup.stack.id;
+export let frontendURL = api.url;
+export let ec2VpcId = vpc.apply(v => v.id);
+export let ec2PublicSubnets = vpc.apply(v => v.publicSubnetIds);
+export let ec2PrivateSubnets = vpc.apply(v => v.privateSubnetIds);
+export let ec2IsolatedSubnets = vpc.apply(v => v.isolatedSubnetIds);

@@ -25,7 +25,7 @@ const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
 const cluster = new awsx.ecs.Cluster("testing", { vpc }, providerOpts);
 
 // A simple NGINX service, scaled out over two containers.
-const nginxListener = new awsx.lb.NetworkListener("nginx", { port: 80 }, providerOpts);
+const nginxListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx", { port: 80 }, providerOpts);
 const nginx = new awsx.ecs.FargateService("nginx", {
     cluster,
     taskDefinitionArgs: {
@@ -64,7 +64,7 @@ const cachedNginx = new awsx.ecs.FargateService("cached-nginx", {
                     cacheFrom: true,
                 }),
                 memory: 128,
-                portMappings: [new awsx.lb.NetworkListener("cached-nginx", { port: 80 }, providerOpts)],
+                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener("cached-nginx", { port: 80 }, providerOpts)],
             },
         },
     },
@@ -82,7 +82,7 @@ const multistageCachedNginx = new awsx.ecs.FargateService("multistage-cached-ngi
                     cacheFrom: {stages: ["build"]},
                 }),
                 memory: 128,
-                portMappings: [new awsx.lb.NetworkListener(
+                portMappings: [new awsx.elasticloadbalancingv2.NetworkListener(
                     "multistage-cached-nginx", { port: 80 }, providerOpts)],
             },
         },
@@ -191,7 +191,7 @@ const helloTask = new awsx.ecs.FargateTaskDefinition("hello-world", {
 }, providerOpts);
 
 // build an anonymous image:
-const builtServiceListener = new awsx.lb.NetworkListener("nginx2", { port: 80 }, providerOpts);
+const builtServiceListener = new awsx.elasticloadbalancingv2.NetworkListener("nginx2", { port: 80 }, providerOpts);
 const builtService = new awsx.ecs.FargateService("nginx2", {
     cluster,
     taskDefinitionArgs: {
@@ -319,8 +319,8 @@ const api = new awsx.apigateway.API("containers", {
     }],
 }, providerOpts);
 
-export const frontendURL = api.url;
-export const fargateVpcId = vpc.apply(v => v.id);
-export const fargatePublicSubnets = vpc.apply(v => v.publicSubnetIds);
-export const fargatePrivateSubnets = vpc.apply(v => v.privateSubnetIds);
-export const fargateIsolatedSubnets = vpc.apply(v => v.isolatedSubnetIds);
+export let frontendURL = api.url;
+export let fargateVpcId = vpc.apply(v => v.id);
+export let fargatePublicSubnets = vpc.apply(v => v.publicSubnetIds);
+export let fargatePrivateSubnets = vpc.apply(v => v.privateSubnetIds);
+export let fargateIsolatedSubnets = vpc.apply(v => v.isolatedSubnetIds);
