@@ -83,7 +83,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
 
         // Now go and actually find the group created by cloudformation.  The id for the group will
         // be stored in `stack.outputs.Instances`.
-        this.group = aws.autoscaling.Group.get(name, this.stack.outputs["Instances"], undefined, { parent: this });
+        this.group = aws.autoscaling.Group.get(name, <any>this.stack.outputs["Instances"], undefined, { parent: this });
 
         this.registerOutputs();
     }
