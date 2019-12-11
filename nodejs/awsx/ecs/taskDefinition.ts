@@ -225,11 +225,9 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
 
         const cluster = params.cluster;
         const clusterArn = cluster.id.get();
-        const securityGroupIds = cluster.securityGroups.map(g => g.id.get());
-
-        const publicSubnetIds = await cluster.vpc.publicSubnetIds;
-        const subnetIds = publicSubnetIds.map(i => i.get());
-        const assignPublicIp = isFargate; // && !usePrivateSubnets;
+        const securityGroupIds = cluster.securityGroupIds.get();
+        const subnetIds = cluster.publicSubnetIds.get();
+        const assignPublicIp = isFargate;
 
         // Run the task
         return ecs.runTask({
