@@ -281,7 +281,7 @@ export class Vpc extends pulumi.ComponentResource {
             this._underlyingData = this.initializeExistingVpcIdArgs(name, args, opts);
         }
         else if (isDefaultVpcArgs(args)) {
-            this._underlyingData = this.initializeDefaultVpcArgs(name, args.opts);
+            this._underlyingData = this.initializeDefaultVpcArgs(name, args);
         }
         else {
             this._underlyingData = this.initializeVpcArgs(name, args, opts);
@@ -354,12 +354,23 @@ export class Vpc extends pulumi.ComponentResource {
      * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
      * version be used instead.  This version will properly respect providers.
      */
-    public static getDefault(opts: pulumi.InvokeOptions = {}, name?: string): Vpc {
-        name = name || "default-vpc";
+    public static getDefault(opts: pulumi.InvokeOptions = {}): Vpc {
+        // Pull out the provider to ensure we're looking up the default vpc in the right location.
+        // Note that we do not pass 'parent' along as we want the default vpc to always be parented
+        // logically by hte stack.
+        const provider = Vpc.getProvider(opts);
+
+        // Generate the name as `default-` + the name of this provider..  For back compat with how
+        // we previously named things, also create an alias from "default-vpc" to this name for the
+        // very first default Vpc we create as that's how we used to name them.
+        const name = "default-" + (provider === undefined ? "vpc" : (<any>provider).__name);
 
         let vpc = defaultVpcs.get(name);
         if (!vpc) {
-            vpc = new Vpc(name, { isDefault: true, opts }, opts);
+            const aliases = defaultVpcs.size === 0
+                ? [{ name: "default-vpc" }]
+                : [];
+            vpc = new Vpc(name, { isDefault: true, provider }, { provider, aliases });
             defaultVpcs.set(name, vpc);
         }
 
@@ -367,11 +378,8 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     /** @internal */
-    public async initializeDefaultVpcArgs(name: string, opts: pulumi.InvokeOptions = {}): Promise<VpcData> {
-        // Pull out the provider to ensure we're looking up the default vpc in the right location.
-        // Note that we do not pass 'parent' along as we want the default vpc to always be parented
-        // logically by hte stack.
-        const provider = Vpc.getProvider(opts);
+    public async initializeDefaultVpcArgs(name: string, args: DefaultVpcArgs): Promise<VpcData> {
+        const provider = args.provider;
 
         // And we want to be able to return the same Vpc object instance if it represents the same
         // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
@@ -581,7 +589,7 @@ function isExistingVpcIdArgs(obj: any): obj is ExistingVpcIdArgs {
 
 interface DefaultVpcArgs {
     isDefault: true;
-    opts: pulumi.InvokeOptions;
+    provider: pulumi.ProviderResource | undefined;
 }
 
 function isDefaultVpcArgs(obj: any): obj is DefaultVpcArgs {
