@@ -71,22 +71,13 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 function getSubnets(
     args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
 
-    // console.log("Getting subnets for LB");
     if (!args.subnets) {
-        // console.log("no subnets provided");
         // No subnets requested.  Determine the subnets automatically from the vpc.
-        return pulumi.all([vpc, external]).apply(([vpc, external]) => {
-            if (external) {
-                // console.log("Using public subnets:");
-                return vpc.publicSubnetIds;
-            } else {
-                // console.log("Using private subnets:");
-                return vpc.privateSubnetIds;
-            }
+        return pulumi.all([vpc.publicSubnetIds, vpc.privateSubnetIds, external])
+                     .apply(([publicSubnetIds, privateSubnetIds]) => {
+            return external ? publicSubnetIds : privateSubnetIds;
         });
     }
-
-    // console.log("subnets provided");
 
     return isLoadBalancerSubnets(args.subnets)
         ? args.subnets.subnets()
