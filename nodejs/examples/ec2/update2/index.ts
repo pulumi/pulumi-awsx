@@ -27,7 +27,7 @@ const vpc = new awsx.ec2.Vpc("testing-1", {}, providerOpts);
 const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
 
 const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
-    subnetIds: vpc.apply(v => v.publicSubnetIds),
+    subnetIds: vpc.publicSubnetIds,
     templateParameters: {
         minSize: 5,
     },
