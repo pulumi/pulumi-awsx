@@ -17,7 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as ecs from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class EC2TaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,

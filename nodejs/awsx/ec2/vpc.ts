@@ -18,7 +18,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import * as topology from "./vpcTopology";
 
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 // Mapping from default vpc name to Vpc.
 const defaultVpcs = new Map<string, Vpc>();
@@ -121,8 +121,7 @@ class VpcData {
         }
     }
 
-    /** @internal */
-    public async partition(
+    public partition(
             name: string, cidrBlock: CidrBlock, availabilityZones: topology.AvailabilityZoneDescription[],
             numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
             subnetArgs: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
