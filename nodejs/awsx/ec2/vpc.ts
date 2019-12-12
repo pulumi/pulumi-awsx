@@ -285,8 +285,13 @@ export class Vpc extends pulumi.ComponentResource {
         }
 
         this.id = pulumi.output(this._underlyingData.then(v => v.id));
-        this._underlyingData.then(_ => this.registerOutputs());
         this.vpc = pulumi.output(this._underlyingData.then(d => d.vpc));
+
+        this._underlyingData.then(_ => this.registerOutputs());
+    }
+
+    protected isAsyncConstructed() {
+        return true;
     }
 
     /** @internal */
