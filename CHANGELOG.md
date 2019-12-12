@@ -2,8 +2,29 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-_(none)_
 
+* Due the necessity to perform many async operations during creation, many parts of an
+  [awsx.ec2.Vpc] have become asynchronous.  This is encoded using the normal `Output<awsx.ec2.Vpc>`
+  type. However, for convenience, many parts are also available as `Promise`s, making it easy to use
+  from `async` code.  Specifically:
+
+  1. `awsx.ec2.Vpc.vpc` has changed from an `aws.ec2.Vpc` to an `Output<aws.ec2.Vpc>`.
+  2. The properties and methods exposed off of `awsx.ec2.Vpc` (like `publicSubnetIds`) are now
+     async (i.e. `Promise<string[]>`).
+  3. `awsx.ec2.Vpc.getDefault` now returns an `Output<awsx.ec2.Vpc>` instead of a `awsx.ec2.Vpc`.
+  4. A new api `awsx.ec2.Vpc.getDefaultValue` has been added that returns a `Promise<awsx.ec2.Vpc>`.
+
+These changes should not impact most code.  Code that creates and passes around a Vpc or accesses
+properties off of the Vpc should continue to work.  If there is code that needs to access the raw
+values (for example, to iterate over the subnets of a Vpc) that can be written like so:
+
+```ts
+const vpc = new awsx.ec2.Vpc(...);
+const ids = await vpc.publicSubnetIds;
+for (const id of ids) {
+    ...
+}
+```
 
 ## 0.18.14 (2019-11-21)
 * Allow the user to pass `family` to the `ecs.TaskDefinition`
