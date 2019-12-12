@@ -219,7 +219,7 @@ type RunTaskRequestOverrideShape = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
 const _: string = utils.checkCompat<RunTaskRequestOverrideShape, RunTaskRequest>();
 
 function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
-    return async function run(params: RunTaskRequest) {
+    return function run(params: RunTaskRequest) {
 
         const ecs = new aws.sdk.ECS();
 
