@@ -21,7 +21,7 @@ import * as utils from "../utils";
 export class SecurityGroup extends pulumi.ComponentResource {
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly id: pulumi.Output<string>;
-    public readonly vpc: x.ec2.Vpc
+    public readonly vpc: x.ec2.Vpc;
 
     public readonly egressRules: x.ec2.EgressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
