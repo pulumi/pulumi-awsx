@@ -127,7 +127,7 @@ export interface EC2TaskDefinitionArgs {
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
      * provided as it will be inferred from the cluster the service is associated with.
      */
-    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
+    vpc?: x.ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.

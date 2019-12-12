@@ -20,7 +20,7 @@ import * as topology from "./vpcTopology";
 
 import * as utils from "../utils";
 
-// Mapping from vpcId to Vpc.
+// Mapping from default vpc-name to Vpc.
 const defaultVpcs = new Map<string, Vpc>();
 
 class VpcData {
@@ -250,11 +250,17 @@ export class Vpc extends pulumi.ComponentResource {
 
     private readonly _underlyingData: Promise<VpcData>;
 
-    constructor(name: string, args: VpcArgs | ExistingVpcArgs | ExistingVpcIdArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: VpcArgs | ExistingVpcArgs | ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions);
+    /** @internal */
+    constructor(name: string, args: DefaultVpcArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, args: VpcArgs | ExistingVpcArgs | ExistingVpcIdArgs | DefaultVpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
             this._underlyingData = this.initializeExistingVpcArgs(name, args, opts);
+        }
+        else if (isDefaultVpcArgs(args)) {
+            this._underlyingData = this.initializeDefaultVpcArgs(name, args, opts);
         }
         else if (isExistingVpcIdArgs(args)) {
             this._underlyingData = this.initializeExistingVpcIdArgs(name, args, opts);
@@ -274,13 +280,30 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     /** @internal */
-    public async initializeExistingVpcArgs(name: string, args: x.ec2.ExistingVpcArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
+    public async initializeExistingVpcArgs(name: string, args: ExistingVpcArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
         return new VpcData(name, this, args, opts);
     }
 
     /** @internal */
-    public async initializeExistingVpcIdArgs(name: string, args: x.ec2.ExistingVpcIdArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
+    public async initializeExistingVpcIdArgs(name: string, args: ExistingVpcIdArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
         return new VpcData(name, this, args, opts);
+    }
+
+    /** @internal */
+    public async initializeDefaultVpcArgs(name: string, args: DefaultVpcArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
+        // back compat.  We always would just use the first two public subnets of the region
+        // we're in.  So preserve that, even though we could get all of them here.  Pulling in
+        // more than the two we pulled in before could have deep implications for clients as
+        // those subnets are used to make many downstream resource-creating decisions.
+        const vpcId = await args.vpcId;
+        const provider = args.provider;
+        const getSubnetsResult = await aws.ec2.getSubnetIds({ vpcId  }, { provider, async: true });
+        const publicSubnetIds = getSubnetsResult.ids.slice(0, 2);
+
+        return new VpcData(name, this, {
+            vpcId,
+            publicSubnetIds,
+        }, opts);
     }
 
     /** @internal */
@@ -334,82 +357,34 @@ export class Vpc extends pulumi.ComponentResource {
      * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
      * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
      * version be used instead.  This version will properly respect providers.
-     *
-     * This method returns an Output because retrieval of a default Vpc's data happens
-     * asynchronously.  Because it is an Output, you can access the properties of the Vpc directly
-     * off of the Output like so:
-     *
-     * ```ts
-     * const vpc = Vpc.getDefault(opts);
-     * cluster1.createAutoScalingGroup("testing-1", {
-     *     subnetIds: vpc.publicSubnetIds,
-     *     ...
-     * ```
-     *
-     * If your code wants to use properties of the Vpc for purposes of flow control
-     * (for example, iterating over each subnet in the Vpc) use [getDefaultValue] like so:
-     *
-     * ```ts
-     * const vpc = await Vpc.getDefaultValue(opts);
-     * for (const subnet of vpc.publicSubnets) { ... }
-     * ```
      */
-    public static getDefault(opts: pulumi.InvokeOptions = {}): pulumi.Output<Vpc> {
-        return pulumi.output(Vpc.getDefaultValue(opts));
-    }
-
-    /**
-     * Gets the default vpc for the current aws account and region.
-     *
-     * See https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html for more details.
-     *
-     * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
-     * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
-     * version be used instead.  This version will properly respect providers.
-     *
-     * This method returns a Promise because retrieval of a default Vpc's data happens
-     * asynchronously.
-     */
-    public static async getDefaultValue(opts: pulumi.InvokeOptions = {}): Promise<Vpc> {
+    public static getDefault(opts: pulumi.InvokeOptions = {}): Vpc {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
         // logically by hte stack.
         const provider = Vpc.getProvider(opts);
+        const vpcName = "default-" + (provider ? (<any>provider).__name : "vpc");
 
-        // And we want to be able to return the same Vpc object instance if it represents the same
-        // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
-        // an account.  So we just map from the id to the Vpc instance we hydrate.  If asked again
-        // for the same id we can just return the same instance.
-        const getVpcResult = await aws.ec2.getVpc({ default: true }, { provider, async: true });
-        const vpcId = getVpcResult.id;
-
-        // back compat.  We always would just use the first two public subnets of the region
-        // we're in.  So preserve that, even though we could get all of them here.  Pulling in
-        // more than the two we pulled in before could have deep implications for clients as
-        // those subnets are used to make many downstream resource-creating decisions.
-        const publicSubnetIds = aws.ec2.getSubnetIds({ vpcId }, { provider }).ids.slice(0, 2);
-
-        return Vpc.computeDefault(vpcId, publicSubnetIds, provider);
-    }
-
-    // Keep this method synchronous to ensure that we don't interleave any code checking the
-    // `defaultVpcs` map.
-    private static computeDefault(vpcId: string, publicSubnetIds: string[], provider: pulumi.ProviderResource | undefined) {
-        let vpc = defaultVpcs.get(vpcId);
+        let vpc = defaultVpcs.get(vpcName);
         if (!vpc) {
-
-            // Generate the name as `default-` + the actual name.  For back compat with how we
-            // previously named things, also create an alias from "default-vpc" to this name for
-            // the very first default Vpc we create as that's how we used to name them.
-            const vpcName = "default-" + vpcId;
-
-            const aliases = defaultVpcs.size === 0
+            // For back compat with how we previously named things, also create an alias from
+            // "default-vpc" to this name for the very first default Vpc we create as that's how we
+            // used to name them.
+            const aliases: pulumi.Alias[] = defaultVpcs.size === 0
                 ? [{ name: "default-vpc" }]
                 : [];
 
-            vpc = Vpc.fromExistingIds(vpcName, { vpcId, publicSubnetIds }, { aliases, provider });
+            // Also add an alias to "default-vpc-id".  This is the name we generated for
+            // default-vpcs when we had sync data-sources.
+            const vpcId = aws.ec2.getVpc({ default: true }, { provider, async: true }).then(r => r.id);
+            aliases.push({ name: vpcId.then(vpcId => "default-" + vpcId) });
 
-            defaultVpcs.set(vpcId, vpc);
+            vpc = new Vpc(vpcName, {
+                isDefault: true,
+                vpcId,
+                provider,
+            }, { provider, aliases });
+            defaultVpcs.set(vpcName, vpc);
         }
 
         return vpc;
@@ -450,6 +425,7 @@ export class Vpc extends pulumi.ComponentResource {
 
 utils.Capture(Vpc.prototype).addInternetGateway.doNotCapture = true;
 utils.Capture(Vpc.prototype).addNatGateway.doNotCapture = true;
+utils.Capture(Vpc.prototype).initializeDefaultVpcArgs.doNotCapture = true;
 utils.Capture(Vpc.prototype).initializeExistingVpcArgs.doNotCapture = true;
 utils.Capture(Vpc.prototype).initializeExistingVpcIdArgs.doNotCapture = true;
 utils.Capture(Vpc.prototype).initializeVpcArgs.doNotCapture = true;
@@ -620,6 +596,17 @@ export interface ExistingVpcIdArgs {
 
 function isExistingVpcIdArgs(obj: any): obj is ExistingVpcIdArgs {
     return !!(<ExistingVpcIdArgs>obj).vpcId;
+}
+
+interface DefaultVpcArgs {
+    /** The id of the VPC. */
+    vpcId: Promise<string>;
+    provider: pulumi.ProviderResource | undefined;
+    isDefault: true;
+}
+
+function isDefaultVpcArgs(obj: any): obj is DefaultVpcArgs {
+    return (<DefaultVpcArgs>obj).isDefault === true;
 }
 
 export interface ExistingVpcArgs {

@@ -29,7 +29,7 @@ export abstract class TargetGroup
 
     public readonly loadBalancer: mod.LoadBalancer;
     public readonly targetGroup: aws.lb.TargetGroup;
-    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
+    public readonly vpc: x.ec2.Vpc;
 
     public readonly listeners: x.lb.Listener[] = [];
 
@@ -177,7 +177,7 @@ export interface TargetGroupArgs {
     /**
      * The vpc for this target group.
      */
-    vpc: pulumi.Output<x.ec2.Vpc>;
+    vpc: x.ec2.Vpc;
 
     /**
      * @deprecated Not used.  Supply the name you want for a TargetGroup through the [name]
