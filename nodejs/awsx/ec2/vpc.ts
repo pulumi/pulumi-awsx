@@ -271,9 +271,7 @@ export class Vpc extends pulumi.ComponentResource {
 
     private readonly _underlyingData: Promise<VpcData>;
 
-    constructor(name: string, args: VpcArgs | ExistingVpcArgs | ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions)
-    constructor(name: string, args: DefaultVpcArgs, opts?: pulumi.ComponentResourceOptions)
-    constructor(name: string, args: VpcArgs | ExistingVpcArgs | ExistingVpcIdArgs | DefaultVpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, args: VpcArgs | ExistingVpcArgs | ExistingVpcIdArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:Vpc", name, {}, opts);
 
         if (isExistingVpcArgs(args)) {
@@ -281,9 +279,6 @@ export class Vpc extends pulumi.ComponentResource {
         }
         else if (isExistingVpcIdArgs(args)) {
             this._underlyingData = this.initializeExistingVpcIdArgs(name, args, opts);
-        }
-        else if (isDefaultVpcArgs(args)) {
-            this._underlyingData = this.initializeDefaultVpcArgs(name, args);
         }
         else {
             this._underlyingData = this.initializeVpcArgs(name, args, opts);
@@ -436,19 +431,6 @@ export class Vpc extends pulumi.ComponentResource {
         return vpc;
     }
 
-    /** @internal */
-    public async initializeDefaultVpcArgs(name: string, args: DefaultVpcArgs): Promise<VpcData> {
-        const provider = args.provider;
-
-        // And we want to be able to return the same Vpc object instance if it represents the same
-        // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
-        // an account.  So we just map from the id to the Vpc instance we hydrate.  If asked again
-        // for the same id we can just return the same instance.
-        const getVpcResult = await aws.ec2.getVpc({ default: true }, { provider, async: true });
-        const vpcId = getVpcResult.id;
-        return VpcData.computeDefault(name, this, vpcId, provider);
-    }
-
     // lifted members of VpcData
 
     private async liftMember<T>(func: (d: VpcData) => T, def: T): Promise<T> {
@@ -486,7 +468,6 @@ utils.Capture(Vpc.prototype).addInternetGateway.doNotCapture = true;
 utils.Capture(Vpc.prototype).addNatGateway.doNotCapture = true;
 utils.Capture(Vpc.prototype).initializeExistingVpcArgs.doNotCapture = true;
 utils.Capture(Vpc.prototype).initializeExistingVpcIdArgs.doNotCapture = true;
-utils.Capture(Vpc.prototype).initializeDefaultVpcArgs.doNotCapture = true;
 utils.Capture(Vpc.prototype).initializeVpcArgs.doNotCapture = true;
 
 async function getAvailabilityZones(
@@ -655,15 +636,6 @@ export interface ExistingVpcIdArgs {
 
 function isExistingVpcIdArgs(obj: any): obj is ExistingVpcIdArgs {
     return !!(<ExistingVpcIdArgs>obj).vpcId;
-}
-
-interface DefaultVpcArgs {
-    isDefault: true;
-    provider: pulumi.ProviderResource | undefined;
-}
-
-function isDefaultVpcArgs(obj: any): obj is DefaultVpcArgs {
-    return (<DefaultVpcArgs>obj).isDefault === true;
 }
 
 export interface ExistingVpcArgs {
