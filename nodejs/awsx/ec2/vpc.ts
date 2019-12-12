@@ -236,30 +236,9 @@ class VpcData {
         this.natGateways.push(natGateway);
         return natGateway;
     }
-
-    public static async computeDefault(name: string, vpc: Vpc, vpcId: string, provider: pulumi.ProviderResource | undefined) {
-        // back compat.  We always would just use the first two public subnets of the region
-        // we're in.  So preserve that, even though we could get all of them here.  Pulling in
-        // more than the two we pulled in before could have deep implications for clients as
-        // those subnets are used to make many downstream resource-creating decisions.
-        const getSubnetIdsResult = await aws.ec2.getSubnetIds({ vpcId }, { provider, async: true });
-        const publicSubnetIds = getSubnetIdsResult.ids.slice(0, 2);
-
-        // // Generate the name as `default-` + the actual name.  For back compat with how we
-        // // previously named things, also create an alias from "default-vpc" to this name for
-        // // the very first default Vpc we create as that's how we used to name them.
-        // const vpcName = "default-" + vpcId;
-
-        // const aliases = defaultVpcs.size === 0
-        //     ? [{ name: "default-vpc" }]
-        //     : [];
-
-        return new VpcData(name, vpc, { vpcId, publicSubnetIds }, { provider });
-    }
 }
 
 (<any>VpcData).doNotCapture = true;
-utils.Capture(VpcData).computeDefault.doNotCapture = true;
 utils.Capture(VpcData.prototype).addInternetGateway.doNotCapture = true;
 utils.Capture(VpcData.prototype).addNatGateway.doNotCapture = true;
 utils.Capture(VpcData.prototype).partition.doNotCapture = true;
