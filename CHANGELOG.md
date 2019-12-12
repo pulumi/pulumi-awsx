@@ -3,10 +3,12 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Upgrade to go1.13.x
+
 * Due the necessity to perform many async operations during creation, many parts of an
   [awsx.ec2.Vpc] have become asynchronous.  This is encoded using the normal `Output<awsx.ec2.Vpc>`
   type. However, for convenience, many parts are also available as `Promise`s, making it easy to use
-  from `async` code.  Specifically:
+  from `async/await` code.  Specifically:
 
   1. `awsx.ec2.Vpc.vpc` has changed from an `aws.ec2.Vpc` to an `Output<aws.ec2.Vpc>`.
   2. The properties and methods exposed off of `awsx.ec2.Vpc` (like `publicSubnetIds`) are now
