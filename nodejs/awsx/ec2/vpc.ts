@@ -20,7 +20,7 @@ import * as topology from "./vpcTopology";
 
 import * as utils from "../utils";
 
-// Mapping from default vpc name to Vpc.
+// Mapping from vpcId to Vpc.
 const defaultVpcs = new Map<string, Vpc>();
 
 class VpcData {
