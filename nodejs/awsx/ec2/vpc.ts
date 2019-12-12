@@ -355,25 +355,82 @@ export class Vpc extends pulumi.ComponentResource {
      * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
      * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
      * version be used instead.  This version will properly respect providers.
+     *
+     * This method returns an Output because retrieval of a default Vpc's data happens
+     * asynchronously.  Because it is an Output, you can access the properties of the Vpc directly
+     * off of the Output like so:
+     *
+     * ```ts
+     * const vpc = Vpc.getDefault(opts);
+     * cluster1.createAutoScalingGroup("testing-1", {
+     *     subnetIds: vpc.publicSubnetIds,
+     *     ...
+     * ```
+     *
+     * If your code wants to use properties of the Vpc for purposes of flow control
+     * (for example, iterating over each subnet in the Vpc) use [getDefaultValue] like so:
+     *
+     * ```ts
+     * const vpc = await Vpc.getDefaultValue(opts);
+     * for (const subnet of vpc.publicSubnets) { ... }
+     * ```
      */
-    public static getDefault(opts: pulumi.InvokeOptions = {}): Vpc {
+    public static getDefault(opts: pulumi.InvokeOptions = {}): pulumi.Output<Vpc> {
+        return pulumi.output(Vpc.getDefaultValue(opts));
+    }
+
+    /**
+     * Gets the default vpc for the current aws account and region.
+     *
+     * See https://docs.aws.amazon.com/vpc/latest/userguide/default-vpc.html for more details.
+     *
+     * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
+     * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
+     * version be used instead.  This version will properly respect providers.
+     *
+     * This method returns a Promise because retrieval of a default Vpc's data happens
+     * asynchronously.
+     */
+    public static async getDefaultValue(opts: pulumi.InvokeOptions = {}): Promise<Vpc> {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
         // logically by hte stack.
         const provider = Vpc.getProvider(opts);
 
-        // Generate the name as `default-` + the name of this provider..  For back compat with how
-        // we previously named things, also create an alias from "default-vpc" to this name for the
-        // very first default Vpc we create as that's how we used to name them.
-        const name = "default-" + (provider === undefined ? "vpc" : (<any>provider).__name);
+        // And we want to be able to return the same Vpc object instance if it represents the same
+        // logical default vpc instance for the AWS account.  Fortunately Vpcs have unique ids for
+        // an account.  So we just map from the id to the Vpc instance we hydrate.  If asked again
+        // for the same id we can just return the same instance.
+        const getVpcResult = await aws.ec2.getVpc({ default: true }, { provider, async: true });
+        const vpcId = getVpcResult.id;
 
-        let vpc = defaultVpcs.get(name);
+        // back compat.  We always would just use the first two public subnets of the region
+        // we're in.  So preserve that, even though we could get all of them here.  Pulling in
+        // more than the two we pulled in before could have deep implications for clients as
+        // those subnets are used to make many downstream resource-creating decisions.
+        const publicSubnetIds = aws.ec2.getSubnetIds({ vpcId }, { provider }).ids.slice(0, 2);
+
+        return Vpc.computeDefault(vpcId, publicSubnetIds, provider);
+    }
+
+    // Keep this method synchronous to ensure that we don't interleave any code checking the
+    // `defaultVpcs` map.
+    private static computeDefault(vpcId: string, publicSubnetIds: string[], provider: pulumi.ProviderResource | undefined) {
+        let vpc = defaultVpcs.get(vpcId);
         if (!vpc) {
+
+            // Generate the name as `default-` + the actual name.  For back compat with how we
+            // previously named things, also create an alias from "default-vpc" to this name for
+            // the very first default Vpc we create as that's how we used to name them.
+            const vpcName = "default-" + vpcId;
+
             const aliases = defaultVpcs.size === 0
                 ? [{ name: "default-vpc" }]
                 : [];
-            vpc = new Vpc(name, { isDefault: true, provider }, { provider, aliases });
-            defaultVpcs.set(name, vpc);
+
+            vpc = Vpc.fromExistingIds(vpcName, { vpcId, publicSubnetIds }, { aliases, provider });
+
+            defaultVpcs.set(vpcId, vpc);
         }
 
         return vpc;

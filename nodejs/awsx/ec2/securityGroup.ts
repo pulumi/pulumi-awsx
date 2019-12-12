@@ -21,7 +21,7 @@ import * as utils from "../utils";
 export class SecurityGroup extends pulumi.ComponentResource {
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly id: pulumi.Output<string>;
-    public readonly vpc: x.ec2.Vpc;
+    public readonly vpc: pulumi.Output<x.ec2.Vpc>;
 
     public readonly egressRules: x.ec2.EgressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
@@ -47,7 +47,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
         delete args.egress;
         delete args.ingress;
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
+        this.vpc = utils.ifUndefined(args.vpc, x.ec2.Vpc.getDefault({ parent: this }));
 
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
@@ -107,7 +107,7 @@ export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 
 /** @internal */
 export function getSecurityGroups(
-        vpc: x.ec2.Vpc, name: string, args: SecurityGroupOrId[] | undefined,
+        vpc: pulumi.Output<x.ec2.Vpc>, name: string, args: SecurityGroupOrId[] | undefined,
         opts: pulumi.ResourceOptions | undefined) {
     if (!args) {
         return undefined;
@@ -132,7 +132,7 @@ type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
     namePrefix?: never;
     vpcId?: never;
 
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
     egress?: x.ec2.EgressSecurityGroupRuleArgs[];
     ingress?: x.ec2.IngressSecurityGroupRuleArgs[];
 }>;
@@ -147,7 +147,7 @@ export interface SecurityGroupArgs {
     /**
      * The vpc this security group applies to.  Or [Vpc.getDefault] if unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: pulumi.Input<x.ec2.Vpc | undefined>;
 
     /**
      * The security group description. Defaults to "Managed by Terraform". Cannot be "". __NOTE__:

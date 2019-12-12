@@ -20,7 +20,7 @@ export = async () => {
     const config = new pulumi.Config("aws");
     const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-    const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
+    const vpc = await awsx.ec2.Vpc.getDefaultValue(providerOpts);
 
     // Create a security group to let traffic flow.
     const sg = new awsx.ec2.SecurityGroup("web-sg", { vpc }, providerOpts);
