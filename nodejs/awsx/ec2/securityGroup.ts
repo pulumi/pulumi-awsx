@@ -48,7 +48,6 @@ export class SecurityGroup extends pulumi.ComponentResource {
         delete args.ingress;
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
-
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
             vpcId: this.vpc.id,
