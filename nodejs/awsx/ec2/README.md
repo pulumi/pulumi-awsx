@@ -1,11 +1,7 @@
 
 ## Pulumi EC2 Components
 
-Pulumi's API for simplifying working with [EC2](https://aws.amazon.com/ec2/).  The API currently
-primarily provides ways to define and configure a Virtual Private Cloud
-([VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html)), as well as
-customize the [Security
-Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) around it.
+Pulumi's API's for simplifying workin with [EC2](https://aws.amazon.com/ec2/).  The API currently primarily provides ways to define and configure a Virtual Private Cloud ([VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html)), as well as customize the [Security Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) around it.
 
 ### The Default VPC
 
@@ -86,10 +82,7 @@ const vpc = new awsx.ec2.Vpc("custom", {
 });
 ```
 
-There is no restriction on the number of public/private/isolated subnets in an availability zone.
-For example, it might be useful to have multiple isolated subnets, one for DB instances and another
-for Redis instances.  To facilitate this sort of arrangement, subnets can be named for clarity.
-i.e.:
+There is no restriction on the number of public/private/isolated subnets in an availability zone.  For example, it might be useful to have multiple isolated subnets, one for DB instances and another for Redis instances.  To facilitate this sort of arrangement, subnets can be named for clarity.  i.e.:
 
 ```ts
 import * as aws from "@pulumi/aws";
@@ -106,13 +99,7 @@ const vpc = new awsx.ec2.Vpc("custom", {
 });
 ```
 
-By default the subnets will divide the CIDR space for each availability zone equally.  If this is
-not desired, a particular size for each zone can be requested by passing in an appropriate netmask
-value between 16 and 28.  See [VPC and Subnet
-Sizing](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html#VPC_Sizing) for more
-details.  This value can be provided for specific subnets you know the number of instances you want
-IP addresses for.  Whatever IP addresses are remaining in the availability zone will be split over
-the subnets that do not provide a defined size.
+By default the subnets will divide the CIDR space for each availability zone equally.  If this is not desired, a particular size for each zone can be requested by passing in an appropriate netmask value between 16 and 28.  See [VPC and Subnet Sizing](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html#VPC_Sizing) for more details.  This value can be provided for specific subnets you know the number of instances you want IP addresses for.  Whatever IP addresses are remaining in the availability zone will be split over the subnets that do not provide a defined size.
 
 ### Gateways
 
