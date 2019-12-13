@@ -1,6 +1,12 @@
 ## Pulumi Elastic Contain Registry (ECR) Components
 
-Pulumi's API for simplifying working with [ECR](https://aws.amazon.com/ecr/). The API currently provides ways to define and configure [`Repositories`](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html) and [`LifecyclePolicies`](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html).  It also makes it simple to build and push [Docker Images](https://docs.docker.com/engine/reference/commandline/image/) to a Repository providing stored cloud images that can then be used by other AWS services like ECS.
+Pulumi's API for simplifying working with [ECR](https://aws.amazon.com/ecr/). The API currently
+provides ways to define and configure
+[`Repositories`](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html) and
+[`LifecyclePolicies`](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html).
+It also makes it simple to build and push [Docker
+Images](https://docs.docker.com/engine/reference/commandline/image/) to a Repository providing
+stored cloud images that can then be used by other AWS services like ECS.
 
 ### Repositories
 

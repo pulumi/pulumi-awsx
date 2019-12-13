@@ -73,10 +73,7 @@ function getSubnets(
 
     if (!args.subnets) {
         // No subnets requested.  Determine the subnets automatically from the vpc.
-        return pulumi.all([vpc.publicSubnetIds, vpc.privateSubnetIds, external])
-                     .apply(([publicSubnetIds, privateSubnetIds]) => {
-            return external ? publicSubnetIds : privateSubnetIds;
-        });
+        return external.apply(e => e ? vpc.publicSubnetIds : vpc.privateSubnetIds);
     }
 
     return isLoadBalancerSubnets(args.subnets)
