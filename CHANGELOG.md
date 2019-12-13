@@ -13,8 +13,8 @@ CHANGELOG
   1. `awsx.ec2.Vpc.vpc` has changed from an `aws.ec2.Vpc` to an `Output<aws.ec2.Vpc>`.
   2. The properties and methods exposed off of `awsx.ec2.Vpc` (like `publicSubnetIds`) are now
      async (i.e. `Promise<string[]>`).
-  3. `awsx.ec2.Vpc.getDefault` now returns an `Output<awsx.ec2.Vpc>` instead of a `awsx.ec2.Vpc`.
-  4. A new api `awsx.ec2.Vpc.getDefaultValue` has been added that returns a `Promise<awsx.ec2.Vpc>`.
+  3. `awsx.ec2.Vpc.getDefault` now returns a Vpc with a different name than before. Aliases to the
+     previous names Pulumi would created are used to prevent any resources from being recreated.
 
 These changes should not impact most code.  Code that creates and passes around a Vpc or accesses
 properties off of the Vpc should continue to work.  If there is code that needs to access the raw

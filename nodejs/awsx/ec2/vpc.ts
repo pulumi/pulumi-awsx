@@ -20,8 +20,9 @@ import * as topology from "./vpcTopology";
 
 import * as utils from "../utils";
 
-// Mapping from default vpc-name to Vpc.
-const defaultVpcs = new Map<string, Vpc>();
+// Mapping from provider to Vpc.  'undefined' is used to encode the Vpc we create when no provider
+// is passed in.
+const providerToDefaultVpc = new Map<pulumi.ProviderResource | undefined, Vpc>();
 
 class VpcData {
     // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
@@ -356,21 +357,23 @@ export class Vpc extends pulumi.ComponentResource {
      *
      * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
      * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
-     * version be used instead.  This version will properly respect providers.
+     * version be used instead.  This version will properly respect providers. Specifically, the
+     * same Vpc will be returned if the same `aws.Provider` is passed in.
      */
     public static getDefault(opts: pulumi.InvokeOptions = {}): Vpc {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
         // logically by hte stack.
         const provider = Vpc.getProvider(opts);
-        const vpcName = "default-" + (provider ? (<any>provider).__name : "vpc");
 
-        let vpc = defaultVpcs.get(vpcName);
+        let vpc = providerToDefaultVpc.get(provider);
         if (!vpc) {
+            const vpcName = "default-" + (provider ? (<any>provider).__name : "vpc");
+
             // For back compat with how we previously named things, also create an alias from
             // "default-vpc" to this name for the very first default Vpc we create as that's how we
             // used to name them.
-            const aliases: pulumi.Alias[] = defaultVpcs.size === 0
+            const aliases: pulumi.Alias[] = providerToDefaultVpc.size === 0
                 ? [{ name: "default-vpc" }]
                 : [];
 
@@ -384,7 +387,7 @@ export class Vpc extends pulumi.ComponentResource {
                 vpcId,
                 provider,
             }, { provider, aliases });
-            defaultVpcs.set(vpcName, vpc);
+            providerToDefaultVpc.set(provider, vpc);
         }
 
         return vpc;
