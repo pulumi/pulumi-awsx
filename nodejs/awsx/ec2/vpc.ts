@@ -357,8 +357,10 @@ export class Vpc extends pulumi.ComponentResource {
      *
      * Note: the no-arg version of this call is not recommended.  It will acquire the default Vpc
      * for the current region and cache it.  Instead, it is recommended that the `getDefault(opts)`
-     * version be used instead.  This version will properly respect providers. Specifically, the
-     * same Vpc will be returned if the same `aws.Provider` is passed in.
+     * version be used instead with either `opts.provider` or `opts.parent` set.  This version will
+     * properly get the default vpc for the region the provider specifies.
+     *
+     * This method will return the same Vpc instance when passed the same `provider`.
      */
     public static getDefault(opts: pulumi.InvokeOptions = {}): Vpc {
         // Pull out the provider to ensure we're looking up the default vpc in the right location.
