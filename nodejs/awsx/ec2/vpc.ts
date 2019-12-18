@@ -27,31 +27,43 @@ const providerToDefaultVpc = new Map<pulumi.ProviderResource | undefined, Vpc>()
 class VpcData {
     // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
     // properties.
+    /** @internal */
     public readonly publicSubnetIds: pulumi.Output<string>[] = [];
+    /** @internal */
     public readonly privateSubnetIds: pulumi.Output<string>[] = [];
+    /** @internal */
     public readonly isolatedSubnetIds: pulumi.Output<string>[] = [];
 
+    /** @internal */
     public readonly vpc: aws.ec2.Vpc;
+    /** @internal */
     public readonly id: pulumi.Output<string>;
 
+    /** @internal */
     public readonly publicSubnets: x.ec2.Subnet[] = [];
+    /** @internal */
     public readonly privateSubnets: x.ec2.Subnet[] = [];
+    /** @internal */
     public readonly isolatedSubnets: x.ec2.Subnet[] = [];
 
     /**
+     * @internal
      * The internet gateway created to allow traffic to/from the internet to the public subnets.
      * Only available if this was created using [VpcArgs].
      */
     public internetGateway?: x.ec2.InternetGateway;
 
     /**
+     * @internal
      * The nat gateways created to allow private subnets access to the internet.
      * Only available if this was created using [VpcArgs].
      */
     public readonly natGateways: x.ec2.NatGateway[] = [];
 
+    /** @internal */
     private readonly parent: Vpc;
 
+    /** @internal */
     constructor(name: string, parent: Vpc,
                 args: InternalVpcArgs | ExistingVpcArgs | ExistingVpcIdArgs,
                 opts: pulumi.ComponentResourceOptions) {
@@ -122,6 +134,7 @@ class VpcData {
         }
     }
 
+    /** @internal */
     public partition(
             name: string, cidrBlock: CidrBlock, availabilityZones: topology.AvailabilityZoneDescription[],
             numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
@@ -174,11 +187,13 @@ class VpcData {
         }
     }
 
+    /** @internal */
     private addSubnet(type: VpcSubnetType, subnet: x.ec2.Subnet) {
         this.getSubnets(type).push(subnet);
         this.getSubnetIds(type).push(subnet.id);
     }
 
+    /** @internal */
     public getSubnets(type: VpcSubnetType) {
         switch (type) {
             case "public": return this.publicSubnets;
@@ -188,6 +203,7 @@ class VpcData {
         }
     }
 
+    /** @internal */
     public getSubnetIds(type: VpcSubnetType) {
         switch (type) {
             case "public": return this.publicSubnetIds;
@@ -198,6 +214,7 @@ class VpcData {
     }
 
     /**
+     * @internal
      * Adds an [awsx.ec2.InternetGateway] to this VPC.  Will fail if this Vpc already has an
      * InternetGateway.
      *
@@ -225,6 +242,7 @@ class VpcData {
     }
 
     /**
+     * @internal
      * Adds an [awsx.ec2.NatGateway] to this VPC. The NatGateway must be supplied a subnet (normally
      * public) to be placed in.  After adding the NatGateway you should update the route table
      * associated with one or more of your private subnets to point Internet-bound traffic to the
@@ -277,10 +295,6 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
         else {
             return this.initializeVpcArgs(name, args, opts);
         }
-    }
-
-    protected isAsyncConstructed() {
-        return true;
     }
 
     /** @internal */
@@ -400,8 +414,12 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
 
     // lifted members of VpcData
 
+    /** @internal */
     private async liftMember<T>(func: (d: VpcData) => T, def: T): Promise<T> {
         const data = await this.getData();
+        if (!data) {
+            return def;
+        }
         return func(data);
     }
 
