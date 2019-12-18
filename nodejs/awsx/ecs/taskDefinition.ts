@@ -218,7 +218,7 @@ type RunTaskRequestOverrideShape = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
 const _: string = utils.checkCompat<RunTaskRequestOverrideShape, RunTaskRequest>();
 
 function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
-    return function run(params: RunTaskRequest) {
+    return async function run(params: RunTaskRequest) {
 
         const ecs = new aws.sdk.ECS();
 
@@ -226,7 +226,9 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
         const clusterArn = cluster.id.get();
 
         const securityGroupIds = cluster.securityGroups.map(g => g.id.get());
-        const subnetIds = cluster.publicSubnetIds.get();
+        const publicSubnetIds = await cluster.vpc.publicSubnetIds;
+
+        const subnetIds = publicSubnetIds.map(i => i.get());
         const assignPublicIp = isFargate; // && !usePrivateSubnets;
 
         // Run the task

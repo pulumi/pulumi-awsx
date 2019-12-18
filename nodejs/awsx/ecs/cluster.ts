@@ -38,9 +38,6 @@ export class Cluster
      */
     public readonly securityGroups: x.ec2.SecurityGroup[];
 
-    /** @internal */
-    public readonly publicSubnetIds: pulumi.Output<string[]>;
-
     public readonly extraBootcmdLines: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
 
     public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
@@ -60,8 +57,6 @@ export class Cluster
         // across both instance and Lambda compute.
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) ||
             [Cluster.createDefaultSecurityGroup(name, this.vpc, { parent: this })];
-
-        this.publicSubnetIds = pulumi.output(this.vpc.publicSubnetIds);
 
         this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
