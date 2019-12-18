@@ -54,7 +54,7 @@ class VpcData {
 
     constructor(name: string, parent: Vpc,
                 args: InternalVpcArgs | ExistingVpcArgs | ExistingVpcIdArgs,
-                opts: pulumi.ComponentResourceOptions = {}) {
+                opts: pulumi.ComponentResourceOptions) {
         this.parent = parent;
 
         if (isExistingVpcArgs(args)) {
