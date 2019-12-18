@@ -109,7 +109,7 @@ const instance = new aws.ec2.Instance("web", {
     tags: {
         Name: "HelloWorld",
     },
-}, providerOpts);
+}, { ...providerOpts, async: true });
 
 const instanceMetric = awsx.ec2.metrics.cpuUtilization({ instance });
 const instanceAlarm = instanceMetric.createAlarm("alarm" + alarmIndex++, { threshold: 120, evaluationPeriods: 2 }, providerOpts);

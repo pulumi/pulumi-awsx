@@ -50,7 +50,7 @@ export = async () => {
             ],
             mostRecent: true,
             owners: [ "099720109477" ], // Canonical
-        }, providerOpts);
+        }, { ...providerOpts, async: true });
 
         const vm = new aws.ec2.Instance(`web-${i}`, {
             ami: getAmiResult.id,
