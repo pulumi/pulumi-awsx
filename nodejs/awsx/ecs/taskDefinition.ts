@@ -224,7 +224,8 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
 
         const cluster = params.cluster;
         const clusterArn = cluster.id.get();
-        const securityGroupIds = cluster.securityGroupIds.get();
+
+        const securityGroupIds = cluster.securityGroups.map(g => g.id.get());
         const subnetIds = cluster.publicSubnetIds.get();
         const assignPublicIp = isFargate; // && !usePrivateSubnets;
 

@@ -40,8 +40,6 @@ export class Cluster
 
     /** @internal */
     public readonly publicSubnetIds: pulumi.Output<string[]>;
-    /** @internal */
-    public readonly securityGroupIds: pulumi.Output<string[]>;
 
     public readonly extraBootcmdLines: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
 
@@ -64,7 +62,6 @@ export class Cluster
             [Cluster.createDefaultSecurityGroup(name, this.vpc, { parent: this })];
 
         this.publicSubnetIds = pulumi.output(this.vpc.publicSubnetIds);
-        this.securityGroupIds = pulumi.all(this.securityGroups.map(g => g.id));
 
         this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
