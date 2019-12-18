@@ -70,8 +70,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
         this.containers = args.containers;
 
         const containerDefinitions = computeContainerDefinitions(
-            this, name, args.vpc, this.containers,
-            this.applicationListeners, this.networkListeners, this.logGroup);
+            this, name, args.vpc, this.containers, this.applicationListeners, this.networkListeners, this.logGroup);
         this.listeners = {...this.applicationListeners, ...this.networkListeners };
 
         const containerString = containerDefinitions.apply(d => JSON.stringify(d));
