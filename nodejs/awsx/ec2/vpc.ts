@@ -244,36 +244,39 @@ utils.Capture(VpcData.prototype).addInternetGateway.doNotCapture = true;
 utils.Capture(VpcData.prototype).addNatGateway.doNotCapture = true;
 utils.Capture(VpcData.prototype).partition.doNotCapture = true;
 
-export class Vpc extends pulumi.ComponentResource {
+export class Vpc extends pulumi.ComponentResource<VpcData> {
     public readonly id: pulumi.Output<string>;
 
     public readonly vpc: pulumi.Output<aws.ec2.Vpc>;
-
-    private readonly _underlyingData: Promise<VpcData>;
 
     constructor(name: string, args: VpcArgs | ExistingVpcArgs | ExistingVpcIdArgs, opts?: pulumi.ComponentResourceOptions);
     /** @internal */
     constructor(name: string, args: DefaultVpcArgs, opts?: pulumi.ComponentResourceOptions);
     constructor(name: string, args: VpcArgs | ExistingVpcArgs | ExistingVpcIdArgs | DefaultVpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:x:ec2:Vpc", name, {}, opts);
+        super("awsx:x:ec2:Vpc", name, { name, args, opts }, opts);
 
+        const data = this.getData();
+
+        this.id = pulumi.output(data.then(v => v.id));
+        this.vpc = pulumi.output(data.then(d => d.vpc));
+    }
+
+    protected initialize(props: { name: string, args: any, opts: pulumi.ComponentResourceOptions }): Promise<VpcData> {
+        const name = props.name;
+        const args = props.args;
+        const opts = props.opts;
         if (isExistingVpcArgs(args)) {
-            this._underlyingData = this.initializeExistingVpcArgs(name, args, opts);
+            return this.initializeExistingVpcArgs(name, args, opts);
         }
         else if (isDefaultVpcArgs(args)) {
-            this._underlyingData = this.initializeDefaultVpcArgs(name, args, opts);
+            return this.initializeDefaultVpcArgs(name, args, opts);
         }
         else if (isExistingVpcIdArgs(args)) {
-            this._underlyingData = this.initializeExistingVpcIdArgs(name, args, opts);
+            return this.initializeExistingVpcIdArgs(name, args, opts);
         }
         else {
-            this._underlyingData = this.initializeVpcArgs(name, args, opts);
+            return this.initializeVpcArgs(name, args, opts);
         }
-
-        this.id = pulumi.output(this._underlyingData.then(v => v.id));
-        this.vpc = pulumi.output(this._underlyingData.then(d => d.vpc));
-
-        this._underlyingData.then(_ => this.registerOutputs());
     }
 
     protected isAsyncConstructed() {
@@ -331,12 +334,12 @@ export class Vpc extends pulumi.ComponentResource {
         name: string, subnets?: x.ec2.Subnet[],
         args: aws.ec2.InternetGatewayArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
 
-        const vpc = await this._underlyingData;
+        const vpc = await this.getData();
         vpc.addInternetGateway(name, subnets, args, opts);
     }
 
     public async addNatGateway(name: string, args: x.ec2.NatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const vpc = await this._underlyingData;
+        const vpc = await this.getData();
         vpc.addNatGateway(name, args, opts);
     }
 
@@ -398,11 +401,7 @@ export class Vpc extends pulumi.ComponentResource {
     // lifted members of VpcData
 
     private async liftMember<T>(func: (d: VpcData) => T, def: T): Promise<T> {
-        if (!this._underlyingData) {
-            return def;
-        }
-
-        const data = await this._underlyingData;
+        const data = await this.getData();
         return func(data);
     }
 
