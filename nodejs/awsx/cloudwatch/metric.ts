@@ -180,6 +180,23 @@ export class Metric {
         };
     }
 
+    private spread() {
+        return {
+            resource: this.resource,
+            namespace: this.namespace,
+            name: this.name,
+            dimensions: this.dimensions,
+            period: this.period,
+            statistic: this.statistic,
+            extendedStatistic: this.extendedStatistic,
+            unit: this.unit,
+            color: this.color,
+            label: this.label,
+            visible: this.visible,
+            yAxis: this.yAxis,
+        };
+    }
+
     /**
      * Produces a new [Metric] instances with the specific [dimensions] of this instance overwritten
      * with the [dimensions] pass in as arguments.  Because this is a merging, to unset a particular
@@ -188,29 +205,29 @@ export class Metric {
      */
     public withDimensions(dimensions: pulumi.Input<Record<string, any>> | undefined) {
         return new Metric({
-            ...this,
+            ...this.spread(),
             dimensions: mergeDimensions(this.dimensions, pulumi.output(dimensions)),
         }, this.resource);
     }
 
     public withPeriod(period: pulumi.Input<number> | undefined) {
-        return new Metric({ ...this, period }, this.resource);
+        return new Metric({ ...this.spread(), period }, this.resource);
     }
 
     public withUnit(unit: pulumi.Input<MetricUnit> | undefined) {
-        return new Metric({ ...this, unit }, this.resource);
+        return new Metric({ ...this.spread(), unit }, this.resource);
     }
 
     public withColor(color: pulumi.Input<string> | undefined) {
-        return new Metric({ ...this, color }, this.resource);
+        return new Metric({ ...this.spread(), color }, this.resource);
     }
 
     public withLabel(label: pulumi.Input<string> | undefined) {
-        return new Metric({ ...this, label }, this.resource);
+        return new Metric({ ...this.spread(), label }, this.resource);
     }
 
     public withVisible(visible: pulumi.Input<boolean> | undefined) {
-        return new Metric({ ...this, visible }, this.resource);
+        return new Metric({ ...this.spread(), visible }, this.resource);
     }
 
     public withYAxis(yAxis: pulumi.Input<"left" | "right"> | undefined) {
@@ -220,7 +237,7 @@ export class Metric {
     public withStatistic(statistic: pulumi.Input<MetricStatistic> | undefined) {
         // If they're supplying a statistic, then we want to clear out extendedStatistic.
         return new Metric({
-            ...this,
+            ...this.spread(),
             statistic,
             extendedStatistic: pulumi.all([statistic, this.extendedStatistic])
                                      .apply(([statistic, extendedStatistic]) =>
@@ -231,8 +248,8 @@ export class Metric {
     public withExtendedStatistic(extendedStatistic: pulumi.Input<number> | undefined) {
         // If they're supplying an extendedStatistic, then we want to clear out statistic.
         return new Metric({
-            ...this,
-            statistic: pulumi.output([this.statistic, extendedStatistic])
+            ...this.spread(),
+            statistic: pulumi.all([this.statistic, extendedStatistic])
                              .apply(([statistic, extendedStatistic]) =>
                                 extendedStatistic !== undefined ? undefined : statistic),
             extendedStatistic,
@@ -268,7 +285,7 @@ export class Metric {
         // [Namespace, MetricName, [{DimensionName,DimensionValue}...] [Rendering Properties Object] ]
         // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Dashboard-Body-Structure.html#CloudWatch-Dashboard-Properties-Metrics-Array-Format
 
-        const op = pulumi.all([this, statisticString(this)]).apply(([uw, stat]) => {
+        const op = pulumi.all([this.spread(), statisticString(this.spread())]).apply(([uw, stat]) => {
             const result: (string | wjson.RenderingPropertiesJson)[] = [];
 
             if (uw.period % 60 !== 0) {
