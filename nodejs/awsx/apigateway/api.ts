@@ -897,12 +897,12 @@ function addAuthorizersToSwagger(
     apiAuthorizers: Record<string, Authorizer>): Record<string, string[]>[] {
 
     const authRecords: Record<string, string[]>[] = [];
-    swagger["securityDefinitions"] = swagger["securityDefinitions"] || {};
+    swagger.securityDefinitions = swagger.securityDefinitions || {};
 
     authorizers = Array.isArray(authorizers) ? authorizers : [authorizers];
 
     for (const auth of authorizers) {
-        const suffix = Object.keys(swagger["securityDefinitions"]).length;
+        const suffix = Object.keys(swagger.securityDefinitions).length;
         const authName = auth.authorizerName || `${swagger.info.title}-authorizer-${suffix}`;
         auth.authorizerName = authName;
 
@@ -915,9 +915,9 @@ function addAuthorizersToSwagger(
         }
 
         // Add security definition if it's a new authorizer
-        if (!swagger["securityDefinitions"][auth.authorizerName]) {
+        if (!swagger.securityDefinitions[auth.authorizerName]) {
 
-            swagger["securityDefinitions"][authName] = {
+            swagger.securityDefinitions[authName] = {
                 type: "apiKey",
                 name: auth.parameterName,
                 in: lambdaAuthorizer.isLambdaAuthorizer(auth) ? auth.parameterLocation : "header",
