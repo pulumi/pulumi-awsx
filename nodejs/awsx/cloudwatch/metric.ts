@@ -285,7 +285,7 @@ export class Metric {
         // [Namespace, MetricName, [{DimensionName,DimensionValue}...] [Rendering Properties Object] ]
         // See: https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/CloudWatch-Dashboard-Body-Structure.html#CloudWatch-Dashboard-Properties-Metrics-Array-Format
 
-        const op = pulumi.all([this, statisticString(this)]).apply(([uw, stat]) => {
+        const op = pulumi.all([this.spread(), statisticString(this.spread())]).apply(([uw, stat]) => {
             const result: (string | wjson.RenderingPropertiesJson)[] = [];
 
             if (uw.period % 60 !== 0) {
