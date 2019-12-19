@@ -231,7 +231,7 @@ export class Metric {
     }
 
     public withYAxis(yAxis: pulumi.Input<"left" | "right"> | undefined) {
-        return new Metric({ ...this, yAxis }, this.resource);
+        return new Metric({ ...this.spread(), yAxis }, this.resource);
     }
 
     public withStatistic(statistic: pulumi.Input<MetricStatistic> | undefined) {
@@ -297,10 +297,12 @@ export class Metric {
 
             // note that dimensions are just added added directly into the array, there's no
             // sub-array or other structure to hold them.
-            for (const key in uw.dimensions) {
-                if (uw.dimensions.hasOwnProperty(key)) {
-                    result.push(key);
-                    result.push(uw.dimensions[key]);
+            if (uw.dimensions) {
+                for (const key in uw.dimensions) {
+                    if (uw.dimensions.hasOwnProperty(key)) {
+                        result.push(key);
+                        result.push(uw.dimensions[key]);
+                    }
                 }
             }
 
