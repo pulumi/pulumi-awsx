@@ -884,8 +884,8 @@ function addAPIkeyToSecurityDefinitions(swagger: SwaggerSpec) {
 }
 
 function addAPIKeyToSwaggerOperation(swaggerOperation: SwaggerOperation) {
-    swaggerOperation["security"] = swaggerOperation["security"] || [];
-    swaggerOperation["security"].push({
+    swaggerOperation.security = swaggerOperation.security || [];
+    swaggerOperation.security.push({
         ["api_key"]: [],
     });
 }
@@ -1009,9 +1009,9 @@ function getLambdaAuthorizer(api: API, authorizerName: string, authorizer: lambd
 }
 
 function addAuthorizersToSwaggerOperation(swaggerOperation: SwaggerOperation, authRecords: Record<string, string[]>[]) {
-    swaggerOperation["security"] = swaggerOperation["security"] || [];
+    swaggerOperation.security = swaggerOperation.security || [];
     for (const record of authRecords) {
-        swaggerOperation["security"].push(record);
+        swaggerOperation.security.push(record);
     }
 }
 
