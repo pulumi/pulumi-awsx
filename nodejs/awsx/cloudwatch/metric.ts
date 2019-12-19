@@ -231,7 +231,7 @@ export class Metric {
     }
 
     public withYAxis(yAxis: pulumi.Input<"left" | "right"> | undefined) {
-        return new Metric({ ...this, yAxis }, this.resource);
+        return new Metric({ ...this.spread(), yAxis }, this.resource);
     }
 
     public withStatistic(statistic: pulumi.Input<MetricStatistic> | undefined) {
