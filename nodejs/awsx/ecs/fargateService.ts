@@ -236,13 +236,13 @@ function getSubnets(
         subnets: pulumi.Input<pulumi.Input<string>[]> | undefined,
         assignPublicIp: pulumi.Output<boolean>) {
 
-    return pulumi.all([subnets, assignPublicIp])
-                 .apply(([subnets, assignPublicIp]) => {
+    return pulumi.all([cluster.vpc.publicSubnetIds, cluster.vpc.privateSubnetIds, subnets, assignPublicIp])
+                 .apply(([publicSubnetIds, privateSubnetIds, subnets, assignPublicIp]) => {
         if (subnets) {
             return subnets;
         }
 
-        return assignPublicIp ? cluster.vpc.publicSubnetIds : cluster.vpc.privateSubnetIds;
+        return assignPublicIp ? publicSubnetIds : privateSubnetIds;
     });
 }
 

@@ -102,7 +102,7 @@ const ubuntu = pulumi.output(aws.getAmi({
     ],
     mostRecent: true,
     owners: ["099720109477"], // Canonical
-}, providerOpts));
+}, { ...providerOpts, async: true }));
 const instance = new aws.ec2.Instance("web", {
     ami: ubuntu.apply(ubuntu => ubuntu.id),
     instanceType: "m5.large",

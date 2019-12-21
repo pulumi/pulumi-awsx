@@ -37,7 +37,7 @@ export class InternetGateway
         else {
             this.internetGateway = new aws.ec2.InternetGateway(name, {
                 ...args,
-                vpcId: vpc.vpc.id,
+                vpcId: vpc.id,
             }, { parent: this });
         }
 

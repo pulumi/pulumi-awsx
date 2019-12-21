@@ -51,7 +51,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
         this.logGroup = args.logGroup === null ? undefined :
@@ -218,14 +218,17 @@ type RunTaskRequestOverrideShape = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
 const _: string = utils.checkCompat<RunTaskRequestOverrideShape, RunTaskRequest>();
 
 function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
-    return function run(params: RunTaskRequest) {
+    return async function run(params: RunTaskRequest) {
 
         const ecs = new aws.sdk.ECS();
 
         const cluster = params.cluster;
         const clusterArn = cluster.id.get();
+
         const securityGroupIds = cluster.securityGroups.map(g => g.id.get());
-        const subnetIds = cluster.vpc.publicSubnetIds.map(i => i.get());
+        const publicSubnetIds = await cluster.vpc.publicSubnetIds;
+
+        const subnetIds = publicSubnetIds.map(i => i.get());
         const assignPublicIp = isFargate; // && !usePrivateSubnets;
 
         // Run the task

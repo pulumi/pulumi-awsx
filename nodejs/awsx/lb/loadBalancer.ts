@@ -73,12 +73,8 @@ function getSubnets(
 
     if (!args.subnets) {
         // No subnets requested.  Determine the subnets automatically from the vpc.
-        return external.apply(e => {
-            return e ? vpc.publicSubnetIds : vpc.privateSubnetIds;
-        });
+        return external.apply(e => e ? vpc.publicSubnetIds : vpc.privateSubnetIds);
     }
-
-    // console.log("subnets provided");
 
     return isLoadBalancerSubnets(args.subnets)
         ? args.subnets.subnets()

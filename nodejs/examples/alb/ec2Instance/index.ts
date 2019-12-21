@@ -16,52 +16,57 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const config = new pulumi.Config("aws");
-const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+export = async () => {
+    const config = new pulumi.Config("aws");
+    const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-// Create a security group to let traffic flow.
-const sg = new awsx.ec2.SecurityGroup("web-sg", {
-    vpc: awsx.ec2.Vpc.getDefault(providerOpts),
-}, providerOpts);
+    const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
 
-const ipv4egress = sg.createEgressRule("ipv4-egress", {
-    ports: new awsx.ec2.AllTraffic(),
-    location: new awsx.ec2.AnyIPv4Location(),
-});
-const ipv6egress = sg.createEgressRule("ipv6-egress", {
-    ports: new awsx.ec2.AllTraffic(),
-    location: new awsx.ec2.AnyIPv6Location(),
-});
+    // Create a security group to let traffic flow.
+    const sg = new awsx.ec2.SecurityGroup("web-sg", { vpc }, providerOpts);
 
-// Creates an ALB associated with the default VPC for this region and listen on port 80.
-const alb = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("web-traffic",
-    { external: true, securityGroups: [ sg ] }, providerOpts);
-const listener = alb.createListener("web-listener", { port: 80 });
+    const ipv4egress = sg.createEgressRule("ipv4-egress", {
+        ports: new awsx.ec2.AllTraffic(),
+        location: new awsx.ec2.AnyIPv4Location(),
+    });
+    const ipv6egress = sg.createEgressRule("ipv6-egress", {
+        ports: new awsx.ec2.AllTraffic(),
+        location: new awsx.ec2.AnyIPv6Location(),
+    });
 
-// For each subnet, and each subnet/zone, create a VM and a listener.
-export const publicIps: pulumi.Output<string>[] = [];
-for (let i = 0; i < alb.vpc.publicSubnets.length; i++) {
-    const vm = new aws.ec2.Instance(`web-${i}`, {
-        ami: aws.getAmi({
+    // Creates an ALB associated with the default VPC for this region and listen on port 80.
+    const alb = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("web-traffic",
+        { vpc, external: true, securityGroups: [ sg ] }, providerOpts);
+    const listener = alb.createListener("web-listener", { port: 80 });
+
+    // For each subnet, and each subnet/zone, create a VM and a listener.
+    const publicIps: pulumi.Output<string>[] = [];
+    const subnets = await vpc.publicSubnets;
+    for (let i = 0; i < subnets.length; i++) {
+        const getAmiResult = await aws.getAmi({
             filters: [
                 { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*" ] },
                 { name: "virtualization-type", values: [ "hvm" ] },
             ],
             mostRecent: true,
             owners: [ "099720109477" ], // Canonical
-        }, providerOpts).id,
-        instanceType: "m5.large",
-        subnetId: alb.vpc.publicSubnets[i].subnet.id,
-        availabilityZone: alb.vpc.publicSubnets[i].subnet.availabilityZone,
-        vpcSecurityGroupIds: [ sg.id ],
-        userData: `#!/bin/bash
-echo "Hello World, from Server ${i+1}!" > index.html
-nohup python -m SimpleHTTPServer 80 &`,
-    }, providerOpts);
-    publicIps.push(vm.publicIp);
+        }, { ...providerOpts, async: true });
 
-    alb.attachTarget("target-" + i, vm);
-}
+        const vm = new aws.ec2.Instance(`web-${i}`, {
+            ami: getAmiResult.id,
+            instanceType: "m5.large",
+            subnetId: subnets[i].subnet.id,
+            availabilityZone: subnets[i].subnet.availabilityZone,
+            vpcSecurityGroupIds: [ sg.id ],
+            userData: `#!/bin/bash
+    echo "Hello World, from Server ${i+1}!" > index.html
+    nohup python -m SimpleHTTPServer 80 &`,
+        }, providerOpts);
+        publicIps.push(vm.publicIp);
 
-// Export the resulting URL so that it's easy to access.
-export const endpoint = listener.endpoint;
+        alb.attachTarget("target-" + i, vm);
+    }
+
+    // Export the resulting URL so that it's easy to access.
+    return { endpoint: listener.endpoint, publicIps: publicIps };
+};

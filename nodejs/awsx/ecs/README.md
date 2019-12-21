@@ -176,9 +176,9 @@ const fargateService = new awsx.ecs.FargateService("fargate-nginx", {
     cluster,
     desiredCount: 2,
     taskDefinitionArgs: {
-      containers: {
-        nginx: // ...
-      },
+        containers: {
+            nginx: // ...
+        },
     },
 });
 
@@ -186,9 +186,9 @@ const ec2Service = new awsx.ecs.FargateService("ec2-nginx", {
     cluster,
     desiredCount: 2,
     taskDefinitionArgs: {
-      containers: {
-        nginx: // ...
-      },
+        containers: {
+            nginx: // ...
+        },
     },
 });
 ```
@@ -238,7 +238,7 @@ const task = new awsx.ecs.FargateTaskDefinition("task", {
 
 However, `image` is far more flexible than that.  Beyond just accepting a string a [ContainerImageProvider](https://github.com/pulumi/pulumi-awsx/blob/8d651854ba3821644eabff66c0f6fe6d85e61160/nodejs/awsx/ecs/container.ts#L188) can also be provided.  Instances of this interface can be used to dynamically compute and pass in an ECR repository path.  Pulumi provides several convenient ways to do this.
 
-For example `fromPath` will run a Docker build in that path, push the result up to an ECR repository, and then pass the repostory path to the container:
+For example `fromPath` will run a Docker build in that path, push the result up to an ECR repository, and then pass the repository path to the container:
 
 ```ts
 const task = new awsx.ecs.FargateTaskDefinition("task", {
