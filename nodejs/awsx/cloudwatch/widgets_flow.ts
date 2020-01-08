@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import { Widget } from "./widget";
@@ -76,12 +77,12 @@ export abstract class FlowWidget implements Widget {
     }
 
     /** For internal use only. */
-    public addWidgetJson(widgetJsons: WidgetJson[], xOffset: number, yOffset: number) {
+    public addWidgetJson(widgetJsons: WidgetJson[], xOffset: number, yOffset: number, region: pulumi.Output<aws.Region>) {
         for (const [widget, dimension] of this.getWidgetRelativePositions()) {
             // Recurse into each of our children, asking them to add themselves into [widgetJsons].
             // We pass them their actual position based on the x/y offset of this FlowWidget and
             // their relative offset within us.
-            widget.addWidgetJson(widgetJsons, xOffset + dimension.relativeX, yOffset + dimension.relativeY);
+            widget.addWidgetJson(widgetJsons, xOffset + dimension.relativeX, yOffset + dimension.relativeY, region);
         }
     }
 }
@@ -164,11 +165,11 @@ export class RowWidget extends FlowWidget {
     }
 
     /** For internal use only. */
-    public addWidgetJson(widgetJsons: WidgetJson[], xOffset: number, yOffset: number) {
+    public addWidgetJson(widgetJsons: WidgetJson[], xOffset: number, yOffset: number, region: pulumi.Output<aws.Region>) {
         if (xOffset !== 0) {
             throw new Error(`A RowWidget must be placed in the leftmost grid column: ${xOffset}`);
         }
 
-        return super.addWidgetJson(widgetJsons, xOffset, yOffset);
+        return super.addWidgetJson(widgetJsons, xOffset, yOffset, region);
     }
 }

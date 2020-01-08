@@ -1,0 +1,3 @@
+name: alb-ec2-instance
+runtime: nodejs
+description: A simple application load balancer example using ec2 instances.

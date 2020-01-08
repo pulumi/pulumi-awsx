@@ -17,8 +17,9 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as mod from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export interface ListenerEndpoint {
     hostname: string;
@@ -29,19 +30,27 @@ export abstract class Listener
         extends pulumi.ComponentResource
         implements x.ecs.ContainerPortMappingProvider,
                    x.ecs.ContainerLoadBalancerProvider {
-    public readonly listener: aws.elasticloadbalancingv2.Listener;
-    public readonly loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
+    public readonly listener: aws.lb.Listener;
+    public readonly loadBalancer: x.lb.LoadBalancer;
+    public readonly defaultTargetGroup?: x.lb.TargetGroup;
 
     public readonly endpoint: pulumi.Output<ListenerEndpoint>;
 
     private readonly defaultListenerAction?: ListenerDefaultAction;
 
+    // tslint:disable-next-line:variable-name
+    private readonly __isListenerInstance = true;
+
     constructor(type: string, name: string,
                 defaultListenerAction: ListenerDefaultAction | undefined,
-                args: ListenerArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, args, opts);
-
-        const parentOpts = { parent: this };
+                args: ListenerArgs, opts: pulumi.ComponentResourceOptions) {
+        // By default, we'd like to be parented by the LB .  However, we didn't use to do this.
+        // Create an alias from teh old urn to the new one so that we don't cause these to eb
+        // created/destroyed.
+        super(type, name, {}, {
+            parent: args.loadBalancer,
+            ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
+        });
 
         // If SSL is used, and no ssl policy was  we automatically insert the recommended ELB
         // security policy from:
@@ -49,11 +58,11 @@ export abstract class Listener
         const defaultSslPolicy = pulumi.output(args.certificateArn)
                                        .apply(a => a ? "ELBSecurityPolicy-2016-08" : undefined!);
 
-        this.listener = new aws.elasticloadbalancingv2.Listener(name, {
+        this.listener = new aws.lb.Listener(name, {
             ...args,
             loadBalancerArn: args.loadBalancer.loadBalancer.arn,
             sslPolicy: utils.ifUndefined(args.sslPolicy, defaultSslPolicy),
-        }, parentOpts);
+        }, { parent: this });
 
         const loadBalancer = args.loadBalancer.loadBalancer;
         this.endpoint = this.listener.urn.apply(_ => pulumi.output({
@@ -64,6 +73,10 @@ export abstract class Listener
         this.loadBalancer = args.loadBalancer;
         this.defaultListenerAction = defaultListenerAction;
 
+        if (defaultListenerAction instanceof mod.TargetGroup) {
+            this.defaultTargetGroup = defaultListenerAction;
+        }
+
         if (defaultListenerAction) {
             // If our default rule hooked up this listener to a target group, then add our listener
             // to the set of listeners the target group knows about.  This is necessary so that
@@ -71,6 +84,11 @@ export abstract class Listener
             // created.
             defaultListenerAction.registerListener(this);
         }
+    }
+
+    /** @internal */
+    public static isListenerInstance(obj: any): obj is Listener {
+        return obj && !!(<Listener>obj).__isListenerInstance;
     }
 
     public containerPortMapping(name: string, parent: pulumi.Resource) {
@@ -89,8 +107,19 @@ export abstract class Listener
         return this.defaultListenerAction.containerLoadBalancer(name, parent);
     }
 
-    public addListenerRule(name: string, args: x.elasticloadbalancingv2.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new x.elasticloadbalancingv2.ListenerRule(name, this, args, opts);
+    public addListenerRule(name: string, args: x.lb.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        return new x.lb.ListenerRule(name, this, args, opts);
+    }
+
+    /**
+     * Attaches a target to the `defaultTargetGroup` for this Listener.
+     */
+    public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
+        if (!this.defaultTargetGroup) {
+            throw new pulumi.ResourceError("Listener must have a [defaultTargetGroup] in order to attach a target.", this);
+        }
+
+        return this.defaultTargetGroup.attachTarget(name, args, opts);
     }
 }
 
@@ -259,7 +288,7 @@ export interface ListenerDefaultAction {
 }
 
 export interface ListenerActions {
-    actions(): aws.elasticloadbalancingv2.ListenerRuleArgs["actions"];
+    actions(): aws.lb.ListenerRuleArgs["actions"];
     registerListener(listener: Listener): void;
 }
 
@@ -277,8 +306,8 @@ export function isListenerActions(obj: any): obj is ListenerActions {
         (<ListenerActions>obj).registerListener instanceof Function;
 }
 
-type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
-    loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
+type OverwriteShape = utils.Overwrite<aws.lb.ListenerArgs, {
+    loadBalancer: x.lb.LoadBalancer;
     certificateArn?: pulumi.Input<string>;
     defaultActions: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
     loadBalancerArn?: never;
@@ -288,7 +317,7 @@ type OverwriteShape = utils.Overwrite<aws.elasticloadbalancingv2.ListenerArgs, {
 }>;
 
 export interface ListenerArgs {
-    loadBalancer: x.elasticloadbalancingv2.LoadBalancer;
+    loadBalancer: x.lb.LoadBalancer;
 
     /**
      * The ARN of the default SSL server certificate. Exactly one certificate is required if the

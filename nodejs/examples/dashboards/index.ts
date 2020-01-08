@@ -17,9 +17,12 @@ import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
 import * as fetch from "node-fetch";
 
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
 // Examples of different types of metrics and alarms that can be set.
 
-const topic = new aws.sns.Topic("sites-to-process-topic");
+const topic = new aws.sns.Topic("sites-to-process-topic", {}, providerOpts);
 const subscription = topic.onEvent("for-each-url", async (event) => {
     const records = event.Records || [];
     for (const record of records) {
@@ -44,7 +47,7 @@ const funcMetric = awsx.lambda.metrics.duration({ function: subscription.func })
 // Create an alarm if this lambda takes more than 1000ms to complete in a period of 10 minutes over
 // at least five periods in a row.
 const funcAlarm1 = funcMetric.with({ unit: "Milliseconds", period: 600 })
-                             .createAlarm("SlowUrlProcessing", { threshold: 1000, evaluationPeriods: 5 });
+                             .createAlarm("SlowUrlProcessing", { threshold: 1000, evaluationPeriods: 5 }, providerOpts);
 
 // Also create a dashboard to track this.
 const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
@@ -73,4 +76,6 @@ const dashboard = new awsx.cloudwatch.Dashboard("TopicData", {
             ],
         }),
     ],
-});
+}, providerOpts);
+
+export const dashboardUrl = dashboard.url;

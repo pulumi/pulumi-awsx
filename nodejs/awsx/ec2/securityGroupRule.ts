@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export interface SecurityGroupRuleLocation {
     /**
@@ -59,7 +59,9 @@ export class AnyIPv4Location implements SecurityGroupRuleLocation {
 }
 
 export class AnyIPv6Location implements SecurityGroupRuleLocation {
-    public readonly ipv6CidrBlocks = ["::0/0"];
+    // From https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
+    // "::/0" - Allow all outbound IPv6 traffic.
+    public readonly ipv6CidrBlocks = ["::/0"];
 }
 
 export class TcpPorts implements SecurityGroupRulePorts {
@@ -109,7 +111,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 
     constructor(type: string, name: string,
                 securityGroup: x.ec2.SecurityGroup,
-                args: SecurityGroupRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
+                args: SecurityGroupRuleArgs, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, { parent: securityGroup, ...opts });
 
         this.securityGroup = securityGroup;
@@ -177,7 +179,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 export class EgressSecurityGroupRule extends SecurityGroupRule {
     constructor(name: string, securityGroup: x.ec2.SecurityGroup,
                 args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
             args = x.ec2.SecurityGroupRule.egressArgs(args.location, args.ports, args.description);
@@ -195,7 +197,7 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
 export class IngressSecurityGroupRule extends SecurityGroupRule {
     constructor(name: string, securityGroup: x.ec2.SecurityGroup,
                 args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
             args = x.ec2.SecurityGroupRule.ingressArgs(args.location, args.ports, args.description);

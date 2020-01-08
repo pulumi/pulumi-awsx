@@ -28,8 +28,8 @@ import * as ec2 from "./ec2";
 import * as ecr from "./ecr";
 import * as ecs from "./ecs";
 import * as efs from "./efs";
-import * as elasticloadbalancingv2 from "./elasticloadbalancingv2";
 import * as lambda from "./lambda";
+import * as lb from "./lb";
 import * as rds from "./rds";
 import * as s3 from "./s3";
 import * as sns from "./sns";
@@ -49,8 +49,9 @@ export {
     ecr,
     ecs,
     efs,
-    elasticloadbalancingv2,
+    lb as elasticloadbalancingv2,
     lambda,
+    lb,
     rds,
     s3,
     sns,
@@ -62,4 +63,5 @@ export {
 // deployment time module can be ok in some cases.  For example, using "awsx.apigateway.authorizerResponse"
 // as a helper function is fine. However, in general, the majority of this API is not safe to use
 // at 'run time' and will fail.
+/** @internal */
 export const deploymentOnlyModule = true;

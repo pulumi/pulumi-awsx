@@ -15,16 +15,23 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
+import * as utils from "../utils";
+
 export class LifecyclePolicy extends aws.ecr.LifecyclePolicy {
     /**
      * Creates a new [LifecyclePolicy] for the given [repository].  If [args] is not provided, then
      * [getDefaultLifecyclePolicyArgs] will be used to set the default policy for this repo.
      */
-    constructor(name: string, repository: aws.ecr.Repository, args?: LifecyclePolicyArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, repository: aws.ecr.Repository, args?: LifecyclePolicyArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        // We previously did not parent the LifecyclePolicy to the repository. We now do. Provide an
+        // alias so this doesn't cause resources to be destroyed/recreated for existing stacks.
         super(name, {
             policy: convertToJSON(args || LifecyclePolicy.defaultLifecyclePolicyArgs()),
             repository: repository.name,
-        }, opts);
+        }, {
+            parent: repository,
+            ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
+        });
     }
 
     /**

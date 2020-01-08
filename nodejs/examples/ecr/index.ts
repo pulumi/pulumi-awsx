@@ -12,19 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as pulumi from "@pulumi/pulumi";
+import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const vpc = awsx.ec2.Vpc.getDefault();
-const cluster = new awsx.ecs.Cluster("testing", { vpc });
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
+const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
 
 // build an anonymous image:
-const listener = new awsx.elasticloadbalancingv2.NetworkListener("nginx2", { port: 80 });
-const repository = new awsx.ecr.Repository("nginx2");
-const service = new awsx.ecs.FargateService("nginx2", {
+const listener = new awsx.elasticloadbalancingv2.NetworkListener("service", { vpc: cluster.vpc, port: 80 }, providerOpts);
+const repository = new awsx.ecr.Repository("repository", {}, providerOpts);
+const service = new awsx.ecs.FargateService("service", {
     cluster,
     taskDefinitionArgs: {
         containers: {
-            nginx: {
+            service: {
                 image: repository.buildAndPushImage("./app"),
                 memory: 128,
                 portMappings: [listener],
@@ -33,8 +37,12 @@ const service = new awsx.ecs.FargateService("nginx2", {
     },
     desiredCount: 2,
     waitForSteadyState: false,
-});
+}, providerOpts);
 
-export let vpcId = vpc.id;
+export let vpcId = cluster.vpc.id;
 export let serviceId = service.service.id;
 export let endpoint = listener.endpoint;
+
+const cluster2 = new awsx.ecs.Cluster("testing2", undefined, { provider: new aws.Provider("prov2", {
+    region: "us-west-1"
+})});

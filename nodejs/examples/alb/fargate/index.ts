@@ -12,11 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const cluster = new awsx.ecs.Cluster("testing");
-const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true });
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
+const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
+const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true }, providerOpts);
 
 // A simple NGINX service, scaled out over two containers.
 const nginxListener = loadBalancer.createListener("nginx", { port: 80, external: true });
@@ -32,10 +36,6 @@ const nginx = new awsx.ecs.FargateService("nginx", {
         },
     },
     desiredCount: 2,
-});
-
-loadBalancer.securityGroups[0].createEgressRule("nginxEgress",
-    awsx.ec2.SecurityGroupRule.egressArgs(
-        new awsx.ec2.AnyIPv4Location(), new awsx.ec2.TcpPorts(80)));
+}, providerOpts);
 
 export const nginxEndpoint = nginxListener.endpoint;

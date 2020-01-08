@@ -16,12 +16,13 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class NatGateway
         extends pulumi.ComponentResource
         implements x.ec2.SubnetRouteProvider {
 
+    public readonly natGatewayName: string;
     public readonly vpc: x.ec2.Vpc;
     public readonly elasticIP: aws.ec2.Eip | undefined;
     public readonly natGateway: aws.ec2.NatGateway;
@@ -31,9 +32,9 @@ export class NatGateway
     constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:NatGateway", name, {}, { parent: vpc, ...opts });
 
-        const parentOpts = { parent: this };
-
         this.vpc = vpc;
+        this.natGatewayName = name;
+
         if (isExistingNatGatewayArgs(args)) {
             this.natGateway = args.natGateway;
         }
@@ -49,7 +50,7 @@ export class NatGateway
             this.elasticIP = new aws.ec2.Eip(name, {
                 vpc: true,
                 tags: { Name: name },
-            }, parentOpts);
+            }, { parent: this });
 
             const subnetId = x.ec2.Subnet.isSubnetInstance(args.subnet)
                 ? args.subnet.id
@@ -59,7 +60,7 @@ export class NatGateway
                 ...args,
                 subnetId,
                 allocationId: this.elasticIP.id,
-            }, parentOpts);
+            }, { parent: this });
         }
 
         this.registerOutputs();

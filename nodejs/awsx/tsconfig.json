@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "outDir": "bin",
-        "target": "es6",
+        "target": "ES2017",
         "module": "commonjs",
         "moduleResolution": "node",
         "declaration": true,
@@ -79,13 +79,17 @@
 
         "efs/index.ts",
         "efs/metrics.ts",
-        "elasticloadbalancingv2/application.ts",
-        "elasticloadbalancingv2/index.ts",
-        "elasticloadbalancingv2/listener.ts",
-        "elasticloadbalancingv2/listenerRule.ts",
-        "elasticloadbalancingv2/loadBalancer.ts",
-        "elasticloadbalancingv2/network.ts",
-        "elasticloadbalancingv2/targetGroup.ts",
+
+        "lb/application.ts",
+        "lb/index.ts",
+        "lb/listener.ts",
+        "lb/listenerRule.ts",
+        "lb/loadBalancer.ts",
+        "lb/metrics.ts",
+        "lb/network.ts",
+        "lb/targetGroup.ts",
+        "lb/targetGroupAttachment.ts",
+
         "lambda/index.ts",
         "lambda/metrics.ts",
         "rds/index.ts",

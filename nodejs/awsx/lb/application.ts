@@ -37,9 +37,9 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: ApplicationListener[];
     public readonly targetGroups: ApplicationTargetGroup[];
 
-    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
-        const argsCopy: x.elasticloadbalancingv2.LoadBalancerArgs = {
-            vpc: args.vpc || x.ec2.Vpc.getDefault(),
+    constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
+        const argsCopy: x.lb.LoadBalancerArgs = {
+            vpc: args.vpc || x.ec2.Vpc.getDefault(opts),
             ...args,
             loadBalancerType: "application",
         };
@@ -51,7 +51,8 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
             }, opts)];
         }
 
-        super("awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer", name, argsCopy, opts);
+        super("aws:lb:ApplicationLoadBalancer", name, argsCopy,
+            pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer"}] }));
 
         this.listeners = [];
         this.targetGroups = [];
@@ -92,20 +93,21 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
 export class ApplicationTargetGroup extends mod.TargetGroup {
     public readonly loadBalancer: ApplicationLoadBalancer;
 
-    public readonly listeners: x.elasticloadbalancingv2.ApplicationListener[];
+    public readonly listeners: x.lb.ApplicationListener[];
 
     /** @internal */
     // tslint:disable-next-line:variable-name
     public readonly __isApplicationTargetGroup: boolean;
 
-    constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: ApplicationTargetGroupArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {
             vpc: args.vpc,
             name: args.name,
         }, opts);
         const { port, protocol } = computePortInfo(args.port, args.protocol);
 
-        super("awsx:x:elasticloadbalancingv2:ApplicationTargetGroup", name, loadBalancer, {
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationTargetGroup" }] });
+        super("awsx:lb:ApplicationTargetGroup", name, loadBalancer, {
             ...args,
             vpc: loadBalancer.vpc,
             port,
@@ -122,12 +124,17 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
     }
 
     public createListener(name: string, args: ApplicationListenerArgs,
-                          opts?: pulumi.ComponentResourceOptions): ApplicationListener {
+                          opts: pulumi.ComponentResourceOptions = {}): ApplicationListener {
+        // We didn't use to parent the listener to the target group.  Now we do.  Create an alias
+        // from the old parent to the current one if this moves over.
         return new ApplicationListener(name, {
             defaultAction: this,
             loadBalancer: this.loadBalancer,
             ...args,
-        }, opts);
+        }, {
+            parent: this,
+            ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
+        });
     }
 
     public static isInstance(obj: any): obj is ApplicationTargetGroup {
@@ -174,20 +181,30 @@ function computePortInfo(
 
 export class ApplicationListener extends mod.Listener {
     public readonly loadBalancer: ApplicationLoadBalancer;
-    public readonly defaultTargetGroup?: x.elasticloadbalancingv2.ApplicationTargetGroup;
+    public readonly defaultTargetGroup?: x.lb.ApplicationTargetGroup;
+
+    // tslint:disable-next-line:variable-name
+    private readonly __isApplicationListenerInstance: boolean;
 
     constructor(name: string,
                 args: ApplicationListenerArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
-        if (args.defaultAction && args.defaultActions) {
-            throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
+        const argCount = (args.defaultAction ? 1 : 0) +
+                         (args.defaultActions ? 1 : 0) +
+                         (args.targetGroup ? 1 : 0);
+
+        if (argCount >= 2) {
+            throw new Error("Only provide one of [defaultAction], [defaultActions] or [targetGroup].");
         }
 
-        const loadBalancer = args.loadBalancer || new ApplicationLoadBalancer(name, {
-            vpc: args.vpc,
-            name: args.name,
-        }, opts);
+        const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
+            ? args.loadBalancer
+            : new ApplicationLoadBalancer(name, {
+                ...args.loadBalancer,
+                vpc: args.vpc,
+                name: args.name,
+            }, opts);
 
         const { port, protocol } = computePortInfo(args.port, args.protocol);
         const { defaultActions, defaultListener } = getDefaultActions(
@@ -196,7 +213,9 @@ export class ApplicationListener extends mod.Listener {
         // Pass along the target as the defaultTarget for this listener.  This allows this listener
         // to defer to it for ContainerPortMappings information.  this allows this listener to be
         // passed in as the portMappings information needed for a Service.
-        super("awsx:x:elasticloadbalancingv2:ApplicationListener", name, defaultListener, {
+
+        opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationListener" }] });
+        super("awsx:lb:ApplicationListener", name, defaultListener, {
             ...args,
             defaultActions,
             loadBalancer,
@@ -204,25 +223,36 @@ export class ApplicationListener extends mod.Listener {
             protocol,
         }, opts);
 
-        const parentOpts = { parent: this };
-
+        this.__isApplicationListenerInstance = true;
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
-        // If the listener is externally available, then open it's port both for ingress
-        // in the load balancer's security groups.
+        // As per https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-update-security-groups.html
+        //
+        // Whenever you add a listener to your load balancer or update the health check port for a
+        // target group used by the load balancer to route requests, you must verify that the
+        // security groups associated with the load balancer allow traffic on the new port in both
+        // directions.
         if (args.external !== false) {
-            const args = x.ec2.SecurityGroupRule.ingressArgs(
-                new x.ec2.AnyIPv4Location(), new x.ec2.TcpPorts(port),
-                pulumi.interpolate`Externally available at port ${port}`);
+            const args = {
+                location: new x.ec2.AnyIPv4Location(),
+                ports: new x.ec2.TcpPorts(port),
+                description: pulumi.interpolate`Externally available at port ${port}`,
+            };
 
             for (let i = 0, n = this.loadBalancer.securityGroups.length; i < n; i++) {
                 const securityGroup = this.loadBalancer.securityGroups[i];
-                securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, parentOpts);
+                securityGroup.createIngressRule(`${name}-external-${i}-ingress`, args, { parent: this });
+                securityGroup.createEgressRule(`${name}-external-${i}-egress`, args, { parent: this });
             }
         }
 
         this.registerOutputs();
+    }
+
+    /** @internal */
+    public static isApplicationListenerInstance(obj: any): obj is ApplicationListener {
+        return obj && !!(<ApplicationListener>obj).__isApplicationListenerInstance;
     }
 }
 
@@ -238,18 +268,38 @@ function getDefaultActions(
     }
 
     if (args.defaultAction) {
-        return x.elasticloadbalancingv2.isListenerDefaultAction(args.defaultAction)
+        return x.lb.isListenerDefaultAction(args.defaultAction)
             ? { defaultActions: [args.defaultAction.listenerDefaultAction()], defaultListener: args.defaultAction }
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
-    const targetGroup = new ApplicationTargetGroup(name, {
-        loadBalancer,
-        port,
-        protocol,
-        name: args.name,
-    }, opts);
+    // User didn't provide default actions for this listener.  Create a reasonable target group for
+    // us and use that as our default action.
+    const targetGroup = createTargetGroup();
+
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
+
+    function createTargetGroup() {
+        // Use the target group if provided by the client.  Otherwise, create a reasonable default
+        // one for our LB that will connect to this listener's port using our app protocol.
+        if (pulumi.Resource.isInstance(args.targetGroup)) {
+            return args.targetGroup;
+        }
+        else if (args.targetGroup) {
+            return new ApplicationTargetGroup(name, {
+                ...args.targetGroup,
+                loadBalancer,
+            }, opts);
+        }
+        else {
+            return new ApplicationTargetGroup(name, {
+                port,
+                protocol,
+                loadBalancer,
+                name: args.name,
+            }, opts);
+        }
+    }
 }
 
 export interface ApplicationLoadBalancerArgs {
@@ -290,14 +340,14 @@ export interface ApplicationLoadBalancerArgs {
     /**
      * A subnet mapping block as documented below.
      */
-    subnetMappings?: aws.elasticloadbalancingv2.LoadBalancerArgs["subnetMappings"];
+    subnetMappings?: aws.lb.LoadBalancerArgs["subnetMappings"];
 
     /**
      * A list of subnet IDs to attach to the LB. Subnets cannot be updated for Load Balancers of
      * type `network`. Changing this value for load balancers of type `network` will force a
      * recreation of the resource.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.elasticloadbalancingv2.LoadBalancerSubnets;
+    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.lb.LoadBalancerSubnets;
 
     /**
      * A mapping of tags to assign to the resource.
@@ -309,7 +359,7 @@ export interface ApplicationLoadBalancerArgs {
     /**
      * An Access Logs block. Access Logs documented below.
      */
-    accessLogs?: aws.elasticloadbalancingv2.LoadBalancerArgs["accessLogs"];
+    accessLogs?: aws.lb.LoadBalancerArgs["accessLogs"];
 
     /**
      * Indicates whether HTTP/2 is enabled. Defaults to `true`.
@@ -407,7 +457,7 @@ export interface ApplicationTargetGroupArgs {
      * A Stickiness block. Stickiness blocks are documented below. `stickiness` is only valid if
      * used with Load Balancers of type `Application`
      */
-    stickiness?: aws.elasticloadbalancingv2.TargetGroupArgs["stickiness"];
+    stickiness?: aws.lb.TargetGroupArgs["stickiness"];
 
     /**
      * A mapping of tags to assign to the resource.
@@ -417,15 +467,14 @@ export interface ApplicationTargetGroupArgs {
     /**
      * The type of target that you must specify when registering targets with this target group. The
      * possible values are `instance` (targets are specified by instance ID) or `ip` (targets are
-     * specified by IP address). The default is `ip`.
-     *
-     * Note that you can't specify targets for a target group using both instance IDs and IP
+     * specified by IP address) or `lambda` (targets are specified by lambda arn). The default is
+     * `ip`. Note that you can't specify targets for a target group using both instance IDs and IP
      * addresses. If the target type is `ip`, specify IP addresses from the subnets of the virtual
      * private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and
      * 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable
      * IP addresses.
      */
-    targetType?: pulumi.Input<"instance" | "ip">;
+    targetType?: pulumi.Input<mod.TargetType>;
 
     // Changed by us:
 
@@ -458,7 +507,7 @@ export interface ApplicationListenerArgs {
      * The load balancer this listener is associated with.  If not provided, a new load balancer
      * will be automatically created.
      */
-    loadBalancer?: ApplicationLoadBalancer;
+    loadBalancer?: ApplicationLoadBalancer | ApplicationLoadBalancerArgs;
 
     /**
      * The port. Specify a value from `1` to `65535`.  Computed from "protocol" if not provided.
@@ -474,18 +523,26 @@ export interface ApplicationListenerArgs {
      * An Action block. If neither this nor [defaultActions] is provided, a suitable defaultAction
      * will be chosen that forwards to a new [ApplicationTargetGroup] created from [port].
      *
-     * Do not provide both [defaultAction] and [defaultActions].
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
-    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.elasticloadbalancingv2.ListenerDefaultAction;
+    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.lb.ListenerDefaultAction;
 
     /**
      * An list of Action blocks. If neither this nor [defaultActions] is provided, a suitable
      * defaultAction will be chosen that forwards to a new [ApplicationTargetGroup] created from
      * [port].
      *
-     * Do not provide both [defaultAction] and [defaultActions].
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
     defaultActions?: pulumi.Input<pulumi.Input<mod.ListenerDefaultActionArgs>[]>;
+
+    /**
+     * Target group this listener is associated with.  This is used to determine the [defaultAction]
+     * for the listener.
+     *
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
+     */
+    targetGroup?: x.lb.ApplicationTargetGroup | x.lb.ApplicationTargetGroupArgs;
 
     // TODO: consider extracting out an HttpsApplicationListener.
 

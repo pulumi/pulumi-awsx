@@ -18,15 +18,25 @@ import * as pulumi from "@pulumi/pulumi";
 import * as awssdk from "aws-sdk";
 
 import * as ecs from ".";
+import * as x from "..";
 import * as role from "../role";
 import * as utils from "../utils";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly taskDefinition: aws.ecs.TaskDefinition;
-    public readonly logGroup: aws.cloudwatch.LogGroup;
+    public readonly logGroup?: aws.cloudwatch.LogGroup;
     public readonly containers: Record<string, ecs.Container>;
-    public readonly taskRole: aws.iam.Role;
-    public readonly executionRole: aws.iam.Role;
+    public readonly taskRole?: aws.iam.Role;
+    public readonly executionRole?: aws.iam.Role;
+
+    /**
+     * Mapping from container in this task to the ELB listener exposing it through a load balancer.
+     * Only present if a listener was provided in [Container.portMappings] or in
+     * [Container.applicationListener] or [Container.networkListener].
+     */
+    public readonly listeners: Record<string, x.lb.Listener> = {};
+    public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
+    public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
 
     /**
      * Run one or more instances of this TaskDefinition using the ECS `runTask` API, returning the Task instances.
@@ -41,49 +51,39 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
-        const parentOpts = { parent: this };
-        this.logGroup = args.logGroup || new aws.cloudwatch.LogGroup(name, {
+        this.logGroup = args.logGroup === null ? undefined :
+                        args.logGroup ? args.logGroup : new aws.cloudwatch.LogGroup(name, {
             retentionInDays: 1,
-        }, parentOpts);
+        }, { parent: this });
 
-        this.taskRole = args.taskRole || TaskDefinition.createTaskRole(
-            `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, parentOpts);
-        this.executionRole = args.executionRole || TaskDefinition.createExecutionRole(
-            `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, parentOpts);
+        this.taskRole = args.taskRole === null ? undefined :
+                        args.taskRole ? args.taskRole : TaskDefinition.createTaskRole(
+            `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
-//         // todo(cyrusn): volumes.
-//         //     // Find all referenced Volumes.
-// //     const volumes: { hostPath?: string; name: string }[] = [];
-// //     for (const containerName of Object.keys(containers)) {
-// //         const container = containers[containerName];
-
-// //         // Collect referenced Volumes.
-// //         if (container.volumes) {
-// //             for (const volumeMount of container.volumes) {
-// //                 const volume = volumeMount.sourceVolume;
-// //                 volumes.push({
-// //                     hostPath: (volume as Volume).getHostPath(),
-// //                     name: (volume as Volume).getVolumeName(),
-// //                 });
-// //             }
-// //         }
-// //     }
+        this.executionRole = args.taskRole === null ? undefined :
+                             args.executionRole ? args.executionRole : TaskDefinition.createExecutionRole(
+            `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
         this.containers = args.containers;
-        const containerDefinitions = computeContainerDefinitions(this, name, this.containers, this.logGroup);
+
+        const containerDefinitions = computeContainerDefinitions(
+            this, name, args.vpc, this.containers, this.applicationListeners, this.networkListeners, this.logGroup);
+        this.listeners = {...this.applicationListeners, ...this.networkListeners };
+
         const containerString = containerDefinitions.apply(d => JSON.stringify(d));
-        const family = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
+        const defaultFamily = containerString.apply(s => name + "-" + utils.sha1hash(pulumi.getStack() + containerString));
+        const family = utils.ifUndefined(args.family, defaultFamily);
 
         this.taskDefinition = new aws.ecs.TaskDefinition(name, {
             ...args,
-            family,
-            taskRoleArn: this.taskRole.arn,
-            executionRoleArn: this.executionRole.arn,
+            family: family,
+            taskRoleArn: this.taskRole ? this.taskRole.arn : undefined,
+            executionRoleArn: this.executionRole ? this.executionRole.arn : undefined,
             containerDefinitions: containerString,
-        }, parentOpts);
+        }, { parent: this });
 
         this.run = createRunFunction(isFargate, this.taskDefinition.arn);
     }
@@ -218,14 +218,17 @@ type RunTaskRequestOverrideShape = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
 const _: string = utils.checkCompat<RunTaskRequestOverrideShape, RunTaskRequest>();
 
 function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
-    return function run(params: RunTaskRequest) {
+    return async function run(params: RunTaskRequest) {
 
         const ecs = new aws.sdk.ECS();
 
         const cluster = params.cluster;
         const clusterArn = cluster.id.get();
+
         const securityGroupIds = cluster.securityGroups.map(g => g.id.get());
-        const subnetIds = cluster.vpc.publicSubnetIds.map(i => i.get());
+        const publicSubnetIds = await cluster.vpc.publicSubnetIds;
+
+        const subnetIds = publicSubnetIds.map(i => i.get());
         const assignPublicIp = isFargate; // && !usePrivateSubnets;
 
         // Run the task
@@ -248,15 +251,20 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
+    vpc: x.ec2.Vpc | undefined,
     containers: Record<string, ecs.Container>,
-    logGroup: aws.cloudwatch.LogGroup): pulumi.Output<aws.ecs.ContainerDefinition[]> {
+    applicationListeners: Record<string, x.lb.ApplicationListener>,
+    networkListeners: Record<string, x.lb.NetworkListener>,
+    logGroup: aws.cloudwatch.LogGroup | undefined): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
 
     for (const containerName of Object.keys(containers)) {
         const container = containers[containerName];
 
-        result.push(ecs.computeContainerDefinition(parent, name, containerName, container, logGroup));
+        result.push(ecs.computeContainerDefinition(
+            parent, name, vpc, containerName, container,
+            applicationListeners, networkListeners, logGroup));
     }
 
     return pulumi.all(result);
@@ -266,7 +274,7 @@ function computeContainerDefinitions(
 // 'Overwrite' types are not pleasant to work with. However, they internally allow us to succinctly
 // express the shape we're trying to provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
-    family?: never;
+    family?: pulumi.Input<string>;
     containerDefinitions?: never;
     logGroup?: aws.cloudwatch.LogGroup
     taskRoleArn?: never;
@@ -285,6 +293,12 @@ export interface TaskDefinitionArgs {
     // Properties copied from aws.ecs.TaskDefinitionArgs
 
     /**
+     * The vpc that the service for this task will run in.  Does not normally need to be explicitly
+     * provided as it will be inferred from the cluster the service is associated with.
+     */
+    vpc?: x.ec2.Vpc;
+
+    /**
      * A set of placement constraints rules that are taken into consideration during task placement.
      * Maximum number of `placement_constraints` is `10`.
      */
@@ -298,23 +312,28 @@ export interface TaskDefinitionArgs {
     // Properties we've added/changed.
 
     /**
-     * Log group for logging information related to the service.  If not provided a default instance
-     * with a one-day retention policy will be created.
+     * Log group for logging information related to the service.  If `undefined` a default instance
+     * with a one-day retention policy will be created.  If `null`, no log group will be created.
      */
     logGroup?: aws.cloudwatch.LogGroup;
 
     /**
-     * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
-     * If not provided, a default will be created for the task.
+     * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
+     * `undefined`, a default will be created for the task.  If `null`, no task will be created.
      */
     taskRole?: aws.iam.Role;
 
     /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
      *
-     * If not provided, a default will be created for the task.
+     * If `undefined`, a default will be created for the task.  If `null`, no task will be created.
      */
     executionRole?: aws.iam.Role;
+
+    /**
+     * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
+     */
+    family?: pulumi.Input<string>;
 
     /**
      * The number of cpu units used by the task.  If not provided, a default will be computed

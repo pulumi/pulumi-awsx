@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 import { AutoScalingGroup } from "./autoscaling";
 
@@ -218,8 +218,6 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
             throw new Error("At least one of [args.steps.upper] and [args.steps.lower] must be provided.");
         }
 
-        const parentOpts = { parent: this };
-
         const convertedSteps = pulumi.output(args.steps).apply(s => convertSteps(s));
 
         const metricAggregationType = pulumi.output(args.metric.statistic).apply(s => {
@@ -246,7 +244,7 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
             this.upperPolicy = new aws.autoscaling.Policy(`${name}-upper`, {
                 ...commonArgs,
                 stepAdjustments: convertedSteps.upper.stepAdjustments,
-            }, parentOpts);
+            }, { parent: this });
 
             this.upperAlarm = metric.createAlarm(`${name}-upper`, {
                 evaluationPeriods,
@@ -254,14 +252,14 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
                 comparisonOperator: "GreaterThanOrEqualToThreshold",
                 threshold: convertedSteps.upper.threshold,
                 alarmActions: [this.upperPolicy.arn],
-            }, parentOpts);
+            }, { parent: this });
         }
 
         if (args.steps.lower) {
             this.lowerPolicy = new aws.autoscaling.Policy(`${name}-lower`, {
                 ...commonArgs,
                 stepAdjustments: convertedSteps.lower.stepAdjustments,
-            }, parentOpts);
+            }, { parent: this });
 
             this.lowerAlarm = metric.createAlarm(`${name}-lower`, {
                 evaluationPeriods,
@@ -269,7 +267,7 @@ export class StepScalingPolicy extends pulumi.ComponentResource {
                 comparisonOperator: "LessThanOrEqualToThreshold",
                 threshold: convertedSteps.lower.threshold,
                 alarmActions: [this.lowerPolicy.arn],
-            }, parentOpts);
+            }, { parent: this });
         }
 
         this.registerOutputs();

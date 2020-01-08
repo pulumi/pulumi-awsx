@@ -46,18 +46,17 @@ export class Cluster
         super("awsx:x:ecs:Cluster", name, {}, opts);
 
         // First create an ECS cluster.
-        const parentOpts = { parent: this };
-        const cluster = args.cluster || new aws.ecs.Cluster(name, args, parentOpts);
+        const cluster = getOrCreateCluster(name, args, this);
         this.cluster = cluster;
         this.id = cluster.id;
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
 
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, parentOpts) ||
-            [Cluster.createDefaultSecurityGroup(name, this.vpc, parentOpts)];
+        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) ||
+            [Cluster.createDefaultSecurityGroup(name, this.vpc, { parent: this })];
 
         this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
             [{ contents: `- echo ECS_CLUSTER='${clusterId}' >> /etc/ecs/ecs.config` }]);
@@ -81,11 +80,12 @@ export class Cluster
             opts: pulumi.ComponentResourceOptions = {}) {
 
         args.vpc = args.vpc || this.vpc;
-        args.launchConfigurationArgs = args.launchConfigurationArgs || {};
-
-        const launchConfigurationArgs = args.launchConfigurationArgs;
-        launchConfigurationArgs.securityGroups = this.securityGroups;
-        launchConfigurationArgs.userData = this;
+        args.launchConfigurationArgs = {
+            // default to our security groups if the caller didn't provide their own.
+            securityGroups: this.securityGroups,
+            userData: this,
+            ...args.launchConfigurationArgs,
+        };
 
         const group = new x.autoscaling.AutoScalingGroup(name, args, { parent: this, ...opts });
         this.addAutoScalingGroup(group);
@@ -109,9 +109,9 @@ export class Cluster
     public static createDefaultSecurityGroup(
             name: string,
             vpc?: x.ec2.Vpc,
-            opts?: pulumi.ComponentResourceOptions): x.ec2.SecurityGroup {
+            opts: pulumi.ComponentResourceOptions = {}): x.ec2.SecurityGroup {
 
-        vpc = vpc || x.ec2.Vpc.getDefault();
+        vpc = vpc || x.ec2.Vpc.getDefault(opts);
         const securityGroup = new x.ec2.SecurityGroup(name, {
             vpc,
             tags: { Name: name },
@@ -145,13 +145,26 @@ export class Cluster
     }
 }
 
-(<any>Cluster.prototype.createAutoScalingGroup).doNotCapture = true;
+utils.Capture(Cluster.prototype).createAutoScalingGroup.doNotCapture = true;
+
+function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
+    if (args.cluster === undefined) {
+        return new aws.ecs.Cluster(name, args, { parent });
+    }
+
+    if (pulumi.Resource.isInstance(args.cluster)) {
+        return args.cluster;
+    }
+
+    return aws.ecs.Cluster.get(name, args.cluster, undefined, { parent });
+}
 
 // The shape we want for ClusterArgs.  We don't export this as 'Overwrite' types are not pleasant to
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     vpc?: x.ec2.Vpc;
+    cluster?: aws.ecs.Cluster | pulumi.Input<string>;
     securityGroups?: x.ec2.SecurityGroupOrId[];
     tags?: pulumi.Input<aws.Tags>;
 }>;
@@ -167,10 +180,12 @@ export interface ClusterArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * An existing Cluster to use for this awsx Cluster.  If not provided, a default one will
-     * be created.
+     * An existing aws.ecs.Cluster (or the name of an existing aws.ecs.Cluster) to use for this
+     * awsx.ecs.Cluster.  If not provided, a default one will be created.
+     *
+     * Note: If passing a string, use the *name* of an existing ECS Cluster instead of its *id*.
      */
-    cluster?: aws.ecs.Cluster;
+    cluster?: aws.ecs.Cluster | pulumi.Input<string>;
 
     /**
      * The name of the cluster (up to 255 letters, numbers, hyphens, and underscores)
@@ -179,7 +194,7 @@ export interface ClusterArgs {
 
     /**
      * The security group to place new instances into.  If not provided, a default will be
-     * created.
+     * created. Pass an empty array to create no security groups.
      */
     securityGroups?: x.ec2.SecurityGroupOrId[];
 

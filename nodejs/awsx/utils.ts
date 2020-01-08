@@ -15,8 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as deasync from "deasync";
-
 import * as crypto from "crypto";
 
 type Diff<T extends string | number | symbol, U extends string | number | symbol> =
@@ -30,6 +28,16 @@ export type Overwrite<T, U> = Pick<T, Diff<keyof T, keyof U>> & U;
 export type Mutable<T> = {
     -readonly [P in keyof T]: T[P];
 };
+
+/** @internal */
+export type Capture<T> = {
+    [P in keyof T]: T[P] extends Function ? { doNotCapture: boolean } : never;
+};
+
+/** @internal */
+export function Capture<T>(t: T): Capture<T> {
+    return <any>t;
+}
 
 // sha1hash returns a partial SHA1 hash of the input string.
 /** @internal */
@@ -109,31 +117,24 @@ export function hasTrueBooleanMember(obj: any, memberName: string | number | sym
 }
 
 /** @internal */
-export function promiseResult<T>(promise: Promise<T>): T {
-    enum State {
-        running,
-        finishedSuccessfully,
-        finishedWithError,
+export function getRegionFromOpts(opts: pulumi.CustomResourceOptions): pulumi.Output<aws.Region> {
+    if (opts.parent) {
+        return getRegion(opts.parent);
     }
 
-    let result: T;
-    let error = undefined;
-    let state = <State>State.running;
+    return getRegionFromProvider(opts.provider);
+}
 
-    promise.then(
-        val => {
-            result = val;
-            state = State.finishedSuccessfully;
-        },
-        err => {
-            error = err;
-            state = State.finishedWithError;
-        });
 
-    deasync.loopWhile(() => state === State.running);
-    if (state === State.finishedWithError) {
-        throw error;
-    }
+/** @internal */
+export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
+    // A little strange, but all we're doing is passing a fake type-token simply to get
+    // the AWS provider from this resource.
+    const provider = res.getProvider ? res.getProvider("aws::") : undefined;
+    return getRegionFromProvider(provider);
+}
 
-    return result!;
+function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
+    const region = provider ? (<any>provider).region : undefined;
+    return region || aws.config.region;
 }

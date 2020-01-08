@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 import { AutoScalingLaunchConfiguration, AutoScalingLaunchConfigurationArgs } from "./launchConfiguration";
 import { cronExpression, ScheduleArgs } from "./schedule";
@@ -48,16 +48,14 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * https://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html
      * for more details.
      */
-    public readonly targetGroups: x.elasticloadbalancingv2.TargetGroup[];
+    public readonly targetGroups: x.lb.TargetGroup[];
 
     constructor(name: string,
                 args: AutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingGroup", name, {}, opts);
 
-        const parentOpts = { parent: this };
-
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
         const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
         this.targetGroups = args.targetGroups || [];
         const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
@@ -68,10 +66,8 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
         }
         else {
             this.launchConfiguration = new AutoScalingLaunchConfiguration(
-                name, this.vpc, args.launchConfigurationArgs, parentOpts);
+                name, this.vpc, args.launchConfigurationArgs, { parent: this });
         }
-
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
 
         // Use cloudformation to actually construct the autoscaling group.
         this.stack = new aws.cloudformation.Stack(name, {
@@ -83,11 +79,11 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 subnetIds,
                 targetGroupArns,
                 utils.ifUndefined(args.templateParameters, {})),
-        }, parentOpts);
+        }, { parent: this });
 
         // Now go and actually find the group created by cloudformation.  The id for the group will
         // be stored in `stack.outputs.Instances`.
-        this.group = aws.autoscaling.Group.get(name, this.stack.outputs["Instances"], undefined, parentOpts);
+        this.group = aws.autoscaling.Group.get(name, <pulumi.Output<string>>this.stack.outputs["Instances"], undefined, { parent: this });
 
         this.registerOutputs();
     }
@@ -197,7 +193,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             predefinedMetricType: "ALBRequestCountPerTarget",
             resourceLabel: pulumi.interpolate `${loadBalancerSuffix}/${targetGroupSuffix}`,
             ...args,
-        }, opts);
+        }, pulumi.mergeOptions(opts, { dependsOn: targetGroup.getListenersAsync() }));
     }
 
     /**
@@ -221,12 +217,11 @@ function ifUndefined<T>(val: T | undefined, defVal: T) {
 function getCloudFormationTemplate(
     instanceName: string,
     instanceLaunchConfigurationId: pulumi.Output<string>,
-    subnetIds: pulumi.Input<string>[],
-    targetGroupArns: pulumi.Input<string>[],
+    subnetIds: pulumi.Input<pulumi.Input<string>[]>,
+    targetGroupArns: pulumi.Output<string>[],
     parameters: pulumi.Output<TemplateParameters>): pulumi.Output<string> {
 
-    const subnetIdsArray = pulumi.all(subnetIds);
-    return pulumi.all([subnetIdsArray, targetGroupArns, instanceLaunchConfigurationId, parameters])
+    return pulumi.all([subnetIds, targetGroupArns, instanceLaunchConfigurationId, parameters])
                  .apply(([subnetIdsArray, targetGroupArns, instanceLaunchConfigurationId, parameters]) => {
 
     const minSize = ifUndefined(parameters.minSize, 2);
@@ -306,7 +301,7 @@ export interface AutoScalingGroupArgs {
      * The subnets to use for the autoscaling group.  If not provided, the `private` subnets of
      * the `vpc` will be used.
      */
-    subnetIds?: pulumi.Input<string>[];
+    subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
 
     /**
      * The config to use when creating the auto scaling group.
@@ -340,7 +335,7 @@ export interface AutoScalingGroupArgs {
      * A list of target groups to associate with the Auto Scaling group.  All target groups must
      * have the "instance" [targetType].
      */
-    targetGroups?: x.elasticloadbalancingv2.TargetGroup[];
+    targetGroups?: x.lb.TargetGroup[];
 
     /**
      * Set to true to disable rollback of the underlying aws.cloudformation.Stack if that Stack

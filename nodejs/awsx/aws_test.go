@@ -29,7 +29,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/pulumi/pulumi-cloud/examples"
 	"github.com/pulumi/pulumi/pkg/operations"
 	"github.com/pulumi/pulumi/pkg/resource"
 	"github.com/pulumi/pulumi/pkg/resource/config"
@@ -38,59 +37,114 @@ import (
 	"github.com/pulumi/pulumi/pkg/util/contract"
 )
 
-func Test_Examples(t *testing.T) {
-	region := os.Getenv("AWS_REGION")
-	if region == "" {
-		t.Skipf("Skipping test due to missing AWS_REGION environment variable")
-	}
-	fmt.Printf("AWS Region: %v\n", region)
+func TestAccCluster(t *testing.T) {
+	test := getDefaultProviderOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/cluster"),
+		})
 
-	cwd, err := os.Getwd()
-	if !assert.NoError(t, err, "expected a valid working directory: %v", err) {
-		return
-	}
+	integration.ProgramTest(t, &test)
+}
 
-	testBase := integration.ProgramTestOptions{
-		Config: map[string]string{
-			"aws:region": region,
-		},
-		Dependencies: []string{
-			"@pulumi/awsx",
-		},
-		Quick:       true,
-		SkipRefresh: true,
-	}
+func TestAccDashboards(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/dashboards"),
+		})
 
-	shortTests := []integration.ProgramTestOptions{
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/cluster"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/dashboards"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/ecr"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/metrics"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/vpc"),
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccEcr(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/ecr"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccMetrics(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/metrics"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccVpcIgnoreSubnetChanges(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/vpcIgnoreSubnetChanges"),
+			StackName: addRandomSuffix("vpcIgnoreSubnetChanges"),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
+			},
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccVpc(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/vpc"),
 			StackName: addRandomSuffix("vpc"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:                    path.Join(cwd, "../examples/nlb/fargateShort"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccNlb_fargateShort(t *testing.T) {
+	envRegion := getEnvRegion(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:                    path.Join(getCwd(t), "../examples/nlb/fargateShort"),
 			StackName:              addRandomSuffix("fargate"),
-			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/, true /*short*/),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir: path.Join(cwd, "../examples/api"),
-			Config: map[string]string{
-				"aws:region": region,
+			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
 			},
-			Dependencies: []string{
-				"@pulumi/awsx",
-			},
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccNlb_fargateShortInlineListener(t *testing.T) {
+	envRegion := getEnvRegion(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:                    path.Join(getCwd(t), "../examples/nlb/fargateShortInlineListener"),
+			StackName:              addRandomSuffix("fargate"),
+			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_ec2(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/ec2"),
+			StackName: addRandomSuffix("ec2"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccApi(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/api"),
 			ExtraRuntimeValidation: validateAPITests([]apiTest{
 				{
 					urlStackOutputKey: "url",
@@ -106,53 +160,53 @@ func Test_Examples(t *testing.T) {
 					},
 					expectedBody: "<h1>Hello world!</h1>",
 				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/b",
-					requiredAuth: &requiredAuth{
-						queryParameters: map[string]string{
-							"auth": "password",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					expectedBody: "Hello, world!",
-				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/www/file1.txt",
-					requiredParameters: &requiredParameters{
-						queryParameters:             []string{"key"},
-						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-					},
-					requiredAuth: &requiredAuth{
-						headers: map[string]string{
-							"Authorization": "Allow",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					expectedBody: "contents1\n",
-				},
-				{
-					urlStackOutputKey: "url",
-					urlPath:           "/integration",
-					requiredParameters: &requiredParameters{
-						queryParameters:             []string{"key"},
-						expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
-					},
-					requiredAuth: &requiredAuth{
-						queryParameters: map[string]string{
-							"auth": "password",
-						},
-					},
-					requiredAPIKey: &requiredAPIKey{
-						stackOutput: "apiKeyValue",
-					},
-					skipBodyValidation: true,
-				},
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/b",
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "Hello, world!",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/www/file1.txt",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		headers: map[string]string{
+				// 			"Authorization": "Allow",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	expectedBody: "contents1\n",
+				// },
+				// {
+				// 	urlStackOutputKey: "url",
+				// 	urlPath:           "/integration",
+				// 	requiredParameters: &requiredParameters{
+				// 		queryParameters:             []string{"key"},
+				// 		expectedBodyWithoutQueryStr: `{"message": "Missing required request parameters: [key]"}`,
+				// 	},
+				// 	requiredAuth: &requiredAuth{
+				// 		queryParameters: map[string]string{
+				// 			"auth": "password",
+				// 		},
+				// 	},
+				// 	requiredAPIKey: &requiredAPIKey{
+				// 		stackOutput: "apiKeyValue",
+				// 	},
+				// 	skipBodyValidation: true,
+				// },
 				{
 					urlStackOutputKey: "authorizerUrl",
 					urlPath:           "/www_old/file1.txt",
@@ -187,77 +241,140 @@ func Test_Examples(t *testing.T) {
 					},
 				}),
 			}},
-		}),
-	}
+		})
 
-	longTests := []integration.ProgramTestOptions{
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/fargate"),
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_fargate(t *testing.T) {
+	skipIfShort(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/fargate"),
 			StackName: addRandomSuffix("fargate"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/alb/ec2"),
-			StackName: addRandomSuffix("ec2"),
-		}),
-		testBase.With(integration.ProgramTestOptions{
-			Dir:       path.Join(cwd, "../examples/nlb/fargate"),
+			EditDirs: []integration.EditDir{
+				{
+					Dir:             "step2",
+					Additive:        true,
+					ExpectNoChanges: true,
+				},
+			},
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_fargateInlineListener(t *testing.T) {
+	skipIfShort(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/fargateInlineListener"),
+			StackName: addRandomSuffix("fargate"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_ec2Instance(t *testing.T) {
+	skipIfShort(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/ec2Instance"),
+			StackName: addRandomSuffix("ec2Instance"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccAlb_lambdaTarget(t *testing.T) {
+	skipIfShort(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/alb/lambdaTarget"),
+			StackName: addRandomSuffix("lambdaTarget"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccNlb_fargate(t *testing.T) {
+	skipIfShort(t)
+	envRegion := getEnvRegion(t)
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:       path.Join(getCwd(t), "../examples/nlb/fargate"),
 			StackName: addRandomSuffix("fargate"),
 			Config: map[string]string{
-				"aws:region":               region,
+				"aws:region":               "INVALID_REGION",
+				"aws:envRegion":            envRegion,
 				"containers:redisPassword": "SECRETPASSWORD",
 			},
 			PreviewCommandlineFlags: []string{
 				"--diff",
 			},
-			ExtraRuntimeValidation: containersRuntimeValidator(region, true /*isFargate*/, false /*short*/),
-		}),
-
-		// {
-		// 	Dir:       path.Join(cwd, "../examples/ec2"),
-		// 	StackName: addRandomSuffix("ec2"),
-		// 	Config: map[string]string{
-		// 		"aws:region":               region,
-		// 		"cloud:provider":           "aws",
-		// 		"containers:redisPassword": "SECRETPASSWORD",
-		// 	},
-		// 	Dependencies: []string{
-		// 		"@pulumi/awsx",
-		// 	},
-		// 	Quick:       true,
-		// 	SkipRefresh: true,
-		// 	PreviewCommandlineFlags: []string{
-		// 		"--diff",
-		// 	},
-		// 	EditDirs: []integration.EditDir{
-		// 		{
-		// 			Additive: true,
-		// 			Dir:      path.Join(cwd, "../examples/ec2/update1"),
-		// 		},
-		// 		{
-		// 			Additive:               true,
-		// 			Dir:                    path.Join(cwd, "../examples/ec2/update2"),
-		// 			ExtraRuntimeValidation: containersRuntimeValidator(region, false /*isFargate*/),
-		// 		},
-		// 	},
-		// },
-	}
-
-	tests := shortTests
-	if !testing.Short() {
-		tests = append(tests, longTests...)
-	}
-
-	for _, ex := range tests {
-		example := ex.With(integration.ProgramTestOptions{
-			ReportStats: integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
-			// TODO[pulumi/pulumi#1900]: This should be the default value, every test we have causes some sort of
-			// change during a `pulumi refresh` for reasons outside our control.
-			ExpectRefreshChanges: true,
+			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, false /*short*/),
 		})
-		t.Run(example.Dir, func(t *testing.T) {
-			integration.ProgramTest(t, &example)
-		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func skipIfShort(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping long-running test in short mode")
 	}
+}
+
+func getEnvRegion(t *testing.T) string {
+	envRegion := os.Getenv("AWS_REGION")
+	if envRegion == "" {
+		t.Skipf("Skipping test due to missing AWS_REGION environment variable")
+	}
+	fmt.Printf("AWS Region: %v\n", envRegion)
+
+	return envRegion
+}
+
+func getCwd(t *testing.T) string {
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.FailNow()
+	}
+
+	return cwd
+}
+
+func getBaseOptions(t *testing.T) integration.ProgramTestOptions {
+	envRegion := getEnvRegion(t)
+	baseJS := integration.ProgramTestOptions{
+		Config: map[string]string{
+			"aws:envRegion": envRegion,
+		},
+		Dependencies: []string{
+			"@pulumi/awsx",
+		},
+		Quick:                true,
+		SkipRefresh:          true,
+		ExpectRefreshChanges: true,
+		ReportStats:          integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
+	}
+
+	return baseJS
+}
+
+func getDefaultProviderOptions(t *testing.T) integration.ProgramTestOptions {
+	baseJS := integration.ProgramTestOptions{
+		Dependencies: []string{
+			"@pulumi/awsx",
+		},
+		Quick:       true,
+		SkipRefresh: true,
+		// TODO[pulumi/pulumi#1900]: This should be the default value, every test we have causes some sort of
+		// change during a `pulumi refresh` for reasons outside our control.
+		ExpectRefreshChanges: true,
+		ReportStats:          integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
+	}
+
+	return baseJS
 }
 
 func getAllMessageText(logs []operations.LogEntry) string {
@@ -273,7 +390,7 @@ func getLogs(t *testing.T, region string, stackInfo integration.RuntimeValidatio
 
 	var states []*resource.State
 	for _, res := range stackInfo.Deployment.Resources {
-		state, err := stack.DeserializeResource(res)
+		state, err := stack.DeserializeResource(res, config.NewPanicCrypter())
 		if !assert.NoError(t, err) {
 			return nil
 		}
@@ -305,7 +422,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 
 		// Validate the GET /test endpoint
 		{
-			resp := examples.GetHTTP(t, baseURL+"test", 200)
+			resp := GetURL(t, baseURL+"test", 200)
 			contentType := resp.Header.Get("Content-Type")
 			assert.Equal(t, "application/json", contentType)
 			bytes, err := ioutil.ReadAll(resp.Body)
@@ -321,7 +438,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 			// https://github.com/pulumi/pulumi-cloud/issues/666
 			// We are only making the proxy route in fargate testing.
 			if isFargate {
-				resp := examples.GetHTTP(t, baseURL+"nginx", 200)
+				resp := GetURL(t, baseURL+"nginx", 200)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "text/html", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -329,7 +446,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 				t.Logf("GET %v [%v/%v]: %v", baseURL+"nginx", resp.StatusCode, contentType, string(bytes))
 			}
 			{
-				resp := examples.GetHTTP(t, baseURL+"nginx/doesnotexist", 404)
+				resp := GetURL(t, baseURL+"nginx/doesnotexist", 404)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "text/html", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -343,7 +460,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 			{
 				// Call the endpoint twice so that things have time to warm up.
 				http.Get(baseURL)
-				resp := examples.GetHTTP(t, baseURL, 200)
+				resp := GetURL(t, baseURL, 200)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "application/json", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -353,7 +470,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 
 			// Validate the GET /run endpoint
 			{
-				resp := examples.GetHTTP(t, baseURL+"run", 200)
+				resp := GetURL(t, baseURL+"run", 200)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "application/json", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -369,7 +486,7 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 
 			// Validate the GET /custom endpoint
 			{
-				resp := examples.GetHTTP(t, baseURL+"custom", 200)
+				resp := GetURL(t, baseURL+"custom", 200)
 				contentType := resp.Header.Get("Content-Type")
 				assert.Equal(t, "application/json", contentType)
 				bytes, err := ioutil.ReadAll(resp.Body)
@@ -444,6 +561,40 @@ func containersRuntimeValidator(region string, isFargate bool, short bool) func(
 	}
 }
 
+func GetURL(t *testing.T, url string, statusCode int) *http.Response {
+	var resp *http.Response
+	var err error
+	for i := 0; i <= 10; i++ {
+		resp, err = http.Get(url)
+		if err == nil && resp.StatusCode == statusCode {
+			return resp
+		}
+
+		if err != nil {
+			t.Logf("Got error trying to get %v. %v", url, err.Error())
+		}
+
+		if resp != nil && resp.StatusCode != statusCode {
+			t.Logf("Expected to get status code %v for %v. Got: %v", statusCode, url, resp.StatusCode)
+		}
+
+		time.Sleep(1 * time.Minute)
+	}
+
+	if !assert.NoError(t, err, "expected to be able to GET "+url) {
+		t.FailNow()
+	}
+
+	if !assert.Equal(t, statusCode, resp.StatusCode, "Got unexpected status code. Body was:") {
+		contentType := resp.Header.Get("Content-Type")
+		bytes, _ := ioutil.ReadAll(resp.Body)
+		t.Logf("GET %v [%v/%v]: %v", url, resp.StatusCode, contentType, string(bytes))
+		t.FailNow()
+	}
+
+	return nil
+}
+
 func getLogsWithPrefix(logsByResource map[string][]operations.LogEntry, prefix string) ([]operations.LogEntry, bool) {
 	for key, logs := range logsByResource {
 		if strings.HasPrefix(key, prefix) {
@@ -503,7 +654,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 
 			if tt.requiredAuth != nil {
 				resp := GetHTTP(t, req, 401)
-				assertRequestBody(t, `{"message":"Unauthorized"}`, false /*skipBodyValidation*/, resp)
+				assertRequestBody(t, `{"message":"401 Unauthorized"}`, false /*skipBodyValidation*/, resp)
 
 				for header, val := range tt.requiredAuth.headers {
 					req.Header.Add(header, val)
@@ -518,7 +669,7 @@ func validateAPITests(apiTests []apiTest) func(t *testing.T, stack integration.R
 
 			if tt.requiredToken != nil {
 				resp := GetHTTP(t, req, 401)
-				assertRequestBody(t, `{"message":"Unauthorized"}`, false /*skipBodyValidation*/, resp)
+				assertRequestBody(t, `{"message":"401 Unauthorized"}`, false /*skipBodyValidation*/, resp)
 
 				token := tt.requiredToken.getAuthToken(t, stack)
 				req.Header.Add(tt.requiredToken.header, token)
@@ -564,7 +715,7 @@ func GetHTTP(t *testing.T, req *http.Request, statusCode int) *http.Response {
 	var httpClient http.Client
 	url := req.URL.String()
 
-	for i := 0; i <= 3; i++ {
+	for i := 0; i <= 10; i++ {
 
 		resp, err = httpClient.Do(req)
 		if err == nil && resp.StatusCode == statusCode {

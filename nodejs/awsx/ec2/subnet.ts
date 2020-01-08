@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class Subnet extends pulumi.ComponentResource {
     // tslint:disable-next-line:variable-name
@@ -44,7 +44,6 @@ export class Subnet extends pulumi.ComponentResource {
         this.vpc = vpc;
         this.subnetName = name;
 
-        const parentOpts = { parent: this };
         if (isExistingSubnetArgs(args)) {
             this.subnet = args.subnet;
             this.id = args.subnet.id;
@@ -52,19 +51,28 @@ export class Subnet extends pulumi.ComponentResource {
             // when importing a subnet.
         }
         else {
+            // Allow the individual subnet to decide it if wants an ipv6 address assigned at
+            // creation. If not specified, assign by default if the Vpc has ipv6 assigned to
+            // it, don't assign otherwise.
+            const assignIpv6AddressOnCreation = utils.ifUndefined(args.assignIpv6AddressOnCreation, vpc.vpc.assignGeneratedIpv6CidrBlock);
             this.subnet = new aws.ec2.Subnet(name, {
                 vpcId: vpc.id,
                 ...args,
-            }, parentOpts);
+                assignIpv6AddressOnCreation,
+            }, {
+                parent: this,
+                // See https://github.com/pulumi/pulumi-awsx/issues/398.
+                ignoreChanges: opts.ignoreChanges,
+            });
 
             this.routeTable = new aws.ec2.RouteTable(name, {
                 vpcId: vpc.id,
-            }, parentOpts);
+            }, { parent: this });
 
             this.routeTableAssociation = new aws.ec2.RouteTableAssociation(name, {
                 routeTableId: this.routeTable.id,
                 subnetId: this.subnet.id,
-            }, parentOpts);
+            }, { parent: this });
 
             this.id = pulumi.all([this.subnet.id, this.routeTableAssociation.id])
                             .apply(([id]) => id);
@@ -88,7 +96,7 @@ export class Subnet extends pulumi.ComponentResource {
         opts = { parent: this, ...opts };
 
         const args = isSubnetRouteProvider(argsOrProvider)
-            ? argsOrProvider.route(name, opts)
+            ? argsOrProvider.route(name, { parent: this })
             : argsOrProvider;
 
         this.routes.push(new aws.ec2.Route(`${this.subnetName}-${name}`, {
@@ -97,6 +105,8 @@ export class Subnet extends pulumi.ComponentResource {
         }, opts));
     }
 }
+
+utils.Capture(Subnet.prototype).createRoute.doNotCapture = true;
 
 export interface SubnetRouteProvider {
     route(name: string, opts: pulumi.ComponentResourceOptions): RouteArgs;
@@ -107,8 +117,6 @@ function isSubnetRouteProvider(obj: any): obj is SubnetRouteProvider {
 }
 
 export type SubnetOrId = Subnet | pulumi.Input<string>;
-
-(<any>Subnet.prototype.createRoute).doNotCapture = true;
 
 export interface ExistingSubnetArgs {
     /**
@@ -178,9 +186,9 @@ export interface SubnetArgs {
      */
     cidrBlock: pulumi.Input<string>;
     /**
-     * Specify true to indicate
-     * that network interfaces created in the specified subnet should be
-     * assigned an IPv6 address. Default is `false`
+     * Specify true to indicate that network interfaces created in the specified subnet should be
+     * assigned an IPv6 address. Default's to `true` if the Vpc this is associated with has
+     * `assignGeneratedIpv6CidrBlock: true`. `false` otherwise.
      */
     assignIpv6AddressOnCreation?: pulumi.Input<boolean>;
     /**
@@ -197,15 +205,18 @@ export interface SubnetArgs {
      */
     ipv6CidrBlock?: pulumi.Input<string>;
     /**
-     * Specify true to indicate
-     * that instances launched into the subnet should be assigned
-     * a public IP address. Default is `false`.
+     * Specify true to indicate that instances launched into the subnet should be assigned a public
+     * IP address. Default is `false`.
      */
     mapPublicIpOnLaunch?: pulumi.Input<boolean>;
     /**
      * A mapping of tags to assign to the resource.
      */
     tags?: pulumi.Input<aws.Tags>;
+    /**
+     * Ignore changes to any of the specified properties of the Subnet.
+     */
+    ignoreChanges?: string[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

@@ -1,8 +1,8 @@
-# Pulumi Elastic Load Balancing Components
+## Pulumi Elastic Load Balancing Components
 
 Pulumi's API's for simplifying [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/).  The API provides a simple way to create either Application (ALB) or Network (NLB) load balancers, and their associated Target Groups and Listeners.  For more details, see [Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) and [Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html).
 
-## Network Load Balancer
+### Network Load Balancer
 
 To create an NLB
 
@@ -12,11 +12,11 @@ import * as awsx from "@pulumi/awsx";
 
 // Creates an NLB associated with the default Vpc for this region.  Pass 'external: true' to make the NLB
 // externally accessible
-const nlb1 = new awsx.elasticloadbalancingv2.NetworkLoadBalancer("nlb1", { external: true });
+const nlb1 = new awsx.lb.NetworkLoadBalancer("nlb1", { external: true });
 
 // To create an NLB for a different Vpc, simply pass it in:
 const vpc = new awsx.ec2.Vpc(...);
-const nlb2 = new awsx.elasticloadbalancingv2.NetworkLoadBalancer("nlb2", { vpc, external: true });
+const nlb2 = new awsx.lb.NetworkLoadBalancer("nlb2", { vpc, external: true });
 ```
 
 Once created, an NLB can be used to create both [`Listeners`](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-listeners.html) and [`TargetGroups`](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html).  By default, a Listener needs at least one TargetGroup that it can route requests to.  So, if a Listener is created without specifying a TargetGroup, one will be automatically created.  For example:
@@ -80,9 +80,9 @@ const nginx = new awsx.ecs.EC2Service("examples-nginx", {
 });
 ```
 
-# Application Load Balancers
+## Application Load Balancers
 
-ALBs follow the same pattern above as NLBs.  To create ad use them, simply replace usages of `Network` above with `Application`.  i.e. instead of `new awsx.elasticloadbalancingv2.NetworkLoadBalancer` use `new awsx.elasticloadbalancingv2.ApplicationLoadBalancer`.
+ALBs follow the same pattern above as NLBs.  To create ad use them, simply replace usages of `Network` above with `Application`.  i.e. instead of `new awsx.lb.NetworkLoadBalancer` use `new awsx.lb.ApplicationLoadBalancer`.
 
 For detailed reference documentation, please visit [the API docs](
-https://pulumi.io/reference/pkg/nodejs/@pulumi/awsx/elasticloadbalancingv2/).
+https://pulumi.io/reference/pkg/nodejs/@pulumi/awsx/lb/).

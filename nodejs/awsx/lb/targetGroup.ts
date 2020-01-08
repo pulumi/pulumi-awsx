@@ -19,38 +19,47 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export abstract class TargetGroup
     extends pulumi.ComponentResource
     implements x.ecs.ContainerPortMappingProvider,
     x.ecs.ContainerLoadBalancerProvider,
-    x.elasticloadbalancingv2.ListenerDefaultAction {
+    x.lb.ListenerDefaultAction {
 
     public readonly loadBalancer: mod.LoadBalancer;
-    public readonly targetGroup: aws.elasticloadbalancingv2.TargetGroup;
+    public readonly targetGroup: aws.lb.TargetGroup;
     public readonly vpc: x.ec2.Vpc;
 
-    public readonly listeners: x.elasticloadbalancingv2.Listener[] = [];
+    public readonly listeners: x.lb.Listener[] = [];
 
     constructor(type: string, name: string, loadBalancer: mod.LoadBalancer,
-                args: TargetGroupArgs, opts?: pulumi.ComponentResourceOptions) {
-        super(type, name, {}, opts);
-
-        const parentOpts = { parent: this };
-
-        const longName = `${name}`;
-        const shortName = args.name || utils.sha1hash(`${longName}`);
+                args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
+        // We want our parent to the be the ALB by default if nothing else is specified.
+        // Create an alias from our old name where we didn't parent by default to keep
+        // resources from being created/destroyed.
+        super(type, name, {}, {
+            parent: loadBalancer,
+            ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
+        });
 
         this.vpc = args.vpc;
-        this.targetGroup = new aws.elasticloadbalancingv2.TargetGroup(shortName, {
+
+        // We used to hash the name of an TG to keep the name short.  This was necessary back when
+        // people didn't have direct control over creating the TG.  In awsx though creating the TG
+        // is easy to do, so we just let the user pass in the name they want.  We simply add an
+        // alias from the old name to the new one to keep things from being recreated.
+        this.targetGroup = new aws.lb.TargetGroup(name, {
             ...args,
             vpcId: this.vpc.id,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
             deregistrationDelay: utils.ifUndefined(args.deregistrationDelay, 300),
             targetType: utils.ifUndefined(args.targetType, "ip"),
-            tags: utils.mergeTags(args.tags, { Name: longName }),
-        }, parentOpts);
+            tags: utils.mergeTags(args.tags, { Name: name }),
+        }, {
+            parent: this,
+            aliases: [{ name: args.name || utils.sha1hash(name) }],
+        });
 
         this.loadBalancer = loadBalancer;
     }
@@ -59,6 +68,11 @@ export abstract class TargetGroup
         // Return an output that depends on our listeners.  That way anything that depends on us
         // will only proceed once our load balancer connections have been created.
         return pulumi.output(this.listeners.map(r => r.listener.urn));
+    }
+
+    /** @internal */
+    public async getListenersAsync() {
+        return this.listeners;
     }
 
     public containerPortMapping(): pulumi.Input<aws.ecs.PortMapping> {
@@ -82,8 +96,17 @@ export abstract class TargetGroup
     }
 
     /** Do not call directly.  Intended for use by [Listener] and [ListenerRule] */
-    public registerListener(listener: x.elasticloadbalancingv2.Listener) {
+    public registerListener(listener: x.lb.Listener) {
         this.listeners.push(listener);
+    }
+
+    /**
+     * Attaches a target to this target group.  See
+     * [Register-Targets](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-register-targets.html)
+     * for more details.
+     */
+    public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
+        return new mod.TargetGroupAttachment(name, this, args, opts);
     }
 }
 
@@ -157,8 +180,8 @@ export interface TargetGroupArgs {
     vpc: x.ec2.Vpc;
 
     /**
-     * The name of the TargetGroup. If not specified, the [name] parameter passed into the
-     * TargetGroup constructor will be hashed and used as the name.
+     * @deprecated Not used.  Supply the name you want for a TargetGroup through the [name]
+     * constructor arg.
      */
     name?: string;
 
@@ -202,7 +225,7 @@ export interface TargetGroupArgs {
      * A Stickiness block. Stickiness blocks are documented below. `stickiness` is only valid if
      * used with Load Balancers of type `Application`
      */
-    stickiness?: aws.elasticloadbalancingv2.TargetGroupArgs["stickiness"];
+    stickiness?: aws.lb.TargetGroupArgs["stickiness"];
 
     /**
      * A mapping of tags to assign to the resource.
@@ -212,11 +235,28 @@ export interface TargetGroupArgs {
     /**
      * The type of target that you must specify when registering targets with this target group. The
      * possible values are `instance` (targets are specified by instance ID) or `ip` (targets are
-     * specified by IP address). The default is `ip`. Note that you can't specify targets for
-     * a target group using both instance IDs and IP addresses. If the target type is `ip`, specify
-     * IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the
-     * RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range
-     * (100.64.0.0/10). You can't specify publicly routable IP addresses.
+     * specified by IP address) or `lambda` (targets are specified by lambda arn). The default is
+     * `ip`. Note that you can't specify targets for a target group using both instance IDs
+     * and IP addresses. If the target type is `ip`, specify IP addresses from the subnets of the
+     * virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8,
+     * 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify
+     * publicly routable IP addresses.
      */
-    targetType?: pulumi.Input<"instance" | "ip">;
+    targetType?: pulumi.Input<TargetType>;
 }
+
+/**
+ * The type of target that you must specify when registering targets with a target group. The
+ * possible values are `instance` (targets are specified by instance ID) or `ip` (targets are
+ * specified by IP address) or `lambda` (targets are specified by lambda arn). The default is `ip`.
+ * Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+ * If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud
+ * (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16),
+ * and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+ *
+ * Network Load Balancers do not support the lambda target type, only Application Load Balancers
+ * support the lambda target type. For more information, see
+ * [Lambda-Functions-as-Targets](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/lambda-functions.html#register-lambda-function)
+ * in the User Guide for Application Load Balancers.
+ */
+export type TargetType = "instance" | "ip" | "lambda";

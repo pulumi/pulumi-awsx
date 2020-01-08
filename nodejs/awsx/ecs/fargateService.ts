@@ -17,12 +17,12 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as ecs from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
                 args: ecs.FargateTaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
@@ -149,10 +149,12 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
 
         // Want to return docker CPU units, not vCPU values. From AWS:
         //
-        // You can determine the number of CPU units that are available per Amazon EC2 instance type
-        // by multiplying the number of vCPUs listed for that instance type on the Amazon EC2
-        // Instances detail page by 1,024.
-        return { memory: `${config.memGB}GB`, cpu: `${config.vcpu * 1024}` };
+        // You can determine the number of CPU units that are available per Amazon EC2 instance type by multiplying the
+        // number of vCPUs listed for that instance type on the Amazon EC2 Instances detail page by 1,024.
+        //
+        // We return `memory` in MB units because that appears to be how AWS normalized these internally so this avoids
+        // refresh issues.
+        return { memory: `${config.memGB * 1024}`, cpu: `${config.vcpu * 1024}` };
 
         // local functions.
         function getRequestedVCPUandMemory() {
@@ -192,20 +194,24 @@ export class FargateService extends ecs.Service {
 
     constructor(name: string,
                 args: FargateServiceArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const taskDefinition = args.taskDefinition ||
-            new ecs.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
-
         const cluster = args.cluster || x.ecs.Cluster.getDefault();
+
+        const taskDefinition = args.taskDefinition ||
+            new ecs.FargateTaskDefinition(name, {
+                ...args.taskDefinitionArgs,
+                vpc: cluster.vpc,
+            }, opts);
+
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
-        const subnets = assignPublicIp.apply(pub => pub ? cluster.vpc.publicSubnetIds : cluster.vpc.privateSubnetIds);
+        const subnets = getSubnets(cluster, args.subnets, assignPublicIp);
 
         super("awsx:x:ecs:FargateService", name, {
             ...args,
@@ -217,12 +223,27 @@ export class FargateService extends ecs.Service {
                 assignPublicIp,
                 securityGroups: securityGroups.map(g => g.id),
             },
-        },  /*isFargate:*/ true, opts);
+        }, opts);
 
         this.taskDefinition = taskDefinition;
 
         this.registerOutputs();
     }
+}
+
+function getSubnets(
+        cluster: ecs.Cluster,
+        subnets: pulumi.Input<pulumi.Input<string>[]> | undefined,
+        assignPublicIp: pulumi.Output<boolean>) {
+
+    return pulumi.all([cluster.vpc.publicSubnetIds, cluster.vpc.privateSubnetIds, subnets, assignPublicIp])
+                 .apply(([publicSubnetIds, privateSubnetIds, subnets, assignPublicIp]) => {
+        if (subnets) {
+            return subnets;
+        }
+
+        return assignPublicIp ? publicSubnetIds : privateSubnetIds;
+    });
 }
 
 type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
@@ -234,6 +255,12 @@ type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs
 
 export interface FargateTaskDefinitionArgs {
     // Properties copied from ecs.TaskDefinitionArgs
+
+    /**
+     * The vpc that the service for this task will run in.  Does not normally need to be explicitly
+     * provided as it will be inferred from the cluster the service is associated with.
+     */
+    vpc?: x.ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
@@ -249,21 +276,26 @@ export interface FargateTaskDefinitionArgs {
     // Properties we've added/changed.
 
     /**
-     * Log group for logging information related to the service.  If not provided a default instance
-     * with a one-day retention policy will be created.
+     * Log group for logging information related to the service.  If `undefined` a default instance
+     * with a one-day retention policy will be created.  If `null` no log group will be created.
      */
     logGroup?: aws.cloudwatch.LogGroup;
 
     /**
-     * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
-     * If not provided, a default will be created for the task.
+     * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
+     * `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
     taskRole?: aws.iam.Role;
 
     /**
+     * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
+     */
+    family?: pulumi.Input<string>;
+
+    /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
      *
-     * If not provided, a default will be created for the task.
+     *  If `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
     executionRole?: aws.iam.Role;
 

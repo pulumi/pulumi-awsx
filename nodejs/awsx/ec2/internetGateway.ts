@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class InternetGateway
         extends pulumi.ComponentResource
@@ -37,7 +37,7 @@ export class InternetGateway
         else {
             this.internetGateway = new aws.ec2.InternetGateway(name, {
                 ...args,
-                vpcId: vpc.vpc.id,
+                vpcId: vpc.id,
             }, { parent: this });
         }
 

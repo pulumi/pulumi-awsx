@@ -16,14 +16,14 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class SecurityGroup extends pulumi.ComponentResource {
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly id: pulumi.Output<string>;
     public readonly vpc: x.ec2.Vpc;
 
-    public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
+    public readonly egressRules: x.ec2.EgressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
     // tslint:disable-next-line:variable-name
@@ -47,24 +47,22 @@ export class SecurityGroup extends pulumi.ComponentResource {
         delete args.egress;
         delete args.ingress;
 
-        const parentOpts = { parent: this };
-
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault();
+        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
             vpcId: this.vpc.id,
-        }, parentOpts);
+        }, { parent: this });
 
         this.id = this.securityGroup.id;
 
         this.registerOutputs();
 
         for (let i = 0, n = egressRules.length; i < n; i++) {
-            this.createEgressRule(`${name}-egress-${i}`, egressRules[i], parentOpts);
+            this.createEgressRule(`${name}-egress-${i}`, egressRules[i]);
         }
 
         for (let i = 0, n = ingressRules.length; i < n; i++) {
-            this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i], parentOpts);
+            this.createIngressRule(`${name}-ingress-${i}`, ingressRules[i]);
         }
     }
 
@@ -101,8 +99,8 @@ export class SecurityGroup extends pulumi.ComponentResource {
     }
 }
 
-(<any>SecurityGroup.prototype.createEgressRule).doNotCapture = true;
-(<any>SecurityGroup.prototype.createIngressRule).doNotCapture = true;
+utils.Capture(SecurityGroup.prototype).createEgressRule.doNotCapture = true;
+utils.Capture(SecurityGroup.prototype).createIngressRule.doNotCapture = true;
 
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 
@@ -121,9 +119,7 @@ export function getSecurityGroups(
             result.push(obj);
         }
         else {
-            result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, {
-                vpc,
-            }, opts));
+            result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, { vpc }, opts));
         }
     }
 
@@ -148,7 +144,7 @@ export interface SecurityGroupArgs {
     securityGroup?: aws.ec2.SecurityGroup;
 
     /**
-     * The vpc this security group applies to.  Or [Network.getDefault] if unspecified.
+     * The vpc this security group applies to.  Or [Vpc.getDefault] if unspecified.
      */
     vpc?: x.ec2.Vpc;
 

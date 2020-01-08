@@ -12,33 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const cluster = new awsx.ecs.Cluster("testing");
-const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true });
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-// A simple NGINX service, scaled out over two containers.
+const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
+const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true }, providerOpts);
+
 const targetGroup = loadBalancer.createTargetGroup("nginx", { port: 80, targetType: "instance" });
 
-const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
-    subnetIds: awsx.ec2.Vpc.getDefault().publicSubnetIds,
-    targetGroups: [targetGroup],
-    templateParameters: {
-        minSize: 10,
-    },
-    launchConfigurationArgs: {
-        instanceType: "t2.medium",
-        associatePublicIpAddress: true,
-    },
-});
-
-const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
-    targetValue: 10,
-    estimatedInstanceWarmup: 120,
-    targetGroup: targetGroup,
-});
-
+// A simple NGINX service, scaled out over two containers.  Create a listener to connect the load
+// balancer to the service.
 const nginxListener = targetGroup.createListener("nginx", { port: 80, external: true });
 const service = new awsx.ecs.EC2Service("nginx", {
     cluster,
@@ -53,6 +40,25 @@ const service = new awsx.ecs.EC2Service("nginx", {
         },
     },
     desiredCount: 2,
+}, providerOpts);
+
+// Now setup an asg for the cluster to control how it will respond under load.
+const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
+    subnetIds: awsx.ec2.Vpc.getDefault(providerOpts).publicSubnetIds,
+    targetGroups: [targetGroup],
+    templateParameters: {
+        minSize: 5,
+    },
+    launchConfigurationArgs: {
+        instanceType: "m5.large",
+        associatePublicIpAddress: true,
+    },
+});
+
+const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
+    targetValue: 5,
+    estimatedInstanceWarmup: 120,
+    targetGroup: targetGroup,
 });
 
 // Create a policy that scales the ASG in response to the average memory utilization of the service.
@@ -67,9 +73,5 @@ const stepScalingPolicy = autoScalingGroup.scaleInSteps("scale-in-out", {
         lower: [{ value: 40, adjustment: -10 }, { value: 30, adjustment: -30 }]
     },
 });
-
-loadBalancer.securityGroups[0].createEgressRule("nginxEgress",
-    awsx.ec2.SecurityGroupRule.egressArgs(
-        new awsx.ec2.AnyIPv4Location(), new awsx.ec2.TcpPorts(80)));
 
 export const nginxEndpoint = nginxListener.endpoint;

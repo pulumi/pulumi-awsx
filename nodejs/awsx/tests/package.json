@@ -13,14 +13,13 @@
         "build": "tsc"
     },
     "dependencies": {
-        "@pulumi/pulumi": "^0.17.6",
-        "@pulumi/aws": "^0.18.1",
+        "@pulumi/pulumi": "^1.0.0",
+        "@pulumi/aws": "^1.0.0",
         "aws-sdk": "^2.0.0",
         "builtin-modules": "3.0.0",
         "mime": "^2.0.0",
         "resolve": "^1.7.1",
         "mocha": "^3.5.0",
-        "typescript": "^3.4.4",
         "chai": "^4.2.0",
         "proxyquire": "^2.1.0",
         "semver": "^6.0.0",
