@@ -1289,8 +1289,8 @@ function addIntegrationRouteToSwaggerSpec(
 
         const connectionType = target.connectionType;
         const connectionId = target.connectionId;
-        const type = target.apply(t => t.type === undefined ? "http_proxy" : t.type);
-        const passthroughBehavior = target.apply(t => t.passthroughBehavior === undefined ? "when_no_match" : t.passthroughBehavior);
+        const type = ifUndefined(target.type, "http_proxy");
+        const passthroughBehavior = ifUndefined(target.passthroughBehavior, "when_no_match");
         const requestParameters = target.requestParameters;
         const requestTemplates = target.requestTemplates;
 
@@ -1307,8 +1307,8 @@ function addIntegrationRouteToSwaggerSpec(
                 connectionId,
                 passthroughBehavior,
                 httpMethod,
-                requestParameters: requestParameters,
-                requestTemplates: requestTemplates,
+                requestParameters,
+                requestTemplates,
             },
         };
         if (useProxyPathParameter) {
