@@ -182,6 +182,7 @@ export interface IntegrationRoute extends BaseRoute {
      * `/` will be added automatically to the beginning.
      */
     path: string;
+
     /**
      * Specifies the integration's HTTP method type.  Defaults to 'ANY' if unspecified.
      */
