@@ -474,15 +474,9 @@ async function getAvailabilityZones(
     return descriptions.slice(0, count);
 }
 
-<<<<<<< HEAD
-function getExistingSubnets(vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
-    const subnets = vpc.getSubnets(type);
-    const subnetIds = vpc.getSubnetIds(type);
-=======
 function getExistingSubnets(vpcData: VpcData, vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
     const subnets = vpcData.getSubnets(type);
     const subnetIds = vpcData.getSubnetIds(type);
->>>>>>> master
 
     for (let i = 0, n = inputs.length; i < n; i++) {
         const subnetName = `${vpcName}-${type}-${i}`;
