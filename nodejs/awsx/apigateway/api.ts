@@ -1260,10 +1260,10 @@ function addIntegrationRouteToSwaggerSpec(
             return result;
         });
 
-        const connectionType = target.apply(t => t.connectionType);
-        const connectionId = target.apply(t => t.connectionId);
-        const type = target.apply(t => t.type === undefined ? "http_proxy" : t.type);
-        const passthroughBehavior = target.apply(t => t.passthroughBehavior === undefined ? "when_no_match" : t.passthroughBehavior);
+        const connectionType = target.connectionType;
+        const connectionId = target.connectionId;
+        const type = ifUndefined(target.type, <IntegrationType>"http_proxy");
+        const passthroughBehavior = ifUndefined(target.passthroughBehavior, "when_no_match");
 
         const result: SwaggerOperation = {
             "x-amazon-apigateway-integration": {
