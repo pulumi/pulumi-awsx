@@ -1289,7 +1289,7 @@ function addIntegrationRouteToSwaggerSpec(
 
         const connectionType = target.connectionType;
         const connectionId = target.connectionId;
-        const type = ifUndefined(target.type, "http_proxy");
+        const type = ifUndefined(target.type, <IntegrationType>"http_proxy");
         const passthroughBehavior = ifUndefined(target.passthroughBehavior, "when_no_match");
         const requestParameters = target.requestParameters;
         const requestTemplates = target.requestTemplates;
