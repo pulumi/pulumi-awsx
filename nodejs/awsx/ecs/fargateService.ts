@@ -17,12 +17,12 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as ecs from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
                 args: ecs.FargateTaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
@@ -194,16 +194,20 @@ export class FargateService extends ecs.Service {
 
     constructor(name: string,
                 args: FargateServiceArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const taskDefinition = args.taskDefinition ||
-            new ecs.FargateTaskDefinition(name, args.taskDefinitionArgs!, opts);
-
         const cluster = args.cluster || x.ecs.Cluster.getDefault();
+
+        const taskDefinition = args.taskDefinition ||
+            new ecs.FargateTaskDefinition(name, {
+                ...args.taskDefinitionArgs,
+                vpc: cluster.vpc,
+            }, opts);
+
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
@@ -219,7 +223,7 @@ export class FargateService extends ecs.Service {
                 assignPublicIp,
                 securityGroups: securityGroups.map(g => g.id),
             },
-        },  /*isFargate:*/ true, opts);
+        }, opts);
 
         this.taskDefinition = taskDefinition;
 
@@ -232,13 +236,13 @@ function getSubnets(
         subnets: pulumi.Input<pulumi.Input<string>[]> | undefined,
         assignPublicIp: pulumi.Output<boolean>) {
 
-    return pulumi.all([subnets, assignPublicIp])
-                 .apply(([subnets, assignPublicIp]) => {
+    return pulumi.all([cluster.vpc.publicSubnetIds, cluster.vpc.privateSubnetIds, subnets, assignPublicIp])
+                 .apply(([publicSubnetIds, privateSubnetIds, subnets, assignPublicIp]) => {
         if (subnets) {
             return subnets;
         }
 
-        return assignPublicIp ? cluster.vpc.publicSubnetIds : cluster.vpc.privateSubnetIds;
+        return assignPublicIp ? publicSubnetIds : privateSubnetIds;
     });
 }
 
@@ -251,6 +255,12 @@ type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs
 
 export interface FargateTaskDefinitionArgs {
     // Properties copied from ecs.TaskDefinitionArgs
+
+    /**
+     * The vpc that the service for this task will run in.  Does not normally need to be explicitly
+     * provided as it will be inferred from the cluster the service is associated with.
+     */
+    vpc?: x.ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
@@ -276,6 +286,11 @@ export interface FargateTaskDefinitionArgs {
      * `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
     taskRole?: aws.iam.Role;
+
+    /**
+     * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
+     */
+    family?: pulumi.Input<string>;
 
     /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.

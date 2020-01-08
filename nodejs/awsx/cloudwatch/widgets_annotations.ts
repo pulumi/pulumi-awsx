@@ -48,7 +48,7 @@ export class AlarmAnnotation implements WidgetAnnotation {
 
 export interface HorizontalAlarmAnnotationArgs {
     alarmDescription: pulumi.Input<string | undefined>;
-    threshold: pulumi.Input<number>;
+    threshold: pulumi.Input<number | undefined>;
 }
 
 function isHorizontalAlarmAnnotationArgs(obj: any): obj is HorizontalAlarmAnnotationArgs {
@@ -127,7 +127,10 @@ export class HorizontalAnnotation implements WidgetAnnotation {
     constructor(args: HorizontalAnnotationArgs | HorizontalAlarmAnnotationArgs) {
         if (isHorizontalAlarmAnnotationArgs(args)) {
             this.args = {
-                aboveEdge: { label: pulumi.output(args.alarmDescription), value: args.threshold },
+                aboveEdge: {
+                    label: pulumi.output(args.alarmDescription),
+                    value: pulumi.output(args.threshold).apply(v => v || 0),
+                },
             };
         }
         else {

@@ -16,14 +16,14 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class SecurityGroup extends pulumi.ComponentResource {
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly id: pulumi.Output<string>;
     public readonly vpc: x.ec2.Vpc;
 
-    public readonly egressRules: x.ec2.IngressSecurityGroupRule[] = [];
+    public readonly egressRules: x.ec2.EgressSecurityGroupRule[] = [];
     public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
 
     // tslint:disable-next-line:variable-name
@@ -99,8 +99,8 @@ export class SecurityGroup extends pulumi.ComponentResource {
     }
 }
 
-(<any>SecurityGroup.prototype.createEgressRule).doNotCapture = true;
-(<any>SecurityGroup.prototype.createIngressRule).doNotCapture = true;
+utils.Capture(SecurityGroup.prototype).createEgressRule.doNotCapture = true;
+utils.Capture(SecurityGroup.prototype).createIngressRule.doNotCapture = true;
 
 export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 

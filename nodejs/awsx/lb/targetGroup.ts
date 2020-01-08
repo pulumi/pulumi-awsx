@@ -19,7 +19,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export abstract class TargetGroup
     extends pulumi.ComponentResource
@@ -34,7 +34,7 @@ export abstract class TargetGroup
     public readonly listeners: x.lb.Listener[] = [];
 
     constructor(type: string, name: string, loadBalancer: mod.LoadBalancer,
-                args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
+                args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
         // We want our parent to the be the ALB by default if nothing else is specified.
         // Create an alias from our old name where we didn't parent by default to keep
         // resources from being created/destroyed.
@@ -68,6 +68,11 @@ export abstract class TargetGroup
         // Return an output that depends on our listeners.  That way anything that depends on us
         // will only proceed once our load balancer connections have been created.
         return pulumi.output(this.listeners.map(r => r.listener.urn));
+    }
+
+    /** @internal */
+    public async getListenersAsync() {
+        return this.listeners;
     }
 
     public containerPortMapping(): pulumi.Input<aws.ecs.PortMapping> {

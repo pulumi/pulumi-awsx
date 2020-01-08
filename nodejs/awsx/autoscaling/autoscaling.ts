@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 import { AutoScalingLaunchConfiguration, AutoScalingLaunchConfigurationArgs } from "./launchConfiguration";
 import { cronExpression, ScheduleArgs } from "./schedule";
@@ -69,8 +69,6 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
                 name, this.vpc, args.launchConfigurationArgs, { parent: this });
         }
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
-
         // Use cloudformation to actually construct the autoscaling group.
         this.stack = new aws.cloudformation.Stack(name, {
             ...args,
@@ -85,7 +83,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
 
         // Now go and actually find the group created by cloudformation.  The id for the group will
         // be stored in `stack.outputs.Instances`.
-        this.group = aws.autoscaling.Group.get(name, this.stack.outputs["Instances"], undefined, { parent: this });
+        this.group = aws.autoscaling.Group.get(name, <pulumi.Output<string>>this.stack.outputs["Instances"], undefined, { parent: this });
 
         this.registerOutputs();
     }
@@ -195,7 +193,7 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
             predefinedMetricType: "ALBRequestCountPerTarget",
             resourceLabel: pulumi.interpolate `${loadBalancerSuffix}/${targetGroupSuffix}`,
             ...args,
-        }, opts);
+        }, pulumi.mergeOptions(opts, { dependsOn: targetGroup.getListenersAsync() }));
     }
 
     /**
@@ -219,12 +217,11 @@ function ifUndefined<T>(val: T | undefined, defVal: T) {
 function getCloudFormationTemplate(
     instanceName: string,
     instanceLaunchConfigurationId: pulumi.Output<string>,
-    subnetIds: pulumi.Input<string>[],
-    targetGroupArns: pulumi.Input<string>[],
+    subnetIds: pulumi.Input<pulumi.Input<string>[]>,
+    targetGroupArns: pulumi.Output<string>[],
     parameters: pulumi.Output<TemplateParameters>): pulumi.Output<string> {
 
-    const subnetIdsArray = pulumi.all(subnetIds);
-    return pulumi.all([subnetIdsArray, targetGroupArns, instanceLaunchConfigurationId, parameters])
+    return pulumi.all([subnetIds, targetGroupArns, instanceLaunchConfigurationId, parameters])
                  .apply(([subnetIdsArray, targetGroupArns, instanceLaunchConfigurationId, parameters]) => {
 
     const minSize = ifUndefined(parameters.minSize, 2);
@@ -304,7 +301,7 @@ export interface AutoScalingGroupArgs {
      * The subnets to use for the autoscaling group.  If not provided, the `private` subnets of
      * the `vpc` will be used.
      */
-    subnetIds?: pulumi.Input<string>[];
+    subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
 
     /**
      * The config to use when creating the auto scaling group.

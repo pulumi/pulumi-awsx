@@ -17,7 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly loadBalancer: aws.lb.LoadBalancer;
@@ -27,7 +27,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly listeners: mod.Listener[] = [];
     public readonly targetGroups: mod.TargetGroup[] = [];
 
-    constructor(type: string, name: string, args: LoadBalancerArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(type: string, name: string, args: LoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
         this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
@@ -71,22 +71,10 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 function getSubnets(
     args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
 
-    // console.log("Getting subnets for LB");
     if (!args.subnets) {
-        // console.log("no subnets provided");
         // No subnets requested.  Determine the subnets automatically from the vpc.
-        return external.apply(e => {
-            if (e) {
-                // console.log("Using public subnets:");
-                return vpc.publicSubnetIds;
-            } else {
-                // console.log("Using private subnets:");
-                return vpc.privateSubnetIds;
-            }
-        });
+        return external.apply(e => e ? vpc.publicSubnetIds : vpc.privateSubnetIds);
     }
-
-    // console.log("subnets provided");
 
     return isLoadBalancerSubnets(args.subnets)
         ? args.subnets.subnets()

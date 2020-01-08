@@ -20,7 +20,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as mod from ".";
 import * as x from "..";
 
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export type NetworkProtocol = "TCP" | "TLS" | "HTTP" | "HTTPS";
 
@@ -28,7 +28,7 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: NetworkListener[];
     public readonly targetGroups: NetworkTargetGroup[];
 
-    constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         const argsCopy: x.lb.LoadBalancerArgs = {
             ...args,
             loadBalancerType: "network",
@@ -85,7 +85,7 @@ export class NetworkTargetGroup extends mod.TargetGroup {
             vpc: args.vpc,
             name: args.name,
         }, opts);
-        const protocol = utils.ifUndefined(args.protocol, "TCP");
+        const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkTargetGroup" }] });
         super("awsx:lb:NetworkTargetGroup", name, loadBalancer, {
@@ -126,20 +126,31 @@ export class NetworkListener
     public readonly loadBalancer: NetworkLoadBalancer;
     public readonly defaultTargetGroup?: x.lb.NetworkTargetGroup;
 
+    // tslint:disable-next-line:variable-name
+    private readonly __isNetworkListenerInstance: boolean;
+
     constructor(name: string,
                 args: NetworkListenerArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
 
-        if (args.defaultAction && args.defaultActions) {
-            throw new Error("Do not provide both [args.defaultAction] and [args.defaultActions].");
+        const argCount = (args.defaultAction ? 1 : 0) +
+                         (args.defaultActions ? 1 : 0) +
+                         (args.targetGroup ? 1 : 0);
+
+        if (argCount >= 2) {
+            throw new Error("Only provide one of [defaultAction], [defaultActions] or [targetGroup].");
         }
 
-        const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {
-            vpc: args.vpc,
-            name: args.name,
-        }, opts);
+        const loadBalancer = pulumi.Resource.isInstance(args.loadBalancer)
+            ? args.loadBalancer
+            : new NetworkLoadBalancer(name, {
+                ...args.loadBalancer,
+                vpc: args.vpc,
+                name: args.name,
+            }, opts);
+
         const { defaultActions, defaultListener } = getDefaultActions(name, loadBalancer, args, opts);
-        const protocol = utils.ifUndefined(args.protocol, "TCP");
+        const protocol = utils.ifUndefined(args.protocol, "TCP" as NetworkProtocol);
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:NetworkListener" }] });
         super("awsx:lb:NetworkListener", name, defaultListener, {
@@ -149,10 +160,16 @@ export class NetworkListener
             defaultActions,
         }, opts);
 
+        this.__isNetworkListenerInstance = true;
         this.loadBalancer = loadBalancer;
         loadBalancer.listeners.push(this);
 
         this.registerOutputs();
+    }
+
+    /** @internal */
+    public static isNetworkListenerInstance(obj: any): obj is NetworkListener {
+        return obj && !!(<NetworkListener>obj).__isNetworkListenerInstance;
     }
 
     public target(name: string, parent: pulumi.Resource): pulumi.Input<x.apigateway.IntegrationTarget> {
@@ -186,12 +203,32 @@ function getDefaultActions(
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
 
-    const targetGroup = new NetworkTargetGroup(name, {
-        loadBalancer,
-        name: args.name,
-        port: args.port,
-    }, opts);
+    // User didn't provide default actions for this listener.  Create a reasonable target group for
+    // us and use that as our default action.
+    const targetGroup = createTargetGroup();
+
     return { defaultActions: [targetGroup.listenerDefaultAction()], defaultListener: targetGroup };
+
+    function createTargetGroup() {
+        // Use the target group if provided by the client.  Otherwise, create a reasonable default
+        // one for our LB that will connect to this listener's port.
+        if (pulumi.Resource.isInstance(args.targetGroup)) {
+            return args.targetGroup;
+        }
+        else if (args.targetGroup) {
+            return new NetworkTargetGroup(name, {
+                ...args.targetGroup,
+                loadBalancer,
+            }, opts);
+        }
+        else {
+            return new NetworkTargetGroup(name, {
+                loadBalancer,
+                name: args.name,
+                port: args.port,
+            }, opts);
+        }
+    }
 }
 
 export interface NetworkLoadBalancerArgs {
@@ -389,7 +426,7 @@ export interface NetworkListenerArgs {
      * The load balancer this listener is associated with.  If not provided, a new load balancer
      * will be automatically created.
      */
-    loadBalancer?: NetworkLoadBalancer;
+    loadBalancer?: NetworkLoadBalancer | NetworkLoadBalancerArgs;
 
     /**
      * The port. Specify a value from `1` to `65535`.
@@ -406,7 +443,7 @@ export interface NetworkListenerArgs {
      * An Action block. If neither this nor [defaultActions] is provided, a suitable defaultAction
      * will be chosen that forwards to a new [NetworkTargetGroup] created from [port].
      *
-     * Do not provide both [defaultAction] and [defaultActions].
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
     defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.lb.ListenerDefaultAction;
 
@@ -415,9 +452,17 @@ export interface NetworkListenerArgs {
      * defaultAction will be chosen that forwards to a new [NetworkTargetGroup] created from
      * [port].
      *
-     * Do not provide both [defaultAction] and [defaultActions].
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
     defaultActions?: pulumi.Input<pulumi.Input<mod.ListenerDefaultActionArgs>[]>;
+
+    /**
+     * Target group this listener is associated with.  This is used to determine the [defaultAction]
+     * for the listener.
+     *
+     * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
+     */
+    targetGroup?: x.lb.NetworkTargetGroup | x.lb.NetworkTargetGroupArgs;
 
     /**
      * The ARN of the default SSL server certificate. Exactly one certificate is required if the

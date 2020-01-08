@@ -22,27 +22,10 @@ const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>
 const cluster = new awsx.ecs.Cluster("testing", {}, providerOpts);
 const loadBalancer = new awsx.elasticloadbalancingv2.ApplicationLoadBalancer("nginx", { external: true }, providerOpts);
 
-// A simple NGINX service, scaled out over two containers.
 const targetGroup = loadBalancer.createTargetGroup("nginx", { port: 80, targetType: "instance" });
 
-const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
-    subnetIds: awsx.ec2.Vpc.getDefault(providerOpts).publicSubnetIds,
-    targetGroups: [targetGroup],
-    templateParameters: {
-        minSize: 10,
-    },
-    launchConfigurationArgs: {
-        instanceType: "t2.medium",
-        associatePublicIpAddress: true,
-    },
-});
-
-const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
-    targetValue: 10,
-    estimatedInstanceWarmup: 120,
-    targetGroup: targetGroup,
-});
-
+// A simple NGINX service, scaled out over two containers.  Create a listener to connect the load
+// balancer to the service.
 const nginxListener = targetGroup.createListener("nginx", { port: 80, external: true });
 const service = new awsx.ecs.EC2Service("nginx", {
     cluster,
@@ -58,6 +41,25 @@ const service = new awsx.ecs.EC2Service("nginx", {
     },
     desiredCount: 2,
 }, providerOpts);
+
+// Now setup an asg for the cluster to control how it will respond under load.
+const autoScalingGroup = cluster.createAutoScalingGroup("testing-1", {
+    subnetIds: awsx.ec2.Vpc.getDefault(providerOpts).publicSubnetIds,
+    targetGroups: [targetGroup],
+    templateParameters: {
+        minSize: 5,
+    },
+    launchConfigurationArgs: {
+        instanceType: "m5.large",
+        associatePublicIpAddress: true,
+    },
+});
+
+const requestCountScalingPolicy = autoScalingGroup.scaleToTrackRequestCountPerTarget("onHighRequest", {
+    targetValue: 5,
+    estimatedInstanceWarmup: 120,
+    targetGroup: targetGroup,
+});
 
 // Create a policy that scales the ASG in response to the average memory utilization of the service.
 // When memory goes above 60%, scale up the ASG by 10%.  If it goes above 70%, scale it up by 30%.

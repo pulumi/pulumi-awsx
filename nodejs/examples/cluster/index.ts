@@ -17,8 +17,8 @@ import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
 
 const prefix = "infratest";
-const numberOfAvailabilityZones = 2;
-const instanceType = "t2.small";
+const numAvailabilityZones = 2;
+const instanceType = "m5.large";
 
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };

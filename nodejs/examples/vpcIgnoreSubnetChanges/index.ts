@@ -16,26 +16,15 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-import { Config } from "@pulumi/pulumi";
-
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-console.log("EC2: Update1");
-
-const vpc = new awsx.ec2.Vpc("testing-1", {}, providerOpts);
-const cluster1 = new awsx.ecs.Cluster("testing-1", { vpc }, providerOpts);
-export const clusterId = cluster1.id;
-
-const autoScalingGroup = cluster1.createAutoScalingGroup("testing-1", {
-    subnetIds: vpc.publicSubnetIds,
-    templateParameters: {
-        minSize: 10,
-    },
-    launchConfigurationArgs: {
-        instanceType: "t2.medium",
-        associatePublicIpAddress: true,
-    },
-});
-
-export const autoScalingGroupId = autoScalingGroup.stack.id;
+const vpcWithIgnoredSubnetTags = new awsx.ec2.Vpc("custom7", {
+    subnets: [{
+        type: "public",
+        ignoreChanges: ["tags"],
+        // tags: {
+        //     "Something": "Else",
+        // }
+    }],
+}, providerOpts);

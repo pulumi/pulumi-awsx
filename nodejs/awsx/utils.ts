@@ -15,8 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as deasync from "deasync";
-
 import * as crypto from "crypto";
 
 type Diff<T extends string | number | symbol, U extends string | number | symbol> =
@@ -30,6 +28,16 @@ export type Overwrite<T, U> = Pick<T, Diff<keyof T, keyof U>> & U;
 export type Mutable<T> = {
     -readonly [P in keyof T]: T[P];
 };
+
+/** @internal */
+export type Capture<T> = {
+    [P in keyof T]: T[P] extends Function ? { doNotCapture: boolean } : never;
+};
+
+/** @internal */
+export function Capture<T>(t: T): Capture<T> {
+    return <any>t;
+}
 
 // sha1hash returns a partial SHA1 hash of the input string.
 /** @internal */

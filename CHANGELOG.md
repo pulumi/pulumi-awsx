@@ -3,10 +3,47 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Upgrade to go1.13.x
+
+* Due the necessity to perform many async operations during creation, many parts of an
+  [awsx.ec2.Vpc] have become asynchronous.  This change should nor require code changes in
+  most projects.  However, there may be some code changes needed.  For more details see:
+  [#470](https://github.com/pulumi/pulumi-awsx/pull/470).
+
 ### Compatibility issues
 
 * Removing the deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6). Code that uses
   these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
+
+## 0.18.14 (2019-11-21)
+* Allow the user to pass `family` to the `ecs.TaskDefinition`
+* Update `Container` interface to support the full set of supported ECS container properties
+
+## 0.18.13 (2019-10-15)
+
+* Added a simpler way to create a load balanced (NLB or ALB) `aws.ecs.EC2Service` or
+  `awsx.ecs.FargateService`
+
+* Added `secrets` property to `awsx.ecs.Container` to allow injecting sensitive data into a
+  container.
+
+## 0.18.12 (2019-10-02)
+
+* Added options to customize the Deployment, RestApi or Stage produced by an awsx.apigateway.API.
+
+## 0.18.11 (2019-09-19)
+
+* Allow passing `ignoreChanges` into `Subnet`s created as part of an `awsx.ec2.Vpc`.
+
+* Updated `@pulumi/awsx` to use the latest versions of `@pulumi/pulumi` and `@pulumi/aws`.
+
+## 0.18.10 (2019-08-21)
+
+* Updated `@pulumi/awsx` to use the latest version of `@pulumi/docker`.
+
+## 0.18.9 (2019-08-06)
+
+* Updated `@pulumi/awsx` to use the latest versions of `@pulumi/pulumi` and `@pulumi/aws`.
 
 ## 0.18.8 (2019-07-29)
 

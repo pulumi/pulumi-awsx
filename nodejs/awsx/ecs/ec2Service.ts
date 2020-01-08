@@ -17,12 +17,12 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as ecs from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class EC2TaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
                 args: EC2TaskDefinitionArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
         }
@@ -67,16 +67,20 @@ export class EC2Service extends ecs.Service {
 
     constructor(name: string,
                 args: EC2ServiceArgs,
-                opts?: pulumi.ComponentResourceOptions) {
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.taskDefinition && !args.taskDefinitionArgs) {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const taskDefinition = args.taskDefinition ||
-            new ecs.EC2TaskDefinition(name, args.taskDefinitionArgs!, opts);
-
         const cluster = args.cluster || x.ecs.Cluster.getDefault();
+
+        const taskDefinition = args.taskDefinition ||
+            new ecs.EC2TaskDefinition(name, {
+                ...args.taskDefinitionArgs,
+                vpc: cluster.vpc,
+            }, opts);
+
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = args.subnets || cluster.vpc.publicSubnetIds;
@@ -100,7 +104,7 @@ export class EC2Service extends ecs.Service {
                     securityGroups: securityGroups.map(g => g.id),
                 };
             }),
-        }, /*isFargate:*/ false, opts);
+        }, opts);
 
         this.taskDefinition = taskDefinition;
 
@@ -118,6 +122,12 @@ type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
 
 export interface EC2TaskDefinitionArgs {
     // Properties from ecs.TaskDefinitionArgs
+
+    /**
+     * The vpc that the service for this task will run in.  Does not normally need to be explicitly
+     * provided as it will be inferred from the cluster the service is associated with.
+     */
+    vpc?: x.ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
@@ -143,6 +153,11 @@ export interface EC2TaskDefinitionArgs {
      * `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
     taskRole?: aws.iam.Role;
+
+    /**
+     * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
+     */
+    family?: pulumi.Input<string>;
 
     /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.

@@ -18,7 +18,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as x from "..";
 import { Cidr32Block, getIPv4Address } from "./cidr";
 
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 /** @internal */
 export interface AvailabilityZoneDescription {
@@ -251,6 +251,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
                     assignIpv6AddressOnCreation,
                     tags: subnetArgs.tags,
                 },
+                ignoreChanges: subnetArgs.ignoreChanges,
             });
         }
 
@@ -341,6 +342,7 @@ class ExplicitLocationTopology extends VpcTopology {
                         assignIpv6AddressOnCreation: utils.ifUndefined(subnetArgs.assignIpv6AddressOnCreation, this.assignGeneratedIpv6CidrBlock),
                         tags: subnetArgs.tags,
                     },
+                    ignoreChanges: subnetArgs.ignoreChanges,
                 };
                 subnetDescriptions.push(subnetDesc);
 
@@ -454,6 +456,7 @@ export interface SubnetDescription {
     type: x.ec2.VpcSubnetType;
     subnetName: string;
     args: x.ec2.SubnetArgs;
+    ignoreChanges?: string[];
 }
 
 

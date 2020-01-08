@@ -80,11 +80,12 @@ export class Cluster
             opts: pulumi.ComponentResourceOptions = {}) {
 
         args.vpc = args.vpc || this.vpc;
-        args.launchConfigurationArgs = args.launchConfigurationArgs || {};
-
-        const launchConfigurationArgs = args.launchConfigurationArgs;
-        launchConfigurationArgs.securityGroups = this.securityGroups;
-        launchConfigurationArgs.userData = this;
+        args.launchConfigurationArgs = {
+            // default to our security groups if the caller didn't provide their own.
+            securityGroups: this.securityGroups,
+            userData: this,
+            ...args.launchConfigurationArgs,
+        };
 
         const group = new x.autoscaling.AutoScalingGroup(name, args, { parent: this, ...opts });
         this.addAutoScalingGroup(group);
@@ -144,7 +145,7 @@ export class Cluster
     }
 }
 
-(<any>Cluster.prototype.createAutoScalingGroup).doNotCapture = true;
+utils.Capture(Cluster.prototype).createAutoScalingGroup.doNotCapture = true;
 
 function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
     if (args.cluster === undefined) {
@@ -179,8 +180,10 @@ export interface ClusterArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * An existing Cluster (or Cluster-Id) to use for this awsx Cluster.  If not provided, a default
-     * one will be created.
+     * An existing aws.ecs.Cluster (or the name of an existing aws.ecs.Cluster) to use for this
+     * awsx.ecs.Cluster.  If not provided, a default one will be created.
+     *
+     * Note: If passing a string, use the *name* of an existing ECS Cluster instead of its *id*.
      */
     cluster?: aws.ecs.Cluster | pulumi.Input<string>;
 

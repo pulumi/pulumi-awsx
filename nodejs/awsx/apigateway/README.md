@@ -1,16 +1,16 @@
-# Pulumi API Gateway Components
+## Pulumi API Gateway Components
 
 Pulumi's API for simplifying working with [API Gateway](https://aws.amazon.com/api-gateway/). The API currently provides ways to define routes that accepts and forwards traffic to a specified destination. A route is a publicly accessible URI that supports the defined HTTP methods and responds according to the route definition.
 
-## Defining an Endpoint
+### Defining an Endpoint
 
 To define an endpoint you will need to specify a route. You can also define the stage name (else it will default to "stage"). A `stage` is an addressable instance of the Rest API.
 
-### Routes
+#### Routes
 
 The destination is determined by the route, which can be an [Event Handler Route](#Event-Handler-Route), a [Static Route](#Static-Route), an [Integration Route](#Integration-Route) or a [Raw Data Route](#Raw-Data-Route).
 
-#### Event Handler Route
+##### Event Handler Route
 
 An Event Handler Route is a route that will map to a [Lambda](https://aws.amazon.com/lambda/). You will need to specify the path, method and the Lambda. Pulumi allows you to define the Lambda inline with your application code and provisions the appropriate permissions on your behalf so that API Gateway can communicate with your Lambda.
 
@@ -31,8 +31,7 @@ let endpoint = new awsx.apigateway.API("example", {
     }],
 })
 ```
-
-A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
+A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/examples/api/index.ts).
 
 You can also link a route to an existing Lambda using `aws.lambda.Function.get`.
 
@@ -72,7 +71,7 @@ let endpoint = new awsx.apigateway.API("example", {
 })
 ```
 
-#### Static Route
+##### Static Route
 
 A Static Route is a route that will map to static content in files/directories. You will need to define the local path and then the files (and subdirectories) will be uploaded into S3 objects. If the local path points to a file, you can specify the content-type. Else, the content types for all files in a directory are inferred.
 
@@ -92,7 +91,7 @@ let endpoint = new awsx.apigateway.API("example", {
 
 A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
 
-#### Integration Route
+##### Integration Route
 
 An Integration Route is a route that will map an endpoint to a specified backend. The supported types are:
 
@@ -117,7 +116,7 @@ let endpoint = new awsx.apigateway.API("example", {
 
 For more information API Integrations, visit the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-integration-types.html).
 
-#### Raw Data Route
+##### Raw Data Route
 
 A Raw Data Route is a fallback route for when raw swagger control is desired.  The `data` field should be an object that will be then included in the final swagger specification. For more information on the `x-amazon-apigateway-integration` swagger object, visit the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-swagger-extensions-integration.html).
 
@@ -145,11 +144,11 @@ let endpoint = new awsx.apigateway.API("example", {
 })
 ```
 
-### Request Validation
+#### Request Validation
 
 API Gateway can perform basic validations against request parameters, a request payload or both. When a validation fails, a 400 error is returned immediately.
 
-#### Validators
+##### Validators
 
 Validators can be assigned at the API level or at the method level. The validators defined at a method level override any validator set at the API level.
 
@@ -173,7 +172,7 @@ let endpoint = new awsx.apigateway.API("example", {
 })
 ```
 
-#### Request Parameters
+##### Request Parameters
 
 For each required request parameter, you must define the name and where the parameter is expected (i.e. "path", "query", or "header").
 
@@ -194,11 +193,11 @@ let endpoint = new awsx.apigateway.API("example", {
 })
 ```
 
-#### Request Body
+##### Request Body
 
 Request body validation is currently not supported. If you have a strong use case, please comment on this [open issue](https://github.com/pulumi/pulumi-awsx/issues/198).
 
-### API Keys
+#### API Keys
 
 To require an API Key for an API Gateway route you set the `apiKeyRequired` property equal to `true`. At the API level, you can choose if you want the API Key source to be `HEADER` (i.e. client includes a `x-api-key` header with the API Key) or `AUTHORIZER` (i.e. a Lambda authorizer sends the API Key as part of the authorization response). If the API Key source is not set, then the source will default to `HEADER`.
 
@@ -255,13 +254,13 @@ const apikeys = awsx.apigateway.createAssociatedAPIKeys("my-api-keys", {
 });
 ```
 
-### Lambda Authorizers
+#### Lambda Authorizers
 
 [Lambda Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) are AWS Lambda functions that provide control access to an API. You can define a Lambda Authorizer for an Event Handler Route or a Static Route. API Gateway supports `request` or `token` type Lambda authorizers. A `token` Lambda Authorizer uses an authorization token (i.e. a header in the form `Authorization: Token <token>`) to authorize the user, whereas a `request` Lambda Authorizer uses the request parameters (i.e. headers, path parameter or query parameters).
 
 To define an Authorizer, you provide a Lambda that fulfills `aws.lambda.EventHandler<AuthorizerEvent, AuthorizerResponse>` or you provide information on a pre-existing Lambda authorizer. The example below shows defining the Authorizer Lambda directly inline. See the [Event Handler Route](#Event-Handler-Route) section for other ways you can define a Lambda for the Authorizer.
 
-#### Request Authorizer
+##### Request Authorizer
 
 Below is an example of a custom `request` Lambda Authorizer that uses `awsx.apigateway.getRequestLambdaAuthorizer` to simplify defining the authorizer.
 
@@ -318,7 +317,7 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
-#### Token Authorizer
+##### Token Authorizer
 
 Below is an example of a custom `token` Lambda Authorizer that uses `awsx.apigateway.` to simplify the creation of the authorizer.
 
@@ -378,7 +377,7 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
-#### Specifying the Role
+##### Specifying the Role
 
 If your Authorizer requires access to other AWS resources, you will need to provision the appropriate role. You can do so by using `new aws.lambda.CallbackFunction`.
 
@@ -415,7 +414,7 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
-#### Using a Pre-existing AWS Lambda
+##### Using a Pre-existing AWS Lambda
 
 You can also define the Lambda Authorizer elsewhere and then reference the required values.
 
@@ -444,7 +443,7 @@ const apiWithAuthorizer = new awsx.apigateway.API("authorizer-api", {
 
 A complete example of defining the Lambda Authorizer elsewhere can be found [here](https://github.com/pulumi/pulumi-awsx/blob/61d2996b8bdb20ea625e66e17ebbaa7b62f9c163/nodejs/awsx/examples/api/index.ts#L94-L152).
 
-#### Authorizer Response
+##### Authorizer Response
 
 A helper function `awsx.apigateway.authorizerResponse` has been created to simplify generating the authorizer response. This can be used when defining the authorizer handler as follows:
 
@@ -469,7 +468,7 @@ const api = new awsx.apigateway.API("myapi", {
 });
 ```
 
-### Cognito Authorizers
+#### Cognito Authorizers
 
 [Cognito Authorizers](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) allow you to use [Amazon Cognito User Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools.html) as an Authorizer for API Gateway. This will require users to sign in to the user pool, obtain an identity/access token and then call your API with said token.
 
@@ -491,7 +490,7 @@ const apiWithCognitoAuthorizer = new awsx.apigateway.API("cognito-protected-api"
 });
 ```
 
-### Swagger String
+#### Swagger String
 
 You can use a OpenAPI specification that is in string form to initialize the API Gateway. This in a way is an escape hatch for implementing featured not yet supported by Pulumi. You must manually provide permission for any route targets to be invoked by API Gateway when using this option.
 

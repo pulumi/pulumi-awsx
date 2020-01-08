@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export class Subnet extends pulumi.ComponentResource {
     // tslint:disable-next-line:variable-name
@@ -59,7 +59,11 @@ export class Subnet extends pulumi.ComponentResource {
                 vpcId: vpc.id,
                 ...args,
                 assignIpv6AddressOnCreation,
-            }, { parent: this });
+            }, {
+                parent: this,
+                // See https://github.com/pulumi/pulumi-awsx/issues/398.
+                ignoreChanges: opts.ignoreChanges,
+            });
 
             this.routeTable = new aws.ec2.RouteTable(name, {
                 vpcId: vpc.id,
@@ -102,6 +106,8 @@ export class Subnet extends pulumi.ComponentResource {
     }
 }
 
+utils.Capture(Subnet.prototype).createRoute.doNotCapture = true;
+
 export interface SubnetRouteProvider {
     route(name: string, opts: pulumi.ComponentResourceOptions): RouteArgs;
 }
@@ -111,8 +117,6 @@ function isSubnetRouteProvider(obj: any): obj is SubnetRouteProvider {
 }
 
 export type SubnetOrId = Subnet | pulumi.Input<string>;
-
-(<any>Subnet.prototype.createRoute).doNotCapture = true;
 
 export interface ExistingSubnetArgs {
     /**
@@ -209,6 +213,10 @@ export interface SubnetArgs {
      * A mapping of tags to assign to the resource.
      */
     tags?: pulumi.Input<aws.Tags>;
+    /**
+     * Ignore changes to any of the specified properties of the Subnet.
+     */
+    ignoreChanges?: string[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

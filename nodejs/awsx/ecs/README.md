@@ -27,6 +27,44 @@ This single call will create a Cluster on your behalf in [The Default VPC](https
 
 While this approach manages nearly everything on your behalf, it can often be desirable to control more of what is going on.  To help explain how that works, we'll work from the top down up to see how each part of your containerized infrastructure can be configured.
 
+### Load Balancing
+
+The above example shows how service load balanced through an internet-facing [NLB](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html). The pattern of defining a service that is attached to an [NLB](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/introduction.html) or [ALB](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html) is so common that both `awsx.ecs.FargateService` and `awsx.ecs.EC2Service` provide convenient construction techniques to simplify creating both.
+
+Here's how we can simplify the above using those techniques:
+
+```ts
+import * as aws from "@pulumi/aws";
+import * as awsx from "@pulumi/awsx";
+
+const nginx = new awsx.ecs.FargateService("nginx", {
+    taskDefinitionArgs: {
+        containers: {
+            nginx: {
+                image: "nginx",
+                memory: 128,
+                networkListener: { port: 80 },
+            },
+        },
+    },
+    desiredCount: 2,
+});
+```
+
+Like before, this will create an [awsx.lb.NetworkListener] named `"nginx"`, but will not require that resource to be directly declared beforehand.
+
+The `networkListener:` or `applicationListener:` provided can be fully configured to your needs. This includes adjusting the `awsx.lb.LoadBalancer` and `awsx.lb.TargetGroup` that are needed here.  Those can be configured like so:
+
+```ts
+    nginx: {
+        image: "nginx",
+        memory: 128,
+        networkListener: { port: 80, /*more listener args*/, targetGroup: { /*...*/ }, loadBalancer: { /*...*/ }  },
+    },
+```
+
+See the respective docs for more details on what can be configured here.
+
 ### Clusters
 
 A Cluster defines the infrastructure to run Services and Tasks in.  If a Cluster is not specified when creating Services or running Tasks, then a default one will be created that is confired to use [The Default VPC](https://github.com/pulumi/pulumi-awsx/tree/master/nodejs/awsx/ec2#the-default-vpc) for your region.  Creating a Cluster that uses a different Vpc can be simply done by:
@@ -138,9 +176,9 @@ const fargateService = new awsx.ecs.FargateService("fargate-nginx", {
     cluster,
     desiredCount: 2,
     taskDefinitionArgs: {
-      containers: {
-        nginx: // ...
-      },
+        containers: {
+            nginx: // ...
+        },
     },
 });
 
@@ -148,9 +186,9 @@ const ec2Service = new awsx.ecs.FargateService("ec2-nginx", {
     cluster,
     desiredCount: 2,
     taskDefinitionArgs: {
-      containers: {
-        nginx: // ...
-      },
+        containers: {
+            nginx: // ...
+        },
     },
 });
 ```
@@ -200,7 +238,7 @@ const task = new awsx.ecs.FargateTaskDefinition("task", {
 
 However, `image` is far more flexible than that.  Beyond just accepting a string a [ContainerImageProvider](https://github.com/pulumi/pulumi-awsx/blob/8d651854ba3821644eabff66c0f6fe6d85e61160/nodejs/awsx/ecs/container.ts#L188) can also be provided.  Instances of this interface can be used to dynamically compute and pass in an ECR repository path.  Pulumi provides several convenient ways to do this.
 
-For example `fromPath` will run a Docker build in that path, push the result up to an ECR repository, and then pass the repostory path to the container:
+For example `fromPath` will run a Docker build in that path, push the result up to an ECR repository, and then pass the repository path to the container:
 
 ```ts
 const task = new awsx.ecs.FargateTaskDefinition("task", {

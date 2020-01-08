@@ -19,7 +19,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as mod from ".";
 import * as x from "..";
-import * as utils from "./../utils";
+import * as utils from "../utils";
 
 export interface ListenerEndpoint {
     hostname: string;
@@ -38,13 +38,16 @@ export abstract class Listener
 
     private readonly defaultListenerAction?: ListenerDefaultAction;
 
+    // tslint:disable-next-line:variable-name
+    private readonly __isListenerInstance = true;
+
     constructor(type: string, name: string,
                 defaultListenerAction: ListenerDefaultAction | undefined,
-                args: ListenerArgs, opts: pulumi.ComponentResourceOptions = {}) {
+                args: ListenerArgs, opts: pulumi.ComponentResourceOptions) {
         // By default, we'd like to be parented by the LB .  However, we didn't use to do this.
         // Create an alias from teh old urn to the new one so that we don't cause these to eb
         // created/destroyed.
-        super(type, name, args, {
+        super(type, name, {}, {
             parent: args.loadBalancer,
             ...pulumi.mergeOptions(opts, { aliases: [{ parent: opts.parent }] }),
         });
@@ -81,6 +84,11 @@ export abstract class Listener
             // created.
             defaultListenerAction.registerListener(this);
         }
+    }
+
+    /** @internal */
+    public static isListenerInstance(obj: any): obj is Listener {
+        return obj && !!(<Listener>obj).__isListenerInstance;
     }
 
     public containerPortMapping(name: string, parent: pulumi.Resource) {
