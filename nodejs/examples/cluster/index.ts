@@ -17,7 +17,7 @@ import * as awsx from "@pulumi/awsx";
 import * as pulumi from "@pulumi/pulumi";
 
 const prefix = "infratest";
-const numAvailabilityZones = 2;
+const numberOfAvailabilityZones = 2;
 const instanceType = "m5.large";
 
 const config = new pulumi.Config("aws");
@@ -39,7 +39,7 @@ cluster.createAutoScalingGroup(prefix, {
 
 // Export details of the network and cluster
 export let vpcId: pulumi.Output<string> = vpc.vpc.id;
-export let privateSubnetIds = pulumi.all(vpc.privateSubnetIds).apply(ids => ids.join(","));
-export let publicSubnetIds = pulumi.all(vpc.publicSubnetIds).apply(ids => ids.join(","));
-export let securityGroupIds = pulumi.all(cluster.securityGroups.map(g => g.id)).apply(ids => ids.join(","));
+export let privateSubnetIds = pulumi.output(vpc.privateSubnetIds).apply(ids => ids.join(","));
+export let publicSubnetIds = pulumi.output(vpc.publicSubnetIds).apply(ids => ids.join(","));
+export let securityGroupIds = pulumi.output(cluster.securityGroups.map(g => g.id)).apply(ids => ids.join(","));
 export let ecsClusterARN: pulumi.Output<string> = cluster.cluster.arn;
