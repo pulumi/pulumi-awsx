@@ -12,7 +12,7 @@ CHANGELOG
 
 ### Compatibility issues
 
-* Removing the deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6). Code that uses
+* The deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6) have been removed. Code that uses
   these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
 
 ## 0.18.14 (2019-11-21)
