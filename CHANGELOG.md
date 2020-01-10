@@ -10,6 +10,11 @@ CHANGELOG
   most projects.  However, there may be some code changes needed.  For more details see:
   [#470](https://github.com/pulumi/pulumi-awsx/pull/470).
 
+### Compatibility issues
+
+* The deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6) have been removed. Code that uses
+  these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
+
 ## 0.18.14 (2019-11-21)
 * Allow the user to pass `family` to the `ecs.TaskDefinition`
 * Update `Container` interface to support the full set of supported ECS container properties

@@ -38,7 +38,7 @@ import (
 )
 
 func TestAccCluster(t *testing.T) {
-	test := getDefaultProviderOptions(t).
+	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			Dir: path.Join(getCwd(t), "../examples/cluster"),
 		})
