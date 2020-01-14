@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.18.15 (2020-01-14)
+
 * Upgrade to go1.13.x
 
 * Due the necessity to perform many async operations during creation, many parts of an
