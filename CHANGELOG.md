@@ -5,10 +5,8 @@ CHANGELOG
 
 ## 0.18.15 (2020-01-14)
 
-* Upgrade to go1.13.x
-
 * Due the necessity to perform many async operations during creation, many parts of an
-  [awsx.ec2.Vpc] have become asynchronous.  This change should nor require code changes in
+  [awsx.ec2.Vpc] have become asynchronous.  This change should not require code changes in
   most projects.  However, there may be some code changes needed.  For more details see:
   [#470](https://github.com/pulumi/pulumi-awsx/pull/470).
 
