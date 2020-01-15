@@ -3,19 +3,17 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
-## 0.18.15 (2020-01-14)
-
-* Upgrade to go1.13.x
+## 0.19.0 (2020-01-15)
 
 * Due the necessity to perform many async operations during creation, many parts of an
-  [awsx.ec2.Vpc] have become asynchronous.  This change should nor require code changes in
+  [awsx.ec2.Vpc] have become asynchronous.  This change should not require code changes in
   most projects.  However, there may be some code changes needed.  For more details see:
   [#470](https://github.com/pulumi/pulumi-awsx/pull/470).
 
 ### Compatibility issues
 
-* The deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6) have been removed. Code that uses
-  these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
+* The deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6) have been removed. Code
+  that uses these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
 
 ## 0.18.14 (2019-11-21)
 * Allow the user to pass `family` to the `ecs.TaskDefinition`
