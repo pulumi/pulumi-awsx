@@ -3,7 +3,7 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
-## 0.18.15 (2020-01-14)
+## 0.19.0 (2020-01-15)
 
 * Due the necessity to perform many async operations during creation, many parts of an
   [awsx.ec2.Vpc] have become asynchronous.  This change should not require code changes in
@@ -12,8 +12,8 @@ CHANGELOG
 
 ### Compatibility issues
 
-* The deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6) have been removed. Code that uses
-  these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
+* The deprecated awsx.Cluster and awsx.Network type (deprecated in 0.18.6) have been removed. Code
+  that uses these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
 
 ## 0.18.14 (2019-11-21)
 * Allow the user to pass `family` to the `ecs.TaskDefinition`
