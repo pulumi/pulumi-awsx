@@ -553,6 +553,11 @@ export class API extends pulumi.ComponentResource {
             body: swaggerString,
         }, { parent: this });
 
+        // Account for all potential REST API Args that should trigger a redeployment
+        let argsHash = pulumi.all([this.restAPI.apiKeySource, this.restAPI.binaryMediaTypes, this.restAPI.endpointConfiguration, this.restAPI.minimumCompressionSize, this.restAPI.policy, swaggerString]).apply(
+            ( [apiKey, binaryMediaTypes, endpointConfig, minimumCompression, policy, swagger]) => (JSON.stringify({apiKey, binaryMediaTypes, endpointConfig, minimumCompression, policy, swagger}))
+        ) 
+
         // Create a deployment of the Rest API.
         this.deployment = new aws.apigateway.Deployment(name, {
             ...args.deploymentArgs,
@@ -566,7 +571,7 @@ export class API extends pulumi.ComponentResource {
             // when needed.  The Stage allocated below will be the stable stage that always points
             // to the latest deployment of the API.
             variables: {
-                version: swaggerString.apply(s => sha1hash(s)),
+                version: argsHash.apply(s => sha1hash(s)),
             },
         }, { parent: this });
 
