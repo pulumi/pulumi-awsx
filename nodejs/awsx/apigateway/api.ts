@@ -554,33 +554,9 @@ export class API extends pulumi.ComponentResource {
         }, { parent: this });
 
         // Account for all potential REST API Args that should trigger a redeployment
-        const argsHash = pulumi
-          .all([
-            this.restAPI.apiKeySource,
-            this.restAPI.binaryMediaTypes,
-            this.restAPI.endpointConfiguration,
-            this.restAPI.minimumCompressionSize,
-            this.restAPI.policy,
-            swaggerString,
-          ])
-          .apply(
-            ([
-              apiKey,
-              binaryMediaTypes,
-              endpointConfig,
-              minimumCompression,
-              policy,
-              swagger,
-            ]) =>
-              JSON.stringify({
-                apiKey,
-                binaryMediaTypes,
-                endpointConfig,
-                minimumCompression,
-                policy,
-                swagger,
-              }),
-          );
+        const argsHash = pulumi.all([this.restAPI.apiKeySource, this.restAPI.binaryMediaTypes, this.restAPI.endpointConfiguration, this.restAPI.minimumCompressionSize,
+            this.restAPI.policy, swaggerString ]).apply(([apiKey, binaryMediaTypes, endpointConfig, minimumCompression, policy, swagger ]) => JSON.stringify({apiKey,
+                binaryMediaTypes, endpointConfig, minimumCompression, policy, swagger }) );
 
         // Create a deployment of the Rest API.
         this.deployment = new aws.apigateway.Deployment(name, {
