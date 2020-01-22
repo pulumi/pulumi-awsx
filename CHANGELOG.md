@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.19.1 (2020-01-22)
+
 - Account for all scenarios where an API Gateway REST API should be redeployed. For more details
   see: [#485](https://github.com/pulumi/pulumi-awsx/issues/485).
 
