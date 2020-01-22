@@ -3,6 +3,12 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+- Account for all scenarios where an API Gateway REST API should be redeployed. For more details
+  see: [#485](https://github.com/pulumi/pulumi-awsx/issues/485).
+
+  This will cause all existing `awsx.apigateway.API`s to be redeployed.  However, these resources
+  are safe to redeploy with zero downtime, so existing stacks should not be negatively affected.
+
 ## 0.19.0 (2020-01-15)
 
 * Due the necessity to perform many async operations during creation, many parts of an
