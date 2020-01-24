@@ -2,6 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+* Add support for `FirelensConfiguration` to `ecs.Container`
 
 - Explicitly require @pulumi/pulumi v1.9.1 and up as it contains an API that awsx depends on.
 
