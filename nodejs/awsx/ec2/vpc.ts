@@ -65,8 +65,8 @@ class VpcData {
 
     /** @internal */
     constructor(name: string, parent: Vpc,
-                args: InternalVpcArgs | ExistingVpcArgs | ExistingVpcIdArgs,
-                opts: pulumi.ComponentResourceOptions) {
+        args: InternalVpcArgs | ExistingVpcArgs | ExistingVpcIdArgs,
+        opts: pulumi.ComponentResourceOptions) {
         this.parent = parent;
 
         if (isExistingVpcArgs(args)) {
@@ -75,7 +75,7 @@ class VpcData {
         }
         else if (isExistingVpcIdArgs(args)) {
             this.vpc = aws.ec2.Vpc.get(name, args.vpcId, {}, opts),
-            this.id = this.vpc.id;
+                this.id = this.vpc.id;
 
             getExistingSubnets(this, this.parent, name, "public", args.publicSubnetIds);
             getExistingSubnets(this, this.parent, name, "private", args.privateSubnetIds);
@@ -136,9 +136,9 @@ class VpcData {
 
     /** @internal */
     public partition(
-            name: string, cidrBlock: CidrBlock, availabilityZones: topology.AvailabilityZoneDescription[],
-            numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
-            subnetArgs: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
+        name: string, cidrBlock: CidrBlock, availabilityZones: topology.AvailabilityZoneDescription[],
+        numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Output<boolean>,
+        subnetArgs: VpcSubnetArgs[], opts: pulumi.ComponentResourceOptions) {
         // Create the appropriate subnets.  Default to a single public and private subnet for each
         // availability zone if none were specified.
         const { subnets, natGateways, natRoutes } = topology.create(
@@ -222,8 +222,8 @@ class VpcData {
      *        subnets of this Vpc if not specified.
      */
     public addInternetGateway(name: string, subnets?: x.ec2.Subnet[],
-                              args: aws.ec2.InternetGatewayArgs = {},
-                              opts: pulumi.ComponentResourceOptions = {}) {
+        args: aws.ec2.InternetGatewayArgs = {},
+        opts: pulumi.ComponentResourceOptions = {}) {
 
         if (this.internetGateway) {
             throw new Error("Cannot add InternetGateway to Vpc that already has one.");
@@ -315,7 +315,7 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
         // those subnets are used to make many downstream resource-creating decisions.
         const vpcId = await args.vpcId;
         const provider = args.provider;
-        const getSubnetsResult = await aws.ec2.getSubnetIds({ vpcId  }, { provider, async: true });
+        const getSubnetsResult = await aws.ec2.getSubnetIds({ vpcId }, { provider, async: true });
         const publicSubnetIds = getSubnetsResult.ids.slice(0, 2);
 
         return new VpcData(name, this, {
@@ -327,7 +327,7 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
     /** @internal */
     public async initializeVpcArgs(name: string, args: x.ec2.VpcArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
         const provider = Vpc.getProvider(opts);
-        const availabilityZones = await getAvailabilityZones(opts.parent, provider, args.numberOfAvailabilityZones);
+        const availabilityZones = await getAvailabilityZones(opts.parent, provider, args.requestedAvailabilityZone);
 
         return new VpcData(name, this, {
             ...args,
@@ -340,7 +340,7 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
         // Note that we do not pass 'parent' along as we want the default vpc to always be parented
         // logically by hte stack.
         const provider = opts.provider ? opts.provider :
-                         opts.parent   ? opts.parent.getProvider("aws::") : undefined;
+            opts.parent ? opts.parent.getProvider("aws::") : undefined;
         return provider;
     }
 
@@ -453,25 +453,35 @@ utils.Capture(Vpc.prototype).initializeExistingVpcIdArgs.doNotCapture = true;
 utils.Capture(Vpc.prototype).initializeVpcArgs.doNotCapture = true;
 
 async function getAvailabilityZones(
-        parent: pulumi.Resource | undefined,
-        provider: pulumi.ProviderResource | undefined,
-        requestedCount: "all" | number | undefined): Promise<topology.AvailabilityZoneDescription[]> {
+    parent: pulumi.Resource | undefined,
+    provider: pulumi.ProviderResource | undefined,
+    requestedZones: string[] | "all" | undefined): Promise<topology.AvailabilityZoneDescription[]> {
 
-    const result = await aws.getAvailabilityZones(/*args:*/ undefined, { provider, async: true });
+    const result = await aws.getAvailabilityZones(/*args:*/ undefined, { provider, async: true })
+
     if (result.names.length !== result.zoneIds.length) {
         throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", parent);
     }
 
-    const descriptions: topology.AvailabilityZoneDescription[] = [];
+
+    var descriptions: topology.AvailabilityZoneDescription[] = [];
     for (let i = 0, n = result.names.length; i < n; i++) {
         descriptions.push({ name: result.names[i], id: result.zoneIds[i] });
+
     }
 
-    const count =
-        typeof requestedCount === "number" ? requestedCount :
-        requestedCount === "all" ? descriptions.length : 2;
+    if (Array.isArray(requestedZones)) {
+        descriptions = descriptions.filter((zone) => {
+            const exists = requestedZones.find((requstedZone) => { zone.name === requstedZone });
+            return exists != undefined
+        });
 
-    return descriptions.slice(0, count);
+        if (descriptions.length !== requestedZones.length) {
+            throw new pulumi.ResourceError("Availability zones for region had mismatched names.", parent);
+        }
+    }
+
+    return descriptions;
 }
 
 function getExistingSubnets(vpcData: VpcData, vpc: Vpc, vpcName: string, type: VpcSubnetType, inputs: pulumi.Input<string>[] = []) {
@@ -652,10 +662,10 @@ export interface VpcArgs {
     subnets?: VpcSubnetArgs[];
 
     /**
-     * The maximum number of availability zones to use in the current region.  Defaults to `2` if
-     * unspecified.  Use `"all"` to use all the availability zones in the current region.
+     * The names of the availability zones to use in the current region. Defaults to `2` if
+     * unspecified. Use `"all"` to use all the availability zones in the current region.
      */
-    numberOfAvailabilityZones?: number | "all";
+    requestedAvailabilityZone?: string[] | "all";
 
     /**
      * The max number of NAT gateways to create if there are any private subnets created.  A NAT
