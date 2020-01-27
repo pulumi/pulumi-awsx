@@ -11,7 +11,7 @@
     "homepage": "https://pulumi.io",
     "repository": "https://github.com/pulumi/pulumi-awsx",
     "dependencies": {
-        "@pulumi/pulumi": "^1.0.0",
+        "@pulumi/pulumi": "^1.9.1",
         "@pulumi/aws": "^1.0.0",
         "@pulumi/docker": "^1.0.0",
         "@types/aws-lambda": "^8.10.23",
