@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+- Explicitly require @pulumi/pulumi v1.9.1 and up as it contains an API that awsx depends on.
+
 ## 0.19.1 (2020-01-22)
 
 - Account for all scenarios where an API Gateway REST API should be redeployed. For more details
