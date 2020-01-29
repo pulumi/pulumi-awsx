@@ -227,6 +227,9 @@ type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     // TODO[pulumi/aws#796]: This overwrite is needed until the type of `dependsOn` is fixed in the
     // AWS provider.
     dependsOn?: pulumi.Input<ContainerDependency[]>;
+
+    // Target a more specific shape for `firelensConfiguration` than what `aws` exports.
+    firelensConfiguration?: pulumi.Input<FirelensConfiguration>;
 }>;
 
 /**
