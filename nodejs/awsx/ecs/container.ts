@@ -227,6 +227,9 @@ type OverwriteShape = utils.Overwrite<MakeInputs<aws.ecs.ContainerDefinition>, {
     // TODO[pulumi/aws#796]: This overwrite is needed until the type of `dependsOn` is fixed in the
     // AWS provider.
     dependsOn?: pulumi.Input<ContainerDependency[]>;
+
+    // Target a more specific shape for `firelensConfiguration` than what `aws` exports.
+    firelensConfiguration?: pulumi.Input<FirelensConfiguration>;
 }>;
 
 /**
@@ -270,6 +273,23 @@ export interface ContainerDependency {
     containerName: pulumi.Input<string>;
 }
 
+/**
+ * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html
+ * for more details
+ */
+export interface FirelensConfiguration {
+    /**
+     * The options to use when configuring the log router. This field is optional and can be used to specify a custom
+     * configuration file or to add additional metadata, such as the task, task definition, cluster, and container
+     * instance details to the log event.
+     */
+    options?: { [key: string]: string};
+
+    /**
+     * The log router to use.
+     */
+    type: pulumi.Input<"fluentd" | "fluentbit">;
+}
 
 /**
  * [Container]s are used in [awsx.ec2.TaskDefinition] to describe the different containers that are
@@ -437,6 +457,13 @@ export interface Container {
      * network mode.
      */
     extraHosts?: pulumi.Input<aws.ecs.HostEntry[]>;
+
+    /**
+     * The FireLens configuration for the container. This is used to specify and configure a log router for container
+     * logs. For more information, see [Custom Route Logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html)
+     * in the Amazon Elastic Container Service Developer Guide.
+     */
+    firelensConfiguration?: pulumi.Input<FirelensConfiguration>;
 
     /**
      * The health check command and associated configuration parameters for the container. This
