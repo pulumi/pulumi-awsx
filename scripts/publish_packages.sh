@@ -24,6 +24,9 @@ publish() {
     if [[ "${TRAVIS_BRANCH:-}" == features/* ]]; then
         NPM_TAG=$(echo "${TRAVIS_BRANCH}" | sed -e 's|^features/|feature-|g')
     fi
+    if [[ "${TRAVIS_BRANCH:-}" == feature-* ]]; then
+        NPM_TAG=$(echo "${TRAVIS_BRANCH}")
+    fi
 
     PKG_NAME=$(jq -r .name < package.json)
     PKG_VERSION=$(jq -r .version < package.json)
