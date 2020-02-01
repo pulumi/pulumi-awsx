@@ -11,6 +11,9 @@ CHANGELOG
 - Explicitly require `@pulumi/pulumi@>=1.9.1` as it contains an API that awsx depends on.
   [#492](https://github.com/pulumi/pulumi-awsx/pull/492)
 
+- Allow the user to pass `TargetGroup` as `actions` of `ListenerRule`.
+  [#503](https://github.com/pulumi/pulumi-awsx/pull/503)
+
 ## 0.19.1 (2020-01-22)
 
 - Account for all scenarios where an API Gateway REST API should be redeployed. For more details

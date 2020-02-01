@@ -25,7 +25,8 @@ export abstract class TargetGroup
     extends pulumi.ComponentResource
     implements x.ecs.ContainerPortMappingProvider,
     x.ecs.ContainerLoadBalancerProvider,
-    x.lb.ListenerDefaultAction {
+    x.lb.ListenerDefaultAction,
+    x.lb.ListenerActions {
 
     public readonly loadBalancer: mod.LoadBalancer;
     public readonly targetGroup: aws.lb.TargetGroup;
@@ -93,6 +94,10 @@ export abstract class TargetGroup
             targetGroupArn: this.targetGroup.arn,
             type: "forward",
         }));
+    }
+
+    public actions(): aws.lb.ListenerRuleArgs["actions"] {
+        return [this.listenerDefaultAction()];
     }
 
     /** Do not call directly.  Intended for use by [Listener] and [ListenerRule] */
