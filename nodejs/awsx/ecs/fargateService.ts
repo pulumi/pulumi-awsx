@@ -279,13 +279,13 @@ export interface FargateTaskDefinitionArgs {
      * Log group for logging information related to the service.  If `undefined` a default instance
      * with a one-day retention policy will be created.  If `null` no log group will be created.
      */
-    logGroup?: aws.cloudwatch.LogGroup;
+    logGroup?: aws.cloudwatch.LogGroup | null;
 
     /**
      * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
      * `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
-    taskRole?: aws.iam.Role;
+    taskRole?: aws.iam.Role | null;
 
     /**
      * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
@@ -297,7 +297,7 @@ export interface FargateTaskDefinitionArgs {
      *
      *  If `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
-    executionRole?: aws.iam.Role;
+    executionRole?: aws.iam.Role | null;
 
     /**
      * The number of cpu units used by the task.  If not provided, a default will be computed
