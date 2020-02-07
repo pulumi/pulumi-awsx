@@ -3,7 +3,7 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
-- The default log stream for an `awsx.ecs.Container` has changed.  Previously it would a stream named `container-name/container-name/task-id`.  Now it will be `service-or-task-name/container-name/task-id`.  See []() for more details.
+- The default log stream for an `awsx.ecs.Container` has changed.  Previously it would a stream named `container-name/container-name/task-id`.  Now it will be `service-or-task-name/container-name/task-id`.  See [#507](https://github.com/pulumi/pulumi-awsx/pull/507) for more details.
 
 ## 0.19.2 (2020-01-31)
 
