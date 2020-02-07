@@ -55,13 +55,20 @@ export function computeContainerDefinition(
                 name: containerName,
             };
 
-            if (logGroupId !== undefined) {
+            // From https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html
+            // AWS recommends:
+            //
+            // For Amazon ECS services, you could use the service name as the prefix, which would
+            // allow you to trace log streams to the service that the container belongs to, the name
+            // of the container that sent them, and the ID of the task to which the container
+            // belongs.
+            if (logGroupId !== undefined && containerDefinition.logConfiguration === undefined) {
                 containerDefinition.logConfiguration = {
                     logDriver: "awslogs",
                     options: {
                         "awslogs-group": logGroupId,
                         "awslogs-region": region,
-                        "awslogs-stream-prefix": containerName,
+                        "awslogs-stream-prefix": name,
                     },
                 };
             }
@@ -526,6 +533,11 @@ export interface Container {
      * [Create-a-container](https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate)
      * section of the [Docker-Remote-API](https://docs.docker.com/engine/api/v1.35/) and the
      * `--log-driver` parameter to [docker-run](https://docs.docker.com/engine/reference/run/).
+     *
+     * If this property is not `undefined` then a default log configuration will be made using the
+     * `awslogs` driver with a log stream in the form `task-or-service-name/container-name/task-id`
+     *
+     * To disable logs entirely, pass in `null` here.
      */
     logConfiguration?: pulumi.Input<aws.ecs.LogConfiguration>;
 

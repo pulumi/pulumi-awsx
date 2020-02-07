@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+- The default log stream for an `awsx.ecs.Container` has changed.  Previously it would a stream named `container-name/container-name/task-id`.  Now it will be `service-or-task-name/container-name/task-id`.  See []() for more details.
+
 ## 0.19.2 (2020-01-31)
 
 - Add support for `FirelensConfiguration` to `ecs.Container`.
