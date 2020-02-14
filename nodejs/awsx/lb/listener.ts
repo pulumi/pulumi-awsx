@@ -123,6 +123,11 @@ export abstract class Listener
     }
 }
 
+utils.Capture(Listener.prototype).containerPortMapping.doNotCapture = true;
+utils.Capture(Listener.prototype).containerLoadBalancer.doNotCapture = true;
+utils.Capture(Listener.prototype).addListenerRule.doNotCapture = true;
+utils.Capture(Listener.prototype).attachTarget.doNotCapture = true;
+
 /**
  * See https://www.terraform.io/docs/providers/aws/r/lb_listener.html#default_action
  */
