@@ -345,6 +345,16 @@ export interface FargateServiceArgs {
     // Properties from ecs.ServiceArgs
 
     /**
+     * The capacity provider strategy to use for the service.
+     */
+    capacityProviderStrategies?: aws.ecs.ServiceArgs["capacityProviderStrategies"];
+
+    /**
+     * onfiguration block containing deployment controller configuration.
+     */
+    deploymentController?: aws.ecs.ServiceArgs["deploymentController"];
+
+    /**
      * The upper limit (as a percentage of the service's desiredCount) of the number of running
      * tasks that can be running in a service during a deployment. Not valid when using the `DAEMON`
      * scheduling strategy.
@@ -356,6 +366,17 @@ export interface FargateServiceArgs {
      * tasks that must remain running and healthy in a service during a deployment.
      */
     deploymentMinimumHealthyPercent?: pulumi.Input<number>;
+
+    /**
+     * The number of instances of the task definition to place and keep running. Defaults to 1. Do
+     * not specify if using the `DAEMON` scheduling strategy.
+     */
+    desiredCount?: pulumi.Input<number>;
+
+    /**
+     * Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+     */
+    enableEcsManagedTags?: pulumi.Input<boolean>;
 
     /**
      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
@@ -418,11 +439,24 @@ export interface FargateServiceArgs {
     placementConstraints?: aws.ecs.ServiceArgs["placementConstraints"];
 
     /**
+     * The platform version on which to run your service. Only applicable for `launchType` set to `FARGATE`.
+     * Defaults to `LATEST`. More information about Fargate platform versions can be found in the
+     * [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
+     */
+    platformVersion?: pulumi.Input<string>;
+
+    /**
      * The scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`.
      * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
      * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
      */
     schedulingStrategy?: pulumi.Input<string>;
+
+    /**
+     * Specifies whether to propagate the tags from the task definition or the service
+     * to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+     */
+    propagateTags?: pulumi.Input<string>;
 
     /**
      * The service discovery registries for the service. The maximum number of `service_registries` blocks is `1`.
@@ -435,12 +469,6 @@ export interface FargateServiceArgs {
      * Cluster this service will run in.  If unspecified, [Cluster.getDefault()] will be used.
      */
     cluster?: ecs.Cluster;
-
-    /**
-     * The number of instances of the task definition to place and keep running. Defaults to 1. Do
-     * not specify if using the `DAEMON` scheduling strategy.
-     */
-    desiredCount?: pulumi.Input<number>;
 
     os?: pulumi.Input<"linux" | "windows">;
 

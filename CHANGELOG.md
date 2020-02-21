@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Update `Service`, `EC2Service` and `FargateService` interface to support the full set of supported ECS Service properties
+
 ## 0.19.2 (2020-01-31)
 
 - Add support for `FirelensConfiguration` to `ecs.Container`.
