@@ -4,6 +4,7 @@ CHANGELOG
 ## HEAD (Unreleased)
 
 * Update `Service`, `EC2Service` and `FargateService` interface to support the full set of supported ECS Service properties
+* Ensure `CustomResourceOptions` are passed to underlying `ecs.Service` when using `awsx.ecs.FargateService` and `awsx.ecs.EC2Service`
 
 ## 0.19.2 (2020-01-31)
 

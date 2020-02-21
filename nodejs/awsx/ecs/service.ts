@@ -56,11 +56,10 @@ export abstract class Service extends pulumi.ComponentResource {
             desiredCount: utils.ifUndefined(args.desiredCount, 1),
             launchType: utils.ifUndefined(args.launchType, "EC2"),
             waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),
-        }, {
-            parent: this,
-            // If the cluster has any autoscaling groups, ensure the service depends on it being created.
-            dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
-        });
+        }, pulumi.mergeOptions(opts, {
+                parent: this,
+                dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
+        }));
 
         this.taskDefinition = args.taskDefinition;
     }
