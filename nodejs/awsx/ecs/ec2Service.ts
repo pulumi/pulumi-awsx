@@ -152,7 +152,7 @@ export interface EC2TaskDefinitionArgs {
      * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
      * `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
-    taskRole?: aws.iam.Role;
+    taskRole?: aws.iam.Role | null;
 
     /**
      * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
@@ -164,7 +164,7 @@ export interface EC2TaskDefinitionArgs {
      *
      * If `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
-    executionRole?: aws.iam.Role;
+    executionRole?: aws.iam.Role | null;
 
     /**
      * The Docker networking mode to use for the containers in the task. The valid values are

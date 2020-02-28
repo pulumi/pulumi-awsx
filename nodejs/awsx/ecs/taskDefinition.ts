@@ -278,9 +278,9 @@ type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
     containerDefinitions?: never;
     logGroup?: aws.cloudwatch.LogGroup | null
     taskRoleArn?: never;
-    taskRole?: aws.iam.Role;
+    taskRole?: aws.iam.Role | null;
     executionRoleArn?: never;
-    executionRole?: aws.iam.Role;
+    executionRole?: aws.iam.Role | null;
     cpu?: pulumi.Input<string>;
     memory?: pulumi.Input<string>;
     requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
@@ -321,14 +321,14 @@ export interface TaskDefinitionArgs {
      * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
      * `undefined`, a default will be created for the task.  If `null`, no task will be created.
      */
-    taskRole?: aws.iam.Role;
+    taskRole?: aws.iam.Role | null;
 
     /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
      *
      * If `undefined`, a default will be created for the task.  If `null`, no task will be created.
      */
-    executionRole?: aws.iam.Role;
+    executionRole?: aws.iam.Role | null;
 
     /**
      * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
