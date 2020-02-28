@@ -29,7 +29,7 @@ export function computeContainerDefinition(
     container: Container,
     applicationListeners: Record<string, x.lb.ApplicationListener>,
     networkListeners: Record<string, x.lb.NetworkListener>,
-    logGroup: aws.cloudwatch.LogGroup | undefined) {
+    logGroup: aws.cloudwatch.LogGroup | undefined | null) {
 
     const image = isContainerImageProvider(container.image)
         ? container.image.image(name, parent)

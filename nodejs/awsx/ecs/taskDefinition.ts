@@ -255,7 +255,7 @@ function computeContainerDefinitions(
     containers: Record<string, ecs.Container>,
     applicationListeners: Record<string, x.lb.ApplicationListener>,
     networkListeners: Record<string, x.lb.NetworkListener>,
-    logGroup: aws.cloudwatch.LogGroup | undefined): pulumi.Output<aws.ecs.ContainerDefinition[]> {
+    logGroup: aws.cloudwatch.LogGroup | undefined | null): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
 
@@ -276,7 +276,7 @@ function computeContainerDefinitions(
 type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
     family?: pulumi.Input<string>;
     containerDefinitions?: never;
-    logGroup?: aws.cloudwatch.LogGroup
+    logGroup?: aws.cloudwatch.LogGroup | null
     taskRoleArn?: never;
     taskRole?: aws.iam.Role;
     executionRoleArn?: never;
@@ -315,7 +315,7 @@ export interface TaskDefinitionArgs {
      * Log group for logging information related to the service.  If `undefined` a default instance
      * with a one-day retention policy will be created.  If `null`, no log group will be created.
      */
-    logGroup?: aws.cloudwatch.LogGroup;
+    logGroup?: aws.cloudwatch.LogGroup | null;
 
     /**
      * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
