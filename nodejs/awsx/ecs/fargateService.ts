@@ -279,7 +279,7 @@ export interface FargateTaskDefinitionArgs {
      * Log group for logging information related to the service.  If `undefined` a default instance
      * with a one-day retention policy will be created.  If `null` no log group will be created.
      */
-    logGroup?: aws.cloudwatch.LogGroup;
+    logGroup?: aws.cloudwatch.LogGroup | null;
 
     /**
      * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
