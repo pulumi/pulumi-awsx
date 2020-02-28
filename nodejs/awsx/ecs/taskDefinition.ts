@@ -276,7 +276,7 @@ function computeContainerDefinitions(
 type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
     family?: pulumi.Input<string>;
     containerDefinitions?: never;
-    logGroup?: aws.cloudwatch.LogGroup
+    logGroup?: aws.cloudwatch.LogGroup | null;
     taskRoleArn?: never;
     taskRole?: aws.iam.Role;
     executionRoleArn?: never;
