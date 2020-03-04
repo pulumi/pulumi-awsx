@@ -63,7 +63,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
                         args.taskRole ? args.taskRole : TaskDefinition.createTaskRole(
             `${name}-task`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
-        this.executionRole = args.taskRole === null ? undefined :
+        this.executionRole = args.executionRole === null ? undefined :
                              args.executionRole ? args.executionRole : TaskDefinition.createExecutionRole(
             `${name}-execution`, /*assumeRolePolicy*/ undefined, /*policyArns*/ undefined, { parent: this });
 
