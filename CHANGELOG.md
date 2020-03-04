@@ -6,6 +6,8 @@ CHANGELOG
 * Update `Service`, `EC2Service` and `FargateService` interface to support the full set of supported ECS Service properties
 * Ensure `CustomResourceOptions` are passed to underlying `ecs.Service` when using `awsx.ecs.FargateService` and `awsx.ecs.EC2Service`
 * Update `TaskDefinitionArgs`, `EC2TaskDefinitionArgs`, `FargateTaskDefinitionArgs` to allow for null taskRole, executionRole, and logGroup attributes.
+* Fix bug in `TaskDefinition` when `executionRole` is ignored when `taskRole` is `null`.
+  [#517](https://github.com/pulumi/pulumi-awsx/pull/517)
 
 ## 0.19.2 (2020-01-31)
 
