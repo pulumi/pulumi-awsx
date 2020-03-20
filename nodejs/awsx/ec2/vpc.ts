@@ -423,12 +423,61 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
         return func(data);
     }
 
+    /**
+     * Asynchronously retrieves the IDs for the public subnets in this Vpc.  This will only retrieve
+     * data for the subnets specified when the Vpc was created.  If subnets were created externally,
+     * they will not be included.
+     */
     public get publicSubnetIds() { return this.liftMember(v => v.publicSubnetIds, []); }
+
+    /**
+     * Asynchronously retrieves the IDs for the private subnets in this Vpc.  This will only retrieve
+     * data for the subnets specified when the Vpc was created.  If subnets were created externally,
+     * they will not be included.
+     */
     public get privateSubnetIds() { return this.liftMember(v => v.privateSubnetIds, []); }
+
+    /**
+     * Asynchronously retrieves the IDs for the isolated subnets in this Vpc.  This will only retrieve
+     * data for the subnets specified when the Vpc was created.  If subnets were created externally,
+     * they will not be included.
+     */
     public get isolatedSubnetIds() { return this.liftMember(v => v.isolatedSubnetIds, []); }
+
+    /**
+     * Asynchronously retrieves the IDs for the subnets of a particular type in this Vpc.  This will
+     * only retrieve data for the subnets specified when the Vpc was created.  If subnets were
+     * created externally, they will not be included.
+     */
+    public getSubnetsIds(type: VpcSubnetType) { return this.liftMember(d => d.getSubnetIds(type), []); }
+
+    /**
+     * Asynchronously retrieves the public subnets in this Vpc.  This will only retrieve data for
+     * the subnets specified when the Vpc was created.  If subnets were created externally, they
+     * will not be included.
+     */
     public get publicSubnets() { return this.liftMember(v => v.publicSubnets, []); }
+
+    /**
+     * Asynchronously retrieves the private subnets in this Vpc.  This will only retrieve data for
+     * the subnets specified when the Vpc was created.  If subnets were created externally, they
+     * will not be included.
+     */
     public get privateSubnets() { return this.liftMember(v => v.privateSubnets, []); }
+
+    /**
+     * Asynchronously retrieves the isolated subnets in this Vpc.  This will only retrieve data for
+     * the subnets specified when the Vpc was created.  If subnets were created externally, they
+     * will not be included.
+     */
     public get isolatedSubnets() { return this.liftMember(v => v.isolatedSubnets, []); }
+
+    /**
+     * Asynchronously retrieves the subnets of a particular type in this Vpc.  This will only
+     * retrieve data for the subnets specified when the Vpc was created.  If subnets were created
+     * externally, they will not be included.
+     */
+    public getSubnets(type: VpcSubnetType) { return this.liftMember(d => d.getSubnets(type), []); }
 
     /**
      * The internet gateway created to allow traffic to/from the internet to the public subnets.

@@ -56,11 +56,10 @@ export abstract class Service extends pulumi.ComponentResource {
             desiredCount: utils.ifUndefined(args.desiredCount, 1),
             launchType: utils.ifUndefined(args.launchType, "EC2"),
             waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),
-        }, {
-            parent: this,
-            // If the cluster has any autoscaling groups, ensure the service depends on it being created.
-            dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
-        });
+        }, pulumi.mergeOptions(opts, {
+                parent: this,
+                dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
+        }));
 
         this.taskDefinition = args.taskDefinition;
     }
@@ -173,6 +172,16 @@ export interface ServiceArgs {
     // Properties from aws.ecs.ServiceArgs
 
     /**
+     * The capacity provider strategy to use for the service.
+     */
+    capacityProviderStrategies?: aws.ecs.ServiceArgs["capacityProviderStrategies"];
+
+    /**
+     * onfiguration block containing deployment controller configuration.
+     */
+    deploymentController?: aws.ecs.ServiceArgs["deploymentController"];
+
+    /**
      * The upper limit (as a percentage of the service's desiredCount) of the number of running
      * tasks that can be running in a service during a deployment. Not valid when using the `DAEMON`
      * scheduling strategy.
@@ -184,6 +193,17 @@ export interface ServiceArgs {
      * tasks that must remain running and healthy in a service during a deployment.
      */
     deploymentMinimumHealthyPercent?: pulumi.Input<number>;
+
+    /**
+     * The number of instances of the task definition to place and keep running. Defaults to 1. Do
+     * not specify if using the `DAEMON` scheduling strategy.
+     */
+    desiredCount?: pulumi.Input<number>;
+
+    /**
+     * Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+     */
+    enableEcsManagedTags?: pulumi.Input<boolean>;
 
     /**
      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
@@ -200,6 +220,12 @@ export interface ServiceArgs {
      * here.
      */
     iamRole?: pulumi.Input<string>;
+
+    /**
+     * The launch type on which to run your service. The valid values are `EC2` and `FARGATE`.
+     * Defaults to `EC2`.
+     */
+    launchType?: pulumi.Input<"EC2" | "FARGATE">;
 
     /**
      * A load balancer block. Load balancers documented below.
@@ -232,6 +258,19 @@ export interface ServiceArgs {
     placementConstraints?: aws.ecs.ServiceArgs["placementConstraints"];
 
     /**
+     * The platform version on which to run your service. Only applicable for `launchType` set to `FARGATE`.
+     * Defaults to `LATEST`. More information about Fargate platform versions can be found in the
+     * [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
+     */
+    platformVersion?: pulumi.Input<string>;
+
+    /**
+     * Specifies whether to propagate the tags from the task definition or the service
+     * to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+     */
+    propagateTags?: pulumi.Input<string>;
+
+    /**
      * The scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`.
      * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
      * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
@@ -259,18 +298,6 @@ export interface ServiceArgs {
      * Security groups determining how this service can be reached.
      */
     securityGroups: x.ec2.SecurityGroup[];
-
-    /**
-     * The number of instances of the task definition to place and keep running. Defaults to 1. Do
-     * not specify if using the `DAEMON` scheduling strategy.
-     */
-    desiredCount?: pulumi.Input<number>;
-
-    /**
-     * The launch type on which to run your service. The valid values are `EC2` and `FARGATE`.
-     * Defaults to `EC2`.
-     */
-    launchType?: pulumi.Input<"EC2" | "FARGATE">;
 
     /**
      * Wait for the service to reach a steady state (like [`aws ecs wait

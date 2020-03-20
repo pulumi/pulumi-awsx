@@ -132,12 +132,12 @@ const vpc = new awsx.ec2.Vpc("custom", {
    // ...
 });
 
-const sg = new awsx.ec2.SecurityGroup(`sg`, { vpc });
-SecurityGroupRule.ingress("https-access", sg,
+const sg = new awsx.ec2.SecurityGroup("custom", { vpc });
+awsx.ec2.SecurityGroupRule.ingress("https-access", sg,
    new awsx.ec2.AnyIPv4Location(),
    new awsx.ec2.TcpPorts(443),
    "allow https access");
-SecurityGroupRule.ingress("ssd-access", sg,
+awsx.ec2.SecurityGroupRule.ingress("ssd-access", sg,
    new awsx.ec2.AnyIPv4Location(),
    new awsx.ec2.TcpPorts(22),
    "allow ssh access");

@@ -279,13 +279,13 @@ export interface FargateTaskDefinitionArgs {
      * Log group for logging information related to the service.  If `undefined` a default instance
      * with a one-day retention policy will be created.  If `null` no log group will be created.
      */
-    logGroup?: aws.cloudwatch.LogGroup;
+    logGroup?: aws.cloudwatch.LogGroup | null;
 
     /**
      * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
      * `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
-    taskRole?: aws.iam.Role;
+    taskRole?: aws.iam.Role | null;
 
     /**
      * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
@@ -297,7 +297,7 @@ export interface FargateTaskDefinitionArgs {
      *
      *  If `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
-    executionRole?: aws.iam.Role;
+    executionRole?: aws.iam.Role | null;
 
     /**
      * The number of cpu units used by the task.  If not provided, a default will be computed
@@ -345,6 +345,16 @@ export interface FargateServiceArgs {
     // Properties from ecs.ServiceArgs
 
     /**
+     * The capacity provider strategy to use for the service.
+     */
+    capacityProviderStrategies?: aws.ecs.ServiceArgs["capacityProviderStrategies"];
+
+    /**
+     * onfiguration block containing deployment controller configuration.
+     */
+    deploymentController?: aws.ecs.ServiceArgs["deploymentController"];
+
+    /**
      * The upper limit (as a percentage of the service's desiredCount) of the number of running
      * tasks that can be running in a service during a deployment. Not valid when using the `DAEMON`
      * scheduling strategy.
@@ -356,6 +366,17 @@ export interface FargateServiceArgs {
      * tasks that must remain running and healthy in a service during a deployment.
      */
     deploymentMinimumHealthyPercent?: pulumi.Input<number>;
+
+    /**
+     * The number of instances of the task definition to place and keep running. Defaults to 1. Do
+     * not specify if using the `DAEMON` scheduling strategy.
+     */
+    desiredCount?: pulumi.Input<number>;
+
+    /**
+     * Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
+     */
+    enableEcsManagedTags?: pulumi.Input<boolean>;
 
     /**
      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
@@ -418,11 +439,24 @@ export interface FargateServiceArgs {
     placementConstraints?: aws.ecs.ServiceArgs["placementConstraints"];
 
     /**
+     * The platform version on which to run your service. Only applicable for `launchType` set to `FARGATE`.
+     * Defaults to `LATEST`. More information about Fargate platform versions can be found in the
+     * [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
+     */
+    platformVersion?: pulumi.Input<string>;
+
+    /**
      * The scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`.
      * Defaults to `REPLICA`. Note that [*Fargate tasks do not support the `DAEMON` scheduling
      * strategy*](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/scheduling_tasks.html).
      */
     schedulingStrategy?: pulumi.Input<string>;
+
+    /**
+     * Specifies whether to propagate the tags from the task definition or the service
+     * to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
+     */
+    propagateTags?: pulumi.Input<string>;
 
     /**
      * The service discovery registries for the service. The maximum number of `service_registries` blocks is `1`.
@@ -435,12 +469,6 @@ export interface FargateServiceArgs {
      * Cluster this service will run in.  If unspecified, [Cluster.getDefault()] will be used.
      */
     cluster?: ecs.Cluster;
-
-    /**
-     * The number of instances of the task definition to place and keep running. Defaults to 1. Do
-     * not specify if using the `DAEMON` scheduling strategy.
-     */
-    desiredCount?: pulumi.Input<number>;
 
     os?: pulumi.Input<"linux" | "windows">;
 
