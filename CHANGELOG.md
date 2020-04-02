@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.19.3 (2020-04-02)
+
 * Update `Service`, `EC2Service` and `FargateService` interface to support the full set of supported ECS Service properties
 * Ensure `CustomResourceOptions` are passed to underlying `ecs.Service` when using `awsx.ecs.FargateService` and `awsx.ecs.EC2Service`
 * Update `TaskDefinitionArgs`, `EC2TaskDefinitionArgs`, `FargateTaskDefinitionArgs` to allow for null taskRole, executionRole, and logGroup attributes.
