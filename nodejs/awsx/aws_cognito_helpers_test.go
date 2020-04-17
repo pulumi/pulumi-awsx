@@ -20,7 +20,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	cognito "github.com/aws/aws-sdk-go/service/cognitoidentityprovider"
-	"github.com/pulumi/pulumi/pkg/testing/integration"
+	"github.com/pulumi/pulumi/pkg/v2/testing/integration"
 )
 
 func getCognitoUserToken(t *testing.T, stack integration.RuntimeValidationStackInfo) string {
