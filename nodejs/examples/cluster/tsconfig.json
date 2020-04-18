@@ -12,7 +12,12 @@
         "pretty": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": ".",
+        "paths": {
+            "@pulumi/aws": ["node_modules/@pulumi/aws"],
+            "@pulumi/pulumi": ["node_modules/@pulumi/pulumi"]
+        }
     },
     "files": [
         "index.ts"
