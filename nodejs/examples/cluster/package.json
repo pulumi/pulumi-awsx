@@ -9,7 +9,8 @@
     },
     "dependencies": {
         "@pulumi/pulumi": "^1.0.0",
-        "@pulumi/aws": "^1.0.0"
+        "@pulumi/aws": "^1.0.0",
+        "@pulumi/docker": "^1.0.0"
     },
     "devDependencies": {
         "@types/node": "^8.0.0"

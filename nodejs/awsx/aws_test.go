@@ -352,6 +352,9 @@ func getBaseOptions(t *testing.T) integration.ProgramTestOptions {
 		Dependencies: []string{
 			"@pulumi/awsx",
 		},
+		Env: []string{
+			"NODE_PRESERVE_SYMLINKS=1",
+		},
 		Quick:                true,
 		SkipRefresh:          true,
 		ExpectRefreshChanges: true,
