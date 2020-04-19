@@ -89,8 +89,6 @@ func TestAccMetricsMixedVersions(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			Dir: path.Join(getCwd(t), "../examples/metrics/mixed"),
-			// Ensure we link in the yarn dependencies before we attempt to build
-			RunUpdateTest: true,
 			// It doesn't actually fail unless we RunBuild (e.g. `yarn build` which invokes tsc).
 			// Sadly, "ExpectFailure" doesn't actually do the right thing w.r.t. RunBuild.
 			RunBuild: true,
