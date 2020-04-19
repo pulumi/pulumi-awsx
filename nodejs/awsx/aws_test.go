@@ -88,7 +88,8 @@ func TestAccMetricsMixedVersions(t *testing.T) {
 	// When using 1.x and 2.x together, we should expect to see a failure in type assignment.
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir: path.Join(getCwd(t), "../examples/metrics/mixed"),
+			Dir:        path.Join(getCwd(t), "../examples/metrics/mixed"),
+			NoParallel: true,
 			// It doesn't actually fail unless we RunBuild (e.g. `yarn build` which invokes tsc).
 			// Sadly, "ExpectFailure" doesn't actually do the right thing w.r.t. RunBuild.
 			RunBuild: true,
@@ -96,12 +97,12 @@ func TestAccMetricsMixedVersions(t *testing.T) {
 		})
 
 	pt := integration.ProgramTestManualLifeCycle(t, &test)
-	defer func() {
-		pt.TestLifeCycleDestroy()
-		pt.TestCleanUp()
-	}()
 
-	assert.Error(t, pt.TestLifeCyclePrepare())
+	defer pt.TestCleanUp()
+
+	err := pt.TestLifeCyclePrepare()
+	pt.TestFinished = true
+	assert.Error(t, err)
 }
 
 func TestAccVpcIgnoreSubnetChanges(t *testing.T) {
