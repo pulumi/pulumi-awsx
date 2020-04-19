@@ -85,18 +85,24 @@ func TestAccMetrics2x(t *testing.T) {
 }
 
 func TestAccMetricsMixedVersions(t *testing.T) {
-	// When using 1.x and 2.x together, we should expect to see a failure in type assignment
+	// When using 1.x and 2.x together, we should expect to see a failure in type assignment.
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			Dir: path.Join(getCwd(t), "../examples/metrics/mixed"),
-			// It doesn't actually fail unless we RunBuild (e.g. `yarn build` which invokes tsc)
-			// Sadly, "ExpectFailure" doesn't actually do the right thing w.r.t. RunBuild
+			// Ensure we link in the yarn dependencies before we attempt to build
+			RunUpdateTest: true,
+			// It doesn't actually fail unless we RunBuild (e.g. `yarn build` which invokes tsc).
+			// Sadly, "ExpectFailure" doesn't actually do the right thing w.r.t. RunBuild.
 			RunBuild: true,
-			// So, we'll take over execution of the lifecycle instead below
-
+			// So, we'll take over execution of the lifecycle instead below.
 		})
 
 	pt := integration.ProgramTestManualLifeCycle(t, &test)
+	defer func() {
+		pt.TestLifeCycleDestroy()
+		pt.TestCleanUp()
+	}()
+
 	assert.Error(t, pt.TestLifeCyclePrepare())
 }
 
