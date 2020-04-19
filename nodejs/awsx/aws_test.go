@@ -64,13 +64,40 @@ func TestAccEcr(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
-func TestAccMetrics(t *testing.T) {
+func TestAccMetrics1x(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir: path.Join(getCwd(t), "../examples/metrics"),
+			Dir:      path.Join(getCwd(t), "../examples/metrics/1.0"),
+			RunBuild: true,
 		})
 
 	integration.ProgramTest(t, &test)
+}
+
+func TestAccMetrics2x(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir:      path.Join(getCwd(t), "../examples/metrics/2.0"),
+			RunBuild: true,
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccMetricsMixedVersions(t *testing.T) {
+	// When using 1.x and 2.x together, we should expect to see a failure in type assignment
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/metrics/mixed"),
+			// It doesn't actually fail unless we RunBuild (e.g. `yarn build` which invokes tsc)
+			// Sadly, "ExpectFailure" doesn't actually do the right thing w.r.t. RunBuild
+			RunBuild: true,
+			// So, we'll take over execution of the lifecycle instead below
+
+		})
+
+	pt := integration.ProgramTestManualLifeCycle(t, &test)
+	assert.Error(t, pt.TestLifeCyclePrepare())
 }
 
 func TestAccVpcIgnoreSubnetChanges(t *testing.T) {
