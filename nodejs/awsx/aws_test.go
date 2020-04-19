@@ -67,8 +67,7 @@ func TestAccEcr(t *testing.T) {
 func TestAccMetrics1x(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:      path.Join(getCwd(t), "../examples/metrics/1.0"),
-			RunBuild: true,
+			Dir: path.Join(getCwd(t), "../examples/metrics/1.0"),
 		})
 
 	integration.ProgramTest(t, &test)
@@ -77,31 +76,22 @@ func TestAccMetrics1x(t *testing.T) {
 func TestAccMetrics2x(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:      path.Join(getCwd(t), "../examples/metrics/2.0"),
-			RunBuild: true,
+			Dir: path.Join(getCwd(t), "../examples/metrics/2.0"),
 		})
 
 	integration.ProgramTest(t, &test)
 }
 
 func TestAccMetricsMixedVersions(t *testing.T) {
-	// When using 1.x and 2.x together, we should expect to see a failure in type assignment.
+	// Mixing versions mode will actually work now. The compiler "does the right thing" in that
+	// it picks up the version of @pulumi/pulumi used by the underlying library of aws. As a result,
+	// we don't end up with class type conflicts.
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir: path.Join(getCwd(t), "../examples/metrics/mixed"),
-			// It doesn't actually fail unless we RunBuild (e.g. `yarn build` which invokes tsc).
-			// Sadly, "ExpectFailure" doesn't actually do the right thing w.r.t. RunBuild.
-			RunBuild: true,
-			// So, we'll take over execution of the lifecycle instead below.
+			Dir: path.Join(getCwd(t), "../examples/metrics/2.0"),
 		})
 
-	pt := integration.ProgramTestManualLifeCycle(t, &test)
-
-	defer pt.TestCleanUp()
-
-	err := pt.TestLifeCyclePrepare()
-	pt.TestFinished = true
-	assert.Error(t, err)
+	integration.ProgramTest(t, &test)
 }
 
 func TestAccVpcIgnoreSubnetChanges(t *testing.T) {
