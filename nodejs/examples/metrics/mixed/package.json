@@ -16,7 +16,8 @@
     "devDependencies": {
         "@types/aws-sdk": "^2.7.0",
         "@types/node": "^8.0.0",
-        "@types/node-fetch": "=2.1.2"
+        "@types/node-fetch": "=2.1.2",
+        "typescript": "~3.8.3"
     },
     "peerDependencies": {
         "@pulumi/awsx": "latest"
