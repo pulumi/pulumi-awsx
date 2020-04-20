@@ -88,7 +88,7 @@ func TestAccMetricsMixedVersions(t *testing.T) {
 	// we don't end up with class type conflicts.
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir: path.Join(getCwd(t), "../examples/metrics/2.0"),
+			Dir: path.Join(getCwd(t), "../examples/metrics/mixed"),
 		})
 
 	integration.ProgramTest(t, &test)

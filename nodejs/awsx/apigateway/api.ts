@@ -1061,7 +1061,7 @@ function addStaticRouteToSwaggerSpec(
         }, { parent: api });
         const attachment = new aws.iam.RolePolicyAttachment(key, {
             role: role,
-            policyArn: aws.iam.AmazonS3FullAccess,
+            policyArn: aws.iam.ManagedPolicies.AmazonS3FullAccess,
         }, { parent: api });
 
         return role;

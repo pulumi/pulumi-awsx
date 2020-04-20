@@ -82,7 +82,7 @@ export class AutoScalingLaunchConfiguration extends pulumi.ComponentResource {
     }
 
     public static defaultInstanceProfilePolicyARNs() {
-        return [aws.iam.AmazonEC2ContainerServiceforEC2Role, aws.iam.AmazonEC2ReadOnlyAccess];
+        return [aws.iam.ManagedPolicies.AmazonEC2ContainerServiceforEC2Role, aws.iam.ManagedPolicies.AmazonEC2ReadOnlyAccess];
     }
 
     /**

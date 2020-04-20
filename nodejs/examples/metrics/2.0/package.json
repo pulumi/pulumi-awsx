@@ -10,7 +10,6 @@
     "dependencies": {
         "@pulumi/pulumi": "^2.0.0",
         "@pulumi/aws": "^2.0.0",
-        "@pulumi/docker": "^2.0.0",
         "node-fetch": "^2.2.0"
     },
     "devDependencies": {
