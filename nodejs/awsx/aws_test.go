@@ -29,12 +29,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/pulumi/pulumi/pkg/operations"
-	"github.com/pulumi/pulumi/pkg/resource"
-	"github.com/pulumi/pulumi/pkg/resource/config"
-	"github.com/pulumi/pulumi/pkg/resource/stack"
-	"github.com/pulumi/pulumi/pkg/testing/integration"
-	"github.com/pulumi/pulumi/pkg/util/contract"
+	"github.com/pulumi/pulumi/pkg/v2/operations"
+	"github.com/pulumi/pulumi/pkg/v2/resource/stack"
+	"github.com/pulumi/pulumi/pkg/v2/testing/integration"
+	"github.com/pulumi/pulumi/sdk/v2/go/common/resource"
+	"github.com/pulumi/pulumi/sdk/v2/go/common/resource/config"
+	"github.com/pulumi/pulumi/sdk/v2/go/common/util/contract"
 )
 
 func TestAccCluster(t *testing.T) {
@@ -64,10 +64,31 @@ func TestAccEcr(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
-func TestAccMetrics(t *testing.T) {
+func TestAccMetrics1x(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir: path.Join(getCwd(t), "../examples/metrics"),
+			Dir: path.Join(getCwd(t), "../examples/metrics/1.0"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccMetrics2x(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/metrics/2.0"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccMetricsMixedVersions(t *testing.T) {
+	// Mixing versions mode will actually work now. The compiler "does the right thing" in that
+	// it picks up the version of @pulumi/pulumi used by the underlying library of aws. As a result,
+	// we don't end up with class type conflicts.
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/metrics/mixed"),
 		})
 
 	integration.ProgramTest(t, &test)
@@ -351,6 +372,9 @@ func getBaseOptions(t *testing.T) integration.ProgramTestOptions {
 		},
 		Dependencies: []string{
 			"@pulumi/awsx",
+		},
+		Env: []string{
+			"NODE_PRESERVE_SYMLINKS=1",
 		},
 		Quick:                true,
 		SkipRefresh:          true,

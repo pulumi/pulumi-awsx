@@ -10,7 +10,8 @@
         "pretty": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "preserveSymlinks": true
     },
     "files": [
         "index.ts"

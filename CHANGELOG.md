@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Update dependencies to be peer dependencies and allow both 1.x and 2.x for `@pulumi/pulumi`, `@pulumi/aws`.
+
 ## 0.19.3 (2020-04-02)
 
 * Update `Service`, `EC2Service` and `FargateService` interface to support the full set of supported ECS Service properties
