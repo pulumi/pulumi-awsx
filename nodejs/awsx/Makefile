@@ -10,6 +10,7 @@ TESTPARALLELISM := 10
 
 build::
 	yarn install
+	yarn run install-peers -f
 	tsc --version
 	tsc
 	sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json

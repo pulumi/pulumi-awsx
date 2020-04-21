@@ -11,7 +11,7 @@
     "homepage": "https://pulumi.io",
     "repository": "https://github.com/pulumi/pulumi-awsx",
     "scripts": {
-        "prepare": "install-peers"
+        "install-peers": "install-peers"
     },
     "dependencies": {
         "@pulumi/docker": "^1.0.0 || ^2.0.0",
