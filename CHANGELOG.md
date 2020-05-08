@@ -3,9 +3,13 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+## 0.20.1 (2020-05-08)
+
+* Release to get latest version of @pulumi/docker in order to remove dependency on @pulumi/pulumi 1.x
+
 ## 0.20.0 (2020-04-20)
 
-* Update dependencies to be peer dependencies and allow both 1.x and 2.x for `@pulumi/pulumi`, `@pulumi/aws`.
+* Update dependencies to be peer dependencies and allow both 1.x and 2.x for `@pulumi/pulumi`, `@pulumi/aws
 
 ## 0.19.3 (2020-04-02)
 
