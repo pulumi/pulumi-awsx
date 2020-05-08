@@ -5,7 +5,7 @@ CHANGELOG
 
 ## 0.20.1 (2020-05-08)
 
-* Release to get latest version of @pulumi/docker in order to remove dependency on @pulumi/pulumi 1.x
+* Release to get latest version of `@pulumi/docker` in order to remove dependency on `@pulumi/pulumi` 1.x
 
 ## 0.20.0 (2020-04-20)
 
