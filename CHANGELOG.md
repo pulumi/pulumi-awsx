@@ -2,6 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+* Allow an existing load balancer be passed to `awsx.lb.LoadBalancer`'
 
 ## 0.20.0 (2020-04-20)
 

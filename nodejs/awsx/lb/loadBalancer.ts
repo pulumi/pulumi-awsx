@@ -30,6 +30,20 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     constructor(type: string, name: string, args: LoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
+        if (args.loadBalancer !== undefined) {
+            if (Object.keys(args).length > 1) {
+                throw new pulumi.ResourceError("When providing a loadBalancer argument, no other args are allowed", this);
+            }
+            this.loadBalancer = args.loadBalancer;
+            this.vpc = x.ec2.Vpc.fromExistingIds("lb-vpc", { vpcId: this.loadBalancer.vpcId });
+            const securityGroups = this.loadBalancer.securityGroups;
+            if (!securityGroups) {
+                throw new pulumi.ResourceError("Load Balancer is missing info about its security groups", this);
+            }
+            this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, securityGroups.get(), { parent: this }) || [];
+            return this;
+        }
+
         this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 
@@ -99,6 +113,15 @@ export interface LoadBalancerArgs {
      * unspecified.
      */
     external?: boolean;
+
+    /**
+     * Allows an existing load balancer to be used. There are cases where users want to use the
+     * convenience of awsx, but already have an existing load balancer either from another stack
+     * or already in their account.
+     *
+     * If this value is set, no other arguments are allowed.
+     */
+    loadBalancer?: aws.lb.LoadBalancer;
 
     /**
      * The type of load balancer to create. Possible values are `application` or `network`.
