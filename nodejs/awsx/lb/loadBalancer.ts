@@ -30,6 +30,13 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
     constructor(type: string, name: string, args: LoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
+        if (args.loadBalancer) {
+            this.loadBalancer = args.loadBalancer;
+            this.vpc = x.ec2.Vpc.fromExistingIds(`${name}-vpc`, { vpcId: this.loadBalancer.vpcId });
+            this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, this.loadBalancer.securityGroups.get(), { parent: this }) || [];
+            return;
+        }
+
         this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 
@@ -82,6 +89,14 @@ function getSubnets(
 }
 
 export interface LoadBalancerArgs {
+
+    /**
+     * An existing aws.lb.LoadBalancer to use for this awsx.lb.LoadBalancer.
+     * If this value is set then all other arguments are ignored.
+     * If not provided, one will be created.
+     */
+    loadBalancer?: aws.lb.LoadBalancer;
+
     /**
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
