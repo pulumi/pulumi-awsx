@@ -373,9 +373,13 @@ type OverwriteTemplateParameters = utils.Overwrite<utils.Mutable<aws.autoscaling
     waitForCapacityTimeout?: never;
     waitForElbCapacity?: never;
 
+    desiredCapacity?: pulumi.Input<number>;
+    healthCheckType?: pulumi.Input<"EC2" | "ELB">;
     maxSize?: pulumi.Input<number>;
     minSize?: pulumi.Input<number>;
-    desiredCapacity?: pulumi.Input<number>;
+    suspendedProcesses?: pulumi.Input<pulumi.Input<
+        "Launch" | "Terminate" | "HealthCheck" | "ReplaceUnhealthy" |
+        "AZRebalance" | "AlarmNotification" | "ScheduledActions" | "AddToLoadBalancer">[]>;
 }>;
 
 export interface TemplateParameters {
