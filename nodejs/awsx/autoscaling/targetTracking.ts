@@ -155,20 +155,20 @@ export function createCustomMetricPolicy(
 }
 
 function convertDimensions(dimensions: pulumi.Output<{[key: string]: string}> | undefined) {
-    if (dimensions !== undefined) {
-        return dimensions.apply(d => {
-            if (!d) {
-                return [];
-            }
-
-            const result: { name: string, value: string }[] = [];
-            for (const key of Object.keys(d)) {
-                result.push({ name: key, value: d[key] });
-            }
-
-            return result;
-        });
+    if (dimensions === undefined) {
+        return dimensions;
     }
 
-    return undefined;
+    return dimensions.apply(d => {
+        if (!d) {
+            return [];
+        }
+
+        const result: { name: string, value: string }[] = [];
+        for (const key of Object.keys(d)) {
+            result.push({ name: key, value: d[key] });
+        }
+
+        return result;
+    });
 }
