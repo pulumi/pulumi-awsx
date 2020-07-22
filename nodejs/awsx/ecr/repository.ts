@@ -79,7 +79,7 @@ export interface RepositoryArgs {
     /**
      * A mapping of tags to assign to the resource.
      */
-    tags?: pulumi.Input<Record<string, any>>;
+    tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 
     /**
      * The arguments controlling the [LifecyclePolicy] for this [Repository].  If `undefined`, a default one will be

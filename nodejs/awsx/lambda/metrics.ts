@@ -58,7 +58,7 @@ export namespace metrics {
      *    to alias invocations.
      */
     function metric(metricName: LambdaMetricName, change: LambdaMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.function !== undefined) {
             dimensions.FunctionName = change.function.name;
         }

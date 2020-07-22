@@ -79,7 +79,7 @@ export namespace metrics {
      * available statistics are filtered by volume ID.
      */
     function metric(metricName: EbsMetricName, change: EbsMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.volume !== undefined) {
             dimensions.VolumeId = change.volume.id;
         }

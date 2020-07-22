@@ -80,7 +80,7 @@ export namespace metrics {
      *    instances with Detailed Monitoring enabled.
      */
     function metric(metricName: Ec2MetricName, change: Ec2MetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.instance !== undefined) {
             dimensions.InstanceId = change.instance.id;
         }

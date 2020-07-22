@@ -49,7 +49,7 @@ export namespace metrics {
      * takes the form of fs-XXXXXXXX.
      */
     function metric(metricName: EfsMetricName, change: EfsMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.fileSystem !== undefined) {
             dimensions.FileSystemId = change.fileSystem.id;
         }

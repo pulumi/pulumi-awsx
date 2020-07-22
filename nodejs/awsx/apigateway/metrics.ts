@@ -95,7 +95,7 @@ export namespace metrics {
      * 3. "ApiName, Stage": Filters API Gateway metrics for an API stage of the specified API and stage.
      */
     function metric(metricName: ApigatewayMetricName, change: ApigatewayMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.restApi !== undefined) {
             dimensions.ApiName = change.restApi.name;
         }

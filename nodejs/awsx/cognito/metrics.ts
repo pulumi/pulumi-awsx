@@ -41,7 +41,7 @@ export namespace metrics {
      * level.
      */
     function metric(metricName: CognitoMetricName, change: CognitoMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.userPool !== undefined) {
             dimensions.UserPoolId = change.userPool.id;
         }
