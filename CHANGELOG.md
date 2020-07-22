@@ -3,6 +3,9 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Update `Metric` to support the latest `@pulumi/aws` resource shape. This is a breaking change that narrows the type of `dimensions`
+from allowing `[key: string]: any` to `[key: string]: string`.
+
 ## 0.20.0 (2020-04-20)
 
 * Update dependencies to be peer dependencies and allow both 1.x and 2.x for `@pulumi/pulumi`, `@pulumi/aws`.
