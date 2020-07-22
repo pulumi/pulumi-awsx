@@ -154,17 +154,21 @@ export function createCustomMetricPolicy(
     }, opts);
 }
 
-function convertDimensions(dimensions: pulumi.Output<Record<string, any> | undefined>) {
-    return dimensions.apply(d => {
-        if (!d) {
-            return [];
-        }
+function convertDimensions(dimensions: pulumi.Output<{[key: string]: string}> | undefined) {
+    if (dimensions !== undefined) {
+        return dimensions.apply(d => {
+            if (!d) {
+                return [];
+            }
 
-        const result: { name: string, value: string }[] = [];
-        for (const key of Object.keys(d)) {
-            result.push({ name: key, value: d[key] });
-        }
+            const result: { name: string, value: string }[] = [];
+            for (const key of Object.keys(d)) {
+                result.push({ name: key, value: d[key] });
+            }
 
-        return result;
-    });
+            return result;
+        });
+    }
+
+    return undefined;
 }

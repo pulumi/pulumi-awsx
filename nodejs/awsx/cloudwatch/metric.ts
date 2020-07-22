@@ -64,7 +64,7 @@ export class Metric {
      * The dimensions for this metric.  For the list of available dimensions see the AWS documentation
      * [here](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/CW_Support_For_AWS.html).
      */
-    public readonly dimensions: pulumi.Output<Record<string, any> | undefined>;
+    public readonly dimensions: pulumi.Output<{[key: string]: string}> | undefined;
     /**
      * The period in seconds over which the specified [statistic] is applied.  Must be in multiples
      * of 60. Periods are defined in numbers of seconds, and valid values for period are 1, 5, 10,
@@ -135,7 +135,10 @@ export class Metric {
     constructor(args: MetricArgs, resource?: pulumi.Resource) {
         this.resource = resource;
         this.name = pulumi.output(args.name);
-        this.dimensions = pulumi.output(args.dimensions);
+        if (args.dimensions) {
+            this.dimensions = pulumi.output(args.dimensions);
+        }
+
         this.namespace = pulumi.output(args.namespace);
         this.period = utils.ifUndefined(args.period, 300).apply(p => validatePeriod(p));
         this.statistic = pulumi.all([args.statistic, args.extendedStatistic])
@@ -203,10 +206,10 @@ export class Metric {
      * dimension, pass in an explicit value of `{ name: undefined }`.  To clear all dimensions, pass
      * in `undefined` for the entire argument.
      */
-    public withDimensions(dimensions: pulumi.Input<Record<string, any>> | undefined) {
+    public withDimensions(dimensions: pulumi.Input<{ [key: string]: pulumi.Input<string> }> | undefined) {
         return new Metric({
             ...this.spread(),
-            dimensions: mergeDimensions(this.dimensions, pulumi.output(dimensions)),
+            dimensions: mergeDimensions(this.dimensions, dimensions),
         }, this.resource);
     }
 
@@ -325,15 +328,15 @@ export class Metric {
 
 /** @internal */
 export function mergeDimensions(
-        oldDimensions: pulumi.Input<Record<string, any> | undefined> | undefined,
-        newDimensions: pulumi.Input<Record<string, any> | undefined> | undefined) {
+        oldDimensions: pulumi.Input<{ [key: string]: pulumi.Input<string> }> | undefined,
+        newDimensions: pulumi.Input<{ [key: string]: pulumi.Input<string> }> | undefined) {
+
+    if (!newDimensions) {
+        // they're explicitly clearing out all dimensions.
+        return undefined;
+    }
 
     return pulumi.all([oldDimensions, newDimensions]).apply(([oldDimensions, newDimensions]) => {
-        if (!newDimensions) {
-            // they're explicitly clearing out all dimensions.
-            return undefined;
-        }
-
         if (!oldDimensions) {
             // no old dimensions, can just use all the new dimensions passed in.
             return newDimensions;
@@ -427,7 +430,7 @@ export interface MetricChange {
      * will be made.  However, if the property is there by set to [undefined] then the value will be
      * cleared.
      */
-    dimensions?: pulumi.Input<Record<string, any>>;
+    dimensions?: pulumi.Input<{ [key: string]: pulumi.Input<string> }>;
     /**
      * The new period in seconds over which the specified `stat` is applied.  If this object is
      * missing this property, then no change will be made.  However, if the property is there by set
@@ -580,7 +583,7 @@ export interface MetricArgs {
      * The dimensions for this metric.  For the list of available dimensions see the AWS documentation
      * [here](http://docs.aws.amazon.com/AmazonCloudWatch/latest/DeveloperGuide/CW_Support_For_AWS.html).
      */
-    dimensions?: pulumi.Input<Record<string, any> | undefined>;
+    dimensions?: pulumi.Input<{ [key: string]: pulumi.Input<string> }>;
     /**
      * The period in seconds over which the specified `stat` is applied.  Must be in multiples of 60.
      * Default to [300] if unspecified.
