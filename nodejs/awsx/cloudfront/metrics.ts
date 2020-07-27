@@ -52,7 +52,7 @@ export namespace metrics {
      *    US East (N. Virginia).
      */
     function metric(metricName: CloudfrontMetricName, change: CloudfrontMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.distribution !== undefined) {
             dimensions.DistributionId = change.distribution.id;
         }

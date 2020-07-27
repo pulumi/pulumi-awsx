@@ -52,7 +52,7 @@ export namespace metrics {
      * The only dimension that Amazon SQS sends to CloudWatch is "QueueName"
      */
     function metric(metricName: SqsMetricName, change: SqsMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.queue !== undefined) {
             dimensions.QueueName = change.queue.name;
         }

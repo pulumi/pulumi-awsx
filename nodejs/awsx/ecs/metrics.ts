@@ -62,7 +62,7 @@ export namespace metrics {
      *    specified service within a specified cluster.
      */
     function metric(metricName: EcsMetricName, change: EcsMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.cluster !== undefined) {
             if (change.cluster instanceof Cluster) {
                 dimensions.ClusterName = change.cluster.cluster.name;

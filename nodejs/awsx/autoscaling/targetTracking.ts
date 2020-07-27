@@ -154,7 +154,11 @@ export function createCustomMetricPolicy(
     }, opts);
 }
 
-function convertDimensions(dimensions: pulumi.Output<Record<string, any> | undefined>) {
+function convertDimensions(dimensions: pulumi.Output<{[key: string]: string}> | undefined) {
+    if (dimensions === undefined) {
+        return dimensions;
+    }
+
     return dimensions.apply(d => {
         if (!d) {
             return [];

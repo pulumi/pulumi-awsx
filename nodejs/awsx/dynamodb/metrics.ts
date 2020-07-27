@@ -85,7 +85,7 @@ export namespace metrics {
      *    name in the current region and the current AWS account.
      */
     function metric(metricName: DynamodbMetricName, change: DynamodbMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.table !== undefined) {
             dimensions.TableName = change.table.name;
         }

@@ -691,6 +691,7 @@ function isExistingVpcArgs(obj: any): obj is ExistingVpcArgs {
 
 type OverwriteShape = utils.Overwrite<aws.ec2.VpcArgs, {
     cidrBlock?: CidrBlock;
+    instanceTenancy?: pulumi.Input<"default" | "dedicated">;
 }>;
 
 export interface VpcArgs {

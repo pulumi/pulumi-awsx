@@ -162,7 +162,7 @@ export namespace metrics {
      *    example, you can aggregate metrics for all instances in the region us-east-1.
      */
     function metric(metricName: RdsMetricName, change: RdsMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.cluster !== undefined) {
             dimensions.DBClusterIdentifier = change.cluster.id;
         }

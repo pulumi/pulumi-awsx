@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
 
 import * as cloudwatch from "../cloudwatch";
 
@@ -46,7 +47,7 @@ export namespace metrics {
      * dimension.
      */
     function metric(metricName: aws.autoscaling.Metric, change: AutoScalingMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.group !== undefined) {
             dimensions.AutoScalingGroupName = change.group.name;
         }

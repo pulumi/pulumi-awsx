@@ -44,7 +44,7 @@ export namespace metrics {
     }
 
     function createDimensions(change: CoreMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.loadBalancer !== undefined) {
             if (change.loadBalancer instanceof LoadBalancer) {
                 dimensions.LoadBalancer = change.loadBalancer.loadBalancer.arnSuffix;

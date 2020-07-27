@@ -135,7 +135,7 @@ export namespace metrics {
      *    [Metrics-Configurations-for-Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/metrics-configurations.html).
      */
     function metric(metricName: S3MetricName, change: S3MetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.bucket !== undefined) {
             dimensions.BucketName = change.bucket.bucket;
         }

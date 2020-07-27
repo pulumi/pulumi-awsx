@@ -88,7 +88,7 @@ export namespace metrics {
      *    "transactional".
      */
     function metric(metricName: SnsMetricName, change: SnsMetricChange = {}) {
-        const dimensions: Record<string, any> = {};
+        const dimensions: Record<string, pulumi.Input<string>> = {};
         if (change.topic !== undefined) {
             dimensions.TopicName = change.topic.name;
         }

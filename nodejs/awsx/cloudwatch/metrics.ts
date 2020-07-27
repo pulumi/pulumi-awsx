@@ -47,7 +47,7 @@ export namespace metrics {
          * 1. "RuleName": Filters the available metrics by rule name.
          */
         function metric(metricName: CloudWatchEventMetricName, change: CloudWatchMetricChange = {}) {
-            const dimensions: Record<string, any> = {};
+            const dimensions: Record<string, pulumi.Input<string>> = {};
             if (change.eventRule !== undefined) {
                 dimensions.RuleName = change.eventRule.name;
             }
@@ -172,7 +172,7 @@ export namespace metrics {
          *    ASCII and any unsupported characters get replaced with a question mark (?).
          */
         function metric(metricName: CloudWatchLogMetricName, change: CloudWatchMetricChange = {}) {
-            const dimensions: Record<string, any> = {};
+            const dimensions: Record<string, pulumi.Input<string>> = {};
             if (change.logGroup !== undefined) {
                 dimensions.LogGroupName = change.logGroup.name;
             }
