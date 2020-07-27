@@ -306,6 +306,13 @@ export interface ApplicationLoadBalancerArgs {
     // Properties from LoadBalancerArgs
 
     /**
+     * An existing aws.lb.LoadBalancer to use for this awsx.lb.LoadBalancer.
+     * If this value is set then all other arguments are ignored.
+     * If not provided, one will be created.
+     */
+    loadBalancer?: aws.lb.LoadBalancer;
+
+    /**
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */

@@ -5,6 +5,7 @@ CHANGELOG
 
 * Update `Metric` to support the latest `@pulumi/aws` resource shape. This is a breaking change that narrows the type of `dimensions`
 from allowing `[key: string]: any` to `[key: string]: string`.
+* Allow an existing `aws.lb.LoadBalancer` to be passed to `awsx.lb.LoadBalancer`.
 
 ## 0.20.0 (2020-04-20)
 
