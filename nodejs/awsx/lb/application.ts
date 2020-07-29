@@ -233,7 +233,7 @@ export class ApplicationListener extends mod.Listener {
         // target group used by the load balancer to route requests, you must verify that the
         // security groups associated with the load balancer allow traffic on the new port in both
         // directions.
-        if (args.external !== false) {
+        if (!args.listener && args.external !== false) {
             const args = {
                 location: new x.ec2.AnyIPv4Location(),
                 ports: new x.ec2.TcpPorts(port),
@@ -498,6 +498,13 @@ export interface ApplicationTargetGroupArgs {
 }
 
 export interface ApplicationListenerArgs {
+
+    /**
+     * An existing aws.lb.Listener to use for this awsx.lb.Listener.
+     * If not provided, one will be created.
+     */
+    listener?: aws.lb.Listener;
+
     /**
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.

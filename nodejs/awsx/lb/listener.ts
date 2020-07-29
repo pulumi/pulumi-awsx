@@ -58,7 +58,7 @@ export abstract class Listener
         const defaultSslPolicy = pulumi.output(args.certificateArn)
                                        .apply(a => a ? "ELBSecurityPolicy-2016-08" : undefined!);
 
-        this.listener = new aws.lb.Listener(name, {
+        this.listener = args.listener || new aws.lb.Listener(name, {
             ...args,
             loadBalancerArn: args.loadBalancer.loadBalancer.arn,
             sslPolicy: utils.ifUndefined(args.sslPolicy, defaultSslPolicy),
@@ -322,6 +322,13 @@ type OverwriteShape = utils.Overwrite<aws.lb.ListenerArgs, {
 }>;
 
 export interface ListenerArgs {
+
+    /**
+     * An existing aws.lb.Listener to use for this awsx.lb.Listener.
+     * If not provided, one will be created.
+     */
+    listener?: aws.lb.Listener;
+
     loadBalancer: x.lb.LoadBalancer;
 
     /**

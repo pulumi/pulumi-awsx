@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Allow an existing `aws.lb.Listener` to be passed to `awsx.lb.Listener`.
+
 ## 0.21.0 (2020-07-27)
 
 * Update `Metric` to support the latest `@pulumi/aws` resource shape. This is a breaking change that narrows the type of `dimensions`
