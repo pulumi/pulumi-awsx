@@ -417,6 +417,13 @@ export interface NetworkTargetGroupArgs {
 }
 
 export interface NetworkListenerArgs {
+
+    /**
+     * An existing aws.lb.Listener to use for this awsx.lb.Listener.
+     * If not provided, one will be created.
+     */
+    listener?: aws.lb.Listener;
+
     /**
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
