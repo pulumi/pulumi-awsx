@@ -508,7 +508,7 @@ export class API extends pulumi.ComponentResource {
     private readonly swaggerLambdas: SwaggerLambdas;
 
     constructor(name: string, args: APIArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("aws:apigateway:x:API", name, {}, opts);
+        super("awsx:apigateway:x:API", name, {}, opts);
 
         let swaggerString: pulumi.Output<string>;
         let swaggerLambdas: SwaggerLambdas | undefined;

@@ -4,6 +4,7 @@ CHANGELOG
 ## HEAD (Unreleased)
 
 * Allow an existing `aws.lb.Listener` to be passed to `awsx.lb.Listener`.
+* Use the `awsx` namespace for all objects
 
 ## 0.21.0 (2020-07-27)
 

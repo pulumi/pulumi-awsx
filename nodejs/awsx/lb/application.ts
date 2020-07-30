@@ -51,7 +51,7 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
             }, opts)];
         }
 
-        super("aws:lb:ApplicationLoadBalancer", name, argsCopy,
+        super("awsx:lb:ApplicationLoadBalancer", name, argsCopy,
             pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer"}] }));
 
         this.listeners = [];
