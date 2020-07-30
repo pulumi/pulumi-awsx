@@ -201,7 +201,7 @@ type OverwriteEC2ServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
     taskDefinitionArgs?: EC2TaskDefinitionArgs;
     launchType?: never;
     networkConfiguration?: never;
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: x.ec2.SecurityGroupsOrIds;
 }>;
 
 export interface EC2ServiceArgs {
@@ -272,7 +272,7 @@ export interface EC2ServiceArgs {
      *
      * Defaults to [cluster.securityGroups] if unspecified.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: x.ec2.SecurityGroupsOrIds;
 
     /**
      * The subnets to connect the instances to.  If unspecified then these will be the public

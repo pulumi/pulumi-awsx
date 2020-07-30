@@ -165,7 +165,7 @@ function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
     vpc?: x.ec2.Vpc;
     cluster?: aws.ecs.Cluster | pulumi.Input<string>;
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: x.ec2.SecurityGroupsOrIds;
     tags?: pulumi.Input<aws.Tags>;
 }>;
 
@@ -213,7 +213,7 @@ export interface ClusterArgs {
      * The security group to place new instances into.  If not provided, a default will be
      * created. Pass an empty array to create no security groups.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: x.ec2.SecurityGroupsOrIds;
 
     /**
      * Key-value mapping of resource tags

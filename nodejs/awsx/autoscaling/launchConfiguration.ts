@@ -267,7 +267,7 @@ type OverwriteAutoScalingLaunchConfigurationArgs = utils.Overwrite<utils.Mutable
     ecsOptimizedAMIName?: string;
     instanceType?: pulumi.Input<aws.ec2.InstanceType>;
     placementTenancy?: pulumi.Input<"default" | "dedicated">;
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: x.ec2.SecurityGroupsOrIds;
     userData?: pulumi.Input<string> | AutoScalingUserData;
 }>;
 
@@ -410,7 +410,7 @@ export interface AutoScalingLaunchConfigurationArgs {
     /**
     * A list of associated security group IDs.
     */
-   securityGroups?: x.ec2.SecurityGroupOrId[];
+   securityGroups?: x.ec2.SecurityGroupsOrIds;
 
     /**
      * The user data to provide when launching the instance. Do not pass gzip-compressed data via this argument; see `user_data_base64` instead.

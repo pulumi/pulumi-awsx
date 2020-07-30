@@ -383,7 +383,7 @@ export interface ApplicationLoadBalancerArgs {
      * be created for the ALB.  To prevent a default instance from being created, pass in an empty
      * array here.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: x.ec2.SecurityGroupsOrIds;
 }
 
 /**

@@ -152,7 +152,7 @@ export interface LoadBalancerArgs {
      * A list of security group IDs to assign to the LB. Only valid for Load Balancers of type
      * `application`.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: x.ec2.SecurityGroupsOrIds;
 }
 
 export interface LoadBalancerSubnets {

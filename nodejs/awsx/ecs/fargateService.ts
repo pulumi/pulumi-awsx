@@ -338,7 +338,7 @@ type OverwriteFargateServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
     taskDefinitionArgs?: FargateTaskDefinitionArgs;
     launchType?: never;
     networkConfiguration?: never;
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: x.ec2.SecurityGroupsOrIds;
 }>;
 
 export interface FargateServiceArgs {
@@ -416,7 +416,7 @@ export interface FargateServiceArgs {
      *
      * Defaults to [cluster.securityGroups] if unspecified.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: x.ec2.SecurityGroupsOrIds;
 
     /**
      * The subnets to connect the instances to.  If unspecified and [assignPublicIp] is true, then
