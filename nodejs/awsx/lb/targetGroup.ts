@@ -45,11 +45,15 @@ export abstract class TargetGroup
 
         this.vpc = args.vpc;
 
+        if (!args.targetGroup && args.port === undefined) {
+            throw new Error("[port] must be provided.");
+        }
+
         // We used to hash the name of an TG to keep the name short.  This was necessary back when
         // people didn't have direct control over creating the TG.  In awsx though creating the TG
         // is easy to do, so we just let the user pass in the name they want.  We simply add an
         // alias from the old name to the new one to keep things from being recreated.
-        this.targetGroup = new aws.lb.TargetGroup(name, {
+        this.targetGroup = args.targetGroup || new aws.lb.TargetGroup(name, {
             ...args,
             vpcId: this.vpc.id,
             protocol: utils.ifUndefined(args.protocol, "HTTP"),
@@ -174,6 +178,13 @@ export interface TargetGroupHealthCheck {
 }
 
 export interface TargetGroupArgs {
+
+    /**
+     * An existing aws.lb.TargetGroup to use for this awsx.lb.TargetGroup.
+     * If not provided, one will be created.
+     */
+    targetGroup?: aws.lb.TargetGroup;
+
     /**
      * The vpc for this target group.
      */
@@ -201,12 +212,12 @@ export interface TargetGroupArgs {
      * The port to use to connect with the target. Valid values are either ports 1-65536, or
      * `traffic-port`. Defaults to `traffic-port`.
      */
-    port: pulumi.Input<number>;
+    port: pulumi.Input<number> | undefined;
 
     /**
      * The protocol to use to connect with the target.
      */
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS">;
+    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS"> | undefined;
 
     /**
      * Boolean to enable / disable support for proxy protocol v2 on Network Load Balancers. See

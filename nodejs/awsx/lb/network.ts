@@ -334,6 +334,12 @@ export interface NetworkTargetGroupHealthCheck extends mod.TargetGroupHealthChec
 
 export interface NetworkTargetGroupArgs {
     /**
+     * An existing aws.lb.TargetGroup to use for this awsx.lb.TargetGroup.
+     * If not provided, one will be created.
+     */
+    targetGroup?: aws.lb.TargetGroup;
+
+    /**
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
