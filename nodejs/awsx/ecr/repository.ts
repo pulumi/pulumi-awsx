@@ -56,7 +56,7 @@ export class Repository extends pulumi.ComponentResource {
 }
 
 /**
- * Creates a new [Repository] (optionally configured using [args]), builds the docker container
+ * Creates a new [Repository], optionally configured using [args], builds the docker container
  * specified by [pathOrBuild] and then pushes the built image to the repository.  The result
  * contains both the Repository created as well as the unique ID referencing the built image in that
  * repo.  This result type can be passed in as `image: ecr.buildAndPushImage(...)` for an
