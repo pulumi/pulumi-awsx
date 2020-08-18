@@ -104,7 +104,7 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
             vpc: args.vpc,
             name: args.name,
         }, opts);
-        const { port, protocol } = computePortInfo(args.port, args.protocol);
+        const { port, protocol } = args.targetGroup ? { port: undefined, protocol: undefined} : computePortInfo(args.port, args.protocol);
 
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:x:elasticloadbalancingv2:ApplicationTargetGroup" }] });
         super("awsx:lb:ApplicationTargetGroup", name, loadBalancer, {
@@ -143,8 +143,8 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 }
 
 function computePortInfo(
-    port: pulumi.Input<number> | undefined,
-    protocol: pulumi.Input<ApplicationProtocol> | undefined) {
+    port?: pulumi.Input<number>,
+    protocol?: pulumi.Input<ApplicationProtocol>) {
 
     if (port === undefined && protocol === undefined) {
         throw new Error("At least one of [port] or [protocol] must be provided.");
@@ -206,7 +206,8 @@ export class ApplicationListener extends mod.Listener {
                 name: args.name,
             }, opts);
 
-        const { port, protocol } = computePortInfo(args.port, args.protocol);
+        const { port, protocol } = computePortInfo(args.port || args.listener?.port,
+            args.protocol || (args.listener?.protocol as (pulumi.Output<ApplicationProtocol> | undefined)));
         const { defaultActions, defaultListener } = getDefaultActions(
             name, loadBalancer, args, port, protocol, opts);
 
@@ -414,6 +415,12 @@ export interface ApplicationTargetGroupHealthCheck extends mod.TargetGroupHealth
 }
 
 export interface ApplicationTargetGroupArgs {
+    /**
+     * An existing aws.lb.TargetGroup to use for this awsx.lb.TargetGroup.
+     * If not provided, one will be created.
+     */
+    targetGroup?: aws.lb.TargetGroup;
+
     /**
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
