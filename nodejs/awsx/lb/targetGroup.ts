@@ -45,10 +45,6 @@ export abstract class TargetGroup
 
         this.vpc = args.vpc;
 
-        if (!args.targetGroup && args.port === undefined) {
-            throw new Error("[port] must be provided.");
-        }
-
         // We used to hash the name of an TG to keep the name short.  This was necessary back when
         // people didn't have direct control over creating the TG.  In awsx though creating the TG
         // is easy to do, so we just let the user pass in the name they want.  We simply add an
