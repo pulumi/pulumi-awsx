@@ -57,6 +57,7 @@ export interface SwaggerOperation {
     responses?: { [code: string]: SwaggerResponse };
     "x-amazon-apigateway-integration": ApigatewayIntegration;
     "x-amazon-apigateway-request-validator"?: RequestValidator;
+    "x-amazon-apigateway-auth"?: ApigatewayAuth;
 
     /**
      * security a list of objects whose keys are the names of the authorizer. Each authorizer name
@@ -135,6 +136,10 @@ export interface ApigatewayIntegration {
     connectionType?: pulumi.Input<IntegrationConnectionType | undefined>;
     connectionId?: pulumi.Input<string | undefined>;
     credentials?: pulumi.Output<string>;
+}
+
+export interface ApigatewayAuth {
+    type: string;
 }
 
 export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH" | "OPTIONS";

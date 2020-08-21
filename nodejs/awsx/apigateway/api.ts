@@ -121,6 +121,12 @@ export interface BaseRoute {
      * the route is called.
      */
     authorizers?: Authorizer[] | Authorizer;
+
+    /**
+     * By default, the route method auth type is set to `NONE`. If true, the auth type will be
+     * set to `AWS_IAM`.
+     */
+    iamAuthEnabled?: boolean;
 }
 
 export interface EventHandlerRoute extends BaseRoute {
@@ -871,6 +877,9 @@ function addBasePathOptionsToSwagger(
     }
     if (route.requestValidator) {
         swaggerOperation["x-amazon-apigateway-request-validator"] = route.requestValidator;
+    }
+    if (route.iamAuthEnabled) {
+        swaggerOperation["x-amazon-apigateway-auth"] = { type: "AWS_IAM" };
     }
     if (route.apiKeyRequired) {
         addAPIkeyToSecurityDefinitions(swagger);
