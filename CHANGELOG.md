@@ -2,6 +2,9 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+_(none)_
+
+## 0.22.0 (2020-09-01)
 
 * Allow an existing `aws.lb.TargetGroup` to be passed to `awsx.lb.TargetGroup`.
 * Allow an existing `aws.lb.Listener` to be passed to `awsx.lb.Listener`.
