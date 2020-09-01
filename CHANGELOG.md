@@ -6,6 +6,7 @@ CHANGELOG
 * Allow an existing `aws.lb.TargetGroup` to be passed to `awsx.lb.TargetGroup`.
 * Allow an existing `aws.lb.Listener` to be passed to `awsx.lb.Listener`.
 * Update `awsx.apigateway.API` to support IAM Authorization on routes.
+* Upgrade to `pulumi-aws` v3.0.0
 
 ## 0.21.0 (2020-07-27)
 
