@@ -1,20 +1,38 @@
 PROJECT_NAME := Pulumi Infrastructure Components for AWS
-SUB_PROJECTS := nodejs/awsx
-include build/common.mk
 
-.PHONY: publish_packages
-publish_packages:
-	$(call STEP_MESSAGE)
-	./scripts/publish_packages.sh
-	$$(go env GOPATH)/src/github.com/pulumi/scripts/ci/build-package-docs.sh awsx
+VERSION         := $(shell pulumictl get version)
+TESTPARALLELISM := 10
 
-.PHONY: check_clean_worktree
-check_clean_worktree:
-	$$(go env GOPATH)/src/github.com/pulumi/scripts/ci/check-worktree-is-clean.sh
+WORKING_DIR     := $(shell pwd)
 
-# The travis_* targets are entrypoints for CI.
-.PHONY: travis_cron travis_push travis_pull_request travis_api
-travis_cron: all
-travis_push: only_build check_clean_worktree only_test publish_packages
-travis_pull_request: only_build check_clean_worktree only_test_fast
-travis_api: all
+build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
+build_nodejs::
+	cd nodejs/awsx && \
+		yarn install && \
+		yarn run install-peers -f && \
+		yarn run tsc && \
+		tsc --version && \
+		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
+		cp ../../README.md ../../LICENSE bin/
+
+istanbul_tests::
+	cd nodejs/awsx/tests && \
+		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
+
+test_nodejs::
+	cd nodejs/awsx && go test -v -count=1 -cover -timeout 2h -parallel ${TESTPARALLELISM} .
+
+install_nodejs_sdk::
+	cd $(WORKING_DIR)/nodejs/awsx/bin && yarn install
+	yarn link --cwd $(WORKING_DIR)/nodejs/awsx/bin
+
+lint:
+	yarn global add tslint typescript
+	cd nodejs/awsx && \
+		yarn install && \
+		yarn run install-peers -f && \
+		tslint -c ../tslint.json -p tsconfig.json
+
+dev:: lint build_nodejs istanbul_tests
+
+test:: install_nodejs_sdk test_nodejs
