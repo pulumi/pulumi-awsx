@@ -115,13 +115,6 @@ jobs:
         with:
           always-auth: true
           registry-url: https://registry.npmjs.org
-      - name: Download NodeJS SDK
-        uses: actions/download-artifact@v2
-        with:
-          name: nodejs-sdk.tar.gz
-          path: ${{ github.workspace}}/sdk
-      - name: Unzip NodeJS SDK
-        run: tar -zxf ${{ github.workspace}}/sdk/nodejs.tar.gz -C ${{ github.workspace}}/sdk/nodejs
       - name: Download SDK
         uses: actions/download-artifact@v2
         with:
