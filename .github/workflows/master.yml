@@ -115,14 +115,14 @@ jobs:
         with:
           always-auth: true
           registry-url: https://registry.npmjs.org
-      - name: Download SDK
+      - name: Download NodeJS SDK
         uses: actions/download-artifact@v2
         with:
-          name: ${{ matrix.language }}-sdk.tar.gz
-          path: ${{ github.workspace}}/${{ matrix.language }}/
+          name: nodejs-sdk.tar.gz
+          path: ${{ github.workspace}}/nodejs
       - name: Uncompress SDK folder
-        run: tar -zxf ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{
-          github.workspace}}/${{ matrix.language}}/awsx
+        run: tar -zxf ${{ github.workspace}}/nodejs/nodejs.tar.gz -C ${{
+          github.workspace}}/nodejs/awsx
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         name: Publish SDK
