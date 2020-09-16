@@ -2,7 +2,9 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-_(none)_
+
+* Ensure API Gateway static routes use POSIX paths. File paths with '\\' are transformed to '/' when uploaded.
+[#581](https://github.com/pulumi/pulumi-awsx/pull/581)
 
 ## 0.22.0 (2020-09-01)
 

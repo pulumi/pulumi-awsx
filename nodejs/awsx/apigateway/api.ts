@@ -1102,7 +1102,7 @@ function addStaticRouteToSwaggerSpec(
         const directoryKey = name + sha1hash(method + ":" + directoryServerPath);
         const role = createRole(directoryKey);
 
-        let startDir = directory.localPath.startsWith("/")
+        let startDir = fspath.isAbsolute(directory.localPath)
             ? directory.localPath
             : fspath.join(process.cwd(), directory.localPath);
 
@@ -1110,7 +1110,7 @@ function addStaticRouteToSwaggerSpec(
             startDir = fspath.join(startDir, fspath.sep);
         }
 
-        // If the user has supplied 'false' for options.index, then no speciam index file served
+        // If the user has supplied 'false' for options.index, then no special index file served
         // at the root. Otherwise if they've supplied an actual filename to serve as the index
         // file then use what they've provided.  Otherwise attempt to serve "index.html" at the
         // root (if it exists).
@@ -1135,7 +1135,8 @@ function addStaticRouteToSwaggerSpec(
                     walk(childPath);
                 }
                 else if (stats.isFile()) {
-                    const childRelativePath = childPath.substr(startDir.length);
+                    // childPath could have either Windows or POSIX separators, so we should account for this.
+                    const childRelativePath = childPath.substr(startDir.length).split(fspath.sep).join(fspath.posix.sep);
                     const childUrn = directoryKey + "/" + childRelativePath;
 
                     createBucketObject(childUrn, childPath);
