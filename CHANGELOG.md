@@ -5,7 +5,7 @@ CHANGELOG
 
 * Ensure API Gateway static routes use POSIX paths. File paths with '\\' are transformed to '/' when uploaded.
 [#581](https://github.com/pulumi/pulumi-awsx/pull/581)
-* Add `lambda.Function` and `cloudtrail.Trail` components which auto-generate required roles and buckets.
+* Add `cloudtrail.Trail` component which can generate the required roles and bucket for a CloudTrail.
 
 ## 0.22.0 (2020-09-01)
 
