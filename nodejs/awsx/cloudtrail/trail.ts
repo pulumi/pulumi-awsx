@@ -23,7 +23,7 @@ export class Trail extends pulumi.ComponentResource {
     public readonly logGroup: aws.cloudwatch.LogGroup | undefined;
 
     /**
-     * The managed S3 Bucket.
+     * The managed S3 Bucket where the Trail will place its logs.
      */
     public readonly bucket: aws.s3.Bucket | undefined;
 
@@ -71,22 +71,21 @@ type TrailArgs = utils.Overwrite<aws.cloudtrail.TrailArgs, {
     /**
      * If CloudTrail pushes logs to CloudWatch Logs in addition to S3.
      *
-     * Disabled for cost out of the box.
+     * Disabled by default to reduce costs.
      *
      * @default false
      */
-    readonly sendToCloudWatchLogs?: pulumi.Input<boolean>;
+    sendToCloudWatchLogs?: boolean;
 
     /**
-     * If sendToCloudWatchLogs is enabled, provide these arguments to configure
-     * the log group.
+     * If sendToCloudWatchLogs is enabled, provide the log group configuration.
      */
-    readonly cloudWatchLogGroupArgs?: aws.cloudwatch.LogGroupArgs;
+    cloudWatchLogGroupArgs?: aws.cloudwatch.LogGroupArgs;
 
     /**
      * Specifies the name of the S3 bucket designated for publishing log files.
      */
-    readonly s3BucketName?: pulumi.Input<string>;
+    s3BucketName?: pulumi.Input<string>;
 }>;
 
 function bucketWithCloudTrailPolicy(name: string, parent: pulumi.Resource | undefined): aws.s3.Bucket {
@@ -98,7 +97,7 @@ function bucketWithCloudTrailPolicy(name: string, parent: pulumi.Resource | unde
             Statement: [{
                 Sid: "AWSCloudTrailAclCheck",
                 Effect: "Allow",
-                Principal: {Service: "cloudtrail.amazonaws.com"},
+                Principal: aws.iam.Principals.CloudtrailPrincipal,
                 Action: ["s3:GetBucketAcl"],
                 Resource: [bucket.arn],
             }, {
