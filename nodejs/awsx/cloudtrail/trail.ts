@@ -28,7 +28,7 @@ export class Trail extends pulumi.ComponentResource {
     public readonly bucket: aws.s3.Bucket | undefined;
 
     /**
-     * The CloudWatch Trail.
+     * The CloudTrail Trail.
      */
     public readonly trail: aws.cloudtrail.Trail;
 
