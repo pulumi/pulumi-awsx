@@ -28,7 +28,7 @@ jobs:
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@release/v1-alpha
+        uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
           repo: pulumi/pulumictl
       - name: Setup Node
