@@ -10,12 +10,12 @@
     "dependencies": {
         "@pulumi/pulumi": "^2.0.0",
         "@pulumi/aws": "^3.0.0",
-        "node-fetch": "^1.7.3",
+        "node-fetch": "^2.6.1",
         "redis": "^2.8.0"
     },
     "devDependencies": {
         "@types/node": "^8.0.0",
-        "@types/node-fetch": "^1.6.7"
+        "@types/node-fetch": "^2.5.7"
     },
     "peerDependencies": {
         "@pulumi/awsx": "latest"
