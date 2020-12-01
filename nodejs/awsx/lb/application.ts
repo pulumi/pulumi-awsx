@@ -143,14 +143,14 @@ export class ApplicationTargetGroup extends mod.TargetGroup {
 }
 
 function computePortInfo(
-    port?: pulumi.Input<number>,
+    port?: pulumi.Input<number | undefined>,
     protocol?: pulumi.Input<ApplicationProtocol>) {
 
     if (port === undefined && protocol === undefined) {
         throw new Error("At least one of [port] or [protocol] must be provided.");
     }
 
-    port = pulumi.all([port, protocol]).apply(([port, protocol]) => {
+    const computedPort = pulumi.all([port, protocol]).apply(([port, protocol]) => {
         if (port !== undefined) {
             return port;
         }
@@ -176,7 +176,7 @@ function computePortInfo(
         }
     });
 
-    return { port, protocol };
+    return { port: computedPort, protocol };
 }
 
 export class ApplicationListener extends mod.Listener {
