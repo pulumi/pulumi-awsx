@@ -55,7 +55,7 @@ export function computeContainerDefinition(
                 name: containerName,
             };
 
-            if (logGroupId !== undefined) {
+            if (logGroupId === undefined) {
                 containerDefinition.logConfiguration = {
                     logDriver: "awslogs",
                     options: {
