@@ -309,27 +309,10 @@ export interface NetworkLoadBalancerArgs {
  */
 export interface NetworkTargetGroupHealthCheck extends mod.TargetGroupHealthCheck {
     /**
-     * Applies to Application Load Balancers only (HTTP/HTTPS), not Network Load Balancers (TCP)
-     */
-    matcher?: never;
-
-    /**
-     * Applies to Application Load Balancers only (HTTP/HTTPS), not Network Load Balancers (TCP).
-     */
-    path?: never;
-
-    /**
      * For Network Load Balancers, you cannot set a custom value, and the default is 10 seconds
      * for TCP and HTTPS health checks and 6 seconds for HTTP health checks.
      */
     timeout?: never;
-
-    /**
-     * The number of consecutive health check failures required before considering the target
-     * unhealthy . For Network Load Balancers, this value must be the same as the
-     * healthy_threshold.
-     */
-    unhealthyThreshold?: pulumi.Input<number>;
 }
 
 export interface NetworkTargetGroupArgs {
