@@ -167,7 +167,7 @@ export interface TargetGroupHealthCheck {
 
     /**
      * The number of consecutive health check failures required before considering the target
-     * unhealthy . For Network Load Balancers, this value must be the same as the
+     * unhealthy. For Network Load Balancers, this value must be the same as the
      * healthy_threshold. Defaults to 3.
      */
     unhealthyThreshold?: pulumi.Input<number>;
