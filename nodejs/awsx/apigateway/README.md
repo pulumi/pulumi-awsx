@@ -89,7 +89,7 @@ let endpoint = new awsx.apigateway.API("example", {
 })
 ```
 
-A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples/api/index.ts).
+A complete example can be found [here](https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/examples/api/index.ts).
 
 ##### Integration Route
 
