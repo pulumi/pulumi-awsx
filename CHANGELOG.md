@@ -2,6 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+* Replace default ECS task definition AmazonEC2ContainerServiceFullAccess policy to AmazonECSFullAccess policy
 
 ## 0.23.0 (2020-12-18)
 
