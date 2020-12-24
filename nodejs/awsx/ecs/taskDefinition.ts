@@ -147,9 +147,9 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
     public static defaultTaskRolePolicyARNs() {
         return [
             // Provides wide access to "serverless" services (Dynamo, S3, etc.)
-            aws.iam.ManagedPolicies.AWSLambdaFullAccess,
+            aws.iam.ManagedPolicy.AWSLambdaFullAccess,
             // Required for lambda compute to be able to run Tasks
-            aws.iam.ManagedPolicies.AmazonEC2ContainerServiceFullAccess,
+            aws.iam.ManagedPolicy.AmazonECSFullAccess,
         ];
     }
 
