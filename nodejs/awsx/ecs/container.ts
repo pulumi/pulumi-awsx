@@ -486,10 +486,10 @@ export interface Container {
 
     /**
      * When this parameter is true, this allows you to deploy containerized applications that
-     * require stdin or a tty to be allocated. This parameter maps to OpenStdin in the Create
-     * a container section of the Docker Remote API and the --interactive option to docker run.
+     * require stdin or a tty to be allocated. This parameter maps to OpenStdin in the Create a
+     * container section of the Docker Remote API and the --interactive option to docker run.
      */
-    interactive?: pulumi.Input<string>;
+    interactive?: pulumi.Input<boolean>;
 
     /**
      * The links parameter allows containers to communicate with each other without the need for
