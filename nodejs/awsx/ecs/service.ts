@@ -206,6 +206,14 @@ export interface ServiceArgs {
     enableEcsManagedTags?: pulumi.Input<boolean>;
 
     /**
+     * Enable to force a new task deployment of the service. This can be used to update tasks
+     * to use a newer Docker image with same image/tag combination (e.g. `myimage:latest`), roll
+     * Fargate tasks onto a newer platform version, or immediately deploy `orderedPlacementStrategy`
+     * and `placementConstraints` updates.
+     */
+    forceNewDeployment?: pulumi.Input<boolean>;
+
+    /**
      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
      * premature shutdown, up to 7200. Only valid for services configured to use load balancers.
      */
@@ -282,6 +290,18 @@ export interface ServiceArgs {
      */
     serviceRegistries?: aws.ecs.ServiceArgs["serviceRegistries"];
 
+    /**
+     * Key-value mapping of resource tags
+     */
+    tags?: pulumi.Input<aws.Tags>;
+
+    /**
+     * Wait for the service to reach a steady state (like [`aws ecs wait
+     * services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html))
+     * before continuing. Defaults to `true`.
+     */
+    waitForSteadyState?: pulumi.Input<boolean>;
+
     // Changes we made to the core args type.
 
     /**
@@ -298,18 +318,6 @@ export interface ServiceArgs {
      * Security groups determining how this service can be reached.
      */
     securityGroups: x.ec2.SecurityGroup[];
-
-    /**
-     * Wait for the service to reach a steady state (like [`aws ecs wait
-     * services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html))
-     * before continuing. Defaults to `true`.
-     */
-    waitForSteadyState?: pulumi.Input<boolean>;
-
-    /**
-     * Key-value mapping of resource tags
-     */
-    tags?: pulumi.Input<aws.Tags>;
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

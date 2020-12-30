@@ -9,6 +9,7 @@ CHANGELOG
 [#581](https://github.com/pulumi/pulumi-awsx/pull/581)
 * Add `cloudtrail.Trail` component which can generate the required roles and bucket for a CloudTrail.
 * Update `lb.NetworkTargetGroupHealthCheck` to allow for `path` and `matcher` properties.
+* Update ECS types [#616](https://github.com/pulumi/pulumi-awsx/pull/616)
 
 ## 0.22.0 (2020-09-01)
 

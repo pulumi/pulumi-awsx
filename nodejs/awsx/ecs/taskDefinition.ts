@@ -290,7 +290,7 @@ type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
 }>;
 
 export interface TaskDefinitionArgs {
-    // Properties copied from aws.ecs.TaskDefinitionArgs
+    // Added for AWSX
 
     /**
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
@@ -299,29 +299,26 @@ export interface TaskDefinitionArgs {
     vpc?: x.ec2.Vpc;
 
     /**
-     * A set of placement constraints rules that are taken into consideration during task placement.
-     * Maximum number of `placement_constraints` is `10`.
-     */
-    placementConstraints?: aws.ecs.TaskDefinitionArgs["placementConstraints"];
-
-    /**
-     * A set of volume blocks that containers in your task may use.
-     */
-    volumes?: aws.ecs.TaskDefinitionArgs["volumes"];
-
-    // Properties we've added/changed.
-
-    /**
      * Log group for logging information related to the service.  If `undefined` a default instance
      * with a one-day retention policy will be created.  If `null`, no log group will be created.
      */
     logGroup?: aws.cloudwatch.LogGroup | null;
 
+    // Copied from aws.ecs.TaskDefinitionArgs
+
     /**
-     * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
-     * `undefined`, a default will be created for the task.  If `null`, no task will be created.
+     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
+     * ClusterService that will contain many containers within.
+     *
+     * Either [container] or [containers] must be provided.
      */
-    taskRole?: aws.iam.Role | null;
+    containers: Record<string, ecs.Container>;
+
+    /**
+     * The number of cpu units used by the task.  If not provided, a default will be computed
+     * based on the cumulative needs specified by [containerDefinitions]
+     */
+    cpu?: pulumi.Input<string>;
 
     /**
      * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -336,10 +333,14 @@ export interface TaskDefinitionArgs {
     family?: pulumi.Input<string>;
 
     /**
-     * The number of cpu units used by the task.  If not provided, a default will be computed
-     * based on the cumulative needs specified by [containerDefinitions]
+     * Configuration block(s) with Inference Accelerators settings. Detailed below.
      */
-    cpu?: pulumi.Input<string>;
+    inferenceAccelerators?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionInferenceAccelerator>[]>;
+
+    /**
+     * The IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+     */
+    ipcMode?: pulumi.Input<string>;
 
     /**
      * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
@@ -348,28 +349,48 @@ export interface TaskDefinitionArgs {
     memory?: pulumi.Input<string>;
 
     /**
-     * A set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
-     */
-    requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
-
-    /**
      * The Docker networking mode to use for the containers in the task. The valid values are
      * `none`, `bridge`, `awsvpc`, and `host`.
      */
     networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
 
     /**
-     * All the containers to make a ClusterTaskDefinition from.  Useful when creating a
-     * ClusterService that will contain many containers within.
-     *
-     * Either [container] or [containers] must be provided.
+     * The process namespace to use for the containers in the task. The valid values are `host` and `task`.
      */
-    containers: Record<string, ecs.Container>;
+    pidMode?: pulumi.Input<string>;
+
+    /**
+     * A set of placement constraints rules that are taken into consideration during task placement.
+     * Maximum number of `placement_constraints` is `10`.
+     */
+    placementConstraints?: aws.ecs.TaskDefinitionArgs["placementConstraints"];
+
+    /**
+     * The proxy configuration details for the App Mesh proxy.
+     */
+    proxyConfiguration?: aws.ecs.TaskDefinitionArgs["proxyConfiguration"];
+
+    /**
+     * A set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
+     */
+    requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
 
     /**
      * Key-value mapping of resource tags
      */
     tags?: pulumi.Input<aws.Tags>;
+
+    /**
+     * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
+     * `undefined`, a default will be created for the task.  If `null`, no task will be created.
+     */
+    taskRole?: aws.iam.Role | null;
+
+    /**
+     * A set of volume blocks that containers in your task may use.
+     */
+    volumes?: aws.ecs.TaskDefinitionArgs["volumes"];
+
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
