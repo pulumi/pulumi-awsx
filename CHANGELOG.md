@@ -6,6 +6,8 @@ CHANGELOG
 - Allow the user to pass `TargetGroup` as `actions` of `ListenerRule`.
   [#503](https://github.com/pulumi/pulumi-awsx/pull/503)
 
+* Add support for `proxyConfiguration` to `awsx.ecs.FargateTaskDefinition` and `awsx.ecs.EC2TaskDefinition`.
+
 ## 0.23.0 (2020-12-18)
 
 * Ensure API Gateway static routes use POSIX paths. File paths with '\\' are transformed to '/' when uploaded.

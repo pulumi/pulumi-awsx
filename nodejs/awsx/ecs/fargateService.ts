@@ -269,6 +269,11 @@ export interface FargateTaskDefinitionArgs {
     placementConstraints?: aws.ecs.TaskDefinitionArgs["placementConstraints"];
 
     /**
+     * The proxy configuration details for the App Mesh proxy.
+     */
+    proxyConfiguration?: aws.ecs.TaskDefinitionArgs["proxyConfiguration"];
+
+    /**
      * A set of volume blocks that containers in your task may use.
      */
     volumes?: aws.ecs.TaskDefinitionArgs["volumes"];
