@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Add support for `proxyConfiguration` to `awsx.ecs.FargateTaskDefinition` and `awsx.ecs.EC2TaskDefinition`.
+
 ## 0.23.0 (2020-12-18)
 
 * Ensure API Gateway static routes use POSIX paths. File paths with '\\' are transformed to '/' when uploaded.
