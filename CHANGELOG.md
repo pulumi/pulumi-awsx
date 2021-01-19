@@ -3,6 +3,9 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+- Allow the user to pass `TargetGroup` as `actions` of `ListenerRule`.
+  [#503](https://github.com/pulumi/pulumi-awsx/pull/503)
+
 * Add support for `proxyConfiguration` to `awsx.ecs.FargateTaskDefinition` and `awsx.ecs.EC2TaskDefinition`.
 
 ## 0.23.0 (2020-12-18)
