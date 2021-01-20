@@ -4,6 +4,8 @@ CHANGELOG
 ## HEAD (Unreleased)
 
 * Allow passing of `forceNewDeployment` to `ecs.FargateService` and `ecs.Ec2Service`
+* Allow the user to pass their own logging configuration to a TaskDefinition
+  [#625](https://github.com/pulumi/pulumi-awsx/pull/625)
 
 ## 0.24.0 (2021-01-26)
 

@@ -49,7 +49,16 @@ func TestAccCluster(t *testing.T) {
 func TestAccTaskDefinitionWithProxyConfiguration(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir: path.Join(getCwd(t), "../examples/task-definitions-with-proxy-config"),
+			Dir: path.Join(getCwd(t), "../examples/ecs/task-definitions-with-proxy-config"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccFargateServiceWithFirelensLogging(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/ecs/fargate-service-with-firelens"),
 		})
 
 	integration.ProgramTest(t, &test)
