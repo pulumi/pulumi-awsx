@@ -2,10 +2,11 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-
-- Allow the user to pass `TargetGroup` as `actions` of `ListenerRule`.
+* Replaced deprecated `AmazonEC2ContainerServiceFullAccess` policy with `AmazonECS_FullAccess`. Note that this is a breaking change as now
+only `@pulumi/aws` ^3.22.0 can act as a peer dependency whereas previous versions of this library allowed `@pulumi/aws` versions 1.x and 2.x.
+  [#624](https://github.com/pulumi/pulumi-awsx/pull/624)
+* Allow the user to pass `TargetGroup` as `actions` of `ListenerRule`.
   [#503](https://github.com/pulumi/pulumi-awsx/pull/503)
-
 * Add support for `proxyConfiguration` to `awsx.ecs.FargateTaskDefinition` and `awsx.ecs.EC2TaskDefinition`.
 
 ## 0.23.0 (2020-12-18)
