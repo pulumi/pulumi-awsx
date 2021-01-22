@@ -552,7 +552,7 @@ export class API extends pulumi.ComponentResource {
         const stageName = args.stageName || "stage";
 
         const restApiArgs = args.restApiArgs || {};
-        
+
         // Create the API Gateway Rest API, using a swagger spec.
         this.restAPI = new aws.apigateway.RestApi(name, {
             ...args.restApiArgs,
@@ -560,7 +560,7 @@ export class API extends pulumi.ComponentResource {
             binaryMediaTypes: ifUndefined(restApiArgs.binaryMediaTypes, ["*/*"]),
             body: swaggerString,
         }, { parent: this });
-        
+
         if (restApiArgs.policy) {
             this.apiPolicy = new aws.apigateway.RestApiPolicy(name, {
                 restApiId: this.restAPI.id,
