@@ -502,6 +502,7 @@ export class API extends pulumi.ComponentResource {
     public readonly restAPI: aws.apigateway.RestApi;
     public readonly deployment: aws.apigateway.Deployment;
     public readonly stage: aws.apigateway.Stage;
+    public readonly apiPolicy?: aws.apigateway.RestApiPolicy;
 
     /**
      * Bucket where static resources were placed.  Only set if a Bucket was provided to the API at
@@ -551,6 +552,7 @@ export class API extends pulumi.ComponentResource {
         const stageName = args.stageName || "stage";
 
         const restApiArgs = args.restApiArgs || {};
+
         // Create the API Gateway Rest API, using a swagger spec.
         this.restAPI = new aws.apigateway.RestApi(name, {
             ...args.restApiArgs,
@@ -558,6 +560,13 @@ export class API extends pulumi.ComponentResource {
             binaryMediaTypes: ifUndefined(restApiArgs.binaryMediaTypes, ["*/*"]),
             body: swaggerString,
         }, { parent: this });
+
+        if (restApiArgs.policy) {
+            this.apiPolicy = new aws.apigateway.RestApiPolicy(name, {
+                restApiId: this.restAPI.id,
+                policy: restApiArgs.policy,
+            }, { parent: this });
+        }
 
         // Account for all potential REST API Args that should trigger a redeployment
         const version =
@@ -578,7 +587,10 @@ export class API extends pulumi.ComponentResource {
             // when needed.  The Stage allocated below will be the stable stage that always points
             // to the latest deployment of the API.
             variables: { version },
-        }, { parent: this });
+        }, {
+            parent: this,
+            dependsOn: this.apiPolicy ? [ this.apiPolicy ] : [],
+        });
 
         this.swaggerLambdas = swaggerLambdas || new Map();
         const permissions = createLambdaPermissions(this, name, this.swaggerLambdas);

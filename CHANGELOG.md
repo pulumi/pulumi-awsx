@@ -8,6 +8,7 @@ only `@pulumi/aws` ^3.22.0 can act as a peer dependency whereas previous version
 * Allow the user to pass `TargetGroup` as `actions` of `ListenerRule`.
   [#503](https://github.com/pulumi/pulumi-awsx/pull/503)
 * Add support for `proxyConfiguration` to `awsx.ecs.FargateTaskDefinition` and `awsx.ecs.EC2TaskDefinition`.
+* Create an explicit `RestApiPolicy` if a policy is specified with `restApiArgs` in `awsx.apigateway.API`.
 
 ## 0.23.0 (2020-12-18)
 
