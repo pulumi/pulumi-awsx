@@ -149,7 +149,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
             // Provides wide access to "serverless" services (Dynamo, S3, etc.)
             aws.iam.ManagedPolicies.AWSLambdaFullAccess,
             // Required for lambda compute to be able to run Tasks
-            aws.iam.ManagedPolicies.AmazonEC2ContainerServiceFullAccess,
+            aws.iam.ManagedPolicy.AmazonECSFullAccess,
         ];
     }
 
