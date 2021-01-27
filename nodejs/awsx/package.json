@@ -19,7 +19,7 @@
         "mime": "^2.0.0"
     },
     "peerDependencies": {
-        "@pulumi/aws": "^3.22.0",
+        "@pulumi/aws": "^3.25.1",
         "@pulumi/pulumi": "^1.9.1 || ^2.0.0"
     },
     "devDependencies": {
