@@ -2,7 +2,9 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-* (Breaking) Update the default task role in `ecs.TaskDefinition` to use the more scoped down `LambdaFullAccess` policy (the new one that AWS recommends).
+* (Breaking) Update the default task role in `ecs.TaskDefinition` to use the more scoped down `LambdaFullAccess`
+  policy (the new one that AWS recommends). As this significantly reduces the scope for the task definition, users
+  may need to attach additional policies if their task needs access to specific AWS services.
 * (Breaking) Update the peer dependency for `@pulumi/aws` to ^3.25.1 so that callback functions will create a copy of the deprecated policy if necessary.
 * (Breaking) Replaced deprecated `AmazonEC2ContainerServiceFullAccess` policy with `AmazonECS_FullAccess`. Note that this is a breaking change as now
 only `@pulumi/aws` ^3.22.0 can act as a peer dependency whereas previous versions of this library allowed `@pulumi/aws` versions 1.x and 2.x.
