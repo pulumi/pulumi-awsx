@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* Allow passing of `forceNewDeployment` to `ecs.FargateService` and `ecs.Ec2Service`
+
 ## 0.24.0 (2021-01-26)
 
 * (Breaking) Update the default task role in `ecs.TaskDefinition` to use the more scoped down `LambdaFullAccess`
