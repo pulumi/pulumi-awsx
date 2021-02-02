@@ -384,6 +384,13 @@ export interface FargateServiceArgs {
     enableEcsManagedTags?: pulumi.Input<boolean>;
 
     /**
+     * Enable to force a new task deployment of the service. This can be used to update tasks to use a newer
+     * Docker image with same image/tag combination (e.g. myimage:latest), roll Fargate tasks onto a newer platform
+     * version, or immediately deploy orderedPlacementStrategies and placementConstraints updates.
+     */
+    forceNewDeployment?: pulumi.Input<boolean>;
+
+    /**
      * Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent
      * premature shutdown, up to 7200. Only valid for services configured to use load balancers.
      */
