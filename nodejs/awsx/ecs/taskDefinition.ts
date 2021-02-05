@@ -155,7 +155,10 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
 
     // Default policy arns for the Execution role.
     public static defaultExecutionRolePolicyARNs() {
-        return ["arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"];
+        return [
+            "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+            aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+        ];
     }
 }
 

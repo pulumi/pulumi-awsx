@@ -46,16 +46,14 @@ export function computeContainerDefinition(
     const containerDefinition = pulumi.all([container, logGroupId, image, environment, portMappings, region])
         .apply(([container, logGroupId, image, environment, portMappings, region]) => {
             const containerDefinition: aws.ecs.ContainerDefinition = {
-                // TODO[pulumi/aws#796]: Cast to `<any>` needed until the type of `dependsOn` is
-                // fixed in the AWS provider.
-                ...(<any>container),
+                ...container,
                 image,
                 environment,
                 portMappings,
                 name: containerName,
             };
 
-            if (logGroupId !== undefined) {
+            if (containerDefinition.logConfiguration === undefined && logGroupId !== undefined) {
                 containerDefinition.logConfiguration = {
                     logDriver: "awslogs",
                     options: {
