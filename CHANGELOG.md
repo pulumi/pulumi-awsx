@@ -2,6 +2,9 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+_(none)_
+
+## 0.25.0 (2021-02-12)
 
 * Allow passing of `forceNewDeployment` to `ecs.FargateService` and `ecs.Ec2Service`
 * Allow the user to pass their own logging configuration to a TaskDefinition
