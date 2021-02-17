@@ -522,7 +522,7 @@ async function getAvailabilityZones(
         if (mappedZones.length !== requestedZones.length) {
             throw new pulumi.ResourceError("Availability zones did not match requested zones", parent);
         }
-        return mappedZones
+        return mappedZones;
     }
     else {
         const count =
