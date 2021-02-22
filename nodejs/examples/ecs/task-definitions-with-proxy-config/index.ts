@@ -1,4 +1,10 @@
 import * as awsx from "@pulumi/awsx";
+import * as pulumi from "@pulumi/pulumi";
+import * as aws from "@pulumi/aws";
+
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
 
 const fargateTask = new awsx.ecs.FargateTaskDefinition("fargate-task", {
     containers: {
@@ -22,7 +28,7 @@ const fargateTask = new awsx.ecs.FargateTaskDefinition("fargate-task", {
             ProxyIngressPort: "15000",
         }
     }
-});
+}, providerOpts);
 
 const ec2Task = new awsx.ecs.EC2TaskDefinition("ec2-task", {
     containers: {
@@ -46,5 +52,5 @@ const ec2Task = new awsx.ecs.EC2TaskDefinition("ec2-task", {
             ProxyIngressPort: "15000",
         }
     }
-});
+}, providerOpts);
 
