@@ -54,3 +54,13 @@ const vpcWithLocations = new awsx.ec2.Vpc("custom6", {
         { type: "isolated", name: "redis", location: "10.0.3.0/24" },
     ],
 }, providerOpts);
+
+const vpcWithSpecificZones = new awsx.ec2.Vpc("custom7", {
+    requestedAvailabilityZones: ["us-east-1a","us-east-1b","us-east-1c"],
+    subnets: [
+        { type: "public"},
+        { type: "private"},
+        { type: "isolated", name: "db"},
+        { type: "isolated", name: "redis"},
+    ],
+}, { provider: new aws.Provider("prov2", { region: "us-east-1" }) });
