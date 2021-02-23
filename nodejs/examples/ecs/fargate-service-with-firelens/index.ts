@@ -1,9 +1,14 @@
 import * as awsx from "@pulumi/awsx";
+import * as pulumi from "@pulumi/pulumi";
+import * as aws from "@pulumi/aws";
 
-const cluster = new awsx.ecs.Cluster("cluster");
+const config = new pulumi.Config("aws");
+const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
+
+const cluster = new awsx.ecs.Cluster("cluster", {}, providerOpts);
 
 // Create a load balancer on port 80 and spin up two instances of Nginx.
-const lb = new awsx.lb.ApplicationListener("nginx-lb", { port: 80 });
+const lb = new awsx.lb.ApplicationListener("nginx-lb", { port: 80 }, providerOpts);
 
 const fargateTask = new awsx.ecs.FargateTaskDefinition(
     `taskdefinition-firelens`,
@@ -43,13 +48,13 @@ const fargateTask = new awsx.ecs.FargateTaskDefinition(
                 },
             },
         },
-    })
+    }, providerOpts)
 
 const service = new awsx.ecs.FargateService("my-service", {
     cluster: cluster,
     taskDefinition: fargateTask,
     desiredCount: 1,
-});
+}, providerOpts);
 
 // Export the load balancer's address so that it's easy to access.
 export const url = lb.endpoint.hostname;
