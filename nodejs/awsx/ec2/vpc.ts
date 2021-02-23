@@ -504,17 +504,15 @@ utils.Capture(Vpc.prototype).initializeVpcArgs.doNotCapture = true;
 async function getAvailabilityZones(
         parent: pulumi.Resource | undefined,
         provider: pulumi.ProviderResource | undefined,
-        requestedZones: string[] | number | "all" | undefined): Promise<topology.AvailabilityZoneDescription[]> {
+        requestedZones: [string, ...string[]] | number | "all" | undefined): Promise<topology.AvailabilityZoneDescription[]> {
 
     const result = await aws.getAvailabilityZones(/*args:*/ undefined, { provider, async: true });
     if (result.names.length !== result.zoneIds.length) {
         throw new pulumi.ResourceError("Availability zones for region had mismatched names and ids.", parent);
     }
 
-    const descriptions: topology.AvailabilityZoneDescription[] = [];
-    for (let i = 0, n = result.names.length; i < n; i++) {
-        descriptions.push({ name: result.names[i], id: result.zoneIds[i] });
-    }
+
+    const descriptions = result.names.map((name, idx) => ({name, id:result.zoneIds[idx]}))
 
     if (Array.isArray(requestedZones)) {
         const mappedZones = descriptions.filter(zone => requestedZones.includes(zone.name));
@@ -715,13 +713,13 @@ export interface VpcArgs {
     /**
      * @deprecated Use `requestedAvailabilityZones`
      */
-    numberOfAvailabilityZones?: number | "all" | string[];
+    numberOfAvailabilityZones?: number | "all" | [string, ...string[]];
 
     /**
      * The names of the availability zones to use in the current region. Defaults to `2` if
      * unspecified. Use `"all"` to use all the availability zones in the current region.
      */
-    requestedAvailabilityZones?: number | "all" | string[];
+    requestedAvailabilityZones?: number | "all" | [string, ...string[]];
 
     /**
      * The max number of NAT gateways to create if there are any private subnets created.  A NAT
