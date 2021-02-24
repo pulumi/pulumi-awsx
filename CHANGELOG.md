@@ -4,6 +4,10 @@ CHANGELOG
 ## HEAD (Unreleased)
 _(none)_
 
+## 0.25.1 (2021-02-24)
+
+* Make it possible to use capacity provider strategy for `ecs.FargateService` and `ecs.Ec2Service`
+
 ## 0.25.0 (2021-02-12)
 
 * Allow passing of `forceNewDeployment` to `ecs.FargateService` and `ecs.Ec2Service`

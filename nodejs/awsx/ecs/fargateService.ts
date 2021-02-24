@@ -213,11 +213,19 @@ export class FargateService extends ecs.Service {
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = getSubnets(cluster, args.subnets, assignPublicIp);
 
+        const useClusterDefaultCapacityProviderStrategies = !!args.useClusterDefaultCapacityProviderStrategies;
+
+        const capacityProviderStrategies = !useClusterDefaultCapacityProviderStrategies ? args.capacityProviderStrategies : undefined;
+
+        // LaunchType should be Fargate only if we are not using the cluster capacity provider strategy nor using a custom one
+        const launchType = !useClusterDefaultCapacityProviderStrategies && !capacityProviderStrategies ? "FARGATE" : undefined;
+
         super("awsx:x:ecs:FargateService", name, {
             ...args,
             taskDefinition,
             securityGroups,
-            launchType: "FARGATE",
+            launchType,
+            capacityProviderStrategies,
             networkConfiguration: {
                 subnets,
                 assignPublicIp,
@@ -350,7 +358,13 @@ export interface FargateServiceArgs {
     // Properties from ecs.ServiceArgs
 
     /**
-     * The capacity provider strategy to use for the service.
+     * Use the Cluster default capacity provider strategies. Defaults to false.
+     * If true, `capacityProviderStrategies` will not be used.
+     */
+    useClusterDefaultCapacityProviderStrategies?: boolean;
+
+    /**
+     * The custom capacity provider strategy to use for the service.
      */
     capacityProviderStrategies?: aws.ecs.ServiceArgs["capacityProviderStrategies"];
 

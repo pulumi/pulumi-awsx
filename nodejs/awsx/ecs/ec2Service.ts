@@ -85,11 +85,18 @@ export class EC2Service extends ecs.Service {
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = args.subnets || cluster.vpc.publicSubnetIds;
 
+        const useClusterDefaultCapacityProviderStrategies = utils.ifUndefined(args.useClusterDefaultCapacityProviderStrategies, false);
+
+        const capacityProviderStrategies = !useClusterDefaultCapacityProviderStrategies ? args.capacityProviderStrategies : undefined;
+
+        // LaunchType should be EC2 only if we are not using the cluster capacity provider strategy nor using a custom one
+        const launchType = !useClusterDefaultCapacityProviderStrategies && !capacityProviderStrategies ? "EC2" : undefined;
+
         super("awsx:x:ecs:EC2Service", name, {
             ...args,
             taskDefinition,
             securityGroups,
-            launchType: "EC2",
+            launchType,
             networkConfiguration: taskDefinition.taskDefinition.networkMode.apply(n => {
                 // The network configuration for the service. This parameter is required for task
                 // definitions that use the `awsvpc` network mode to receive their own Elastic
@@ -122,6 +129,12 @@ type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
 
 export interface EC2TaskDefinitionArgs {
     // Properties from ecs.TaskDefinitionArgs
+
+    /**
+     * Use the Cluster default capacity provider strategies. Defaults to false.
+     * If true, `capacityProviderStrategies` will not be used.
+     */
+    useClusterDefaultCapacityProviderStrategies?: boolean;
 
     /**
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
