@@ -85,7 +85,7 @@ export class EC2Service extends ecs.Service {
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = args.subnets || cluster.vpc.publicSubnetIds;
 
-        const useClusterDefaultCapacityProviderStrategies = utils.ifUndefined(args.useClusterDefaultCapacityProviderStrategies, false);
+        const useClusterDefaultCapacityProviderStrategies = !!args.useClusterDefaultCapacityProviderStrategies;
 
         const capacityProviderStrategies = !useClusterDefaultCapacityProviderStrategies ? args.capacityProviderStrategies : undefined;
 
@@ -129,12 +129,6 @@ type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
 
 export interface EC2TaskDefinitionArgs {
     // Properties from ecs.TaskDefinitionArgs
-
-    /**
-     * Use the Cluster default capacity provider strategies. Defaults to false.
-     * If true, `capacityProviderStrategies` will not be used.
-     */
-    useClusterDefaultCapacityProviderStrategies?: boolean;
 
     /**
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
@@ -224,6 +218,12 @@ type OverwriteEC2ServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
 
 export interface EC2ServiceArgs {
     // Properties from ecs.ServiceArgs
+
+    /**
+     * Use the Cluster default capacity provider strategies. Defaults to false.
+     * If true, `capacityProviderStrategies` will not be used.
+     */
+    useClusterDefaultCapacityProviderStrategies?: boolean;
 
     /**
      * The capacity provider strategy to use for the service.
