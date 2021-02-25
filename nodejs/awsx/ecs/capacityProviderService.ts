@@ -1,4 +1,4 @@
-// Copyright 2016-2018, Pulumi Corporation.
+// Copyright 2016-2021, Pulumi Corporation.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import * as ecs from ".";
 import * as x from "..";
 import * as utils from "../utils";
 
-
-
 export class CapacityProviderService extends ecs.Service {
     public readonly taskDefinition: ecs.FargateTaskDefinition | ecs.EC2TaskDefinition;
 
@@ -36,7 +34,6 @@ export class CapacityProviderService extends ecs.Service {
 
         const taskDefinition = args.taskDefinition;
 
-
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
 
@@ -44,7 +41,7 @@ export class CapacityProviderService extends ecs.Service {
 
         if (taskDefinition instanceof ecs.FargateTaskDefinition) {
             assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
-            subnets = ecs._getSubnets(cluster, args.subnets, assignPublicIp);
+            subnets = ecs.getSubnets(cluster, args.subnets, assignPublicIp);
             networkConfiguration = {
                 subnets,
                 assignPublicIp,

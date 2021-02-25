@@ -211,7 +211,7 @@ export class FargateService extends ecs.Service {
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
-        const subnets = _getSubnets(cluster, args.subnets, assignPublicIp);
+        const subnets = getSubnets(cluster, args.subnets, assignPublicIp);
 
         super("awsx:x:ecs:FargateService", name, {
             ...args,
@@ -231,7 +231,8 @@ export class FargateService extends ecs.Service {
     }
 }
 
-export function _getSubnets(
+/** @internal */
+export function getSubnets(
         cluster: ecs.Cluster,
         subnets: pulumi.Input<pulumi.Input<string>[]> | undefined,
         assignPublicIp: pulumi.Output<boolean>) {
