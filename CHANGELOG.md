@@ -2,7 +2,8 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-_(none)_
+
+* Create `CapacityProviderService` to make it possible to use capacity provider strategies solving [#599](https://github.com/pulumi/pulumi-awsx/issues/599).
 
 ## 0.25.0 (2021-02-12)
 
