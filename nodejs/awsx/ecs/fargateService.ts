@@ -211,7 +211,7 @@ export class FargateService extends ecs.Service {
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
-        const subnets = getSubnets(cluster, args.subnets, assignPublicIp);
+        const subnets = _getSubnets(cluster, args.subnets, assignPublicIp);
 
         super("awsx:x:ecs:FargateService", name, {
             ...args,
@@ -231,7 +231,7 @@ export class FargateService extends ecs.Service {
     }
 }
 
-function getSubnets(
+export function _getSubnets(
         cluster: ecs.Cluster,
         subnets: pulumi.Input<pulumi.Input<string>[]> | undefined,
         assignPublicIp: pulumi.Output<boolean>) {
@@ -343,16 +343,13 @@ type OverwriteFargateServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
     taskDefinitionArgs?: FargateTaskDefinitionArgs;
     launchType?: never;
     networkConfiguration?: never;
+    capacityProviderStrategies?: never;
+    orderedPlacementStrategies?: never;
     securityGroups?: x.ec2.SecurityGroupOrId[];
 }>;
 
 export interface FargateServiceArgs {
     // Properties from ecs.ServiceArgs
-
-    /**
-     * The capacity provider strategy to use for the service.
-     */
-    capacityProviderStrategies?: aws.ecs.ServiceArgs["capacityProviderStrategies"];
 
     /**
      * onfiguration block containing deployment controller configuration.
@@ -436,13 +433,6 @@ export interface FargateServiceArgs {
      * is false, then these will be the private subnets of the cluster's vpc.
      */
     subnets?: pulumi.Input<pulumi.Input<string>[]>;
-
-    /**
-     * Service level strategy rules that are taken into consideration during task placement. List
-     * from top to bottom in order of precedence. The maximum number of `ordered_placement_strategy`
-     * blocks is `5`. Defined below.
-     */
-    orderedPlacementStrategies?: aws.ecs.ServiceArgs["orderedPlacementStrategies"];
 
     /**
      * rules that are taken into consideration during task placement. Maximum number of
