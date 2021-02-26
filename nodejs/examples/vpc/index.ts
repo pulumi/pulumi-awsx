@@ -57,22 +57,21 @@ const vpcWithLocations = new awsx.ec2.Vpc("custom6", {
 }, providerOpts);
 
 
-export = async () => {
-    const allZones =   await aws.getAvailabilityZones(/*args:*/ undefined, { provider: providerOpts.provider, async: true })
 
-    const selectedZones = new random.RandomShuffle("custom7_az", {
-        inputs: allZones.names,
-        resultCount: allZones.names.length / 2,
-    }).results;
+const allZones =   aws.getAvailabilityZones(undefined, { provider: providerOpts.provider, async: true }).then(allZones => allZones.names)
+const selectedZones = new random.RandomShuffle("custom7_az", {
+    inputs: allZones,
+    resultCount: allZones.then(z => z.length / 2)
+}).results;
 
-    const vpcWithSpecificZones = new awsx.ec2.Vpc("custom7", {
-        requestedAvailabilityZones: selectedZones,
-        subnets: [
-            { type: "public" },
-            { type: "private" },
-            { type: "isolated", name: "db" },
-            { type: "isolated", name: "redis" },
-        ],
-    }, providerOpts);
-}
+const vpcWithSpecificZones = new awsx.ec2.Vpc("custom7", {
+    requestedAvailabilityZones: selectedZones,
+    subnets: [
+        { type: "public" },
+        { type: "private" },
+        { type: "isolated", name: "db" },
+        { type: "isolated", name: "redis" },
+    ],
+}, providerOpts);
+// }
 
