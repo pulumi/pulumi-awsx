@@ -5,9 +5,9 @@ import * as pulumi from "@pulumi/pulumi";
 const config = new pulumi.Config("aws");
 const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>config.require("envRegion") }) };
 
-const cluster = new awsx.ecs.Cluster("cluster", {}, providerOpts);
+const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
 
-const vpc = new awsx.ec2.Vpc("vpc", {}, providerOpts);
+const cluster = new awsx.ecs.Cluster("cluster", { vpc }, providerOpts);
 
 const asg = cluster.createAutoScalingGroup("asg", {
   vpc,
