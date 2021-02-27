@@ -1,0 +1,3 @@
+name: capacity-provider-service-ec2-custom-strategy
+runtime: nodejs
+description: Test the CapacityProviderService to use the service capacity provider strategy
