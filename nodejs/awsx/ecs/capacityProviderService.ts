@@ -37,9 +37,11 @@ export class CapacityProviderService extends ecs.Service {
         const securityGroups = x.ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
 
-        let assignPublicIp, networkConfiguration, subnets: pulumi.Input<pulumi.Input<string>[]>;
+        let assignPublicIp, networkConfiguration,
+        subnets: pulumi.Input<pulumi.Input<string>[]>, launchType: "FARGATE" | "EC2";
 
         if (taskDefinition instanceof ecs.FargateTaskDefinition) {
+            launchType = "FARGATE";
             assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
             subnets = ecs.getSubnets(cluster, args.subnets, assignPublicIp);
             networkConfiguration = {
@@ -48,10 +50,11 @@ export class CapacityProviderService extends ecs.Service {
                 securityGroups: securityGroups.map(g => g.id),
             };
         } else {
+            launchType = "EC2";
             assignPublicIp = false;
             subnets = args.subnets || cluster.vpc.publicSubnetIds;
             networkConfiguration = taskDefinition.taskDefinition.networkMode.apply(n => {
-                // The network configuration for the service. This parameter is required for task
+                // The network configuration for the EC2 service. This parameter is required for task
                 // definitions that use the `awsvpc` network mode to receive their own Elastic
                 // Network Interface, and it is not supported for other network modes.
                 if (n !== "awsvpc") {
@@ -69,6 +72,7 @@ export class CapacityProviderService extends ecs.Service {
         super("awsx:x:ecs:CapacityProviderService", name, {
             ...args,
             taskDefinition,
+            launchType,
             securityGroups,
             networkConfiguration,
         }, opts);
