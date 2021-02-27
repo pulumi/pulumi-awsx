@@ -38,10 +38,9 @@ export class CapacityProviderService extends ecs.Service {
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
 
         let assignPublicIp, networkConfiguration,
-        subnets: pulumi.Input<pulumi.Input<string>[]>, launchType: "FARGATE" | "EC2";
+        subnets: pulumi.Input<pulumi.Input<string>[]>;
 
         if (taskDefinition instanceof ecs.FargateTaskDefinition) {
-            launchType = "FARGATE";
             assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
             subnets = ecs.getSubnets(cluster, args.subnets, assignPublicIp);
             networkConfiguration = {
@@ -50,7 +49,6 @@ export class CapacityProviderService extends ecs.Service {
                 securityGroups: securityGroups.map(g => g.id),
             };
         } else {
-            launchType = "EC2";
             assignPublicIp = false;
             subnets = args.subnets || cluster.vpc.publicSubnetIds;
             networkConfiguration = taskDefinition.taskDefinition.networkMode.apply(n => {
@@ -72,7 +70,6 @@ export class CapacityProviderService extends ecs.Service {
         super("awsx:x:ecs:CapacityProviderService", name, {
             ...args,
             taskDefinition,
-            launchType,
             securityGroups,
             networkConfiguration,
         }, opts);
