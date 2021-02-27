@@ -23,6 +23,7 @@ const fargateTask = new awsx.ecs.FargateTaskDefinition("fargate-task", {
           memory: 128,
           essential: true,
           cpu: 512,
+          portMappings: [lb],
       },
   },
 }, providerOpts);
