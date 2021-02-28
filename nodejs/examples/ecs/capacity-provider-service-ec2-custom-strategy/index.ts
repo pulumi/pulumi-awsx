@@ -7,14 +7,14 @@ const providerOpts = { provider: new aws.Provider("prov", { region: <aws.Region>
 
 const vpc = awsx.ec2.Vpc.getDefault(providerOpts);
 
-const cluster = new awsx.ecs.Cluster("cluster", { vpc }, providerOpts);
+const cluster = new awsx.ecs.Cluster("cluster", { vpc, capacityProviders: ["my-capacity-provider"] }, providerOpts);
 
 const asg = cluster.createAutoScalingGroup("asg", {
   vpc,
   subnetIds: vpc.publicSubnetIds,
   templateParameters: { minSize: 1 },
-  launchConfigurationArgs: { instanceType: "t2.micro" },
-}, providerOpts);
+  launchConfigurationArgs: { instanceType: "t2.micro", securityGroups: cluster.securityGroups },
+ }, providerOpts);
 
 const cp = new aws.ecs.CapacityProvider("capacity-provider", {
   name: "my-capacity-provider",
@@ -31,7 +31,6 @@ const ec2Task = new awsx.ecs.EC2TaskDefinition("ec2-task", {
       application: {
           image: "nginx:latest",
           memory: 128,
-          essential: true,
           cpu: 512,
           portMappings: [lb],
       },
@@ -42,6 +41,7 @@ const service = new awsx.ecs.CapacityProviderService("my-service", {
   cluster,
   taskDefinition: ec2Task,
   desiredCount: 1,
+  forceNewDeployment: true,
   capacityProviderStrategies: [{
     capacityProvider: cp.name,
     weight: 1
