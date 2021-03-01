@@ -317,7 +317,7 @@ type OverwriteShape = utils.Overwrite<aws.lb.ListenerArgs, {
     defaultActions: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
     loadBalancerArn?: never;
     port: pulumi.Input<number>;
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS">;
+    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS" | "GENEVE" | "UDP" | "TCP_UDP">;
     sslPolicy?: pulumi.Input<string>;
 }>;
 
@@ -352,7 +352,7 @@ export interface ListenerArgs {
     /**
      * The protocol.
      */
-    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS">;
+    protocol: pulumi.Input<"HTTP" | "HTTPS" | "TCP" | "TLS" | "GENEVE" | "UDP" | "TCP_UDP">;
 
     /**
      * The name of the SSL Policy for the listener. Required if `protocol` is `HTTPS`.
