@@ -2,7 +2,8 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-_(none)_
+
+* Ensure that `awsx.apigateway.APIArgs` `RestApiArgs` reflect the underlying pulumi-aws library
 
 ## 0.25.0 (2021-02-12)
 
