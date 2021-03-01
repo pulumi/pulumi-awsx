@@ -73,5 +73,3 @@ const vpcWithSpecificZones = new awsx.ec2.Vpc("custom7", {
         { type: "isolated", name: "redis" },
     ],
 }, providerOpts);
-// }
-
