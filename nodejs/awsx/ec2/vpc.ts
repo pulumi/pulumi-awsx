@@ -504,7 +504,7 @@ utils.Capture(Vpc.prototype).initializeVpcArgs.doNotCapture = true;
 async function getAvailabilityZones(
         parent: pulumi.Resource | undefined,
         provider: pulumi.ProviderResource | undefined,
-        requestedZones: VpcArgs["requestedAvailabilityZones"]): Promise<topology.AvailabilityZoneDescription[]> {
+        requestedZones: VpcArgs["requestedAvailabilityZones"] = 2): Promise<topology.AvailabilityZoneDescription[]> {
 
     const result = await aws.getAvailabilityZones(/*args:*/ undefined, { provider, async: true });
     if (result.names.length !== result.zoneIds.length) {
@@ -526,11 +526,7 @@ async function getAvailabilityZones(
         })
     }
     else {
-        const count =
-            typeof requestedZones === "number" ? requestedZones :
-                requestedZones === "all" ? descriptions.length : 2;
-
-        return descriptions.slice(0, count);
+        return descriptions.slice(0, requestedZones === "all" ? descriptions.length : requestedZones);
     }
 
 }
