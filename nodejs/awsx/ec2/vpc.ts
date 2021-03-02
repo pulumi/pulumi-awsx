@@ -514,13 +514,16 @@ async function getAvailabilityZones(
 
     const descriptions = result.names.map((name, idx) => ({ name, id: result.zoneIds[idx] }) )
 
-    if (Array.isArray(requestedZones)) {
-        const mappedZones = descriptions.filter(zone => requestedZones.includes(zone.name));
 
-        if (mappedZones.length !== requestedZones.length) {
-            throw new pulumi.ResourceError("Availability zones did not match requested zones", parent);
-        }
-        return mappedZones;
+    if (typeof requestedZones === "object") {
+        return new Promise((resolve, reject) => {
+            pulumi.Output.create(requestedZones).apply(requestedZones => {
+                const mappedZones = descriptions.filter(zone => requestedZones.includes(zone.name));
+                mappedZones.length === requestedZones.length ?
+                    resolve(mappedZones) :
+                    reject(new pulumi.ResourceError("Availability zones did not match requested zones", parent));
+            })
+        })
     }
     else {
         const count =
@@ -714,7 +717,7 @@ export interface VpcArgs {
      * The names of the availability zones to use in the current region. Defaults to `2` if
      * unspecified. Use `"all"` to use all the availability zones in the current region.
      */
-    requestedAvailabilityZones?: number | "all" | [string, ...string[]];
+    requestedAvailabilityZones?: number | "all" | pulumi.Input<[string, ...string[]]>;
 
     /**
      * @deprecated Use `requestedAvailabilityZones`
