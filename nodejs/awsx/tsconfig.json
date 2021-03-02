@@ -70,6 +70,7 @@
         "ecs/index.ts",
         "ecs/cluster.ts",
         "ecs/container.ts",
+        "ecs/capacityProviderService.ts",
         "ecs/ec2Service.ts",
         "ecs/fargateService.ts",
         "ecs/image.ts",
