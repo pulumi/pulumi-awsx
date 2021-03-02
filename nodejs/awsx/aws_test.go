@@ -46,6 +46,24 @@ func TestAccCluster(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestAccCapacityProviderServiceWithClusterDefaultStrategies(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/ecs/capacity-provider-service-with-cluster-default-strategies"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestAccCapacityProviderServiceEC2CustomStrategy(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "../examples/ecs/capacity-provider-service-ec2-custom-strategy"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func TestAccTaskDefinitionWithProxyConfiguration(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{

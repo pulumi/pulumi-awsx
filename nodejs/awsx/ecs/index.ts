@@ -21,3 +21,4 @@ export * from "./metrics";
 export * from "./service";
 export * from "./ec2Service";
 export * from "./fargateService";
+export * from "./capacityProviderService";

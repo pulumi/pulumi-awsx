@@ -54,7 +54,6 @@ export abstract class Service extends pulumi.ComponentResource {
             cluster: this.cluster.cluster.arn,
             taskDefinition: args.taskDefinition.taskDefinition.arn,
             desiredCount: utils.ifUndefined(args.desiredCount, 1),
-            launchType: utils.ifUndefined(args.launchType, "EC2"),
             waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),
         }, pulumi.mergeOptions(opts, {
                 parent: this,

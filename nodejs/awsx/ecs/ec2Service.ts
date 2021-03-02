@@ -206,16 +206,12 @@ type OverwriteEC2ServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
     taskDefinitionArgs?: EC2TaskDefinitionArgs;
     launchType?: never;
     networkConfiguration?: never;
+    capacityProviderStrategies?: never;
     securityGroups?: x.ec2.SecurityGroupOrId[];
 }>;
 
 export interface EC2ServiceArgs {
     // Properties from ecs.ServiceArgs
-
-    /**
-     * The capacity provider strategy to use for the service.
-     */
-    capacityProviderStrategies?: aws.ecs.ServiceArgs["capacityProviderStrategies"];
 
     /**
      * onfiguration block containing deployment controller configuration.
