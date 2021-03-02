@@ -522,8 +522,8 @@ async function getAvailabilityZones(
                 mappedZones.length === requestedZones.length ?
                     resolve(mappedZones) :
                     reject(new pulumi.ResourceError("Availability zones did not match requested zones", parent));
-            })
-        })
+            });
+        });
     }
     else {
         return descriptions.slice(0, requestedZones === "all" ? descriptions.length : requestedZones);
