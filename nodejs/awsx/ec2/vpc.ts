@@ -512,7 +512,7 @@ async function getAvailabilityZones(
     }
 
 
-    const descriptions = result.names.map((name, idx) => ({ name, id: result.zoneIds[idx] }) )
+    const descriptions = result.names.map((name, idx) => ({ name, id: result.zoneIds[idx] }) );
 
     if (Array.isArray(requestedZones) || typeof requestedZones === "object" ) {
         return new Promise((resolve, reject) => {
