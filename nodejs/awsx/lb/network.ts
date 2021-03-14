@@ -22,7 +22,7 @@ import * as x from "..";
 
 import * as utils from "../utils";
 
-export type NetworkProtocol = "TCP" | "TLS" | "HTTP" | "HTTPS";
+export type NetworkProtocol = "HTTP" | "HTTPS" | "TCP" | "TLS" | "GENEVE" | "UDP" | "TCP_UDP";
 
 export class NetworkLoadBalancer extends mod.LoadBalancer {
     public readonly listeners: NetworkListener[];
