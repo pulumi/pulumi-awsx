@@ -21,12 +21,17 @@ import { YAxis } from "./widgets_graph";
 // the json conversion properly as it's very easy to screw up if using things like the 'any' type.
 
 export interface WidgetJson {
-    type: pulumi.Input<"metric" | "text">;
+    type: pulumi.Input<"alarm" | "metric" | "text">;
     x: pulumi.Input<number>;
     y: pulumi.Input<number>;
     width: pulumi.Input<number>;
     height: pulumi.Input<number>;
     properties: Record<string, any>;
+}
+
+export interface AlarmWidgetJson extends WidgetJson {
+  type: pulumi.Input<"alarm">;
+  properties: pulumi.Input<{ alarms: pulumi.Input<string>[] }>;
 }
 
 export interface TextWidgetJson extends WidgetJson {

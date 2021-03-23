@@ -7,6 +7,7 @@ CHANGELOG
 * Ensure that `awsx.apigateway.APIArgs` `RestApiArgs` reflect the underlying pulumi-aws library
 * Upgrade to Go1.16
 * Add support for `GENEVE`, `UDP` and `TCP_UDP` in `awsx.lb.TargetGroup` Protocols
+* Add support for `AlarmWidget` in `awsx.cloudwatch`
 
 ## 0.25.0 (2021-02-12)
 

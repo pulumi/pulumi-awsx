@@ -86,6 +86,36 @@ export abstract class SimpleWidget implements Widget {
     }
 }
 
+export interface AlarmWidgetArgs extends SimpleWidgetArgs {
+  alarms: pulumi.Input<string>[];
+}
+
+/**
+ * Simple widget that displays an array of cloudwatch alarm status in the dashboard grid.
+ */
+export class AlarmWidget extends SimpleWidget {
+  private readonly alarmArgs: AlarmWidgetArgs;
+
+  constructor(args: AlarmWidgetArgs) {
+    super(args);
+
+    this.alarmArgs = args;
+  }
+
+  public height() {
+    return this.alarmArgs.height !== undefined ? this.alarmArgs.height : 2;
+  }
+
+  protected computeType(): wjson.AlarmWidgetJson["type"] {
+    return "alarm";
+  }
+
+  protected computeProperties(region: pulumi.Output<aws.Region>): wjson.AlarmWidgetJson["properties"] {
+    return { alarms: this.alarmArgs.alarms };
+  }
+}
+
+
 /**
  * Simple [Widget] that can be used for putting space between other widgets in the [Dashboard].
  */
