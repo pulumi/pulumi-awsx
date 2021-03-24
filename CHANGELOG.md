@@ -2,7 +2,8 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-_(none)_
+
+* Add additional StorageTypes to `awsx.s3.metrics`
 
 ## 0.26 (2021-03-25)
 
