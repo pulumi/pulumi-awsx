@@ -30,8 +30,15 @@ export interface WidgetJson {
 }
 
 export interface AlarmWidgetJson extends WidgetJson {
-  type: pulumi.Input<"alarm">;
-  properties: pulumi.Input<{ alarms: pulumi.Input<string>[] }>;
+    type: pulumi.Input<"alarm">;
+    properties: pulumi.Input<AlarmWidgetPropertiesJson>;
+}
+
+export interface AlarmWidgetPropertiesJson {
+    alarms: pulumi.Input<pulumi.Input<string>[]>;
+    sortBy: pulumi.Input<"default" | "stateUpdatedTimestamp" | "timestamp" | undefined>;
+    states: pulumi.Input<("ALARM" | "INSUFFICIENT_DATA" | "OK")[] | undefined>;
+    title: pulumi.Input<string | undefined>;
 }
 
 export interface TextWidgetJson extends WidgetJson {

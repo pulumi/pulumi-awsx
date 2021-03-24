@@ -87,7 +87,36 @@ export abstract class SimpleWidget implements Widget {
 }
 
 export interface AlarmWidgetArgs extends SimpleWidgetArgs {
+  /** An array of alarm ARNs to include in the widget. The array can have 1-100 ARNs. */
   alarms: pulumi.Input<string>[];
+
+  /**
+   * Specifies how to sort the alarms in the widget.
+   *
+   * Choose default to sort them in alphabetical order by alarm name.
+   *
+   * Choose stateUpdatedTimestamp to sort them first by alarm state, with alarms in ALARM state first,
+   * INSUFFICIENT_DATA alarms next, and OK alarms last. Within each group, the alarms are sorted by when
+   * they last changed state, with more recent state changes listed first.
+   *
+   * Choose timestamp to sort them by the time when the alarms most recently changed state, no matter
+   * the current alarm state. The alarm that changed state most recently is listed first.
+   *
+   * If you omit this field, the alarms are sorted in alphabetical order.
+   */
+  sortBy?: pulumi.Input<"default" | "stateUpdatedTimestamp" | "timestamp" | undefined>;
+
+  /**
+   * Use this field to filter the list of alarms displayed in the widget to only those alarms
+   * currently in the specified states. You can specify one or more alarm states in the value
+   * for this field. The alarm states that you can specify are ALARM, INSUFFICIENT_DATA, and OK.
+   *
+   * If you omit this field or specify an empty array, all the alarms specified in alarms are displayed.
+   */
+  states?: pulumi.Input<("ALARM" | "INSUFFICIENT_DATA" | "OK")[] | undefined>;
+
+  /** The title to be displayed for the alarm widget. */
+  title?: pulumi.Input<string>;
 }
 
 /**
@@ -111,7 +140,12 @@ export class AlarmWidget extends SimpleWidget {
   }
 
   protected computeProperties(region: pulumi.Output<aws.Region>): wjson.AlarmWidgetJson["properties"] {
-    return { alarms: this.alarmArgs.alarms };
+    return {
+      alarms: this.alarmArgs.alarms,
+      sortBy: this.alarmArgs.sortBy,
+      states: this.alarmArgs.states,
+      title: this.alarmArgs.title,
+    };
   }
 }
 
