@@ -2,6 +2,9 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+_(none)_
+
+## 0.26 (2021-03-25)
 
 * Create `CapacityProviderService` to make it possible to use capacity provider strategies solving [#599](https://github.com/pulumi/pulumi-awsx/issues/599).
 * Ensure that `awsx.apigateway.APIArgs` `RestApiArgs` reflect the underlying pulumi-aws library
