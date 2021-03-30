@@ -37,31 +37,74 @@ export namespace metrics {
          * of storage:
          *
          * * StandardStorage - The number of bytes used for objects in the STANDARD storage class.
+         * * IntelligentTieringAAStorage - The number of bytes used for objects in the Archive
+         *   Access tier of INTELLIGENT_TIERING storage class.
+         * * IntelligentTieringDAAStorage - The number of bytes used for objects in the Deep
+         *   Archive Access tier of INTELLIGENT_TIERING storage class.
          * * IntelligentTieringFAStorage - The number of bytes used for objects in the Frequent
          *   Access tier of INTELLIGENT_TIERING storage class.
          * * IntelligentTieringIAStorage - The number of bytes used for objects in the Infrequent
          *   Access tier of INTELLIGENT_TIERING storage class.
-         * * StandardIAStorage - The number of bytes used for objects in the Standard - Infrequent
-         *   Access (STANDARD_IA) storage class.
+         * * StandardIAStorage - The number of bytes used for objects in the Standard-Infrequent
+         *   Access (STANDARD_IA) storage class. This extra data is necessary to identify and
+         *   restore your object. You are charged GLACIER rates for this additional storage.
          * * StandardIASizeOverhead - The number of bytes used for objects smaller than 128 KB in
          *   size in the STANDARD_IA storage class.
-         * * OneZoneIAStorage - The number of bytes used for objects in the OneZone - Infrequent
+         * * IntAAObjectOverhead - For each object in INTELLIGENT_TIERING storage class in the
+         *   Archive Access tier, GLACIER adds 32 KB of storage for index and related metadata.
+         *   This extra data is necessary to identify and restore your object. You are charged
+         *   GLACIER rates for this additional storage.
+         * * IntAAS3ObjectOverhead - For each object in INTELLIGENT_TIERING storage class in the
+         *   Archive Access tier, Amazon S3 uses 8 KB of storage for the name of the object and
+         *   other metadata. You are charged STANDARD rates for this additional storage.
+         * * IntDAAObjectOverhead - For each object in INTELLIGENT_TIERING storage class in the
+         *   Deep Archive Access tier, GLACIER adds 32 KB of storage for index and related
+         *   metadata. This extra data is necessary to identify and restore your object. You are
+         *   charged S3 Glacier Deep Archive storage rates for this additional storage.
+         * * IntDAAS3ObjectOverhead - For each object in INTELLIGENT_TIERING storage class in the
+         *   Deep Archive Access tier, Amazon S3 adds 8 KB of storage for index and related
+         *   metadata. This extra data is necessary to identify and restore your object. You are
+         *   charged STANDARD rates for this additional storage.
+         * * OneZoneIAStorage - The number of bytes used for objects in the OneZone-Infrequent
          *   Access (ONEZONE_IA) storage class.
          * * OneZoneIASizeOverhead - The number of bytes used for objects smaller than 128 KB in
          *   size in the ONEZONE_IA storage class.
          * * ReducedRedundancyStorage - The number of bytes used for objects in the Reduced
          *   Redundancy Storage (RRS) class.
-         * * GlacierStorage - The number of bytes used for objects in the Glacier (GLACIER) storage
-         *   class.
-         * * GlacierStorageOverhead - For each object archived to Glacier, Amazon S3 uses 8 KB of
-         *   storage for the name of the object and other metadata. You are charged standard Amazon
-         *   S3 rates for this additional storage. For each archived object, Glacier adds 32 KB of
-         *   storage for index and related metadata. This extra data is necessary to identify and
-         *   restore your object. You are charged Glacier rates for this additional storage.
+         * * GlacierStorage - The number of bytes used for objects in the GLACIER storage class.
+         * * GlacierStagingStorage - The number of bytes used for parts of Multipart objects
+         *   before the CompleteMultipartUpload request is completed on objects in the GLACIER
+         *   storage class.
+         * * GlacierObjectOverhead - For each archived object, GLACIER adds 32 KB of storage for
+         *   index and related metadata. This extra data is necessary to identify and restore
+         *   your object. You are charged GLACIER rates for this additional storage.
+         * * GlacierS3ObjectOverhead - For each object archived to GLACIER , Amazon S3 uses 8 KB
+         *   of storage for the name of the object and other metadata. You are charged STANDARD
+         *   rates for this additional storage.
+         * * DeepArchiveStorage - The number of bytes used for objects in the S3 Glacier Deep
+         *   Archive storage class.
+         * * DeepArchiveObjectOverhead - For each archived object, S3 Glacier Deep Archive adds
+         *   32 KB of storage for index and related metadata. This extra data is necessary to
+         *   identify and restore your object. You are charged S3 Glacier Deep Archive rates
+         *   for this additional storage.
+         * * DeepArchiveS3ObjectOverhead - For each object archived to S3 Glacier Deep Archive,
+         *   Amazon S3 uses 8 KB of storage for the name of the object and other metadata. You
+         *   are charged STANDARD rates for this additional storage.
+         * * DeepArchiveStagingStorage – The number of bytes used for parts of Multipart objects
+         *   before the CompleteMultipartUpload request is completed on objects in the S3
+         *   Glacier Deep Archive storage class.
+         * * AllStorageTypes - All available storage types, used by NumberOfObjects metric
+         *
+         * For more information, see
+         * [Metrics-and-dimensions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/metrics-dimensions.html).
          */
-        storageType?: "StandardStorage" | "IntelligentTieringFAStorage" | "IntelligentTieringIAStorage" |
-            "StandardIAStorage" | "StandardIAStorage" | "StandardIASizeOverhead" | "OneZoneIAStorage" |
-            "OneZoneIASizeOverhead" | "ReducedRedundancyStorage" | "GlacierStorage" | "GlacierStorageOverhead";
+        storageType?: "StandardStorage" | "IntelligentTieringAAStorage" | "IntelligentTieringDAAStorage" |
+            "IntelligentTieringFAStorage" | "IntelligentTieringIAStorage" | "StandardIAStorage" |
+            "StandardIASizeOverhead" | "IntAAObjectOverhead" | "IntAAS3ObjectOverhead" | "IntDAAObjectOverhead" |
+            "IntDAAS3ObjectOverhead" | "OneZoneIAStorage" | "OneZoneIASizeOverhead" | "ReducedRedundancyStorage" |
+            "GlacierStorage" | "GlacierStagingStorage" | "GlacierObjectOverhead" | "GlacierS3ObjectOverhead" |
+            "DeepArchiveStorage" | "DeepArchiveObjectOverhead" | "DeepArchiveS3ObjectOverhead" |
+            "DeepArchiveStagingStorage" | "AllStorageTypes";
 
         /**
          * This dimension filters metrics configurations that you specify for request metrics on a
