@@ -142,7 +142,7 @@ export interface ApigatewayAuth {
     type: string;
 }
 
-export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH" | "OPTIONS";
+export type Method = "ANY" | "GET" | "PUT" | "POST" | "DELETE" | "PATCH" | "OPTIONS" | "HEAD";
 export type IntegrationConnectionType = "INTERNET" | "VPC_LINK";
 export type IntegrationType = "aws" | "aws_proxy" | "http" | "http_proxy" | "mock";
 export type IntegrationPassthroughBehavior = "when_no_match" | "when_no_templates" | "never";
