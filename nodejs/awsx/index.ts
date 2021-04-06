@@ -15,6 +15,7 @@
 import * as acmpca from "./acmpca";
 import * as apigateway from "./apigateway";
 import * as autoscaling from "./autoscaling";
+import * as billing from "./billing";
 import * as cloudfront from "./cloudfront";
 import * as cloudtrail from "./cloudtrail";
 import * as cloudwatch from "./cloudwatch";
@@ -37,6 +38,7 @@ export {
     acmpca,
     apigateway,
     autoscaling,
+    billing,
     cloudfront,
     cloudtrail,
     cloudwatch,
