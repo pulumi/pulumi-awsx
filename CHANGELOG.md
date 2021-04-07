@@ -4,6 +4,7 @@ CHANGELOG
 ## HEAD (Unreleased)
 
 * Add additional StorageTypes to `awsx.s3.metrics`
+* Add missing `HEAD` value to `awsx.apigateway.Method`
 * Add support for Billing CloudWatch metrics and alarms
 
 ## 0.26 (2021-03-25)
