@@ -29,12 +29,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/pulumi/pulumi/pkg/v2/operations"
-	"github.com/pulumi/pulumi/pkg/v2/resource/stack"
-	"github.com/pulumi/pulumi/pkg/v2/testing/integration"
-	"github.com/pulumi/pulumi/sdk/v2/go/common/resource"
-	"github.com/pulumi/pulumi/sdk/v2/go/common/resource/config"
-	"github.com/pulumi/pulumi/sdk/v2/go/common/util/contract"
+	"github.com/pulumi/pulumi/pkg/v3/operations"
+	"github.com/pulumi/pulumi/pkg/v3/resource/stack"
+	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/resource"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/resource/config"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/util/contract"
 )
 
 func TestAccCluster(t *testing.T) {
@@ -429,7 +429,7 @@ func getLogs(t *testing.T, region string, stackInfo integration.RuntimeValidatio
 
 	var states []*resource.State
 	for _, res := range stackInfo.Deployment.Resources {
-		state, err := stack.DeserializeResource(res, config.NewPanicCrypter())
+		state, err := stack.DeserializeResource(res, config.NewPanicCrypter(), config.NewPanicCrypter())
 		if !assert.NoError(t, err) {
 			return nil
 		}
