@@ -2,11 +2,15 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+_(none)_
 
+## 0.30.0 (2021-04-19)
+
+* Upgrade to @pulumi/pulumi@3.0.0 and @pulumi/aws@4.0.0
 * Add additional StorageTypes to `awsx.s3.metrics`
 * Add missing `HEAD` value to `awsx.apigateway.Method`
 
-## 0.26 (2021-03-25)
+## 0.26.0 (2021-03-25)
 
 * Create `CapacityProviderService` to make it possible to use capacity provider strategies solving [#599](https://github.com/pulumi/pulumi-awsx/issues/599).
 * Ensure that `awsx.apigateway.APIArgs` `RestApiArgs` reflect the underlying pulumi-aws library
