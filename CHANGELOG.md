@@ -9,6 +9,7 @@ _(none)_
 * Upgrade to @pulumi/pulumi@3.0.0 and @pulumi/aws@4.0.0
 * Add additional StorageTypes to `awsx.s3.metrics`
 * Add missing `HEAD` value to `awsx.apigateway.Method`
+* Add support for Billing CloudWatch metrics and alarms
 
 ## 0.26.0 (2021-03-25)
 
