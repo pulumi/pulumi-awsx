@@ -21,8 +21,8 @@ import * as utils from "../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
     constructor(name: string,
-        args: ecs.FargateTaskDefinitionArgs,
-        opts: pulumi.ComponentResourceOptions = {}) {
+                args: ecs.FargateTaskDefinitionArgs,
+                opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.container && !args.containers) {
             throw new Error("Either [container] or [containers] must be provided");
