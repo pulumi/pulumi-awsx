@@ -56,8 +56,8 @@ export abstract class Service extends pulumi.ComponentResource {
             desiredCount: utils.ifUndefined(args.desiredCount, 1),
             waitForSteadyState: utils.ifUndefined(args.waitForSteadyState, true),
         }, pulumi.mergeOptions(opts, {
-                parent: this,
-                dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
+            parent: this,
+            dependsOn: this.cluster.autoScalingGroups.map(g => g.stack),
         }));
 
         this.taskDefinition = args.taskDefinition;
@@ -176,7 +176,12 @@ export interface ServiceArgs {
     capacityProviderStrategies?: aws.ecs.ServiceArgs["capacityProviderStrategies"];
 
     /**
-     * onfiguration block containing deployment controller configuration.
+     * Configuration block for deployment circuit breaker.
+     */
+    deploymentCircuitBreaker?: aws.ecs.ServiceArgs["deploymentCircuitBreaker"];
+
+    /**
+     * Configuration block containing deployment controller configuration.
      */
     deploymentController?: aws.ecs.ServiceArgs["deploymentController"];
 
@@ -203,6 +208,11 @@ export interface ServiceArgs {
      * Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
      */
     enableEcsManagedTags?: pulumi.Input<boolean>;
+
+    /**
+     * Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+     */
+    enableExecuteCommand?: pulumi.Input<boolean>;
 
     /**
      * Enable to force a new task deployment of the service. This can be used to update tasks

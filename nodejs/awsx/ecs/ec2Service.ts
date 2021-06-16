@@ -214,7 +214,12 @@ export interface EC2ServiceArgs {
     // Properties from ecs.ServiceArgs
 
     /**
-     * onfiguration block containing deployment controller configuration.
+     * Configuration block for deployment circuit breaker.
+     */
+    deploymentCircuitBreaker?: aws.ecs.ServiceArgs["deploymentCircuitBreaker"];
+
+    /**
+     * Configuration block containing deployment controller configuration.
      */
     deploymentController?: aws.ecs.ServiceArgs["deploymentController"];
 
@@ -241,6 +246,11 @@ export interface EC2ServiceArgs {
      * Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
      */
     enableEcsManagedTags?: pulumi.Input<boolean>;
+
+    /**
+     * Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+     */
+    enableExecuteCommand?: pulumi.Input<boolean>;
 
     /**
      * Enable to force a new task deployment of the service. This can be used to update tasks to use a newer

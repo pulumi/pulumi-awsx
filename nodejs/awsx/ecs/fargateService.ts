@@ -54,7 +54,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
      * Creates a service with this as its task definition.
      */
     public createService(
-            name: string, args: ecs.FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        name: string, args: ecs.FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -75,30 +75,30 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
  * needed by the containers and we'll return the cheapest fargate config that supplies at
  * least that much memory/vcpu.
  */
-function * getAllFargateConfigs() {
+function* getAllFargateConfigs() {
     // from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
     // Supported task CPU and memory values for Fargate tasks are as follows.
 
     // CPU value                    Memory value (MiB)
 
     // .25 vCPU                     0.5GB, 1GB, 2GB
-    yield * makeFargateConfigs(.25, [.5, 1, 2]);
+    yield* makeFargateConfigs(.25, [.5, 1, 2]);
 
     // .5 vCPU                     1GB, 2GB, 3GB, 4GBs
-    yield * makeFargateConfigs(.5, makeMemoryConfigs(1, 4));
+    yield* makeFargateConfigs(.5, makeMemoryConfigs(1, 4));
 
     // 1 vCPU                     2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
-    yield * makeFargateConfigs(1, makeMemoryConfigs(2, 8));
+    yield* makeFargateConfigs(1, makeMemoryConfigs(2, 8));
 
     // 2 vCPU                     Between 4GB and 16GB in increments of 1GB
-    yield * makeFargateConfigs(2, makeMemoryConfigs(4, 16));
+    yield* makeFargateConfigs(2, makeMemoryConfigs(4, 16));
 
     // 4 vCPU                     Between 8GB and 30GB in increments of 1GB
-    yield * makeFargateConfigs(4, makeMemoryConfigs(8, 30));
+    yield* makeFargateConfigs(4, makeMemoryConfigs(8, 30));
 
     return;
 
-    function * makeMemoryConfigs(low: number, high: number) {
+    function* makeMemoryConfigs(low: number, high: number) {
         if (low < 1) {
             throw new Error(`Invalid low: ${low}`);
         }
@@ -111,7 +111,7 @@ function * getAllFargateConfigs() {
         }
     }
 
-    function * makeFargateConfigs(vcpu: number, memory: Iterable<number>) {
+    function* makeFargateConfigs(vcpu: number, memory: Iterable<number>) {
         if (vcpu < .25 || vcpu > 4) {
             throw new Error(`Invalid vcpu: ${vcpu}`);
         }
@@ -353,7 +353,12 @@ export interface FargateServiceArgs {
     // Properties from ecs.ServiceArgs
 
     /**
-     * onfiguration block containing deployment controller configuration.
+     * Configuration block for deployment circuit breaker.
+     */
+    deploymentCircuitBreaker?: aws.ecs.ServiceArgs["deploymentCircuitBreaker"];
+
+    /**
+     * Configuration block containing deployment controller configuration.
      */
     deploymentController?: aws.ecs.ServiceArgs["deploymentController"];
 
@@ -380,6 +385,11 @@ export interface FargateServiceArgs {
      * Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
      */
     enableEcsManagedTags?: pulumi.Input<boolean>;
+
+    /**
+     * Specifies whether to enable Amazon ECS Exec for the tasks within the service.
+     */
+     enableExecuteCommand?: pulumi.Input<boolean>;
 
     /**
      * Enable to force a new task deployment of the service. This can be used to update tasks to use a newer
