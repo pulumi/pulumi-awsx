@@ -4,6 +4,7 @@ CHANGELOG
 ## HEAD (Unreleased)
 * Add support for Billing CloudWatch metrics and alarms
 * Add support for ECS Service Circuit Breaker and Execute Command
+* Use `aws.ec2.getAmi()` instead of deprecated `aws.getAmi()`
 
 ## 0.30.0 (2021-04-19)
 
