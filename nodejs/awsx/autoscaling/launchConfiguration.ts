@@ -120,7 +120,7 @@ async function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions)
     }
 
     // Else, if a name was provided, look it up and use that imageId.
-    const result = await aws.getAmi({
+    const result = await aws.ec2.getAmi({
         owners: [
             "591542846629", // Amazon
         ],

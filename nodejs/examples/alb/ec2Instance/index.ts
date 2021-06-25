@@ -43,7 +43,7 @@ export = async () => {
     const publicIps: pulumi.Output<string>[] = [];
     const subnets = await vpc.publicSubnets;
     for (let i = 0; i < subnets.length; i++) {
-        const getAmiResult = await aws.getAmi({
+        const getAmiResult = await aws.ec2.getAmi({
             filters: [
                 { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*" ] },
                 { name: "virtualization-type", values: [ "hvm" ] },

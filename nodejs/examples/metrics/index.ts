@@ -95,7 +95,7 @@ const bucket = new aws.s3.Bucket("b", {
 const bucketMetric = awsx.s3.metrics.firstByteLatency({ bucket, unit: "Seconds" });
 const bucketAlarm = bucketMetric.createAlarm("alarm" + alarmIndex++, { threshold: 30 , evaluationPeriods: 2 }, providerOpts);
 
-const ubuntu = pulumi.output(aws.getAmi({
+const ubuntu = pulumi.output(aws.ec2.getAmi({
     filters: [
         { name: "name", values: ["ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*"] },
         { name: "virtualization-type", values: ["hvm"] },
