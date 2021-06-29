@@ -2,6 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+* Update `ecs.Container` interface to include `environmentFile`
 * Add support for Billing CloudWatch metrics and alarms
 * Add support for ECS Service Circuit Breaker and Execute Command
 * Use `aws.ec2.getAmi()` instead of deprecated `aws.getAmi()`
