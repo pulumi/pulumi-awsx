@@ -248,6 +248,22 @@ export interface KeyValuePair {
 }
 
 /**
+ * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_EnvironmentFile.html
+ * for more details.
+ */
+export interface EnvironmentFile {
+    /**
+     * The file type to use. The only supported value is s3.
+     */
+    type: "s3";
+    /**
+     * The Amazon Resource Name (ARN) of the Amazon S3 object containing the environment
+     * variable file.
+     */
+    value: string;
+}
+
+/**
  * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html
  * for more details.
  */
@@ -425,6 +441,24 @@ export interface Container {
      * information, such as credential data.
      */
     environment?: pulumi.Input<KeyValuePair[]>;
+
+    /**
+     * A list of files containing the environment variables to pass to a container.
+     * This parameter maps to the --env-file option to docker run.
+     *
+     * You can specify up to ten environment files. The file must have a .env file extension. Each line in
+     * an environment file should contain an environment variable in VARIABLE=VALUE format. Lines beginning
+     * with # are treated as comments and are ignored. For more information on the environment variable file
+     * syntax, see [Declare default environment variables in file](https://docs.docker.com/compose/env-file/).
+     *
+     * If there are environment variables specified using the environment parameter in a container definition,
+     * they take precedence over the variables contained within an environment file. If multiple environment
+     * files are specified that contain the same variable, they are processed from the top down. It is
+     * recommended to use unique variable names. For more information, see [Specifying Environment
+     * Variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html)
+     * in the Amazon Elastic Container Service Developer Guide.
+     */
+    environmentFiles?: pulumi.Input<EnvironmentFile[]>;
 
     /**
      * If the essential parameter of a container is marked as true, and that container fails or

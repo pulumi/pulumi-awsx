@@ -72,7 +72,10 @@ export class Subnet extends pulumi.ComponentResource {
             this.routeTableAssociation = new aws.ec2.RouteTableAssociation(name, {
                 routeTableId: this.routeTable.id,
                 subnetId: this.subnet.id,
-            }, { parent: this });
+            }, { parent: this, customTimeouts: {
+                create: "5m",
+                delete: "5m",
+            } });
 
             this.id = pulumi.all([this.subnet.id, this.routeTableAssociation.id])
                             .apply(([id]) => id);
