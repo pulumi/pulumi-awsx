@@ -2,6 +2,9 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+
+## 0.31.0 (2021-08-04)
+
 * Update `ecs.Container` interface to include `environmentFile`
 * Add support for Billing CloudWatch metrics and alarms
 * Add support for ECS Service Circuit Breaker and Execute Command
