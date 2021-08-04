@@ -137,6 +137,7 @@ func TestAccVpc(t *testing.T) {
 }
 
 func TestAccNlb_fargateShort(t *testing.T) {
+	t.Skip("Temporarily skipping due to https://github.com/pulumi/pulumi-awsx/issues/686")
 	envRegion := getEnvRegion(t)
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
@@ -156,6 +157,7 @@ func TestAccNlb_fargateShort(t *testing.T) {
 }
 
 func TestAccNlb_fargateShortInlineListener(t *testing.T) {
+	t.Skip("Temporarily skipping due to https://github.com/pulumi/pulumi-awsx/issues/686")
 	envRegion := getEnvRegion(t)
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
@@ -334,6 +336,7 @@ func TestAccAlb_lambdaTarget(t *testing.T) {
 }
 
 func TestAccNlb_fargate(t *testing.T) {
+	t.Skip("Temporarily skipping due to https://github.com/pulumi/pulumi-awsx/issues/686")
 	skipIfShort(t)
 	envRegion := getEnvRegion(t)
 	test := getBaseOptions(t).
