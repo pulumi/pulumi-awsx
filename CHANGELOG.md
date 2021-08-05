@@ -3,6 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
+* (None)
+
 ## 0.31.0 (2021-08-04)
 
 * Update `ecs.Container` interface to include `environmentFile`
