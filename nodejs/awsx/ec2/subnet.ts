@@ -96,7 +96,14 @@ export class Subnet extends pulumi.ComponentResource {
             throw new Error("Cannot call [createRoute] on a [Subnet] that doesn't have a [RouteTable]");
         }
 
-        opts = { parent: this, ...opts };
+        opts = {
+            parent: this,
+            customTimeouts: {
+                create: "5m",
+                delete: "5m",
+            },
+            ...opts
+        };
 
         const args = isSubnetRouteProvider(argsOrProvider)
             ? argsOrProvider.route(name, { parent: this })
