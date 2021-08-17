@@ -102,7 +102,7 @@ export class Subnet extends pulumi.ComponentResource {
                 create: "5m",
                 delete: "5m",
             },
-            ...opts
+            ...opts,
         };
 
         const args = isSubnetRouteProvider(argsOrProvider)
