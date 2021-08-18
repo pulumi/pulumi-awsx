@@ -41,18 +41,25 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
         this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 
         const external = utils.ifUndefined(args.external, true);
-
-        // We used to hash the name of an LB to keep the name short.  This was necessary back when
-        // people didn't have direct control over creating the LB.  In awsx though creating the LB
-        // is easy to do, so we just let the user pass in the name they want.  We simply add an
-        // alias from the old name to the new one to keep things from being recreated.
-        this.loadBalancer = new aws.lb.LoadBalancer(name, {
+        const lbArgs: aws.lb.LoadBalancerArgs = {
             ...args,
             subnets: getSubnets(args, this.vpc, external),
             internal: external.apply(ex => !ex),
             securityGroups: this.securityGroups.map(g => g.id),
             tags: utils.mergeTags(args.tags, { Name: name }),
-        }, {
+        };
+
+        // If we're explicitly provided subnetMappings, then remove the `subnets` property
+        // because they are mutually exclusive.
+        if (lbArgs.subnetMappings) {
+            delete lbArgs.subnets;
+        }
+
+        // We used to hash the name of an LB to keep the name short.  This was necessary back when
+        // people didn't have direct control over creating the LB.  In awsx though creating the LB
+        // is easy to do, so we just let the user pass in the name they want.  We simply add an
+        // alias from the old name to the new one to keep things from being recreated.
+        this.loadBalancer = new aws.lb.LoadBalancer(name, lbArgs, {
             parent: this,
             aliases: [{ name: args.name || utils.sha1hash(name) }],
         });
