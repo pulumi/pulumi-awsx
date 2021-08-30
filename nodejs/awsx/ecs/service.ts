@@ -77,7 +77,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
         }
     }
 
-    const containerLoadBalancerProviders = new Map<string, ecs.ContainerLoadBalancerProvider>();
+    const containerLoadBalancerProviders: [string, ecs.ContainerLoadBalancerProvider][] = [];
 
     // Now walk each container and see if it wants to add load balancer information as well.
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
@@ -88,7 +88,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 
         for (const obj of container.portMappings) {
             if (x.ecs.isContainerLoadBalancerProvider(obj)) {
-                containerLoadBalancerProviders.set(containerName, obj);
+                containerLoadBalancerProviders.push([containerName, obj]);
             }
         }
     }
@@ -96,8 +96,9 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
     // Finally see if we were directly given load balancing listeners to associate our containers
     // with. If so, use their information to populate our LB information.
     for (const containerName of Object.keys(service.listeners)) {
-        if (!containerLoadBalancerProviders.has(containerName)) {
-            containerLoadBalancerProviders.set(containerName, service.listeners[containerName]);
+        const provider = service.listeners[containerName];
+        if (!containerLoadBalancerProviders.some(p => p[0] === containerName && p[1] === provider)) {
+            containerLoadBalancerProviders.push([containerName, provider]);
         }
     }
 

@@ -3,7 +3,8 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
-* (None)
+* Support multiple load balancing listeners per container
+  [#698](https://github.com/pulumi/pulumi-awsx/pull/698)
 
 ## 0.31.0 (2021-08-04)
 
