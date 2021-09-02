@@ -3,7 +3,7 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 
-* (None)
+* Fix a bug that prevented `elasticloadbalancingv2.NetworkLoadBalancer` from using explicitly provided `subnetMappings`.
 
 ## 0.31.0 (2021-08-04)
 
