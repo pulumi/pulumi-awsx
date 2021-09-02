@@ -4,6 +4,8 @@ CHANGELOG
 ## HEAD (Unreleased)
 
 * Fix a bug that prevented `elasticloadbalancingv2.NetworkLoadBalancer` from using explicitly provided `subnetMappings`.
+* Support multiple load balancing listeners per container
+  [#698](https://github.com/pulumi/pulumi-awsx/pull/698)
 
 ## 0.31.0 (2021-08-04)
 
