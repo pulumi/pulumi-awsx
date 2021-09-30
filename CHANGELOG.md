@@ -2,6 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+(None)
 
 ## 0.32.0 (2021-09-29)
 
