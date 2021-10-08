@@ -12,7 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./api";
+export {
+    AdditionalRoute, API, APIArgs, BaseRoute, DeploymentArgs, Endpoint, EventHandlerRoute,
+    IntegrationRoute, IntegrationRouteTargetProvider, IntegrationTarget, RawDataRoute, Request,
+    RequestContext, Response, RestApiArgs, Route, StageArgs, StaticRoute,
+    /* createAPI */ // Intentionally not re-exporting this
+} from "./api";
 export * from "./apikey";
 export * from "./cognitoAuthorizer";
 export * from "./lambdaAuthorizer";
