@@ -80,6 +80,7 @@ export class Cluster
             opts: pulumi.ComponentResourceOptions = {}) {
 
         args.vpc = args.vpc || this.vpc;
+        args.subnetIds = args.subnetIds || this.vpc.publicSubnetIds;
         args.launchConfigurationArgs = {
             // default to our security groups if the caller didn't provide their own.
             securityGroups: this.securityGroups,
