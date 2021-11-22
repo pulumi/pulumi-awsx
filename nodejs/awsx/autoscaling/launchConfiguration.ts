@@ -138,7 +138,7 @@ async function getEcsAmiId(name: string | undefined, opts: pulumi.InvokeOptions)
 
 
 const defaultRootBlockDevice = {
-    volumeSize: 8, // GiB
+    volumeSize: 32, // GiB
     volumeType: "gp2", // default is "standard"
     deleteOnTermination: true,
 };
@@ -392,7 +392,7 @@ export interface AutoScalingLaunchConfigurationArgs {
      * Customize details about the root block device of the instance. See Block Devices below for
      * details.
      *
-     * If not provided, an 8gb 'gp2' root device will be created.  This device will be deleted upon
+     * If not provided, an 32gb 'gp2' root device will be created.  This device will be deleted upon
      * termination.
      */
     rootBlockDevice?: aws.ec2.LaunchConfigurationArgs["rootBlockDevice"];
