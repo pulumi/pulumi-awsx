@@ -714,9 +714,6 @@ export interface VpcArgs {
      */
     requestedAvailabilityZones?: number | "all" | [string, ...string[]] | pulumi.Input<string[]>;
 
-    /**
-     * @deprecated Use `requestedAvailabilityZones`
-     */
     numberOfAvailabilityZones?: VpcArgs["requestedAvailabilityZones"];
 
     /**
