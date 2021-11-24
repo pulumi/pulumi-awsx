@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-
+* Introduce `requestedAvailabilityZone` on `ec2.vps.VpcArgs` that takes `number | "all" | string[]`, to allow specific zones for creating a VPC.
 * Extend the `volumeSize` of the default root block device in ECS
   autoscaling launch configuration to 32 GB to accomodate the latest
   default AMI snapshot size
