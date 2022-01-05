@@ -20,12 +20,12 @@ import * as topology from "./vpcTopology";
 
 import * as utils from "../utils";
 
-// Mapping from provider to Vpc.  'undefined' is used to encode the Vpc we create when no provider
+// Mapping from provider to Vpc. 'undefined' is used to encode the Vpc we create when no provider
 // is passed in.
 const providerToDefaultVpc = new Map<pulumi.ProviderResource | undefined, Vpc>();
 
 class VpcData {
-    // Convenience properties.  Equivalent to getting the IDs from teh corresponding XxxSubnets
+    // Convenience properties.  Equivalent to getting the IDs from the corresponding XxxSubnets
     // properties.
     /** @internal */
     public readonly publicSubnetIds: pulumi.Output<string>[] = [];
