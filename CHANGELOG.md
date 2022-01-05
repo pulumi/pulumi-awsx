@@ -6,6 +6,7 @@ CHANGELOG
 * Extend the `volumeSize` of the default root block device in ECS
   autoscaling launch configuration to 32 GB to accomodate the latest
   default AMI snapshot size
+* Fix spelling mistakes in the typescript `cidr` and `vpc` types.
 
 ## 0.32.0 (2021-09-29)
 
