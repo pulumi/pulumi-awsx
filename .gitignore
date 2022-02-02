@@ -1,9 +1,23 @@
 .pulumi
 **/bin/
+**/obj/
 **/node_modules/
 vendor/
 **/Pulumi.*.yaml
 **/yarn-error.log
-**/.idea
-*.pyc
 yarn.lock
+package-lock.json
+.idea/
+**/version.txt
+**/dist
+.DS_Store
+
+ci-scripts/
+*.tar.gz
+
+# for goreleaser
+/goreleaser
+/package.json
+/PulumiPlugin.yaml
+
+**/venv
