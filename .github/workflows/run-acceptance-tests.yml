@@ -80,18 +80,18 @@ jobs:
         uses: pulumi/action-install-pulumi-cli@v1.0.1
       - name: Build provider binary + schema
         run: make schema provider
-#      - name: Check Schema is Valid
-#        run: |
-#          echo 'SCHEMA_CHANGES<<EOF' >> $GITHUB_ENV
-#          schema-tools compare ${{ env.PROVIDER }} master --local-path=provider/cmd/pulumi-resource-${{ env.PROVIDER }}/schema.json >> $GITHUB_ENV
-#          echo 'EOF' >> $GITHUB_ENV
-#      - if: github.event_name == 'pull_request'
-#        name: Comment on PR with Details of Schema Check
-#        uses: thollander/actions-comment-pull-request@1.0.1
-#        with:
-#          message: |
-#            ### Does the PR have any schema changes?
-#            ${{ env.SCHEMA_CHANGES }}
+      - name: Check Schema is Valid
+        run: |
+          echo 'SCHEMA_CHANGES<<EOF' >> $GITHUB_ENV
+          schema-tools compare ${{ env.PROVIDER }} master --local-path=provider/cmd/pulumi-resource-${{ env.PROVIDER }}/schema.json >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - if: github.event_name == 'pull_request'
+        name: Comment on PR with Details of Schema Check
+        uses: thollander/actions-comment-pull-request@1.0.1
+        with:
+          message: |
+            ### Does the PR have any schema changes?
+            ${{ env.SCHEMA_CHANGES }}
 #          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
