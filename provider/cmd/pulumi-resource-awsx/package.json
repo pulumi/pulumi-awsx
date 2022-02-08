@@ -1,0 +1,6 @@
+{
+  "name": "pulumi-resource-awsx",
+  "dependencies": {
+    "@pulumi/awsx": "${VERSION}"
+  }
+}
