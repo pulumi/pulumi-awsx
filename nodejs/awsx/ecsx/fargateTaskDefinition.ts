@@ -6,11 +6,6 @@ import { Container } from "./container";
 
 export interface FargateTaskDefinitionArgs {
     // Properties copied from ecs.TaskDefinitionArgs
-    /**
-     * The vpc that the service for this task will run in.  Does not normally need to be explicitly
-     * provided as it will be inferred from the cluster the service is associated with.
-     */
-    vpcId?: pulumi.Input<string>;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
@@ -99,6 +94,8 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
     public readonly containers: Record<string, Container>;
     public readonly taskRole?: aws.iam.Role;
     public readonly executionRole?: aws.iam.Role;
+    // tslint:disable-next-line:variable-name
+    public readonly __isFargateTaskDefinition: boolean;
 
     constructor(
         name: string,
@@ -115,6 +112,7 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
         }
 
         super("awsx:x:ecs:FargateTaskDefinition", name, {}, opts);
+        this.__isFargateTaskDefinition = true;
 
         if (args.logGroup) {
             this.logGroup = aws.cloudwatch.LogGroup.isInstance(args.logGroup)
@@ -165,6 +163,13 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
                 this.executionRole
             ),
             { parent: this }
+        );
+    }
+
+    public static isInstance(obj: any): obj is FargateTaskDefinition {
+        return utils.isInstance<FargateTaskDefinition>(
+            obj,
+            "__isFargateTaskDefinition"
         );
     }
 }
