@@ -53,7 +53,7 @@ export interface Container {
      * For tasks using the Fargate launch type, the task or service requires platform version 1.3.0
      * or later.
      */
-    dependsOn?: pulumi.Input<ContainerDependency[]>;
+    dependsOn?: pulumi.Input<aws.ecs.ContainerDependency[]>;
 
     /**
      * When this parameter is true, networking is disabled within the container.
@@ -136,7 +136,7 @@ export interface Container {
      * Important: We do not recommend using plaintext environment variables for sensitive
      * information, such as credential data.
      */
-    environment?: pulumi.Input<KeyValuePair[]>;
+    environment?: pulumi.Input<aws.ecs.KeyValuePair[]>;
 
     /**
      * A list of files containing the environment variables to pass to a container.
@@ -154,7 +154,7 @@ export interface Container {
      * Variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html)
      * in the Amazon Elastic Container Service Developer Guide.
      */
-    environmentFiles?: pulumi.Input<EnvironmentFile[]>;
+    environmentFiles?: pulumi.Input<aws.ecs.EnvironmentFile[]>;
 
     /**
      * If the essential parameter of a container is marked as true, and that container fails or
@@ -191,7 +191,7 @@ export interface Container {
      * logs. For more information, see [Custom Route Logging](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html)
      * in the Amazon Elastic Container Service Developer Guide.
      */
-    firelensConfiguration?: pulumi.Input<FirelensConfiguration>;
+    firelensConfiguration?: pulumi.Input<aws.ecs.FirelensConfiguration>;
 
     /**
      * The health check command and associated configuration parameters for the container. This
@@ -532,86 +532,5 @@ export interface Container {
      * section of the [Docker-Remote-API](https://docs.docker.com/engine/api/v1.35/) and the
      * `--publish` parameter to [docker-run](https://docs.docker.com/engine/reference/run/).
      */
-    portMappings?: pulumi.Input<aws.ecs.PortMapping>[];
-
-    /**
-     * Alternative to passing in `portMappings`.  If a listener (or args to create a listener) is
-     * passed in, it will be used instead.
-     */
-    applicationListener?: aws.lb.LoadBalancer;
-}
-
-/**
- * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KeyValuePair.html
- * for more details.
- */
-export interface KeyValuePair {
-    /**
-     * The name of the key-value pair. For environment variables, this is the name of the
-     * environment variable.
-     */
-    name: pulumi.Input<string>;
-    /**
-     * The value of the key-value pair. For environment variables, this is the value of the
-     * environment variable.
-     */
-    value: pulumi.Input<string>;
-}
-
-/**
- * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_EnvironmentFile.html
- * for more details.
- */
-export interface EnvironmentFile {
-    /**
-     * The file type to use. The only supported value is s3.
-     */
-    type: "s3";
-    /**
-     * The Amazon Resource Name (ARN) of the Amazon S3 object containing the environment
-     * variable file.
-     */
-    value: string;
-}
-
-/**
- * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDependency.html
- * for more details.
- */
-export interface ContainerDependency {
-    /**
-     * The dependency condition of the container. The following are the available conditions and
-     *    their behavior: START - This condition emulates the behavior of links and volumes today.
-     *    It validates that a dependent container is started before permitting other containers to
-     *    start. COMPLETE - This condition validates that a dependent container runs to completion
-     *    (exits) before permitting other containers to start. This can be useful for nonessential
-     *    containers that run a script and then exit. SUCCESS - This condition is the same as
-     *    COMPLETE, but it also requires that the container exits with a zero status. HEALTHY - This
-     *    condition validates that the dependent container passes its Docker health check before
-     *    permitting other containers to start. This requires that the dependent container has
-     *    health checks configured. This condition is confirmed only at task startup.
-     */
-    condition?: pulumi.Input<"START" | "COMPLETE" | "SUCCESS" | "HEALTHY">;
-    /**
-     * The name of a container.
-     */
-    containerName: pulumi.Input<string>;
-}
-
-/**
- * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_FirelensConfiguration.html
- * for more details
- */
-export interface FirelensConfiguration {
-    /**
-     * The options to use when configuring the log router. This field is optional and can be used to specify a custom
-     * configuration file or to add additional metadata, such as the task, task definition, cluster, and container
-     * instance details to the log event.
-     */
-    options?: { [key: string]: string };
-
-    /**
-     * The log router to use.
-     */
-    type: pulumi.Input<"fluentd" | "fluentbit">;
+    portMappings?: (pulumi.Input<aws.ecs.PortMapping> | aws.lb.TargetGroup)[];
 }

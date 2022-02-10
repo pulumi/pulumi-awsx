@@ -2,7 +2,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as role from "../role";
 import * as utils from "../utils";
-import { TaskDefinition } from "../ecs";
 import { Container } from "./container";
 
 export interface FargateTaskDefinitionArgs {
@@ -129,9 +128,8 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
                 : role.createRoleAndPolicies(
                       args.taskRole.name ?? `${name}-task`,
                       args.taskRole.assumeRolePolicy ??
-                          TaskDefinition.defaultRoleAssumeRolePolicy(),
-                      args.taskRole.policyArns ??
-                          TaskDefinition.defaultTaskRolePolicyARNs(),
+                          defaultRoleAssumeRolePolicy(),
+                      args.taskRole.policyArns ?? defaultTaskRolePolicyARNs(),
                       { ...opts, parent: this }
                   ).role;
         }
@@ -142,9 +140,9 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
                 : role.createRoleAndPolicies(
                       args.executionRole.name ?? `${name}-execution`,
                       args.executionRole.assumeRolePolicy ??
-                          TaskDefinition.defaultRoleAssumeRolePolicy(),
+                          defaultRoleAssumeRolePolicy(),
                       args.executionRole.policyArns ??
-                          TaskDefinition.defaultExecutionRolePolicyARNs(),
+                          defaultExecutionRolePolicyARNs(),
                       { ...opts, parent: this }
                   ).role;
         }
@@ -153,9 +151,8 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
 
         const containerDefinitions = computeContainerDefinitions(
             this,
-            name,
             this.containers,
-            this.logGroup
+            this.logGroup?.id
         );
 
         this.taskDefinition = new aws.ecs.TaskDefinition(
@@ -196,9 +193,8 @@ function buildTaskDefinitionArgs(
 
 function computeContainerDefinitions(
     parent: pulumi.Resource,
-    name: string,
     containers: Record<string, Container>,
-    logGroup: aws.cloudwatch.LogGroup | undefined
+    logGroupId: pulumi.Input<string | undefined>
 ): pulumi.Output<aws.ecs.ContainerDefinition[]> {
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
 
@@ -208,10 +204,9 @@ function computeContainerDefinitions(
         result.push(
             computeContainerDefinition(
                 parent,
-                name,
                 containerName,
                 container,
-                logGroup
+                logGroupId
             )
         );
     }
@@ -221,10 +216,74 @@ function computeContainerDefinitions(
 
 function computeContainerDefinition(
     parent: pulumi.Resource,
-    name: string,
     containerName: string,
     container: Container,
-    logGroup: aws.cloudwatch.LogGroup | undefined
+    logGroupId: pulumi.Input<string | undefined>
 ): pulumi.Output<aws.ecs.ContainerDefinition> {
-    throw new Error("TODO");
+    const resolvedMappings = container.portMappings.map((mappingInput) =>
+        aws.lb.TargetGroup.isInstance(mappingInput)
+            ? mappingInput.port.apply(
+                  (port): aws.ecs.PortMapping => ({
+                      containerPort: port,
+                      hostPort: port,
+                  })
+              )
+            : mappingInput
+    );
+    const region = utils.getRegion(parent);
+    return pulumi
+        .all([container, resolvedMappings, region, logGroupId])
+        .apply(([container, portMappings, region, logGroupId]) => {
+            const containerDefinition: aws.ecs.ContainerDefinition = {
+                ...container,
+                portMappings,
+                name: containerName,
+            };
+            if (
+                containerDefinition.logConfiguration === undefined &&
+                logGroupId !== undefined
+            ) {
+                containerDefinition.logConfiguration = {
+                    logDriver: "awslogs",
+                    options: {
+                        "awslogs-group": logGroupId,
+                        "awslogs-region": region,
+                        "awslogs-stream-prefix": containerName,
+                    },
+                };
+            }
+            return containerDefinition;
+        });
+}
+
+function defaultRoleAssumeRolePolicy(): aws.iam.PolicyDocument {
+    return {
+        Version: "2012-10-17",
+        Statement: [
+            {
+                Action: "sts:AssumeRole",
+                Principal: {
+                    Service: "ecs-tasks.amazonaws.com",
+                },
+                Effect: "Allow",
+                Sid: "",
+            },
+        ],
+    };
+}
+
+function defaultTaskRolePolicyARNs() {
+    return [
+        // Provides full access to Lambda
+        aws.iam.ManagedPolicy.LambdaFullAccess,
+        // Required for lambda compute to be able to run Tasks
+        aws.iam.ManagedPolicy.AmazonECSFullAccess,
+    ];
+}
+
+function defaultExecutionRolePolicyARNs() {
+    return [
+        "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+        aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+    ];
 }
