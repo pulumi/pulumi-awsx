@@ -3,6 +3,7 @@ import * as aws from "@pulumi/aws";
 import * as role from "../role";
 import * as utils from "../utils";
 import { Container } from "./container";
+import { ResourceOptions } from "./componentOptions";
 
 export interface FargateTaskDefinitionArgs {
     // Properties copied from ecs.TaskDefinitionArgs
@@ -80,39 +81,55 @@ export interface FargateTaskDefinitionArgs {
      * Key-value mapping of resource tags
      */
     tags?: pulumi.Input<aws.Tags>;
+
+    taskRoleOpts?: ResourceOptions;
+
+    componentImport?: {
+        taskDefinition?: string;
+        logGroup?: string;
+        taskRole?: string;
+        executionRole?: string;
+    };
 }
 
 export interface RoleArgs {
+    /**
+     * Set to `true` to skip creating this resource
+     */
+    skip?: boolean;
     name?: string;
     assumeRolePolicy?: string | aws.iam.PolicyDocument;
     policyArns?: string[];
 }
 
+/**
+ * Auto-creates log-group and task & execution roles.
+ * Calculates required Service load balancers if target group included in port mappings.
+ */
 export class FargateTaskDefinition extends pulumi.ComponentResource {
     public readonly taskDefinition: aws.ecs.TaskDefinition;
     public readonly logGroup?: aws.cloudwatch.LogGroup;
-    public readonly containers: Record<string, Container>;
     public readonly taskRole?: aws.iam.Role;
     public readonly executionRole?: aws.iam.Role;
+    public readonly containers: Record<string, Container>;
+    public readonly loadBalancers: pulumi.Output<aws.types.input.ecs.ServiceLoadBalancer[]>;
     // tslint:disable-next-line:variable-name
     public readonly __isFargateTaskDefinition: boolean;
 
-    constructor(
-        name: string,
-        args: FargateTaskDefinitionArgs,
-        opts: pulumi.ComponentResourceOptions = {}
-    ) {
-        if (
-            (!args.container && !args.containers) ||
-            (args.container && args.containers)
-        ) {
-            throw new Error(
-                "One of [container] or [containers] must be provided"
-            );
-        }
-
+    constructor(name: string, args: FargateTaskDefinitionArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ecs:FargateTaskDefinition", name, {}, opts);
         this.__isFargateTaskDefinition = true;
+
+        const { container, containers } = args;
+        if (container && containers) {
+            throw new Error("Exactly one of [container] or [containers] must be provided");
+        } else if (containers !== undefined) {
+            this.containers = containers;
+        } else if (container !== undefined) {
+            this.containers = { container: container };
+        } else {
+            throw new Error("Exactly one of [container] or [containers] must be provided");
+        }
 
         if (args.logGroup) {
             this.logGroup = aws.cloudwatch.LogGroup.isInstance(args.logGroup)
@@ -125,10 +142,9 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
                 ? args.taskRole
                 : role.createRoleAndPolicies(
                       args.taskRole.name ?? `${name}-task`,
-                      args.taskRole.assumeRolePolicy ??
-                          defaultRoleAssumeRolePolicy(),
+                      args.taskRole.assumeRolePolicy ?? defaultRoleAssumeRolePolicy(),
                       args.taskRole.policyArns ?? defaultTaskRolePolicyARNs(),
-                      { ...opts, parent: this }
+                      { ...args.taskRoleOpts, parent: this }
                   ).role;
         }
 
@@ -137,40 +153,25 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
                 ? args.executionRole
                 : role.createRoleAndPolicies(
                       args.executionRole.name ?? `${name}-execution`,
-                      args.executionRole.assumeRolePolicy ??
-                          defaultRoleAssumeRolePolicy(),
-                      args.executionRole.policyArns ??
-                          defaultExecutionRolePolicyARNs(),
+                      args.executionRole.assumeRolePolicy ?? defaultRoleAssumeRolePolicy(),
+                      args.executionRole.policyArns ?? defaultExecutionRolePolicyARNs(),
                       { ...opts, parent: this }
                   ).role;
         }
 
-        this.containers = args.containers ?? { container: args.container };
+        const containerDefinitions = computeContainerDefinitions(this, this.containers, this.logGroup?.id);
 
-        const containerDefinitions = computeContainerDefinitions(
-            this,
-            this.containers,
-            this.logGroup?.id
-        );
+        this.loadBalancers = computeLoadBalancers(this.containers);
 
         this.taskDefinition = new aws.ecs.TaskDefinition(
             name,
-            buildTaskDefinitionArgs(
-                name,
-                args,
-                containerDefinitions,
-                this.taskRole,
-                this.executionRole
-            ),
+            buildTaskDefinitionArgs(name, args, containerDefinitions, this.taskRole, this.executionRole),
             { parent: this }
         );
     }
 
     public static isInstance(obj: any): obj is FargateTaskDefinition {
-        return utils.isInstance<FargateTaskDefinition>(
-            obj,
-            "__isFargateTaskDefinition"
-        );
+        return utils.isInstance<FargateTaskDefinition>(obj, "__isFargateTaskDefinition");
     }
 }
 
@@ -181,16 +182,14 @@ function buildTaskDefinitionArgs(
     taskRole?: aws.iam.Role,
     executionRole?: aws.iam.Role
 ): aws.ecs.TaskDefinitionArgs {
-    const containerString = containerDefinitions.apply((d) =>
-        JSON.stringify(d)
-    );
-    const defaultFamily = containerString.apply(
-        (s) => name + "-" + utils.sha1hash(pulumi.getStack() + s)
-    );
+    const containerString = containerDefinitions.apply((d) => JSON.stringify(d));
+    const defaultFamily = containerString.apply((s) => name + "-" + utils.sha1hash(pulumi.getStack() + s));
     const family = utils.ifUndefined(args.family, defaultFamily);
 
     return {
         ...args,
+        taskRoleArn: taskRole?.arn,
+        executionRoleArn: executionRole?.arn,
         family,
         containerDefinitions: containerString,
     };
@@ -206,14 +205,7 @@ function computeContainerDefinitions(
     for (const containerName of Object.keys(containers)) {
         const container = containers[containerName];
 
-        result.push(
-            computeContainerDefinition(
-                parent,
-                containerName,
-                container,
-                logGroupId
-            )
-        );
+        result.push(computeContainerDefinition(parent, containerName, container, logGroupId));
     }
 
     return pulumi.all(result);
@@ -225,16 +217,21 @@ function computeContainerDefinition(
     container: Container,
     logGroupId: pulumi.Input<string | undefined>
 ): pulumi.Output<aws.ecs.ContainerDefinition> {
-    const resolvedMappings = container.portMappings.map((mappingInput) =>
-        aws.lb.TargetGroup.isInstance(mappingInput)
-            ? mappingInput.port.apply(
-                  (port): aws.ecs.PortMapping => ({
-                      containerPort: port,
-                      hostPort: port,
-                  })
-              )
-            : mappingInput
-    );
+    const resolvedMappings = container.portMappings
+        ? pulumi.all(
+              container.portMappings.map((mappingInput) => {
+                  return pulumi.output(mappingInput).apply((mi) =>
+                      pulumi.output(mi.targetGroup?.port).apply((tgPort): aws.ecs.PortMapping => {
+                          return {
+                              containerPort: mi.containerPort ?? tgPort ?? mi.hostPort,
+                              hostPort: tgPort ?? mi.hostPort,
+                              protocol: mi.protocol,
+                          };
+                      })
+                  );
+              })
+          )
+        : undefined;
     const region = utils.getRegion(parent);
     return pulumi
         .all([container, resolvedMappings, region, logGroupId])
@@ -244,10 +241,7 @@ function computeContainerDefinition(
                 portMappings,
                 name: containerName,
             };
-            if (
-                containerDefinition.logConfiguration === undefined &&
-                logGroupId !== undefined
-            ) {
+            if (containerDefinition.logConfiguration === undefined && logGroupId !== undefined) {
                 containerDefinition.logConfiguration = {
                     logDriver: "awslogs",
                     options: {
@@ -259,6 +253,45 @@ function computeContainerDefinition(
             }
             return containerDefinition;
         });
+}
+
+function computeLoadBalancers(
+    containers: Record<string, Container>
+): pulumi.Output<aws.types.input.ecs.ServiceLoadBalancer[]> {
+    return pulumi
+        .all(
+            Object.entries(containers).map(([containerName, v]) => {
+                if (v.portMappings === undefined) return pulumi.output([]);
+                return pulumi.all(
+                    v.portMappings?.map((m) => {
+                        const targetGroup = pulumi.output(m).targetGroup;
+                        return pulumi
+                            .all([targetGroup?.apply((tg) => tg?.arn), targetGroup?.apply((tg) => tg?.port)])
+                            .apply(([arn, port]) => ({
+                                containerName,
+                                tgArn: arn,
+                                tgPort: port,
+                            }));
+                    })
+                );
+            })
+        )
+        .apply((containerGroups) =>
+            utils.collect(containerGroups, (cg) => {
+                if (cg === undefined) {
+                    return [];
+                }
+                return utils.choose(
+                    cg,
+                    ({ containerName, tgArn, tgPort }): aws.types.input.ecs.ServiceLoadBalancer | undefined => {
+                        if (tgArn === undefined || tgPort === undefined) {
+                            return undefined;
+                        }
+                        return { containerName, containerPort: tgPort, targetGroupArn: tgArn };
+                    }
+                );
+            })
+        );
 }
 
 function defaultRoleAssumeRolePolicy(): aws.iam.PolicyDocument {
@@ -280,15 +313,15 @@ function defaultRoleAssumeRolePolicy(): aws.iam.PolicyDocument {
 function defaultTaskRolePolicyARNs() {
     return [
         // Provides full access to Lambda
-        aws.iam.ManagedPolicy.LambdaFullAccess,
+        // aws.iam.ManagedPolicy.LambdaFullAccess,
         // Required for lambda compute to be able to run Tasks
-        aws.iam.ManagedPolicy.AmazonECSFullAccess,
+        // aws.iam.ManagedPolicy.AmazonECSFullAccess,
     ];
 }
 
 function defaultExecutionRolePolicyARNs() {
     return [
         "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-        aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+        // aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
     ];
 }

@@ -1,9 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import {
-    FargateTaskDefinition,
-    FargateTaskDefinitionArgs,
-} from "./fargateTaskDefinition";
+import { FargateTaskDefinition, FargateTaskDefinitionArgs } from "./fargateTaskDefinition";
 import * as utils from "../utils";
 export interface FargateServiceArgs {
     /**
@@ -69,12 +66,9 @@ export interface FargateServiceArgs {
     iamRole?: pulumi.Input<string>;
 
     /**
-     * A load balancer block. Load balancers documented below.
+     * A list of load balancer objects to associate with the service. If you specify the Role property, LoadBalancers must be specified as well.
      */
-    // loadBalancers?: (
-    //     | pulumi.Input<x.ecs.ServiceLoadBalancer>
-    //     | x.ecs.ServiceLoadBalancerProvider
-    // )[];
+    loadBalancers?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceLoadBalancer>[]>;
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
@@ -100,7 +94,7 @@ export interface FargateServiceArgs {
      * these will be the public subnets of the cluster's vpc.  If unspecified and [assignPublicIp]
      * is false, then these will be the private subnets of the cluster's vpc.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]>;
+    subnets: pulumi.Input<pulumi.Input<string>[]>;
 
     /**
      * rules that are taken into consideration during task placement. Maximum number of
@@ -167,33 +161,28 @@ export class FargateService extends pulumi.ComponentResource {
     public readonly taskDefinition: FargateTaskDefinition;
     public readonly service: aws.ecs.Service;
 
-    constructor(
-        name: string,
-        args: FargateServiceArgs,
-        opts: pulumi.ComponentResourceOptions = {}
-    ) {
+    constructor(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ecs:FargateService", name, {}, opts);
 
-        this.taskDefinition = FargateTaskDefinition.isInstance(
-            args.taskDefinition
-        )
+        this.taskDefinition = FargateTaskDefinition.isInstance(args.taskDefinition)
             ? args.taskDefinition
             : new FargateTaskDefinition(name, args.taskDefinition, {
                   parent: this,
               });
 
         this.service = new aws.ecs.Service(name, {
-            // ...args,
-            cluster: aws.ecs.Cluster.isInstance(args.cluster)
-                ? args.cluster.arn
-                : args.cluster,
+            ...args,
+            cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
             launchType: "FARGATE",
+            loadBalancers: args.loadBalancers ?? this.taskDefinition.loadBalancers,
             networkConfiguration: {
                 subnets: args.subnets,
                 assignPublicIp: utils.ifUndefined(args.assignPublicIp, true),
                 securityGroups: args.securityGroups,
             },
+            taskDefinition: this.taskDefinition.taskDefinition.arn,
         });
+
         this.registerOutputs();
     }
 }

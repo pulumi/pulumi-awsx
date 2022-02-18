@@ -18,7 +18,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as crypto from "crypto";
 
 type Diff<T extends string | number | symbol, U extends string | number | symbol> =
-  ({ [P in T]: P } & { [P in U]: never } & { [x: string]: never })[T];
+    ({ [P in T]: P } & { [P in U]: never } & { [x: string]: never })[T];
 
 // Overwrite allows you to take an existing type, and then overwrite existing properties in it
 // with properties of the same name, but with entirely different types.
@@ -68,7 +68,7 @@ type WithoutUndefined<T> = T extends undefined ? never : T;
 /** @internal */
 export function ifUndefined<T>(input: pulumi.Input<T> | undefined, value: pulumi.Input<T>): pulumi.Output<WithoutUndefined<T>> {
     return <any>pulumi.all([input, value])
-                      .apply(([input, value]) => input !== undefined ? input : value);
+        .apply(([input, value]) => input !== undefined ? input : value);
 }
 
 /** @internal */
@@ -81,7 +81,7 @@ export function checkCompat<T, U>(): Compatible<T, U> {
 
 /** @internal */
 export function mergeTags(tags1: pulumi.Input<aws.Tags> | undefined,
-                          tags2: pulumi.Input<aws.Tags> | undefined): pulumi.Output<aws.Tags> {
+    tags2: pulumi.Input<aws.Tags> | undefined): pulumi.Output<aws.Tags> {
     return pulumi.all([tags1, tags2]).apply(([tags1, tags2]) => ({
         ...(tags1 || {}),
         ...(tags2 || {}),
@@ -137,4 +137,55 @@ export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
 function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
     const region = provider ? (<any>provider).region : undefined;
     return region || aws.config.region;
+}
+
+/**
+ * Applies the given function to each element of the array and returns a new array comprised of the results for each element where the function returns a value.
+ * @param source The input collection.
+ * @param chooser A function to transform items from the input collection to a new value to be included, or undefined to be excluded.
+ * @example
+ * choose(
+ *  [1, 2, 3],
+ *  x => (x % 2 === 1 ? x * 2 : undefined)
+ * ) // [2, 6]
+ * @internal
+ */
+export function choose<T, U>(
+    source: ReadonlyArray<T>,
+    chooser: (item: T, index: number) => U | undefined
+): U[] {
+    const target = []
+    let index = 0
+    for (const item of source) {
+        const chosen = chooser(item, index)
+        if (chosen !== undefined) {
+            target.push(chosen)
+        }
+        index++
+    }
+    return target
+}
+
+/**
+ * Applies the given function to each element of the source array and concatenates all the results.
+ * @param source The input collection.
+ * @param mapping A function to transform elements of the input collection into collections that are concatenated.
+ * @example
+ * collect([1, 2], x => [x, x]) // [1, 1, 2, 2]
+ * @internal
+ */
+export function collect<T, U>(
+    source: ReadonlyArray<T>,
+    mapping: (item: T, index: number) => Iterable<U>
+): U[] {
+    const target = []
+    let index = 0
+    for (const item of source) {
+        const children = mapping(item, index)
+        for (const child of children) {
+            target.push(child)
+        }
+        index++
+    }
+    return target
 }

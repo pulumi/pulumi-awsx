@@ -532,5 +532,10 @@ export interface Container {
      * section of the [Docker-Remote-API](https://docs.docker.com/engine/api/v1.35/) and the
      * `--publish` parameter to [docker-run](https://docs.docker.com/engine/reference/run/).
      */
-    portMappings?: (pulumi.Input<aws.ecs.PortMapping> | aws.lb.TargetGroup)[];
+    portMappings?: pulumi.Input<{
+        targetGroup?: aws.lb.TargetGroup;
+        containerPort?: number;
+        hostPort?: number;
+        protocol?: aws.ecs.Protocol;
+    }>[];
 }
