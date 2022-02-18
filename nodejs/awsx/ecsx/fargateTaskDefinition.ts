@@ -3,7 +3,8 @@ import * as aws from "@pulumi/aws";
 import * as role from "../role";
 import * as utils from "../utils";
 import { Container } from "./container";
-import { ResourceOptions } from "./componentOptions";
+import { NestedResourceOptions } from "../nestedResourceOptions";
+import { DefaultRoleWithPolicyArgs } from "../role";
 
 export interface FargateTaskDefinitionArgs {
     // Properties copied from ecs.TaskDefinitionArgs
@@ -35,7 +36,7 @@ export interface FargateTaskDefinitionArgs {
      * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
      * `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
-    taskRole?: aws.iam.Role | RoleArgs;
+    taskRole?: DefaultRoleWithPolicyArgs;
 
     /**
      * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
@@ -47,7 +48,7 @@ export interface FargateTaskDefinitionArgs {
      *
      *  If `undefined`, a default will be created for the task.  If `null` no role will be created.
      */
-    executionRole?: aws.iam.Role | RoleArgs;
+    executionRole?: DefaultRoleWithPolicyArgs;
 
     /**
      * The number of cpu units used by the task.  If not provided, a default will be computed
@@ -81,25 +82,6 @@ export interface FargateTaskDefinitionArgs {
      * Key-value mapping of resource tags
      */
     tags?: pulumi.Input<aws.Tags>;
-
-    taskRoleOpts?: ResourceOptions;
-
-    componentImport?: {
-        taskDefinition?: string;
-        logGroup?: string;
-        taskRole?: string;
-        executionRole?: string;
-    };
-}
-
-export interface RoleArgs {
-    /**
-     * Set to `true` to skip creating this resource
-     */
-    skip?: boolean;
-    name?: string;
-    assumeRolePolicy?: string | aws.iam.PolicyDocument;
-    policyArns?: string[];
 }
 
 /**
@@ -137,27 +119,26 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
                 : new aws.cloudwatch.LogGroup(name, args.logGroup, opts);
         }
 
-        if (args.taskRole) {
-            this.taskRole = aws.iam.Role.isInstance(args.taskRole)
-                ? args.taskRole
-                : role.createRoleAndPolicies(
-                      args.taskRole.name ?? `${name}-task`,
-                      args.taskRole.assumeRolePolicy ?? defaultRoleAssumeRolePolicy(),
-                      args.taskRole.policyArns ?? defaultTaskRolePolicyARNs(),
-                      { ...args.taskRoleOpts, parent: this }
-                  ).role;
-        }
-
-        if (args.executionRole) {
-            this.executionRole = aws.iam.Role.isInstance(args.executionRole)
-                ? args.executionRole
-                : role.createRoleAndPolicies(
-                      args.executionRole.name ?? `${name}-execution`,
-                      args.executionRole.assumeRolePolicy ?? defaultRoleAssumeRolePolicy(),
-                      args.executionRole.policyArns ?? defaultExecutionRolePolicyARNs(),
-                      { ...opts, parent: this }
-                  ).role;
-        }
+        const taskRole = role.defaultRoleWithPolicies(
+            `${name}-task`,
+            args.taskRole,
+            {
+                assumeRolePolicy: defaultRoleAssumeRolePolicy(),
+                policyArns: defaultTaskRolePolicyARNs(),
+            },
+            { parent: this }
+        );
+        const executionRole = role.defaultRoleWithPolicies(
+            `${name}-execution`,
+            args.executionRole,
+            {
+                assumeRolePolicy: defaultRoleAssumeRolePolicy(),
+                policyArns: defaultExecutionRolePolicyARNs(),
+            },
+            { parent: this }
+        );
+        this.taskRole = taskRole.role;
+        this.executionRole = executionRole.role;
 
         const containerDefinitions = computeContainerDefinitions(this, this.containers, this.logGroup?.id);
 
@@ -165,7 +146,7 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
 
         this.taskDefinition = new aws.ecs.TaskDefinition(
             name,
-            buildTaskDefinitionArgs(name, args, containerDefinitions, this.taskRole, this.executionRole),
+            buildTaskDefinitionArgs(name, args, containerDefinitions, taskRole.roleArn, executionRole.roleArn),
             { parent: this }
         );
     }
@@ -179,8 +160,8 @@ function buildTaskDefinitionArgs(
     name: string,
     args: FargateTaskDefinitionArgs,
     containerDefinitions: pulumi.Output<aws.ecs.ContainerDefinition[]>,
-    taskRole?: aws.iam.Role,
-    executionRole?: aws.iam.Role
+    taskRoleArn?: pulumi.Input<string>,
+    executionRoleArn?: pulumi.Input<string>
 ): aws.ecs.TaskDefinitionArgs {
     const containerString = containerDefinitions.apply((d) => JSON.stringify(d));
     const defaultFamily = containerString.apply((s) => name + "-" + utils.sha1hash(pulumi.getStack() + s));
@@ -188,8 +169,8 @@ function buildTaskDefinitionArgs(
 
     return {
         ...args,
-        taskRoleArn: taskRole?.arn,
-        executionRoleArn: executionRole?.arn,
+        taskRoleArn: taskRoleArn,
+        executionRoleArn: executionRoleArn,
         family,
         containerDefinitions: containerString,
     };
