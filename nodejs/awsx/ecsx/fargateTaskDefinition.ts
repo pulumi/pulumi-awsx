@@ -5,6 +5,7 @@ import * as utils from "../utils";
 import { Container } from "./container";
 import { NestedResourceOptions } from "../nestedResourceOptions";
 import { DefaultRoleWithPolicyArgs } from "../role";
+import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
 
 export interface FargateTaskDefinitionArgs {
     // Properties copied from ecs.TaskDefinitionArgs
@@ -163,12 +164,22 @@ function buildTaskDefinitionArgs(
     taskRoleArn?: pulumi.Input<string>,
     executionRoleArn?: pulumi.Input<string>
 ): aws.ecs.TaskDefinitionArgs {
+    const requiredMemoryAndCPU = containerDefinitions.apply((defs) => calculateFargateMemoryAndCPU(defs));
+
+    if (args.cpu === undefined) {
+        args.cpu = requiredMemoryAndCPU.cpu;
+    }
+    if (args.memory === undefined) {
+        args.memory = requiredMemoryAndCPU.memory;
+    }
     const containerString = containerDefinitions.apply((d) => JSON.stringify(d));
     const defaultFamily = containerString.apply((s) => name + "-" + utils.sha1hash(pulumi.getStack() + s));
     const family = utils.ifUndefined(args.family, defaultFamily);
 
     return {
         ...args,
+        requiresCompatibilities: ["FARGATE"],
+        networkMode: "awsvpc",
         taskRoleArn: taskRoleArn,
         executionRoleArn: executionRoleArn,
         family,

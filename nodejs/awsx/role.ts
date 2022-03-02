@@ -27,7 +27,7 @@ export interface RoleWithPolicyArgs {
     /**
      * Policy that grants an entity permission to assume the role.
      */
-    assumeRolePolicy: string | aws.iam.PolicyDocument;
+    assumeRolePolicy?: string | aws.iam.PolicyDocument;
     /**
      * Description of the role.
      */
@@ -40,10 +40,6 @@ export interface RoleWithPolicyArgs {
      * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. Defined below. If no blocks are configured, the provider will ignore any managing any inline policies in this resource. Configuring one empty block (i.e., `inlinePolicy {}`) will cause the provider to remove _all_ inline policies.
      */
     inlinePolicies?: pulumi.Input<pulumi.Input<aws.types.input.iam.RoleInlinePolicy>[]>;
-    /**
-     * Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, the provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managedPolicyArns = []`) will cause the provider to remove _all_ managed policy attachments.
-     */
-    managedPolicyArns?: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
      */
@@ -111,16 +107,22 @@ export function defaultRoleWithPolicies(
     if (inputs?.roleArn !== undefined) {
         return { roleArn: pulumi.output(inputs.roleArn) };
     }
-    const innerArgs = inputs?.args;
+    const args = { ...defaults, ...inputs?.args };
     const assumeRolePolicy =
-        typeof innerArgs?.assumeRolePolicy === "string"
-            ? innerArgs?.assumeRolePolicy
-            : JSON.stringify(innerArgs?.assumeRolePolicy);
+        typeof args.assumeRolePolicy === "string" ? args.assumeRolePolicy : JSON.stringify(args.assumeRolePolicy);
 
-    const role = new aws.iam.Role(name, { ...innerArgs, assumeRolePolicy }, { ...inputs?.opts, ...opts });
-    const policies = innerArgs?.policyArns?.map(
+    const roleArgs = { ...args, assumeRolePolicy };
+    delete roleArgs.policyArns;
+    const roleOpts = { ...inputs?.opts, ...opts };
+
+    const role = new aws.iam.Role(name, roleArgs, roleOpts);
+    const policies = args.policyArns?.map(
         (policyArn) =>
-            new aws.iam.RolePolicyAttachment(`${name}-${utils.sha1hash(policyArn)}`, { role, policyArn }, opts)
+            new aws.iam.RolePolicyAttachment(
+                `${name}-${utils.sha1hash(policyArn)}`,
+                { role: role.name, policyArn },
+                opts
+            )
     );
     return { role, policies, roleArn: role.arn };
 }

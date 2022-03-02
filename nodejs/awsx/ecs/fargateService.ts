@@ -17,6 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as ecs from ".";
 import * as x from "..";
+import { calculateFargateMemoryAndCPU } from "../ecsx/fargateMemoryAndCpu";
 import * as utils from "../utils";
 
 export class FargateTaskDefinition extends ecs.TaskDefinition {
@@ -30,7 +31,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
 
         const containers = args.containers || { container: args.container! };
 
-        const computedMemoryAndCPU = computeFargateMemoryAndCPU(containers);
+        const computedMemoryAndCPU = pulumi.output(Object.values(containers)).apply(calculateFargateMemoryAndCPU);
         const computedMemory = computedMemoryAndCPU.memory;
         const computedCPU = computedMemoryAndCPU.cpu;
 
@@ -68,125 +69,6 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
             taskDefinition: this,
         }, { parent: this, ...opts });
     }
-}
-
-/**
- * Gets the list of all supported fargate configs.  We'll compute the amount of memory/vcpu
- * needed by the containers and we'll return the cheapest fargate config that supplies at
- * least that much memory/vcpu.
- */
-function* getAllFargateConfigs() {
-    // from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
-    // Supported task CPU and memory values for Fargate tasks are as follows.
-
-    // CPU value                    Memory value (MiB)
-
-    // .25 vCPU                     0.5GB, 1GB, 2GB
-    yield* makeFargateConfigs(.25, [.5, 1, 2]);
-
-    // .5 vCPU                     1GB, 2GB, 3GB, 4GBs
-    yield* makeFargateConfigs(.5, makeMemoryConfigs(1, 4));
-
-    // 1 vCPU                     2GB, 3GB, 4GB, 5GB, 6GB, 7GB, 8GB
-    yield* makeFargateConfigs(1, makeMemoryConfigs(2, 8));
-
-    // 2 vCPU                     Between 4GB and 16GB in increments of 1GB
-    yield* makeFargateConfigs(2, makeMemoryConfigs(4, 16));
-
-    // 4 vCPU                     Between 8GB and 30GB in increments of 1GB
-    yield* makeFargateConfigs(4, makeMemoryConfigs(8, 30));
-
-    return;
-
-    function* makeMemoryConfigs(low: number, high: number) {
-        if (low < 1) {
-            throw new Error(`Invalid low: ${low}`);
-        }
-        if (high > 30) {
-            throw new Error(`Invalid high: ${high}`);
-        }
-
-        for (let i = low; i <= high; i++) {
-            yield i;
-        }
-    }
-
-    function* makeFargateConfigs(vcpu: number, memory: Iterable<number>) {
-        if (vcpu < .25 || vcpu > 4) {
-            throw new Error(`Invalid vcpu: ${vcpu}`);
-        }
-
-        for (const mem of memory) {
-            yield { vcpu, memGB: mem, cost: 0.04048 * vcpu + 0.004445 * mem };
-        }
-    }
-}
-
-function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
-    return pulumi.output(containers).apply(containers => {
-        // First, determine how much VCPU/GB that the user is asking for in their containers.
-        let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory();
-
-        // Max CPU that can be requested is only 4.  Don't exceed that.  No need to worry about a
-        // min as we're finding the first config that provides *at least* this amount.
-        requestedVCPU = Math.min(requestedVCPU, 4);
-
-        // Max memory that can be requested is only 30.  Don't exceed that.  No need to worry about
-        // a min as we're finding the first config that provides *at least* this amount.
-        requestedGB = Math.min(requestedGB, 30);
-
-        // Get all configs that can at least satisfy this pair of cpu/memory needs.
-        const configs = [...getAllFargateConfigs()];
-        const validConfigs = configs.filter(c => c.vcpu >= requestedVCPU && c.memGB >= requestedGB);
-
-        if (validConfigs.length === 0) {
-            throw new Error(`Could not find fargate config that could satisfy: ${requestedVCPU} vCPU and ${requestedGB}GB.`);
-        }
-
-        // Now, find the cheapest config that satisfies both mem and cpu.
-        const sorted = validConfigs.sort((c1, c2) => c1.cost - c2.cost);
-        const config = sorted[0];
-
-        // Want to return docker CPU units, not vCPU values. From AWS:
-        //
-        // You can determine the number of CPU units that are available per Amazon EC2 instance type by multiplying the
-        // number of vCPUs listed for that instance type on the Amazon EC2 Instances detail page by 1,024.
-        //
-        // We return `memory` in MB units because that appears to be how AWS normalized these internally so this avoids
-        // refresh issues.
-        return { memory: `${config.memGB * 1024}`, cpu: `${config.vcpu * 1024}` };
-
-        // local functions.
-        function getRequestedVCPUandMemory() {
-            // Sum the requested memory and CPU for each container in the task.
-            //
-            // Memory is in MB, and CPU values are in CPU shares.
-
-            let minTaskMemoryMB = 0;
-            let minTaskCPUUnits = 0;
-            for (const containerName of Object.keys(containers)) {
-                const containerDef = containers[containerName];
-
-                if (containerDef.memoryReservation) {
-                    minTaskMemoryMB += containerDef.memoryReservation;
-                } else if (containerDef.memory) {
-                    minTaskMemoryMB += containerDef.memory;
-                }
-
-                if (containerDef.cpu) {
-                    minTaskCPUUnits += containerDef.cpu;
-                }
-            }
-
-            // Convert docker cpu units values into vcpu values.  i.e. 256->.25, 4096->4.
-            const requestedVCPU = minTaskCPUUnits / 1024;
-
-            // Convert memory into GB values.  i.e. 2048MB -> 2GB.
-            const requestedGB = minTaskMemoryMB / 1024;
-
-            return { requestedVCPU, requestedGB };
-        }
-    });
 }
 
 export class FargateService extends ecs.Service {
