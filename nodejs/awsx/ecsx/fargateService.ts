@@ -170,18 +170,22 @@ export class FargateService extends pulumi.ComponentResource {
                   parent: this,
               });
 
-        this.service = new aws.ecs.Service(name, {
-            ...args,
-            cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
-            launchType: "FARGATE",
-            loadBalancers: args.loadBalancers ?? this.taskDefinition.loadBalancers,
-            networkConfiguration: {
-                subnets: args.subnets,
-                assignPublicIp: utils.ifUndefined(args.assignPublicIp, true),
-                securityGroups: args.securityGroups,
+        this.service = new aws.ecs.Service(
+            name,
+            {
+                ...args,
+                cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
+                launchType: "FARGATE",
+                loadBalancers: args.loadBalancers ?? this.taskDefinition.loadBalancers,
+                networkConfiguration: {
+                    subnets: args.subnets,
+                    assignPublicIp: utils.ifUndefined(args.assignPublicIp, true),
+                    securityGroups: args.securityGroups,
+                },
+                taskDefinition: this.taskDefinition.taskDefinition.arn,
             },
-            taskDefinition: this.taskDefinition.taskDefinition.arn,
-        });
+            { parent: this }
+        );
 
         this.registerOutputs();
     }
