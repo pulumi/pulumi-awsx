@@ -18,15 +18,23 @@ import { ResourceOptions } from "@pulumi/pulumi";
 import { NestedResourceOptions } from "../nestedResourceOptions";
 import { getRegion, getRegionFromOpts } from "../utils";
 
+/** Reference to an existing log group. */
 export interface ExistingLogGroup {
+    /** Name of the log group. */
     name: pulumi.Input<string>;
+    /** Region of the log group. If not specified, the provider region will be used. */
     region?: pulumi.Input<string>;
 }
 
+/** Log group with default setup unless explicitly skipped */
 export interface DefaultLogGroupArgs {
+    /** Skip creation of the log group. */
     skip?: boolean;
+    /** Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`. */
     existing?: ExistingLogGroup;
+    /** Arguments to use instead of the default values during creation. */
     args?: aws.cloudwatch.LogGroupArgs;
+    /** Resource options to be used during creation of the log group. */
     opts?: NestedResourceOptions;
 }
 
