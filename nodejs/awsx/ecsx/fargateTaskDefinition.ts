@@ -6,6 +6,7 @@ import { Container } from "./container";
 import { NestedResourceOptions } from "../nestedResourceOptions";
 import { DefaultRoleWithPolicyArgs } from "../role";
 import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
+import { defaultLogGroup, DefaultLogGroupArgs, LogGroupId } from "../cloudwatch/logGroup";
 
 export interface FargateTaskDefinitionArgs {
     // Properties copied from ecs.TaskDefinitionArgs
@@ -31,7 +32,7 @@ export interface FargateTaskDefinitionArgs {
      * Log group for logging information related to the service.  If `undefined` a default instance
      * with a one-day retention policy will be created.  If `null` no log group will be created.
      */
-    logGroup?: aws.cloudwatch.LogGroup | aws.cloudwatch.LogGroupArgs;
+    logGroup?: DefaultLogGroupArgs;
 
     /**
      * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
@@ -86,15 +87,20 @@ export interface FargateTaskDefinitionArgs {
 }
 
 /**
- * Auto-creates log-group and task & execution roles.
- * Calculates required Service load balancers if target group included in port mappings.
+ * Create a TaskDefinition resource with the given unique name, arguments, and options.
+ * Creates required log-group and task & execution roles.
+ * Presents required Service load balancers if target group included in port mappings.
  */
 export class FargateTaskDefinition extends pulumi.ComponentResource {
+    /** Created ECS Task Definition resource. */
     public readonly taskDefinition: aws.ecs.TaskDefinition;
+    /** Auto-created Log Group resource for use by containers. */
     public readonly logGroup?: aws.cloudwatch.LogGroup;
+    /** Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services. */
     public readonly taskRole?: aws.iam.Role;
+    /** Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume. */
     public readonly executionRole?: aws.iam.Role;
-    public readonly containers: Record<string, Container>;
+    /** Computed load balancers from target groups specified of container port mappings. */
     public readonly loadBalancers: pulumi.Output<aws.types.input.ecs.ServiceLoadBalancer[]>;
     // tslint:disable-next-line:variable-name
     public readonly __isFargateTaskDefinition: boolean;
@@ -103,22 +109,17 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
         super("awsx:x:ecs:FargateTaskDefinition", name, {}, opts);
         this.__isFargateTaskDefinition = true;
 
-        const { container, containers } = args;
-        if (container && containers) {
-            throw new Error("Exactly one of [container] or [containers] must be provided");
-        } else if (containers !== undefined) {
-            this.containers = containers;
-        } else if (container !== undefined) {
-            this.containers = { container: container };
+        let { container, containers } = args;
+        if (containers !== undefined && container === undefined) {
+            containers = containers;
+        } else if (container !== undefined && containers === undefined) {
+            containers = { container: container };
         } else {
             throw new Error("Exactly one of [container] or [containers] must be provided");
         }
 
-        if (args.logGroup) {
-            this.logGroup = aws.cloudwatch.LogGroup.isInstance(args.logGroup)
-                ? args.logGroup
-                : new aws.cloudwatch.LogGroup(name, args.logGroup, opts);
-        }
+        const { logGroup, logGroupId } = defaultLogGroup(name, args.logGroup, {}, { parent: this });
+        this.logGroup = logGroup;
 
         const taskRole = role.defaultRoleWithPolicies(
             `${name}-task`,
@@ -141,9 +142,9 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
         this.taskRole = taskRole.role;
         this.executionRole = executionRole.role;
 
-        const containerDefinitions = computeContainerDefinitions(this, this.containers, this.logGroup?.id);
+        const containerDefinitions = computeContainerDefinitions(this, containers, logGroupId);
 
-        this.loadBalancers = computeLoadBalancers(this.containers);
+        this.loadBalancers = computeLoadBalancers(containers);
 
         this.taskDefinition = new aws.ecs.TaskDefinition(
             name,
@@ -190,7 +191,7 @@ function buildTaskDefinitionArgs(
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     containers: Record<string, Container>,
-    logGroupId: pulumi.Input<string | undefined>
+    logGroupId: pulumi.Input<LogGroupId> | undefined
 ): pulumi.Output<aws.ecs.ContainerDefinition[]> {
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
 
@@ -207,7 +208,7 @@ function computeContainerDefinition(
     parent: pulumi.Resource,
     containerName: string,
     container: Container,
-    logGroupId: pulumi.Input<string | undefined>
+    logGroupId: pulumi.Input<LogGroupId> | undefined
 ): pulumi.Output<aws.ecs.ContainerDefinition> {
     const resolvedMappings = container.portMappings
         ? pulumi.all(
@@ -237,8 +238,8 @@ function computeContainerDefinition(
                 containerDefinition.logConfiguration = {
                     logDriver: "awslogs",
                     options: {
-                        "awslogs-group": logGroupId,
-                        "awslogs-region": region,
+                        "awslogs-group": logGroupId.logGroupName,
+                        "awslogs-region": logGroupId.logGroupRegion,
                         "awslogs-stream-prefix": containerName,
                     },
                 };
