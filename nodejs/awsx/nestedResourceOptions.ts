@@ -1,4 +1,5 @@
 import { ID, Input } from "@pulumi/pulumi";
+import * as aws from "@pulumi/aws";
 
 /**
  * ResourceOptions is a bag of optional settings that control a resource's behavior.
@@ -29,4 +30,10 @@ export interface NestedResourceOptions {
      * instead of update only if `"*"` is passed.
      */
     replaceOnChanges?: string[];
+    /**
+     * An optional provider to use for this resource's CRUD operations. If no provider is supplied,
+     * the default provider for the resource's package will be used. The default provider is pulled
+     * from the parent's provider bag (see also ComponentResourceOptions.providers).
+     */
+    provider?: aws.Provider;
 }
