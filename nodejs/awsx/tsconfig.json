@@ -32,6 +32,9 @@
         "autoscaling/stepScaling.ts",
         "autoscaling/targetTracking.ts",
 
+        "cmd/provider/index.ts",
+        "cmd/provider/trail.ts",
+
         "cloudwatch/index.ts",
         "cloudwatch/dashboard.ts",
         "cloudwatch/metric.ts",

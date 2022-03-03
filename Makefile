@@ -27,7 +27,8 @@ build_nodejs::
 		yarn run tsc && \
 		tsc --version && \
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
-		cp ../../README.md ../../LICENSE bin/
+		cp ../../README.md ../../LICENSE bin/ && \
+		cp ../../provider/cmd/pulumi-resource-awsx/schema.json bin/cmd/provider/
 
 build_python:: PYPI_VERSION := $(shell pulumictl get version --language python)
 build_python:: schema

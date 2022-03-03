@@ -25,7 +25,7 @@
     "devDependencies": {
         "@types/aws-sdk": "^2.7.0",
         "@types/mime": "^2.0.0",
-        "@types/node": "^10.0.0",
+        "@types/node": "^17.0.21",
         "install-peers-cli": "^2.2.0",
         "tslint": "^5.11.0",
         "typedoc": "^0.13.0",
