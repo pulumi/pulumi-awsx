@@ -26,7 +26,7 @@ class Provider implements pulumi.provider.Provider {
 
     constructor(readonly version: string, readonly schema: string) {
         // Register any resources that can come back as resource references that need to be rehydrated.
-        pulumi.runtime.registerResourceModule("eks", "index", {
+        pulumi.runtime.registerResourceModule("awsx", "cloudtrail", {
             version: version,
             construct: (name, type, urn) => {
                 switch (type) {
