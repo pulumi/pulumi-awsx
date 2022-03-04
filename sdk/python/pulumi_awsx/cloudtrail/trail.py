@@ -411,6 +411,8 @@ class Trail(pulumi.ComponentResource):
             __props__.__dict__["arn"] = None
             __props__.__dict__["home_region"] = None
             __props__.__dict__["tags_all"] = None
+        alias_opts = pulumi.ResourceOptions(aliases=[pulumi.Alias(type_="aws:cloudtrail:x:Trail")])
+        opts = pulumi.ResourceOptions.merge(opts, alias_opts)
         super(Trail, __self__).__init__(
             'awsx:cloudtrail:Trail',
             resource_name,

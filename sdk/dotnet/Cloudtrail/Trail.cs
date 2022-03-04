@@ -48,6 +48,10 @@ namespace Pulumi.Awsx.Cloudtrail
             var defaultOptions = new ComponentResourceOptions
             {
                 Version = Utilities.Version,
+                Aliases =
+                {
+                    new Pulumi.Alias { Type = "aws:cloudtrail:x:Trail"},
+                },
             };
             var merged = ComponentResourceOptions.Merge(defaultOptions, options);
             // Override the ID if one was specified for consistency with other language SDKs.

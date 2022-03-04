@@ -142,6 +142,11 @@
                     "description": "Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level."
                 }
             },
+            "aliases": [
+                {
+                    "type": "aws:cloudtrail:x:Trail"
+                }
+            ],
             "isComponent": true
         }
     },
