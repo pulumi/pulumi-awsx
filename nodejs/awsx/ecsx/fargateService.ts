@@ -1,6 +1,9 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
-import { FargateTaskDefinition, FargateTaskDefinitionArgs } from "./fargateTaskDefinition";
+import {
+    FargateTaskDefinition,
+    FargateTaskDefinitionArgs,
+} from "./fargateTaskDefinition";
 import * as utils from "../utils";
 export interface FargateServiceArgs {
     /**
@@ -68,7 +71,9 @@ export interface FargateServiceArgs {
     /**
      * A list of load balancer objects to associate with the service. If you specify the Role property, LoadBalancers must be specified as well.
      */
-    loadBalancers?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceLoadBalancer>[]>;
+    loadBalancers?: pulumi.Input<
+        pulumi.Input<aws.types.input.ecs.ServiceLoadBalancer>[]
+    >;
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
@@ -146,10 +151,16 @@ export interface FargateServiceArgs {
     // Properties we're adding.
 
     /**
-     * The task definition to create the service from.  Either [taskDefinition] or
+     * ARN of the task definition to create the service from. Either [taskDefinition] or
      * [taskDefinitionArgs] must be provided.
      */
-    taskDefinition: FargateTaskDefinition | FargateTaskDefinitionArgs;
+    taskDefinition?: pulumi.Input<string>;
+
+    /**
+     * The task definition to create the service from. Either [taskDefinition] or
+     * [taskDefinitionArgs] must be provided.
+     */
+    taskDefinitionArgs?: FargateTaskDefinitionArgs;
 
     /**
      * Key-value mapping of resource tags
@@ -158,31 +169,60 @@ export interface FargateServiceArgs {
 }
 
 export class FargateService extends pulumi.ComponentResource {
-    public readonly taskDefinition: FargateTaskDefinition;
+    public readonly taskDefinition?: FargateTaskDefinition;
     public readonly service: aws.ecs.Service;
 
-    constructor(name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(
+        name: string,
+        args: FargateServiceArgs,
+        opts: pulumi.ComponentResourceOptions = {}
+    ) {
         super("awsx:x:ecs:FargateService", name, {}, opts);
 
-        this.taskDefinition = FargateTaskDefinition.isInstance(args.taskDefinition)
-            ? args.taskDefinition
-            : new FargateTaskDefinition(name, args.taskDefinition, {
-                  parent: this,
-              });
+        if (
+            args.taskDefinition !== undefined &&
+            args.taskDefinitionArgs !== undefined
+        ) {
+            throw new Error(
+                "Only one of `taskDefinition` or `taskDefinitionArgs` can be provided."
+            );
+        }
+        let taskDefinition = args.taskDefinition;
+        if (args.taskDefinitionArgs) {
+            this.taskDefinition = new FargateTaskDefinition(
+                name,
+                args.taskDefinitionArgs,
+                {
+                    parent: this,
+                }
+            );
+            taskDefinition = this.taskDefinition.taskDefinition.arn;
+        }
+        if (taskDefinition == undefined) {
+            throw new Error(
+                "Either `taskDefinition` or `taskDefinitionArgs` must be provided."
+            );
+        }
 
         this.service = new aws.ecs.Service(
             name,
             {
                 ...args,
-                cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
+                cluster: aws.ecs.Cluster.isInstance(args.cluster)
+                    ? args.cluster.arn
+                    : args.cluster,
                 launchType: "FARGATE",
-                loadBalancers: args.loadBalancers ?? this.taskDefinition.loadBalancers,
+                loadBalancers:
+                    args.loadBalancers ?? this.taskDefinition?.loadBalancers,
                 networkConfiguration: {
                     subnets: args.subnets,
-                    assignPublicIp: utils.ifUndefined(args.assignPublicIp, true),
+                    assignPublicIp: utils.ifUndefined(
+                        args.assignPublicIp,
+                        true
+                    ),
                     securityGroups: args.securityGroups,
                 },
-                taskDefinition: this.taskDefinition.taskDefinition.arn,
+                taskDefinition,
             },
             { parent: this }
         );
