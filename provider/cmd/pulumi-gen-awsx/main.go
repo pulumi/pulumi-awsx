@@ -559,6 +559,7 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 func defaultRoleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
 			Description: "Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.",
 			Properties: map[string]schema.PropertySpec{
 				"skip": {
@@ -599,6 +600,11 @@ func roleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	for k, v := range role.InputProperties {
 		properties[k] = v
 	}
+
+	// The assumeRolePolicy ref doesn't point to a valid type ... and we don't need it for now
+	delete(properties, "assumeRolePolicy")
+	properties["inlinePolicies"].Items.Ref = awsRef(properties["inlinePolicies"].Items.Ref)
+
 	properties["policyArns"] = schema.PropertySpec{
 		Description: "ARNs of the policies to attach to the created role.",
 		TypeSpec: schema.TypeSpec{
@@ -611,6 +617,7 @@ func roleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
 			Description: "The set of arguments for constructing a Role resource and Policy attachments.",
 			Properties:  properties,
 		},
