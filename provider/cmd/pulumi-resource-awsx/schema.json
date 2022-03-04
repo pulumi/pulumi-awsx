@@ -35,6 +35,684 @@
                 }
             },
             "type": "object"
+        },
+        "awsx:cloudwatch:DefaultLogGroupArgs": {
+            "description": "Log group with default setup unless explicitly skipped.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:cloudwatch:LogGroupArgs",
+                    "plain": true,
+                    "description": "Arguments to use instead of the default values during creation."
+                },
+                "existing": {
+                    "$ref": "#/types/awsx:cloudwatch:ExistingLogGroup",
+                    "plain": true,
+                    "description": "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`."
+                },
+                "opts": {
+                    "$ref": "#/types/awsx:resource:NestedResourceOptions",
+                    "plain": true,
+                    "description": "Resource options to be used during creation of the log group."
+                },
+                "skip": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Skip creation of the log group."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:cloudwatch:ExistingLogGroup": {
+            "description": "Reference to an existing log group.",
+            "properties": {
+                "existing": {
+                    "type": "string",
+                    "description": "Region of the log group. If not specified, the provider region will be used."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the log group."
+                }
+            },
+            "type": "object",
+            "required": [
+                "name"
+            ]
+        },
+        "awsx:cloudwatch:LogGroupArgs": {
+            "description": "The set of arguments for constructing a LogGroup resource.",
+            "properties": {
+                "kmsKeyId": {
+                    "type": "string",
+                    "description": "The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,\nAWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires\npermissions for the CMK whenever the encrypted data is requested.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the log group. If omitted, this provider will assign a random, unique name.\n"
+                },
+                "namePrefix": {
+                    "type": "string",
+                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n"
+                },
+                "retentionInDays": {
+                    "type": "integer",
+                    "description": "Specifies the number of days\nyou want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.\nIf you select 0, the events in the log group are always retained and never expire.\n"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionContainerDefinition": {
+            "description": "List of container definitions that are passed to the Docker daemon on a container instance",
+            "properties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "cpu": {
+                    "type": "integer"
+                },
+                "dependsOn": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionContainerDependency"
+                    }
+                },
+                "disableNetworking": {
+                    "type": "boolean"
+                },
+                "dnsSearchDomains": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dnsServers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dockerLabels": {
+                    "$ref": "pulumi.json#/Any"
+                },
+                "dockerSecurityOptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "entryPoint": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "environment": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionKeyValuePair"
+                    },
+                    "description": "The environment variables to pass to a container"
+                },
+                "environmentFiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionEnvironmentFile"
+                    },
+                    "description": "The list of one or more files that contain the environment variables to pass to a container"
+                },
+                "essential": {
+                    "type": "boolean"
+                },
+                "extraHosts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionHostEntry"
+                    }
+                },
+                "firelensConfiguration": {
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionFirelensConfiguration"
+                },
+                "healthCheck": {
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionHealthCheck"
+                },
+                "hostname": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string",
+                    "description": "The image used to start a container. This string is passed directly to the Docker daemon."
+                },
+                "interactive": {
+                    "type": "boolean"
+                },
+                "links": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "linuxParameters": {
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionLinuxParameters"
+                },
+                "logConfiguration": {
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionLogConfiguration"
+                },
+                "memory": {
+                    "type": "integer",
+                    "description": "The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed."
+                },
+                "memoryReservation": {
+                    "type": "integer"
+                },
+                "mountPoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionMountPoint"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed"
+                },
+                "portMappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionPortMapping"
+                    },
+                    "description": "Port mappings allow containers to access ports on the host container instance to send or receive traffic."
+                },
+                "privileged": {
+                    "type": "boolean"
+                },
+                "pseudoTerminal": {
+                    "type": "boolean"
+                },
+                "readonlyRootFilesystem": {
+                    "type": "boolean"
+                },
+                "repositoryCredentials": {
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionRepositoryCredentials"
+                },
+                "resourceRequirements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionResourceRequirement"
+                    }
+                },
+                "secrets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionSecret"
+                    }
+                },
+                "startTimeout": {
+                    "type": "integer"
+                },
+                "stopTimeout": {
+                    "type": "integer"
+                },
+                "systemControls": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionSystemControl"
+                    }
+                },
+                "ulimits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionUlimit"
+                    }
+                },
+                "user": {
+                    "type": "string"
+                },
+                "volumesFrom": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionVolumeFrom"
+                    }
+                },
+                "workingDirectory": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionContainerDependency": {
+            "properties": {
+                "condition": {
+                    "type": "string"
+                },
+                "containerName": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionDevice": {
+            "properties": {
+                "containerPath": {
+                    "type": "string"
+                },
+                "hostPath": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionEnvironmentFile": {
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionFirelensConfiguration": {
+            "properties": {
+                "options": {
+                    "$ref": "pulumi.json#/Any"
+                },
+                "type": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionHealthCheck": {
+            "description": "The health check command and associated configuration parameters for the container.",
+            "properties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A string array representing the command that the container runs to determine if it is healthy."
+                },
+                "interval": {
+                    "type": "integer",
+                    "description": "The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds."
+                },
+                "retries": {
+                    "type": "integer",
+                    "description": "The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is three retries."
+                },
+                "startPeriod": {
+                    "type": "integer",
+                    "description": "The optional grace period within which to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You may specify between 0 and 300 seconds. The startPeriod is disabled by default."
+                },
+                "timeout": {
+                    "type": "integer",
+                    "description": "The time period in seconds to wait for a health check to succeed before it is considered a failure. You may specify between 2 and 60 seconds. The default value is 5 seconds."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionHostEntry": {
+            "properties": {
+                "hostname": {
+                    "type": "string"
+                },
+                "ipAddress": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionKernelCapabilities": {
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "drop": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionKeyValuePair": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionLinuxParameters": {
+            "properties": {
+                "capabilities": {
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionKernelCapabilities"
+                },
+                "devices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionDevice"
+                    }
+                },
+                "initProcessEnabled": {
+                    "type": "boolean"
+                },
+                "maxSwap": {
+                    "type": "integer"
+                },
+                "sharedMemorySize": {
+                    "type": "integer"
+                },
+                "swappiness": {
+                    "type": "integer"
+                },
+                "tmpfs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionTmpfs"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionLogConfiguration": {
+            "properties": {
+                "logDriver": {
+                    "type": "string"
+                },
+                "options": {
+                    "$ref": "pulumi.json#/Any"
+                },
+                "secretOptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionSecret"
+                    }
+                }
+            },
+            "type": "object",
+            "required": [
+                "logDriver"
+            ]
+        },
+        "awsx:ecs:TaskDefinitionMountPoint": {
+            "properties": {
+                "containerPath": {
+                    "type": "string"
+                },
+                "readOnly": {
+                    "type": "boolean"
+                },
+                "sourceVolume": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionPortMapping": {
+            "properties": {
+                "containerPort": {
+                    "type": "integer"
+                },
+                "hostPort": {
+                    "type": "integer"
+                },
+                "protocol": {
+                    "type": "string"
+                },
+                "targetGroup": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:lb%2FtargetGroup:TargetGroup"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionRepositoryCredentials": {
+            "properties": {
+                "credentialsParameter": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionResourceRequirement": {
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "type": "object",
+            "required": [
+                "type",
+                "value"
+            ]
+        },
+        "awsx:ecs:TaskDefinitionSecret": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "valueFrom": {
+                    "type": "string"
+                }
+            },
+            "type": "object",
+            "required": [
+                "name",
+                "valueFrom"
+            ]
+        },
+        "awsx:ecs:TaskDefinitionSystemControl": {
+            "properties": {
+                "namespace": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionTmpfs": {
+            "properties": {
+                "containerPath": {
+                    "type": "string"
+                },
+                "mountOptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "size": {
+                    "type": "integer"
+                }
+            },
+            "type": "object",
+            "required": [
+                "size"
+            ]
+        },
+        "awsx:ecs:TaskDefinitionUlimit": {
+            "properties": {
+                "hardLimit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "softLimit": {
+                    "type": "integer"
+                }
+            },
+            "type": "object",
+            "required": [
+                "hardLimit",
+                "name",
+                "softLimit"
+            ]
+        },
+        "awsx:ecs:TaskDefinitionVolumeFrom": {
+            "properties": {
+                "readOnly": {
+                    "type": "boolean"
+                },
+                "sourceContainer": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:iam:DefaultRoleWithPolicyArgs": {
+            "description": "Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:iam:RoleWithPolicyArgs",
+                    "plain": true,
+                    "description": "Args to use when creating the role and policies. Can't be specified if `roleArn` is used."
+                },
+                "opts": {
+                    "$ref": "#/types/awsx:resource:NestedResourceOptions",
+                    "plain": true,
+                    "description": "Resource options to use for the role. Can't be specified if `roleArn` is used."
+                },
+                "roleArn": {
+                    "type": "string",
+                    "description": "ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`."
+                },
+                "skip": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Skips creation of the role if set to `true`."
+                }
+            }
+        },
+        "awsx:iam:RoleWithPolicyArgs": {
+            "description": "The set of arguments for constructing a Role resource and Policy attachments.",
+            "properties": {
+                "assumeRolePolicy": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string",
+                            "$ref": "#/types/aws:iam/documents:PolicyDocument"
+                        }
+                    ],
+                    "description": "Policy that grants an entity permission to assume the role.\n"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the role.\n"
+                },
+                "forceDetachPolicies": {
+                    "type": "boolean",
+                    "description": "Whether to force detaching any policies the role has before destroying it. Defaults to `false`.\n"
+                },
+                "inlinePolicies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
+                    },
+                    "description": "Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.\n"
+                },
+                "managedPolicyArns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.\n"
+                },
+                "maxSessionDuration": {
+                    "type": "integer",
+                    "description": "Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the role policy.\n"
+                },
+                "namePrefix": {
+                    "type": "string",
+                    "description": "Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.\n"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.\n"
+                },
+                "permissionsBoundary": {
+                    "type": "string",
+                    "description": "ARN of the policy that is used to set the permissions boundary for the role.\n"
+                },
+                "policyArns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "ARNs of the policies to attach to the created role."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            }
+        },
+        "awsx:resource:NestedResourceOptions": {
+            "description": "NestedResourceOptions is a bag of optional settings that control a resource's behavior.",
+            "properties": {
+                "ignoreChanges": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Ignore changes to any of the specified properties."
+                },
+                "import": {
+                    "type": "string",
+                    "description": "When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options."
+                },
+                "protect": {
+                    "type": "boolean",
+                    "description": "When set to true, protect ensures this resource cannot be deleted."
+                },
+                "replaceOnChanges": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Changes to any of these property paths will force a replacement.  If this list includes `\"*\"`, changes to any properties will force a replacement.  Initialization errors from previous deployments will require replacement instead of update only if `\"*\"` is passed."
+                }
+            },
+            "type": "object"
         }
     },
     "provider": {},
@@ -140,6 +818,143 @@
                         "type": "string"
                     },
                     "description": "Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level."
+                }
+            },
+            "isComponent": true
+        },
+        "awsx:ecs:FargateTaskDefinition": {
+            "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
+            "properties": {
+                "executionRole": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:iam%2Frole:Role",
+                    "description": "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume."
+                },
+                "loadBalancers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
+                    },
+                    "description": "Computed load balancers from target groups specified of container port mappings."
+                },
+                "logGroup": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "description": "Auto-created Log Group resource for use by containers."
+                },
+                "taskDefinition": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "description": "Underlying ECS Task Definition resource"
+                },
+                "taskRole": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:iam%2Frole:Role",
+                    "description": "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services."
+                }
+            },
+            "required": [
+                "taskDefinition",
+                "loadBalancers"
+            ],
+            "inputProperties": {
+                "container": {
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionContainerDefinition",
+                    "plain": true,
+                    "description": "Single container to make a TaskDefinition from.  Useful for simple cases where there aren't\nmultiple containers, especially when creating a TaskDefinition to call [run] on.\n\nEither [container] or [containers] must be provided."
+                },
+                "containers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionContainerDefinition"
+                    },
+                    "plain": true,
+                    "description": "All the containers to make a TaskDefinition from.  Useful when creating a Service that will\ncontain many containers within.\n\nEither [container] or [containers] must be provided."
+                },
+                "cpu": {
+                    "type": "string",
+                    "description": "The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]"
+                },
+                "ephemeralStorage": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
+                },
+                "executionRole": {
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicyArgs",
+                    "plain": true,
+                    "description": "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined."
+                },
+                "family": {
+                    "type": "string",
+                    "description": "An optional unique name for your task definition. If not specified, then a default will be created."
+                },
+                "inferenceAccelerators": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
+                    },
+                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n"
+                },
+                "ipcMode": {
+                    "type": "string",
+                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
+                },
+                "logGroup": {
+                    "$ref": "#/types/awsx:cloudwatch:DefaultLogGroupArgs",
+                    "plain": true,
+                    "description": "A set of volume blocks that containers in your task may use."
+                },
+                "memory": {
+                    "type": "string",
+                    "description": "The amount (in MiB) of memory used by the task.  If not provided, a default will be computed\nbased on the cumulative needs specified by [containerDefinitions]"
+                },
+                "networkMode": {
+                    "type": "string",
+                    "description": "Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.\n"
+                },
+                "pidMode": {
+                    "type": "string",
+                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n"
+                },
+                "placementConstraints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                    },
+                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n"
+                },
+                "proxyConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n"
+                },
+                "requiresCompatibilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.\n"
+                },
+                "runtimePlatform": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "description": "Configuration block for runtime_platform that containers in your task may use.\n"
+                },
+                "skipDestroy": {
+                    "type": "boolean"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Key-value map of resource tags.\n"
+                },
+                "taskRole": {
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicyArgs",
+                    "plain": true,
+                    "description": "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined."
+                },
+                "volumes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                    },
+                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n"
                 }
             },
             "isComponent": true

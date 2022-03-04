@@ -2,11 +2,9 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
 /**
- * [Container]s are used in [awsx.ec2.TaskDefinition] to describe the different containers that are
- * launched as part of a task.
+ * Container definitions are used in task definitions to describe the different containers that are launched as part of a task.
  *
- * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html for
- * more details.
+ * See https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_ContainerDefinition.html for more details.
  */
 export interface Container {
     // Properties from aws.ecs.ContainerDefinition

@@ -8,62 +8,10 @@ import { DefaultRoleWithPolicyArgs } from "../role";
 import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
 import { defaultLogGroup, DefaultLogGroupArgs, LogGroupId } from "../cloudwatch/logGroup";
 
-export interface FargateTaskDefinitionArgs {
-    // Properties copied from ecs.TaskDefinitionArgs
-
-    /**
-     * A set of placement constraints rules that are taken into consideration during task placement.
-     * Maximum number of `placement_constraints` is `10`.
-     */
-    placementConstraints?: aws.ecs.TaskDefinitionArgs["placementConstraints"];
-
-    /**
-     * The proxy configuration details for the App Mesh proxy.
-     */
-    proxyConfiguration?: aws.ecs.TaskDefinitionArgs["proxyConfiguration"];
-
-    /**
-     * A set of volume blocks that containers in your task may use.
-     */
-    volumes?: aws.ecs.TaskDefinitionArgs["volumes"];
-
-    // Properties we've added/changed.
-    /**
-     * Log group for logging information related to the service.  If `undefined` a default instance
-     * with a one-day retention policy will be created.  If `null` no log group will be created.
-     */
-    logGroup?: DefaultLogGroupArgs;
-
-    /**
-     * IAM role that allows your Amazon ECS container task to make calls to other AWS services. If
-     * `undefined`, a default will be created for the task.  If `null` no role will be created.
-     */
-    taskRole?: DefaultRoleWithPolicyArgs;
-
-    /**
-     * An optional family name for the Task Definition. If not specified, then a suitable default will be created.
-     */
-    family?: pulumi.Input<string>;
-
-    /**
-     * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
-     *
-     *  If `undefined`, a default will be created for the task.  If `null` no role will be created.
-     */
-    executionRole?: DefaultRoleWithPolicyArgs;
-
-    /**
-     * The number of cpu units used by the task.  If not provided, a default will be computed
-     * based on the cumulative needs specified by [containerDefinitions]
-     */
-    cpu?: pulumi.Input<string>;
-
-    /**
-     * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
-     * based on the cumulative needs specified by [containerDefinitions]
-     */
-    memory?: pulumi.Input<string>;
-
+export type FargateTaskDefinitionArgs = Omit<
+    aws.ecs.TaskDefinitionArgs,
+    "containerDefinitions" | "cpu" | "executionRoleArn" | "family" | "memory" | "taskRoleArn"
+> & {
     /**
      * Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
      * multiple containers, especially when creating a TaskDefinition to call [run] on.
@@ -81,10 +29,40 @@ export interface FargateTaskDefinitionArgs {
     containers?: Record<string, Container>;
 
     /**
-     * Key-value mapping of resource tags
+     * The number of cpu units used by the task. If not provided, a default will be computed
+     * based on the cumulative needs specified by [containerDefinitions]
      */
-    tags?: pulumi.Input<aws.Tags>;
-}
+    cpu?: pulumi.Input<string>;
+
+    /**
+     * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+     * Will be created automatically if not defined.
+     */
+    executionRole?: DefaultRoleWithPolicyArgs;
+
+    /**
+     * An optional unique name for your task definition. If not specified, then a default will be created.
+     */
+    family?: pulumi.Input<string>;
+
+    /**
+     * Log group for logging information related to the service.
+     * Will be created automatically if not defined.
+     */
+    logGroup?: DefaultLogGroupArgs;
+
+    /**
+     * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+     * based on the cumulative needs specified by [containerDefinitions]
+     */
+    memory?: pulumi.Input<string>;
+
+    /**
+     * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+     * Will be created automatically if not defined.
+     */
+    taskRole?: DefaultRoleWithPolicyArgs;
+};
 
 /**
  * Create a TaskDefinition resource with the given unique name, arguments, and options.
@@ -101,7 +79,7 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
     /** Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume. */
     public readonly executionRole?: aws.iam.Role;
     /** Computed load balancers from target groups specified of container port mappings. */
-    public readonly loadBalancers: pulumi.Output<aws.types.input.ecs.ServiceLoadBalancer[]>;
+    public readonly loadBalancers: pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]>;
     // tslint:disable-next-line:variable-name
     public readonly __isFargateTaskDefinition: boolean;
 
@@ -250,7 +228,7 @@ function computeContainerDefinition(
 
 function computeLoadBalancers(
     containers: Record<string, Container>
-): pulumi.Output<aws.types.input.ecs.ServiceLoadBalancer[]> {
+): pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]> {
     return pulumi
         .all(
             Object.entries(containers).map(([containerName, v]) => {
@@ -276,7 +254,7 @@ function computeLoadBalancers(
                 }
                 return utils.choose(
                     cg,
-                    ({ containerName, tgArn, tgPort }): aws.types.input.ecs.ServiceLoadBalancer | undefined => {
+                    ({ containerName, tgArn, tgPort }): aws.types.output.ecs.ServiceLoadBalancer | undefined => {
                         if (tgArn === undefined || tgPort === undefined) {
                             return undefined;
                         }
