@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-(None)
+* Add multi-lang component support scaffolding.
 
 ## 0.33.0 (2021-02-02)
 * Introduce `requestedAvailabilityZone` on `ec2.vps.VpcArgs` that takes `number | "all" | string[]`, to allow specific zones for creating a VPC.
