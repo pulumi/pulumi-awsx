@@ -6,12 +6,22 @@ import { Container } from "./container";
 import { NestedResourceOptions } from "../nestedResourceOptions";
 import { DefaultRoleWithPolicyArgs } from "../role";
 import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
-import { defaultLogGroup, DefaultLogGroupArgs, LogGroupId } from "../cloudwatch/logGroup";
+import {
+    defaultLogGroup,
+    DefaultLogGroupArgs,
+    LogGroupId,
+} from "../cloudwatch/logGroup";
 
-export type FargateTaskDefinitionArgs = Omit<
-    aws.ecs.TaskDefinitionArgs,
-    "containerDefinitions" | "cpu" | "executionRoleArn" | "family" | "memory" | "taskRoleArn"
-> & {
+export interface FargateTaskDefinitionArgs
+    extends Omit<
+        aws.ecs.TaskDefinitionArgs,
+        | "containerDefinitions"
+        | "cpu"
+        | "executionRoleArn"
+        | "family"
+        | "memory"
+        | "taskRoleArn"
+    > {
     /**
      * Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
      * multiple containers, especially when creating a TaskDefinition to call [run] on.
@@ -62,7 +72,7 @@ export type FargateTaskDefinitionArgs = Omit<
      * Will be created automatically if not defined.
      */
     taskRole?: DefaultRoleWithPolicyArgs;
-};
+}
 
 /**
  * Create a TaskDefinition resource with the given unique name, arguments, and options.
@@ -79,11 +89,17 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
     /** Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume. */
     public readonly executionRole?: aws.iam.Role;
     /** Computed load balancers from target groups specified of container port mappings. */
-    public readonly loadBalancers: pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]>;
+    public readonly loadBalancers: pulumi.Output<
+        aws.types.output.ecs.ServiceLoadBalancer[]
+    >;
     // tslint:disable-next-line:variable-name
     public readonly __isFargateTaskDefinition: boolean;
 
-    constructor(name: string, args: FargateTaskDefinitionArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(
+        name: string,
+        args: FargateTaskDefinitionArgs,
+        opts: pulumi.ComponentResourceOptions = {}
+    ) {
         super("awsx:x:ecs:FargateTaskDefinition", name, {}, opts);
         this.__isFargateTaskDefinition = true;
 
@@ -93,10 +109,17 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
         } else if (container !== undefined && containers === undefined) {
             containers = { container: container };
         } else {
-            throw new Error("Exactly one of [container] or [containers] must be provided");
+            throw new Error(
+                "Exactly one of [container] or [containers] must be provided"
+            );
         }
 
-        const { logGroup, logGroupId } = defaultLogGroup(name, args.logGroup, {}, { parent: this });
+        const { logGroup, logGroupId } = defaultLogGroup(
+            name,
+            args.logGroup,
+            {},
+            { parent: this }
+        );
         this.logGroup = logGroup;
 
         const taskRole = role.defaultRoleWithPolicies(
@@ -120,19 +143,32 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
         this.taskRole = taskRole.role;
         this.executionRole = executionRole.role;
 
-        const containerDefinitions = computeContainerDefinitions(this, containers, logGroupId);
+        const containerDefinitions = computeContainerDefinitions(
+            this,
+            containers,
+            logGroupId
+        );
 
         this.loadBalancers = computeLoadBalancers(containers);
 
         this.taskDefinition = new aws.ecs.TaskDefinition(
             name,
-            buildTaskDefinitionArgs(name, args, containerDefinitions, taskRole.roleArn, executionRole.roleArn),
+            buildTaskDefinitionArgs(
+                name,
+                args,
+                containerDefinitions,
+                taskRole.roleArn,
+                executionRole.roleArn
+            ),
             { parent: this }
         );
     }
 
     public static isInstance(obj: any): obj is FargateTaskDefinition {
-        return utils.isInstance<FargateTaskDefinition>(obj, "__isFargateTaskDefinition");
+        return utils.isInstance<FargateTaskDefinition>(
+            obj,
+            "__isFargateTaskDefinition"
+        );
     }
 }
 
@@ -143,7 +179,9 @@ function buildTaskDefinitionArgs(
     taskRoleArn?: pulumi.Input<string>,
     executionRoleArn?: pulumi.Input<string>
 ): aws.ecs.TaskDefinitionArgs {
-    const requiredMemoryAndCPU = containerDefinitions.apply((defs) => calculateFargateMemoryAndCPU(defs));
+    const requiredMemoryAndCPU = containerDefinitions.apply((defs) =>
+        calculateFargateMemoryAndCPU(defs)
+    );
 
     if (args.cpu === undefined) {
         args.cpu = requiredMemoryAndCPU.cpu;
@@ -151,8 +189,12 @@ function buildTaskDefinitionArgs(
     if (args.memory === undefined) {
         args.memory = requiredMemoryAndCPU.memory;
     }
-    const containerString = containerDefinitions.apply((d) => JSON.stringify(d));
-    const defaultFamily = containerString.apply((s) => name + "-" + utils.sha1hash(pulumi.getStack() + s));
+    const containerString = containerDefinitions.apply((d) =>
+        JSON.stringify(d)
+    );
+    const defaultFamily = containerString.apply(
+        (s) => name + "-" + utils.sha1hash(pulumi.getStack() + s)
+    );
     const family = utils.ifUndefined(args.family, defaultFamily);
 
     return {
@@ -176,7 +218,14 @@ function computeContainerDefinitions(
     for (const containerName of Object.keys(containers)) {
         const container = containers[containerName];
 
-        result.push(computeContainerDefinition(parent, containerName, container, logGroupId));
+        result.push(
+            computeContainerDefinition(
+                parent,
+                containerName,
+                container,
+                logGroupId
+            )
+        );
     }
 
     return pulumi.all(result);
@@ -192,13 +241,16 @@ function computeContainerDefinition(
         ? pulumi.all(
               container.portMappings.map((mappingInput) => {
                   return pulumi.output(mappingInput).apply((mi) =>
-                      pulumi.output(mi.targetGroup?.port).apply((tgPort): aws.ecs.PortMapping => {
-                          return {
-                              containerPort: mi.containerPort ?? tgPort ?? mi.hostPort,
-                              hostPort: tgPort ?? mi.hostPort,
-                              protocol: mi.protocol,
-                          };
-                      })
+                      pulumi
+                          .output(mi.targetGroup?.port)
+                          .apply((tgPort): aws.ecs.PortMapping => {
+                              return {
+                                  containerPort:
+                                      mi.containerPort ?? tgPort ?? mi.hostPort,
+                                  hostPort: tgPort ?? mi.hostPort,
+                                  protocol: mi.protocol,
+                              };
+                          })
                   );
               })
           )
@@ -212,7 +264,10 @@ function computeContainerDefinition(
                 portMappings,
                 name: containerName,
             };
-            if (containerDefinition.logConfiguration === undefined && logGroupId !== undefined) {
+            if (
+                containerDefinition.logConfiguration === undefined &&
+                logGroupId !== undefined
+            ) {
                 containerDefinition.logConfiguration = {
                     logDriver: "awslogs",
                     options: {
@@ -237,7 +292,10 @@ function computeLoadBalancers(
                     v.portMappings?.map((m) => {
                         const targetGroup = pulumi.output(m).targetGroup;
                         return pulumi
-                            .all([targetGroup?.apply((tg) => tg?.arn), targetGroup?.apply((tg) => tg?.port)])
+                            .all([
+                                targetGroup?.apply((tg) => tg?.arn),
+                                targetGroup?.apply((tg) => tg?.port),
+                            ])
                             .apply(([arn, port]) => ({
                                 containerName,
                                 tgArn: arn,
@@ -254,11 +312,21 @@ function computeLoadBalancers(
                 }
                 return utils.choose(
                     cg,
-                    ({ containerName, tgArn, tgPort }): aws.types.output.ecs.ServiceLoadBalancer | undefined => {
+                    ({
+                        containerName,
+                        tgArn,
+                        tgPort,
+                    }):
+                        | aws.types.output.ecs.ServiceLoadBalancer
+                        | undefined => {
                         if (tgArn === undefined || tgPort === undefined) {
                             return undefined;
                         }
-                        return { containerName, containerPort: tgPort, targetGroupArn: tgArn };
+                        return {
+                            containerName,
+                            containerPort: tgPort,
+                            targetGroupArn: tgArn,
+                        };
                     }
                 );
             })
