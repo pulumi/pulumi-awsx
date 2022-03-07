@@ -29,12 +29,6 @@ func NewTrail(ctx *pulumi.Context,
 		args = &TrailArgs{}
 	}
 
-	aliases := pulumi.Aliases([]pulumi.Alias{
-		{
-			Type: pulumi.String("aws:cloudtrail:x:Trail"),
-		},
-	})
-	opts = append(opts, aliases)
 	var resource Trail
 	err := ctx.RegisterRemoteComponentResource("awsx:cloudtrail:Trail", name, args, &resource, opts...)
 	if err != nil {

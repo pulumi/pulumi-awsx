@@ -40,7 +40,8 @@ export class Trail extends pulumi.ComponentResource {
      * @param opts A bag of options that control this resource's behavior.
      */
     constructor(name: string, args: TrailArgs, opts?: pulumi.CustomResourceOptions) {
-        super("awsx:cloudtrail:Trail", name, {aliases: [{type: pulumi.output("aws:cloudtrail:x:Trail")}]}, opts);
+        const aliasOpts = pulumi.mergeOptions(opts, {aliases: [{type: pulumi.output("aws:cloudtrail:x:Trail")}]});
+        super("awsx:cloudtrail:Trail", name, {}, aliasOpts);
 
         let bucketName: pulumi.Output<string>;
         if (args.s3BucketName !== undefined) {

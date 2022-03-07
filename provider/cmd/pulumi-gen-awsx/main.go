@@ -89,7 +89,6 @@ func awsRef(ref string) string {
 
 // nolint: lll
 func generateSchema() schema.PackageSpec {
-	cloudTrailResourceType := "aws:cloudtrail:x:Trail"
 	return schema.PackageSpec{
 		Name:        "awsx",
 		Description: "Pulumi Amazon Web Services (AWS) AWSX Components.",
@@ -102,7 +101,6 @@ func generateSchema() schema.PackageSpec {
 		Resources: map[string]schema.ResourceSpec{
 			"awsx:cloudtrail:Trail": {
 				IsComponent: true,
-				Aliases: []schema.AliasSpec{{Type: &cloudTrailResourceType}},
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Description: "",
 					Properties: map[string]schema.PropertySpec{
