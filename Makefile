@@ -12,7 +12,7 @@ WORKING_DIR     := $(shell pwd)
 build:: schema provider build_nodejs build_python build_go build_dotnet
 
 schema::
-	cd provider/cmd/$(CODEGEN) && go run main.go schema ../$(PROVIDER)
+	cd provider/cmd/$(CODEGEN) && go run . schema ../$(PROVIDER)
 
 provider::
 	rm -rf provider/cmd/$(PROVIDER)/bin
@@ -32,7 +32,7 @@ build_nodejs::
 build_python:: PYPI_VERSION := $(shell pulumictl get version --language python)
 build_python:: schema
 	rm -rf sdk/python
-	cd provider/cmd/$(CODEGEN) && go run main.go python ../../../sdk/python ../$(PROVIDER)/schema.json $(VERSION)
+	cd provider/cmd/$(CODEGEN) && go run . python ../../../sdk/python ../$(PROVIDER)/schema.json $(VERSION)
 	cd sdk/python/ && \
 		cp ../../README.md . && \
 		python3 setup.py clean --all 2>/dev/null && \
@@ -44,12 +44,12 @@ build_python:: schema
 build_go:: VERSION := $(shell pulumictl get version --language generic)
 build_go:: schema
 	rm -rf sdk/go
-	cd provider/cmd/$(CODEGEN) && go run main.go go ../../../sdk/go ../$(PROVIDER)/schema.json $(VERSION)
+	cd provider/cmd/$(CODEGEN) && go run . go ../../../sdk/go ../$(PROVIDER)/schema.json $(VERSION)
 
 build_dotnet:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 build_dotnet:: schema
 	rm -rf sdk/dotnet
-	cd provider/cmd/$(CODEGEN) && go run main.go dotnet ../../../sdk/dotnet ../$(PROVIDER)/schema.json $(VERSION)
+	cd provider/cmd/$(CODEGEN) && go run . dotnet ../../../sdk/dotnet ../$(PROVIDER)/schema.json $(VERSION)
 	cd sdk/dotnet/ && \
 		echo "${DOTNET_VERSION}" >version.txt && \
 		dotnet build /p:Version=${DOTNET_VERSION}

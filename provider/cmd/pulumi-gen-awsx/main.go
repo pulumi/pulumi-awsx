@@ -24,6 +24,7 @@ import (
 	"github.com/pkg/errors"
 	dotnetgen "github.com/pulumi/pulumi/pkg/v3/codegen/dotnet"
 	gogen "github.com/pulumi/pulumi/pkg/v3/codegen/go"
+	nodegen "github.com/pulumi/pulumi/pkg/v3/codegen/nodejs"
 	pygen "github.com/pulumi/pulumi/pkg/v3/codegen/python"
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 	"github.com/pulumi/pulumi/sdk/v3/go/common/util/contract"
@@ -39,6 +40,7 @@ const (
 	Go     Language = "go"
 	Python Language = "python"
 	Schema Language = "schema"
+	Nodejs Language = "nodejs"
 )
 
 func main() {
@@ -71,6 +73,8 @@ func main() {
 		genGo(readSchema(schemaFile, version), outdir)
 	case Python:
 		genPython(readSchema(schemaFile, version), outdir)
+	case Nodejs:
+		genNodejs(readSchema(schemaFile, version), outdir)
 	case Schema:
 		pkgSpec := generateSchema()
 		mustWritePulumiSchema(pkgSpec, outdir)
@@ -123,6 +127,14 @@ func genGo(pkg *schema.Package, outdir string) {
 
 func genPython(pkg *schema.Package, outdir string) {
 	files, err := pygen.GeneratePackage(Tool, pkg, map[string][]byte{})
+	if err != nil {
+		panic(err)
+	}
+	mustWriteFiles(outdir, files)
+}
+
+func genNodejs(pkg *schema.Package, outdir string) {
+	files, err := nodegen.GeneratePackage(Tool, pkg, map[string][]byte{})
 	if err != nil {
 		panic(err)
 	}
