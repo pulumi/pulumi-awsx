@@ -21,21 +21,25 @@ export interface FargateServiceArgs
     continueBeforeSteadyState?: pulumi.Input<boolean>;
 
     /**
-     * ARN of the task definition to create the service from. Either [taskDefinition] or
-     * [taskDefinitionArgs] must be provided.
+     * Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
      */
     taskDefinition?: pulumi.Input<string>;
 
     /**
-     * The task definition to create the service from. Either [taskDefinition] or
-     * [taskDefinitionArgs] must be provided.
+     * The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
      */
     taskDefinitionArgs?: FargateTaskDefinitionArgs;
 }
 
+/**
+ * Create an ECS Service resource for Fargate with the given unique name, arguments, and options.
+ * Creates Task definition if `taskDefinitionArgs` is specified.
+ */
 export class FargateService extends pulumi.ComponentResource {
-    public readonly taskDefinition?: FargateTaskDefinition;
+    /** Underlying ECS Service resource */
     public readonly service: aws.ecs.Service;
+    /** Underlying Fargate component resource if created from args */
+    public readonly taskDefinition?: FargateTaskDefinition;
 
     constructor(
         name: string,

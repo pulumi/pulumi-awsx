@@ -18,13 +18,22 @@ import (
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
-// nolint: lll
 func generateEcs(awsSpec, awsNativeSpec schema.PackageSpec) schema.PackageSpec {
+	fargateTaskDefinitionResource := fargateTaskDefinition(awsSpec)
 	packageSpec := schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
-			"awsx:ecs:FargateTaskDefinition": fargateTaskDefinition(awsSpec),
+			"awsx:ecs:FargateService":        fargateService(awsSpec),
+			"awsx:ecs:FargateTaskDefinition": fargateTaskDefinitionResource,
 		},
-		Types: map[string]schema.ComplexTypeSpec{},
+		Types: map[string]schema.ComplexTypeSpec{
+			"awsx:ecs:FargateServiceTaskDefinition": {
+				ObjectTypeSpec: schema.ObjectTypeSpec{
+					Type:        "object",
+					Description: fargateTaskDefinitionResource.Description,
+					Properties:  fargateTaskDefinitionResource.InputProperties,
+				},
+			},
+		},
 	}
 
 	for k, v := range containerDefinitionTypes(awsNativeSpec) {
@@ -32,6 +41,59 @@ func generateEcs(awsSpec, awsNativeSpec schema.PackageSpec) schema.PackageSpec {
 	}
 
 	return packageSpec
+}
+
+func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
+	service := awsSpec.Resources["aws:ecs/service:Service"]
+	inputProperties := map[string]schema.PropertySpec{}
+	for k, v := range service.InputProperties {
+		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", awsRef("#/types/aws:"))
+	}
+	delete(inputProperties, "launchType")
+	delete(inputProperties, "taskDefinition")
+	delete(inputProperties, "waitForSteadyState")
+	inputProperties["continueBeforeSteadyState"] = schema.PropertySpec{
+		Description: "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.",
+		TypeSpec: schema.TypeSpec{
+			Type: "boolean",
+		},
+	}
+	inputProperties["taskDefinition"] = schema.PropertySpec{
+		Description: "Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.",
+		TypeSpec: schema.TypeSpec{
+			Type: "string",
+		},
+	}
+	inputProperties["taskDefinitionArgs"] = schema.PropertySpec{
+		Description: "The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.",
+		TypeSpec: schema.TypeSpec{
+			Ref: "#/types/awsx:ecs:FargateServiceTaskDefinition",
+		},
+	}
+
+	return schema.ResourceSpec{
+		IsComponent: true,
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Description: "Create an ECS Service resource for Fargate with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
+			Properties: map[string]schema.PropertySpec{
+				"service": {
+					Description: "Underlying ECS Service resource",
+					TypeSpec: schema.TypeSpec{
+						Ref: awsRef("#/resources/aws:ecs%2fservice:Service"),
+					},
+				},
+				"taskDefinition": {
+					Description: "Underlying Fargate component resource if created from args",
+					TypeSpec: schema.TypeSpec{
+						Ref: awsRef("#/resources/aws:ecs%2FtaskDefinition:TaskDefinition"),
+					},
+				},
+			},
+			Required: []string{"service"},
+		},
+		InputProperties: inputProperties,
+		RequiredInputs:  []string{"networkConfiguration"},
+	}
 }
 
 func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
