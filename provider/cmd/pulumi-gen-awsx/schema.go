@@ -221,7 +221,7 @@ func generateSchema() schema.PackageSpec {
 					},
 				},
 			},
-			"awsx:cloudwatch:DefaultLogGroupArgs": {
+			"awsx:cloudwatch:DefaultLogGroup": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "Log group with default setup unless explicitly skipped.",
@@ -243,7 +243,7 @@ func generateSchema() schema.PackageSpec {
 						"args": {
 							Description: "Arguments to use instead of the default values during creation.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:LogGroupArgs",
+								Ref:   "#/types/awsx:cloudwatch:LogGroup",
 								Plain: true,
 							},
 						},
@@ -278,15 +278,15 @@ func generateSchema() schema.PackageSpec {
 					Required: []string{"name"},
 				},
 			},
-			"awsx:cloudwatch:LogGroupArgs": {
+			"awsx:cloudwatch:LogGroup": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "The set of arguments for constructing a LogGroup resource.",
 					Properties:  awsSpec.Resources["aws:cloudwatch/logGroup:LogGroup"].InputProperties,
 				},
 			},
-			"awsx:iam:DefaultRoleWithPolicyArgs": defaultRoleWithPolicyArgs(awsSpec),
-			"awsx:iam:RoleWithPolicyArgs":        roleWithPolicyArgs(awsSpec),
+			"awsx:iam:DefaultRoleWithPolicy": defaultRoleWithPolicyArgs(awsSpec),
+			"awsx:iam:RoleWithPolicy":        roleWithPolicyArgs(awsSpec),
 			"awsx:resource:NestedResourceOptions": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
@@ -401,7 +401,7 @@ func defaultRoleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpe
 				"args": {
 					Description: "Args to use when creating the role and policies. Can't be specified if `roleArn` is used.",
 					TypeSpec: schema.TypeSpec{
-						Ref:   "#/types/awsx:iam:RoleWithPolicyArgs",
+						Ref:   "#/types/awsx:iam:RoleWithPolicy",
 						Plain: true,
 					},
 				},

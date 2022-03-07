@@ -135,7 +135,7 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties["executionRole"] = schema.PropertySpec{
 		Description: "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined.",
 		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:iam:DefaultRoleWithPolicyArgs",
+			Ref:   "#/types/awsx:iam:DefaultRoleWithPolicy",
 			Plain: true,
 		},
 	}
@@ -148,7 +148,7 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties["logGroup"] = schema.PropertySpec{
 		Description: "A set of volume blocks that containers in your task may use.",
 		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:cloudwatch:DefaultLogGroupArgs",
+			Ref:   "#/types/awsx:cloudwatch:DefaultLogGroup",
 			Plain: true,
 		},
 	}
@@ -161,7 +161,7 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties["taskRole"] = schema.PropertySpec{
 		Description: "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined.",
 		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:iam:DefaultRoleWithPolicyArgs",
+			Ref:   "#/types/awsx:iam:DefaultRoleWithPolicy",
 			Plain: true,
 		},
 	}

@@ -36,11 +36,11 @@
             },
             "type": "object"
         },
-        "awsx:cloudwatch:DefaultLogGroupArgs": {
+        "awsx:cloudwatch:DefaultLogGroup": {
             "description": "Log group with default setup unless explicitly skipped.",
             "properties": {
                 "args": {
-                    "$ref": "#/types/awsx:cloudwatch:LogGroupArgs",
+                    "$ref": "#/types/awsx:cloudwatch:LogGroup",
                     "plain": true,
                     "description": "Arguments to use instead of the default values during creation."
                 },
@@ -79,7 +79,7 @@
                 "name"
             ]
         },
-        "awsx:cloudwatch:LogGroupArgs": {
+        "awsx:cloudwatch:LogGroup": {
             "description": "The set of arguments for constructing a LogGroup resource.",
             "properties": {
                 "kmsKeyId": {
@@ -133,7 +133,7 @@
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
                 },
                 "executionRole": {
-                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicyArgs",
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
                     "plain": true,
                     "description": "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined."
                 },
@@ -153,7 +153,7 @@
                     "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
                 },
                 "logGroup": {
-                    "$ref": "#/types/awsx:cloudwatch:DefaultLogGroupArgs",
+                    "$ref": "#/types/awsx:cloudwatch:DefaultLogGroup",
                     "plain": true,
                     "description": "A set of volume blocks that containers in your task may use."
                 },
@@ -202,7 +202,7 @@
                     "description": "Key-value map of resource tags.\n"
                 },
                 "taskRole": {
-                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicyArgs",
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
                     "plain": true,
                     "description": "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined."
                 },
@@ -696,11 +696,11 @@
             },
             "type": "object"
         },
-        "awsx:iam:DefaultRoleWithPolicyArgs": {
+        "awsx:iam:DefaultRoleWithPolicy": {
             "description": "Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.",
             "properties": {
                 "args": {
-                    "$ref": "#/types/awsx:iam:RoleWithPolicyArgs",
+                    "$ref": "#/types/awsx:iam:RoleWithPolicy",
                     "plain": true,
                     "description": "Args to use when creating the role and policies. Can't be specified if `roleArn` is used."
                 },
@@ -721,7 +721,7 @@
             },
             "type": "object"
         },
-        "awsx:iam:RoleWithPolicyArgs": {
+        "awsx:iam:RoleWithPolicy": {
             "description": "The set of arguments for constructing a Role resource and Policy attachments.",
             "properties": {
                 "description": {
@@ -1110,7 +1110,7 @@
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
                 },
                 "executionRole": {
-                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicyArgs",
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
                     "plain": true,
                     "description": "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined."
                 },
@@ -1130,7 +1130,7 @@
                     "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
                 },
                 "logGroup": {
-                    "$ref": "#/types/awsx:cloudwatch:DefaultLogGroupArgs",
+                    "$ref": "#/types/awsx:cloudwatch:DefaultLogGroup",
                     "plain": true,
                     "description": "A set of volume blocks that containers in your task may use."
                 },
@@ -1179,7 +1179,7 @@
                     "description": "Key-value map of resource tags.\n"
                 },
                 "taskRole": {
-                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicyArgs",
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
                     "plain": true,
                     "description": "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined."
                 },
