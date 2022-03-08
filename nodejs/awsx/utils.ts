@@ -17,8 +17,10 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as crypto from "crypto";
 
-type Diff<T extends string | number | symbol, U extends string | number | symbol> =
-    ({ [P in T]: P } & { [P in U]: never } & { [x: string]: never })[T];
+type Diff<
+    T extends string | number | symbol,
+    U extends string | number | symbol,
+> = ({ [P in T]: P } & { [P in U]: never } & { [x: string]: never })[T];
 
 // Overwrite allows you to take an existing type, and then overwrite existing properties in it
 // with properties of the same name, but with entirely different types.
@@ -52,27 +54,33 @@ export function sha1hash(s: string): string {
 /** @internal */
 export function combineArrays<T>(
     e1: pulumi.Input<T[] | undefined>,
-    e2: pulumi.Input<T[] | undefined>): pulumi.Output<T[]> {
-
+    e2: pulumi.Input<T[] | undefined>,
+): pulumi.Output<T[]> {
     const result = pulumi.all([e1, e2]).apply(([e1, e2]) => {
         e1 = e1 || [];
         e2 = e2 || [];
         return [...e1, ...e2];
     });
 
-    return <pulumi.Output<T[]>><unknown>result;
+    return <pulumi.Output<T[]>>(<unknown>result);
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
 
 /** @internal */
-export function ifUndefined<T>(input: pulumi.Input<T> | undefined, value: pulumi.Input<T>): pulumi.Output<WithoutUndefined<T>> {
-    return <any>pulumi.all([input, value])
-        .apply(([input, value]) => input !== undefined ? input : value);
+export function ifUndefined<T>(
+    input: pulumi.Input<T> | undefined,
+    value: pulumi.Input<T>,
+): pulumi.Output<WithoutUndefined<T>> {
+    return <any>(
+        pulumi
+            .all([input, value])
+            .apply(([input, value]) => (input !== undefined ? input : value))
+    );
 }
 
 /** @internal */
-export type Compatible<T, U> = T extends U ? U extends T ? any : void : void;
+export type Compatible<T, U> = T extends U ? (U extends T ? any : void) : void;
 
 /** @internal */
 export function checkCompat<T, U>(): Compatible<T, U> {
@@ -80,8 +88,10 @@ export function checkCompat<T, U>(): Compatible<T, U> {
 }
 
 /** @internal */
-export function mergeTags(tags1: pulumi.Input<aws.Tags> | undefined,
-    tags2: pulumi.Input<aws.Tags> | undefined): pulumi.Output<aws.Tags> {
+export function mergeTags(
+    tags1: pulumi.Input<aws.Tags> | undefined,
+    tags2: pulumi.Input<aws.Tags> | undefined,
+): pulumi.Output<aws.Tags> {
     return pulumi.all([tags1, tags2]).apply(([tags1, tags2]) => ({
         ...(tags1 || {}),
         ...(tags2 || {}),
@@ -103,7 +113,10 @@ export function isInstance<T>(obj: any, name: keyof T): obj is T {
 }
 
 /** @internal */
-export function hasTrueBooleanMember(obj: any, memberName: string | number | symbol): boolean {
+export function hasTrueBooleanMember(
+    obj: any,
+    memberName: string | number | symbol,
+): boolean {
     if (obj === undefined || obj === null) {
         return false;
     }
@@ -117,14 +130,15 @@ export function hasTrueBooleanMember(obj: any, memberName: string | number | sym
 }
 
 /** @internal */
-export function getRegionFromOpts(opts: pulumi.CustomResourceOptions): pulumi.Output<aws.Region> {
+export function getRegionFromOpts(
+    opts: pulumi.CustomResourceOptions,
+): pulumi.Output<aws.Region> {
     if (opts.parent) {
         return getRegion(opts.parent);
     }
 
     return getRegionFromProvider(opts.provider);
 }
-
 
 /** @internal */
 export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
@@ -152,18 +166,18 @@ function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
  */
 export function choose<T, U>(
     source: ReadonlyArray<T>,
-    chooser: (item: T, index: number) => U | undefined
+    chooser: (item: T, index: number) => U | undefined,
 ): U[] {
-    const target = []
-    let index = 0
+    const target = [];
+    let index = 0;
     for (const item of source) {
-        const chosen = chooser(item, index)
+        const chosen = chooser(item, index);
         if (chosen !== undefined) {
-            target.push(chosen)
+            target.push(chosen);
         }
-        index++
+        index++;
     }
-    return target
+    return target;
 }
 
 /**
@@ -176,16 +190,16 @@ export function choose<T, U>(
  */
 export function collect<T, U>(
     source: ReadonlyArray<T>,
-    mapping: (item: T, index: number) => Iterable<U>
+    mapping: (item: T, index: number) => Iterable<U>,
 ): U[] {
-    const target = []
-    let index = 0
+    const target = [];
+    let index = 0;
     for (const item of source) {
-        const children = mapping(item, index)
+        const children = mapping(item, index);
         for (const child of children) {
-            target.push(child)
+            target.push(child);
         }
-        index++
+        index++;
     }
-    return target
+    return target;
 }

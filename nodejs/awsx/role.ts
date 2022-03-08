@@ -27,7 +27,8 @@ interface RolePolicyAttachments {
 }
 
 /** The set of arguments for constructing a Role resource and Policy attach. */
-export type RoleWithPolicyArgs = Omit<aws.iam.RoleArgs, "assumeRolePolicy"> & RolePolicyAttachments;
+export type RoleWithPolicyArgs = Omit<aws.iam.RoleArgs, "assumeRolePolicy"> &
+    RolePolicyAttachments;
 
 /** Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided. */
 export interface DefaultRoleWithPolicyArgs {
@@ -54,14 +55,16 @@ export function defaultRoleWithPolicies(
     name: string,
     inputs: DefaultRoleWithPolicyArgs | undefined,
     defaults: aws.iam.RoleArgs & RolePolicyAttachments,
-    opts: ResourceOptions
+    opts: ResourceOptions,
 ): {
     roleArn?: pulumi.Output<string>;
     role?: aws.iam.Role;
     policies?: aws.iam.RolePolicyAttachment[];
 } {
     if (inputs?.roleArn !== undefined && inputs?.args !== undefined) {
-        throw new Error("Can't define role args if specified an existing role ARN");
+        throw new Error(
+            "Can't define role args if specified an existing role ARN",
+        );
     }
     if (inputs?.skip === true) {
         return {};
@@ -71,7 +74,9 @@ export function defaultRoleWithPolicies(
     }
     const args = { ...defaults, ...inputs?.args };
     const assumeRolePolicy =
-        typeof args.assumeRolePolicy === "string" ? args.assumeRolePolicy : JSON.stringify(args.assumeRolePolicy);
+        typeof args.assumeRolePolicy === "string"
+            ? args.assumeRolePolicy
+            : JSON.stringify(args.assumeRolePolicy);
 
     const roleArgs = { ...args, assumeRolePolicy };
     delete roleArgs.policyArns;
@@ -83,8 +88,8 @@ export function defaultRoleWithPolicies(
             new aws.iam.RolePolicyAttachment(
                 `${name}-${utils.sha1hash(policyArn)}`,
                 { role: role.name, policyArn },
-                opts
-            )
+                opts,
+            ),
     );
     return { role, policies, roleArn: role.arn };
 }
@@ -94,7 +99,7 @@ export function createRoleAndPolicies(
     name: string,
     assumeRolePolicy: string | aws.iam.PolicyDocument,
     policyArns: string[],
-    opts: pulumi.ComponentResourceOptions | undefined
+    opts: pulumi.ComponentResourceOptions | undefined,
 ) {
     if (typeof assumeRolePolicy !== "string") {
         assumeRolePolicy = JSON.stringify(assumeRolePolicy);
@@ -106,7 +111,11 @@ export function createRoleAndPolicies(
     for (let i = 0; i < policyArns.length; i++) {
         const policyArn = policyArns[i];
         policies.push(
-            new aws.iam.RolePolicyAttachment(`${name}-${utils.sha1hash(policyArn)}`, { role, policyArn }, opts)
+            new aws.iam.RolePolicyAttachment(
+                `${name}-${utils.sha1hash(policyArn)}`,
+                { role, policyArn },
+                opts,
+            ),
         );
     }
 
@@ -118,8 +127,13 @@ export function createRole(
     name: string,
     assumeRolePolicy: string | aws.iam.PolicyDocument,
     policyArns: string[],
-    opts: pulumi.ComponentResourceOptions | undefined
+    opts: pulumi.ComponentResourceOptions | undefined,
 ) {
-    const { role } = createRoleAndPolicies(name, assumeRolePolicy, policyArns, opts);
+    const { role } = createRoleAndPolicies(
+        name,
+        assumeRolePolicy,
+        policyArns,
+        opts,
+    );
     return role;
 }

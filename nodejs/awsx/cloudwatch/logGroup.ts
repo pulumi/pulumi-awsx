@@ -43,24 +43,31 @@ export interface LogGroupId {
     logGroupRegion: string;
 }
 
-function makeLogGroupId(args: { name: pulumi.Input<string>; region: pulumi.Input<string> }): pulumi.Output<LogGroupId> {
-    return pulumi.all([args.name, args.region]).apply(([logGroupName, logGroupRegion]) => ({
-        logGroupName,
-        logGroupRegion,
-    }));
+function makeLogGroupId(args: {
+    name: pulumi.Input<string>;
+    region: pulumi.Input<string>;
+}): pulumi.Output<LogGroupId> {
+    return pulumi
+        .all([args.name, args.region])
+        .apply(([logGroupName, logGroupRegion]) => ({
+            logGroupName,
+            logGroupRegion,
+        }));
 }
 
 export function defaultLogGroup(
     name: string,
     inputs: DefaultLogGroupArgs | undefined,
     defaults: aws.cloudwatch.LogGroupArgs,
-    opts: ResourceOptions
+    opts: ResourceOptions,
 ): {
     logGroup?: aws.cloudwatch.LogGroup;
     logGroupId?: pulumi.Output<LogGroupId>;
 } {
     if (inputs?.existing !== undefined && inputs.args !== undefined) {
-        throw new Error("Can't define log group args if specifying an existing log group name");
+        throw new Error(
+            "Can't define log group args if specifying an existing log group name",
+        );
     }
     if (inputs?.skip) {
         return {};
@@ -68,12 +75,17 @@ export function defaultLogGroup(
     const existing = inputs?.existing;
     if (existing !== undefined) {
         aws.cloudwatch.getLogGroup({ name });
-        const region = existing.region ? pulumi.output(existing.region) : getRegionFromOpts(opts);
+        const region = existing.region
+            ? pulumi.output(existing.region)
+            : getRegionFromOpts(opts);
         return { logGroupId: makeLogGroupId({ name: existing.name, region }) };
     }
     const args = { ...defaults, ...inputs?.args };
     const logGroupOpts = { ...inputs?.opts, ...opts };
     const logGroup = new aws.cloudwatch.LogGroup(name, args, logGroupOpts);
     const region = getRegion(logGroup);
-    return { logGroup, logGroupId: makeLogGroupId({ name: logGroup.name, region }) };
+    return {
+        logGroup,
+        logGroupId: makeLogGroupId({ name: logGroup.name, region }),
+    };
 }

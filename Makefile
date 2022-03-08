@@ -73,11 +73,9 @@ install_python_sdk::
 	#Intentionall empty for CI / CD templating
 
 lint:
-	yarn global add tslint typescript
 	cd nodejs/awsx && \
 		yarn install && \
-		yarn run install-peers -f && \
-		tslint -c ../tslint.json -p tsconfig.json
+		yarn lint
 
 install_provider:: PROVIDER_VERSION := latest
 install_provider:: provider install_nodejs_sdk

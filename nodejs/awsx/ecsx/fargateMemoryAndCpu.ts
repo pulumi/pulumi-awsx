@@ -1,3 +1,17 @@
+// Copyright 2016-2018, Pulumi Corporation.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import * as aws from "@pulumi/aws";
 
 function* range(low: number, high: number) {
@@ -10,7 +24,13 @@ function fargateCost({ vcpu, memGB }: { vcpu: number; memGB: number }) {
     return 0.04048 * vcpu + 0.004445 * memGB;
 }
 
-function* cpuMemoryConfigs({ vcpu, memGBs }: { vcpu: number; memGBs: Iterable<number> }) {
+function* cpuMemoryConfigs({
+    vcpu,
+    memGBs,
+}: {
+    vcpu: number;
+    memGBs: Iterable<number>;
+}) {
     for (const memGB of memGBs) {
         yield { vcpu, memGB, cost: fargateCost({ vcpu, memGB }) };
     }
@@ -36,7 +56,10 @@ function fargateConfigsByPriceAscending() {
 }
 
 export function calculateFargateMemoryAndCPU(
-    containers: Pick<aws.ecs.ContainerDefinition, "cpu" | "memory" | "memoryReservation">[]
+    containers: Pick<
+        aws.ecs.ContainerDefinition,
+        "cpu" | "memory" | "memoryReservation"
+    >[],
 ) {
     // First, determine how much VCPU/GB that the user is asking for in their containers.
     let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory();
@@ -50,11 +73,13 @@ export function calculateFargateMemoryAndCPU(
     requestedGB = Math.min(requestedGB, 30);
 
     // Get all configs that can at least satisfy this pair of cpu/memory needs.
-    const config = fargateConfigsByPriceAscending().find((c) => c.vcpu >= requestedVCPU && c.memGB >= requestedGB);
+    const config = fargateConfigsByPriceAscending().find(
+        (c) => c.vcpu >= requestedVCPU && c.memGB >= requestedGB,
+    );
 
     if (config === undefined) {
         throw new Error(
-            `Could not find fargate config that could satisfy: ${requestedVCPU} vCPU and ${requestedGB}GB.`
+            `Could not find fargate config that could satisfy: ${requestedVCPU} vCPU and ${requestedGB}GB.`,
         );
     }
 

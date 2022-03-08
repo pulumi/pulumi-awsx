@@ -1,16 +1,29 @@
-import * as pulumi from "@pulumi/pulumi";
+// Copyright 2016-2018, Pulumi Corporation.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import * as aws from "@pulumi/aws";
-import * as role from "../role";
-import * as utils from "../utils";
-import { Container } from "./container";
-import { NestedResourceOptions } from "../nestedResourceOptions";
-import { DefaultRoleWithPolicyArgs } from "../role";
-import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
+import * as pulumi from "@pulumi/pulumi";
 import {
     defaultLogGroup,
     DefaultLogGroupArgs,
     LogGroupId,
 } from "../cloudwatch/logGroup";
+import * as role from "../role";
+import { DefaultRoleWithPolicyArgs } from "../role";
+import * as utils from "../utils";
+import { Container } from "./container";
+import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
 
 export interface FargateTaskDefinitionArgs
     extends Omit<
@@ -98,19 +111,20 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
     constructor(
         name: string,
         args: FargateTaskDefinitionArgs,
-        opts: pulumi.ComponentResourceOptions = {}
+        opts: pulumi.ComponentResourceOptions = {},
     ) {
         super("awsx:x:ecs:FargateTaskDefinition", name, {}, opts);
         this.__isFargateTaskDefinition = true;
 
-        let { container, containers } = args;
+        const { container } = args;
+        let { containers } = args;
         if (containers !== undefined && container === undefined) {
             containers = containers;
         } else if (container !== undefined && containers === undefined) {
             containers = { container: container };
         } else {
             throw new Error(
-                "Exactly one of [container] or [containers] must be provided"
+                "Exactly one of [container] or [containers] must be provided",
             );
         }
 
@@ -118,7 +132,7 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
             name,
             args.logGroup,
             {},
-            { parent: this }
+            { parent: this },
         );
         this.logGroup = logGroup;
 
@@ -129,7 +143,7 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
                 assumeRolePolicy: defaultRoleAssumeRolePolicy(),
                 policyArns: defaultTaskRolePolicyARNs(),
             },
-            { parent: this }
+            { parent: this },
         );
         const executionRole = role.defaultRoleWithPolicies(
             `${name}-execution`,
@@ -138,7 +152,7 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
                 assumeRolePolicy: defaultRoleAssumeRolePolicy(),
                 policyArns: defaultExecutionRolePolicyARNs(),
             },
-            { parent: this }
+            { parent: this },
         );
         this.taskRole = taskRole.role;
         this.executionRole = executionRole.role;
@@ -146,7 +160,7 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
         const containerDefinitions = computeContainerDefinitions(
             this,
             containers,
-            logGroupId
+            logGroupId,
         );
 
         this.loadBalancers = computeLoadBalancers(containers);
@@ -158,16 +172,16 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
                 args,
                 containerDefinitions,
                 taskRole.roleArn,
-                executionRole.roleArn
+                executionRole.roleArn,
             ),
-            { parent: this }
+            { parent: this },
         );
     }
 
     public static isInstance(obj: any): obj is FargateTaskDefinition {
         return utils.isInstance<FargateTaskDefinition>(
             obj,
-            "__isFargateTaskDefinition"
+            "__isFargateTaskDefinition",
         );
     }
 }
@@ -177,10 +191,10 @@ function buildTaskDefinitionArgs(
     args: FargateTaskDefinitionArgs,
     containerDefinitions: pulumi.Output<aws.ecs.ContainerDefinition[]>,
     taskRoleArn?: pulumi.Input<string>,
-    executionRoleArn?: pulumi.Input<string>
+    executionRoleArn?: pulumi.Input<string>,
 ): aws.ecs.TaskDefinitionArgs {
     const requiredMemoryAndCPU = containerDefinitions.apply((defs) =>
-        calculateFargateMemoryAndCPU(defs)
+        calculateFargateMemoryAndCPU(defs),
     );
 
     if (args.cpu === undefined) {
@@ -190,10 +204,10 @@ function buildTaskDefinitionArgs(
         args.memory = requiredMemoryAndCPU.memory;
     }
     const containerString = containerDefinitions.apply((d) =>
-        JSON.stringify(d)
+        JSON.stringify(d),
     );
     const defaultFamily = containerString.apply(
-        (s) => name + "-" + utils.sha1hash(pulumi.getStack() + s)
+        (s) => name + "-" + utils.sha1hash(pulumi.getStack() + s),
     );
     const family = utils.ifUndefined(args.family, defaultFamily);
 
@@ -211,7 +225,7 @@ function buildTaskDefinitionArgs(
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     containers: Record<string, Container>,
-    logGroupId: pulumi.Input<LogGroupId> | undefined
+    logGroupId: pulumi.Input<LogGroupId> | undefined,
 ): pulumi.Output<aws.ecs.ContainerDefinition[]> {
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
 
@@ -223,8 +237,8 @@ function computeContainerDefinitions(
                 parent,
                 containerName,
                 container,
-                logGroupId
-            )
+                logGroupId,
+            ),
         );
     }
 
@@ -235,7 +249,7 @@ function computeContainerDefinition(
     parent: pulumi.Resource,
     containerName: string,
     container: Container,
-    logGroupId: pulumi.Input<LogGroupId> | undefined
+    logGroupId: pulumi.Input<LogGroupId> | undefined,
 ): pulumi.Output<aws.ecs.ContainerDefinition> {
     const resolvedMappings = container.portMappings
         ? pulumi.all(
@@ -250,9 +264,9 @@ function computeContainerDefinition(
                                   hostPort: tgPort ?? mi.hostPort,
                                   protocol: mi.protocol,
                               };
-                          })
+                          }),
                   );
-              })
+              }),
           )
         : undefined;
     const region = utils.getRegion(parent);
@@ -282,12 +296,14 @@ function computeContainerDefinition(
 }
 
 function computeLoadBalancers(
-    containers: Record<string, Container>
+    containers: Record<string, Container>,
 ): pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]> {
     return pulumi
         .all(
             Object.entries(containers).map(([containerName, v]) => {
-                if (v.portMappings === undefined) return pulumi.output([]);
+                if (v.portMappings === undefined) {
+                    return pulumi.output([]);
+                }
                 return pulumi.all(
                     v.portMappings?.map((m) => {
                         const targetGroup = pulumi.output(m).targetGroup;
@@ -301,9 +317,9 @@ function computeLoadBalancers(
                                 tgArn: arn,
                                 tgPort: port,
                             }));
-                    })
+                    }),
                 );
-            })
+            }),
         )
         .apply((containerGroups) =>
             utils.collect(containerGroups, (cg) => {
@@ -327,9 +343,9 @@ function computeLoadBalancers(
                             containerPort: tgPort,
                             targetGroupArn: tgArn,
                         };
-                    }
+                    },
                 );
-            })
+            }),
         );
 }
 

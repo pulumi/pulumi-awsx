@@ -1,10 +1,24 @@
-import * as pulumi from "@pulumi/pulumi";
+// Copyright 2016-2018, Pulumi Corporation.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 import * as aws from "@pulumi/aws";
+import * as pulumi from "@pulumi/pulumi";
+import * as utils from "../utils";
 import {
     FargateTaskDefinition,
     FargateTaskDefinitionArgs,
 } from "./fargateTaskDefinition";
-import * as utils from "../utils";
 
 export interface FargateServiceArgs
     extends Omit<
@@ -44,7 +58,7 @@ export class FargateService extends pulumi.ComponentResource {
     constructor(
         name: string,
         args: FargateServiceArgs,
-        opts: pulumi.ComponentResourceOptions = {}
+        opts: pulumi.ComponentResourceOptions = {},
     ) {
         super("awsx:x:ecs:FargateService", name, {}, opts);
 
@@ -53,7 +67,7 @@ export class FargateService extends pulumi.ComponentResource {
             args.taskDefinitionArgs !== undefined
         ) {
             throw new Error(
-                "Only one of `taskDefinition` or `taskDefinitionArgs` can be provided."
+                "Only one of `taskDefinition` or `taskDefinitionArgs` can be provided.",
             );
         }
         let taskDefinition = args.taskDefinition;
@@ -63,13 +77,13 @@ export class FargateService extends pulumi.ComponentResource {
                 args.taskDefinitionArgs,
                 {
                     parent: this,
-                }
+                },
             );
             taskDefinition = this.taskDefinition.taskDefinition.arn;
         }
-        if (taskDefinition == undefined) {
+        if (taskDefinition === undefined) {
             throw new Error(
-                "Either `taskDefinition` or `taskDefinitionArgs` must be provided."
+                "Either `taskDefinition` or `taskDefinitionArgs` must be provided.",
             );
         }
 
@@ -85,11 +99,11 @@ export class FargateService extends pulumi.ComponentResource {
                     args.loadBalancers ?? this.taskDefinition?.loadBalancers,
                 waitForSteadyState: !utils.ifUndefined(
                     args.continueBeforeSteadyState,
-                    false
+                    false,
                 ),
                 taskDefinition,
             },
-            { parent: this }
+            { parent: this },
         );
 
         this.registerOutputs();
