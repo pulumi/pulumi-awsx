@@ -23,9 +23,8 @@ build_nodejs::
 	rm -rf nodejs/awsx/bin/*
 	cd nodejs/awsx && \
 		yarn install && \
-		yarn run install-peers -f && \
+		yarn run tsc --version && \
 		yarn run tsc && \
-		tsc --version && \
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
 		cp ../../README.md ../../LICENSE bin/
 

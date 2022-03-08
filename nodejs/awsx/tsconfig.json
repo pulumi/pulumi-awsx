@@ -12,4 +12,8 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true
     },
+    "exclude": [
+        "bin",
+        "tests"
+    ]
 }

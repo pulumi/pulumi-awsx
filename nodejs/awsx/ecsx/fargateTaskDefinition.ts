@@ -193,9 +193,21 @@ function buildTaskDefinitionArgs(
     taskRoleArn?: pulumi.Input<string>,
     executionRoleArn?: pulumi.Input<string>,
 ): aws.ecs.TaskDefinitionArgs {
-    const requiredMemoryAndCPU = containerDefinitions.apply((defs) =>
-        calculateFargateMemoryAndCPU(defs),
-    );
+    const requiredMemoryAndCPU = containerDefinitions
+        .apply((defs) =>
+            pulumi.all(
+                defs.map((def) =>
+                    pulumi
+                        .all([def.cpu, def.memory, def.memoryReservation])
+                        .apply(([cpu, memory, memoryReservation]) => ({
+                            cpu,
+                            memory,
+                            memoryReservation,
+                        })),
+                ),
+            ),
+        )
+        .apply((defs) => calculateFargateMemoryAndCPU(defs));
 
     if (args.cpu === undefined) {
         args.cpu = requiredMemoryAndCPU.cpu;

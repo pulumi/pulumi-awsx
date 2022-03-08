@@ -55,14 +55,17 @@ function fargateConfigsByPriceAscending() {
     return allConfigs;
 }
 
+type FargateContainerMemoryAndCpu = {
+    cpu?: number;
+    memory?: number;
+    memoryReservation?: number;
+};
+
 export function calculateFargateMemoryAndCPU(
-    containers: Pick<
-        aws.ecs.ContainerDefinition,
-        "cpu" | "memory" | "memoryReservation"
-    >[],
+    containers: FargateContainerMemoryAndCpu[],
 ) {
     // First, determine how much VCPU/GB that the user is asking for in their containers.
-    let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory();
+    let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory(containers);
 
     // Max CPU that can be requested is only 4.  Don't exceed that.  No need to worry about a
     // min as we're finding the first config that provides *at least* this amount.
@@ -93,30 +96,31 @@ export function calculateFargateMemoryAndCPU(
     return { memory: `${config.memGB * 1024}`, cpu: `${config.vcpu * 1024}` };
 
     // local functions.
-    function getRequestedVCPUandMemory() {
-        // Sum the requested memory and CPU for each container in the task.
-        //
-        // Memory is in MB, and CPU values are in CPU shares.
-        let minTaskMemoryMB = 0;
-        let minTaskCPUUnits = 0;
-        for (const containerDef of containers) {
-            if (containerDef.memoryReservation) {
-                minTaskMemoryMB += containerDef.memoryReservation;
-            } else if (containerDef.memory) {
-                minTaskMemoryMB += containerDef.memory;
-            }
+}
 
-            if (containerDef.cpu) {
-                minTaskCPUUnits += containerDef.cpu;
-            }
+function getRequestedVCPUandMemory(containers: FargateContainerMemoryAndCpu[]) {
+    // Sum the requested memory and CPU for each container in the task.
+    //
+    // Memory is in MB, and CPU values are in CPU shares.
+    let minTaskMemoryMB = 0;
+    let minTaskCPUUnits = 0;
+    for (const containerDef of containers) {
+        if (containerDef.memoryReservation) {
+            minTaskMemoryMB += containerDef.memoryReservation;
+        } else if (containerDef.memory) {
+            minTaskMemoryMB += containerDef.memory;
         }
 
-        // Convert docker cpu units values into vcpu values.  i.e. 256->.25, 4096->4.
-        const requestedVCPU = minTaskCPUUnits / 1024;
-
-        // Convert memory into GB values.  i.e. 2048MB -> 2GB.
-        const requestedGB = minTaskMemoryMB / 1024;
-
-        return { requestedVCPU, requestedGB };
+        if (containerDef.cpu) {
+            minTaskCPUUnits += containerDef.cpu;
+        }
     }
+
+    // Convert docker cpu units values into vcpu values.  i.e. 256->.25, 4096->4.
+    const requestedVCPU = minTaskCPUUnits / 1024;
+
+    // Convert memory into GB values.  i.e. 2048MB -> 2GB.
+    const requestedGB = minTaskMemoryMB / 1024;
+
+    return { requestedVCPU, requestedGB };
 }

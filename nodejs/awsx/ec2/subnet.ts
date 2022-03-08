@@ -230,5 +230,5 @@ export interface SubnetArgs {
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-const test1: string = utils.checkCompat<SubnetArgsShape, SubnetArgs>();
+// const test1: string = utils.checkCompat<SubnetArgsShape, SubnetArgs>();
 const test2: string = utils.checkCompat<RouteArgsShape, RouteArgs>();
