@@ -98,8 +98,7 @@ func TestAccMetrics(t *testing.T) {
 func TestAccVpcIgnoreSubnetChanges(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:       path.Join(getCwd(t), "./vpcIgnoreSubnetChanges"),
-			StackName: addRandomSuffix("vpcIgnoreSubnetChanges"),
+			Dir: path.Join(getCwd(t), "./vpcIgnoreSubnetChanges"),
 			EditDirs: []integration.EditDir{
 				{
 					Dir:             "step2",
@@ -115,8 +114,7 @@ func TestAccVpcIgnoreSubnetChanges(t *testing.T) {
 func TestAccVpc(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:       path.Join(getCwd(t), "./vpc"),
-			StackName: addRandomSuffix("vpc"),
+			Dir: path.Join(getCwd(t), "./vpc"),
 		})
 
 	integration.ProgramTest(t, &test)
@@ -128,7 +126,6 @@ func TestAccNlb_fargateShort(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			Dir:                    path.Join(getCwd(t), "./nlb/fargateShort"),
-			StackName:              addRandomSuffix("fargate"),
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
 			EditDirs: []integration.EditDir{
 				{
@@ -148,7 +145,6 @@ func TestAccNlb_fargateShortInlineListener(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			Dir:                    path.Join(getCwd(t), "./nlb/fargateShortInlineListener"),
-			StackName:              addRandomSuffix("fargate"),
 			ExtraRuntimeValidation: containersRuntimeValidator(envRegion, true /*isFargate*/, true /*short*/),
 		})
 
@@ -158,8 +154,7 @@ func TestAccNlb_fargateShortInlineListener(t *testing.T) {
 func TestAccAlb_ec2(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:       path.Join(getCwd(t), "./alb/ec2"),
-			StackName: addRandomSuffix("ec2"),
+			Dir: path.Join(getCwd(t), "./alb/ec2"),
 		})
 
 	integration.ProgramTest(t, &test)
@@ -274,8 +269,7 @@ func TestAccAlb_fargate(t *testing.T) {
 	skipIfShort(t)
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:       path.Join(getCwd(t), "./alb/fargate"),
-			StackName: addRandomSuffix("fargate"),
+			Dir: path.Join(getCwd(t), "./alb/fargate"),
 			EditDirs: []integration.EditDir{
 				{
 					Dir:             "step2",
@@ -292,8 +286,7 @@ func TestAccAlb_fargateInlineListener(t *testing.T) {
 	skipIfShort(t)
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:       path.Join(getCwd(t), "./alb/fargateInlineListener"),
-			StackName: addRandomSuffix("fargate"),
+			Dir: path.Join(getCwd(t), "./alb/fargateInlineListener"),
 		})
 
 	integration.ProgramTest(t, &test)
@@ -303,8 +296,7 @@ func TestAccAlb_ec2Instance(t *testing.T) {
 	skipIfShort(t)
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:       path.Join(getCwd(t), "./alb/ec2Instance"),
-			StackName: addRandomSuffix("ec2Instance"),
+			Dir: path.Join(getCwd(t), "./alb/ec2Instance"),
 		})
 
 	integration.ProgramTest(t, &test)
@@ -314,8 +306,7 @@ func TestAccAlb_lambdaTarget(t *testing.T) {
 	skipIfShort(t)
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:       path.Join(getCwd(t), "./alb/lambdaTarget"),
-			StackName: addRandomSuffix("lambdaTarget"),
+			Dir: path.Join(getCwd(t), "./alb/lambdaTarget"),
 		})
 
 	integration.ProgramTest(t, &test)
@@ -327,8 +318,7 @@ func TestAccNlb_fargate(t *testing.T) {
 	envRegion := getEnvRegion(t)
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			Dir:       path.Join(getCwd(t), "./nlb/fargate"),
-			StackName: addRandomSuffix("fargate"),
+			Dir: path.Join(getCwd(t), "./nlb/fargate"),
 			Config: map[string]string{
 				"aws:region":               "INVALID_REGION",
 				"aws:envRegion":            envRegion,
