@@ -22,12 +22,12 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
+	"github.com/pulumi/pulumi-awsx/provider/pkg/gen"
 	dotnetgen "github.com/pulumi/pulumi/pkg/v3/codegen/dotnet"
 	gogen "github.com/pulumi/pulumi/pkg/v3/codegen/go"
 	nodegen "github.com/pulumi/pulumi/pkg/v3/codegen/nodejs"
 	pygen "github.com/pulumi/pulumi/pkg/v3/codegen/python"
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
-	"github.com/pulumi/pulumi/sdk/v3/go/common/util/contract"
 )
 
 const Tool = "pulumi-gen-awsx"
@@ -76,17 +76,11 @@ func main() {
 	case Nodejs:
 		genNodejs(readSchema(schemaFile, version), outdir)
 	case Schema:
-		pkgSpec := generateSchema()
+		pkgSpec := gen.GenerateSchema()
 		mustWritePulumiSchema(pkgSpec, outdir)
 	default:
 		panic(fmt.Sprintf("Unrecognized language %q", language))
 	}
-}
-
-func rawMessage(v interface{}) schema.RawMessage {
-	bytes, err := json.Marshal(v)
-	contract.Assert(err == nil)
-	return bytes
 }
 
 func readSchema(schemaPath string, version string) *schema.Package {

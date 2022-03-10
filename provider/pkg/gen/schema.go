@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package gen
 
 import (
 	"encoding/json"
@@ -23,6 +23,7 @@ import (
 	"strings"
 
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
+	"github.com/pulumi/pulumi/sdk/v3/go/common/util/contract"
 )
 
 const (
@@ -35,7 +36,7 @@ func awsRef(ref string) string {
 }
 
 // nolint: lll
-func generateSchema() schema.PackageSpec {
+func GenerateSchema() schema.PackageSpec {
 	awsSpec := getAwsSpec()
 	awsNativeSpec := getAwsNativeSpec()
 
@@ -351,7 +352,7 @@ func generateSchema() schema.PackageSpec {
 		},
 	}
 
-	return extendSchemas(packageSpec, generateEcs(awsSpec, awsNativeSpec))
+	return extendSchemas(packageSpec, generateEcsx(awsSpec, awsNativeSpec))
 }
 
 func getAwsSpec() schema.PackageSpec {
@@ -515,4 +516,10 @@ func extendSchemas(spec schema.PackageSpec, extensions ...schema.PackageSpec) sc
 	}
 
 	return spec
+}
+
+func rawMessage(v interface{}) schema.RawMessage {
+	bytes, err := json.Marshal(v)
+	contract.Assert(err == nil)
+	return bytes
 }

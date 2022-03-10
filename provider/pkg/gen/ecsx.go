@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package main
+package gen
 
 import (
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
-func generateEcs(awsSpec, awsNativeSpec schema.PackageSpec) schema.PackageSpec {
+func generateEcsx(awsSpec, awsNativeSpec schema.PackageSpec) schema.PackageSpec {
 	fargateTaskDefinitionResource := fargateTaskDefinition(awsSpec)
 	packageSpec := schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
