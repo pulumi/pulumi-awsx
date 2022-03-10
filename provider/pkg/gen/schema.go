@@ -448,6 +448,7 @@ func roleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
+// Perform a simple string replacement on Refs in all sub-specs
 func renameComplexRefs(spec schema.ComplexTypeSpec, old, new string) schema.ComplexTypeSpec {
 	spec.Properties = renamePropertiesRefs(spec.Properties, old, new)
 	return spec

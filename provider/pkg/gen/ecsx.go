@@ -211,6 +211,10 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	}
 }
 
+// Do a deep copy of the ContainerDefinition types from AWS-native to avoid re-defining by hand
+// Manually list all dependencies to also copy. If new dependencies are added the SDK builds will fail
+// indicating that we need to add them to be copied here. We're not just referencing from aws-native
+// as that would require adding a new package dependency just for the purpose of accessing some interfaces.
 func containerDefinitionTypes(awsNativeSpec schema.PackageSpec) map[string]schema.ComplexTypeSpec {
 	names := []string{
 		"TaskDefinitionContainerDefinition",
