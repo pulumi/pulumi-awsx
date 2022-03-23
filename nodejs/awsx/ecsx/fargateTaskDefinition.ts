@@ -113,7 +113,12 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
         args: FargateTaskDefinitionArgs,
         opts: pulumi.ComponentResourceOptions = {},
     ) {
-        super("awsx:x:ecs:FargateTaskDefinition", name, {}, opts);
+        super(
+            "awsx:ecsx:FargateTaskDefinition",
+            name,
+            { aliases: [{ type: "awsx:x:ecs:FargateTaskDefinition" }] },
+            opts,
+        );
         this.__isFargateTaskDefinition = true;
 
         const { container } = args;

@@ -60,7 +60,12 @@ export class FargateService extends pulumi.ComponentResource {
         args: FargateServiceArgs,
         opts: pulumi.ComponentResourceOptions = {},
     ) {
-        super("awsx:x:ecs:FargateService", name, {}, opts);
+        super(
+            "awsx:ecsx:FargateService",
+            name,
+            { aliases: [{ type: "awsx:x:ecs:FargateService" }] },
+            opts,
+        );
 
         if (
             args.taskDefinition !== undefined &&
