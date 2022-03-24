@@ -188,6 +188,7 @@ export interface RouteArgs {
 
 type SubnetArgsShape = utils.Overwrite<aws.ec2.SubnetArgs, {
     vpcId?: never;
+    cidrBlock: pulumi.Input<string>;
 }>;
 
 export interface SubnetArgs {

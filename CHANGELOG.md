@@ -2,6 +2,12 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
+(None)
+
+## 0.40.0 (2022-03-24)
+* Compatibility with pulumi-aws v5.0.0
+
+## 0.33.0 (2021-02-02)
 * Introduce `requestedAvailabilityZone` on `ec2.vps.VpcArgs` that takes `number | "all" | string[]`, to allow specific zones for creating a VPC.
 * Extend the `volumeSize` of the default root block device in ECS
   autoscaling launch configuration to 32 GB to accomodate the latest
