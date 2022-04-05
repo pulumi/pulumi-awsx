@@ -12,6 +12,8 @@
     "repository": "https://github.com/pulumi/pulumi-awsx",
     "scripts": {
         "postinstall": "install-peers",
+        "gen-scripts": "curl https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json | json2ts -o scripts/pulumi-schema.d.ts --unreachableDefinitions --ignoreMinAndMaxItems",
+        "gen-types": "ts-node scripts/generate-provider-types.ts",
         "format": "prettier --write .",
         "lint": "tslint -c ../tslint.json -p tsconfig.json"
     },
@@ -29,7 +31,9 @@
         "@types/mime": "^2.0.0",
         "@types/node": "^10.0.0",
         "install-peers-cli": "^2.2.0",
+        "json-schema-to-typescript": "^10.1.5",
         "prettier": "^2.5.1",
+        "ts-node": "^10.7.0",
         "tslint": "^6.1.3",
         "typedoc": "^0.13.0",
         "typescript": "^4.6.2"

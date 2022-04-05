@@ -2,6 +2,9 @@
     "compilerOptions": {
         "outDir": "bin",
         "target": "ES2017",
+        "lib": [
+            "ES2019.Array"
+        ],
         "module": "commonjs",
         "moduleResolution": "node",
         "declaration": true,
@@ -14,6 +17,7 @@
     },
     "exclude": [
         "bin",
-        "tests"
+        "tests",
+        "scripts"
     ]
 }
