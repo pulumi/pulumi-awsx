@@ -156,7 +156,7 @@ function genTypeProperties(
 function genClassProperties(
     properties?: Record<string, pulumiSchema.TypeReference>,
     required?: string[],
-) {
+): ts.PropertyDeclaration[] {
     if (properties === undefined) {
         return [];
     }
@@ -165,7 +165,10 @@ function genClassProperties(
         const type = getType(typeDefinition, "Output");
         return ts.factory.createPropertyDeclaration(
             undefined,
-            [ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+            [
+                ts.factory.createModifier(ts.SyntaxKind.PublicKeyword),
+                ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword),
+            ],
             propKey,
             requiredLookup.has(propKey)
                 ? ts.factory.createToken(ts.SyntaxKind.ExclamationToken)
