@@ -8,6 +8,7 @@ export abstract class Trail extends pulumi.ComponentResource {
     readonly arn!: pulumi.Output<string>;
     readonly homeRegion?: pulumi.Output<string>;
     readonly tagsAll?: pulumi.Output<Record<string, string>>;
+    constructor(name: string, args: Record<string, any>, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:cloudtrail:Trail", name, {}, opts); }
 }
 export interface TrailArgs {
     readonly advancedEventSelectors?: pulumi.Input<pulumi.Input<aws.types.input.cloudtrail.TrailAdvancedEventSelector>[]>;
@@ -31,6 +32,7 @@ export interface TrailArgs {
 export abstract class FargateService extends pulumi.ComponentResource {
     readonly service!: pulumi.Output<aws.ecs.Service>;
     readonly taskDefinition?: pulumi.Output<aws.ecs.TaskDefinition>;
+    constructor(name: string, args: Record<string, any>, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecsx:FargateService", name, {}, opts); }
 }
 export interface FargateServiceArgs {
     readonly capacityProviderStrategies?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceCapacityProviderStrategy>[]>;
@@ -65,6 +67,7 @@ export abstract class FargateTaskDefinition extends pulumi.ComponentResource {
     readonly logGroup?: pulumi.Output<aws.cloudwatch.LogGroup>;
     readonly taskDefinition!: pulumi.Output<aws.ecs.TaskDefinition>;
     readonly taskRole?: pulumi.Output<aws.iam.Role>;
+    constructor(name: string, args: Record<string, any>, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecsx:FargateTaskDefinition", name, {}, opts); }
 }
 export interface FargateTaskDefinitionArgs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;
