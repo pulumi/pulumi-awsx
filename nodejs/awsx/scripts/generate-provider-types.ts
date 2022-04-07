@@ -132,6 +132,7 @@ function genTypeProperties(
     properties: Record<string, pulumiSchema.TypeReference>,
     required: string[],
     direction: Direction,
+    plain?: boolean,
 ): ts.TypeElement[] {
     if (properties === undefined) {
         return [];
@@ -139,7 +140,7 @@ function genTypeProperties(
     const requiredLookup = new Set(required);
     return Object.entries(properties).map(
         ([propKey, typeDefinition]): ts.TypeElement => {
-            const type = getType(typeDefinition, direction);
+            const type = getType(typeDefinition, direction, plain);
 
             return ts.factory.createPropertySignature(
                 [ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
@@ -162,7 +163,7 @@ function genClassProperties(
     }
     const requiredLookup = new Set(required);
     return Object.entries(properties).map(([propKey, typeDefinition]) => {
-        const type = getType(typeDefinition, "Output");
+        const type = getPlainType(typeDefinition, "Output");
         return ts.factory.createPropertyDeclaration(
             undefined,
             [
@@ -171,10 +172,34 @@ function genClassProperties(
             ],
             propKey,
             requiredLookup.has(propKey)
-                ? ts.factory.createToken(ts.SyntaxKind.ExclamationToken)
+                ? undefined
                 : ts.factory.createToken(ts.SyntaxKind.QuestionToken),
             type,
             undefined,
+        );
+    });
+}
+
+function genMemberAssignments(
+    properties?: Record<string, pulumiSchema.TypeReference>,
+): ts.Statement[] {
+    if (properties === undefined) {
+        return [];
+    }
+
+    return Object.entries(properties).map(([propKey, typeDefinition]) => {
+        return ts.factory.createExpressionStatement(
+            ts.factory.createBinaryExpression(
+                ts.factory.createPropertyAccessExpression(
+                    ts.factory.createThis(),
+                    ts.factory.createIdentifier(propKey),
+                ),
+                ts.factory.createToken(ts.SyntaxKind.EqualsToken),
+                ts.factory.createPropertyAccessExpression(
+                    ts.factory.createIdentifier("args"),
+                    ts.factory.createIdentifier(propKey),
+                ),
+            ),
         );
     });
 }
@@ -198,6 +223,26 @@ const genResourceArgs = (
     );
 
     return inputs;
+};
+
+const genResourceAbstractTypeArgs = (
+    typeName: string,
+    resource: pulumiSchema.ObjectTypeDefinition,
+) => {
+    const inputProperties = genTypeProperties(
+        resource.properties as any,
+        resource.required as any,
+        "Output",
+        true,
+    );
+    return ts.factory.createInterfaceDeclaration(
+        undefined,
+        undefined,
+        typeName + "Outputs",
+        undefined,
+        undefined,
+        inputProperties,
+    );
 };
 
 const genResourceAbstractType = (
@@ -236,7 +281,7 @@ const genResourceAbstractType = (
                 undefined,
                 "args",
                 undefined,
-                ts.factory.createTypeReferenceNode("pulumi.Inputs"),
+                ts.factory.createTypeReferenceNode(typeName + "Outputs"),
             ),
             ts.factory.createParameterDeclaration(
                 undefined,
@@ -250,20 +295,24 @@ const genResourceAbstractType = (
                 ts.factory.createObjectLiteralExpression(undefined),
             ),
         ],
-        ts.factory.createBlock([
-            ts.factory.createExpressionStatement(
-                ts.factory.createCallExpression(
-                    ts.factory.createSuper(),
-                    undefined,
-                    [
-                        ts.factory.createStringLiteral(typeToken),
-                        ts.factory.createIdentifier("name"),
-                        ts.factory.createObjectLiteralExpression([]),
-                        ts.factory.createIdentifier("opts"),
-                    ],
+        ts.factory.createBlock(
+            [
+                ts.factory.createExpressionStatement(
+                    ts.factory.createCallExpression(
+                        ts.factory.createSuper(),
+                        undefined,
+                        [
+                            ts.factory.createStringLiteral(typeToken),
+                            ts.factory.createIdentifier("name"),
+                            ts.factory.createObjectLiteralExpression([]),
+                            ts.factory.createIdentifier("opts"),
+                        ],
+                    ),
                 ),
-            ),
-        ]),
+                ...genMemberAssignments(resource.properties as any),
+            ],
+            true,
+        ),
     );
     const resourceType = ts.factory.createClassDeclaration(
         undefined,
@@ -333,6 +382,7 @@ function genResources(
     return Object.entries(resources ?? {}).flatMap(([typeToken, resource]) => {
         const typeName = getTypeName(typeToken);
         return [
+            genResourceAbstractTypeArgs(typeName, resource),
             genResourceAbstractType(typeToken, typeName, resource),
             genResourceArgs(typeName, resource),
         ];

@@ -67,7 +67,8 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties["taskDefinitionArgs"] = schema.PropertySpec{
 		Description: "The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.",
 		TypeSpec: schema.TypeSpec{
-			Ref: "#/types/awsx:ecsx:FargateServiceTaskDefinition",
+			Ref:   "#/types/awsx:ecsx:FargateServiceTaskDefinition",
+			Plain: true,
 		},
 	}
 

@@ -4,11 +4,21 @@
  * and run "pulumi-provider-scripts gen-provider-types" to regenerate this file. */
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+interface TrailOutputs {
+    readonly arn: string;
+    readonly homeRegion?: string;
+    readonly tagsAll?: Record<string, string>;
+}
 export abstract class Trail extends pulumi.ComponentResource {
-    public readonly arn!: pulumi.Output<string>;
-    public readonly homeRegion?: pulumi.Output<string>;
-    public readonly tagsAll?: pulumi.Output<Record<string, string>>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:cloudtrail:Trail", name, {}, opts); }
+    public readonly arn: string;
+    public readonly homeRegion?: string;
+    public readonly tagsAll?: Record<string, string>;
+    constructor(name: string, args: TrailOutputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:cloudtrail:Trail", name, {}, opts);
+        this.arn = args.arn;
+        this.homeRegion = args.homeRegion;
+        this.tagsAll = args.tagsAll;
+    }
 }
 export interface TrailArgs {
     readonly advancedEventSelectors?: pulumi.Input<pulumi.Input<aws.types.input.cloudtrail.TrailAdvancedEventSelector>[]>;
@@ -29,10 +39,18 @@ export interface TrailArgs {
     readonly snsTopicName?: pulumi.Input<string>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
+interface FargateServiceOutputs {
+    readonly service: aws.ecs.Service;
+    readonly taskDefinition?: aws.ecs.TaskDefinition;
+}
 export abstract class FargateService extends pulumi.ComponentResource {
-    public readonly service!: pulumi.Output<aws.ecs.Service>;
-    public readonly taskDefinition?: pulumi.Output<aws.ecs.TaskDefinition>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecsx:FargateService", name, {}, opts); }
+    public readonly service: aws.ecs.Service;
+    public readonly taskDefinition?: aws.ecs.TaskDefinition;
+    constructor(name: string, args: FargateServiceOutputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:ecsx:FargateService", name, {}, opts);
+        this.service = args.service;
+        this.taskDefinition = args.taskDefinition;
+    }
 }
 export interface FargateServiceArgs {
     readonly capacityProviderStrategies?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceCapacityProviderStrategy>[]>;
@@ -59,15 +77,29 @@ export interface FargateServiceArgs {
     readonly serviceRegistries?: pulumi.Input<aws.types.input.ecs.ServiceServiceRegistries>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskDefinition?: pulumi.Input<string>;
-    readonly taskDefinitionArgs?: pulumi.Input<FargateServiceTaskDefinitionInputs>;
+    readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
+}
+interface FargateTaskDefinitionOutputs {
+    readonly executionRole?: aws.iam.Role;
+    readonly loadBalancers: aws.types.output.ecs.ServiceLoadBalancer[];
+    readonly logGroup?: aws.cloudwatch.LogGroup;
+    readonly taskDefinition: aws.ecs.TaskDefinition;
+    readonly taskRole?: aws.iam.Role;
 }
 export abstract class FargateTaskDefinition extends pulumi.ComponentResource {
-    public readonly executionRole?: pulumi.Output<aws.iam.Role>;
-    public readonly loadBalancers!: pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]>;
-    public readonly logGroup?: pulumi.Output<aws.cloudwatch.LogGroup>;
-    public readonly taskDefinition!: pulumi.Output<aws.ecs.TaskDefinition>;
-    public readonly taskRole?: pulumi.Output<aws.iam.Role>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecsx:FargateTaskDefinition", name, {}, opts); }
+    public readonly executionRole?: aws.iam.Role;
+    public readonly loadBalancers: aws.types.output.ecs.ServiceLoadBalancer[];
+    public readonly logGroup?: aws.cloudwatch.LogGroup;
+    public readonly taskDefinition: aws.ecs.TaskDefinition;
+    public readonly taskRole?: aws.iam.Role;
+    constructor(name: string, args: FargateTaskDefinitionOutputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:ecsx:FargateTaskDefinition", name, {}, opts);
+        this.executionRole = args.executionRole;
+        this.loadBalancers = args.loadBalancers;
+        this.logGroup = args.logGroup;
+        this.taskDefinition = args.taskDefinition;
+        this.taskRole = args.taskRole;
+    }
 }
 export interface FargateTaskDefinitionArgs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;

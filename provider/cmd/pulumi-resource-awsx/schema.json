@@ -1048,6 +1048,7 @@
                 },
                 "taskDefinitionArgs": {
                     "$ref": "#/types/awsx:ecsx:FargateServiceTaskDefinition",
+                    "plain": true,
                     "description": "The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided."
                 }
             },
