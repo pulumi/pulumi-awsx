@@ -269,7 +269,7 @@ func GenerateSchema() schema.PackageSpec {
 								Type: "string",
 							},
 						},
-						"existing": {
+						"region": {
 							Description: "Region of the log group. If not specified, the provider region will be used.",
 							TypeSpec: schema.TypeSpec{
 								Type: "string",
@@ -296,7 +296,8 @@ func GenerateSchema() schema.PackageSpec {
 						"protect": {
 							Description: "When set to true, protect ensures this resource cannot be deleted.",
 							TypeSpec: schema.TypeSpec{
-								Type: "boolean",
+								Type:  "boolean",
+								Plain: true,
 							},
 						},
 						"ignoreChanges": {
@@ -304,14 +305,17 @@ func GenerateSchema() schema.PackageSpec {
 							TypeSpec: schema.TypeSpec{
 								Type: "array",
 								Items: &schema.TypeSpec{
-									Type: "string",
+									Type:  "string",
+									Plain: true,
 								},
+								Plain: true,
 							},
 						},
 						"import": {
 							Description: "When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options.",
 							TypeSpec: schema.TypeSpec{
-								Type: "string",
+								Type:  "string",
+								Plain: true,
 							},
 						},
 						"replaceOnChanges": {
@@ -319,8 +323,10 @@ func GenerateSchema() schema.PackageSpec {
 							TypeSpec: schema.TypeSpec{
 								Type: "array",
 								Items: &schema.TypeSpec{
-									Type: "string",
+									Type:  "string",
+									Plain: true,
 								},
+								Plain: true,
 							},
 						},
 					},
@@ -434,8 +440,10 @@ func roleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 		TypeSpec: schema.TypeSpec{
 			Type: "array",
 			Items: &schema.TypeSpec{
-				Type: "string",
+				Type:  "string",
+				Plain: true,
 			},
+			Plain: true,
 		},
 	}
 

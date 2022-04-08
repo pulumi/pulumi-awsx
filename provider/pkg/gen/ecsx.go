@@ -122,7 +122,8 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		TypeSpec: schema.TypeSpec{
 			Type: "object",
 			AdditionalProperties: &schema.TypeSpec{
-				Ref: "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+				Ref:   "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+				Plain: true,
 			},
 			Plain: true,
 		},

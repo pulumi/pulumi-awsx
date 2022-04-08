@@ -162,7 +162,10 @@ function genClassProperties(
     }
     const requiredLookup = new Set(required);
     return Object.entries(properties).map(([propKey, typeDefinition]) => {
-        const type = getType(typeDefinition, "Output", true);
+        const type = ts.factory.createUnionTypeNode([
+            getType(typeDefinition, "Output", true),
+            getType(typeDefinition, "Output", false),
+        ]);
         return ts.factory.createPropertyDeclaration(
             undefined,
             [ts.factory.createModifier(ts.SyntaxKind.PublicKeyword)],

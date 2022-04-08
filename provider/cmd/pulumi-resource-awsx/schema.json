@@ -65,13 +65,13 @@
         "awsx:cloudwatch:ExistingLogGroup": {
             "description": "Reference to an existing log group.",
             "properties": {
-                "existing": {
-                    "type": "string",
-                    "description": "Region of the log group. If not specified, the provider region will be used."
-                },
                 "name": {
                     "type": "string",
                     "description": "Name of the log group."
+                },
+                "region": {
+                    "type": "string",
+                    "description": "Region of the log group. If not specified, the provider region will be used."
                 }
             },
             "type": "object",
@@ -119,7 +119,8 @@
                 "containers": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition"
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                        "plain": true
                     },
                     "plain": true,
                     "description": "All the containers to make a TaskDefinition from.  Useful when creating a Service that will\ncontain many containers within.\n\nEither [container] or [containers] must be provided."
@@ -769,8 +770,10 @@
                 "policyArns": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "plain": true
                     },
+                    "plain": true,
                     "description": "ARNs of the policies to attach to the created role."
                 },
                 "tags": {
@@ -789,23 +792,29 @@
                 "ignoreChanges": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "plain": true
                     },
+                    "plain": true,
                     "description": "Ignore changes to any of the specified properties."
                 },
                 "import": {
                     "type": "string",
+                    "plain": true,
                     "description": "When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options."
                 },
                 "protect": {
                     "type": "boolean",
+                    "plain": true,
                     "description": "When set to true, protect ensures this resource cannot be deleted."
                 },
                 "replaceOnChanges": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "plain": true
                     },
+                    "plain": true,
                     "description": "Changes to any of these property paths will force a replacement.  If this list includes `\"*\"`, changes to any properties will force a replacement.  Initialization errors from previous deployments will require replacement instead of update only if `\"*\"` is passed."
                 }
             },
@@ -1097,7 +1106,8 @@
                 "containers": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition"
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                        "plain": true
                     },
                     "plain": true,
                     "description": "All the containers to make a TaskDefinition from.  Useful when creating a Service that will\ncontain many containers within.\n\nEither [container] or [containers] must be provided."

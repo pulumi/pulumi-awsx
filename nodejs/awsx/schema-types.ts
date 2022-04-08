@@ -5,9 +5,9 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 export abstract class Trail extends pulumi.ComponentResource {
-    public arn!: string;
-    public homeRegion?: string;
-    public tagsAll?: Record<string, string>;
+    public arn!: string | pulumi.Output<string>;
+    public homeRegion?: string | pulumi.Output<string>;
+    public tagsAll?: Record<string, string> | pulumi.Output<Record<string, string>>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:cloudtrail:Trail", name, {}, opts); }
 }
 export interface TrailArgs {
@@ -30,8 +30,8 @@ export interface TrailArgs {
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class FargateService extends pulumi.ComponentResource {
-    public service!: aws.ecs.Service;
-    public taskDefinition?: aws.ecs.TaskDefinition;
+    public service!: aws.ecs.Service | pulumi.Output<aws.ecs.Service>;
+    public taskDefinition?: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecsx:FargateService", name, {}, opts); }
 }
 export interface FargateServiceArgs {
@@ -62,16 +62,16 @@ export interface FargateServiceArgs {
     readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
 }
 export abstract class FargateTaskDefinition extends pulumi.ComponentResource {
-    public executionRole?: aws.iam.Role;
-    public loadBalancers!: aws.types.output.ecs.ServiceLoadBalancer[];
-    public logGroup?: aws.cloudwatch.LogGroup;
-    public taskDefinition!: aws.ecs.TaskDefinition;
-    public taskRole?: aws.iam.Role;
+    public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
+    public loadBalancers!: aws.types.output.ecs.ServiceLoadBalancer[] | pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]>;
+    public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
+    public taskDefinition!: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
+    public taskRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecsx:FargateTaskDefinition", name, {}, opts); }
 }
 export interface FargateTaskDefinitionArgs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;
-    readonly containers?: Record<string, pulumi.Input<TaskDefinitionContainerDefinitionInputs>>;
+    readonly containers?: Record<string, TaskDefinitionContainerDefinitionInputs>;
     readonly cpu?: pulumi.Input<string>;
     readonly ephemeralStorage?: pulumi.Input<aws.types.input.ecs.TaskDefinitionEphemeralStorage>;
     readonly executionRole?: DefaultRoleWithPolicyInputs;
@@ -116,12 +116,12 @@ export interface DefaultLogGroupOutputs {
     readonly skip?: boolean;
 }
 export interface ExistingLogGroupInputs {
-    readonly existing?: pulumi.Input<string>;
     readonly name: pulumi.Input<string>;
+    readonly region?: pulumi.Input<string>;
 }
 export interface ExistingLogGroupOutputs {
-    readonly existing?: pulumi.Output<string>;
     readonly name: pulumi.Output<string>;
+    readonly region?: pulumi.Output<string>;
 }
 export interface LogGroupInputs {
     readonly kmsKeyId?: pulumi.Input<string>;
@@ -139,7 +139,7 @@ export interface LogGroupOutputs {
 }
 export interface FargateServiceTaskDefinitionInputs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;
-    readonly containers?: Record<string, pulumi.Input<TaskDefinitionContainerDefinitionInputs>>;
+    readonly containers?: Record<string, TaskDefinitionContainerDefinitionInputs>;
     readonly cpu?: pulumi.Input<string>;
     readonly ephemeralStorage?: pulumi.Input<aws.types.input.ecs.TaskDefinitionEphemeralStorage>;
     readonly executionRole?: DefaultRoleWithPolicyInputs;
@@ -465,7 +465,7 @@ export interface RoleWithPolicyInputs {
     readonly namePrefix?: pulumi.Input<string>;
     readonly path?: pulumi.Input<string>;
     readonly permissionsBoundary?: pulumi.Input<string>;
-    readonly policyArns?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly policyArns?: string[];
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface RoleWithPolicyOutputs {
@@ -478,18 +478,18 @@ export interface RoleWithPolicyOutputs {
     readonly namePrefix?: pulumi.Output<string>;
     readonly path?: pulumi.Output<string>;
     readonly permissionsBoundary?: pulumi.Output<string>;
-    readonly policyArns?: pulumi.Output<string[]>;
+    readonly policyArns?: string[];
     readonly tags?: pulumi.Output<Record<string, string>>;
 }
 export interface NestedResourceOptionsInputs {
-    readonly ignoreChanges?: pulumi.Input<pulumi.Input<string>[]>;
-    readonly import?: pulumi.Input<string>;
-    readonly protect?: pulumi.Input<boolean>;
-    readonly replaceOnChanges?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly ignoreChanges?: string[];
+    readonly import?: string;
+    readonly protect?: boolean;
+    readonly replaceOnChanges?: string[];
 }
 export interface NestedResourceOptionsOutputs {
-    readonly ignoreChanges?: pulumi.Output<string[]>;
-    readonly import?: pulumi.Output<string>;
-    readonly protect?: pulumi.Output<boolean>;
-    readonly replaceOnChanges?: pulumi.Output<string[]>;
+    readonly ignoreChanges?: string[];
+    readonly import?: string;
+    readonly protect?: boolean;
+    readonly replaceOnChanges?: string[];
 }

@@ -15,8 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { ResourceOptions } from "@pulumi/pulumi";
-import { NestedResourceOptions } from "./nestedResourceOptions";
-
+import * as schema from "./schema-types";
 import * as utils from "./utils";
 
 interface RolePolicyAttachments {
@@ -26,34 +25,10 @@ interface RolePolicyAttachments {
     policyArns?: string[];
 }
 
-/** The set of arguments for constructing a Role resource and Policy attach. */
-export type RoleWithPolicyArgs = Omit<aws.iam.RoleArgs, "assumeRolePolicy"> &
-    RolePolicyAttachments;
-
-/** Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided. */
-export interface DefaultRoleWithPolicyArgs {
-    /**
-     * Skips creation of the role if set to `true`.
-     */
-    skip?: boolean;
-    /**
-     * ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
-     */
-    roleArn?: pulumi.Input<string>;
-    /**
-     * Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
-     */
-    args?: RoleWithPolicyArgs;
-    /**
-     * Resource options to use for the role. Can't be specified if `roleArn` is used.
-     */
-    opts?: NestedResourceOptions;
-}
-
 /** @internal */
 export function defaultRoleWithPolicies(
     name: string,
-    inputs: DefaultRoleWithPolicyArgs | undefined,
+    inputs: schema.DefaultRoleWithPolicyInputs | undefined,
     defaults: aws.iam.RoleArgs & RolePolicyAttachments,
     opts: ResourceOptions,
 ): {
