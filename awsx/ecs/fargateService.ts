@@ -14,9 +14,9 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as schema from "../schema-types";
 import * as utils from "../utils";
 import { FargateTaskDefinition } from "./fargateTaskDefinition";
-import * as schema from "../schema-types";
 
 /**
  * Create an ECS Service resource for Fargate with the given unique name, arguments, and options.

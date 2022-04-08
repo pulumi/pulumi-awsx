@@ -393,10 +393,10 @@ export function generateProviderTypes(args: { schama: string; out: string }) {
     );
 
     const outPath = path.resolve(args.out);
-    fs.writeFileSync(outPath, result);
+    fs.writeFileSync(outPath, "/* tslint:disable */\n" + result);
 }
 
 generateProviderTypes({
-    schama: "../../provider/cmd/pulumi-resource-awsx/schema.json",
+    schama: "../provider/cmd/pulumi-resource-awsx/schema.json",
     out: "schema-types.ts",
 });

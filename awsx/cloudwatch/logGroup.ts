@@ -15,8 +15,8 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { ResourceOptions } from "@pulumi/pulumi";
-import { getRegion, getRegionFromOpts } from "../utils";
 import * as schema from "../schema-types";
+import { getRegion, getRegionFromOpts } from "../utils";
 
 export interface LogGroupId {
     logGroupName: string;

@@ -16,9 +16,9 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { defaultLogGroup, LogGroupId } from "../cloudwatch/logGroup";
 import * as role from "../role";
+import * as schema from "../schema-types";
 import * as utils from "../utils";
 import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
-import * as schema from "../schema-types";
 
 /**
  * Create a TaskDefinition resource with the given unique name, arguments, and options.
