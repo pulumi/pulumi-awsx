@@ -398,10 +398,12 @@ export class ExpressionWidgetMetric implements WidgetMetric {
      * @param expression The math expression or search expression.
      * @param label The label to display in the graph to represent this time series.
      * @param id The id of this time series. This id can be used as part of a math expression.
+     * @param yAxis Where on the graph to display the y-axis for this metric. The default is left.
      */
     constructor(private readonly expression: pulumi.Input<string>,
                 private readonly label?: pulumi.Input<string>,
-                private readonly id?: pulumi.Input<string>) {
+                private readonly id?: pulumi.Input<string>,
+                private readonly yAxis?: "right" | "left" | undefined) {
     }
 
     /** For internal use only. */
@@ -410,6 +412,7 @@ export class ExpressionWidgetMetric implements WidgetMetric {
             expression: this.expression,
             label: this.label,
             id: this.id,
+            yAxis: this.yAxis
         }];
 
         metrics.push(json);

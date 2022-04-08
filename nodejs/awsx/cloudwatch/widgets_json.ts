@@ -75,6 +75,7 @@ export type ExpressionMetricJson = [{
     expression: pulumi.Input<string>,
     label: pulumi.Input<string | undefined>,
     id: pulumi.Input<string | undefined>,
+    yAxis: "right" | "left" | undefined,
 }];
 
 export type SingleMetricJson = pulumi.Output<(string | RenderingPropertiesJson)[]>;
