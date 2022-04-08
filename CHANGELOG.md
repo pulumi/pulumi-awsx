@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-(None)
+* Introduce `yAxis` on `cloudwatch.ExpressionWidgetMetric`, to allow the metric to also be on the right side if desired.
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0
