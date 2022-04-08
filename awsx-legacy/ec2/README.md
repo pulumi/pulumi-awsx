@@ -1,7 +1,7 @@
 
 ## Pulumi EC2 Components
 
-Pulumi's API's for simplifying working with [EC2](https://aws.amazon.com/ec2/).  The API currently primarily provides ways to define and configure a Virtual Private Cloud ([VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html)), as well as customize the [Security Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) around it.
+Pulumi's API's for simplifying workin with [EC2](https://aws.amazon.com/ec2/).  The API currently primarily provides ways to define and configure a Virtual Private Cloud ([VPC](https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html)), as well as customize the [Security Groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html) around it.
 
 ### The Default VPC
 

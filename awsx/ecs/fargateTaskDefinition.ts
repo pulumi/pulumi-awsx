@@ -38,8 +38,6 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
     public readonly loadBalancers: pulumi.Output<
         aws.types.output.ecs.ServiceLoadBalancer[]
     >;
-    // tslint:disable-next-line:variable-name
-    public readonly __isFargateTaskDefinition: boolean;
 
     constructor(
         name: string,
@@ -57,7 +55,6 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
                 ],
             },
         );
-        this.__isFargateTaskDefinition = true;
 
         const containers = normalizeContainers(args);
 
@@ -108,13 +105,6 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
                 executionRole.roleArn,
             ),
             { parent: this },
-        );
-    }
-
-    public static isInstance(obj: any): obj is FargateTaskDefinition {
-        return utils.isInstance<FargateTaskDefinition>(
-            obj,
-            "__isFargateTaskDefinition",
         );
     }
 }

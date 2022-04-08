@@ -864,4 +864,4 @@ export function isContainerImageProvider(obj: any): obj is ContainerImageProvide
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.
-// const test1: string = utils.checkCompat<OverwriteShape, Container>();
+const test1: string = utils.checkCompat<OverwriteShape, Container>();
