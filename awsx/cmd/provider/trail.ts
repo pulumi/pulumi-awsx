@@ -16,22 +16,23 @@ import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "../../cloudtrail";
 
 const trailProvider: pulumi.provider.Provider = {
-    construct: (name: string, type: string, inputs: pulumi.Inputs, options: pulumi.ComponentResourceOptions) => {
-        try {
-            const trail = new Trail(name, inputs, options);
-            return Promise.resolve({
-                urn: trail.urn,
-                state: {
-                    arn: trail.trail.arn,
-                    bucket: trail.bucket,
-                    logGroup: trail.logGroup,
-                    homeRegion: trail.trail.homeRegion,
-                    tagsAll: trail.trail.tagsAll,
-                },
-            });
-        } catch (e) {
-            return Promise.reject(e);
-        }
+    construct: async (
+        name: string,
+        type: string,
+        inputs: pulumi.Inputs,
+        options: pulumi.ComponentResourceOptions,
+    ) => {
+        const trail = new Trail(name, inputs, options);
+        return {
+            urn: trail.urn,
+            state: {
+                arn: trail.trail.arn,
+                bucket: trail.bucket,
+                logGroup: trail.logGroup,
+                homeRegion: trail.trail.homeRegion,
+                tagsAll: trail.trail.tagsAll,
+            },
+        };
     },
     version: "", // ignored
 };
