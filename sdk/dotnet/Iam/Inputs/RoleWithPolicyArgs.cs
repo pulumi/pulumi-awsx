@@ -82,14 +82,14 @@ namespace Pulumi.Awsx.Iam.Inputs
         public Input<string>? PermissionsBoundary { get; set; }
 
         [Input("policyArns")]
-        private InputList<string>? _policyArns;
+        private List<string>? _policyArns;
 
         /// <summary>
         /// ARNs of the policies to attach to the created role.
         /// </summary>
-        public InputList<string> PolicyArns
+        public List<string> PolicyArns
         {
-            get => _policyArns ?? (_policyArns = new InputList<string>());
+            get => _policyArns ?? (_policyArns = new List<string>());
             set => _policyArns = value;
         }
 

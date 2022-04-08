@@ -16,16 +16,16 @@ namespace Pulumi.Awsx.Cloudwatch.Inputs
     public sealed class ExistingLogGroupArgs : Pulumi.ResourceArgs
     {
         /// <summary>
-        /// Region of the log group. If not specified, the provider region will be used.
-        /// </summary>
-        [Input("existing")]
-        public Input<string>? Existing { get; set; }
-
-        /// <summary>
         /// Name of the log group.
         /// </summary>
         [Input("name", required: true)]
         public Input<string> Name { get; set; } = null!;
+
+        /// <summary>
+        /// Region of the log group. If not specified, the provider region will be used.
+        /// </summary>
+        [Input("region")]
+        public Input<string>? Region { get; set; }
 
         public ExistingLogGroupArgs()
         {

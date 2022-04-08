@@ -234,7 +234,7 @@ namespace Pulumi.Awsx.Ecsx
         /// The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         /// </summary>
         [Input("taskDefinitionArgs")]
-        public Input<Inputs.FargateServiceTaskDefinitionArgs>? TaskDefinitionArgs { get; set; }
+        public Inputs.FargateServiceTaskDefinitionArgs? TaskDefinitionArgs { get; set; }
 
         public FargateServiceArgs()
         {

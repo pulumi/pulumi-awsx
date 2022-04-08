@@ -15,16 +15,16 @@ __all__ = [
 @pulumi.input_type
 class NestedResourceOptionsArgs:
     def __init__(__self__, *,
-                 ignore_changes: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 import_: Optional[pulumi.Input[str]] = None,
-                 protect: Optional[pulumi.Input[bool]] = None,
-                 replace_on_changes: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None):
+                 ignore_changes: Optional[Sequence[str]] = None,
+                 import_: Optional[str] = None,
+                 protect: Optional[bool] = None,
+                 replace_on_changes: Optional[Sequence[str]] = None):
         """
         NestedResourceOptions is a bag of optional settings that control a resource's behavior.
-        :param pulumi.Input[Sequence[pulumi.Input[str]]] ignore_changes: Ignore changes to any of the specified properties.
-        :param pulumi.Input[str] import_: When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options.
-        :param pulumi.Input[bool] protect: When set to true, protect ensures this resource cannot be deleted.
-        :param pulumi.Input[Sequence[pulumi.Input[str]]] replace_on_changes: Changes to any of these property paths will force a replacement.  If this list includes `"*"`, changes to any properties will force a replacement.  Initialization errors from previous deployments will require replacement instead of update only if `"*"` is passed.
+        :param Sequence[str] ignore_changes: Ignore changes to any of the specified properties.
+        :param str import_: When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options.
+        :param bool protect: When set to true, protect ensures this resource cannot be deleted.
+        :param Sequence[str] replace_on_changes: Changes to any of these property paths will force a replacement.  If this list includes `"*"`, changes to any properties will force a replacement.  Initialization errors from previous deployments will require replacement instead of update only if `"*"` is passed.
         """
         if ignore_changes is not None:
             pulumi.set(__self__, "ignore_changes", ignore_changes)
@@ -37,50 +37,50 @@ class NestedResourceOptionsArgs:
 
     @property
     @pulumi.getter(name="ignoreChanges")
-    def ignore_changes(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+    def ignore_changes(self) -> Optional[Sequence[str]]:
         """
         Ignore changes to any of the specified properties.
         """
         return pulumi.get(self, "ignore_changes")
 
     @ignore_changes.setter
-    def ignore_changes(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+    def ignore_changes(self, value: Optional[Sequence[str]]):
         pulumi.set(self, "ignore_changes", value)
 
     @property
     @pulumi.getter(name="import")
-    def import_(self) -> Optional[pulumi.Input[str]]:
+    def import_(self) -> Optional[str]:
         """
         When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options.
         """
         return pulumi.get(self, "import_")
 
     @import_.setter
-    def import_(self, value: Optional[pulumi.Input[str]]):
+    def import_(self, value: Optional[str]):
         pulumi.set(self, "import_", value)
 
     @property
     @pulumi.getter
-    def protect(self) -> Optional[pulumi.Input[bool]]:
+    def protect(self) -> Optional[bool]:
         """
         When set to true, protect ensures this resource cannot be deleted.
         """
         return pulumi.get(self, "protect")
 
     @protect.setter
-    def protect(self, value: Optional[pulumi.Input[bool]]):
+    def protect(self, value: Optional[bool]):
         pulumi.set(self, "protect", value)
 
     @property
     @pulumi.getter(name="replaceOnChanges")
-    def replace_on_changes(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+    def replace_on_changes(self) -> Optional[Sequence[str]]:
         """
         Changes to any of these property paths will force a replacement.  If this list includes `"*"`, changes to any properties will force a replacement.  Initialization errors from previous deployments will require replacement instead of update only if `"*"` is passed.
         """
         return pulumi.get(self, "replace_on_changes")
 
     @replace_on_changes.setter
-    def replace_on_changes(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+    def replace_on_changes(self, value: Optional[Sequence[str]]):
         pulumi.set(self, "replace_on_changes", value)
 
 

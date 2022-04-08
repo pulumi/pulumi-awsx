@@ -91,15 +91,15 @@ class DefaultLogGroupArgs:
 class ExistingLogGroupArgs:
     def __init__(__self__, *,
                  name: pulumi.Input[str],
-                 existing: Optional[pulumi.Input[str]] = None):
+                 region: Optional[pulumi.Input[str]] = None):
         """
         Reference to an existing log group.
         :param pulumi.Input[str] name: Name of the log group.
-        :param pulumi.Input[str] existing: Region of the log group. If not specified, the provider region will be used.
+        :param pulumi.Input[str] region: Region of the log group. If not specified, the provider region will be used.
         """
         pulumi.set(__self__, "name", name)
-        if existing is not None:
-            pulumi.set(__self__, "existing", existing)
+        if region is not None:
+            pulumi.set(__self__, "region", region)
 
     @property
     @pulumi.getter
@@ -115,15 +115,15 @@ class ExistingLogGroupArgs:
 
     @property
     @pulumi.getter
-    def existing(self) -> Optional[pulumi.Input[str]]:
+    def region(self) -> Optional[pulumi.Input[str]]:
         """
         Region of the log group. If not specified, the provider region will be used.
         """
-        return pulumi.get(self, "existing")
+        return pulumi.get(self, "region")
 
-    @existing.setter
-    def existing(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "existing", value)
+    @region.setter
+    def region(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "region", value)
 
 
 @pulumi.input_type

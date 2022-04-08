@@ -99,7 +99,7 @@ class RoleWithPolicyArgs:
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  path: Optional[pulumi.Input[str]] = None,
                  permissions_boundary: Optional[pulumi.Input[str]] = None,
-                 policy_arns: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 policy_arns: Optional[Sequence[str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Role resource and Policy attachments.
@@ -112,7 +112,7 @@ class RoleWithPolicyArgs:
         :param pulumi.Input[str] name_prefix: Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
         :param pulumi.Input[str] path: Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
         :param pulumi.Input[str] permissions_boundary: ARN of the policy that is used to set the permissions boundary for the role.
-        :param pulumi.Input[Sequence[pulumi.Input[str]]] policy_arns: ARNs of the policies to attach to the created role.
+        :param Sequence[str] policy_arns: ARNs of the policies to attach to the created role.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         if description is not None:
@@ -248,14 +248,14 @@ class RoleWithPolicyArgs:
 
     @property
     @pulumi.getter(name="policyArns")
-    def policy_arns(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+    def policy_arns(self) -> Optional[Sequence[str]]:
         """
         ARNs of the policies to attach to the created role.
         """
         return pulumi.get(self, "policy_arns")
 
     @policy_arns.setter
-    def policy_arns(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+    def policy_arns(self, value: Optional[Sequence[str]]):
         pulumi.set(self, "policy_arns", value)
 
     @property

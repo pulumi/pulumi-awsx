@@ -40,7 +40,7 @@ __all__ = [
 class FargateServiceTaskDefinitionArgs:
     def __init__(__self__, *,
                  container: Optional['TaskDefinitionContainerDefinitionArgs'] = None,
-                 containers: Optional[Mapping[str, pulumi.Input['TaskDefinitionContainerDefinitionArgs']]] = None,
+                 containers: Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']] = None,
                  cpu: Optional[pulumi.Input[str]] = None,
                  ephemeral_storage: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] = None,
                  execution_role: Optional['_iam.DefaultRoleWithPolicyArgs'] = None,
@@ -67,7 +67,7 @@ class FargateServiceTaskDefinitionArgs:
                multiple containers, especially when creating a TaskDefinition to call [run] on.
                
                Either [container] or [containers] must be provided.
-        :param Mapping[str, pulumi.Input['TaskDefinitionContainerDefinitionArgs']] containers: All the containers to make a TaskDefinition from.  Useful when creating a Service that will
+        :param Mapping[str, 'TaskDefinitionContainerDefinitionArgs'] containers: All the containers to make a TaskDefinition from.  Useful when creating a Service that will
                contain many containers within.
                
                Either [container] or [containers] must be provided.
@@ -150,7 +150,7 @@ class FargateServiceTaskDefinitionArgs:
 
     @property
     @pulumi.getter
-    def containers(self) -> Optional[Mapping[str, pulumi.Input['TaskDefinitionContainerDefinitionArgs']]]:
+    def containers(self) -> Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']]:
         """
         All the containers to make a TaskDefinition from.  Useful when creating a Service that will
         contain many containers within.
@@ -160,7 +160,7 @@ class FargateServiceTaskDefinitionArgs:
         return pulumi.get(self, "containers")
 
     @containers.setter
-    def containers(self, value: Optional[Mapping[str, pulumi.Input['TaskDefinitionContainerDefinitionArgs']]]):
+    def containers(self, value: Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']]):
         pulumi.set(self, "containers", value)
 
     @property

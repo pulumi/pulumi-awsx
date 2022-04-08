@@ -27,7 +27,7 @@ namespace Pulumi.Awsx.Ecsx.Inputs
         public Inputs.TaskDefinitionContainerDefinitionArgs? Container { get; set; }
 
         [Input("containers")]
-        private Dictionary<string, Input<Inputs.TaskDefinitionContainerDefinitionArgs>>? _containers;
+        private Dictionary<string, Inputs.TaskDefinitionContainerDefinitionArgs>? _containers;
 
         /// <summary>
         /// All the containers to make a TaskDefinition from.  Useful when creating a Service that will
@@ -35,9 +35,9 @@ namespace Pulumi.Awsx.Ecsx.Inputs
         /// 
         /// Either [container] or [containers] must be provided.
         /// </summary>
-        public Dictionary<string, Input<Inputs.TaskDefinitionContainerDefinitionArgs>> Containers
+        public Dictionary<string, Inputs.TaskDefinitionContainerDefinitionArgs> Containers
         {
-            get => _containers ?? (_containers = new Dictionary<string, Input<Inputs.TaskDefinitionContainerDefinitionArgs>>());
+            get => _containers ?? (_containers = new Dictionary<string, Inputs.TaskDefinitionContainerDefinitionArgs>());
             set => _containers = value;
         }
 

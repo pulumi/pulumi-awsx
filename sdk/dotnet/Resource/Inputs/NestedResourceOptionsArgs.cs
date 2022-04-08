@@ -16,14 +16,14 @@ namespace Pulumi.Awsx.Resource.Inputs
     public sealed class NestedResourceOptionsArgs : Pulumi.ResourceArgs
     {
         [Input("ignoreChanges")]
-        private InputList<string>? _ignoreChanges;
+        private List<string>? _ignoreChanges;
 
         /// <summary>
         /// Ignore changes to any of the specified properties.
         /// </summary>
-        public InputList<string> IgnoreChanges
+        public List<string> IgnoreChanges
         {
-            get => _ignoreChanges ?? (_ignoreChanges = new InputList<string>());
+            get => _ignoreChanges ?? (_ignoreChanges = new List<string>());
             set => _ignoreChanges = value;
         }
 
@@ -31,23 +31,23 @@ namespace Pulumi.Awsx.Resource.Inputs
         /// When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options.
         /// </summary>
         [Input("import")]
-        public Input<string>? Import { get; set; }
+        public string? Import { get; set; }
 
         /// <summary>
         /// When set to true, protect ensures this resource cannot be deleted.
         /// </summary>
         [Input("protect")]
-        public Input<bool>? Protect { get; set; }
+        public bool? Protect { get; set; }
 
         [Input("replaceOnChanges")]
-        private InputList<string>? _replaceOnChanges;
+        private List<string>? _replaceOnChanges;
 
         /// <summary>
         /// Changes to any of these property paths will force a replacement.  If this list includes `"*"`, changes to any properties will force a replacement.  Initialization errors from previous deployments will require replacement instead of update only if `"*"` is passed.
         /// </summary>
-        public InputList<string> ReplaceOnChanges
+        public List<string> ReplaceOnChanges
         {
-            get => _replaceOnChanges ?? (_replaceOnChanges = new InputList<string>());
+            get => _replaceOnChanges ?? (_replaceOnChanges = new List<string>());
             set => _replaceOnChanges = value;
         }
 

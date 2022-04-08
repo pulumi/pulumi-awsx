@@ -145,7 +145,7 @@ type FargateServiceArgs struct {
 	// Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
 	TaskDefinition pulumi.StringPtrInput
 	// The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
-	TaskDefinitionArgs FargateServiceTaskDefinitionPtrInput
+	TaskDefinitionArgs *FargateServiceTaskDefinitionArgs
 }
 
 func (FargateServiceArgs) ElementType() reflect.Type {
