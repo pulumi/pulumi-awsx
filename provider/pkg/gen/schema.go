@@ -341,6 +341,21 @@ func GenerateSchema() schema.PackageSpec {
 				},
 				"liftSingleValueMethodReturns": true,
 			}),
+			"go": rawMessage(map[string]interface{}{
+				"generateResourceContainerTypes": true,
+				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
+				"liftSingleValueMethodReturns":   true,
+			}),
+			"nodejs": rawMessage(map[string]interface{}{
+				"dependencies": map[string]string{
+					"@pulumi/pulumi": "^3.0.0",
+					"@pulumi/aws":    "^4.23.0",
+				},
+				"devDependencies": map[string]string{
+					"@types/node": "^17.0.21",
+					"typescript":  "^4.6.2",
+				},
+			}),
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
 					"pulumi":     ">=3.0.0,<4.0.0",
@@ -349,11 +364,6 @@ func GenerateSchema() schema.PackageSpec {
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",
 				"liftSingleValueMethodReturns": true,
-			}),
-			"go": rawMessage(map[string]interface{}{
-				"generateResourceContainerTypes": true,
-				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
-				"liftSingleValueMethodReturns":   true,
 			}),
 		},
 	}

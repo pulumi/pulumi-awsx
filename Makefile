@@ -16,18 +16,28 @@ schema::
 
 provider::
 	rm -rf provider/cmd/$(PROVIDER)/bin
+	rm -rf awsx/bin
 	cd provider/cmd/$(PROVIDER) && go build -o $(WORKING_DIR)/bin/$(PROVIDER) main.go
+	cd awsx && \
+		yarn install && \
+		yarn gen-types && \
+		yarn tsc && \
+		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
+		cp ../README.md ../LICENSE bin/ && \
+		cp ../provider/cmd/pulumi-resource-awsx/schema.json bin/cmd/provider/
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
 build_nodejs::
-	rm -rf nodejs/awsx/bin/*
-	cd nodejs/awsx && \
+	rm -rf awsx-legacy/bin
+	rm -rf sdk/nodejs
+	cd awsx-legacy && yarn install && yarn tsc
+	cd provider/cmd/$(CODEGEN) && go run . nodejs ../../../sdk/nodejs ../$(PROVIDER)/schema.json $(VERSION)
+	cd sdk/nodejs && \
 		yarn install && \
 		yarn run tsc --version && \
 		yarn run tsc && \
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
-		cp ../../README.md ../../LICENSE bin/ && \
-		cp ../../provider/cmd/pulumi-resource-awsx/schema.json bin/cmd/provider/
+		cp ../../README.md ../../LICENSE bin/
 
 build_python:: PYPI_VERSION := $(shell pulumictl get version --language python)
 build_python:: schema

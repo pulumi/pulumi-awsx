@@ -1,0 +1,27 @@
+{
+    "name": "@pulumi/awsx",
+    "version": "${VERSION}",
+    "keywords": [
+        "pulumi",
+        "aws",
+        "awsx"
+    ],
+    "homepage": "https://pulumi.com",
+    "repository": "https://github.com/pulumi/pulumi-awsx",
+    "license": "Apache-2.0",
+    "scripts": {
+        "build": "tsc",
+        "install": "node scripts/install-pulumi-plugin.js resource awsx ${VERSION}"
+    },
+    "dependencies": {
+        "@pulumi/aws": "^4.23.0",
+        "@pulumi/pulumi": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^17.0.21",
+        "typescript": "^4.6.2"
+    },
+    "pulumi": {
+        "resource": true
+    }
+}
