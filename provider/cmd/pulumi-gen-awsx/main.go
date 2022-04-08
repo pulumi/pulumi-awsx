@@ -128,6 +128,7 @@ func genPython(pkg *schema.Package, outdir string) {
 }
 
 func genNodejs(pkg *schema.Package, outdir string) {
+	// TODO: Get nodejs Typescript files
 	files, err := nodegen.GeneratePackage(Tool, pkg, map[string][]byte{})
 	if err != nil {
 		panic(err)
