@@ -50,8 +50,10 @@ jobs:
         run: |
           echo "$HOME/.yarn/bin" >> $GITHUB_PATH
           echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
-      - name: Run lint
+      - name: Lint AWSX Code
         run: make lint
+      - name: Lint Legacy AWSX Code
+        run: make lint-legacy
   prerequisites:
     runs-on: ubuntu-latest
     steps:
@@ -161,11 +163,6 @@ jobs:
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Compress SDK folder
-        if: matrix.language == 'nodejs'
-        run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C ${{ matrix.language }}/awsx
-          .
-      - name: Compress Non NodeJS SDK folder
-        if: matrix.language != 'nodejs'
         run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
           .
       - name: Upload artifacts

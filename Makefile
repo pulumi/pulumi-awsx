@@ -82,8 +82,13 @@ install_go_sdk::
 install_python_sdk::
 	#Intentionall empty for CI / CD templating
 
+lint-legacy:
+	cd awsx-legacy && \
+		yarn install && \
+		yarn lint
+
 lint:
-	cd nodejs/awsx && \
+	cd awsx && \
 		yarn install && \
 		yarn lint
 
@@ -116,6 +121,6 @@ specific_test:: install_provider
 
 generate_schema:: schema
 
-dev:: lint build_nodejs istanbul_tests
+dev:: lint lint-legacy build_nodejs istanbul_tests
 
 test:: install_nodejs_sdk test_nodejs

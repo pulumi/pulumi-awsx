@@ -12,7 +12,8 @@
     "repository": "https://github.com/pulumi/pulumi-awsx",
     "scripts": {
         "install-peers": "install-peers",
-        "postinstall": "install-peers"
+        "postinstall": "install-peers",
+        "lint": "tslint -c tslint.json -p tsconfig.json"
     },
     "dependencies": {
         "@pulumi/docker": "^3.0.0",

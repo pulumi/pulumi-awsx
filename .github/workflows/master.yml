@@ -34,8 +34,10 @@ jobs:
         run: |
           echo "$HOME/.yarn/bin" >> $GITHUB_PATH
           echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
-      - name: Run lint
+      - name: Lint AWSX Code
         run: make lint
+      - name: Lint Legacy AWSX Code
+        run: make lint-legacy
   prerequisites:
     runs-on: ubuntu-latest
     steps:
