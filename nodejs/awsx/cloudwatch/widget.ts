@@ -28,7 +28,7 @@ import { WidgetJson } from "./widgets_json";
  * 3. [SingleNumberMetricWidget] can be used to make a widget that displays information about a
  *    [Metric] as a single number.
  *
- * 4. [LineGraphMetricWidget] and [StackedAreaGraphMetricWidget] can be used to display a series
+ * 4. [LineGraphMetricWidget], [StackedAreaGraphMetricWidget] and [PieGraphMetricWidget] can be used to display a series
  *    of metric values as a graph.
  */
 export interface Widget {

@@ -22,7 +22,7 @@ import { Metric } from "../../cloudwatch/metric";
 import { Widget } from "../../cloudwatch/widget";
 import { AlarmAnnotation, HorizontalAnnotation, VerticalAnnotation } from "../../cloudwatch/widgets_annotations";
 import { ColumnWidget, RowWidget } from "../../cloudwatch/widgets_flow";
-import { LineGraphMetricWidget, SingleNumberMetricWidget, StackedAreaGraphMetricWidget } from "../../cloudwatch/widgets_graph";
+import { LineGraphMetricWidget, SingleNumberMetricWidget, StackedAreaGraphMetricWidget, PieGraphMetricWidget } from "../../cloudwatch/widgets_graph";
 import { ExpressionWidgetMetric, TextWidget } from "../../cloudwatch/widgets_simple";
 
 async function bodyJson(...widgets: Widget[]) {
@@ -950,6 +950,46 @@ describe("dashboard", () => {
                 "region": "us-east-2",
                 "view": "timeSeries",
                 "stacked": true
+            }
+        }
+    ]
+}`);
+            });
+        });
+
+        describe("pie graph", () => {
+            it("single metric", async () => {
+                const json = await bodyJson(new PieGraphMetricWidget({
+                    metrics: [new Metric({
+                        namespace: "AWS/Lambda",
+                        name: "Invocations",
+                    })],
+                }));
+                assert.equal(json, `{
+    "widgets": [
+        {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [
+                        "AWS/Lambda",
+                        "Invocations",
+                        {
+                            "stat": "Average",
+                            "period": 300,
+                            "visible": true,
+                            "yAxis": "left"
+                        }
+                    ]
+                ],
+                "period": 300,
+                "region": "us-east-2",
+                "view": "pie",
+                "stacked": false
             }
         }
     ]

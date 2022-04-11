@@ -92,3 +92,16 @@ export class SingleNumberMetricWidget extends MetricWidget {
     protected computeView = (): wjson.MetricWidgetPropertiesJson["view"] => "singleValue";
     protected computeYAxis = (): wjson.MetricWidgetPropertiesJson["yAxis"] => undefined;
 }
+
+/**
+ * Displays a set of metrics as a pie graph.
+ */
+export class PieGraphMetricWidget extends MetricWidget { 
+    constructor(args: MetricWidgetArgs) {
+        super(args);
+    }
+
+    protected computedStacked = () => false; 
+    protected computeView = (): wjson.MetricWidgetPropertiesJson["view"] => "pie";
+    protected computeYAxis = (): wjson.MetricWidgetPropertiesJson["yAxis"] => undefined;
+} 

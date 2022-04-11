@@ -281,7 +281,7 @@ export interface WidgetAlarm {
 
 /**
  * Base type for widgets that display data from a set of [Metric]s.  See [LineGraphMetricWidget],
- * [StackedAreaGraphMetricWidget] and [SingleNumberMetricWidget] as concrete [Widget] instances for
+ * [StackedAreaGraphMetricWidget], [PieGraphMetricWidget] and [SingleNumberMetricWidget] as concrete [Widget] instances for
  * displaying [Metric]s.
  */
 export abstract class MetricWidget extends SimpleWidget {
