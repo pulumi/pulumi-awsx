@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-(None)
+* Introduce `PieGraphMetricWidget` on `cloudwatch`, to allow to create graphs with pie view.
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0
