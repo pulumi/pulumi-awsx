@@ -81,8 +81,7 @@ istanbul_tests::
 		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
 
 install_nodejs_sdk:: build_nodejs
-	cd $(WORKING_DIR)/awsx/bin && yarn install
-	yarn link --cwd $(WORKING_DIR)/awsx/bin
+	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
 install_dotnet_sdk:: build_dotnet
 	mkdir -p $(WORKING_DIR)/nuget
