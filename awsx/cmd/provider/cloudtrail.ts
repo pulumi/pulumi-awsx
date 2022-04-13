@@ -16,7 +16,7 @@ import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "../../cloudtrail";
 import { ProviderModule } from "./providerModule";
 
-export const trailProvider: ProviderModule = {
+export const cloudtrailProvider: ProviderModule = {
     construct: async (
         name: string,
         type: string,

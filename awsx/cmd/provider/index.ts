@@ -15,9 +15,13 @@
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
 import { ProviderModule } from "./providerModule";
-import { trailProvider } from "./trail";
+import { cloudtrailProvider } from "./cloudtrail";
+import { ecsProvider } from "./ecs";
 
-const modules: Record<string, ProviderModule> = { cloudtrail: trailProvider };
+const modules: Record<string, ProviderModule> = {
+    cloudtrail: cloudtrailProvider,
+    ecs: ecsProvider,
+};
 
 const packageName = "awsx";
 
