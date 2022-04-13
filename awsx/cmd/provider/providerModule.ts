@@ -1,5 +1,10 @@
 import * as pulumi from "@pulumi/pulumi";
 
 export type ProviderModule = {
-    construct: Required<pulumi.provider.Provider>["construct"];
+    construct: (
+        name: string,
+        type: string,
+        inputs: pulumi.Inputs,
+        options: pulumi.ComponentResourceOptions,
+    ) => pulumi.ComponentResource | undefined;
 };

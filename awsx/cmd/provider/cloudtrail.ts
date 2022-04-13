@@ -17,7 +17,7 @@ import { Trail } from "../../cloudtrail";
 import { ProviderModule } from "./providerModule";
 
 export const cloudtrailProvider: ProviderModule = {
-    construct: async (
+    construct: (
         name: string,
         type: string,
         inputs: pulumi.Inputs,
@@ -26,17 +26,7 @@ export const cloudtrailProvider: ProviderModule = {
         const [pkg, moduleName, typeName] = type.split(":");
         switch (typeName) {
             case "Trail":
-                const trail = new Trail(name, inputs, options);
-                return {
-                    urn: trail.urn,
-                    state: {
-                        bucket: trail.bucket,
-                        logGroup: trail.logGroup,
-                        trail: trail.trail,
-                    },
-                };
-            default:
-                throw new Error(`unknown resource type ${type}`);
+                return new Trail(name, inputs, options);
         }
     },
 };

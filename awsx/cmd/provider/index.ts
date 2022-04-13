@@ -17,6 +17,7 @@ import { readFileSync } from "fs";
 import { ProviderModule } from "./providerModule";
 import { cloudtrailProvider } from "./cloudtrail";
 import { ecsProvider } from "./ecs";
+import { resourceToConstructResult } from "../../utils";
 
 const modules: Record<string, ProviderModule> = {
     cloudtrail: cloudtrailProvider,
@@ -38,7 +39,11 @@ class Provider implements pulumi.provider.Provider {
         if (pkg !== packageName || module === undefined) {
             throw new Error(`unknown resource type ${type}`);
         }
-        return module.construct(name, type, inputs, options);
+        const resource = module.construct(name, type, inputs, options);
+        if (resource === undefined) {
+            throw new Error(`unknown resource type ${type}`);
+        }
+        return resourceToConstructResult(resource);
     }
 }
 

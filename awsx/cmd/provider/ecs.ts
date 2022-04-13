@@ -17,41 +17,18 @@ import { FargateService, FargateTaskDefinition } from "../../ecs";
 import { ProviderModule } from "./providerModule";
 
 export const ecsProvider: ProviderModule = {
-    construct: async (
+    construct: (
         name: string,
         type: string,
         inputs: pulumi.Inputs,
         options: pulumi.ComponentResourceOptions,
     ) => {
         const [pkg, moduleName, typeName] = type.split(":");
-        if (typeName === "FargateService") {
-            const resource = new FargateService(name, inputs as any, options);
-            return {
-                urn: resource.urn,
-                state: {
-                    service: resource.service,
-                    taskDefinition: resource.taskDefinition,
-                },
-            };
+        switch (typeName) {
+            case "FargateService":
+                return new FargateService(name, inputs as any, options);
+            case "FargateTaskDefinition":
+                return new FargateTaskDefinition(name, inputs as any, options);
         }
-        if (typeName === "FargateTaskDefinition") {
-            const resource = new FargateTaskDefinition(
-                name,
-                inputs as any,
-                options,
-            );
-            return {
-                urn: resource.urn,
-                state: {
-                    executionRole: resource.executionRole,
-                    loadBalancers: resource.loadBalancers,
-                    logGroup: resource.logGroup,
-                    taskDefinition: resource.taskDefinition,
-                    taskRole: resource.taskRole,
-                },
-            };
-        }
-
-        throw new Error(`unknown resource type ${type}`);
     },
 };
