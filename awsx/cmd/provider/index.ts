@@ -20,7 +20,10 @@ import { trailProviderFactory } from "./trail";
 class Provider implements pulumi.provider.Provider {
     // A map of types to provider factories. Calling a factory may return a new instance each
     // time or return the same provider instance.
-    private readonly typeToProviderFactoryMap: Record<string, () => pulumi.provider.Provider> = {
+    private readonly typeToProviderFactoryMap: Record<
+        string,
+        () => pulumi.provider.Provider
+    > = {
         "awsx:cloudtrail:Trail": trailProviderFactory,
     };
 
@@ -39,14 +42,12 @@ class Provider implements pulumi.provider.Provider {
         });
     }
 
-    async call(token: string, inputs: pulumi.Inputs): Promise<pulumi.provider.InvokeResult> {
-        throw new Error(`unknown method ${token}`);
-    }
-
-    construct(name: string,
-              type: string,
-              inputs: pulumi.Inputs,
-              options: pulumi.ComponentResourceOptions): Promise<pulumi.provider.ConstructResult> {
+    construct(
+        name: string,
+        type: string,
+        inputs: pulumi.Inputs,
+        options: pulumi.ComponentResourceOptions,
+    ): Promise<pulumi.provider.ConstructResult> {
         const provider = this.getProviderForType(type);
         return provider?.construct
             ? provider.construct(name, type, inputs, options)
@@ -56,7 +57,9 @@ class Provider implements pulumi.provider.Provider {
     /**
      * Returns a provider for the type or undefined if not found.
      */
-    private getProviderForType(type: string): pulumi.provider.Provider | undefined {
+    private getProviderForType(
+        type: string,
+    ): pulumi.provider.Provider | undefined {
         const factory = this.typeToProviderFactoryMap[type];
         return factory ? factory() : undefined;
     }
@@ -68,7 +71,9 @@ function unknownResourceRejectedPromise<T>(type: string): Promise<T> {
 
 /** @internal */
 export function main(args: string[]) {
-    const schema: string = readFileSync(require.resolve("./schema.json"), { encoding: "utf-8" });
+    const schema: string = readFileSync(require.resolve("./schema.json"), {
+        encoding: "utf-8",
+    });
     let version: string = require("../../package.json").version;
     // Node allows for the version to be prefixed by a "v",
     // while semver doesn't. If there is a v, strip it off.
