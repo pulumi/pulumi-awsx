@@ -345,6 +345,97 @@ function genTypes(resources: pulumiSchema.PulumiPackageMetaschema["types"]) {
     );
 }
 
+function genResourceConstructors(
+    resources: pulumiSchema.PulumiPackageMetaschema["resources"],
+) {
+    return ts.factory.createTypeAliasDeclaration(
+        undefined,
+        [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+        ts.factory.createIdentifier("ResourceConstructor"),
+        undefined,
+        ts.factory.createTypeLiteralNode(
+            Object.entries(resources ?? {}).map(([typeToken, resource]) => {
+                const typeName = getTypeName(typeToken);
+                return ts.factory.createPropertySignature(
+                    [ts.factory.createModifier(ts.SyntaxKind.ReadonlyKeyword)],
+                    ts.factory.createStringLiteral(typeToken),
+                    undefined,
+                    ts.factory.createTypeReferenceNode(
+                        ts.factory.createIdentifier("ConstructComponent"),
+                        [
+                            ts.factory.createTypeReferenceNode(
+                                ts.factory.createIdentifier(typeName),
+                                undefined,
+                            ),
+                        ],
+                    ),
+                );
+            }),
+        ),
+    );
+}
+
+function resourceConstructorType() {
+    const tType = ts.factory.createIdentifier("T");
+    const pulumiId = ts.factory.createIdentifier("pulumi");
+    const componentResourceRef = ts.factory.createTypeReferenceNode(
+        ts.factory.createQualifiedName(
+            pulumiId,
+            ts.factory.createIdentifier("ComponentResource"),
+        ),
+        undefined,
+    );
+    const param = (name: string, type: ts.TypeNode) =>
+        ts.factory.createParameterDeclaration(
+            undefined,
+            undefined,
+            undefined,
+            ts.factory.createIdentifier(name),
+            undefined,
+            type,
+        );
+    return ts.factory.createTypeAliasDeclaration(
+        undefined,
+        [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+        ts.factory.createIdentifier("ConstructComponent"),
+        [
+            ts.factory.createTypeParameterDeclaration(
+                tType,
+                componentResourceRef,
+                componentResourceRef,
+            ),
+        ],
+        ts.factory.createFunctionTypeNode(
+            undefined,
+            [
+                param(
+                    "name",
+                    ts.factory.createKeywordTypeNode(
+                        ts.SyntaxKind.StringKeyword,
+                    ),
+                ),
+                param(
+                    "inputs",
+                    ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+                ),
+                param(
+                    "options",
+                    ts.factory.createTypeReferenceNode(
+                        ts.factory.createQualifiedName(
+                            pulumiId,
+                            ts.factory.createIdentifier(
+                                "ComponentResourceOptions",
+                            ),
+                        ),
+                        undefined,
+                    ),
+                ),
+            ],
+            ts.factory.createTypeReferenceNode(tType, undefined),
+        ),
+    );
+}
+
 export function generateProviderTypes(args: { schama: string; out: string }) {
     const schemaPath = path.resolve(args.schama);
     const schemaText = fs.readFileSync(schemaPath, { encoding: "utf-8" });
@@ -362,6 +453,8 @@ export function generateProviderTypes(args: { schama: string; out: string }) {
             ),
             ts.factory.createStringLiteral("@pulumi/pulumi"),
         ),
+        resourceConstructorType(),
+        genResourceConstructors(schema.resources),
         ...Object.values(externalRefs).map((externalRef) =>
             ts.factory.createImportDeclaration(
                 undefined,
