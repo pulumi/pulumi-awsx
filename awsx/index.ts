@@ -14,10 +14,10 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
-import { resourceToConstructResult } from "../../utils";
-import { cloudtrailProvider } from "./cloudtrail";
-import { ecsProvider } from "./ecs";
-import { ProviderModule } from "./providerModule";
+import { cloudtrailProvider } from "./cmd/provider/cloudtrail";
+import { ecsProvider } from "./cmd/provider/ecs";
+import { ProviderModule } from "./cmd/provider/providerModule";
+import { resourceToConstructResult } from "./utils";
 
 const modules: Record<string, ProviderModule> = {
     cloudtrail: cloudtrailProvider,
@@ -51,7 +51,7 @@ function main(args: string[]) {
     const schema: string = readFileSync(require.resolve("./schema.json"), {
         encoding: "utf-8",
     });
-    let version: string = require("../../package.json").version;
+    let version: string = require("./package.json").version;
     // Node allows for the version to be prefixed by a "v",
     // while semver doesn't. If there is a v, strip it off.
     if (version.startsWith("v")) {

@@ -14,12 +14,12 @@
 //go:build go || all
 // +build go all
 
-package example
+package examples
 
 import (
+	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 	"path/filepath"
 	"testing"
-	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 )
 
 func TestAccTrail(t *testing.T) {
@@ -39,7 +39,9 @@ func getGoBaseOptions(t *testing.T) integration.ProgramTestOptions {
 		Config: map[string]string{
 			"aws:region": region,
 		},
-		Verbose: true,
+		Dependencies: []string{
+			"github.com/pulumi/pulumi-awsx/sdk",
+		},
 	})
 
 	return goBase
