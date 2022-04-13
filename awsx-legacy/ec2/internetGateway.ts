@@ -14,19 +14,20 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { RouteArgs, SubnetRouteProvider } from "./subnet";
+import { Vpc } from "./vpc";
 
-import * as x from "..";
 import * as utils from "../utils";
 
 export class InternetGateway
         extends pulumi.ComponentResource
-        implements x.ec2.SubnetRouteProvider {
-    public readonly vpc: x.ec2.Vpc;
+        implements SubnetRouteProvider {
+    public readonly vpc: Vpc;
     public readonly internetGateway: aws.ec2.InternetGateway;
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingInternetGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, vpc: Vpc, args: aws.ec2.InternetGatewayArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: Vpc, args: ExistingInternetGatewayArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: Vpc, args: aws.ec2.InternetGatewayArgs | ExistingInternetGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:InternetGateway", name, {}, { parent: vpc, ...opts });
 
         this.vpc = vpc;
@@ -44,7 +45,7 @@ export class InternetGateway
         this.registerOutputs();
     }
 
-    public route(name: string, opts: pulumi.ComponentResourceOptions): x.ec2.RouteArgs {
+    public route(name: string, opts: pulumi.ComponentResourceOptions): RouteArgs {
         return {
             // From above: For IPv4 traffic, specify 0.0.0.0/0 in the Destination box, and
             // select the internet gateway ID in the Target list.

@@ -16,9 +16,11 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { ContainerLoadBalancerProvider, ContainerPortMappingProvider, isContainerLoadBalancerProvider, isContainerPortMappingProvider } from "../ecs/container";
+import { ListenerRule, ListenerRuleArgs } from "./listenerRule";
+import { LoadBalancer, LoadBalancerTarget } from "./loadBalancer";
+import { TargetGroup } from "./targetGroup";
 
-import * as mod from ".";
-import * as x from "..";
 import * as utils from "../utils";
 
 export interface ListenerEndpoint {
@@ -28,11 +30,11 @@ export interface ListenerEndpoint {
 
 export abstract class Listener
         extends pulumi.ComponentResource
-        implements x.ecs.ContainerPortMappingProvider,
-                   x.ecs.ContainerLoadBalancerProvider {
+        implements ContainerPortMappingProvider,
+                   ContainerLoadBalancerProvider {
     public readonly listener: aws.lb.Listener;
-    public readonly loadBalancer: x.lb.LoadBalancer;
-    public readonly defaultTargetGroup?: x.lb.TargetGroup;
+    public readonly loadBalancer: LoadBalancer;
+    public readonly defaultTargetGroup?: TargetGroup;
 
     public readonly endpoint: pulumi.Output<ListenerEndpoint>;
 
@@ -73,7 +75,7 @@ export abstract class Listener
         this.loadBalancer = args.loadBalancer;
         this.defaultListenerAction = defaultListenerAction;
 
-        if (defaultListenerAction instanceof mod.TargetGroup) {
+        if (defaultListenerAction instanceof TargetGroup) {
             this.defaultTargetGroup = defaultListenerAction;
         }
 
@@ -92,7 +94,7 @@ export abstract class Listener
     }
 
     public containerPortMapping(name: string, parent: pulumi.Resource) {
-        if (!x.ecs.isContainerPortMappingProvider(this.defaultListenerAction)) {
+        if (!isContainerPortMappingProvider(this.defaultListenerAction)) {
             throw new Error("[Listener] was not connected to a [defaultAction] that can provide [portMapping]s");
         }
 
@@ -100,21 +102,21 @@ export abstract class Listener
     }
 
     public containerLoadBalancer(name: string, parent: pulumi.Resource) {
-        if (!x.ecs.isContainerLoadBalancerProvider(this.defaultListenerAction)) {
+        if (!isContainerLoadBalancerProvider(this.defaultListenerAction)) {
             throw new Error("[Listener] was not connected to a [defaultAction] that can provide [containerLoadBalancer]s");
         }
 
         return this.defaultListenerAction.containerLoadBalancer(name, parent);
     }
 
-    public addListenerRule(name: string, args: x.lb.ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new x.lb.ListenerRule(name, this, args, opts);
+    public addListenerRule(name: string, args: ListenerRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        return new ListenerRule(name, this, args, opts);
     }
 
     /**
      * Attaches a target to the `defaultTargetGroup` for this Listener.
      */
-    public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
+    public attachTarget(name: string, args: LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
         if (!this.defaultTargetGroup) {
             throw new pulumi.ResourceError("Listener must have a [defaultTargetGroup] in order to attach a target.", this);
         }
@@ -312,7 +314,7 @@ export function isListenerActions(obj: any): obj is ListenerActions {
 }
 
 type OverwriteShape = utils.Overwrite<aws.lb.ListenerArgs, {
-    loadBalancer: x.lb.LoadBalancer;
+    loadBalancer: LoadBalancer;
     certificateArn?: pulumi.Input<string>;
     defaultActions: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
     loadBalancerArn?: never;
@@ -329,7 +331,7 @@ export interface ListenerArgs {
      */
     listener?: aws.lb.Listener;
 
-    loadBalancer: x.lb.LoadBalancer;
+    loadBalancer: LoadBalancer;
 
     /**
      * The ARN of the default SSL server certificate. Exactly one certificate is required if the

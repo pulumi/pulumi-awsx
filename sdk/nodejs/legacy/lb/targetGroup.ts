@@ -16,25 +16,28 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as ec2 from "../ec2";
+import * as ecs from "../ecs";
+import { Listener, ListenerActions, ListenerDefaultAction, ListenerDefaultActionArgs } from "./listener";
+import { LoadBalancer, LoadBalancerTarget } from "./loadBalancer";
+import { TargetGroupAttachment } from "./targetGroupAttachment";
 
-import * as mod from ".";
-import * as x from "..";
 import * as utils from "../utils";
 
 export abstract class TargetGroup
     extends pulumi.ComponentResource
-    implements x.ecs.ContainerPortMappingProvider,
-    x.ecs.ContainerLoadBalancerProvider,
-    x.lb.ListenerDefaultAction,
-    x.lb.ListenerActions {
+    implements ecs.ContainerPortMappingProvider,
+    ecs.ContainerLoadBalancerProvider,
+    ListenerDefaultAction,
+    ListenerActions {
 
-    public readonly loadBalancer: mod.LoadBalancer;
+    public readonly loadBalancer: LoadBalancer;
     public readonly targetGroup: aws.lb.TargetGroup;
-    public readonly vpc: x.ec2.Vpc;
+    public readonly vpc: ec2.Vpc;
 
-    public readonly listeners: x.lb.Listener[] = [];
+    public readonly listeners: Listener[] = [];
 
-    constructor(type: string, name: string, loadBalancer: mod.LoadBalancer,
+    constructor(type: string, name: string, loadBalancer: LoadBalancer,
                 args: TargetGroupArgs, opts: pulumi.ComponentResourceOptions) {
         // We want our parent to the be the ALB by default if nothing else is specified.
         // Create an alias from our old name where we didn't parent by default to keep
@@ -82,14 +85,14 @@ export abstract class TargetGroup
         }));
     }
 
-    public containerLoadBalancer(): pulumi.Input<x.ecs.ContainerLoadBalancer> {
+    public containerLoadBalancer(): pulumi.Input<ecs.ContainerLoadBalancer> {
         return this.dependencies().apply(_ => ({
             containerPort: this.targetGroup.port.apply(p => p!),
             targetGroupArn: this.targetGroup.arn,
         }));
     }
 
-    public listenerDefaultAction(): pulumi.Input<mod.ListenerDefaultActionArgs> {
+    public listenerDefaultAction(): pulumi.Input<ListenerDefaultActionArgs> {
         return this.dependencies().apply(_ => ({
             targetGroupArn: this.targetGroup.arn,
             type: "forward",
@@ -101,7 +104,7 @@ export abstract class TargetGroup
     }
 
     /** Do not call directly.  Intended for use by [Listener] and [ListenerRule] */
-    public registerListener(listener: x.lb.Listener) {
+    public registerListener(listener: Listener) {
         this.listeners.push(listener);
     }
 
@@ -110,8 +113,8 @@ export abstract class TargetGroup
      * [Register-Targets](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-register-targets.html)
      * for more details.
      */
-    public attachTarget(name: string, args: mod.LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
-        return new mod.TargetGroupAttachment(name, this, args, opts);
+    public attachTarget(name: string, args: LoadBalancerTarget, opts: pulumi.CustomResourceOptions = {}) {
+        return new TargetGroupAttachment(name, this, args, opts);
     }
 }
 
@@ -189,7 +192,7 @@ export interface TargetGroupArgs {
     /**
      * The vpc for this target group.
      */
-    vpc: x.ec2.Vpc;
+    vpc: ec2.Vpc;
 
     /**
      * @deprecated Not used.  Supply the name you want for a TargetGroup through the [name]

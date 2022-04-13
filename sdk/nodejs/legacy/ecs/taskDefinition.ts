@@ -14,18 +14,19 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-
 import * as awssdk from "aws-sdk";
-
-import * as ecs from ".";
-import * as x from "..";
+import * as ec2 from "../ec2";
+import * as lb from "../lb";
 import * as role from "../role";
+import { Cluster } from "./cluster";
+import { computeContainerDefinition, Container } from "./container";
+
 import * as utils from "../utils";
 
 export abstract class TaskDefinition extends pulumi.ComponentResource {
     public readonly taskDefinition: aws.ecs.TaskDefinition;
     public readonly logGroup?: aws.cloudwatch.LogGroup;
-    public readonly containers: Record<string, ecs.Container>;
+    public readonly containers: Record<string, Container>;
     public readonly taskRole?: aws.iam.Role;
     public readonly executionRole?: aws.iam.Role;
 
@@ -34,9 +35,9 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
      * Only present if a listener was provided in [Container.portMappings] or in
      * [Container.applicationListener] or [Container.networkListener].
      */
-    public readonly listeners: Record<string, x.lb.Listener> = {};
-    public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
-    public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
+    public readonly listeners: Record<string, lb.Listener> = {};
+    public readonly applicationListeners: Record<string, lb.ApplicationListener> = {};
+    public readonly networkListeners: Record<string, lb.NetworkListener> = {};
 
     /**
      * Run one or more instances of this TaskDefinition using the ECS `runTask` API, returning the Task instances.
@@ -166,7 +167,7 @@ export interface RunTaskRequest {
     /**
      * The Cluster to run the Task within.
      */
-    cluster: ecs.Cluster;
+    cluster: Cluster;
     /**
      * A list of container overrides in JSON format that specify the name of a container in the specified task definition and the overrides it should receive. You can override the default command for a container (that is specified in the task definition or Docker image) with a command override. You can also override existing environment variables (that are specified in the task definition or Docker image) on a container or add new environment variables to it with an environment override.  A total of 8192 characters are allowed for overrides. This limit includes the JSON formatting characters of the override structure.
      */
@@ -214,7 +215,7 @@ export interface RunTaskRequest {
 }
 
 type RunTaskRequestOverrideShape = utils.Overwrite<awssdk.ECS.RunTaskRequest, {
-    cluster: ecs.Cluster;
+    cluster: Cluster;
     taskDefinition?: never;
     launchType?: never;
 }>;
@@ -254,10 +255,10 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
 function computeContainerDefinitions(
     parent: pulumi.Resource,
     name: string,
-    vpc: x.ec2.Vpc | undefined,
-    containers: Record<string, ecs.Container>,
-    applicationListeners: Record<string, x.lb.ApplicationListener>,
-    networkListeners: Record<string, x.lb.NetworkListener>,
+    vpc: ec2.Vpc | undefined,
+    containers: Record<string, Container>,
+    applicationListeners: Record<string, lb.ApplicationListener>,
+    networkListeners: Record<string, lb.NetworkListener>,
     logGroup: aws.cloudwatch.LogGroup | undefined | null): pulumi.Output<aws.ecs.ContainerDefinition[]> {
 
     const result: pulumi.Output<aws.ecs.ContainerDefinition>[] = [];
@@ -265,7 +266,7 @@ function computeContainerDefinitions(
     for (const containerName of Object.keys(containers)) {
         const container = containers[containerName];
 
-        result.push(ecs.computeContainerDefinition(
+        result.push(computeContainerDefinition(
             parent, name, vpc, containerName, container,
             applicationListeners, networkListeners, logGroup));
     }
@@ -289,7 +290,7 @@ type OverwriteShape = utils.Overwrite<aws.ecs.TaskDefinitionArgs, {
     requiresCompatibilities: pulumi.Input<["FARGATE"] | ["EC2"]>;
     networkMode?: pulumi.Input<"none" | "bridge" | "awsvpc" | "host">;
 
-    containers: Record<string, ecs.Container>;
+    containers: Record<string, Container>;
 }>;
 
 export interface TaskDefinitionArgs {
@@ -299,7 +300,7 @@ export interface TaskDefinitionArgs {
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
      * provided as it will be inferred from the cluster the service is associated with.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * Log group for logging information related to the service.  If `undefined` a default instance
@@ -315,7 +316,7 @@ export interface TaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    containers: Record<string, ecs.Container>;
+    containers: Record<string, Container>;
 
     /**
      * The number of cpu units used by the task.  If not provided, a default will be computed

@@ -14,8 +14,9 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as autoscaling from "../autoscaling";
+import * as ec2 from "../ec2";
 
-import * as x from "..";
 import * as utils from "../utils";
 
 let defaultCluster: Cluster;
@@ -25,22 +26,22 @@ let defaultCluster: Cluster;
  */
 export class Cluster
         extends pulumi.ComponentResource
-        implements x.autoscaling.AutoScalingUserData {
+        implements autoscaling.AutoScalingUserData {
     public readonly cluster: aws.ecs.Cluster;
     public readonly id: pulumi.Output<string>;
 
     /**
      * The network in which to create this cluster.
      */
-    public readonly vpc: x.ec2.Vpc;
+    public readonly vpc: ec2.Vpc;
     /**
      * Security groups associated with this this ECS Cluster.
      */
-    public readonly securityGroups: x.ec2.SecurityGroup[];
+    public readonly securityGroups: ec2.SecurityGroup[];
 
-    public readonly extraBootcmdLines: () => pulumi.Input<x.autoscaling.UserDataLine[]>;
+    public readonly extraBootcmdLines: () => pulumi.Input<autoscaling.UserDataLine[]>;
 
-    public readonly autoScalingGroups: x.autoscaling.AutoScalingGroup[] = [];
+    public readonly autoScalingGroups: autoscaling.AutoScalingGroup[] = [];
 
     constructor(name: string, args: ClusterArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ecs:Cluster", name, {}, opts);
@@ -50,12 +51,12 @@ export class Cluster
         this.cluster = cluster;
         this.id = cluster.id;
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
+        this.vpc = args.vpc || ec2.Vpc.getDefault({ parent: this });
 
         // IDEA: Can we re-use the network's default security group instead of creating a specific
         // new security group in the Cluster layer?  This may allow us to share a single Security Group
         // across both instance and Lambda compute.
-        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) ||
+        this.securityGroups = ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) ||
             [Cluster.createDefaultSecurityGroup(name, this.vpc, { parent: this })];
 
         this.extraBootcmdLines = () => cluster.id.apply(clusterId =>
@@ -64,7 +65,7 @@ export class Cluster
         this.registerOutputs();
     }
 
-    public addAutoScalingGroup(group: x.autoscaling.AutoScalingGroup) {
+    public addAutoScalingGroup(group: autoscaling.AutoScalingGroup) {
         this.autoScalingGroups.push(group);
     }
 
@@ -76,7 +77,7 @@ export class Cluster
      */
     public createAutoScalingGroup(
             name: string,
-            args: x.autoscaling.AutoScalingGroupArgs = {},
+            args: autoscaling.AutoScalingGroupArgs = {},
             opts: pulumi.ComponentResourceOptions = {}) {
 
         args.vpc = args.vpc || this.vpc;
@@ -87,7 +88,7 @@ export class Cluster
             ...args.launchConfigurationArgs,
         };
 
-        const group = new x.autoscaling.AutoScalingGroup(name, args, { parent: this, ...opts });
+        const group = new autoscaling.AutoScalingGroup(name, args, { parent: this, ...opts });
         this.addAutoScalingGroup(group);
 
         return group;
@@ -108,11 +109,11 @@ export class Cluster
 
     public static createDefaultSecurityGroup(
             name: string,
-            vpc?: x.ec2.Vpc,
-            opts: pulumi.ComponentResourceOptions = {}): x.ec2.SecurityGroup {
+            vpc?: ec2.Vpc,
+            opts: pulumi.ComponentResourceOptions = {}): ec2.SecurityGroup {
 
-        vpc = vpc || x.ec2.Vpc.getDefault(opts);
-        const securityGroup = new x.ec2.SecurityGroup(name, {
+        vpc = vpc || ec2.Vpc.getDefault(opts);
+        const securityGroup = new ec2.SecurityGroup(name, {
             vpc,
             tags: { Name: name },
         }, opts);
@@ -123,24 +124,24 @@ export class Cluster
         return securityGroup;
     }
 
-    public static createDefaultSecurityGroupEgressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
-        return [x.ec2.SecurityGroupRule.egress(`${name}-egress`, securityGroup,
-            new x.ec2.AnyIPv4Location(),
-            new x.ec2.AllTraffic(),
+    public static createDefaultSecurityGroupEgressRules(name: string, securityGroup: ec2.SecurityGroup) {
+        return [ec2.SecurityGroupRule.egress(`${name}-egress`, securityGroup,
+            new ec2.AnyIPv4Location(),
+            new ec2.AllTraffic(),
             "allow output to any ipv4 address using any protocol")];
     }
 
-    public static createDefaultSecurityGroupIngressRules(name: string, securityGroup: x.ec2.SecurityGroup) {
-        return [x.ec2.SecurityGroupRule.ingress(`${name}-ssh`, securityGroup,
-                    new x.ec2.AnyIPv4Location(),
-                    new x.ec2.TcpPorts(22),
+    public static createDefaultSecurityGroupIngressRules(name: string, securityGroup: ec2.SecurityGroup) {
+        return [ec2.SecurityGroupRule.ingress(`${name}-ssh`, securityGroup,
+                    new ec2.AnyIPv4Location(),
+                    new ec2.TcpPorts(22),
                     "allow ssh in from any ipv4 address"),
 
                 // Expose ephemeral container ports to Internet.
                 // TODO: Limit to load balancer(s).
-                x.ec2.SecurityGroupRule.ingress(`${name}-containers`, securityGroup,
-                    new x.ec2.AnyIPv4Location(),
-                    new x.ec2.AllTcpPorts(),
+                ec2.SecurityGroupRule.ingress(`${name}-containers`, securityGroup,
+                    new ec2.AnyIPv4Location(),
+                    new ec2.AllTcpPorts(),
                     "allow incoming tcp on any port from any ipv4 address")];
     }
 }
@@ -163,9 +164,9 @@ function getOrCreateCluster(name: string, args: ClusterArgs, parent: Cluster) {
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<aws.ecs.ClusterArgs, {
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
     cluster?: aws.ecs.Cluster | pulumi.Input<string>;
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
     tags?: pulumi.Input<aws.Tags>;
 }>;
 
@@ -194,7 +195,7 @@ export interface ClusterArgs {
      * The network in which to create this cluster.  If not provided, Vpc.getDefault() will be
      * used.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * An existing aws.ecs.Cluster (or the name of an existing aws.ecs.Cluster) to use for this
@@ -213,7 +214,7 @@ export interface ClusterArgs {
      * The security group to place new instances into.  If not provided, a default will be
      * created. Pass an empty array to create no security groups.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
 
     /**
      * Key-value mapping of resource tags

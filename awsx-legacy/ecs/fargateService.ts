@@ -14,14 +14,17 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as ec2 from "../ec2";
+import { Cluster } from "./cluster";
+import { Container } from "./container";
+import { Service, ServiceArgs, ServiceLoadBalancer, ServiceLoadBalancerProvider } from "./service";
+import { TaskDefinition, TaskDefinitionArgs } from "./taskDefinition";
 
-import * as ecs from ".";
-import * as x from "..";
 import * as utils from "../utils";
 
-export class FargateTaskDefinition extends ecs.TaskDefinition {
+export class FargateTaskDefinition extends TaskDefinition {
     constructor(name: string,
-                args: ecs.FargateTaskDefinitionArgs,
+                args: FargateTaskDefinitionArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
 
         if (!args.container && !args.containers) {
@@ -34,7 +37,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
         const computedMemory = computedMemoryAndCPU.memory;
         const computedCPU = computedMemoryAndCPU.cpu;
 
-        const argsCopy: ecs.TaskDefinitionArgs = {
+        const argsCopy: TaskDefinitionArgs = {
             ...args,
             containers,
             requiresCompatibilities: ["FARGATE"],
@@ -54,7 +57,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
      * Creates a service with this as its task definition.
      */
     public createService(
-        name: string, args: ecs.FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        name: string, args: FargateServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -63,7 +66,7 @@ export class FargateTaskDefinition extends ecs.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new ecs.FargateService(name, {
+        return new FargateService(name, {
             ...args,
             taskDefinition: this,
         }, { parent: this, ...opts });
@@ -122,7 +125,7 @@ function* getAllFargateConfigs() {
     }
 }
 
-function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
+function computeFargateMemoryAndCPU(containers: Record<string, Container>) {
     return pulumi.output(containers).apply(containers => {
         // First, determine how much VCPU/GB that the user is asking for in their containers.
         let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory();
@@ -189,7 +192,7 @@ function computeFargateMemoryAndCPU(containers: Record<string, ecs.Container>) {
     });
 }
 
-export class FargateService extends ecs.Service {
+export class FargateService extends Service {
     public readonly taskDefinition: FargateTaskDefinition;
 
     constructor(name: string,
@@ -200,16 +203,16 @@ export class FargateService extends ecs.Service {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const cluster = args.cluster || x.ecs.Cluster.getDefault();
+        const cluster = args.cluster || Cluster.getDefault();
 
         const taskDefinition = args.taskDefinition ||
-            new ecs.FargateTaskDefinition(name, {
+            new FargateTaskDefinition(name, {
                 ...args.taskDefinitionArgs,
                 vpc: cluster.vpc,
             }, opts);
 
         const assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
-        const securityGroups = x.ec2.getSecurityGroups(
+        const securityGroups = ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = getSubnets(cluster, args.subnets, assignPublicIp);
 
@@ -233,7 +236,7 @@ export class FargateService extends ecs.Service {
 
 /** @internal */
 export function getSubnets(
-        cluster: ecs.Cluster,
+        cluster: Cluster,
         subnets: pulumi.Input<pulumi.Input<string>[]> | undefined,
         assignPublicIp: pulumi.Output<boolean>) {
 
@@ -247,11 +250,11 @@ export function getSubnets(
     });
 }
 
-type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
+type OverwriteFargateTaskDefinitionArgs = utils.Overwrite<TaskDefinitionArgs, {
     requiresCompatibilities?: never;
     networkMode?: never;
-    container?: ecs.Container;
-    containers?: Record<string, ecs.Container>;
+    container?: Container;
+    containers?: Record<string, Container>;
 }>;
 
 export interface FargateTaskDefinitionArgs {
@@ -261,7 +264,7 @@ export interface FargateTaskDefinitionArgs {
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
      * provided as it will be inferred from the cluster the service is associated with.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
@@ -323,7 +326,7 @@ export interface FargateTaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    container?: ecs.Container;
+    container?: Container;
 
     /**
      * All the containers to make a TaskDefinition from.  Useful when creating a Service that will
@@ -331,7 +334,7 @@ export interface FargateTaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    containers?: Record<string, ecs.Container>;
+    containers?: Record<string, Container>;
 
     /**
      * Key-value mapping of resource tags
@@ -339,14 +342,14 @@ export interface FargateTaskDefinitionArgs {
     tags?: pulumi.Input<aws.Tags>;
 }
 
-type OverwriteFargateServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
-    taskDefinition?: ecs.FargateTaskDefinition;
+type OverwriteFargateServiceArgs = utils.Overwrite<ServiceArgs, {
+    taskDefinition?: FargateTaskDefinition;
     taskDefinitionArgs?: FargateTaskDefinitionArgs;
     launchType?: never;
     networkConfiguration?: never;
     capacityProviderStrategies?: never;
     orderedPlacementStrategies?: never;
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
 }>;
 
 export interface FargateServiceArgs {
@@ -417,7 +420,7 @@ export interface FargateServiceArgs {
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: (pulumi.Input<x.ecs.ServiceLoadBalancer> | x.ecs.ServiceLoadBalancerProvider)[];
+    loadBalancers?: (pulumi.Input<ServiceLoadBalancer> | ServiceLoadBalancerProvider)[];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
@@ -436,7 +439,7 @@ export interface FargateServiceArgs {
      *
      * Defaults to [cluster.securityGroups] if unspecified.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
 
     /**
      * The subnets to connect the instances to.  If unspecified and [assignPublicIp] is true, then
@@ -481,7 +484,7 @@ export interface FargateServiceArgs {
     /**
      * Cluster this service will run in.  If unspecified, [Cluster.getDefault()] will be used.
      */
-    cluster?: ecs.Cluster;
+    cluster?: Cluster;
 
     os?: pulumi.Input<"linux" | "windows">;
 
@@ -498,7 +501,7 @@ export interface FargateServiceArgs {
      * The task definition to create the service from.  Either [taskDefinition] or
      * [taskDefinitionArgs] must be provided.
      */
-    taskDefinition?: ecs.FargateTaskDefinition;
+    taskDefinition?: FargateTaskDefinition;
 
     /**
      * The task definition to create the service from.  Either [taskDefinition] or

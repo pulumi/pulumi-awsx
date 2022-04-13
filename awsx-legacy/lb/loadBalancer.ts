@@ -14,31 +14,33 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as apigateway from "../apigateway";
+import * as ec2 from "../ec2";
+import { Listener } from "./listener";
+import { TargetGroup, TargetType } from "./targetGroup";
 
-import * as mod from ".";
-import * as x from "..";
 import * as utils from "../utils";
 
 export abstract class LoadBalancer extends pulumi.ComponentResource {
     public readonly loadBalancer: aws.lb.LoadBalancer;
-    public readonly vpc: x.ec2.Vpc;
-    public readonly securityGroups: x.ec2.SecurityGroup[];
+    public readonly vpc: ec2.Vpc;
+    public readonly securityGroups: ec2.SecurityGroup[];
 
-    public readonly listeners: mod.Listener[] = [];
-    public readonly targetGroups: mod.TargetGroup[] = [];
+    public readonly listeners: Listener[] = [];
+    public readonly targetGroups: TargetGroup[] = [];
 
     constructor(type: string, name: string, args: LoadBalancerArgs, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
         if (args.loadBalancer) {
             this.loadBalancer = args.loadBalancer;
-            this.vpc = x.ec2.Vpc.fromExistingIds(`${name}-vpc`, { vpcId: this.loadBalancer.vpcId });
-            this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
+            this.vpc = ec2.Vpc.fromExistingIds(`${name}-vpc`, { vpcId: this.loadBalancer.vpcId });
+            this.securityGroups = ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
             return;
         }
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
-        this.securityGroups = x.ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
+        this.vpc = args.vpc || ec2.Vpc.getDefault({ parent: this });
+        this.securityGroups = ec2.getSecurityGroups(this.vpc, name, args.securityGroups, { parent: this }) || [];
 
         const external = utils.ifUndefined(args.external, true);
         const lbArgs: aws.lb.LoadBalancerArgs = {
@@ -83,7 +85,7 @@ export abstract class LoadBalancer extends pulumi.ComponentResource {
 }
 
 function getSubnets(
-    args: LoadBalancerArgs, vpc: x.ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
+    args: LoadBalancerArgs, vpc: ec2.Vpc, external: pulumi.Output<boolean>): pulumi.Input<pulumi.Input<string>[]> {
 
     if (!args.subnets) {
         // No subnets requested.  Determine the subnets automatically from the vpc.
@@ -108,7 +110,7 @@ export interface LoadBalancerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * @deprecated Not used.  Supply the name you want for a LoadBalancer through the [name]
@@ -159,7 +161,7 @@ export interface LoadBalancerArgs {
      * A list of security group IDs to assign to the LB. Only valid for Load Balancers of type
      * `application`.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
 }
 
 export interface LoadBalancerSubnets {
@@ -188,7 +190,7 @@ export interface LoadBalancerTargetInfo {
 }
 
 export interface LoadBalancerTargetInfoProvider {
-    loadBalancerTargetInfo(targetType: pulumi.Input<mod.TargetType>): pulumi.Output<LoadBalancerTargetInfo>;
+    loadBalancerTargetInfo(targetType: pulumi.Input<TargetType>): pulumi.Output<LoadBalancerTargetInfo>;
 }
 
 export function isLoadBalancerTargetInfoProvider(obj: any): obj is LoadBalancerTargetInfoProvider {
@@ -204,4 +206,4 @@ export type LoadBalancerTarget =
     pulumi.Input<LoadBalancerTargetInfo> |
     LoadBalancerTargetInfoProvider |
     aws.ec2.Instance |
-    aws.lambda.EventHandler<x.apigateway.Request, x.apigateway.Response>;
+    aws.lambda.EventHandler<apigateway.Request, apigateway.Response>;
