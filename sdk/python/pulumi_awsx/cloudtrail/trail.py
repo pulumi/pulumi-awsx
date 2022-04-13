@@ -428,7 +428,7 @@ class Trail(pulumi.ComponentResource):
 
     @property
     @pulumi.getter(name="logGroup")
-    def log_group(self) -> pulumi.Output['pulumi_aws.cloudwatch.LogGroup']:
+    def log_group(self) -> pulumi.Output[Optional['pulumi_aws.cloudwatch.LogGroup']]:
         """
         The managed Cloudwatch Log Group.
         """

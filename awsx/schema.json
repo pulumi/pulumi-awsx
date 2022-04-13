@@ -791,7 +791,12 @@
                 },
                 "trail": {
                     "$ref": "/aws/v4.37.1/schema.json#/resources/aws:cloudtrail%2Ftrail:Trail",
-                    "description": "The CloudTrail Trail."
+                    "description": "The CloudTrail Trail.",
+                    "language": {
+                        "csharp": {
+                            "name": "AwsTrail"
+                        }
+                    }
                 }
             },
             "required": [

@@ -22,13 +22,13 @@ namespace Pulumi.Awsx.Cloudtrail
         /// The managed Cloudwatch Log Group.
         /// </summary>
         [Output("logGroup")]
-        public Output<Pulumi.Aws.CloudWatch.LogGroup> LogGroup { get; private set; } = null!;
+        public Output<Pulumi.Aws.CloudWatch.LogGroup?> LogGroup { get; private set; } = null!;
 
         /// <summary>
         /// The CloudTrail Trail.
         /// </summary>
         [Output("trail")]
-        public Output<Pulumi.Aws.CloudTrail.Trail> Trail { get; private set; } = null!;
+        public Output<Pulumi.Aws.CloudTrail.Trail> AwsTrail { get; private set; } = null!;
 
 
         /// <summary>

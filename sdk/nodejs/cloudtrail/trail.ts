@@ -29,7 +29,7 @@ export class Trail extends pulumi.ComponentResource {
     /**
      * The managed Cloudwatch Log Group.
      */
-    public /*out*/ readonly logGroup!: pulumi.Output<pulumiAws.cloudwatch.LogGroup>;
+    public /*out*/ readonly logGroup!: pulumi.Output<pulumiAws.cloudwatch.LogGroup | undefined>;
     /**
      * The CloudTrail Trail.
      */

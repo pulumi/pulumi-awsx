@@ -72,6 +72,11 @@ func GenerateSchema() schema.PackageSpec {
 							TypeSpec: schema.TypeSpec{
 								Ref: awsRef("#/resources/aws:cloudtrail%2Ftrail:Trail"),
 							},
+							Language: map[string]schema.RawMessage{
+								"csharp": schema.RawMessage(`{
+									"name": "AwsTrail"
+								}`),
+							},
 						},
 					},
 					Required: []string{
