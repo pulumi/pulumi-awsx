@@ -4,6 +4,12 @@
  * DO NOT MODIFY IT BY HAND. Instead, modify the source Pulumi Schema file,
  * and run "pulumi-provider-scripts gen-provider-types" to regenerate this file. */
 import * as pulumi from "@pulumi/pulumi";
+export type ConstructComponent<T extends pulumi.ComponentResource = pulumi.ComponentResource> = (name: string, inputs: any, options: pulumi.ComponentResourceOptions) => T;
+export type ResourceConstructor = {
+    readonly "awsx:cloudtrail:Trail": ConstructComponent<Trail>;
+    readonly "awsx:ecsx:FargateService": ConstructComponent<FargateService>;
+    readonly "awsx:ecsx:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
+};
 import * as aws from "@pulumi/aws";
 export abstract class Trail extends pulumi.ComponentResource {
     public bucket!: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;

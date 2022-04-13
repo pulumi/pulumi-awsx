@@ -14,32 +14,19 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
-import { cloudtrailProvider } from "./cmd/provider/cloudtrail";
-import { ecsProvider } from "./cmd/provider/ecs";
-import { ProviderModule } from "./cmd/provider/providerModule";
+import { construct } from "./resources";
 import { resourceToConstructResult } from "./utils";
-
-const modules: Record<string, ProviderModule> = {
-    cloudtrail: cloudtrailProvider,
-    ecs: ecsProvider,
-};
-
-const packageName = "awsx";
 
 class Provider implements pulumi.provider.Provider {
     constructor(readonly version: string, readonly schema: string) {}
+
     async construct(
         name: string,
         type: string,
         inputs: pulumi.Inputs,
         options: pulumi.ComponentResourceOptions,
     ) {
-        const [pkg, moduleName] = type.split(":");
-        const module = modules[moduleName];
-        if (pkg !== packageName || module === undefined) {
-            throw new Error(`unknown resource type ${type}`);
-        }
-        const resource = module.construct(name, type, inputs, options);
+        const resource = construct(name, type, inputs, options);
         if (resource === undefined) {
             throw new Error(`unknown resource type ${type}`);
         }
