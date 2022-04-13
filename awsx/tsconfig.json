@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "outDir": "bin",
+        "target": "ES2017",
+        "lib": [
+            "ES2019.Array"
+        ],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "declaration": true,
+        "sourceMap": true,
+        "stripInternal": true,
+        "experimentalDecorators": true,
+        "noFallthroughCasesInSwitch": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true
+    },
+    "exclude": [
+        "bin",
+        "tests",
+        "scripts"
+    ]
+}

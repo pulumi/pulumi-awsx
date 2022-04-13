@@ -11,8 +11,17 @@ from .provider import *
 if typing.TYPE_CHECKING:
     import pulumi_awsx.cloudtrail as __cloudtrail
     cloudtrail = __cloudtrail
+    import pulumi_awsx.cloudwatch as __cloudwatch
+    cloudwatch = __cloudwatch
+    import pulumi_awsx.ecsx as __ecsx
+    ecsx = __ecsx
+    import pulumi_awsx.iam as __iam
+    iam = __iam
 else:
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
+    cloudwatch = _utilities.lazy_import('pulumi_awsx.cloudwatch')
+    ecsx = _utilities.lazy_import('pulumi_awsx.ecsx')
+    iam = _utilities.lazy_import('pulumi_awsx.iam')
 
 _utilities.register(
     resource_modules="""
@@ -23,6 +32,15 @@ _utilities.register(
   "fqn": "pulumi_awsx.cloudtrail",
   "classes": {
    "awsx:cloudtrail:Trail": "Trail"
+  }
+ },
+ {
+  "pkg": "awsx",
+  "mod": "ecsx",
+  "fqn": "pulumi_awsx.ecsx",
+  "classes": {
+   "awsx:ecsx:FargateService": "FargateService",
+   "awsx:ecsx:FargateTaskDefinition": "FargateTaskDefinition"
   }
  }
 ]
