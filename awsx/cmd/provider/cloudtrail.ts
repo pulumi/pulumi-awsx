@@ -30,11 +30,9 @@ export const cloudtrailProvider: ProviderModule = {
                 return {
                     urn: trail.urn,
                     state: {
-                        arn: trail.trail.arn,
                         bucket: trail.bucket,
                         logGroup: trail.logGroup,
-                        homeRegion: trail.trail.homeRegion,
-                        tagsAll: trail.trail.tagsAll,
+                        trail: trail.trail,
                     },
                 };
             default:

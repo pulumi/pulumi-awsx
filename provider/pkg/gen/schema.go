@@ -55,28 +55,28 @@ func GenerateSchema() schema.PackageSpec {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Description: "",
 					Properties: map[string]schema.PropertySpec{
-						"arn": {
-							Description: "ARN of the trail.",
+						"bucket": {
+							Description: "The managed S3 Bucket where the Trail will place its logs.",
 							TypeSpec: schema.TypeSpec{
-								Type: "string",
+								Ref: awsRef("#/resources/aws:s3%2Fbucket:Bucket"),
 							},
 						},
-						"homeRegion": {
-							Description: "Region in which the trail was created.",
+						"logGroup": {
+							Description: "The managed Cloudwatch Log Group.",
 							TypeSpec: schema.TypeSpec{
-								Type: "string",
+								Ref: awsRef("#/resources/aws:cloudwatch%2FlogGroup:LogGroup"),
 							},
 						},
-						"tagsAll": {
+						"trail": {
+							Description: "The CloudTrail Trail.",
 							TypeSpec: schema.TypeSpec{
-								Type:                 "object",
-								AdditionalProperties: &schema.TypeSpec{Type: "string"},
+								Ref: awsRef("#/resources/aws:cloudtrail%2Ftrail:Trail"),
 							},
-							Description: "Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.",
 						},
 					},
 					Required: []string{
-						"arn",
+						"bucket",
+						"trail",
 					},
 				},
 				InputProperties: map[string]schema.PropertySpec{

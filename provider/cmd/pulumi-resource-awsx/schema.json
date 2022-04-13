@@ -781,24 +781,22 @@
     "resources": {
         "awsx:cloudtrail:Trail": {
             "properties": {
-                "arn": {
-                    "type": "string",
-                    "description": "ARN of the trail."
+                "bucket": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:s3%2Fbucket:Bucket",
+                    "description": "The managed S3 Bucket where the Trail will place its logs."
                 },
-                "homeRegion": {
-                    "type": "string",
-                    "description": "Region in which the trail was created."
+                "logGroup": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "description": "The managed Cloudwatch Log Group."
                 },
-                "tagsAll": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "description": "Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level."
+                "trail": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:cloudtrail%2Ftrail:Trail",
+                    "description": "The CloudTrail Trail."
                 }
             },
             "required": [
-                "arn"
+                "bucket",
+                "trail"
             ],
             "inputProperties": {
                 "advancedEventSelectors": {

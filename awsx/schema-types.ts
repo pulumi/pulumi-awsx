@@ -6,9 +6,9 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 export abstract class Trail extends pulumi.ComponentResource {
-    public arn!: string | pulumi.Output<string>;
-    public homeRegion?: string | pulumi.Output<string>;
-    public tagsAll?: Record<string, string> | pulumi.Output<Record<string, string>>;
+    public bucket!: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;
+    public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
+    public trail!: aws.cloudtrail.Trail | pulumi.Output<aws.cloudtrail.Trail>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:cloudtrail:Trail", name, {}, opts); }
 }
 export interface TrailArgs {

@@ -8,18 +8,20 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/cloudtrail"
+	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/cloudwatch"
+	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/s3"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 type Trail struct {
 	pulumi.ResourceState
 
-	// ARN of the trail.
-	Arn pulumi.StringOutput `pulumi:"arn"`
-	// Region in which the trail was created.
-	HomeRegion pulumi.StringPtrOutput `pulumi:"homeRegion"`
-	// Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
-	TagsAll pulumi.StringMapOutput `pulumi:"tagsAll"`
+	// The managed S3 Bucket where the Trail will place its logs.
+	Bucket s3.BucketOutput `pulumi:"bucket"`
+	// The managed Cloudwatch Log Group.
+	LogGroup cloudwatch.LogGroupOutput `pulumi:"logGroup"`
+	// The CloudTrail Trail.
+	Trail cloudtrail.TrailOutput `pulumi:"trail"`
 }
 
 // NewTrail registers a new resource with the given unique name, arguments, and options.

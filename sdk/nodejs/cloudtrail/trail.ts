@@ -23,17 +23,17 @@ export class Trail extends pulumi.ComponentResource {
     }
 
     /**
-     * ARN of the trail.
+     * The managed S3 Bucket where the Trail will place its logs.
      */
-    public /*out*/ readonly arn!: pulumi.Output<string>;
+    public /*out*/ readonly bucket!: pulumi.Output<pulumiAws.s3.Bucket>;
     /**
-     * Region in which the trail was created.
+     * The managed Cloudwatch Log Group.
      */
-    public /*out*/ readonly homeRegion!: pulumi.Output<string | undefined>;
+    public /*out*/ readonly logGroup!: pulumi.Output<pulumiAws.cloudwatch.LogGroup>;
     /**
-     * Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
+     * The CloudTrail Trail.
      */
-    public /*out*/ readonly tagsAll!: pulumi.Output<{[key: string]: string} | undefined>;
+    public /*out*/ readonly trail!: pulumi.Output<pulumiAws.cloudtrail.Trail>;
 
     /**
      * Create a Trail resource with the given unique name, arguments, and options.
@@ -63,13 +63,13 @@ export class Trail extends pulumi.ComponentResource {
             resourceInputs["sendToCloudWatchLogs"] = args ? args.sendToCloudWatchLogs : undefined;
             resourceInputs["snsTopicName"] = args ? args.snsTopicName : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
-            resourceInputs["arn"] = undefined /*out*/;
-            resourceInputs["homeRegion"] = undefined /*out*/;
-            resourceInputs["tagsAll"] = undefined /*out*/;
+            resourceInputs["bucket"] = undefined /*out*/;
+            resourceInputs["logGroup"] = undefined /*out*/;
+            resourceInputs["trail"] = undefined /*out*/;
         } else {
-            resourceInputs["arn"] = undefined /*out*/;
-            resourceInputs["homeRegion"] = undefined /*out*/;
-            resourceInputs["tagsAll"] = undefined /*out*/;
+            resourceInputs["bucket"] = undefined /*out*/;
+            resourceInputs["logGroup"] = undefined /*out*/;
+            resourceInputs["trail"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Trail.__pulumiType, name, resourceInputs, opts, true /*remote*/);
