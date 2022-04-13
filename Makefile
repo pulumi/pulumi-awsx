@@ -77,7 +77,7 @@ build_dotnet:: schema
 		dotnet build /p:Version=${DOTNET_VERSION}
 
 istanbul_tests::
-	cd nodejs/awsx/tests && \
+	cd awsx-legacy/tests && \
 		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
 
 install_nodejs_sdk:: build_nodejs
