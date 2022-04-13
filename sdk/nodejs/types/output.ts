@@ -12,7 +12,7 @@ export namespace cloudtrail {
 export namespace cloudwatch {
 }
 
-export namespace ecsx {
+export namespace ecs {
 }
 
 export namespace iam {

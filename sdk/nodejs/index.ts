@@ -9,12 +9,12 @@ export * from "./provider";
 
 // Export sub-modules:
 import * as cloudtrail from "./cloudtrail";
-import * as ecsx from "./ecsx";
+import * as ecs from "./ecs";
 import * as types from "./types";
 
 export {
     cloudtrail,
-    ecsx,
+    ecs,
     types,
 };
 

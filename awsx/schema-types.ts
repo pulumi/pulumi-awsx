@@ -7,8 +7,8 @@ import * as pulumi from "@pulumi/pulumi";
 export type ConstructComponent<T extends pulumi.ComponentResource = pulumi.ComponentResource> = (name: string, inputs: any, options: pulumi.ComponentResourceOptions) => T;
 export type ResourceConstructor = {
     readonly "awsx:cloudtrail:Trail": ConstructComponent<Trail>;
-    readonly "awsx:ecsx:FargateService": ConstructComponent<FargateService>;
-    readonly "awsx:ecsx:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
+    readonly "awsx:ecs:FargateService": ConstructComponent<FargateService>;
+    readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
 };
 import * as aws from "@pulumi/aws";
 export abstract class Trail extends pulumi.ComponentResource {
@@ -39,7 +39,7 @@ export interface TrailArgs {
 export abstract class FargateService extends pulumi.ComponentResource {
     public service!: aws.ecs.Service | pulumi.Output<aws.ecs.Service>;
     public taskDefinition?: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecsx:FargateService", name, {}, opts); }
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:FargateService", name, {}, opts); }
 }
 export interface FargateServiceArgs {
     readonly capacityProviderStrategies?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceCapacityProviderStrategy>[]>;
@@ -74,7 +74,7 @@ export abstract class FargateTaskDefinition extends pulumi.ComponentResource {
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
     public taskDefinition!: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     public taskRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecsx:FargateTaskDefinition", name, {}, opts); }
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:FargateTaskDefinition", name, {}, opts); }
 }
 export interface FargateTaskDefinitionArgs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;

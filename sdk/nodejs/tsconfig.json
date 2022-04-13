@@ -15,9 +15,9 @@
     "files": [
         "cloudtrail/index.ts",
         "cloudtrail/trail.ts",
-        "ecsx/fargateService.ts",
-        "ecsx/fargateTaskDefinition.ts",
-        "ecsx/index.ts",
+        "ecs/fargateService.ts",
+        "ecs/fargateTaskDefinition.ts",
+        "ecs/index.ts",
         "index.ts",
         "provider.ts",
         "types/index.ts",
