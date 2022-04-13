@@ -27,6 +27,8 @@ export const cloudtrailProvider: ProviderModule = {
         switch (typeName) {
             case "Trail":
                 return new Trail(name, inputs, options);
+            default:
+                throw new Error(`unknown resource type ${type}`);
         }
     },
 };

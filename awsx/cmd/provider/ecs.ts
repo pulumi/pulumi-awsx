@@ -29,6 +29,8 @@ export const ecsProvider: ProviderModule = {
                 return new FargateService(name, inputs as any, options);
             case "FargateTaskDefinition":
                 return new FargateTaskDefinition(name, inputs as any, options);
+            default:
+                throw new Error(`unknown resource type ${type}`);
         }
     },
 };

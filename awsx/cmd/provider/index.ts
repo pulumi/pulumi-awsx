@@ -14,10 +14,10 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
-import { ProviderModule } from "./providerModule";
+import { resourceToConstructResult } from "../../utils";
 import { cloudtrailProvider } from "./cloudtrail";
 import { ecsProvider } from "./ecs";
-import { resourceToConstructResult } from "../../utils";
+import { ProviderModule } from "./providerModule";
 
 const modules: Record<string, ProviderModule> = {
     cloudtrail: cloudtrailProvider,
