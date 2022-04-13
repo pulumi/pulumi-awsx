@@ -397,6 +397,6 @@ export function generateProviderTypes(args: { schama: string; out: string }) {
 }
 
 generateProviderTypes({
-    schama: "../provider/cmd/pulumi-resource-awsx/schema.json",
+    schama: "schema.json",
     out: "schema-types.ts",
 });
