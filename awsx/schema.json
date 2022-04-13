@@ -103,18 +103,18 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:FargateServiceTaskDefinition": {
+        "awsx:ecs:FargateServiceTaskDefinition": {
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
                 "container": {
-                    "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionContainerDefinition",
                     "plain": true,
                     "description": "Single container to make a TaskDefinition from.  Useful for simple cases where there aren't\nmultiple containers, especially when creating a TaskDefinition to call [run] on.\n\nEither [container] or [containers] must be provided."
                 },
                 "containers": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionContainerDefinition",
                         "plain": true
                     },
                     "plain": true,
@@ -212,7 +212,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionContainerDefinition": {
+        "awsx:ecs:TaskDefinitionContainerDefinition": {
             "description": "List of container definitions that are passed to the Docker daemon on a container instance",
             "properties": {
                 "command": {
@@ -227,7 +227,7 @@
                 "dependsOn": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDependency"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionContainerDependency"
                     }
                 },
                 "disableNetworking": {
@@ -263,14 +263,14 @@
                 "environment": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionKeyValuePair"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionKeyValuePair"
                     },
                     "description": "The environment variables to pass to a container"
                 },
                 "environmentFiles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionEnvironmentFile"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionEnvironmentFile"
                     },
                     "description": "The list of one or more files that contain the environment variables to pass to a container"
                 },
@@ -280,14 +280,14 @@
                 "extraHosts": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionHostEntry"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionHostEntry"
                     }
                 },
                 "firelensConfiguration": {
-                    "$ref": "#/types/awsx:ecsx:TaskDefinitionFirelensConfiguration"
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionFirelensConfiguration"
                 },
                 "healthCheck": {
-                    "$ref": "#/types/awsx:ecsx:TaskDefinitionHealthCheck"
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionHealthCheck"
                 },
                 "hostname": {
                     "type": "string"
@@ -306,10 +306,10 @@
                     }
                 },
                 "linuxParameters": {
-                    "$ref": "#/types/awsx:ecsx:TaskDefinitionLinuxParameters"
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionLinuxParameters"
                 },
                 "logConfiguration": {
-                    "$ref": "#/types/awsx:ecsx:TaskDefinitionLogConfiguration"
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionLogConfiguration"
                 },
                 "memory": {
                     "type": "integer",
@@ -321,7 +321,7 @@
                 "mountPoints": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionMountPoint"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionMountPoint"
                     }
                 },
                 "name": {
@@ -331,7 +331,7 @@
                 "portMappings": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionPortMapping"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionPortMapping"
                     },
                     "description": "Port mappings allow containers to access ports on the host container instance to send or receive traffic."
                 },
@@ -345,18 +345,18 @@
                     "type": "boolean"
                 },
                 "repositoryCredentials": {
-                    "$ref": "#/types/awsx:ecsx:TaskDefinitionRepositoryCredentials"
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionRepositoryCredentials"
                 },
                 "resourceRequirements": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionResourceRequirement"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionResourceRequirement"
                     }
                 },
                 "secrets": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionSecret"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionSecret"
                     }
                 },
                 "startTimeout": {
@@ -368,13 +368,13 @@
                 "systemControls": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionSystemControl"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionSystemControl"
                     }
                 },
                 "ulimits": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionUlimit"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionUlimit"
                     }
                 },
                 "user": {
@@ -383,7 +383,7 @@
                 "volumesFrom": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionVolumeFrom"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionVolumeFrom"
                     }
                 },
                 "workingDirectory": {
@@ -392,7 +392,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionContainerDependency": {
+        "awsx:ecs:TaskDefinitionContainerDependency": {
             "properties": {
                 "condition": {
                     "type": "string"
@@ -403,7 +403,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionDevice": {
+        "awsx:ecs:TaskDefinitionDevice": {
             "properties": {
                 "containerPath": {
                     "type": "string"
@@ -420,7 +420,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionEnvironmentFile": {
+        "awsx:ecs:TaskDefinitionEnvironmentFile": {
             "properties": {
                 "type": {
                     "type": "string"
@@ -431,7 +431,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionFirelensConfiguration": {
+        "awsx:ecs:TaskDefinitionFirelensConfiguration": {
             "properties": {
                 "options": {
                     "$ref": "pulumi.json#/Any"
@@ -442,7 +442,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionHealthCheck": {
+        "awsx:ecs:TaskDefinitionHealthCheck": {
             "description": "The health check command and associated configuration parameters for the container.",
             "properties": {
                 "command": {
@@ -471,7 +471,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionHostEntry": {
+        "awsx:ecs:TaskDefinitionHostEntry": {
             "properties": {
                 "hostname": {
                     "type": "string"
@@ -482,7 +482,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionKernelCapabilities": {
+        "awsx:ecs:TaskDefinitionKernelCapabilities": {
             "properties": {
                 "add": {
                     "type": "array",
@@ -499,7 +499,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionKeyValuePair": {
+        "awsx:ecs:TaskDefinitionKeyValuePair": {
             "properties": {
                 "name": {
                     "type": "string"
@@ -510,15 +510,15 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionLinuxParameters": {
+        "awsx:ecs:TaskDefinitionLinuxParameters": {
             "properties": {
                 "capabilities": {
-                    "$ref": "#/types/awsx:ecsx:TaskDefinitionKernelCapabilities"
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionKernelCapabilities"
                 },
                 "devices": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionDevice"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionDevice"
                     }
                 },
                 "initProcessEnabled": {
@@ -536,13 +536,13 @@
                 "tmpfs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionTmpfs"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionTmpfs"
                     }
                 }
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionLogConfiguration": {
+        "awsx:ecs:TaskDefinitionLogConfiguration": {
             "properties": {
                 "logDriver": {
                     "type": "string"
@@ -553,7 +553,7 @@
                 "secretOptions": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionSecret"
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionSecret"
                     }
                 }
             },
@@ -562,7 +562,7 @@
                 "logDriver"
             ]
         },
-        "awsx:ecsx:TaskDefinitionMountPoint": {
+        "awsx:ecs:TaskDefinitionMountPoint": {
             "properties": {
                 "containerPath": {
                     "type": "string"
@@ -576,7 +576,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionPortMapping": {
+        "awsx:ecs:TaskDefinitionPortMapping": {
             "properties": {
                 "containerPort": {
                     "type": "integer"
@@ -593,7 +593,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionRepositoryCredentials": {
+        "awsx:ecs:TaskDefinitionRepositoryCredentials": {
             "properties": {
                 "credentialsParameter": {
                     "type": "string"
@@ -601,7 +601,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionResourceRequirement": {
+        "awsx:ecs:TaskDefinitionResourceRequirement": {
             "properties": {
                 "type": {
                     "type": "string"
@@ -616,7 +616,7 @@
                 "value"
             ]
         },
-        "awsx:ecsx:TaskDefinitionSecret": {
+        "awsx:ecs:TaskDefinitionSecret": {
             "properties": {
                 "name": {
                     "type": "string"
@@ -631,7 +631,7 @@
                 "valueFrom"
             ]
         },
-        "awsx:ecsx:TaskDefinitionSystemControl": {
+        "awsx:ecs:TaskDefinitionSystemControl": {
             "properties": {
                 "namespace": {
                     "type": "string"
@@ -642,7 +642,7 @@
             },
             "type": "object"
         },
-        "awsx:ecsx:TaskDefinitionTmpfs": {
+        "awsx:ecs:TaskDefinitionTmpfs": {
             "properties": {
                 "containerPath": {
                     "type": "string"
@@ -662,7 +662,7 @@
                 "size"
             ]
         },
-        "awsx:ecsx:TaskDefinitionUlimit": {
+        "awsx:ecs:TaskDefinitionUlimit": {
             "properties": {
                 "hardLimit": {
                     "type": "integer"
@@ -681,7 +681,7 @@
                 "softLimit"
             ]
         },
-        "awsx:ecsx:TaskDefinitionVolumeFrom": {
+        "awsx:ecs:TaskDefinitionVolumeFrom": {
             "properties": {
                 "readOnly": {
                     "type": "boolean"
@@ -887,7 +887,7 @@
             },
             "isComponent": true
         },
-        "awsx:ecsx:FargateService": {
+        "awsx:ecs:FargateService": {
             "description": "Create an ECS Service resource for Fargate with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
             "properties": {
                 "service": {
@@ -1015,7 +1015,7 @@
                     "description": "Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided."
                 },
                 "taskDefinitionArgs": {
-                    "$ref": "#/types/awsx:ecsx:FargateServiceTaskDefinition",
+                    "$ref": "#/types/awsx:ecs:FargateServiceTaskDefinition",
                     "plain": true,
                     "description": "The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided."
                 }
@@ -1025,7 +1025,7 @@
             ],
             "isComponent": true
         },
-        "awsx:ecsx:FargateTaskDefinition": {
+        "awsx:ecs:FargateTaskDefinition": {
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
                 "executionRole": {
@@ -1058,14 +1058,14 @@
             ],
             "inputProperties": {
                 "container": {
-                    "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionContainerDefinition",
                     "plain": true,
                     "description": "Single container to make a TaskDefinition from.  Useful for simple cases where there aren't\nmultiple containers, especially when creating a TaskDefinition to call [run] on.\n\nEither [container] or [containers] must be provided."
                 },
                 "containers": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                        "$ref": "#/types/awsx:ecs:TaskDefinitionContainerDefinition",
                         "plain": true
                     },
                     "plain": true,

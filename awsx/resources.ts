@@ -19,8 +19,8 @@ import { ConstructComponent, ResourceConstructor } from "./schema-types";
 
 const resources: ResourceConstructor = {
     "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
-    "awsx:ecsx:FargateService": (...args) => new FargateService(...args),
-    "awsx:ecsx:FargateTaskDefinition": (...args) =>
+    "awsx:ecs:FargateService": (...args) => new FargateService(...args),
+    "awsx:ecs:FargateTaskDefinition": (...args) =>
         new FargateTaskDefinition(...args),
 };
 

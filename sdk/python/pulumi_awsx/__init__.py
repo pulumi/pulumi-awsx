@@ -13,14 +13,14 @@ if typing.TYPE_CHECKING:
     cloudtrail = __cloudtrail
     import pulumi_awsx.cloudwatch as __cloudwatch
     cloudwatch = __cloudwatch
-    import pulumi_awsx.ecsx as __ecsx
-    ecsx = __ecsx
+    import pulumi_awsx.ecs as __ecs
+    ecs = __ecs
     import pulumi_awsx.iam as __iam
     iam = __iam
 else:
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
     cloudwatch = _utilities.lazy_import('pulumi_awsx.cloudwatch')
-    ecsx = _utilities.lazy_import('pulumi_awsx.ecsx')
+    ecs = _utilities.lazy_import('pulumi_awsx.ecs')
     iam = _utilities.lazy_import('pulumi_awsx.iam')
 
 _utilities.register(
@@ -36,11 +36,11 @@ _utilities.register(
  },
  {
   "pkg": "awsx",
-  "mod": "ecsx",
-  "fqn": "pulumi_awsx.ecsx",
+  "mod": "ecs",
+  "fqn": "pulumi_awsx.ecs",
   "classes": {
-   "awsx:ecsx:FargateService": "FargateService",
-   "awsx:ecsx:FargateTaskDefinition": "FargateTaskDefinition"
+   "awsx:ecs:FargateService": "FargateService",
+   "awsx:ecs:FargateTaskDefinition": "FargateTaskDefinition"
   }
  }
 ]
