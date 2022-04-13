@@ -14,30 +14,31 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "../../cloudtrail";
+import { ProviderModule } from "./providerModule";
 
-const trailProvider: pulumi.provider.Provider = {
+export const trailProvider: ProviderModule = {
     construct: async (
         name: string,
         type: string,
         inputs: pulumi.Inputs,
         options: pulumi.ComponentResourceOptions,
     ) => {
-        const trail = new Trail(name, inputs, options);
-        return {
-            urn: trail.urn,
-            state: {
-                arn: trail.trail.arn,
-                bucket: trail.bucket,
-                logGroup: trail.logGroup,
-                homeRegion: trail.trail.homeRegion,
-                tagsAll: trail.trail.tagsAll,
-            },
-        };
+        const [pkg, moduleName, typeName] = type.split(":");
+        switch (typeName) {
+            case "Trail":
+                const trail = new Trail(name, inputs, options);
+                return {
+                    urn: trail.urn,
+                    state: {
+                        arn: trail.trail.arn,
+                        bucket: trail.bucket,
+                        logGroup: trail.logGroup,
+                        homeRegion: trail.trail.homeRegion,
+                        tagsAll: trail.trail.tagsAll,
+                    },
+                };
+            default:
+                throw new Error(`unknown resource type ${type}`);
+        }
     },
-    version: "", // ignored
 };
-
-/** @internal */
-export function trailProviderFactory(): pulumi.provider.Provider {
-    return trailProvider;
-}

@@ -14,63 +14,31 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
-import { Trail } from "../../cloudtrail";
-import { trailProviderFactory } from "./trail";
+import { ProviderModule } from "./providerModule";
+import { trailProvider } from "./trail";
+
+const modules: Record<string, ProviderModule> = { cloudtrail: trailProvider };
+
+const packageName = "awsx";
 
 class Provider implements pulumi.provider.Provider {
-    // A map of types to provider factories. Calling a factory may return a new instance each
-    // time or return the same provider instance.
-    private readonly typeToProviderFactoryMap: Record<
-        string,
-        () => pulumi.provider.Provider
-    > = {
-        "awsx:cloudtrail:Trail": trailProviderFactory,
-    };
-
-    constructor(readonly version: string, readonly schema: string) {
-        // Register any resources that can come back as resource references that need to be rehydrated.
-        pulumi.runtime.registerResourceModule("awsx", "cloudtrail", {
-            version: version,
-            construct: (name, type, urn) => {
-                switch (type) {
-                    case "awsx:cloudtrail:Trail":
-                        return new Trail(name, {}, { urn });
-                    default:
-                        throw new Error(`unknown resource type ${type}`);
-                }
-            },
-        });
-    }
-
-    construct(
+    constructor(readonly version: string, readonly schema: string) {}
+    async construct(
         name: string,
         type: string,
         inputs: pulumi.Inputs,
         options: pulumi.ComponentResourceOptions,
-    ): Promise<pulumi.provider.ConstructResult> {
-        const provider = this.getProviderForType(type);
-        return provider?.construct
-            ? provider.construct(name, type, inputs, options)
-            : unknownResourceRejectedPromise(type);
-    }
-
-    /**
-     * Returns a provider for the type or undefined if not found.
-     */
-    private getProviderForType(
-        type: string,
-    ): pulumi.provider.Provider | undefined {
-        const factory = this.typeToProviderFactoryMap[type];
-        return factory ? factory() : undefined;
+    ) {
+        const [pkg, moduleName] = type.split(":");
+        const module = modules[moduleName];
+        if (pkg !== packageName || module === undefined) {
+            throw new Error(`unknown resource type ${type}`);
+        }
+        return module.construct(name, type, inputs, options);
     }
 }
 
-function unknownResourceRejectedPromise<T>(type: string): Promise<T> {
-    return Promise.reject(new Error(`unknown resource type ${type}`));
-}
-
-/** @internal */
-export function main(args: string[]) {
+function main(args: string[]) {
     const schema: string = readFileSync(require.resolve("./schema.json"), {
         encoding: "utf-8",
     });
@@ -80,8 +48,8 @@ export function main(args: string[]) {
     if (version.startsWith("v")) {
         version = version.slice(1);
     }
-
-    return pulumi.provider.main(new Provider(version, schema), args);
+    const provider = new Provider(version, schema);
+    return pulumi.provider.main(provider, args);
 }
 
 main(process.argv.slice(2));
