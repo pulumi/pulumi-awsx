@@ -55,9 +55,8 @@ export function defaultRoleWithPolicies(
 
     const roleArgs = { ...args, assumeRolePolicy };
     delete roleArgs.policyArns;
-    const roleOpts = { ...inputs?.opts, ...opts };
 
-    const role = new aws.iam.Role(name, roleArgs, roleOpts);
+    const role = new aws.iam.Role(name, roleArgs, opts);
     const policies = args.policyArns?.map(
         (policyArn) =>
             new aws.iam.RolePolicyAttachment(

@@ -49,11 +49,6 @@
                     "plain": true,
                     "description": "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`."
                 },
-                "opts": {
-                    "$ref": "#/types/awsx:resource:NestedResourceOptions",
-                    "plain": true,
-                    "description": "Resource options to be used during creation of the log group."
-                },
                 "skip": {
                     "type": "boolean",
                     "plain": true,
@@ -705,11 +700,6 @@
                     "plain": true,
                     "description": "Args to use when creating the role and policies. Can't be specified if `roleArn` is used."
                 },
-                "opts": {
-                    "$ref": "#/types/awsx:resource:NestedResourceOptions",
-                    "plain": true,
-                    "description": "Resource options to use for the role. Can't be specified if `roleArn` is used."
-                },
                 "roleArn": {
                     "type": "string",
                     "description": "ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`."
@@ -782,40 +772,6 @@
                         "type": "string"
                     },
                     "description": "Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
-                }
-            },
-            "type": "object"
-        },
-        "awsx:resource:NestedResourceOptions": {
-            "description": "NestedResourceOptions is a bag of optional settings that control a resource's behavior.",
-            "properties": {
-                "ignoreChanges": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "plain": true
-                    },
-                    "plain": true,
-                    "description": "Ignore changes to any of the specified properties."
-                },
-                "import": {
-                    "type": "string",
-                    "plain": true,
-                    "description": "When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options."
-                },
-                "protect": {
-                    "type": "boolean",
-                    "plain": true,
-                    "description": "When set to true, protect ensures this resource cannot be deleted."
-                },
-                "replaceOnChanges": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "plain": true
-                    },
-                    "plain": true,
-                    "description": "Changes to any of these property paths will force a replacement.  If this list includes `\"*\"`, changes to any properties will force a replacement.  Initialization errors from previous deployments will require replacement instead of update only if `\"*\"` is passed."
                 }
             },
             "type": "object"

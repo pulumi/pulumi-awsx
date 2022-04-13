@@ -107,13 +107,11 @@ export interface LogGroupOutputs {
 export interface DefaultLogGroupInputs {
     readonly args?: LogGroupInputs;
     readonly existing?: ExistingLogGroupInputs;
-    readonly opts?: NestedResourceOptionsInputs;
     readonly skip?: boolean;
 }
 export interface DefaultLogGroupOutputs {
     readonly args?: LogGroupOutputs;
     readonly existing?: ExistingLogGroupOutputs;
-    readonly opts?: NestedResourceOptionsOutputs;
     readonly skip?: boolean;
 }
 export interface ExistingLogGroupInputs {
@@ -446,13 +444,11 @@ export interface TaskDefinitionVolumeFromOutputs {
 }
 export interface DefaultRoleWithPolicyInputs {
     readonly args?: RoleWithPolicyInputs;
-    readonly opts?: NestedResourceOptionsInputs;
     readonly roleArn?: pulumi.Input<string>;
     readonly skip?: boolean;
 }
 export interface DefaultRoleWithPolicyOutputs {
     readonly args?: RoleWithPolicyOutputs;
-    readonly opts?: NestedResourceOptionsOutputs;
     readonly roleArn?: pulumi.Output<string>;
     readonly skip?: boolean;
 }
@@ -481,16 +477,4 @@ export interface RoleWithPolicyOutputs {
     readonly permissionsBoundary?: pulumi.Output<string>;
     readonly policyArns?: string[];
     readonly tags?: pulumi.Output<Record<string, string>>;
-}
-export interface NestedResourceOptionsInputs {
-    readonly ignoreChanges?: string[];
-    readonly import?: string;
-    readonly protect?: boolean;
-    readonly replaceOnChanges?: string[];
-}
-export interface NestedResourceOptionsOutputs {
-    readonly ignoreChanges?: string[];
-    readonly import?: string;
-    readonly protect?: boolean;
-    readonly replaceOnChanges?: string[];
 }
