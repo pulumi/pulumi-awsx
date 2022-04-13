@@ -322,7 +322,7 @@ func GenerateSchema() schema.PackageSpec {
 		},
 	}
 
-	return extendSchemas(packageSpec, generateEcsx(awsSpec, awsNativeSpec))
+	return extendSchemas(packageSpec, generateEcs(awsSpec, awsNativeSpec))
 }
 
 func getAwsSpec() schema.PackageSpec {

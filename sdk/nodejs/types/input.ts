@@ -94,7 +94,7 @@ export namespace cloudwatch {
     }
 }
 
-export namespace ecsx {
+export namespace ecs {
     /**
      * Create a TaskDefinition resource with the given unique name, arguments, and options.
      * Creates required log-group and task & execution roles.
@@ -107,14 +107,14 @@ export namespace ecsx {
          *
          * Either [container] or [containers] must be provided.
          */
-        container?: inputs.ecsx.TaskDefinitionContainerDefinitionArgs;
+        container?: inputs.ecs.TaskDefinitionContainerDefinitionArgs;
         /**
          * All the containers to make a TaskDefinition from.  Useful when creating a Service that will
          * contain many containers within.
          *
          * Either [container] or [containers] must be provided.
          */
-        containers?: {[key: string]: inputs.ecsx.TaskDefinitionContainerDefinitionArgs};
+        containers?: {[key: string]: inputs.ecs.TaskDefinitionContainerDefinitionArgs};
         /**
          * The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
          */
@@ -195,7 +195,7 @@ export namespace ecsx {
     export interface TaskDefinitionContainerDefinitionArgs {
         command?: pulumi.Input<pulumi.Input<string>[]>;
         cpu?: pulumi.Input<number>;
-        dependsOn?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionContainerDependencyArgs>[]>;
+        dependsOn?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionContainerDependencyArgs>[]>;
         disableNetworking?: pulumi.Input<boolean>;
         dnsSearchDomains?: pulumi.Input<pulumi.Input<string>[]>;
         dnsServers?: pulumi.Input<pulumi.Input<string>[]>;
@@ -205,15 +205,15 @@ export namespace ecsx {
         /**
          * The environment variables to pass to a container
          */
-        environment?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionKeyValuePairArgs>[]>;
+        environment?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionKeyValuePairArgs>[]>;
         /**
          * The list of one or more files that contain the environment variables to pass to a container
          */
-        environmentFiles?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionEnvironmentFileArgs>[]>;
+        environmentFiles?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionEnvironmentFileArgs>[]>;
         essential?: pulumi.Input<boolean>;
-        extraHosts?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionHostEntryArgs>[]>;
-        firelensConfiguration?: pulumi.Input<inputs.ecsx.TaskDefinitionFirelensConfigurationArgs>;
-        healthCheck?: pulumi.Input<inputs.ecsx.TaskDefinitionHealthCheckArgs>;
+        extraHosts?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionHostEntryArgs>[]>;
+        firelensConfiguration?: pulumi.Input<inputs.ecs.TaskDefinitionFirelensConfigurationArgs>;
+        healthCheck?: pulumi.Input<inputs.ecs.TaskDefinitionHealthCheckArgs>;
         hostname?: pulumi.Input<string>;
         /**
          * The image used to start a container. This string is passed directly to the Docker daemon.
@@ -221,14 +221,14 @@ export namespace ecsx {
         image?: pulumi.Input<string>;
         interactive?: pulumi.Input<boolean>;
         links?: pulumi.Input<pulumi.Input<string>[]>;
-        linuxParameters?: pulumi.Input<inputs.ecsx.TaskDefinitionLinuxParametersArgs>;
-        logConfiguration?: pulumi.Input<inputs.ecsx.TaskDefinitionLogConfigurationArgs>;
+        linuxParameters?: pulumi.Input<inputs.ecs.TaskDefinitionLinuxParametersArgs>;
+        logConfiguration?: pulumi.Input<inputs.ecs.TaskDefinitionLogConfigurationArgs>;
         /**
          * The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed.
          */
         memory?: pulumi.Input<number>;
         memoryReservation?: pulumi.Input<number>;
-        mountPoints?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionMountPointArgs>[]>;
+        mountPoints?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionMountPointArgs>[]>;
         /**
          * The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
          */
@@ -236,19 +236,19 @@ export namespace ecsx {
         /**
          * Port mappings allow containers to access ports on the host container instance to send or receive traffic.
          */
-        portMappings?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionPortMappingArgs>[]>;
+        portMappings?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionPortMappingArgs>[]>;
         privileged?: pulumi.Input<boolean>;
         pseudoTerminal?: pulumi.Input<boolean>;
         readonlyRootFilesystem?: pulumi.Input<boolean>;
-        repositoryCredentials?: pulumi.Input<inputs.ecsx.TaskDefinitionRepositoryCredentialsArgs>;
-        resourceRequirements?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionResourceRequirementArgs>[]>;
-        secrets?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionSecretArgs>[]>;
+        repositoryCredentials?: pulumi.Input<inputs.ecs.TaskDefinitionRepositoryCredentialsArgs>;
+        resourceRequirements?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionResourceRequirementArgs>[]>;
+        secrets?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionSecretArgs>[]>;
         startTimeout?: pulumi.Input<number>;
         stopTimeout?: pulumi.Input<number>;
-        systemControls?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionSystemControlArgs>[]>;
-        ulimits?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionUlimitArgs>[]>;
+        systemControls?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionSystemControlArgs>[]>;
+        ulimits?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionUlimitArgs>[]>;
         user?: pulumi.Input<string>;
-        volumesFrom?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionVolumeFromArgs>[]>;
+        volumesFrom?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionVolumeFromArgs>[]>;
         workingDirectory?: pulumi.Input<string>;
     }
 
@@ -315,19 +315,19 @@ export namespace ecsx {
     }
 
     export interface TaskDefinitionLinuxParametersArgs {
-        capabilities?: pulumi.Input<inputs.ecsx.TaskDefinitionKernelCapabilitiesArgs>;
-        devices?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionDeviceArgs>[]>;
+        capabilities?: pulumi.Input<inputs.ecs.TaskDefinitionKernelCapabilitiesArgs>;
+        devices?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionDeviceArgs>[]>;
         initProcessEnabled?: pulumi.Input<boolean>;
         maxSwap?: pulumi.Input<number>;
         sharedMemorySize?: pulumi.Input<number>;
         swappiness?: pulumi.Input<number>;
-        tmpfs?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionTmpfsArgs>[]>;
+        tmpfs?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionTmpfsArgs>[]>;
     }
 
     export interface TaskDefinitionLogConfigurationArgs {
         logDriver: pulumi.Input<string>;
         options?: any;
-        secretOptions?: pulumi.Input<pulumi.Input<inputs.ecsx.TaskDefinitionSecretArgs>[]>;
+        secretOptions?: pulumi.Input<pulumi.Input<inputs.ecs.TaskDefinitionSecretArgs>[]>;
     }
 
     export interface TaskDefinitionMountPointArgs {

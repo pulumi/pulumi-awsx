@@ -18,15 +18,15 @@ import (
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
-func generateEcsx(awsSpec, awsNativeSpec schema.PackageSpec) schema.PackageSpec {
+func generateEcs(awsSpec, awsNativeSpec schema.PackageSpec) schema.PackageSpec {
 	fargateTaskDefinitionResource := fargateTaskDefinition(awsSpec)
 	packageSpec := schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
-			"awsx:ecsx:FargateService":        fargateService(awsSpec),
-			"awsx:ecsx:FargateTaskDefinition": fargateTaskDefinitionResource,
+			"awsx:ecs:FargateService":        fargateService(awsSpec),
+			"awsx:ecs:FargateTaskDefinition": fargateTaskDefinitionResource,
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:ecsx:FargateServiceTaskDefinition": {
+			"awsx:ecs:FargateServiceTaskDefinition": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: fargateTaskDefinitionResource.Description,
@@ -67,7 +67,7 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties["taskDefinitionArgs"] = schema.PropertySpec{
 		Description: "The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.",
 		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:ecsx:FargateServiceTaskDefinition",
+			Ref:   "#/types/awsx:ecs:FargateServiceTaskDefinition",
 			Plain: true,
 		},
 	}
@@ -113,7 +113,7 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties["container"] = schema.PropertySpec{
 		Description: "Single container to make a TaskDefinition from.  Useful for simple cases where there aren't\nmultiple containers, especially when creating a TaskDefinition to call [run] on.\n\nEither [container] or [containers] must be provided.",
 		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+			Ref:   "#/types/awsx:ecs:TaskDefinitionContainerDefinition",
 			Plain: true,
 		},
 	}
@@ -122,7 +122,7 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		TypeSpec: schema.TypeSpec{
 			Type: "object",
 			AdditionalProperties: &schema.TypeSpec{
-				Ref:   "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+				Ref:   "#/types/awsx:ecs:TaskDefinitionContainerDefinition",
 				Plain: true,
 			},
 			Plain: true,
@@ -243,9 +243,9 @@ func containerDefinitionTypes(awsNativeSpec schema.PackageSpec) map[string]schem
 	}
 	types := map[string]schema.ComplexTypeSpec{}
 	for _, name := range names {
-		types["awsx:ecsx:"+name] = renameComplexRefs(awsNativeSpec.Types["aws-native:ecs:"+name], "aws-native:ecs:", "awsx:ecsx:")
+		types["awsx:ecs:"+name] = renameComplexRefs(awsNativeSpec.Types["aws-native:ecs:"+name], "aws-native:ecs:", "awsx:ecs:")
 	}
-	types["awsx:ecsx:TaskDefinitionPortMapping"].Properties["targetGroup"] = schema.PropertySpec{
+	types["awsx:ecs:TaskDefinitionPortMapping"].Properties["targetGroup"] = schema.PropertySpec{
 		TypeSpec: schema.TypeSpec{
 			Ref: awsRef("#/resources/aws:lb%2FtargetGroup:TargetGroup"),
 		},
