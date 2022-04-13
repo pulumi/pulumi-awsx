@@ -1,10 +1,10 @@
-module go-trail
+module github.com/pulumi/pulumi-awsx/examples/go-trail
 
-go 1.14
+go 1.16
 
 require (
-	github.com/pulumi/pulumi-aws/sdk/v4 v4.37.5
-	github.com/pulumi/pulumi-awsx/sdk v0.13.0
+	github.com/pulumi/pulumi-aws/sdk/v5 v5.1.2
+	github.com/pulumi/pulumi-awsx/sdk v0.0.0-20220413174901-ab146e2dfade
 	github.com/pulumi/pulumi/sdk/v3 v3.25.1
 )
 
