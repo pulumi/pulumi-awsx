@@ -41,6 +41,15 @@ func TestAccCapacityProviderServiceWithClusterDefaultStrategies(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestEcsxAccCapacityProviderServiceWithClusterDefaultStrategies(t *testing.T) {
+	test := getBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			Dir: path.Join(getCwd(t), "./ecsx/capacity-provider-service-with-cluster-default-strategies"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func TestAccCapacityProviderServiceEC2CustomStrategy(t *testing.T) {
 	test := getBaseOptions(t).
 		With(integration.ProgramTestOptions{

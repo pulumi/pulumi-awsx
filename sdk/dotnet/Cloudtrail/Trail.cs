@@ -13,22 +13,22 @@ namespace Pulumi.Awsx.Cloudtrail
     public partial class Trail : Pulumi.ComponentResource
     {
         /// <summary>
-        /// ARN of the trail.
+        /// The managed S3 Bucket where the Trail will place its logs.
         /// </summary>
-        [Output("arn")]
-        public Output<string> Arn { get; private set; } = null!;
+        [Output("bucket")]
+        public Output<Pulumi.Aws.S3.Bucket> Bucket { get; private set; } = null!;
 
         /// <summary>
-        /// Region in which the trail was created.
+        /// The managed Cloudwatch Log Group.
         /// </summary>
-        [Output("homeRegion")]
-        public Output<string?> HomeRegion { get; private set; } = null!;
+        [Output("logGroup")]
+        public Output<Pulumi.Aws.CloudWatch.LogGroup?> LogGroup { get; private set; } = null!;
 
         /// <summary>
-        /// Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
+        /// The CloudTrail Trail.
         /// </summary>
-        [Output("tagsAll")]
-        public Output<ImmutableDictionary<string, string>?> TagsAll { get; private set; } = null!;
+        [Output("trail")]
+        public Output<Pulumi.Aws.CloudTrail.Trail> AwsTrail { get; private set; } = null!;
 
 
         /// <summary>

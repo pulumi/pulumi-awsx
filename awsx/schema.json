@@ -1,0 +1,1200 @@
+{
+    "name": "awsx",
+    "description": "Pulumi Amazon Web Services (AWS) AWSX Components.",
+    "keywords": [
+        "pulumi",
+        "aws",
+        "awsx"
+    ],
+    "homepage": "https://pulumi.com",
+    "license": "Apache-2.0",
+    "repository": "https://github.com/pulumi/pulumi-awsx",
+    "config": {},
+    "types": {
+        "awsx:cloudtrail:LogGroup": {
+            "description": "Defines the log group configuration for the CloudWatch Log Group to send logs to.",
+            "properties": {
+                "kmsKeyId": {
+                    "type": "string",
+                    "description": "The ARN of the KMS Key to use when encrypting log data."
+                },
+                "namePrefix": {
+                    "type": "string",
+                    "description": "Creates a unique name beginning with the specified prefix"
+                },
+                "retentionInDays": {
+                    "type": "integer",
+                    "description": "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0. If you select 0, the events in the log group are always retained and never expire."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A map of tags to assign to the resource. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:cloudwatch:DefaultLogGroup": {
+            "description": "Log group with default setup unless explicitly skipped.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:cloudwatch:LogGroup",
+                    "plain": true,
+                    "description": "Arguments to use instead of the default values during creation."
+                },
+                "existing": {
+                    "$ref": "#/types/awsx:cloudwatch:ExistingLogGroup",
+                    "plain": true,
+                    "description": "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`."
+                },
+                "skip": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Skip creation of the log group."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:cloudwatch:ExistingLogGroup": {
+            "description": "Reference to an existing log group.",
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "description": "Name of the log group."
+                },
+                "region": {
+                    "type": "string",
+                    "description": "Region of the log group. If not specified, the provider region will be used."
+                }
+            },
+            "type": "object",
+            "required": [
+                "name"
+            ]
+        },
+        "awsx:cloudwatch:LogGroup": {
+            "description": "The set of arguments for constructing a LogGroup resource.",
+            "properties": {
+                "kmsKeyId": {
+                    "type": "string",
+                    "description": "The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,\nAWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires\npermissions for the CMK whenever the encrypted data is requested.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the log group. If omitted, this provider will assign a random, unique name.\n"
+                },
+                "namePrefix": {
+                    "type": "string",
+                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n"
+                },
+                "retentionInDays": {
+                    "type": "integer",
+                    "description": "Specifies the number of days\nyou want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.\nIf you select 0, the events in the log group are always retained and never expire.\n"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:FargateServiceTaskDefinition": {
+            "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
+            "properties": {
+                "container": {
+                    "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                    "plain": true,
+                    "description": "Single container to make a TaskDefinition from.  Useful for simple cases where there aren't\nmultiple containers, especially when creating a TaskDefinition to call [run] on.\n\nEither [container] or [containers] must be provided."
+                },
+                "containers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "All the containers to make a TaskDefinition from.  Useful when creating a Service that will\ncontain many containers within.\n\nEither [container] or [containers] must be provided."
+                },
+                "cpu": {
+                    "type": "string",
+                    "description": "The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]"
+                },
+                "ephemeralStorage": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
+                },
+                "executionRole": {
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
+                    "plain": true,
+                    "description": "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined."
+                },
+                "family": {
+                    "type": "string",
+                    "description": "An optional unique name for your task definition. If not specified, then a default will be created."
+                },
+                "inferenceAccelerators": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
+                    },
+                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n"
+                },
+                "ipcMode": {
+                    "type": "string",
+                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
+                },
+                "logGroup": {
+                    "$ref": "#/types/awsx:cloudwatch:DefaultLogGroup",
+                    "plain": true,
+                    "description": "A set of volume blocks that containers in your task may use."
+                },
+                "memory": {
+                    "type": "string",
+                    "description": "The amount (in MiB) of memory used by the task.  If not provided, a default will be computed\nbased on the cumulative needs specified by [containerDefinitions]"
+                },
+                "networkMode": {
+                    "type": "string",
+                    "description": "Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.\n"
+                },
+                "pidMode": {
+                    "type": "string",
+                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n"
+                },
+                "placementConstraints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                    },
+                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n"
+                },
+                "proxyConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n"
+                },
+                "requiresCompatibilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.\n"
+                },
+                "runtimePlatform": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "description": "Configuration block for runtime_platform that containers in your task may use.\n"
+                },
+                "skipDestroy": {
+                    "type": "boolean"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Key-value map of resource tags.\n"
+                },
+                "taskRole": {
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
+                    "plain": true,
+                    "description": "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined."
+                },
+                "volumes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                    },
+                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionContainerDefinition": {
+            "description": "List of container definitions that are passed to the Docker daemon on a container instance",
+            "properties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "cpu": {
+                    "type": "integer"
+                },
+                "dependsOn": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDependency"
+                    }
+                },
+                "disableNetworking": {
+                    "type": "boolean"
+                },
+                "dnsSearchDomains": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dnsServers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dockerLabels": {
+                    "$ref": "pulumi.json#/Any"
+                },
+                "dockerSecurityOptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "entryPoint": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "environment": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionKeyValuePair"
+                    },
+                    "description": "The environment variables to pass to a container"
+                },
+                "environmentFiles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionEnvironmentFile"
+                    },
+                    "description": "The list of one or more files that contain the environment variables to pass to a container"
+                },
+                "essential": {
+                    "type": "boolean"
+                },
+                "extraHosts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionHostEntry"
+                    }
+                },
+                "firelensConfiguration": {
+                    "$ref": "#/types/awsx:ecsx:TaskDefinitionFirelensConfiguration"
+                },
+                "healthCheck": {
+                    "$ref": "#/types/awsx:ecsx:TaskDefinitionHealthCheck"
+                },
+                "hostname": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string",
+                    "description": "The image used to start a container. This string is passed directly to the Docker daemon."
+                },
+                "interactive": {
+                    "type": "boolean"
+                },
+                "links": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "linuxParameters": {
+                    "$ref": "#/types/awsx:ecsx:TaskDefinitionLinuxParameters"
+                },
+                "logConfiguration": {
+                    "$ref": "#/types/awsx:ecsx:TaskDefinitionLogConfiguration"
+                },
+                "memory": {
+                    "type": "integer",
+                    "description": "The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed."
+                },
+                "memoryReservation": {
+                    "type": "integer"
+                },
+                "mountPoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionMountPoint"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed"
+                },
+                "portMappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionPortMapping"
+                    },
+                    "description": "Port mappings allow containers to access ports on the host container instance to send or receive traffic."
+                },
+                "privileged": {
+                    "type": "boolean"
+                },
+                "pseudoTerminal": {
+                    "type": "boolean"
+                },
+                "readonlyRootFilesystem": {
+                    "type": "boolean"
+                },
+                "repositoryCredentials": {
+                    "$ref": "#/types/awsx:ecsx:TaskDefinitionRepositoryCredentials"
+                },
+                "resourceRequirements": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionResourceRequirement"
+                    }
+                },
+                "secrets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionSecret"
+                    }
+                },
+                "startTimeout": {
+                    "type": "integer"
+                },
+                "stopTimeout": {
+                    "type": "integer"
+                },
+                "systemControls": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionSystemControl"
+                    }
+                },
+                "ulimits": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionUlimit"
+                    }
+                },
+                "user": {
+                    "type": "string"
+                },
+                "volumesFrom": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionVolumeFrom"
+                    }
+                },
+                "workingDirectory": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionContainerDependency": {
+            "properties": {
+                "condition": {
+                    "type": "string"
+                },
+                "containerName": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionDevice": {
+            "properties": {
+                "containerPath": {
+                    "type": "string"
+                },
+                "hostPath": {
+                    "type": "string"
+                },
+                "permissions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionEnvironmentFile": {
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionFirelensConfiguration": {
+            "properties": {
+                "options": {
+                    "$ref": "pulumi.json#/Any"
+                },
+                "type": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionHealthCheck": {
+            "description": "The health check command and associated configuration parameters for the container.",
+            "properties": {
+                "command": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A string array representing the command that the container runs to determine if it is healthy."
+                },
+                "interval": {
+                    "type": "integer",
+                    "description": "The time period in seconds between each health check execution. You may specify between 5 and 300 seconds. The default value is 30 seconds."
+                },
+                "retries": {
+                    "type": "integer",
+                    "description": "The number of times to retry a failed health check before the container is considered unhealthy. You may specify between 1 and 10 retries. The default value is three retries."
+                },
+                "startPeriod": {
+                    "type": "integer",
+                    "description": "The optional grace period within which to provide containers time to bootstrap before failed health checks count towards the maximum number of retries. You may specify between 0 and 300 seconds. The startPeriod is disabled by default."
+                },
+                "timeout": {
+                    "type": "integer",
+                    "description": "The time period in seconds to wait for a health check to succeed before it is considered a failure. You may specify between 2 and 60 seconds. The default value is 5 seconds."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionHostEntry": {
+            "properties": {
+                "hostname": {
+                    "type": "string"
+                },
+                "ipAddress": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionKernelCapabilities": {
+            "properties": {
+                "add": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "drop": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionKeyValuePair": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionLinuxParameters": {
+            "properties": {
+                "capabilities": {
+                    "$ref": "#/types/awsx:ecsx:TaskDefinitionKernelCapabilities"
+                },
+                "devices": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionDevice"
+                    }
+                },
+                "initProcessEnabled": {
+                    "type": "boolean"
+                },
+                "maxSwap": {
+                    "type": "integer"
+                },
+                "sharedMemorySize": {
+                    "type": "integer"
+                },
+                "swappiness": {
+                    "type": "integer"
+                },
+                "tmpfs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionTmpfs"
+                    }
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionLogConfiguration": {
+            "properties": {
+                "logDriver": {
+                    "type": "string"
+                },
+                "options": {
+                    "$ref": "pulumi.json#/Any"
+                },
+                "secretOptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionSecret"
+                    }
+                }
+            },
+            "type": "object",
+            "required": [
+                "logDriver"
+            ]
+        },
+        "awsx:ecsx:TaskDefinitionMountPoint": {
+            "properties": {
+                "containerPath": {
+                    "type": "string"
+                },
+                "readOnly": {
+                    "type": "boolean"
+                },
+                "sourceVolume": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionPortMapping": {
+            "properties": {
+                "containerPort": {
+                    "type": "integer"
+                },
+                "hostPort": {
+                    "type": "integer"
+                },
+                "protocol": {
+                    "type": "string"
+                },
+                "targetGroup": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:lb%2FtargetGroup:TargetGroup"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionRepositoryCredentials": {
+            "properties": {
+                "credentialsParameter": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionResourceRequirement": {
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "type": "object",
+            "required": [
+                "type",
+                "value"
+            ]
+        },
+        "awsx:ecsx:TaskDefinitionSecret": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "valueFrom": {
+                    "type": "string"
+                }
+            },
+            "type": "object",
+            "required": [
+                "name",
+                "valueFrom"
+            ]
+        },
+        "awsx:ecsx:TaskDefinitionSystemControl": {
+            "properties": {
+                "namespace": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecsx:TaskDefinitionTmpfs": {
+            "properties": {
+                "containerPath": {
+                    "type": "string"
+                },
+                "mountOptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "size": {
+                    "type": "integer"
+                }
+            },
+            "type": "object",
+            "required": [
+                "size"
+            ]
+        },
+        "awsx:ecsx:TaskDefinitionUlimit": {
+            "properties": {
+                "hardLimit": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "softLimit": {
+                    "type": "integer"
+                }
+            },
+            "type": "object",
+            "required": [
+                "hardLimit",
+                "name",
+                "softLimit"
+            ]
+        },
+        "awsx:ecsx:TaskDefinitionVolumeFrom": {
+            "properties": {
+                "readOnly": {
+                    "type": "boolean"
+                },
+                "sourceContainer": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:iam:DefaultRoleWithPolicy": {
+            "description": "Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:iam:RoleWithPolicy",
+                    "plain": true,
+                    "description": "Args to use when creating the role and policies. Can't be specified if `roleArn` is used."
+                },
+                "roleArn": {
+                    "type": "string",
+                    "description": "ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`."
+                },
+                "skip": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Skips creation of the role if set to `true`."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:iam:RoleWithPolicy": {
+            "description": "The set of arguments for constructing a Role resource and Policy attachments.",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Description of the role.\n"
+                },
+                "forceDetachPolicies": {
+                    "type": "boolean",
+                    "description": "Whether to force detaching any policies the role has before destroying it. Defaults to `false`.\n"
+                },
+                "inlinePolicies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
+                    },
+                    "description": "Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.\n"
+                },
+                "managedPolicyArns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.\n"
+                },
+                "maxSessionDuration": {
+                    "type": "integer",
+                    "description": "Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the role policy.\n"
+                },
+                "namePrefix": {
+                    "type": "string",
+                    "description": "Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.\n"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.\n"
+                },
+                "permissionsBoundary": {
+                    "type": "string",
+                    "description": "ARN of the policy that is used to set the permissions boundary for the role.\n"
+                },
+                "policyArns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "ARNs of the policies to attach to the created role."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "provider": {},
+    "resources": {
+        "awsx:cloudtrail:Trail": {
+            "properties": {
+                "bucket": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:s3%2Fbucket:Bucket",
+                    "description": "The managed S3 Bucket where the Trail will place its logs."
+                },
+                "logGroup": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "description": "The managed Cloudwatch Log Group."
+                },
+                "trail": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:cloudtrail%2Ftrail:Trail",
+                    "description": "The CloudTrail Trail.",
+                    "language": {
+                        "csharp": {
+                            "name": "AwsTrail"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "bucket",
+                "trail"
+            ],
+            "inputProperties": {
+                "advancedEventSelectors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:cloudtrail%2FTrailAdvancedEventSelector:TrailAdvancedEventSelector"
+                    },
+                    "description": "Specifies an advanced event selector for enabling data event logging."
+                },
+                "cloudWatchLogGroupArgs": {
+                    "$ref": "#/types/awsx:cloudtrail:LogGroup",
+                    "description": "If sendToCloudWatchLogs is enabled, provide the log group configuration."
+                },
+                "cloudWatchLogsGroupArn": {
+                    "type": "string",
+                    "description": "Log group name using an ARN that represents the log group to which CloudTrail logs will be delivered. Note that CloudTrail requires the Log Stream wildcard."
+                },
+                "cloudWatchLogsRoleArn": {
+                    "type": "string",
+                    "description": "Role for the CloudWatch Logs endpoint to assume to write to a user’s log group."
+                },
+                "enableLogFileValidation": {
+                    "type": "boolean",
+                    "description": "Whether log file integrity validation is enabled. Defaults to `false`."
+                },
+                "enableLogging": {
+                    "type": "boolean",
+                    "description": "Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging."
+                },
+                "eventSelectors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:cloudtrail%2FTrailEventSelector:TrailEventSelector"
+                    },
+                    "description": "Specifies an event selector for enabling data event logging. Please note the CloudTrail limits when configuring these"
+                },
+                "includeGlobalServiceEvents": {
+                    "type": "boolean",
+                    "description": "Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`."
+                },
+                "insightSelectors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:cloudtrail%2FTrailInsightSelector:TrailInsightSelector"
+                    },
+                    "description": "Configuration block for identifying unusual operational activity."
+                },
+                "isMultiRegionTrail": {
+                    "type": "boolean",
+                    "description": "Whether the trail is created in the current region or in all regions. Defaults to `false`."
+                },
+                "isOrganizationTrail": {
+                    "type": "boolean",
+                    "description": "Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`"
+                },
+                "kmsKeyId": {
+                    "type": "string",
+                    "description": "KMS key ARN to use to encrypt the logs delivered by CloudTrail."
+                },
+                "s3BucketName": {
+                    "type": "string",
+                    "description": "Name of the S3 bucket designated for publishing log files."
+                },
+                "s3KeyPrefix": {
+                    "type": "string",
+                    "description": "S3 key prefix that follows the name of the bucket you have designated for log file delivery."
+                },
+                "sendToCloudWatchLogs": {
+                    "type": "boolean",
+                    "description": "If CloudTrail pushes logs to CloudWatch Logs in addition to S3. Disabled by default to reduce costs. Defaults to `false`"
+                },
+                "snsTopicName": {
+                    "type": "string",
+                    "description": "Name of the Amazon SNS topic defined for notification of log file delivery."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level."
+                }
+            },
+            "isComponent": true
+        },
+        "awsx:ecsx:FargateService": {
+            "description": "Create an ECS Service resource for Fargate with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
+            "properties": {
+                "service": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ecs%2fservice:Service",
+                    "description": "Underlying ECS Service resource"
+                },
+                "taskDefinition": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "description": "Underlying Fargate component resource if created from args"
+                }
+            },
+            "required": [
+                "service"
+            ],
+            "inputProperties": {
+                "capacityProviderStrategies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/ServiceCapacityProviderStrategy:ServiceCapacityProviderStrategy"
+                    },
+                    "description": "Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below.\n"
+                },
+                "cluster": {
+                    "type": "string",
+                    "description": "ARN of an ECS cluster.\n"
+                },
+                "continueBeforeSteadyState": {
+                    "type": "boolean",
+                    "description": "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`."
+                },
+                "deploymentCircuitBreaker": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/ServiceDeploymentCircuitBreaker:ServiceDeploymentCircuitBreaker",
+                    "description": "Configuration block for deployment circuit breaker. See below.\n"
+                },
+                "deploymentController": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/ServiceDeploymentController:ServiceDeploymentController",
+                    "description": "Configuration block for deployment controller configuration. See below.\n"
+                },
+                "deploymentMaximumPercent": {
+                    "type": "integer",
+                    "description": "Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment. Not valid when using the `DAEMON` scheduling strategy.\n"
+                },
+                "deploymentMinimumHealthyPercent": {
+                    "type": "integer",
+                    "description": "Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment.\n"
+                },
+                "desiredCount": {
+                    "type": "integer",
+                    "description": "Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.\n"
+                },
+                "enableEcsManagedTags": {
+                    "type": "boolean",
+                    "description": "Specifies whether to enable Amazon ECS managed tags for the tasks within the service.\n"
+                },
+                "enableExecuteCommand": {
+                    "type": "boolean",
+                    "description": "Specifies whether to enable Amazon ECS Exec for the tasks within the service.\n"
+                },
+                "forceNewDeployment": {
+                    "type": "boolean",
+                    "description": "Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.\n"
+                },
+                "healthCheckGracePeriodSeconds": {
+                    "type": "integer",
+                    "description": "Seconds to ignore failing load balancer health checks on newly instantiated tasks to prevent premature shutdown, up to 2147483647. Only valid for services configured to use load balancers.\n"
+                },
+                "iamRole": {
+                    "type": "string",
+                    "description": "ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.\n"
+                },
+                "loadBalancers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/ServiceLoadBalancer:ServiceLoadBalancer"
+                    },
+                    "description": "Configuration block for load balancers. See below.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the service (up to 255 letters, numbers, hyphens, and underscores)\n"
+                },
+                "networkConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
+                    "description": "Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.\n"
+                },
+                "orderedPlacementStrategies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/ServiceOrderedPlacementStrategy:ServiceOrderedPlacementStrategy"
+                    },
+                    "description": "Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.\n"
+                },
+                "placementConstraints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/ServicePlacementConstraint:ServicePlacementConstraint"
+                    },
+                    "description": "Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.\n"
+                },
+                "platformVersion": {
+                    "type": "string",
+                    "description": "Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).\n"
+                },
+                "propagateTags": {
+                    "type": "string",
+                    "description": "Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.\n"
+                },
+                "schedulingStrategy": {
+                    "type": "string",
+                    "description": "Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).\n"
+                },
+                "serviceRegistries": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
+                    "description": "Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.\n"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                },
+                "taskDefinition": {
+                    "type": "string",
+                    "description": "Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided."
+                },
+                "taskDefinitionArgs": {
+                    "$ref": "#/types/awsx:ecsx:FargateServiceTaskDefinition",
+                    "plain": true,
+                    "description": "The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided."
+                }
+            },
+            "requiredInputs": [
+                "networkConfiguration"
+            ],
+            "isComponent": true
+        },
+        "awsx:ecsx:FargateTaskDefinition": {
+            "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
+            "properties": {
+                "executionRole": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:iam%2Frole:Role",
+                    "description": "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume."
+                },
+                "loadBalancers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"
+                    },
+                    "description": "Computed load balancers from target groups specified of container port mappings."
+                },
+                "logGroup": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:cloudwatch%2FlogGroup:LogGroup",
+                    "description": "Auto-created Log Group resource for use by containers."
+                },
+                "taskDefinition": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ecs%2FtaskDefinition:TaskDefinition",
+                    "description": "Underlying ECS Task Definition resource"
+                },
+                "taskRole": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:iam%2Frole:Role",
+                    "description": "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services."
+                }
+            },
+            "required": [
+                "taskDefinition",
+                "loadBalancers"
+            ],
+            "inputProperties": {
+                "container": {
+                    "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                    "plain": true,
+                    "description": "Single container to make a TaskDefinition from.  Useful for simple cases where there aren't\nmultiple containers, especially when creating a TaskDefinition to call [run] on.\n\nEither [container] or [containers] must be provided."
+                },
+                "containers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:ecsx:TaskDefinitionContainerDefinition",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "All the containers to make a TaskDefinition from.  Useful when creating a Service that will\ncontain many containers within.\n\nEither [container] or [containers] must be provided."
+                },
+                "cpu": {
+                    "type": "string",
+                    "description": "The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]"
+                },
+                "ephemeralStorage": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
+                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
+                },
+                "executionRole": {
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
+                    "plain": true,
+                    "description": "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined."
+                },
+                "family": {
+                    "type": "string",
+                    "description": "An optional unique name for your task definition. If not specified, then a default will be created."
+                },
+                "inferenceAccelerators": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
+                    },
+                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n"
+                },
+                "ipcMode": {
+                    "type": "string",
+                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
+                },
+                "logGroup": {
+                    "$ref": "#/types/awsx:cloudwatch:DefaultLogGroup",
+                    "plain": true,
+                    "description": "A set of volume blocks that containers in your task may use."
+                },
+                "memory": {
+                    "type": "string",
+                    "description": "The amount (in MiB) of memory used by the task.  If not provided, a default will be computed\nbased on the cumulative needs specified by [containerDefinitions]"
+                },
+                "networkMode": {
+                    "type": "string",
+                    "description": "Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.\n"
+                },
+                "pidMode": {
+                    "type": "string",
+                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n"
+                },
+                "placementConstraints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
+                    },
+                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n"
+                },
+                "proxyConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
+                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n"
+                },
+                "requiresCompatibilities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.\n"
+                },
+                "runtimePlatform": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
+                    "description": "Configuration block for runtime_platform that containers in your task may use.\n"
+                },
+                "skipDestroy": {
+                    "type": "boolean"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Key-value map of resource tags.\n"
+                },
+                "taskRole": {
+                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
+                    "plain": true,
+                    "description": "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined."
+                },
+                "volumes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
+                    },
+                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n"
+                }
+            },
+            "isComponent": true
+        }
+    },
+    "language": {
+        "csharp": {
+            "liftSingleValueMethodReturns": true,
+            "packageReferences": {
+                "Pulumi": "3.*",
+                "Pulumi.Aws": "4.*"
+            }
+        },
+        "go": {
+            "generateResourceContainerTypes": true,
+            "importBasePath": "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
+            "liftSingleValueMethodReturns": true
+        },
+        "nodejs": {
+            "dependencies": {
+                "@pulumi/aws": "^4.23.0",
+                "@pulumi/pulumi": "^3.0.0"
+            },
+            "devDependencies": {
+                "@types/node": "^17.0.21",
+                "typescript": "^4.6.2"
+            }
+        },
+        "python": {
+            "liftSingleValueMethodReturns": true,
+            "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
+            "requires": {
+                "pulumi": "\u003e=3.0.0,\u003c4.0.0",
+                "pulumi-aws": "\u003e=4.15.0,\u003c5.0.0"
+            },
+            "usesIOClasses": true
+        }
+    }
+}

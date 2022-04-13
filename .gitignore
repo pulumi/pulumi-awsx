@@ -15,9 +15,4 @@ package-lock.json
 ci-scripts/
 *.tar.gz
 
-# for goreleaser
-/goreleaser
-/package.json
-/PulumiPlugin.yaml
-
 **/venv

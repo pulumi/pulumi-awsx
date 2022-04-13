@@ -2,7 +2,7 @@ CHANGELOG
 =========
 
 ## HEAD (Unreleased)
-(None)
+* Add multi-lang component support scaffolding.
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0

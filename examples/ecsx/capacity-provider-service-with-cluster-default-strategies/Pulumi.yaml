@@ -1,0 +1,4 @@
+name: ecsx-capacity-provider-service-with-cluster-default-strategies
+runtime: nodejs
+description: Test the CapacityProviderService to use the default capacity provider
+  defined in the cluster

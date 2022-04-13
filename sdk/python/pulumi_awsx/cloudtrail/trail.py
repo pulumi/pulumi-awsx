@@ -408,9 +408,9 @@ class Trail(pulumi.ComponentResource):
             __props__.__dict__["send_to_cloud_watch_logs"] = send_to_cloud_watch_logs
             __props__.__dict__["sns_topic_name"] = sns_topic_name
             __props__.__dict__["tags"] = tags
-            __props__.__dict__["arn"] = None
-            __props__.__dict__["home_region"] = None
-            __props__.__dict__["tags_all"] = None
+            __props__.__dict__["bucket"] = None
+            __props__.__dict__["log_group"] = None
+            __props__.__dict__["trail"] = None
         super(Trail, __self__).__init__(
             'awsx:cloudtrail:Trail',
             resource_name,
@@ -420,25 +420,25 @@ class Trail(pulumi.ComponentResource):
 
     @property
     @pulumi.getter
-    def arn(self) -> pulumi.Output[str]:
+    def bucket(self) -> pulumi.Output['pulumi_aws.s3.Bucket']:
         """
-        ARN of the trail.
+        The managed S3 Bucket where the Trail will place its logs.
         """
-        return pulumi.get(self, "arn")
+        return pulumi.get(self, "bucket")
 
     @property
-    @pulumi.getter(name="homeRegion")
-    def home_region(self) -> pulumi.Output[Optional[str]]:
+    @pulumi.getter(name="logGroup")
+    def log_group(self) -> pulumi.Output[Optional['pulumi_aws.cloudwatch.LogGroup']]:
         """
-        Region in which the trail was created.
+        The managed Cloudwatch Log Group.
         """
-        return pulumi.get(self, "home_region")
+        return pulumi.get(self, "log_group")
 
     @property
-    @pulumi.getter(name="tagsAll")
-    def tags_all(self) -> pulumi.Output[Optional[Mapping[str, str]]]:
+    @pulumi.getter
+    def trail(self) -> pulumi.Output['pulumi_aws.cloudtrail.Trail']:
         """
-        Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
+        The CloudTrail Trail.
         """
-        return pulumi.get(self, "tags_all")
+        return pulumi.get(self, "trail")
 

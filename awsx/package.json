@@ -1,0 +1,41 @@
+{
+    "name": "@pulumi/awsx-provider",
+    "version": "${VERSION}",
+    "description": "Pulumi Amazon Web Services (AWS) infrastructure components.",
+    "license": "Apache-2.0",
+    "keywords": [
+        "pulumi",
+        "aws",
+        "awsx"
+    ],
+    "homepage": "https://pulumi.io",
+    "repository": "https://github.com/pulumi/pulumi-awsx",
+    "scripts": {
+        "postinstall": "install-peers",
+        "gen-scripts": "curl https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json | json2ts -o scripts/pulumi-schema.d.ts --unreachableDefinitions --ignoreMinAndMaxItems",
+        "gen-types": "ts-node scripts/generate-provider-types.ts",
+        "format": "prettier --write .",
+        "lint": "tslint -c tslint.json -p tsconfig.json"
+    },
+    "dependencies": {
+        "@pulumi/docker": "^3.0.0",
+        "@types/aws-lambda": "^8.10.23",
+        "mime": "^2.0.0"
+    },
+    "peerDependencies": {
+        "@pulumi/aws": "^4.23.0",
+        "@pulumi/pulumi": "^3.0.0"
+    },
+    "devDependencies": {
+        "@types/aws-sdk": "^2.7.0",
+        "@types/mime": "^2.0.0",
+        "@types/node": "^17.0.21",
+        "install-peers-cli": "^2.2.0",
+        "json-schema-to-typescript": "^10.1.5",
+        "prettier": "^2.5.1",
+        "ts-node": "^10.7.0",
+        "tslint": "^6.1.3",
+        "typedoc": "^0.13.0",
+        "typescript": "^4.6.2"
+    }
+}
