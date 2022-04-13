@@ -28,12 +28,6 @@ namespace Pulumi.Awsx.Cloudwatch.Inputs
         public Inputs.ExistingLogGroupArgs? Existing { get; set; }
 
         /// <summary>
-        /// Resource options to be used during creation of the log group.
-        /// </summary>
-        [Input("opts")]
-        public Pulumi.Awsx.Resource.Inputs.NestedResourceOptionsArgs? Opts { get; set; }
-
-        /// <summary>
         /// Skip creation of the log group.
         /// </summary>
         [Input("skip")]

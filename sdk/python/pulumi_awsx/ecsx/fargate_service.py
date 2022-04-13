@@ -9,7 +9,6 @@ from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from .. import cloudwatch as _cloudwatch
 from .. import iam as _iam
-from .. import resource as _resource
 from ._inputs import *
 import pulumi_aws
 

@@ -22,12 +22,6 @@ namespace Pulumi.Awsx.Iam.Inputs
         public Inputs.RoleWithPolicyArgs? Args { get; set; }
 
         /// <summary>
-        /// Resource options to use for the role. Can't be specified if `roleArn` is used.
-        /// </summary>
-        [Input("opts")]
-        public Pulumi.Awsx.Resource.Inputs.NestedResourceOptionsArgs? Opts { get; set; }
-
-        /// <summary>
         /// ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
         /// </summary>
         [Input("roleArn")]

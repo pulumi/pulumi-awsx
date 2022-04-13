@@ -44,10 +44,6 @@ export namespace cloudwatch {
          */
         existing?: inputs.cloudwatch.ExistingLogGroupArgs;
         /**
-         * Resource options to be used during creation of the log group.
-         */
-        opts?: inputs.resource.NestedResourceOptionsArgs;
-        /**
          * Skip creation of the log group.
          */
         skip?: boolean;
@@ -395,10 +391,6 @@ export namespace iam {
          */
         args?: inputs.iam.RoleWithPolicyArgs;
         /**
-         * Resource options to use for the role. Can't be specified if `roleArn` is used.
-         */
-        opts?: inputs.resource.NestedResourceOptionsArgs;
-        /**
          * ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
          */
         roleArn?: pulumi.Input<string>;
@@ -456,29 +448,5 @@ export namespace iam {
          * Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-    }
-}
-
-export namespace resource {
-    /**
-     * NestedResourceOptions is a bag of optional settings that control a resource's behavior.
-     */
-    export interface NestedResourceOptionsArgs {
-        /**
-         * Ignore changes to any of the specified properties.
-         */
-        ignoreChanges?: string[];
-        /**
-         * When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options.
-         */
-        import?: string;
-        /**
-         * When set to true, protect ensures this resource cannot be deleted.
-         */
-        protect?: boolean;
-        /**
-         * Changes to any of these property paths will force a replacement.  If this list includes `"*"`, changes to any properties will force a replacement.  Initialization errors from previous deployments will require replacement instead of update only if `"*"` is passed.
-         */
-        replaceOnChanges?: string[];
     }
 }

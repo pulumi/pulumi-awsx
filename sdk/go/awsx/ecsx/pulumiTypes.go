@@ -9,7 +9,6 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
 	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/cloudwatch"
 	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/iam"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/resource"
 )
 
 // Create a TaskDefinition resource with the given unique name, arguments, and options.

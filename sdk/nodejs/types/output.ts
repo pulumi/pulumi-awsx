@@ -17,6 +17,3 @@ export namespace ecsx {
 
 export namespace iam {
 }
-
-export namespace resource {
-}

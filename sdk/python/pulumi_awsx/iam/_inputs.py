@@ -7,7 +7,6 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
-from .. import resource as _resource
 import pulumi_aws
 
 __all__ = [
@@ -19,20 +18,16 @@ __all__ = [
 class DefaultRoleWithPolicyArgs:
     def __init__(__self__, *,
                  args: Optional['RoleWithPolicyArgs'] = None,
-                 opts: Optional['_resource.NestedResourceOptionsArgs'] = None,
                  role_arn: Optional[pulumi.Input[str]] = None,
                  skip: Optional[bool] = None):
         """
         Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
         :param 'RoleWithPolicyArgs' args: Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
-        :param '_resource.NestedResourceOptionsArgs' opts: Resource options to use for the role. Can't be specified if `roleArn` is used.
         :param pulumi.Input[str] role_arn: ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
         :param bool skip: Skips creation of the role if set to `true`.
         """
         if args is not None:
             pulumi.set(__self__, "args", args)
-        if opts is not None:
-            pulumi.set(__self__, "opts", opts)
         if role_arn is not None:
             pulumi.set(__self__, "role_arn", role_arn)
         if skip is not None:
@@ -49,18 +44,6 @@ class DefaultRoleWithPolicyArgs:
     @args.setter
     def args(self, value: Optional['RoleWithPolicyArgs']):
         pulumi.set(self, "args", value)
-
-    @property
-    @pulumi.getter
-    def opts(self) -> Optional['_resource.NestedResourceOptionsArgs']:
-        """
-        Resource options to use for the role. Can't be specified if `roleArn` is used.
-        """
-        return pulumi.get(self, "opts")
-
-    @opts.setter
-    def opts(self, value: Optional['_resource.NestedResourceOptionsArgs']):
-        pulumi.set(self, "opts", value)
 
     @property
     @pulumi.getter(name="roleArn")

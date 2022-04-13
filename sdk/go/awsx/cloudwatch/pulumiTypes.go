@@ -3,18 +3,12 @@
 
 package cloudwatch
 
-import (
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/resource"
-)
-
 // Log group with default setup unless explicitly skipped.
 type DefaultLogGroup struct {
 	// Arguments to use instead of the default values during creation.
 	Args *LogGroup `pulumi:"args"`
 	// Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
 	Existing *ExistingLogGroup `pulumi:"existing"`
-	// Resource options to be used during creation of the log group.
-	Opts *resource.NestedResourceOptions `pulumi:"opts"`
 	// Skip creation of the log group.
 	Skip *bool `pulumi:"skip"`
 }
