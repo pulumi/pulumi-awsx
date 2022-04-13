@@ -76,13 +76,13 @@ jobs:
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Tar provider binaries
-        run: tar -zcf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
-          }}/bin/ pulumi-resource-${{ env.PROVIDER }}
+        run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace
+          }}/${{ env.PROVIDER }}/bin/ .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PROVIDER }}-provider.tar.gz
-          path: ${{ github.workspace }}/bin/provider.tar.gz
+          path: ${{ github.workspace }}/provider.tar.gz
       - if: failure() && github.event_name == 'push'
         name: Notify Slack
         uses: 8398a7/action-slack@v3
