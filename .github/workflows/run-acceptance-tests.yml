@@ -89,21 +89,25 @@ jobs:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Install Schema Tools
+        uses: jaxxstorm/action-install-gh-release@v1.2.0
+        with:
+          repo: mikhailshilkov/schema-tools
       - name: Build provider
         run: make provider
-#      - name: Check Schema is Valid
-#        run: |
-#          echo 'SCHEMA_CHANGES<<EOF' >> $GITHUB_ENV
-#          schema-tools compare ${{ env.PROVIDER }} master --local-path=${{ env.PROVIDER }}/schema.json >> $GITHUB_ENV
-#          echo 'EOF' >> $GITHUB_ENV
-#      - if: github.event_name == 'pull_request'
-#        name: Comment on PR with Details of Schema Check
-#        uses: thollander/actions-comment-pull-request@1.0.1
-#        with:
-#          message: |
-#            ### Does the PR have any schema changes?
-#            ${{ env.SCHEMA_CHANGES }}
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check Schema is Valid
+        run: |
+          echo 'SCHEMA_CHANGES<<EOF' >> $GITHUB_ENV
+          schema-tools compare ${{ env.PROVIDER }} master --local-path=${{ env.PROVIDER }}/schema.json >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      - if: github.event_name == 'pull_request'
+        name: Comment on PR with Details of Schema Check
+        uses: thollander/actions-comment-pull-request@1.0.1
+        with:
+          message: |
+            ### Does the PR have any schema changes?
+            ${{ env.SCHEMA_CHANGES }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Tar provider binaries
