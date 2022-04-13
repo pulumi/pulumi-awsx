@@ -55,28 +55,28 @@ func GenerateSchema() schema.PackageSpec {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Description: "",
 					Properties: map[string]schema.PropertySpec{
-						"arn": {
-							Description: "ARN of the trail.",
+						"bucket": {
+							Description: "The managed S3 Bucket where the Trail will place its logs.",
 							TypeSpec: schema.TypeSpec{
-								Type: "string",
+								Ref: awsRef("#/resources/aws:s3%2Fbucket:Bucket"),
 							},
 						},
-						"homeRegion": {
-							Description: "Region in which the trail was created.",
+						"logGroup": {
+							Description: "The managed Cloudwatch Log Group.",
 							TypeSpec: schema.TypeSpec{
-								Type: "string",
+								Ref: awsRef("#/resources/aws:cloudwatch%2FlogGroup:LogGroup"),
 							},
 						},
-						"tagsAll": {
+						"trail": {
+							Description: "The CloudTrail Trail.",
 							TypeSpec: schema.TypeSpec{
-								Type:                 "object",
-								AdditionalProperties: &schema.TypeSpec{Type: "string"},
+								Ref: awsRef("#/resources/aws:cloudtrail%2Ftrail:Trail"),
 							},
-							Description: "Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.",
 						},
 					},
 					Required: []string{
-						"arn",
+						"bucket",
+						"trail",
 					},
 				},
 				InputProperties: map[string]schema.PropertySpec{
@@ -248,13 +248,6 @@ func GenerateSchema() schema.PackageSpec {
 								Plain: true,
 							},
 						},
-						"opts": {
-							Description: "Resource options to be used during creation of the log group.",
-							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:resource:NestedResourceOptions",
-								Plain: true,
-							},
-						},
 					},
 				},
 			},
@@ -288,50 +281,6 @@ func GenerateSchema() schema.PackageSpec {
 			},
 			"awsx:iam:DefaultRoleWithPolicy": defaultRoleWithPolicyArgs(awsSpec),
 			"awsx:iam:RoleWithPolicy":        roleWithPolicyArgs(awsSpec),
-			"awsx:resource:NestedResourceOptions": {
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Type:        "object",
-					Description: "NestedResourceOptions is a bag of optional settings that control a resource's behavior.",
-					Properties: map[string]schema.PropertySpec{
-						"protect": {
-							Description: "When set to true, protect ensures this resource cannot be deleted.",
-							TypeSpec: schema.TypeSpec{
-								Type:  "boolean",
-								Plain: true,
-							},
-						},
-						"ignoreChanges": {
-							Description: "Ignore changes to any of the specified properties.",
-							TypeSpec: schema.TypeSpec{
-								Type: "array",
-								Items: &schema.TypeSpec{
-									Type:  "string",
-									Plain: true,
-								},
-								Plain: true,
-							},
-						},
-						"import": {
-							Description: "When provided with a resource ID, import indicates that this resource's provider should import its state from the cloud resource with the given ID. The inputs to the resource's constructor must align with the resource's current state. Once a resource has been imported, the import property must be removed from the resource's options.",
-							TypeSpec: schema.TypeSpec{
-								Type:  "string",
-								Plain: true,
-							},
-						},
-						"replaceOnChanges": {
-							Description: "Changes to any of these property paths will force a replacement.  If this list includes `\"*\"`, changes to any properties will force a replacement.  Initialization errors from previous deployments will require replacement instead of update only if `\"*\"` is passed.",
-							TypeSpec: schema.TypeSpec{
-								Type: "array",
-								Items: &schema.TypeSpec{
-									Type:  "string",
-									Plain: true,
-								},
-								Plain: true,
-							},
-						},
-					},
-				},
-			},
 		},
 		Language: map[string]schema.RawMessage{
 			"csharp": rawMessage(map[string]interface{}{
@@ -419,13 +368,6 @@ func defaultRoleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpe
 					Description: "Args to use when creating the role and policies. Can't be specified if `roleArn` is used.",
 					TypeSpec: schema.TypeSpec{
 						Ref:   "#/types/awsx:iam:RoleWithPolicy",
-						Plain: true,
-					},
-				},
-				"opts": {
-					Description: "Resource options to use for the role. Can't be specified if `roleArn` is used.",
-					TypeSpec: schema.TypeSpec{
-						Ref:   "#/types/awsx:resource:NestedResourceOptions",
 						Plain: true,
 					},
 				},

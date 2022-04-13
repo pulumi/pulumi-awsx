@@ -51,6 +51,24 @@ export function ifUndefined<T>(
 }
 
 /** @internal */
+export function resourceToConstructResult<T extends pulumi.ComponentResource>(
+    resource: T,
+): pulumi.provider.ConstructResult {
+    const state = Object.fromEntries(
+        Object.entries(resource).filter(
+            ([key, value]) =>
+                key !== "urn" &&
+                !key.startsWith("get") &&
+                typeof value !== "function",
+        ),
+    );
+    return {
+        urn: resource.urn,
+        state,
+    };
+}
+
+/** @internal */
 export function getRegionFromOpts(
     opts: pulumi.CustomResourceOptions,
 ): pulumi.Output<aws.Region> {

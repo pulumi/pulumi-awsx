@@ -14,69 +14,51 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
-import { Trail } from "../../cloudtrail";
-import { trailProviderFactory } from "./trail";
+import { ProviderModule } from "./providerModule";
+import { cloudtrailProvider } from "./cloudtrail";
+import { ecsProvider } from "./ecs";
+import { resourceToConstructResult } from "../../utils";
+
+const modules: Record<string, ProviderModule> = {
+    cloudtrail: cloudtrailProvider,
+    ecs: ecsProvider,
+};
+
+const packageName = "awsx";
 
 class Provider implements pulumi.provider.Provider {
-    // A map of types to provider factories. Calling a factory may return a new instance each
-    // time or return the same provider instance.
-    private readonly typeToProviderFactoryMap: Record<string, () => pulumi.provider.Provider> = {
-        "awsx:cloudtrail:Trail": trailProviderFactory,
-    };
-
-    constructor(readonly version: string, readonly schema: string) {
-        // Register any resources that can come back as resource references that need to be rehydrated.
-        pulumi.runtime.registerResourceModule("awsx", "cloudtrail", {
-            version: version,
-            construct: (name, type, urn) => {
-                switch (type) {
-                    case "awsx:cloudtrail:Trail":
-                        return new Trail(name, {}, { urn });
-                    default:
-                        throw new Error(`unknown resource type ${type}`);
-                }
-            },
-        });
-    }
-
-    async call(token: string, inputs: pulumi.Inputs): Promise<pulumi.provider.InvokeResult> {
-        throw new Error(`unknown method ${token}`);
-    }
-
-    construct(name: string,
-              type: string,
-              inputs: pulumi.Inputs,
-              options: pulumi.ComponentResourceOptions): Promise<pulumi.provider.ConstructResult> {
-        const provider = this.getProviderForType(type);
-        return provider?.construct
-            ? provider.construct(name, type, inputs, options)
-            : unknownResourceRejectedPromise(type);
-    }
-
-    /**
-     * Returns a provider for the type or undefined if not found.
-     */
-    private getProviderForType(type: string): pulumi.provider.Provider | undefined {
-        const factory = this.typeToProviderFactoryMap[type];
-        return factory ? factory() : undefined;
+    constructor(readonly version: string, readonly schema: string) {}
+    async construct(
+        name: string,
+        type: string,
+        inputs: pulumi.Inputs,
+        options: pulumi.ComponentResourceOptions,
+    ) {
+        const [pkg, moduleName] = type.split(":");
+        const module = modules[moduleName];
+        if (pkg !== packageName || module === undefined) {
+            throw new Error(`unknown resource type ${type}`);
+        }
+        const resource = module.construct(name, type, inputs, options);
+        if (resource === undefined) {
+            throw new Error(`unknown resource type ${type}`);
+        }
+        return resourceToConstructResult(resource);
     }
 }
 
-function unknownResourceRejectedPromise<T>(type: string): Promise<T> {
-    return Promise.reject(new Error(`unknown resource type ${type}`));
-}
-
-/** @internal */
-export function main(args: string[]) {
-    const schema: string = readFileSync(require.resolve("./schema.json"), { encoding: "utf-8" });
+function main(args: string[]) {
+    const schema: string = readFileSync(require.resolve("./schema.json"), {
+        encoding: "utf-8",
+    });
     let version: string = require("../../package.json").version;
     // Node allows for the version to be prefixed by a "v",
     // while semver doesn't. If there is a v, strip it off.
     if (version.startsWith("v")) {
         version = version.slice(1);
     }
-
-    return pulumi.provider.main(new Provider(version, schema), args);
+    const provider = new Provider(version, schema);
+    return pulumi.provider.main(provider, args);
 }
 
 main(process.argv.slice(2));

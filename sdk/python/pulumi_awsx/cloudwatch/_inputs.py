@@ -7,7 +7,6 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
-from .. import resource as _resource
 
 __all__ = [
     'DefaultLogGroupArgs',
@@ -20,21 +19,17 @@ class DefaultLogGroupArgs:
     def __init__(__self__, *,
                  args: Optional['LogGroupArgs'] = None,
                  existing: Optional['ExistingLogGroupArgs'] = None,
-                 opts: Optional['_resource.NestedResourceOptionsArgs'] = None,
                  skip: Optional[bool] = None):
         """
         Log group with default setup unless explicitly skipped.
         :param 'LogGroupArgs' args: Arguments to use instead of the default values during creation.
         :param 'ExistingLogGroupArgs' existing: Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
-        :param '_resource.NestedResourceOptionsArgs' opts: Resource options to be used during creation of the log group.
         :param bool skip: Skip creation of the log group.
         """
         if args is not None:
             pulumi.set(__self__, "args", args)
         if existing is not None:
             pulumi.set(__self__, "existing", existing)
-        if opts is not None:
-            pulumi.set(__self__, "opts", opts)
         if skip is not None:
             pulumi.set(__self__, "skip", skip)
 
@@ -61,18 +56,6 @@ class DefaultLogGroupArgs:
     @existing.setter
     def existing(self, value: Optional['ExistingLogGroupArgs']):
         pulumi.set(self, "existing", value)
-
-    @property
-    @pulumi.getter
-    def opts(self) -> Optional['_resource.NestedResourceOptionsArgs']:
-        """
-        Resource options to be used during creation of the log group.
-        """
-        return pulumi.get(self, "opts")
-
-    @opts.setter
-    def opts(self, value: Optional['_resource.NestedResourceOptionsArgs']):
-        pulumi.set(self, "opts", value)
 
     @property
     @pulumi.getter

@@ -6,9 +6,9 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 export abstract class Trail extends pulumi.ComponentResource {
-    public arn!: string | pulumi.Output<string>;
-    public homeRegion?: string | pulumi.Output<string>;
-    public tagsAll?: Record<string, string> | pulumi.Output<Record<string, string>>;
+    public bucket!: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;
+    public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
+    public trail!: aws.cloudtrail.Trail | pulumi.Output<aws.cloudtrail.Trail>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:cloudtrail:Trail", name, {}, opts); }
 }
 export interface TrailArgs {
@@ -107,13 +107,11 @@ export interface LogGroupOutputs {
 export interface DefaultLogGroupInputs {
     readonly args?: LogGroupInputs;
     readonly existing?: ExistingLogGroupInputs;
-    readonly opts?: NestedResourceOptionsInputs;
     readonly skip?: boolean;
 }
 export interface DefaultLogGroupOutputs {
     readonly args?: LogGroupOutputs;
     readonly existing?: ExistingLogGroupOutputs;
-    readonly opts?: NestedResourceOptionsOutputs;
     readonly skip?: boolean;
 }
 export interface ExistingLogGroupInputs {
@@ -446,13 +444,11 @@ export interface TaskDefinitionVolumeFromOutputs {
 }
 export interface DefaultRoleWithPolicyInputs {
     readonly args?: RoleWithPolicyInputs;
-    readonly opts?: NestedResourceOptionsInputs;
     readonly roleArn?: pulumi.Input<string>;
     readonly skip?: boolean;
 }
 export interface DefaultRoleWithPolicyOutputs {
     readonly args?: RoleWithPolicyOutputs;
-    readonly opts?: NestedResourceOptionsOutputs;
     readonly roleArn?: pulumi.Output<string>;
     readonly skip?: boolean;
 }
@@ -481,16 +477,4 @@ export interface RoleWithPolicyOutputs {
     readonly permissionsBoundary?: pulumi.Output<string>;
     readonly policyArns?: string[];
     readonly tags?: pulumi.Output<Record<string, string>>;
-}
-export interface NestedResourceOptionsInputs {
-    readonly ignoreChanges?: string[];
-    readonly import?: string;
-    readonly protect?: boolean;
-    readonly replaceOnChanges?: string[];
-}
-export interface NestedResourceOptionsOutputs {
-    readonly ignoreChanges?: string[];
-    readonly import?: string;
-    readonly protect?: boolean;
-    readonly replaceOnChanges?: string[];
 }

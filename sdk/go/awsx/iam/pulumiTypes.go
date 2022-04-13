@@ -5,15 +5,12 @@ package iam
 
 import (
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/iam"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/resource"
 )
 
 // Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
 type DefaultRoleWithPolicy struct {
 	// Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
 	Args *RoleWithPolicy `pulumi:"args"`
-	// Resource options to use for the role. Can't be specified if `roleArn` is used.
-	Opts *resource.NestedResourceOptions `pulumi:"opts"`
 	// ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
 	RoleArn *string `pulumi:"roleArn"`
 	// Skips creation of the role if set to `true`.

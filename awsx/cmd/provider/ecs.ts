@@ -13,31 +13,22 @@
 // limitations under the License.
 
 import * as pulumi from "@pulumi/pulumi";
-import { Trail } from "../../cloudtrail";
+import { FargateService, FargateTaskDefinition } from "../../ecs";
+import { ProviderModule } from "./providerModule";
 
-const trailProvider: pulumi.provider.Provider = {
-    construct: async (
+export const ecsProvider: ProviderModule = {
+    construct: (
         name: string,
         type: string,
         inputs: pulumi.Inputs,
         options: pulumi.ComponentResourceOptions,
     ) => {
-        const trail = new Trail(name, inputs, options);
-        return {
-            urn: trail.urn,
-            state: {
-                arn: trail.trail.arn,
-                bucket: trail.bucket,
-                logGroup: trail.logGroup,
-                homeRegion: trail.trail.homeRegion,
-                tagsAll: trail.trail.tagsAll,
-            },
-        };
+        const [pkg, moduleName, typeName] = type.split(":");
+        switch (typeName) {
+            case "FargateService":
+                return new FargateService(name, inputs as any, options);
+            case "FargateTaskDefinition":
+                return new FargateTaskDefinition(name, inputs as any, options);
+        }
     },
-    version: "", // ignored
 };
-
-/** @internal */
-export function trailProviderFactory(): pulumi.provider.Provider {
-    return trailProvider;
-}

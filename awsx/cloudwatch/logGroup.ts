@@ -61,7 +61,7 @@ export function defaultLogGroup(
         return { logGroupId: makeLogGroupId({ name: existing.name, region }) };
     }
     const args = { ...defaults, ...inputs?.args };
-    const logGroupOpts = { ...inputs?.opts, ...opts };
+    const logGroupOpts = opts;
     const logGroup = new aws.cloudwatch.LogGroup(name, args, logGroupOpts);
     const region = getRegion(logGroup);
     return {
