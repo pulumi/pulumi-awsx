@@ -49,10 +49,8 @@ func GenerateSchema() schema.PackageSpec {
 		Repository:  "https://github.com/pulumi/pulumi-awsx",
 
 		Functions: map[string]schema.FunctionSpec{},
-		Resources: map[string]schema.ResourceSpec{
-		},
-		Types: map[string]schema.ComplexTypeSpec{
-		},
+		Resources: map[string]schema.ResourceSpec{},
+		Types:     map[string]schema.ComplexTypeSpec{},
 		Language: map[string]schema.RawMessage{
 			"csharp": rawMessage(map[string]interface{}{
 				"packageReferences": map[string]string{
@@ -96,7 +94,9 @@ func GenerateSchema() schema.PackageSpec {
 		generateCloudtrail(awsSpec),
 		generateEcs(awsSpec, awsNativeSpec),
 		generateCloudwatch(awsSpec),
-		generateIam(awsSpec))
+		generateIam(awsSpec),
+		generateS3(awsSpec),
+	)
 }
 
 func getAwsSpec() schema.PackageSpec {

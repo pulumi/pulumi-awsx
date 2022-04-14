@@ -776,6 +776,169 @@
                 }
             },
             "type": "object"
+        },
+        "awsx:s3:Bucket": {
+            "description": "The set of arguments for constructing a Bucket resource.",
+            "properties": {
+                "accelerationStatus": {
+                    "type": "string",
+                    "description": "Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.\n"
+                },
+                "acl": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string",
+                            "$ref": "#/types/aws:s3/CannedAcl:CannedAcl"
+                        }
+                    ],
+                    "description": "The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.\n"
+                },
+                "arn": {
+                    "type": "string",
+                    "description": "The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.\n"
+                },
+                "bucket": {
+                    "type": "string",
+                    "description": "The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).\n",
+                    "language": {
+                        "csharp": {
+                            "name": "BucketName"
+                        }
+                    }
+                },
+                "bucketPrefix": {
+                    "type": "string",
+                    "description": "Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).\n"
+                },
+                "corsRules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketCorsRule:BucketCorsRule"
+                    },
+                    "description": "A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).\n"
+                },
+                "forceDestroy": {
+                    "type": "boolean",
+                    "description": "A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.\n"
+                },
+                "grants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketGrant:BucketGrant"
+                    },
+                    "description": "An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.\n"
+                },
+                "hostedZoneId": {
+                    "type": "string",
+                    "description": "The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.\n"
+                },
+                "lifecycleRules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketLifecycleRule:BucketLifecycleRule"
+                    },
+                    "description": "A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).\n"
+                },
+                "loggings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketLogging:BucketLogging"
+                    },
+                    "description": "A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).\n"
+                },
+                "objectLockConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketObjectLockConfiguration:BucketObjectLockConfiguration",
+                    "description": "A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)\n"
+                },
+                "policy": {
+                    "type": "string",
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "string",
+                            "$ref": "#/types/aws:iam/documents:PolicyDocument"
+                        }
+                    ],
+                    "description": "A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), the provider may view the policy as constantly changing in a `pulumi up / preview / update`. In this case, please make sure you use the verbose/specific version of the policy.\n"
+                },
+                "replicationConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketReplicationConfiguration:BucketReplicationConfiguration",
+                    "description": "A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).\n"
+                },
+                "requestPayer": {
+                    "type": "string",
+                    "description": "Specifies who should bear the cost of Amazon S3 data transfer.\nCan be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur\nthe costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)\ndeveloper guide for more information.\n"
+                },
+                "serverSideEncryptionConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration",
+                    "description": "A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)\n"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A mapping of tags to assign to the bucket.\n"
+                },
+                "versioning": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketVersioning:BucketVersioning",
+                    "description": "A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)\n"
+                },
+                "website": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketWebsite:BucketWebsite",
+                    "description": "A website object (documented below).\n"
+                },
+                "websiteDomain": {
+                    "type": "string",
+                    "description": "The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.\n"
+                },
+                "websiteEndpoint": {
+                    "type": "string",
+                    "description": "The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.\n"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:s3:DefaultBucket": {
+            "description": "Bucket with default setup unless explicitly skipped.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:s3:Bucket",
+                    "plain": true,
+                    "description": "Arguments to use instead of the default values during creation."
+                },
+                "existing": {
+                    "$ref": "#/types/awsx:s3:ExistingBucket",
+                    "plain": true,
+                    "description": "Identity of an existing bucket to use. Cannot be used in combination with `args`."
+                },
+                "skip": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Skip creation of the bucket."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:s3:ExistingBucket": {
+            "description": "Reference to an existing bucket.",
+            "properties": {
+                "arn": {
+                    "type": "string",
+                    "description": "Arn of the bucket. Only one of [arn] or [name] can be specified."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the bucket. Only one of [arn] or [name] can be specified."
+                }
+            },
+            "type": "object"
         }
     },
     "provider": {},
