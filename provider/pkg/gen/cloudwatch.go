@@ -50,6 +50,35 @@ func generateCloudwatch(awsSpec schema.PackageSpec) schema.PackageSpec {
 					},
 				},
 			},
+			"awsx:cloudwatch:OptionalLogGroup": {
+				ObjectTypeSpec: schema.ObjectTypeSpec{
+					Type:        "object",
+					Description: "Log group which is only created if enabled.",
+					Properties: map[string]schema.PropertySpec{
+						"enable": {
+							Description: "Enable creation of the log group.",
+							TypeSpec: schema.TypeSpec{
+								Type:  "boolean",
+								Plain: true,
+							},
+						},
+						"existing": {
+							Description: "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.",
+							TypeSpec: schema.TypeSpec{
+								Ref:   "#/types/awsx:cloudwatch:ExistingLogGroup",
+								Plain: true,
+							},
+						},
+						"args": {
+							Description: "Arguments to use instead of the default values during creation.",
+							TypeSpec: schema.TypeSpec{
+								Ref:   "#/types/awsx:cloudwatch:LogGroup",
+								Plain: true,
+							},
+						},
+					},
+				},
+			},
 			"awsx:cloudwatch:ExistingLogGroup": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",

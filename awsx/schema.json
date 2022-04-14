@@ -104,6 +104,27 @@
             },
             "type": "object"
         },
+        "awsx:cloudwatch:OptionalLogGroup": {
+            "description": "Log group which is only created if enabled.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:cloudwatch:LogGroup",
+                    "plain": true,
+                    "description": "Arguments to use instead of the default values during creation."
+                },
+                "enable": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Enable creation of the log group."
+                },
+                "existing": {
+                    "$ref": "#/types/awsx:cloudwatch:ExistingLogGroup",
+                    "plain": true,
+                    "description": "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`."
+                }
+            },
+            "type": "object"
+        },
         "awsx:ecs:FargateServiceTaskDefinition": {
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
