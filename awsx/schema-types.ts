@@ -121,11 +121,13 @@ export interface DefaultLogGroupOutputs {
     readonly skip?: boolean;
 }
 export interface ExistingLogGroupInputs {
-    readonly name: pulumi.Input<string>;
+    readonly arn?: pulumi.Input<string>;
+    readonly name?: pulumi.Input<string>;
     readonly region?: pulumi.Input<string>;
 }
 export interface ExistingLogGroupOutputs {
-    readonly name: pulumi.Output<string>;
+    readonly arn?: pulumi.Output<string>;
+    readonly name?: pulumi.Output<string>;
     readonly region?: pulumi.Output<string>;
 }
 export interface LogGroupInputs {

@@ -55,8 +55,14 @@ func generateCloudwatch(awsSpec schema.PackageSpec) schema.PackageSpec {
 					Type:        "object",
 					Description: "Reference to an existing log group.",
 					Properties: map[string]schema.PropertySpec{
+						"arn": {
+							Description: "Arn of the log group. Only one of [arn] or [name] can be specified.",
+							TypeSpec: schema.TypeSpec{
+								Type: "string",
+							},
+						},
 						"name": {
-							Description: "Name of the log group.",
+							Description: "Name of the log group. Only one of [arn] or [name] can be specified.",
 							TypeSpec: schema.TypeSpec{
 								Type: "string",
 							},
@@ -68,7 +74,6 @@ func generateCloudwatch(awsSpec schema.PackageSpec) schema.PackageSpec {
 							},
 						},
 					},
-					Required: []string{"name"},
 				},
 			},
 			"awsx:cloudwatch:LogGroup": {

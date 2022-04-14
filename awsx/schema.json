@@ -60,19 +60,20 @@
         "awsx:cloudwatch:ExistingLogGroup": {
             "description": "Reference to an existing log group.",
             "properties": {
+                "arn": {
+                    "type": "string",
+                    "description": "Arn of the log group. Only one of [arn] or [name] can be specified."
+                },
                 "name": {
                     "type": "string",
-                    "description": "Name of the log group."
+                    "description": "Name of the log group. Only one of [arn] or [name] can be specified."
                 },
                 "region": {
                     "type": "string",
                     "description": "Region of the log group. If not specified, the provider region will be used."
                 }
             },
-            "type": "object",
-            "required": [
-                "name"
-            ]
+            "type": "object"
         },
         "awsx:cloudwatch:LogGroup": {
             "description": "The set of arguments for constructing a LogGroup resource.",
