@@ -99,6 +99,18 @@ func generateS3(awsSpec schema.PackageSpec) schema.PackageSpec {
 
 func bucketTypeSpec(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	properties := awsSpec.Resources["aws:s3/bucket:Bucket"].InputProperties
+	properties["policy"] = schema.PropertySpec{
+		Description: properties["policy"].Description,
+		TypeSpec: schema.TypeSpec{
+			Type: "string",
+		},
+	}
+	properties["acl"] = schema.PropertySpec{
+		Description: properties["acl"].Description,
+		TypeSpec: schema.TypeSpec{
+			Type: "string",
+		},
+	}
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
