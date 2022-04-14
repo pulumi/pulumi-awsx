@@ -40,9 +40,7 @@ install_provider:: provider
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
 build_nodejs::
-	rm -rf awsx-legacy/bin
 	rm -rf sdk/nodejs
-	cd awsx-legacy && yarn install && yarn tsc
 	cd provider/cmd/$(CODEGEN) && go run . nodejs ../../../sdk/nodejs $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
 	cd sdk/nodejs && \
 		yarn install && \
