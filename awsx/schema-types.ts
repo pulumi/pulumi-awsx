@@ -154,6 +154,14 @@ export interface OptionalLogGroupOutputs {
     readonly enable?: boolean;
     readonly existing?: ExistingLogGroupOutputs;
 }
+export interface RequiredLogGroupInputs {
+    readonly args?: LogGroupInputs;
+    readonly existing?: ExistingLogGroupInputs;
+}
+export interface RequiredLogGroupOutputs {
+    readonly args?: LogGroupOutputs;
+    readonly existing?: ExistingLogGroupOutputs;
+}
 export interface FargateServiceTaskDefinitionInputs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;
     readonly containers?: Record<string, TaskDefinitionContainerDefinitionInputs>;

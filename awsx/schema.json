@@ -125,6 +125,22 @@
             },
             "type": "object"
         },
+        "awsx:cloudwatch:RequiredLogGroup": {
+            "description": "Log group with default setup.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:cloudwatch:LogGroup",
+                    "plain": true,
+                    "description": "Arguments to use instead of the default values during creation."
+                },
+                "existing": {
+                    "$ref": "#/types/awsx:cloudwatch:ExistingLogGroup",
+                    "plain": true,
+                    "description": "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`."
+                }
+            },
+            "type": "object"
+        },
         "awsx:ecs:FargateServiceTaskDefinition": {
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
@@ -962,7 +978,7 @@
             "type": "object"
         },
         "awsx:s3:RequiredBucket": {
-            "description": "Bucket with default setup unless explicitly skipped.",
+            "description": "Bucket with default setup.",
             "properties": {
                 "args": {
                     "$ref": "#/types/awsx:s3:Bucket",

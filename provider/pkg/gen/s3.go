@@ -53,7 +53,7 @@ func generateS3(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:s3:RequiredBucket": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
-					Description: "Bucket with default setup unless explicitly skipped.",
+					Description: "Bucket with default setup.",
 					Properties: map[string]schema.PropertySpec{
 						"existing": {
 							Description: "Identity of an existing bucket to use. Cannot be used in combination with `args`.",
