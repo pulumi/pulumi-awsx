@@ -10,11 +10,13 @@ export * from "./provider";
 // Export sub-modules:
 import * as cloudtrail from "./cloudtrail";
 import * as ecs from "./ecs";
+import * as legacy from "./legacy";
 import * as types from "./types";
 
 export {
     cloudtrail,
     ecs,
+    legacy,
     types,
 };
 
