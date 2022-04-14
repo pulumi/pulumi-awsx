@@ -15,8 +15,10 @@ type DefaultLogGroup struct {
 
 // Reference to an existing log group.
 type ExistingLogGroup struct {
-	// Name of the log group.
-	Name string `pulumi:"name"`
+	// Arn of the log group. Only one of [arn] or [name] can be specified.
+	Arn *string `pulumi:"arn"`
+	// Name of the log group. Only one of [arn] or [name] can be specified.
+	Name *string `pulumi:"name"`
 	// Region of the log group. If not specified, the provider region will be used.
 	Region *string `pulumi:"region"`
 }
@@ -37,6 +39,24 @@ type LogGroup struct {
 	RetentionInDays *int `pulumi:"retentionInDays"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
+}
+
+// Log group which is only created if enabled.
+type OptionalLogGroup struct {
+	// Arguments to use instead of the default values during creation.
+	Args *LogGroup `pulumi:"args"`
+	// Enable creation of the log group.
+	Enable *bool `pulumi:"enable"`
+	// Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+	Existing *ExistingLogGroup `pulumi:"existing"`
+}
+
+// Log group with default setup.
+type RequiredLogGroup struct {
+	// Arguments to use instead of the default values during creation.
+	Args *LogGroup `pulumi:"args"`
+	// Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+	Existing *ExistingLogGroup `pulumi:"existing"`
 }
 
 func init() {

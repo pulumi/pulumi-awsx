@@ -10,6 +10,8 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/cloudtrail"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/cloudwatch"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/s3"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/cloudwatch"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/s3"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -40,36 +42,32 @@ func NewTrail(ctx *pulumi.Context,
 }
 
 type trailArgs struct {
-	// Specifies an advanced event selector for enabling data event logging.
+	// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
 	AdvancedEventSelectors []cloudtrail.TrailAdvancedEventSelector `pulumi:"advancedEventSelectors"`
-	// If sendToCloudWatchLogs is enabled, provide the log group configuration.
-	CloudWatchLogGroupArgs *LogGroup `pulumi:"cloudWatchLogGroupArgs"`
-	// Log group name using an ARN that represents the log group to which CloudTrail logs will be delivered. Note that CloudTrail requires the Log Stream wildcard.
-	CloudWatchLogsGroupArn *string `pulumi:"cloudWatchLogsGroupArn"`
-	// Role for the CloudWatch Logs endpoint to assume to write to a user’s log group.
-	CloudWatchLogsRoleArn *string `pulumi:"cloudWatchLogsRoleArn"`
+	// Log group to which CloudTrail logs will be delivered.
+	CloudWatchLogsGroup *cloudwatch.OptionalLogGroup `pulumi:"cloudWatchLogsGroup"`
 	// Whether log file integrity validation is enabled. Defaults to `false`.
 	EnableLogFileValidation *bool `pulumi:"enableLogFileValidation"`
 	// Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.
 	EnableLogging *bool `pulumi:"enableLogging"`
-	// Specifies an event selector for enabling data event logging. Please note the CloudTrail limits when configuring these
+	// Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.
 	EventSelectors []cloudtrail.TrailEventSelector `pulumi:"eventSelectors"`
 	// Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.
 	IncludeGlobalServiceEvents *bool `pulumi:"includeGlobalServiceEvents"`
-	// Configuration block for identifying unusual operational activity.
+	// Configuration block for identifying unusual operational activity. See details below.
 	InsightSelectors []cloudtrail.TrailInsightSelector `pulumi:"insightSelectors"`
 	// Whether the trail is created in the current region or in all regions. Defaults to `false`.
 	IsMultiRegionTrail *bool `pulumi:"isMultiRegionTrail"`
-	// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`
+	// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
 	IsOrganizationTrail *bool `pulumi:"isOrganizationTrail"`
 	// KMS key ARN to use to encrypt the logs delivered by CloudTrail.
 	KmsKeyId *string `pulumi:"kmsKeyId"`
-	// Name of the S3 bucket designated for publishing log files.
-	S3BucketName *string `pulumi:"s3BucketName"`
+	// Specifies the name of the advanced event selector.
+	Name *string `pulumi:"name"`
+	// S3 bucket designated for publishing log files.
+	S3Bucket *s3.RequiredBucket `pulumi:"s3Bucket"`
 	// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
 	S3KeyPrefix *string `pulumi:"s3KeyPrefix"`
-	// If CloudTrail pushes logs to CloudWatch Logs in addition to S3. Disabled by default to reduce costs. Defaults to `false`
-	SendToCloudWatchLogs *bool `pulumi:"sendToCloudWatchLogs"`
 	// Name of the Amazon SNS topic defined for notification of log file delivery.
 	SnsTopicName *string `pulumi:"snsTopicName"`
 	// Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
@@ -78,36 +76,32 @@ type trailArgs struct {
 
 // The set of arguments for constructing a Trail resource.
 type TrailArgs struct {
-	// Specifies an advanced event selector for enabling data event logging.
+	// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
 	AdvancedEventSelectors cloudtrail.TrailAdvancedEventSelectorArrayInput
-	// If sendToCloudWatchLogs is enabled, provide the log group configuration.
-	CloudWatchLogGroupArgs LogGroupPtrInput
-	// Log group name using an ARN that represents the log group to which CloudTrail logs will be delivered. Note that CloudTrail requires the Log Stream wildcard.
-	CloudWatchLogsGroupArn pulumi.StringPtrInput
-	// Role for the CloudWatch Logs endpoint to assume to write to a user’s log group.
-	CloudWatchLogsRoleArn pulumi.StringPtrInput
+	// Log group to which CloudTrail logs will be delivered.
+	CloudWatchLogsGroup *cloudwatch.OptionalLogGroupArgs
 	// Whether log file integrity validation is enabled. Defaults to `false`.
 	EnableLogFileValidation pulumi.BoolPtrInput
 	// Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.
 	EnableLogging pulumi.BoolPtrInput
-	// Specifies an event selector for enabling data event logging. Please note the CloudTrail limits when configuring these
+	// Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.
 	EventSelectors cloudtrail.TrailEventSelectorArrayInput
 	// Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.
 	IncludeGlobalServiceEvents pulumi.BoolPtrInput
-	// Configuration block for identifying unusual operational activity.
+	// Configuration block for identifying unusual operational activity. See details below.
 	InsightSelectors cloudtrail.TrailInsightSelectorArrayInput
 	// Whether the trail is created in the current region or in all regions. Defaults to `false`.
 	IsMultiRegionTrail pulumi.BoolPtrInput
-	// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`
+	// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
 	IsOrganizationTrail pulumi.BoolPtrInput
 	// KMS key ARN to use to encrypt the logs delivered by CloudTrail.
 	KmsKeyId pulumi.StringPtrInput
-	// Name of the S3 bucket designated for publishing log files.
-	S3BucketName pulumi.StringPtrInput
+	// Specifies the name of the advanced event selector.
+	Name pulumi.StringPtrInput
+	// S3 bucket designated for publishing log files.
+	S3Bucket *s3.RequiredBucketArgs
 	// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
 	S3KeyPrefix pulumi.StringPtrInput
-	// If CloudTrail pushes logs to CloudWatch Logs in addition to S3. Disabled by default to reduce costs. Defaults to `false`
-	SendToCloudWatchLogs pulumi.BoolPtrInput
 	// Name of the Amazon SNS topic defined for notification of log file delivery.
 	SnsTopicName pulumi.StringPtrInput
 	// Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.

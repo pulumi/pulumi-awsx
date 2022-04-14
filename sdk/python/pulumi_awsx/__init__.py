@@ -17,11 +17,14 @@ if typing.TYPE_CHECKING:
     ecs = __ecs
     import pulumi_awsx.iam as __iam
     iam = __iam
+    import pulumi_awsx.s3 as __s3
+    s3 = __s3
 else:
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
     cloudwatch = _utilities.lazy_import('pulumi_awsx.cloudwatch')
     ecs = _utilities.lazy_import('pulumi_awsx.ecs')
     iam = _utilities.lazy_import('pulumi_awsx.iam')
+    s3 = _utilities.lazy_import('pulumi_awsx.s3')
 
 _utilities.register(
     resource_modules="""
