@@ -829,7 +829,7 @@
                         },
                         {
                             "type": "string",
-                            "$ref": "#/types/aws:s3/CannedAcl:CannedAcl"
+                            "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/CannedAcl:CannedAcl"
                         }
                     ],
                     "description": "The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.\n"
@@ -899,7 +899,7 @@
                         },
                         {
                             "type": "string",
-                            "$ref": "#/types/aws:iam/documents:PolicyDocument"
+                            "$ref": "/aws/v4.37.1/schema.json#/types/aws:iam/documents:PolicyDocument"
                         }
                     ],
                     "description": "A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), the provider may view the policy as constantly changing in a `pulumi up / preview / update`. In this case, please make sure you use the verbose/specific version of the policy.\n"

@@ -150,9 +150,19 @@ func renamePropertyRefs(propSpec schema.PropertySpec, old, new string) schema.Pr
 		items := renameTypeSpecRefs(*propSpec.Items, old, new)
 		propSpec.Items = &items
 	}
+	if propSpec.OneOf != nil {
+		propSpec.OneOf = renameTypeSpecsRefs(propSpec.OneOf, old, new)
+	}
 	return propSpec
 }
 
+func renameTypeSpecsRefs(typeSpec []schema.TypeSpec, old, new string) []schema.TypeSpec {
+	newSpecs := make([]schema.TypeSpec, len(typeSpec))
+	for i, spec := range typeSpec {
+		newSpecs[i] = renameTypeSpecRefs(spec, old, new)
+	}
+	return newSpecs
+}
 func renameTypeSpecRefs(typeSpec schema.TypeSpec, old, new string) schema.TypeSpec {
 	if typeSpec.Ref != "" {
 		typeSpec.Ref = strings.Replace(typeSpec.Ref, old, new, 1)
