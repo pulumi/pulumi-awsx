@@ -50,6 +50,28 @@ func generateS3(awsSpec schema.PackageSpec) schema.PackageSpec {
 					},
 				},
 			},
+			"awsx:s3:RequiredBucket": {
+				ObjectTypeSpec: schema.ObjectTypeSpec{
+					Type:        "object",
+					Description: "Bucket with default setup unless explicitly skipped.",
+					Properties: map[string]schema.PropertySpec{
+						"existing": {
+							Description: "Identity of an existing bucket to use. Cannot be used in combination with `args`.",
+							TypeSpec: schema.TypeSpec{
+								Ref:   "#/types/awsx:s3:ExistingBucket",
+								Plain: true,
+							},
+						},
+						"args": {
+							Description: "Arguments to use instead of the default values during creation.",
+							TypeSpec: schema.TypeSpec{
+								Ref:   "#/types/awsx:s3:Bucket",
+								Plain: true,
+							},
+						},
+					},
+				},
+			},
 			"awsx:s3:ExistingBucket": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",

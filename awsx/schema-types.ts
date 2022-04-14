@@ -560,3 +560,11 @@ export interface ExistingBucketOutputs {
     readonly arn?: pulumi.Output<string>;
     readonly name?: pulumi.Output<string>;
 }
+export interface RequiredBucketInputs {
+    readonly args?: BucketInputs;
+    readonly existing?: ExistingBucketInputs;
+}
+export interface RequiredBucketOutputs {
+    readonly args?: BucketOutputs;
+    readonly existing?: ExistingBucketOutputs;
+}

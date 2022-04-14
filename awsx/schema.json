@@ -960,6 +960,22 @@
                 }
             },
             "type": "object"
+        },
+        "awsx:s3:RequiredBucket": {
+            "description": "Bucket with default setup unless explicitly skipped.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:s3:Bucket",
+                    "plain": true,
+                    "description": "Arguments to use instead of the default values during creation."
+                },
+                "existing": {
+                    "$ref": "#/types/awsx:s3:ExistingBucket",
+                    "plain": true,
+                    "description": "Identity of an existing bucket to use. Cannot be used in combination with `args`."
+                }
+            },
+            "type": "object"
         }
     },
     "provider": {},

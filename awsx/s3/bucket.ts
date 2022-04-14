@@ -23,22 +23,19 @@ export interface BucketId {
     arn: pulumi.Output<string>;
 }
 
-export function defaultBucket(
+export function requiredBucket(
     name: string,
-    inputs: schema.DefaultBucketInputs | undefined,
-    defaults: aws.cloudwatch.LogGroupArgs,
+    inputs: schema.RequiredBucketInputs | undefined,
+    defaults: aws.s3.BucketArgs,
     opts: ResourceOptions,
 ): {
     bucket?: aws.s3.Bucket;
-    bucketId?: BucketId;
+    bucketId: BucketId;
 } {
     if (inputs?.existing !== undefined && inputs.args !== undefined) {
         throw new Error(
             "Can't define bucket args if specifying an existing bucket",
         );
-    }
-    if (inputs?.skip) {
-        return {};
     }
     const existing = inputs?.existing;
     if (existing !== undefined) {
@@ -60,6 +57,21 @@ export function defaultBucket(
         bucket,
         bucketId: { arn: bucket.arn, name: bucket.bucket },
     };
+}
+
+export function defaultBucket(
+    name: string,
+    inputs: schema.DefaultBucketInputs | undefined,
+    defaults: aws.s3.BucketArgs,
+    opts: ResourceOptions,
+): {
+    bucket?: aws.s3.Bucket;
+    bucketId?: BucketId;
+} {
+    if (inputs?.skip) {
+        return {};
+    }
+    return requiredBucket(name, inputs, defaults, opts);
 }
 
 function nameFromArn(bucketArn: string) {
