@@ -142,3 +142,53 @@ export function collect<T, U>(
     }
     return target;
 }
+
+export interface Arn {
+    resourceType?: string;
+    resourceId: string;
+    partition: string;
+    service: string;
+    region: string;
+    accountId: string;
+}
+
+export function parseArn(arn: string): Arn {
+    const parts = arn.split(":");
+    const [
+        arnPrefix,
+        partition,
+        service,
+        region,
+        accountId,
+        resourceIdOrType,
+        optionalResourceId,
+    ] = parts;
+    if (arnPrefix !== "arn") {
+        throw new Error(`Invalid ARN: must start with "arn:"`);
+    }
+    if (parts.length !== 6 && parts.length !== 7) {
+        throw new Error(`Invalid ARN: must be between 6 or 7 parts"`);
+    }
+    const simpleProps = {
+        partition,
+        service,
+        region,
+        accountId,
+    };
+    if (optionalResourceId !== undefined) {
+        return {
+            ...simpleProps,
+            resourceType: resourceIdOrType,
+            resourceId: optionalResourceId,
+        };
+    }
+    const slashIndex = resourceIdOrType.indexOf("/");
+    if (slashIndex > -1) {
+        return {
+            ...simpleProps,
+            resourceType: resourceIdOrType.substring(0, slashIndex),
+            resourceId: resourceIdOrType.substring(slashIndex + 1),
+        };
+    }
+    return { ...simpleProps, resourceId: resourceIdOrType };
+}
