@@ -111,10 +111,10 @@ class AssetImage extends Image {
 
             this.imageResult = pulumi.all([this.pathOrBuild, repositoryUrl, registryId])
                                      .apply(([pathOrBuild, repositoryUrl, registryId]) =>
-                computeImageFromAsset(pathOrBuild, repositoryUrl, registryId, parent));
+                computeImageFromAsset(pathOrBuild, repositoryUrl, registryId, parent)) as any;
         }
 
-        return this.imageResult;
+        return this.imageResult as any;
     }
 
     // getOrCreateRepository returns the ECR repository for this image, lazily allocating if necessary.
@@ -207,7 +207,7 @@ export function computeImageFromAsset(
         };
     });
 
-    uniqueImageName.apply(d =>
+    uniqueImageName.apply((d: any) =>
         pulumi.log.debug(`    build complete: ${imageName} (${d})`, parent));
 
     return uniqueImageName;
