@@ -17,9 +17,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/pulumi/pulumi-awsx/provider/pkg/gen"
@@ -128,8 +130,35 @@ func genPython(pkg *schema.Package, outdir string) {
 }
 
 func genNodejs(pkg *schema.Package, outdir string) {
-	// TODO: Get nodejs Typescript files
-	files, err := nodegen.GeneratePackage(Tool, pkg, map[string][]byte{})
+	extraFiles := map[string][]byte{}
+	root := filepath.Join(outdir, "..", "..", "awsx-legacy")
+	filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		if info.Name() == "index.ts" || !strings.HasSuffix(info.Name(), ".ts") {
+			return nil
+		}
+		for _, s := range []string{"/tests/", "/node_modules/", "/bin/"} {
+			if strings.Contains(path, s) {
+				return nil
+			}
+		}
+		content, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(root, path)
+		if err != nil {
+			return err
+		}
+		extraFiles[filepath.Join("legacy", rel)] = content
+		return nil
+	})
+	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles)
 	if err != nil {
 		panic(err)
 	}
