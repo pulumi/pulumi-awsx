@@ -12,16 +12,14 @@ export type ResourceConstructor = {
 };
 import * as aws from "@pulumi/aws";
 export abstract class Trail extends pulumi.ComponentResource {
-    public bucket!: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;
+    public bucket?: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
     public trail!: aws.cloudtrail.Trail | pulumi.Output<aws.cloudtrail.Trail>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:cloudtrail:Trail", name, {}, opts); }
 }
 export interface TrailArgs {
     readonly advancedEventSelectors?: pulumi.Input<pulumi.Input<aws.types.input.cloudtrail.TrailAdvancedEventSelector>[]>;
-    readonly cloudWatchLogGroupArgs?: pulumi.Input<LogGroupInputs>;
-    readonly cloudWatchLogsGroupArn?: pulumi.Input<string>;
-    readonly cloudWatchLogsRoleArn?: pulumi.Input<string>;
+    readonly cloudWatchLogsGroup?: OptionalLogGroupInputs;
     readonly enableLogFileValidation?: pulumi.Input<boolean>;
     readonly enableLogging?: pulumi.Input<boolean>;
     readonly eventSelectors?: pulumi.Input<pulumi.Input<aws.types.input.cloudtrail.TrailEventSelector>[]>;
@@ -30,9 +28,9 @@ export interface TrailArgs {
     readonly isMultiRegionTrail?: pulumi.Input<boolean>;
     readonly isOrganizationTrail?: pulumi.Input<boolean>;
     readonly kmsKeyId?: pulumi.Input<string>;
-    readonly s3BucketName?: pulumi.Input<string>;
+    readonly name?: pulumi.Input<string>;
+    readonly s3Bucket?: RequiredBucketInputs;
     readonly s3KeyPrefix?: pulumi.Input<string>;
-    readonly sendToCloudWatchLogs?: pulumi.Input<boolean>;
     readonly snsTopicName?: pulumi.Input<string>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }

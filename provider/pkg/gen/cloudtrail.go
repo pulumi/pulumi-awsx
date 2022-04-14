@@ -19,6 +19,28 @@ import (
 )
 
 func generateCloudtrail(awsSpec schema.PackageSpec) schema.PackageSpec {
+	awsTrail := awsSpec.Resources["aws:cloudtrail/trail:Trail"]
+	inputProperties := map[string]schema.PropertySpec{}
+	for k, v := range awsTrail.InputProperties {
+		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", awsRef("#/types/aws:"))
+	}
+	delete(inputProperties, "cloudWatchLogsGroupArn")
+	delete(inputProperties, "cloudWatchLogsRoleArn")
+	delete(inputProperties, "s3BucketName")
+	inputProperties["s3Bucket"] = schema.PropertySpec{
+		Description: "S3 bucket designated for publishing log files.",
+		TypeSpec: schema.TypeSpec{
+			Ref:   "#/types/awsx:s3:RequiredBucket",
+			Plain: true,
+		},
+	}
+	inputProperties["cloudWatchLogsGroup"] = schema.PropertySpec{
+		Description: "Log group to which CloudTrail logs will be delivered.",
+		TypeSpec: schema.TypeSpec{
+			Ref:   "#/types/awsx:cloudwatch:OptionalLogGroup",
+			Plain: true,
+		},
+	}
 	return schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
 			"awsx:cloudtrail:Trail": {
@@ -51,117 +73,11 @@ func generateCloudtrail(awsSpec schema.PackageSpec) schema.PackageSpec {
 						},
 					},
 					Required: []string{
-						"bucket",
 						"trail",
 					},
 				},
-				InputProperties: map[string]schema.PropertySpec{
-					"advancedEventSelectors": {
-						Description: "Specifies an advanced event selector for enabling data event logging.",
-						TypeSpec: schema.TypeSpec{
-							Type:  "array",
-							Items: &schema.TypeSpec{Ref: awsRef("#/types/aws:cloudtrail%2FTrailAdvancedEventSelector:TrailAdvancedEventSelector")},
-						},
-					},
-					"cloudWatchLogGroupArgs": {
-						TypeSpec:    schema.TypeSpec{Ref: "#/types/awsx:cloudtrail:LogGroup"},
-						Description: "If sendToCloudWatchLogs is enabled, provide the log group configuration.",
-					},
-					"cloudWatchLogsGroupArn": {
-						Description: "Log group name using an ARN that represents the log group to which CloudTrail logs will be delivered. Note that CloudTrail requires the Log Stream wildcard.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"cloudWatchLogsRoleArn": {
-						Description: "Role for the CloudWatch Logs endpoint to assume to write to a user’s log group.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"enableLogFileValidation": {
-						Description: "Whether log file integrity validation is enabled. Defaults to `false`.",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"enableLogging": {
-						Description: "Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"eventSelectors": {
-						Description: "Specifies an event selector for enabling data event logging. Please note the CloudTrail limits when configuring these",
-						TypeSpec: schema.TypeSpec{
-							Type:  "array",
-							Items: &schema.TypeSpec{Ref: awsRef("#/types/aws:cloudtrail%2FTrailEventSelector:TrailEventSelector")},
-						},
-					},
-					"includeGlobalServiceEvents": {
-						Description: "Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"insightSelectors": {
-						Description: "Configuration block for identifying unusual operational activity.",
-						TypeSpec: schema.TypeSpec{
-							Type:  "array",
-							Items: &schema.TypeSpec{Ref: awsRef("#/types/aws:cloudtrail%2FTrailInsightSelector:TrailInsightSelector")},
-						},
-					},
-					"isMultiRegionTrail": {
-						Description: "Whether the trail is created in the current region or in all regions. Defaults to `false`.",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"isOrganizationTrail": {
-						Description: "Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"kmsKeyId": {
-						Description: "KMS key ARN to use to encrypt the logs delivered by CloudTrail.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"s3BucketName": {
-						Description: "Name of the S3 bucket designated for publishing log files.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"s3KeyPrefix": {
-						Description: "S3 key prefix that follows the name of the bucket you have designated for log file delivery.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"sendToCloudWatchLogs": {
-						Description: "If CloudTrail pushes logs to CloudWatch Logs in addition to S3. Disabled by default to reduce costs. Defaults to `false`",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"snsTopicName": {
-						Description: "Name of the Amazon SNS topic defined for notification of log file delivery.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"tags": {
-						TypeSpec: schema.TypeSpec{
-							Type:                 "object",
-							AdditionalProperties: &schema.TypeSpec{Type: "string"},
-						},
-						Description: "Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.",
-					},
-				},
-				RequiredInputs: []string{},
+				InputProperties: inputProperties,
+				RequiredInputs:  []string{},
 			},
 		},
 		Types: map[string]schema.ComplexTypeSpec{
