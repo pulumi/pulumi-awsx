@@ -227,8 +227,6 @@ func GenerateSchema() schema.PackageSpec {
 					},
 				},
 			},
-			"awsx:iam:DefaultRoleWithPolicy": defaultRoleWithPolicyArgs(awsSpec),
-			"awsx:iam:RoleWithPolicy":        roleWithPolicyArgs(awsSpec),
 		},
 		Language: map[string]schema.RawMessage{
 			"csharp": rawMessage(map[string]interface{}{
@@ -269,7 +267,10 @@ func GenerateSchema() schema.PackageSpec {
 		},
 	}
 
-	return extendSchemas(packageSpec, generateEcs(awsSpec, awsNativeSpec), generateCloudwatch(awsSpec))
+	return extendSchemas(packageSpec,
+		generateEcs(awsSpec, awsNativeSpec),
+		generateCloudwatch(awsSpec),
+		generateIam(awsSpec))
 }
 
 func getAwsSpec() schema.PackageSpec {
@@ -295,69 +296,6 @@ func getSpecFromUrl(url string) schema.PackageSpec {
 		log.Fatal(err)
 	}
 	return spec
-}
-
-func defaultRoleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	return schema.ComplexTypeSpec{
-		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.",
-			Properties: map[string]schema.PropertySpec{
-				"skip": {
-					Description: "Skips creation of the role if set to `true`.",
-					TypeSpec: schema.TypeSpec{
-						Type:  "boolean",
-						Plain: true,
-					},
-				},
-				"roleArn": {
-					Description: "ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.",
-					TypeSpec: schema.TypeSpec{
-						Type: "string",
-					},
-				},
-				"args": {
-					Description: "Args to use when creating the role and policies. Can't be specified if `roleArn` is used.",
-					TypeSpec: schema.TypeSpec{
-						Ref:   "#/types/awsx:iam:RoleWithPolicy",
-						Plain: true,
-					},
-				},
-			},
-		},
-	}
-}
-
-func roleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	role := awsSpec.Resources["aws:iam/role:Role"]
-	properties := map[string]schema.PropertySpec{}
-	for k, v := range role.InputProperties {
-		properties[k] = v
-	}
-
-	// The assumeRolePolicy ref doesn't point to a valid type ... and we don't need it for now
-	delete(properties, "assumeRolePolicy")
-	properties["inlinePolicies"].Items.Ref = awsRef(properties["inlinePolicies"].Items.Ref)
-
-	properties["policyArns"] = schema.PropertySpec{
-		Description: "ARNs of the policies to attach to the created role.",
-		TypeSpec: schema.TypeSpec{
-			Type: "array",
-			Items: &schema.TypeSpec{
-				Type:  "string",
-				Plain: true,
-			},
-			Plain: true,
-		},
-	}
-
-	return schema.ComplexTypeSpec{
-		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "The set of arguments for constructing a Role resource and Policy attachments.",
-			Properties:  properties,
-		},
-	}
 }
 
 // Perform a simple string replacement on Refs in all sub-specs
