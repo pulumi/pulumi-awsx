@@ -227,63 +227,6 @@ func GenerateSchema() schema.PackageSpec {
 					},
 				},
 			},
-			"awsx:cloudwatch:DefaultLogGroup": {
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Type:        "object",
-					Description: "Log group with default setup unless explicitly skipped.",
-					Properties: map[string]schema.PropertySpec{
-						"skip": {
-							Description: "Skip creation of the log group.",
-							TypeSpec: schema.TypeSpec{
-								Type:  "boolean",
-								Plain: true,
-							},
-						},
-						"existing": {
-							Description: "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.",
-							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:ExistingLogGroup",
-								Plain: true,
-							},
-						},
-						"args": {
-							Description: "Arguments to use instead of the default values during creation.",
-							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:LogGroup",
-								Plain: true,
-							},
-						},
-					},
-				},
-			},
-			"awsx:cloudwatch:ExistingLogGroup": {
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Type:        "object",
-					Description: "Reference to an existing log group.",
-					Properties: map[string]schema.PropertySpec{
-						"name": {
-							Description: "Name of the log group.",
-							TypeSpec: schema.TypeSpec{
-								Type: "string",
-							},
-						},
-						"region": {
-							Description: "Region of the log group. If not specified, the provider region will be used.",
-							TypeSpec: schema.TypeSpec{
-								Type: "string",
-							},
-						},
-					},
-					Required: []string{"name"},
-				},
-			},
-			"awsx:cloudwatch:LogGroup": {
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Type:        "object",
-					Description: "The set of arguments for constructing a LogGroup resource.",
-					Properties:  awsSpec.Resources["aws:cloudwatch/logGroup:LogGroup"].InputProperties,
-				},
-			},
 			"awsx:iam:DefaultRoleWithPolicy": defaultRoleWithPolicyArgs(awsSpec),
 			"awsx:iam:RoleWithPolicy":        roleWithPolicyArgs(awsSpec),
 		},
@@ -326,7 +269,7 @@ func GenerateSchema() schema.PackageSpec {
 		},
 	}
 
-	return extendSchemas(packageSpec, generateEcs(awsSpec, awsNativeSpec))
+	return extendSchemas(packageSpec, generateEcs(awsSpec, awsNativeSpec), generateCloudwatch(awsSpec))
 }
 
 func getAwsSpec() schema.PackageSpec {
