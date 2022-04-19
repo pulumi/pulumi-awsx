@@ -25,7 +25,7 @@ export class Trail extends pulumi.ComponentResource {
     /**
      * The managed S3 Bucket where the Trail will place its logs.
      */
-    public /*out*/ readonly bucket!: pulumi.Output<pulumiAws.s3.Bucket>;
+    public /*out*/ readonly bucket!: pulumi.Output<pulumiAws.s3.Bucket | undefined>;
     /**
      * The managed Cloudwatch Log Group.
      */
@@ -47,9 +47,7 @@ export class Trail extends pulumi.ComponentResource {
         opts = opts || {};
         if (!opts.id) {
             resourceInputs["advancedEventSelectors"] = args ? args.advancedEventSelectors : undefined;
-            resourceInputs["cloudWatchLogGroupArgs"] = args ? args.cloudWatchLogGroupArgs : undefined;
-            resourceInputs["cloudWatchLogsGroupArn"] = args ? args.cloudWatchLogsGroupArn : undefined;
-            resourceInputs["cloudWatchLogsRoleArn"] = args ? args.cloudWatchLogsRoleArn : undefined;
+            resourceInputs["cloudWatchLogsGroup"] = args ? args.cloudWatchLogsGroup : undefined;
             resourceInputs["enableLogFileValidation"] = args ? args.enableLogFileValidation : undefined;
             resourceInputs["enableLogging"] = args ? args.enableLogging : undefined;
             resourceInputs["eventSelectors"] = args ? args.eventSelectors : undefined;
@@ -58,9 +56,9 @@ export class Trail extends pulumi.ComponentResource {
             resourceInputs["isMultiRegionTrail"] = args ? args.isMultiRegionTrail : undefined;
             resourceInputs["isOrganizationTrail"] = args ? args.isOrganizationTrail : undefined;
             resourceInputs["kmsKeyId"] = args ? args.kmsKeyId : undefined;
-            resourceInputs["s3BucketName"] = args ? args.s3BucketName : undefined;
+            resourceInputs["name"] = args ? args.name : undefined;
+            resourceInputs["s3Bucket"] = args ? args.s3Bucket : undefined;
             resourceInputs["s3KeyPrefix"] = args ? args.s3KeyPrefix : undefined;
-            resourceInputs["sendToCloudWatchLogs"] = args ? args.sendToCloudWatchLogs : undefined;
             resourceInputs["snsTopicName"] = args ? args.snsTopicName : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["bucket"] = undefined /*out*/;
@@ -81,21 +79,13 @@ export class Trail extends pulumi.ComponentResource {
  */
 export interface TrailArgs {
     /**
-     * Specifies an advanced event selector for enabling data event logging.
+     * Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
      */
     advancedEventSelectors?: pulumi.Input<pulumi.Input<pulumiAws.types.input.cloudtrail.TrailAdvancedEventSelector>[]>;
     /**
-     * If sendToCloudWatchLogs is enabled, provide the log group configuration.
+     * Log group to which CloudTrail logs will be delivered.
      */
-    cloudWatchLogGroupArgs?: pulumi.Input<inputs.cloudtrail.LogGroupArgs>;
-    /**
-     * Log group name using an ARN that represents the log group to which CloudTrail logs will be delivered. Note that CloudTrail requires the Log Stream wildcard.
-     */
-    cloudWatchLogsGroupArn?: pulumi.Input<string>;
-    /**
-     * Role for the CloudWatch Logs endpoint to assume to write to a user’s log group.
-     */
-    cloudWatchLogsRoleArn?: pulumi.Input<string>;
+    cloudWatchLogsGroup?: inputs.cloudwatch.OptionalLogGroupArgs;
     /**
      * Whether log file integrity validation is enabled. Defaults to `false`.
      */
@@ -105,7 +95,7 @@ export interface TrailArgs {
      */
     enableLogging?: pulumi.Input<boolean>;
     /**
-     * Specifies an event selector for enabling data event logging. Please note the CloudTrail limits when configuring these
+     * Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.
      */
     eventSelectors?: pulumi.Input<pulumi.Input<pulumiAws.types.input.cloudtrail.TrailEventSelector>[]>;
     /**
@@ -113,7 +103,7 @@ export interface TrailArgs {
      */
     includeGlobalServiceEvents?: pulumi.Input<boolean>;
     /**
-     * Configuration block for identifying unusual operational activity.
+     * Configuration block for identifying unusual operational activity. See details below.
      */
     insightSelectors?: pulumi.Input<pulumi.Input<pulumiAws.types.input.cloudtrail.TrailInsightSelector>[]>;
     /**
@@ -121,7 +111,7 @@ export interface TrailArgs {
      */
     isMultiRegionTrail?: pulumi.Input<boolean>;
     /**
-     * Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`
+     * Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
      */
     isOrganizationTrail?: pulumi.Input<boolean>;
     /**
@@ -129,17 +119,17 @@ export interface TrailArgs {
      */
     kmsKeyId?: pulumi.Input<string>;
     /**
-     * Name of the S3 bucket designated for publishing log files.
+     * Specifies the name of the advanced event selector.
      */
-    s3BucketName?: pulumi.Input<string>;
+    name?: pulumi.Input<string>;
+    /**
+     * S3 bucket designated for publishing log files.
+     */
+    s3Bucket?: inputs.s3.RequiredBucketArgs;
     /**
      * S3 key prefix that follows the name of the bucket you have designated for log file delivery.
      */
     s3KeyPrefix?: pulumi.Input<string>;
-    /**
-     * If CloudTrail pushes logs to CloudWatch Logs in addition to S3. Disabled by default to reduce costs. Defaults to `false`
-     */
-    sendToCloudWatchLogs?: pulumi.Input<boolean>;
     /**
      * Name of the Amazon SNS topic defined for notification of log file delivery.
      */

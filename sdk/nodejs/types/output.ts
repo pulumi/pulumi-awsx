@@ -17,3 +17,6 @@ export namespace ecs {
 
 export namespace iam {
 }
+
+export namespace s3 {
+}
