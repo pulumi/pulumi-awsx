@@ -7,27 +7,33 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.S3.Inputs
+namespace Pulumi.Awsx.Awsx.Inputs
 {
 
     /// <summary>
-    /// Reference to an existing bucket.
+    /// Reference to an existing log group.
     /// </summary>
-    public sealed class ExistingBucketArgs : Pulumi.ResourceArgs
+    public sealed class ExistingLogGroupArgs : Pulumi.ResourceArgs
     {
         /// <summary>
-        /// Arn of the bucket. Only one of [arn] or [name] can be specified.
+        /// Arn of the log group. Only one of [arn] or [name] can be specified.
         /// </summary>
         [Input("arn")]
         public Input<string>? Arn { get; set; }
 
         /// <summary>
-        /// Name of the bucket. Only one of [arn] or [name] can be specified.
+        /// Name of the log group. Only one of [arn] or [name] can be specified.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }
 
-        public ExistingBucketArgs()
+        /// <summary>
+        /// Region of the log group. If not specified, the provider region will be used.
+        /// </summary>
+        [Input("region")]
+        public Input<string>? Region { get; set; }
+
+        public ExistingLogGroupArgs()
         {
         }
     }

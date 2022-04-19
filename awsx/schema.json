@@ -11,41 +11,147 @@
     "repository": "https://github.com/pulumi/pulumi-awsx",
     "config": {},
     "types": {
-        "awsx:cloudtrail:LogGroup": {
-            "description": "Defines the log group configuration for the CloudWatch Log Group to send logs to.",
+        "awsx:awsx:Bucket": {
+            "description": "The set of arguments for constructing a Bucket resource.",
             "properties": {
-                "kmsKeyId": {
+                "accelerationStatus": {
                     "type": "string",
-                    "description": "The ARN of the KMS Key to use when encrypting log data."
+                    "description": "Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.\n"
                 },
-                "namePrefix": {
+                "acl": {
                     "type": "string",
-                    "description": "Creates a unique name beginning with the specified prefix"
+                    "description": "The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.\n"
                 },
-                "retentionInDays": {
-                    "type": "integer",
-                    "description": "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0. If you select 0, the events in the log group are always retained and never expire."
+                "arn": {
+                    "type": "string",
+                    "description": "The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.\n"
+                },
+                "bucket": {
+                    "type": "string",
+                    "description": "The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).\n",
+                    "language": {
+                        "csharp": {
+                            "name": "BucketName"
+                        }
+                    }
+                },
+                "bucketPrefix": {
+                    "type": "string",
+                    "description": "Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).\n"
+                },
+                "corsRules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketCorsRule:BucketCorsRule"
+                    },
+                    "description": "A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).\n"
+                },
+                "forceDestroy": {
+                    "type": "boolean",
+                    "description": "A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.\n"
+                },
+                "grants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketGrant:BucketGrant"
+                    },
+                    "description": "An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.\n"
+                },
+                "hostedZoneId": {
+                    "type": "string",
+                    "description": "The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.\n"
+                },
+                "lifecycleRules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketLifecycleRule:BucketLifecycleRule"
+                    },
+                    "description": "A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).\n"
+                },
+                "loggings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketLogging:BucketLogging"
+                    },
+                    "description": "A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).\n"
+                },
+                "objectLockConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketObjectLockConfiguration:BucketObjectLockConfiguration",
+                    "description": "A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)\n"
+                },
+                "policy": {
+                    "type": "string",
+                    "description": "A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), the provider may view the policy as constantly changing in a `pulumi up / preview / update`. In this case, please make sure you use the verbose/specific version of the policy.\n"
+                },
+                "replicationConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketReplicationConfiguration:BucketReplicationConfiguration",
+                    "description": "A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).\n"
+                },
+                "requestPayer": {
+                    "type": "string",
+                    "description": "Specifies who should bear the cost of Amazon S3 data transfer.\nCan be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur\nthe costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)\ndeveloper guide for more information.\n"
+                },
+                "serverSideEncryptionConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration",
+                    "description": "A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)\n"
                 },
                 "tags": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "A map of tags to assign to the resource. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level."
+                    "description": "A mapping of tags to assign to the bucket.\n"
+                },
+                "versioning": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketVersioning:BucketVersioning",
+                    "description": "A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)\n"
+                },
+                "website": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketWebsite:BucketWebsite",
+                    "description": "A website object (documented below).\n"
+                },
+                "websiteDomain": {
+                    "type": "string",
+                    "description": "The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.\n"
+                },
+                "websiteEndpoint": {
+                    "type": "string",
+                    "description": "The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.\n"
                 }
             },
             "type": "object"
         },
-        "awsx:cloudwatch:DefaultLogGroup": {
-            "description": "Log group with default setup unless explicitly skipped.",
+        "awsx:awsx:DefaultBucket": {
+            "description": "Bucket with default setup unless explicitly skipped.",
             "properties": {
                 "args": {
-                    "$ref": "#/types/awsx:cloudwatch:LogGroup",
+                    "$ref": "#/types/awsx:awsx:Bucket",
                     "plain": true,
                     "description": "Arguments to use instead of the default values during creation."
                 },
                 "existing": {
-                    "$ref": "#/types/awsx:cloudwatch:ExistingLogGroup",
+                    "$ref": "#/types/awsx:awsx:ExistingBucket",
+                    "plain": true,
+                    "description": "Identity of an existing bucket to use. Cannot be used in combination with `args`."
+                },
+                "skip": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Skip creation of the bucket."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:awsx:DefaultLogGroup": {
+            "description": "Log group with default setup unless explicitly skipped.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:awsx:LogGroup",
+                    "plain": true,
+                    "description": "Arguments to use instead of the default values during creation."
+                },
+                "existing": {
+                    "$ref": "#/types/awsx:awsx:ExistingLogGroup",
                     "plain": true,
                     "description": "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`."
                 },
@@ -57,7 +163,41 @@
             },
             "type": "object"
         },
-        "awsx:cloudwatch:ExistingLogGroup": {
+        "awsx:awsx:DefaultRoleWithPolicy": {
+            "description": "Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:awsx:RoleWithPolicy",
+                    "plain": true,
+                    "description": "Args to use when creating the role and policies. Can't be specified if `roleArn` is used."
+                },
+                "roleArn": {
+                    "type": "string",
+                    "description": "ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`."
+                },
+                "skip": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Skips creation of the role if set to `true`."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:awsx:ExistingBucket": {
+            "description": "Reference to an existing bucket.",
+            "properties": {
+                "arn": {
+                    "type": "string",
+                    "description": "Arn of the bucket. Only one of [arn] or [name] can be specified."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the bucket. Only one of [arn] or [name] can be specified."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:awsx:ExistingLogGroup": {
             "description": "Reference to an existing log group.",
             "properties": {
                 "arn": {
@@ -75,7 +215,7 @@
             },
             "type": "object"
         },
-        "awsx:cloudwatch:LogGroup": {
+        "awsx:awsx:LogGroup": {
             "description": "The set of arguments for constructing a LogGroup resource.",
             "properties": {
                 "kmsKeyId": {
@@ -104,11 +244,11 @@
             },
             "type": "object"
         },
-        "awsx:cloudwatch:OptionalLogGroup": {
+        "awsx:awsx:OptionalLogGroup": {
             "description": "Log group which is only created if enabled.",
             "properties": {
                 "args": {
-                    "$ref": "#/types/awsx:cloudwatch:LogGroup",
+                    "$ref": "#/types/awsx:awsx:LogGroup",
                     "plain": true,
                     "description": "Arguments to use instead of the default values during creation."
                 },
@@ -118,25 +258,130 @@
                     "description": "Enable creation of the log group."
                 },
                 "existing": {
-                    "$ref": "#/types/awsx:cloudwatch:ExistingLogGroup",
+                    "$ref": "#/types/awsx:awsx:ExistingLogGroup",
                     "plain": true,
                     "description": "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`."
                 }
             },
             "type": "object"
         },
-        "awsx:cloudwatch:RequiredLogGroup": {
-            "description": "Log group with default setup.",
+        "awsx:awsx:RequiredBucket": {
+            "description": "Bucket with default setup.",
             "properties": {
                 "args": {
-                    "$ref": "#/types/awsx:cloudwatch:LogGroup",
+                    "$ref": "#/types/awsx:awsx:Bucket",
                     "plain": true,
                     "description": "Arguments to use instead of the default values during creation."
                 },
                 "existing": {
-                    "$ref": "#/types/awsx:cloudwatch:ExistingLogGroup",
+                    "$ref": "#/types/awsx:awsx:ExistingBucket",
+                    "plain": true,
+                    "description": "Identity of an existing bucket to use. Cannot be used in combination with `args`."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:awsx:RequiredLogGroup": {
+            "description": "Log group with default setup.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:awsx:LogGroup",
+                    "plain": true,
+                    "description": "Arguments to use instead of the default values during creation."
+                },
+                "existing": {
+                    "$ref": "#/types/awsx:awsx:ExistingLogGroup",
                     "plain": true,
                     "description": "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:awsx:RoleWithPolicy": {
+            "description": "The set of arguments for constructing a Role resource and Policy attachments.",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Description of the role.\n"
+                },
+                "forceDetachPolicies": {
+                    "type": "boolean",
+                    "description": "Whether to force detaching any policies the role has before destroying it. Defaults to `false`.\n"
+                },
+                "inlinePolicies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
+                    },
+                    "description": "Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.\n"
+                },
+                "managedPolicyArns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.\n"
+                },
+                "maxSessionDuration": {
+                    "type": "integer",
+                    "description": "Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the role policy.\n"
+                },
+                "namePrefix": {
+                    "type": "string",
+                    "description": "Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.\n"
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.\n"
+                },
+                "permissionsBoundary": {
+                    "type": "string",
+                    "description": "ARN of the policy that is used to set the permissions boundary for the role.\n"
+                },
+                "policyArns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "ARNs of the policies to attach to the created role."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:cloudtrail:LogGroup": {
+            "description": "Defines the log group configuration for the CloudWatch Log Group to send logs to.",
+            "properties": {
+                "kmsKeyId": {
+                    "type": "string",
+                    "description": "The ARN of the KMS Key to use when encrypting log data."
+                },
+                "namePrefix": {
+                    "type": "string",
+                    "description": "Creates a unique name beginning with the specified prefix"
+                },
+                "retentionInDays": {
+                    "type": "integer",
+                    "description": "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0. If you select 0, the events in the log group are always retained and never expire."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A map of tags to assign to the resource. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level."
                 }
             },
             "type": "object"
@@ -167,7 +412,7 @@
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
                 },
                 "executionRole": {
-                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
+                    "$ref": "#/types/awsx:awsx:DefaultRoleWithPolicy",
                     "plain": true,
                     "description": "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined."
                 },
@@ -187,7 +432,7 @@
                     "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
                 },
                 "logGroup": {
-                    "$ref": "#/types/awsx:cloudwatch:DefaultLogGroup",
+                    "$ref": "#/types/awsx:awsx:DefaultLogGroup",
                     "plain": true,
                     "description": "A set of volume blocks that containers in your task may use."
                 },
@@ -236,7 +481,7 @@
                     "description": "Key-value map of resource tags.\n"
                 },
                 "taskRole": {
-                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
+                    "$ref": "#/types/awsx:awsx:DefaultRoleWithPolicy",
                     "plain": true,
                     "description": "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined."
                 },
@@ -729,251 +974,6 @@
                 }
             },
             "type": "object"
-        },
-        "awsx:iam:DefaultRoleWithPolicy": {
-            "description": "Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.",
-            "properties": {
-                "args": {
-                    "$ref": "#/types/awsx:iam:RoleWithPolicy",
-                    "plain": true,
-                    "description": "Args to use when creating the role and policies. Can't be specified if `roleArn` is used."
-                },
-                "roleArn": {
-                    "type": "string",
-                    "description": "ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`."
-                },
-                "skip": {
-                    "type": "boolean",
-                    "plain": true,
-                    "description": "Skips creation of the role if set to `true`."
-                }
-            },
-            "type": "object"
-        },
-        "awsx:iam:RoleWithPolicy": {
-            "description": "The set of arguments for constructing a Role resource and Policy attachments.",
-            "properties": {
-                "description": {
-                    "type": "string",
-                    "description": "Description of the role.\n"
-                },
-                "forceDetachPolicies": {
-                    "type": "boolean",
-                    "description": "Whether to force detaching any policies the role has before destroying it. Defaults to `false`.\n"
-                },
-                "inlinePolicies": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:iam/RoleInlinePolicy:RoleInlinePolicy"
-                    },
-                    "description": "Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.\n"
-                },
-                "managedPolicyArns": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.\n"
-                },
-                "maxSessionDuration": {
-                    "type": "integer",
-                    "description": "Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.\n"
-                },
-                "name": {
-                    "type": "string",
-                    "description": "Name of the role policy.\n"
-                },
-                "namePrefix": {
-                    "type": "string",
-                    "description": "Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.\n"
-                },
-                "path": {
-                    "type": "string",
-                    "description": "Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.\n"
-                },
-                "permissionsBoundary": {
-                    "type": "string",
-                    "description": "ARN of the policy that is used to set the permissions boundary for the role.\n"
-                },
-                "policyArns": {
-                    "type": "array",
-                    "items": {
-                        "type": "string",
-                        "plain": true
-                    },
-                    "plain": true,
-                    "description": "ARNs of the policies to attach to the created role."
-                },
-                "tags": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "description": "Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
-                }
-            },
-            "type": "object"
-        },
-        "awsx:s3:Bucket": {
-            "description": "The set of arguments for constructing a Bucket resource.",
-            "properties": {
-                "accelerationStatus": {
-                    "type": "string",
-                    "description": "Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.\n"
-                },
-                "acl": {
-                    "type": "string",
-                    "description": "The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.\n"
-                },
-                "arn": {
-                    "type": "string",
-                    "description": "The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.\n"
-                },
-                "bucket": {
-                    "type": "string",
-                    "description": "The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).\n",
-                    "language": {
-                        "csharp": {
-                            "name": "BucketName"
-                        }
-                    }
-                },
-                "bucketPrefix": {
-                    "type": "string",
-                    "description": "Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).\n"
-                },
-                "corsRules": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketCorsRule:BucketCorsRule"
-                    },
-                    "description": "A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).\n"
-                },
-                "forceDestroy": {
-                    "type": "boolean",
-                    "description": "A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.\n"
-                },
-                "grants": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketGrant:BucketGrant"
-                    },
-                    "description": "An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.\n"
-                },
-                "hostedZoneId": {
-                    "type": "string",
-                    "description": "The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.\n"
-                },
-                "lifecycleRules": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketLifecycleRule:BucketLifecycleRule"
-                    },
-                    "description": "A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).\n"
-                },
-                "loggings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketLogging:BucketLogging"
-                    },
-                    "description": "A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).\n"
-                },
-                "objectLockConfiguration": {
-                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketObjectLockConfiguration:BucketObjectLockConfiguration",
-                    "description": "A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)\n"
-                },
-                "policy": {
-                    "type": "string",
-                    "description": "A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), the provider may view the policy as constantly changing in a `pulumi up / preview / update`. In this case, please make sure you use the verbose/specific version of the policy.\n"
-                },
-                "replicationConfiguration": {
-                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketReplicationConfiguration:BucketReplicationConfiguration",
-                    "description": "A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).\n"
-                },
-                "requestPayer": {
-                    "type": "string",
-                    "description": "Specifies who should bear the cost of Amazon S3 data transfer.\nCan be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur\nthe costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)\ndeveloper guide for more information.\n"
-                },
-                "serverSideEncryptionConfiguration": {
-                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketServerSideEncryptionConfiguration:BucketServerSideEncryptionConfiguration",
-                    "description": "A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)\n"
-                },
-                "tags": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "description": "A mapping of tags to assign to the bucket.\n"
-                },
-                "versioning": {
-                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketVersioning:BucketVersioning",
-                    "description": "A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)\n"
-                },
-                "website": {
-                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:s3/BucketWebsite:BucketWebsite",
-                    "description": "A website object (documented below).\n"
-                },
-                "websiteDomain": {
-                    "type": "string",
-                    "description": "The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.\n"
-                },
-                "websiteEndpoint": {
-                    "type": "string",
-                    "description": "The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.\n"
-                }
-            },
-            "type": "object"
-        },
-        "awsx:s3:DefaultBucket": {
-            "description": "Bucket with default setup unless explicitly skipped.",
-            "properties": {
-                "args": {
-                    "$ref": "#/types/awsx:s3:Bucket",
-                    "plain": true,
-                    "description": "Arguments to use instead of the default values during creation."
-                },
-                "existing": {
-                    "$ref": "#/types/awsx:s3:ExistingBucket",
-                    "plain": true,
-                    "description": "Identity of an existing bucket to use. Cannot be used in combination with `args`."
-                },
-                "skip": {
-                    "type": "boolean",
-                    "plain": true,
-                    "description": "Skip creation of the bucket."
-                }
-            },
-            "type": "object"
-        },
-        "awsx:s3:ExistingBucket": {
-            "description": "Reference to an existing bucket.",
-            "properties": {
-                "arn": {
-                    "type": "string",
-                    "description": "Arn of the bucket. Only one of [arn] or [name] can be specified."
-                },
-                "name": {
-                    "type": "string",
-                    "description": "Name of the bucket. Only one of [arn] or [name] can be specified."
-                }
-            },
-            "type": "object"
-        },
-        "awsx:s3:RequiredBucket": {
-            "description": "Bucket with default setup.",
-            "properties": {
-                "args": {
-                    "$ref": "#/types/awsx:s3:Bucket",
-                    "plain": true,
-                    "description": "Arguments to use instead of the default values during creation."
-                },
-                "existing": {
-                    "$ref": "#/types/awsx:s3:ExistingBucket",
-                    "plain": true,
-                    "description": "Identity of an existing bucket to use. Cannot be used in combination with `args`."
-                }
-            },
-            "type": "object"
         }
     },
     "provider": {},
@@ -1010,7 +1010,7 @@
                     "description": "Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.\n"
                 },
                 "cloudWatchLogsGroup": {
-                    "$ref": "#/types/awsx:cloudwatch:OptionalLogGroup",
+                    "$ref": "#/types/awsx:awsx:OptionalLogGroup",
                     "plain": true,
                     "description": "Log group to which CloudTrail logs will be delivered."
                 },
@@ -1057,7 +1057,7 @@
                     "description": "Specifies the name of the advanced event selector.\n"
                 },
                 "s3Bucket": {
-                    "$ref": "#/types/awsx:s3:RequiredBucket",
+                    "$ref": "#/types/awsx:awsx:RequiredBucket",
                     "plain": true,
                     "description": "S3 bucket designated for publishing log files."
                 },
@@ -1272,7 +1272,7 @@
                     "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
                 },
                 "executionRole": {
-                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
+                    "$ref": "#/types/awsx:awsx:DefaultRoleWithPolicy",
                     "plain": true,
                     "description": "The execution role that the Amazon ECS container agent and the Docker daemon can assume.\nWill be created automatically if not defined."
                 },
@@ -1292,7 +1292,7 @@
                     "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
                 },
                 "logGroup": {
-                    "$ref": "#/types/awsx:cloudwatch:DefaultLogGroup",
+                    "$ref": "#/types/awsx:awsx:DefaultLogGroup",
                     "plain": true,
                     "description": "A set of volume blocks that containers in your task may use."
                 },
@@ -1341,7 +1341,7 @@
                     "description": "Key-value map of resource tags.\n"
                 },
                 "taskRole": {
-                    "$ref": "#/types/awsx:iam:DefaultRoleWithPolicy",
+                    "$ref": "#/types/awsx:awsx:DefaultRoleWithPolicy",
                     "plain": true,
                     "description": "IAM role that allows your Amazon ECS container task to make calls to other AWS services.\nWill be created automatically if not defined."
                 },

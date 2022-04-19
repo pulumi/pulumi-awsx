@@ -96,17 +96,61 @@ export interface FargateTaskDefinitionArgs {
     readonly taskRole?: DefaultRoleWithPolicyInputs;
     readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
 }
-export interface LogGroupInputs {
-    readonly kmsKeyId?: pulumi.Input<string>;
-    readonly namePrefix?: pulumi.Input<string>;
-    readonly retentionInDays?: pulumi.Input<number>;
+export interface BucketInputs {
+    readonly accelerationStatus?: pulumi.Input<string>;
+    readonly acl?: pulumi.Input<string>;
+    readonly arn?: pulumi.Input<string>;
+    readonly bucket?: pulumi.Input<string>;
+    readonly bucketPrefix?: pulumi.Input<string>;
+    readonly corsRules?: pulumi.Input<pulumi.Input<aws.types.input.s3.BucketCorsRule>[]>;
+    readonly forceDestroy?: pulumi.Input<boolean>;
+    readonly grants?: pulumi.Input<pulumi.Input<aws.types.input.s3.BucketGrant>[]>;
+    readonly hostedZoneId?: pulumi.Input<string>;
+    readonly lifecycleRules?: pulumi.Input<pulumi.Input<aws.types.input.s3.BucketLifecycleRule>[]>;
+    readonly loggings?: pulumi.Input<pulumi.Input<aws.types.input.s3.BucketLogging>[]>;
+    readonly objectLockConfiguration?: pulumi.Input<aws.types.input.s3.BucketObjectLockConfiguration>;
+    readonly policy?: pulumi.Input<string>;
+    readonly replicationConfiguration?: pulumi.Input<aws.types.input.s3.BucketReplicationConfiguration>;
+    readonly requestPayer?: pulumi.Input<string>;
+    readonly serverSideEncryptionConfiguration?: pulumi.Input<aws.types.input.s3.BucketServerSideEncryptionConfiguration>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly versioning?: pulumi.Input<aws.types.input.s3.BucketVersioning>;
+    readonly website?: pulumi.Input<aws.types.input.s3.BucketWebsite>;
+    readonly websiteDomain?: pulumi.Input<string>;
+    readonly websiteEndpoint?: pulumi.Input<string>;
 }
-export interface LogGroupOutputs {
-    readonly kmsKeyId?: pulumi.Output<string>;
-    readonly namePrefix?: pulumi.Output<string>;
-    readonly retentionInDays?: pulumi.Output<number>;
+export interface BucketOutputs {
+    readonly accelerationStatus?: pulumi.Output<string>;
+    readonly acl?: pulumi.Output<string>;
+    readonly arn?: pulumi.Output<string>;
+    readonly bucket?: pulumi.Output<string>;
+    readonly bucketPrefix?: pulumi.Output<string>;
+    readonly corsRules?: pulumi.Output<aws.types.output.s3.BucketCorsRule[]>;
+    readonly forceDestroy?: pulumi.Output<boolean>;
+    readonly grants?: pulumi.Output<aws.types.output.s3.BucketGrant[]>;
+    readonly hostedZoneId?: pulumi.Output<string>;
+    readonly lifecycleRules?: pulumi.Output<aws.types.output.s3.BucketLifecycleRule[]>;
+    readonly loggings?: pulumi.Output<aws.types.output.s3.BucketLogging[]>;
+    readonly objectLockConfiguration?: pulumi.Output<aws.types.output.s3.BucketObjectLockConfiguration>;
+    readonly policy?: pulumi.Output<string>;
+    readonly replicationConfiguration?: pulumi.Output<aws.types.output.s3.BucketReplicationConfiguration>;
+    readonly requestPayer?: pulumi.Output<string>;
+    readonly serverSideEncryptionConfiguration?: pulumi.Output<aws.types.output.s3.BucketServerSideEncryptionConfiguration>;
     readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly versioning?: pulumi.Output<aws.types.output.s3.BucketVersioning>;
+    readonly website?: pulumi.Output<aws.types.output.s3.BucketWebsite>;
+    readonly websiteDomain?: pulumi.Output<string>;
+    readonly websiteEndpoint?: pulumi.Output<string>;
+}
+export interface DefaultBucketInputs {
+    readonly args?: BucketInputs;
+    readonly existing?: ExistingBucketInputs;
+    readonly skip?: boolean;
+}
+export interface DefaultBucketOutputs {
+    readonly args?: BucketOutputs;
+    readonly existing?: ExistingBucketOutputs;
+    readonly skip?: boolean;
 }
 export interface DefaultLogGroupInputs {
     readonly args?: LogGroupInputs;
@@ -117,6 +161,24 @@ export interface DefaultLogGroupOutputs {
     readonly args?: LogGroupOutputs;
     readonly existing?: ExistingLogGroupOutputs;
     readonly skip?: boolean;
+}
+export interface DefaultRoleWithPolicyInputs {
+    readonly args?: RoleWithPolicyInputs;
+    readonly roleArn?: pulumi.Input<string>;
+    readonly skip?: boolean;
+}
+export interface DefaultRoleWithPolicyOutputs {
+    readonly args?: RoleWithPolicyOutputs;
+    readonly roleArn?: pulumi.Output<string>;
+    readonly skip?: boolean;
+}
+export interface ExistingBucketInputs {
+    readonly arn?: pulumi.Input<string>;
+    readonly name?: pulumi.Input<string>;
+}
+export interface ExistingBucketOutputs {
+    readonly arn?: pulumi.Output<string>;
+    readonly name?: pulumi.Output<string>;
 }
 export interface ExistingLogGroupInputs {
     readonly arn?: pulumi.Input<string>;
@@ -152,6 +214,14 @@ export interface OptionalLogGroupOutputs {
     readonly enable?: boolean;
     readonly existing?: ExistingLogGroupOutputs;
 }
+export interface RequiredBucketInputs {
+    readonly args?: BucketInputs;
+    readonly existing?: ExistingBucketInputs;
+}
+export interface RequiredBucketOutputs {
+    readonly args?: BucketOutputs;
+    readonly existing?: ExistingBucketOutputs;
+}
 export interface RequiredLogGroupInputs {
     readonly args?: LogGroupInputs;
     readonly existing?: ExistingLogGroupInputs;
@@ -159,6 +229,44 @@ export interface RequiredLogGroupInputs {
 export interface RequiredLogGroupOutputs {
     readonly args?: LogGroupOutputs;
     readonly existing?: ExistingLogGroupOutputs;
+}
+export interface RoleWithPolicyInputs {
+    readonly description?: pulumi.Input<string>;
+    readonly forceDetachPolicies?: pulumi.Input<boolean>;
+    readonly inlinePolicies?: pulumi.Input<pulumi.Input<aws.types.input.iam.RoleInlinePolicy>[]>;
+    readonly managedPolicyArns?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly maxSessionDuration?: pulumi.Input<number>;
+    readonly name?: pulumi.Input<string>;
+    readonly namePrefix?: pulumi.Input<string>;
+    readonly path?: pulumi.Input<string>;
+    readonly permissionsBoundary?: pulumi.Input<string>;
+    readonly policyArns?: string[];
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export interface RoleWithPolicyOutputs {
+    readonly description?: pulumi.Output<string>;
+    readonly forceDetachPolicies?: pulumi.Output<boolean>;
+    readonly inlinePolicies?: pulumi.Output<aws.types.output.iam.RoleInlinePolicy[]>;
+    readonly managedPolicyArns?: pulumi.Output<string[]>;
+    readonly maxSessionDuration?: pulumi.Output<number>;
+    readonly name?: pulumi.Output<string>;
+    readonly namePrefix?: pulumi.Output<string>;
+    readonly path?: pulumi.Output<string>;
+    readonly permissionsBoundary?: pulumi.Output<string>;
+    readonly policyArns?: string[];
+    readonly tags?: pulumi.Output<Record<string, string>>;
+}
+export interface LogGroupInputs {
+    readonly kmsKeyId?: pulumi.Input<string>;
+    readonly namePrefix?: pulumi.Input<string>;
+    readonly retentionInDays?: pulumi.Input<number>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export interface LogGroupOutputs {
+    readonly kmsKeyId?: pulumi.Output<string>;
+    readonly namePrefix?: pulumi.Output<string>;
+    readonly retentionInDays?: pulumi.Output<number>;
+    readonly tags?: pulumi.Output<Record<string, string>>;
 }
 export interface FargateServiceTaskDefinitionInputs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;
@@ -465,112 +573,4 @@ export interface TaskDefinitionVolumeFromInputs {
 export interface TaskDefinitionVolumeFromOutputs {
     readonly readOnly?: pulumi.Output<boolean>;
     readonly sourceContainer?: pulumi.Output<string>;
-}
-export interface DefaultRoleWithPolicyInputs {
-    readonly args?: RoleWithPolicyInputs;
-    readonly roleArn?: pulumi.Input<string>;
-    readonly skip?: boolean;
-}
-export interface DefaultRoleWithPolicyOutputs {
-    readonly args?: RoleWithPolicyOutputs;
-    readonly roleArn?: pulumi.Output<string>;
-    readonly skip?: boolean;
-}
-export interface RoleWithPolicyInputs {
-    readonly description?: pulumi.Input<string>;
-    readonly forceDetachPolicies?: pulumi.Input<boolean>;
-    readonly inlinePolicies?: pulumi.Input<pulumi.Input<aws.types.input.iam.RoleInlinePolicy>[]>;
-    readonly managedPolicyArns?: pulumi.Input<pulumi.Input<string>[]>;
-    readonly maxSessionDuration?: pulumi.Input<number>;
-    readonly name?: pulumi.Input<string>;
-    readonly namePrefix?: pulumi.Input<string>;
-    readonly path?: pulumi.Input<string>;
-    readonly permissionsBoundary?: pulumi.Input<string>;
-    readonly policyArns?: string[];
-    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-}
-export interface RoleWithPolicyOutputs {
-    readonly description?: pulumi.Output<string>;
-    readonly forceDetachPolicies?: pulumi.Output<boolean>;
-    readonly inlinePolicies?: pulumi.Output<aws.types.output.iam.RoleInlinePolicy[]>;
-    readonly managedPolicyArns?: pulumi.Output<string[]>;
-    readonly maxSessionDuration?: pulumi.Output<number>;
-    readonly name?: pulumi.Output<string>;
-    readonly namePrefix?: pulumi.Output<string>;
-    readonly path?: pulumi.Output<string>;
-    readonly permissionsBoundary?: pulumi.Output<string>;
-    readonly policyArns?: string[];
-    readonly tags?: pulumi.Output<Record<string, string>>;
-}
-export interface BucketInputs {
-    readonly accelerationStatus?: pulumi.Input<string>;
-    readonly acl?: pulumi.Input<string>;
-    readonly arn?: pulumi.Input<string>;
-    readonly bucket?: pulumi.Input<string>;
-    readonly bucketPrefix?: pulumi.Input<string>;
-    readonly corsRules?: pulumi.Input<pulumi.Input<aws.types.input.s3.BucketCorsRule>[]>;
-    readonly forceDestroy?: pulumi.Input<boolean>;
-    readonly grants?: pulumi.Input<pulumi.Input<aws.types.input.s3.BucketGrant>[]>;
-    readonly hostedZoneId?: pulumi.Input<string>;
-    readonly lifecycleRules?: pulumi.Input<pulumi.Input<aws.types.input.s3.BucketLifecycleRule>[]>;
-    readonly loggings?: pulumi.Input<pulumi.Input<aws.types.input.s3.BucketLogging>[]>;
-    readonly objectLockConfiguration?: pulumi.Input<aws.types.input.s3.BucketObjectLockConfiguration>;
-    readonly policy?: pulumi.Input<string>;
-    readonly replicationConfiguration?: pulumi.Input<aws.types.input.s3.BucketReplicationConfiguration>;
-    readonly requestPayer?: pulumi.Input<string>;
-    readonly serverSideEncryptionConfiguration?: pulumi.Input<aws.types.input.s3.BucketServerSideEncryptionConfiguration>;
-    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-    readonly versioning?: pulumi.Input<aws.types.input.s3.BucketVersioning>;
-    readonly website?: pulumi.Input<aws.types.input.s3.BucketWebsite>;
-    readonly websiteDomain?: pulumi.Input<string>;
-    readonly websiteEndpoint?: pulumi.Input<string>;
-}
-export interface BucketOutputs {
-    readonly accelerationStatus?: pulumi.Output<string>;
-    readonly acl?: pulumi.Output<string>;
-    readonly arn?: pulumi.Output<string>;
-    readonly bucket?: pulumi.Output<string>;
-    readonly bucketPrefix?: pulumi.Output<string>;
-    readonly corsRules?: pulumi.Output<aws.types.output.s3.BucketCorsRule[]>;
-    readonly forceDestroy?: pulumi.Output<boolean>;
-    readonly grants?: pulumi.Output<aws.types.output.s3.BucketGrant[]>;
-    readonly hostedZoneId?: pulumi.Output<string>;
-    readonly lifecycleRules?: pulumi.Output<aws.types.output.s3.BucketLifecycleRule[]>;
-    readonly loggings?: pulumi.Output<aws.types.output.s3.BucketLogging[]>;
-    readonly objectLockConfiguration?: pulumi.Output<aws.types.output.s3.BucketObjectLockConfiguration>;
-    readonly policy?: pulumi.Output<string>;
-    readonly replicationConfiguration?: pulumi.Output<aws.types.output.s3.BucketReplicationConfiguration>;
-    readonly requestPayer?: pulumi.Output<string>;
-    readonly serverSideEncryptionConfiguration?: pulumi.Output<aws.types.output.s3.BucketServerSideEncryptionConfiguration>;
-    readonly tags?: pulumi.Output<Record<string, string>>;
-    readonly versioning?: pulumi.Output<aws.types.output.s3.BucketVersioning>;
-    readonly website?: pulumi.Output<aws.types.output.s3.BucketWebsite>;
-    readonly websiteDomain?: pulumi.Output<string>;
-    readonly websiteEndpoint?: pulumi.Output<string>;
-}
-export interface DefaultBucketInputs {
-    readonly args?: BucketInputs;
-    readonly existing?: ExistingBucketInputs;
-    readonly skip?: boolean;
-}
-export interface DefaultBucketOutputs {
-    readonly args?: BucketOutputs;
-    readonly existing?: ExistingBucketOutputs;
-    readonly skip?: boolean;
-}
-export interface ExistingBucketInputs {
-    readonly arn?: pulumi.Input<string>;
-    readonly name?: pulumi.Input<string>;
-}
-export interface ExistingBucketOutputs {
-    readonly arn?: pulumi.Output<string>;
-    readonly name?: pulumi.Output<string>;
-}
-export interface RequiredBucketInputs {
-    readonly args?: BucketInputs;
-    readonly existing?: ExistingBucketInputs;
-}
-export interface RequiredBucketOutputs {
-    readonly args?: BucketOutputs;
-    readonly existing?: ExistingBucketOutputs;
 }

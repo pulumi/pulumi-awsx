@@ -6,17 +6,11 @@ import { input as inputs, output as outputs } from "../types";
 
 import * as pulumiAws from "@pulumi/aws";
 
+export namespace awsx {
+}
+
 export namespace cloudtrail {
 }
 
-export namespace cloudwatch {
-}
-
 export namespace ecs {
-}
-
-export namespace iam {
-}
-
-export namespace s3 {
 }

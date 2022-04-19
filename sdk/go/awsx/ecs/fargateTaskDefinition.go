@@ -10,8 +10,7 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/cloudwatch"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ecs"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/iam"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/cloudwatch"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/iam"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/awsx"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -65,7 +64,7 @@ type fargateTaskDefinitionArgs struct {
 	EphemeralStorage *ecs.TaskDefinitionEphemeralStorage `pulumi:"ephemeralStorage"`
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
 	// Will be created automatically if not defined.
-	ExecutionRole *iam.DefaultRoleWithPolicy `pulumi:"executionRole"`
+	ExecutionRole *awsx.DefaultRoleWithPolicy `pulumi:"executionRole"`
 	// An optional unique name for your task definition. If not specified, then a default will be created.
 	Family *string `pulumi:"family"`
 	// Configuration block(s) with Inference Accelerators settings. Detailed below.
@@ -73,7 +72,7 @@ type fargateTaskDefinitionArgs struct {
 	// IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
 	IpcMode *string `pulumi:"ipcMode"`
 	// A set of volume blocks that containers in your task may use.
-	LogGroup *cloudwatch.DefaultLogGroup `pulumi:"logGroup"`
+	LogGroup *awsx.DefaultLogGroup `pulumi:"logGroup"`
 	// The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
 	// based on the cumulative needs specified by [containerDefinitions]
 	Memory *string `pulumi:"memory"`
@@ -94,7 +93,7 @@ type fargateTaskDefinitionArgs struct {
 	Tags map[string]string `pulumi:"tags"`
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
-	TaskRole *iam.DefaultRoleWithPolicy `pulumi:"taskRole"`
+	TaskRole *awsx.DefaultRoleWithPolicy `pulumi:"taskRole"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
 	Volumes []ecs.TaskDefinitionVolume `pulumi:"volumes"`
 }
@@ -117,7 +116,7 @@ type FargateTaskDefinitionArgs struct {
 	EphemeralStorage ecs.TaskDefinitionEphemeralStoragePtrInput
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
 	// Will be created automatically if not defined.
-	ExecutionRole *iam.DefaultRoleWithPolicyArgs
+	ExecutionRole *awsx.DefaultRoleWithPolicyArgs
 	// An optional unique name for your task definition. If not specified, then a default will be created.
 	Family pulumi.StringPtrInput
 	// Configuration block(s) with Inference Accelerators settings. Detailed below.
@@ -125,7 +124,7 @@ type FargateTaskDefinitionArgs struct {
 	// IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
 	IpcMode pulumi.StringPtrInput
 	// A set of volume blocks that containers in your task may use.
-	LogGroup *cloudwatch.DefaultLogGroupArgs
+	LogGroup *awsx.DefaultLogGroupArgs
 	// The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
 	// based on the cumulative needs specified by [containerDefinitions]
 	Memory pulumi.StringPtrInput
@@ -146,7 +145,7 @@ type FargateTaskDefinitionArgs struct {
 	Tags pulumi.StringMapInput
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
-	TaskRole *iam.DefaultRoleWithPolicyArgs
+	TaskRole *awsx.DefaultRoleWithPolicyArgs
 	// Configuration block for volumes that containers in your task may use. Detailed below.
 	Volumes ecs.TaskDefinitionVolumeArrayInput
 }

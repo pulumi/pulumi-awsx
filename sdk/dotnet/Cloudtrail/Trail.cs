@@ -74,7 +74,7 @@ namespace Pulumi.Awsx.Cloudtrail
         /// Log group to which CloudTrail logs will be delivered.
         /// </summary>
         [Input("cloudWatchLogsGroup")]
-        public Pulumi.Awsx.Cloudwatch.Inputs.OptionalLogGroupArgs? CloudWatchLogsGroup { get; set; }
+        public Pulumi.Awsx.Awsx.Inputs.OptionalLogGroupArgs? CloudWatchLogsGroup { get; set; }
 
         /// <summary>
         /// Whether log file integrity validation is enabled. Defaults to `false`.
@@ -146,7 +146,7 @@ namespace Pulumi.Awsx.Cloudtrail
         /// S3 bucket designated for publishing log files.
         /// </summary>
         [Input("s3Bucket")]
-        public Pulumi.Awsx.S3.Inputs.RequiredBucketArgs? S3Bucket { get; set; }
+        public Pulumi.Awsx.Awsx.Inputs.RequiredBucketArgs? S3Bucket { get; set; }
 
         /// <summary>
         /// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
