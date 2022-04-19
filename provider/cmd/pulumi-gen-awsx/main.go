@@ -131,7 +131,7 @@ func genPython(pkg *schema.Package, outdir string) {
 
 func genNodejs(pkg *schema.Package, outdir string) {
 	extraFiles := map[string][]byte{}
-	root := filepath.Join(outdir, "..", "..", "awsx-legacy")
+	root := filepath.Join(outdir, "..", "..", "awsx-classic")
 	filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -155,7 +155,7 @@ func genNodejs(pkg *schema.Package, outdir string) {
 		if err != nil {
 			return err
 		}
-		extraFiles[filepath.Join("legacy", rel)] = content
+		extraFiles[filepath.Join("classic", rel)] = content
 		return nil
 	})
 	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles)
