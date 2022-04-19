@@ -21,7 +21,7 @@ import (
 func generateCloudwatch(awsSpec schema.PackageSpec) schema.PackageSpec {
 	return schema.PackageSpec{
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:cloudwatch:DefaultLogGroup": {
+			"awsx:awsx:DefaultLogGroup": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "Log group with default setup unless explicitly skipped.",
@@ -36,21 +36,21 @@ func generateCloudwatch(awsSpec schema.PackageSpec) schema.PackageSpec {
 						"existing": {
 							Description: "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:ExistingLogGroup",
+								Ref:   "#/types/awsx:awsx:ExistingLogGroup",
 								Plain: true,
 							},
 						},
 						"args": {
 							Description: "Arguments to use instead of the default values during creation.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:LogGroup",
+								Ref:   "#/types/awsx:awsx:LogGroup",
 								Plain: true,
 							},
 						},
 					},
 				},
 			},
-			"awsx:cloudwatch:OptionalLogGroup": {
+			"awsx:awsx:OptionalLogGroup": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "Log group which is only created if enabled.",
@@ -65,21 +65,21 @@ func generateCloudwatch(awsSpec schema.PackageSpec) schema.PackageSpec {
 						"existing": {
 							Description: "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:ExistingLogGroup",
+								Ref:   "#/types/awsx:awsx:ExistingLogGroup",
 								Plain: true,
 							},
 						},
 						"args": {
 							Description: "Arguments to use instead of the default values during creation.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:LogGroup",
+								Ref:   "#/types/awsx:awsx:LogGroup",
 								Plain: true,
 							},
 						},
 					},
 				},
 			},
-			"awsx:cloudwatch:RequiredLogGroup": {
+			"awsx:awsx:RequiredLogGroup": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "Log group with default setup.",
@@ -87,21 +87,21 @@ func generateCloudwatch(awsSpec schema.PackageSpec) schema.PackageSpec {
 						"existing": {
 							Description: "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:ExistingLogGroup",
+								Ref:   "#/types/awsx:awsx:ExistingLogGroup",
 								Plain: true,
 							},
 						},
 						"args": {
 							Description: "Arguments to use instead of the default values during creation.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:LogGroup",
+								Ref:   "#/types/awsx:awsx:LogGroup",
 								Plain: true,
 							},
 						},
 					},
 				},
 			},
-			"awsx:cloudwatch:ExistingLogGroup": {
+			"awsx:awsx:ExistingLogGroup": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "Reference to an existing log group.",
@@ -127,7 +127,7 @@ func generateCloudwatch(awsSpec schema.PackageSpec) schema.PackageSpec {
 					},
 				},
 			},
-			"awsx:cloudwatch:LogGroup": {
+			"awsx:awsx:LogGroup": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "The set of arguments for constructing a LogGroup resource.",
