@@ -236,6 +236,7 @@ jobs:
       - name: Restore binary perms
         run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
           -exec chmod +x {} \;
+      - run: dotnet nuget add source ${{ github.workspace }}/nuget
       - name: Update path
         run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
       - name: Install Provider Deps

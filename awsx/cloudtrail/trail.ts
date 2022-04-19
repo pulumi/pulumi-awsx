@@ -37,7 +37,7 @@ export class Trail extends schema.Trail {
             { parent: this },
         );
         this.bucket = bucket;
-        createBucketCloudtrailPolicy(name, bucketId, this);
+        const policy = createBucketCloudtrailPolicy(name, bucketId, bucket, this);
 
         const { logGroup, logGroupId } = optionalLogGroup(
             name,
@@ -55,6 +55,7 @@ export class Trail extends schema.Trail {
 
         this.trail = new aws.cloudtrail.Trail(name, trailArgs, {
             parent: this,
+            dependsOn: [policy],
         });
         this.registerOutputs();
     }
@@ -63,21 +64,25 @@ export class Trail extends schema.Trail {
 function createBucketCloudtrailPolicy(
     name: string,
     bucketId: BucketId,
+    bucket: aws.s3.Bucket | undefined,
     parent: pulumi.Resource | undefined,
 ) {
+    const opts: pulumi.ResourceOptions = { parent: parent };
+    if (bucket !== undefined) {
+        opts.dependsOn = [bucket];
+    }
     return new aws.s3.BucketPolicy(
         name,
         {
             bucket: bucketId.name,
-            policy: defaultCloudTrailPolicy(bucketId.arn),
-        },
-        { parent: parent },
+            policy: bucketId.arn.apply(defaultCloudTrailPolicy),
+        }, opts,
     );
 }
 
 function defaultCloudTrailPolicy(
-    bucketArn: pulumi.Input<string>,
-): pulumi.Input<string | aws.iam.PolicyDocument> {
+    bucketArn: string,
+): aws.iam.PolicyDocument {
     return {
         Version: "2012-10-17",
         Statement: [
@@ -93,7 +98,7 @@ function defaultCloudTrailPolicy(
                 Effect: "Allow",
                 Principal: { Service: "cloudtrail.amazonaws.com" },
                 Action: ["s3:PutObject"],
-                Resource: [pulumi.interpolate`${bucketArn}/*`],
+                Resource: [`${bucketArn}/*`],
                 Condition: {
                     StringEquals: {
                         "s3:x-amz-acl": "bucket-owner-full-control",

@@ -51,7 +51,7 @@ export function requiredBucket(
             );
         }
     }
-    const args = { ...defaults, ...inputs?.args };
+    const args = { forceDestroy: true, ...defaults, ...inputs?.args };
     const bucket = new aws.s3.Bucket(name, args, opts);
     return {
         bucket,

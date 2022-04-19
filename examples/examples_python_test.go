@@ -11,45 +11,38 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-//go:build nodejs || all
-// +build nodejs all
+//go:build python || all
+// +build python all
 
 package examples
 
 import (
+	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 	"path/filepath"
 	"testing"
-
-	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 )
 
-func TestAccTrailTs(t *testing.T) {
-	test := getNodeJSBaseOptions(t).
+func TestAccTrailPython(t *testing.T) {
+	test := getPythonBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "cloudtrail", "nodejs"),
+			Dir:           filepath.Join(getCwd(t), "cloudtrail", "python"),
 		})
 
 	integration.ProgramTest(t, &test)
 }
 
-func TestAccEcsCapacityProviderService(t *testing.T) {
-	test := getNodeJSBaseOptions(t).
-		With(integration.ProgramTestOptions{
-			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "ecs", "capacity-provider-service-with-cluster-default-strategies"),
-		})
-
-	integration.ProgramTest(t, &test)
-}
-
-func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
+func getPythonBaseOptions(t *testing.T) integration.ProgramTestOptions {
+	region := getEnvRegion(t)
 	base := getBaseOptions(t)
-	nodeBase := base.With(integration.ProgramTestOptions{
+	pyBase := base.With(integration.ProgramTestOptions{
+		Config: map[string]string{
+			"aws:region": region,
+		},
 		Dependencies: []string{
-			"@pulumi/awsx",
+			filepath.Join("..", "sdk", "python", "bin"),
 		},
 	})
 
-	return nodeBase
+	return pyBase
 }
