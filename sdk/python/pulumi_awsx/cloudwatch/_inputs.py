@@ -12,6 +12,7 @@ __all__ = [
     'DefaultLogGroupArgs',
     'ExistingLogGroupArgs',
     'LogGroupArgs',
+    'OptionalLogGroupArgs',
 ]
 
 @pulumi.input_type
@@ -73,27 +74,44 @@ class DefaultLogGroupArgs:
 @pulumi.input_type
 class ExistingLogGroupArgs:
     def __init__(__self__, *,
-                 name: pulumi.Input[str],
+                 arn: Optional[pulumi.Input[str]] = None,
+                 name: Optional[pulumi.Input[str]] = None,
                  region: Optional[pulumi.Input[str]] = None):
         """
         Reference to an existing log group.
-        :param pulumi.Input[str] name: Name of the log group.
+        :param pulumi.Input[str] arn: Arn of the log group. Only one of [arn] or [name] can be specified.
+        :param pulumi.Input[str] name: Name of the log group. Only one of [arn] or [name] can be specified.
         :param pulumi.Input[str] region: Region of the log group. If not specified, the provider region will be used.
         """
-        pulumi.set(__self__, "name", name)
+        if arn is not None:
+            pulumi.set(__self__, "arn", arn)
+        if name is not None:
+            pulumi.set(__self__, "name", name)
         if region is not None:
             pulumi.set(__self__, "region", region)
 
     @property
     @pulumi.getter
-    def name(self) -> pulumi.Input[str]:
+    def arn(self) -> Optional[pulumi.Input[str]]:
         """
-        Name of the log group.
+        Arn of the log group. Only one of [arn] or [name] can be specified.
+        """
+        return pulumi.get(self, "arn")
+
+    @arn.setter
+    def arn(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "arn", value)
+
+    @property
+    @pulumi.getter
+    def name(self) -> Optional[pulumi.Input[str]]:
+        """
+        Name of the log group. Only one of [arn] or [name] can be specified.
         """
         return pulumi.get(self, "name")
 
     @name.setter
-    def name(self, value: pulumi.Input[str]):
+    def name(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "name", value)
 
     @property
@@ -203,5 +221,61 @@ class LogGroupArgs:
     @tags.setter
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
+
+
+@pulumi.input_type
+class OptionalLogGroupArgs:
+    def __init__(__self__, *,
+                 args: Optional['LogGroupArgs'] = None,
+                 enable: Optional[bool] = None,
+                 existing: Optional['ExistingLogGroupArgs'] = None):
+        """
+        Log group which is only created if enabled.
+        :param 'LogGroupArgs' args: Arguments to use instead of the default values during creation.
+        :param bool enable: Enable creation of the log group.
+        :param 'ExistingLogGroupArgs' existing: Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+        """
+        if args is not None:
+            pulumi.set(__self__, "args", args)
+        if enable is not None:
+            pulumi.set(__self__, "enable", enable)
+        if existing is not None:
+            pulumi.set(__self__, "existing", existing)
+
+    @property
+    @pulumi.getter
+    def args(self) -> Optional['LogGroupArgs']:
+        """
+        Arguments to use instead of the default values during creation.
+        """
+        return pulumi.get(self, "args")
+
+    @args.setter
+    def args(self, value: Optional['LogGroupArgs']):
+        pulumi.set(self, "args", value)
+
+    @property
+    @pulumi.getter
+    def enable(self) -> Optional[bool]:
+        """
+        Enable creation of the log group.
+        """
+        return pulumi.get(self, "enable")
+
+    @enable.setter
+    def enable(self, value: Optional[bool]):
+        pulumi.set(self, "enable", value)
+
+    @property
+    @pulumi.getter
+    def existing(self) -> Optional['ExistingLogGroupArgs']:
+        """
+        Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+        """
+        return pulumi.get(self, "existing")
+
+    @existing.setter
+    def existing(self, value: Optional['ExistingLogGroupArgs']):
+        pulumi.set(self, "existing", value)
 
 

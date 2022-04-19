@@ -49,244 +49,8 @@ func GenerateSchema() schema.PackageSpec {
 		Repository:  "https://github.com/pulumi/pulumi-awsx",
 
 		Functions: map[string]schema.FunctionSpec{},
-		Resources: map[string]schema.ResourceSpec{
-			"awsx:cloudtrail:Trail": {
-				IsComponent: true,
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Description: "",
-					Properties: map[string]schema.PropertySpec{
-						"bucket": {
-							Description: "The managed S3 Bucket where the Trail will place its logs.",
-							TypeSpec: schema.TypeSpec{
-								Ref: awsRef("#/resources/aws:s3%2Fbucket:Bucket"),
-							},
-						},
-						"logGroup": {
-							Description: "The managed Cloudwatch Log Group.",
-							TypeSpec: schema.TypeSpec{
-								Ref: awsRef("#/resources/aws:cloudwatch%2FlogGroup:LogGroup"),
-							},
-						},
-						"trail": {
-							Description: "The CloudTrail Trail.",
-							TypeSpec: schema.TypeSpec{
-								Ref: awsRef("#/resources/aws:cloudtrail%2Ftrail:Trail"),
-							},
-							Language: map[string]schema.RawMessage{
-								"csharp": schema.RawMessage(`{
-									"name": "AwsTrail"
-								}`),
-							},
-						},
-					},
-					Required: []string{
-						"bucket",
-						"trail",
-					},
-				},
-				InputProperties: map[string]schema.PropertySpec{
-					"advancedEventSelectors": {
-						Description: "Specifies an advanced event selector for enabling data event logging.",
-						TypeSpec: schema.TypeSpec{
-							Type:  "array",
-							Items: &schema.TypeSpec{Ref: awsRef("#/types/aws:cloudtrail%2FTrailAdvancedEventSelector:TrailAdvancedEventSelector")},
-						},
-					},
-					"cloudWatchLogGroupArgs": {
-						TypeSpec:    schema.TypeSpec{Ref: "#/types/awsx:cloudtrail:LogGroup"},
-						Description: "If sendToCloudWatchLogs is enabled, provide the log group configuration.",
-					},
-					"cloudWatchLogsGroupArn": {
-						Description: "Log group name using an ARN that represents the log group to which CloudTrail logs will be delivered. Note that CloudTrail requires the Log Stream wildcard.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"cloudWatchLogsRoleArn": {
-						Description: "Role for the CloudWatch Logs endpoint to assume to write to a user’s log group.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"enableLogFileValidation": {
-						Description: "Whether log file integrity validation is enabled. Defaults to `false`.",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"enableLogging": {
-						Description: "Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"eventSelectors": {
-						Description: "Specifies an event selector for enabling data event logging. Please note the CloudTrail limits when configuring these",
-						TypeSpec: schema.TypeSpec{
-							Type:  "array",
-							Items: &schema.TypeSpec{Ref: awsRef("#/types/aws:cloudtrail%2FTrailEventSelector:TrailEventSelector")},
-						},
-					},
-					"includeGlobalServiceEvents": {
-						Description: "Whether the trail is publishing events from global services such as IAM to the log files. Defaults to `true`.",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"insightSelectors": {
-						Description: "Configuration block for identifying unusual operational activity.",
-						TypeSpec: schema.TypeSpec{
-							Type:  "array",
-							Items: &schema.TypeSpec{Ref: awsRef("#/types/aws:cloudtrail%2FTrailInsightSelector:TrailInsightSelector")},
-						},
-					},
-					"isMultiRegionTrail": {
-						Description: "Whether the trail is created in the current region or in all regions. Defaults to `false`.",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"isOrganizationTrail": {
-						Description: "Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"kmsKeyId": {
-						Description: "KMS key ARN to use to encrypt the logs delivered by CloudTrail.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"s3BucketName": {
-						Description: "Name of the S3 bucket designated for publishing log files.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"s3KeyPrefix": {
-						Description: "S3 key prefix that follows the name of the bucket you have designated for log file delivery.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"sendToCloudWatchLogs": {
-						Description: "If CloudTrail pushes logs to CloudWatch Logs in addition to S3. Disabled by default to reduce costs. Defaults to `false`",
-						TypeSpec: schema.TypeSpec{
-							Type: "boolean",
-						},
-					},
-					"snsTopicName": {
-						Description: "Name of the Amazon SNS topic defined for notification of log file delivery.",
-						TypeSpec: schema.TypeSpec{
-							Type: "string",
-						},
-					},
-					"tags": {
-						TypeSpec: schema.TypeSpec{
-							Type:                 "object",
-							AdditionalProperties: &schema.TypeSpec{Type: "string"},
-						},
-						Description: "Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.",
-					},
-				},
-				RequiredInputs: []string{},
-			},
-		},
-		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:cloudtrail:LogGroup": {
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Type:        "object",
-					Description: "Defines the log group configuration for the CloudWatch Log Group to send logs to.",
-					Properties: map[string]schema.PropertySpec{
-						"kmsKeyId": {
-							Description: "The ARN of the KMS Key to use when encrypting log data.",
-							TypeSpec: schema.TypeSpec{
-								Type: "string",
-							},
-						},
-						"namePrefix": {
-							Description: "Creates a unique name beginning with the specified prefix",
-							TypeSpec: schema.TypeSpec{
-								Type: "string",
-							},
-						},
-						"retentionInDays": {
-							Description: "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0. If you select 0, the events in the log group are always retained and never expire.",
-							TypeSpec: schema.TypeSpec{
-								Type: "integer",
-							},
-						},
-						"tags": {
-							TypeSpec: schema.TypeSpec{
-								Type:                 "object",
-								AdditionalProperties: &schema.TypeSpec{Type: "string"},
-							},
-							Description: "A map of tags to assign to the resource. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.",
-						},
-					},
-				},
-			},
-			"awsx:cloudwatch:DefaultLogGroup": {
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Type:        "object",
-					Description: "Log group with default setup unless explicitly skipped.",
-					Properties: map[string]schema.PropertySpec{
-						"skip": {
-							Description: "Skip creation of the log group.",
-							TypeSpec: schema.TypeSpec{
-								Type:  "boolean",
-								Plain: true,
-							},
-						},
-						"existing": {
-							Description: "Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.",
-							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:ExistingLogGroup",
-								Plain: true,
-							},
-						},
-						"args": {
-							Description: "Arguments to use instead of the default values during creation.",
-							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:cloudwatch:LogGroup",
-								Plain: true,
-							},
-						},
-					},
-				},
-			},
-			"awsx:cloudwatch:ExistingLogGroup": {
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Type:        "object",
-					Description: "Reference to an existing log group.",
-					Properties: map[string]schema.PropertySpec{
-						"name": {
-							Description: "Name of the log group.",
-							TypeSpec: schema.TypeSpec{
-								Type: "string",
-							},
-						},
-						"region": {
-							Description: "Region of the log group. If not specified, the provider region will be used.",
-							TypeSpec: schema.TypeSpec{
-								Type: "string",
-							},
-						},
-					},
-					Required: []string{"name"},
-				},
-			},
-			"awsx:cloudwatch:LogGroup": {
-				ObjectTypeSpec: schema.ObjectTypeSpec{
-					Type:        "object",
-					Description: "The set of arguments for constructing a LogGroup resource.",
-					Properties:  awsSpec.Resources["aws:cloudwatch/logGroup:LogGroup"].InputProperties,
-				},
-			},
-			"awsx:iam:DefaultRoleWithPolicy": defaultRoleWithPolicyArgs(awsSpec),
-			"awsx:iam:RoleWithPolicy":        roleWithPolicyArgs(awsSpec),
-		},
+		Resources: map[string]schema.ResourceSpec{},
+		Types:     map[string]schema.ComplexTypeSpec{},
 		Language: map[string]schema.RawMessage{
 			"csharp": rawMessage(map[string]interface{}{
 				"packageReferences": map[string]string{
@@ -326,7 +90,13 @@ func GenerateSchema() schema.PackageSpec {
 		},
 	}
 
-	return extendSchemas(packageSpec, generateEcs(awsSpec, awsNativeSpec))
+	return extendSchemas(packageSpec,
+		generateCloudtrail(awsSpec),
+		generateEcs(awsSpec, awsNativeSpec),
+		generateCloudwatch(awsSpec),
+		generateIam(awsSpec),
+		generateS3(awsSpec),
+	)
 }
 
 func getAwsSpec() schema.PackageSpec {
@@ -352,69 +122,6 @@ func getSpecFromUrl(url string) schema.PackageSpec {
 		log.Fatal(err)
 	}
 	return spec
-}
-
-func defaultRoleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	return schema.ComplexTypeSpec{
-		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.",
-			Properties: map[string]schema.PropertySpec{
-				"skip": {
-					Description: "Skips creation of the role if set to `true`.",
-					TypeSpec: schema.TypeSpec{
-						Type:  "boolean",
-						Plain: true,
-					},
-				},
-				"roleArn": {
-					Description: "ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.",
-					TypeSpec: schema.TypeSpec{
-						Type: "string",
-					},
-				},
-				"args": {
-					Description: "Args to use when creating the role and policies. Can't be specified if `roleArn` is used.",
-					TypeSpec: schema.TypeSpec{
-						Ref:   "#/types/awsx:iam:RoleWithPolicy",
-						Plain: true,
-					},
-				},
-			},
-		},
-	}
-}
-
-func roleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	role := awsSpec.Resources["aws:iam/role:Role"]
-	properties := map[string]schema.PropertySpec{}
-	for k, v := range role.InputProperties {
-		properties[k] = v
-	}
-
-	// The assumeRolePolicy ref doesn't point to a valid type ... and we don't need it for now
-	delete(properties, "assumeRolePolicy")
-	properties["inlinePolicies"].Items.Ref = awsRef(properties["inlinePolicies"].Items.Ref)
-
-	properties["policyArns"] = schema.PropertySpec{
-		Description: "ARNs of the policies to attach to the created role.",
-		TypeSpec: schema.TypeSpec{
-			Type: "array",
-			Items: &schema.TypeSpec{
-				Type:  "string",
-				Plain: true,
-			},
-			Plain: true,
-		},
-	}
-
-	return schema.ComplexTypeSpec{
-		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "The set of arguments for constructing a Role resource and Policy attachments.",
-			Properties:  properties,
-		},
-	}
 }
 
 // Perform a simple string replacement on Refs in all sub-specs
@@ -443,9 +150,19 @@ func renamePropertyRefs(propSpec schema.PropertySpec, old, new string) schema.Pr
 		items := renameTypeSpecRefs(*propSpec.Items, old, new)
 		propSpec.Items = &items
 	}
+	if propSpec.OneOf != nil {
+		propSpec.OneOf = renameTypeSpecsRefs(propSpec.OneOf, old, new)
+	}
 	return propSpec
 }
 
+func renameTypeSpecsRefs(typeSpec []schema.TypeSpec, old, new string) []schema.TypeSpec {
+	newSpecs := make([]schema.TypeSpec, len(typeSpec))
+	for i, spec := range typeSpec {
+		newSpecs[i] = renameTypeSpecRefs(spec, old, new)
+	}
+	return newSpecs
+}
 func renameTypeSpecRefs(typeSpec schema.TypeSpec, old, new string) schema.TypeSpec {
 	if typeSpec.Ref != "" {
 		typeSpec.Ref = strings.Replace(typeSpec.Ref, old, new, 1)

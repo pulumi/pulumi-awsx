@@ -16,7 +16,7 @@ namespace Pulumi.Awsx.Cloudtrail
         /// The managed S3 Bucket where the Trail will place its logs.
         /// </summary>
         [Output("bucket")]
-        public Output<Pulumi.Aws.S3.Bucket> Bucket { get; private set; } = null!;
+        public Output<Pulumi.Aws.S3.Bucket?> Bucket { get; private set; } = null!;
 
         /// <summary>
         /// The managed Cloudwatch Log Group.
@@ -62,7 +62,7 @@ namespace Pulumi.Awsx.Cloudtrail
         private InputList<Pulumi.Aws.CloudTrail.Inputs.TrailAdvancedEventSelectorArgs>? _advancedEventSelectors;
 
         /// <summary>
-        /// Specifies an advanced event selector for enabling data event logging.
+        /// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
         /// </summary>
         public InputList<Pulumi.Aws.CloudTrail.Inputs.TrailAdvancedEventSelectorArgs> AdvancedEventSelectors
         {
@@ -71,22 +71,10 @@ namespace Pulumi.Awsx.Cloudtrail
         }
 
         /// <summary>
-        /// If sendToCloudWatchLogs is enabled, provide the log group configuration.
+        /// Log group to which CloudTrail logs will be delivered.
         /// </summary>
-        [Input("cloudWatchLogGroupArgs")]
-        public Input<Inputs.LogGroupArgs>? CloudWatchLogGroupArgs { get; set; }
-
-        /// <summary>
-        /// Log group name using an ARN that represents the log group to which CloudTrail logs will be delivered. Note that CloudTrail requires the Log Stream wildcard.
-        /// </summary>
-        [Input("cloudWatchLogsGroupArn")]
-        public Input<string>? CloudWatchLogsGroupArn { get; set; }
-
-        /// <summary>
-        /// Role for the CloudWatch Logs endpoint to assume to write to a user’s log group.
-        /// </summary>
-        [Input("cloudWatchLogsRoleArn")]
-        public Input<string>? CloudWatchLogsRoleArn { get; set; }
+        [Input("cloudWatchLogsGroup")]
+        public Pulumi.Awsx.Cloudwatch.Inputs.OptionalLogGroupArgs? CloudWatchLogsGroup { get; set; }
 
         /// <summary>
         /// Whether log file integrity validation is enabled. Defaults to `false`.
@@ -104,7 +92,7 @@ namespace Pulumi.Awsx.Cloudtrail
         private InputList<Pulumi.Aws.CloudTrail.Inputs.TrailEventSelectorArgs>? _eventSelectors;
 
         /// <summary>
-        /// Specifies an event selector for enabling data event logging. Please note the CloudTrail limits when configuring these
+        /// Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.
         /// </summary>
         public InputList<Pulumi.Aws.CloudTrail.Inputs.TrailEventSelectorArgs> EventSelectors
         {
@@ -122,7 +110,7 @@ namespace Pulumi.Awsx.Cloudtrail
         private InputList<Pulumi.Aws.CloudTrail.Inputs.TrailInsightSelectorArgs>? _insightSelectors;
 
         /// <summary>
-        /// Configuration block for identifying unusual operational activity.
+        /// Configuration block for identifying unusual operational activity. See details below.
         /// </summary>
         public InputList<Pulumi.Aws.CloudTrail.Inputs.TrailInsightSelectorArgs> InsightSelectors
         {
@@ -137,7 +125,7 @@ namespace Pulumi.Awsx.Cloudtrail
         public Input<bool>? IsMultiRegionTrail { get; set; }
 
         /// <summary>
-        /// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`
+        /// Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
         /// </summary>
         [Input("isOrganizationTrail")]
         public Input<bool>? IsOrganizationTrail { get; set; }
@@ -149,22 +137,22 @@ namespace Pulumi.Awsx.Cloudtrail
         public Input<string>? KmsKeyId { get; set; }
 
         /// <summary>
-        /// Name of the S3 bucket designated for publishing log files.
+        /// Specifies the name of the advanced event selector.
         /// </summary>
-        [Input("s3BucketName")]
-        public Input<string>? S3BucketName { get; set; }
+        [Input("name")]
+        public Input<string>? Name { get; set; }
+
+        /// <summary>
+        /// S3 bucket designated for publishing log files.
+        /// </summary>
+        [Input("s3Bucket")]
+        public Pulumi.Awsx.S3.Inputs.RequiredBucketArgs? S3Bucket { get; set; }
 
         /// <summary>
         /// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
         /// </summary>
         [Input("s3KeyPrefix")]
         public Input<string>? S3KeyPrefix { get; set; }
-
-        /// <summary>
-        /// If CloudTrail pushes logs to CloudWatch Logs in addition to S3. Disabled by default to reduce costs. Defaults to `false`
-        /// </summary>
-        [Input("sendToCloudWatchLogs")]
-        public Input<bool>? SendToCloudWatchLogs { get; set; }
 
         /// <summary>
         /// Name of the Amazon SNS topic defined for notification of log file delivery.

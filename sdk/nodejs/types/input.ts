@@ -7,27 +7,6 @@ import { input as inputs, output as outputs } from "../types";
 import * as pulumiAws from "@pulumi/aws";
 
 export namespace cloudtrail {
-    /**
-     * Defines the log group configuration for the CloudWatch Log Group to send logs to.
-     */
-    export interface LogGroupArgs {
-        /**
-         * The ARN of the KMS Key to use when encrypting log data.
-         */
-        kmsKeyId?: pulumi.Input<string>;
-        /**
-         * Creates a unique name beginning with the specified prefix
-         */
-        namePrefix?: pulumi.Input<string>;
-        /**
-         * Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0. If you select 0, the events in the log group are always retained and never expire.
-         */
-        retentionInDays?: pulumi.Input<number>;
-        /**
-         * A map of tags to assign to the resource. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
-         */
-        tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-    }
 }
 
 export namespace cloudwatch {
@@ -54,9 +33,13 @@ export namespace cloudwatch {
      */
     export interface ExistingLogGroupArgs {
         /**
-         * Name of the log group.
+         * Arn of the log group. Only one of [arn] or [name] can be specified.
          */
-        name: pulumi.Input<string>;
+        arn?: pulumi.Input<string>;
+        /**
+         * Name of the log group. Only one of [arn] or [name] can be specified.
+         */
+        name?: pulumi.Input<string>;
         /**
          * Region of the log group. If not specified, the provider region will be used.
          */
@@ -92,6 +75,25 @@ export namespace cloudwatch {
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     }
+
+    /**
+     * Log group which is only created if enabled.
+     */
+    export interface OptionalLogGroupArgs {
+        /**
+         * Arguments to use instead of the default values during creation.
+         */
+        args?: inputs.cloudwatch.LogGroupArgs;
+        /**
+         * Enable creation of the log group.
+         */
+        enable?: boolean;
+        /**
+         * Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+         */
+        existing?: inputs.cloudwatch.ExistingLogGroupArgs;
+    }
+
 }
 
 export namespace ecs {
@@ -448,5 +450,128 @@ export namespace iam {
          * Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    }
+}
+
+export namespace s3 {
+    /**
+     * The set of arguments for constructing a Bucket resource.
+     */
+    export interface BucketArgs {
+        /**
+         * Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
+         */
+        accelerationStatus?: pulumi.Input<string>;
+        /**
+         * The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
+         */
+        acl?: pulumi.Input<string>;
+        /**
+         * The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+         */
+        arn?: pulumi.Input<string>;
+        /**
+         * The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+         */
+        bucket?: pulumi.Input<string>;
+        /**
+         * Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+         */
+        bucketPrefix?: pulumi.Input<string>;
+        /**
+         * A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
+         */
+        corsRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketCorsRule>[]>;
+        /**
+         * A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
+         */
+        forceDestroy?: pulumi.Input<boolean>;
+        /**
+         * An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
+         */
+        grants?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketGrant>[]>;
+        /**
+         * The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+         */
+        hostedZoneId?: pulumi.Input<string>;
+        /**
+         * A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
+         */
+        lifecycleRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLifecycleRule>[]>;
+        /**
+         * A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
+         */
+        loggings?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLogging>[]>;
+        /**
+         * A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+         */
+        objectLockConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketObjectLockConfiguration>;
+        /**
+         * A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), the provider may view the policy as constantly changing in a `pulumi up / preview / update`. In this case, please make sure you use the verbose/specific version of the policy.
+         */
+        policy?: pulumi.Input<string>;
+        /**
+         * A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
+         */
+        replicationConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketReplicationConfiguration>;
+        /**
+         * Specifies who should bear the cost of Amazon S3 data transfer.
+         * Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+         * the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+         * developer guide for more information.
+         */
+        requestPayer?: pulumi.Input<string>;
+        /**
+         * A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
+         */
+        serverSideEncryptionConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketServerSideEncryptionConfiguration>;
+        /**
+         * A mapping of tags to assign to the bucket.
+         */
+        tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
+         */
+        versioning?: pulumi.Input<pulumiAws.types.input.s3.BucketVersioning>;
+        /**
+         * A website object (documented below).
+         */
+        website?: pulumi.Input<pulumiAws.types.input.s3.BucketWebsite>;
+        /**
+         * The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
+         */
+        websiteDomain?: pulumi.Input<string>;
+        /**
+         * The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
+         */
+        websiteEndpoint?: pulumi.Input<string>;
+    }
+
+    /**
+     * Reference to an existing bucket.
+     */
+    export interface ExistingBucketArgs {
+        /**
+         * Arn of the bucket. Only one of [arn] or [name] can be specified.
+         */
+        arn?: pulumi.Input<string>;
+        /**
+         * Name of the bucket. Only one of [arn] or [name] can be specified.
+         */
+        name?: pulumi.Input<string>;
+    }
+
+    /**
+     * Bucket with default setup.
+     */
+    export interface RequiredBucketArgs {
+        /**
+         * Arguments to use instead of the default values during creation.
+         */
+        args?: inputs.s3.BucketArgs;
+        /**
+         * Identity of an existing bucket to use. Cannot be used in combination with `args`.
+         */
+        existing?: inputs.s3.ExistingBucketArgs;
     }
 }

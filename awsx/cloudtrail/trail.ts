@@ -14,6 +14,8 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { optionalLogGroup } from "../cloudwatch/logGroup";
+import { BucketId, requiredBucket } from "../s3/bucket";
 import * as schema from "../schema-types";
 
 export class Trail extends schema.Trail {
@@ -22,34 +24,33 @@ export class Trail extends schema.Trail {
         args: schema.TrailArgs,
         opts?: pulumi.CustomResourceOptions,
     ) {
+        const { s3Bucket, cloudWatchLogsGroup, ...trailCustomArgs } = args;
         const aliasOpts = pulumi.mergeOptions(opts, {
             aliases: [{ type: "aws:cloudtrail:x:Trail" }],
         });
         super(name, {}, aliasOpts);
 
-        let bucketName: pulumi.Output<string>;
-        if (args.s3BucketName !== undefined) {
-            bucketName = pulumi.output(args.s3BucketName);
-        } else {
-            this.bucket = bucketWithCloudTrailPolicy(name, this);
-            bucketName = this.bucket.id;
-        }
+        const { bucket, bucketId } = requiredBucket(
+            name,
+            s3Bucket,
+            {},
+            { parent: this },
+        );
+        this.bucket = bucket;
+        createBucketCloudtrailPolicy(name, bucketId, this);
 
-        let cloudWatchLogGroupArn: pulumi.Output<string> | undefined =
-            undefined;
-        if (args.sendToCloudWatchLogs) {
-            this.logGroup = new aws.cloudwatch.LogGroup(
-                name,
-                args.cloudWatchLogGroupArgs as any,
-                { parent: this },
-            );
-            cloudWatchLogGroupArn = pulumi.interpolate`${this.logGroup.arn}:*`;
-        }
+        const { logGroup, logGroupId } = optionalLogGroup(
+            name,
+            cloudWatchLogsGroup,
+            {},
+            { parent: this },
+        );
+        this.logGroup = logGroup;
 
         const trailArgs = {
-            s3BucketName: bucketName,
-            cloudWatchLogGroupArn: cloudWatchLogGroupArn,
-            ...args,
+            ...trailCustomArgs,
+            s3BucketName: bucketId.name,
+            cloudWatchLogGroupArn: logGroupId?.apply((arn) => arn + ":*"),
         };
 
         this.trail = new aws.cloudtrail.Trail(name, trailArgs, {
@@ -59,41 +60,46 @@ export class Trail extends schema.Trail {
     }
 }
 
-function bucketWithCloudTrailPolicy(
+function createBucketCloudtrailPolicy(
     name: string,
+    bucketId: BucketId,
     parent: pulumi.Resource | undefined,
-): aws.s3.Bucket {
-    const bucket = new aws.s3.Bucket(name, {}, { parent: parent });
-    const policy = new aws.s3.BucketPolicy(
+) {
+    return new aws.s3.BucketPolicy(
         name,
         {
-            bucket: bucket.id,
-            policy: {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Sid: "AWSCloudTrailAclCheck",
-                        Effect: "Allow",
-                        Principal: aws.iam.Principals.CloudtrailPrincipal,
-                        Action: ["s3:GetBucketAcl"],
-                        Resource: [bucket.arn],
-                    },
-                    {
-                        Sid: "AWSCloudTrailWrite",
-                        Effect: "Allow",
-                        Principal: { Service: "cloudtrail.amazonaws.com" },
-                        Action: ["s3:PutObject"],
-                        Resource: [pulumi.interpolate`${bucket.arn}/*`],
-                        Condition: {
-                            StringEquals: {
-                                "s3:x-amz-acl": "bucket-owner-full-control",
-                            },
-                        },
-                    },
-                ],
-            },
+            bucket: bucketId.name,
+            policy: defaultCloudTrailPolicy(bucketId.arn),
         },
         { parent: parent },
     );
-    return bucket;
+}
+
+function defaultCloudTrailPolicy(
+    bucketArn: pulumi.Input<string>,
+): pulumi.Input<string | aws.iam.PolicyDocument> {
+    return {
+        Version: "2012-10-17",
+        Statement: [
+            {
+                Sid: "AWSCloudTrailAclCheck",
+                Effect: "Allow",
+                Principal: aws.iam.Principals.CloudtrailPrincipal,
+                Action: ["s3:GetBucketAcl"],
+                Resource: [bucketArn],
+            },
+            {
+                Sid: "AWSCloudTrailWrite",
+                Effect: "Allow",
+                Principal: { Service: "cloudtrail.amazonaws.com" },
+                Action: ["s3:PutObject"],
+                Resource: [pulumi.interpolate`${bucketArn}/*`],
+                Condition: {
+                    StringEquals: {
+                        "s3:x-amz-acl": "bucket-owner-full-control",
+                    },
+                },
+            },
+        ],
+    };
 }
