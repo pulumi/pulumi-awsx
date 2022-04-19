@@ -5,6 +5,7 @@ package ecs
 
 import (
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ecs"
+	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
 	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/awsx"
 )
