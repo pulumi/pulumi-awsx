@@ -91,19 +91,6 @@ jobs:
         uses: pulumi/action-install-pulumi-cli@v1.0.1
       - name: Build provider
         run: make provider
-#      - name: Check Schema is Valid
-#        run: |
-#          echo 'SCHEMA_CHANGES<<EOF' >> $GITHUB_ENV
-#          schema-tools compare ${{ env.PROVIDER }} master --local-path=${{ env.PROVIDER }}/schema.json >> $GITHUB_ENV
-#          echo 'EOF' >> $GITHUB_ENV
-#      - if: github.event_name == 'pull_request'
-#        name: Comment on PR with Details of Schema Check
-#        uses: thollander/actions-comment-pull-request@1.0.1
-#        with:
-#          message: |
-#            ### Does the PR have any schema changes?
-#            ${{ env.SCHEMA_CHANGES }}
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Tar provider binaries
@@ -201,295 +188,97 @@ jobs:
           - 14.x
         pythonversion:
           - "3.7"
-#  test-nodejs:
-#    name: Run NodeJS Tests
-#    needs: build_sdk
-#    runs-on: ubuntu-latest
-#    if: github.event_name == 'repository_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
-#    steps:
-#      - name: Checkout Repo
-#        uses: actions/checkout@v2
-#      - name: Checkout Scripts Repo
-#        uses: actions/checkout@v2
-#        with:
-#          path: ci-scripts
-#          repository: pulumi/scripts
-#      - name: Unshallow clone for tags
-#        run: git fetch --prune --unshallow --tags
-#      - name: Install Go
-#        uses: actions/setup-go@v2
-#        with:
-#          go-version: ${{ matrix.goversion }}
-#      - name: Install pulumictl
-#        uses: jaxxstorm/action-install-gh-release@v1.1.0
-#        with:
-#          repo: pulumi/pulumictl
-#      - name: Install Pulumi CLI
-#        uses: pulumi/action-install-pulumi-cli@v1.0.1
-#      - name: Setup Node
-#        uses: actions/setup-node@v1
-#        with:
-#          node-version: ${{matrix.nodeversion}}
-#          registry-url: https://registry.npmjs.org
-#      - name: Download provider binary
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: ${{ env.PROVIDER }}-provider.tar.gz
-#          path: ${{ github.workspace }}/bin
-#      - name: Untar provider binaries
-#        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
-#          }}/bin
-#      - name: Restore binary perms
-#        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
-#          -exec chmod +x {} \;
-#      - name: Update path
-#        run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-#      - name: Download SDK
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: ${{ matrix.language }}-sdk.tar.gz
-#          path: ${{ github.workspace}}
-#      - name: Uncompress SDK folder
-#        run: tar -zxf ${{ github.workspace}}/${{ matrix.language }}.tar.gz -C ${{github.workspace}}/${{ matrix.language }}
-#      - name: Install dependencies
-#        run: make install_${{ matrix.language}}_sdk
-#      - name: Install gotestfmt
-#        uses: jaxxstorm/action-install-gh-release@v1.2.0
-#        with:
-#          repo: haveyoudebuggedit/gotestfmt
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-region: ${{ env.AWS_REGION }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          role-duration-seconds: 3600
-#          role-session-name: ${{ env.PROVIDER }}@githubActions
-#          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
-#      - name: Configure AWS CLI
-#        run: |
-#          aws configure set default.aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws configure set default.aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws configure set aws_access_key_id ${{ secrets.ALT_AWS_ACCESS_KEY_ID }} --profile ${{ secrets.ALT_AWS_PROFILE }}
-#          aws configure set aws_secret_access_key ${{ secrets.ALT_AWS_SECRET_ACCESS_KEY }} --profile ${{ secrets.ALT_AWS_PROFILE }}
-#      - name: Link nodejs binary for testing
-#        run: |
-#          cd ${{ github.workspace }}/bin
-#          yarn install && yarn link @pulumi/awsx
-#      - name: Run tests
-#        run: make test_nodejs
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        goversion:
-#          - 1.17.x
-#        language:
-#          - nodejs
-#        nodeversion:
-#          - 14.x
-#  test-python:
-#    name: Run Python Tests
-#    needs: build_sdk
-#    runs-on: ubuntu-latest
-#    if: github.event_name == 'repository_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
-#    steps:
-#      - name: Checkout Repo
-#        uses: actions/checkout@v2
-#      - name: Checkout Scripts Repo
-#        uses: actions/checkout@v2
-#        with:
-#          path: ci-scripts
-#          repository: pulumi/scripts
-#      - name: Unshallow clone for tags
-#        run: git fetch --prune --unshallow --tags
-#      - name: Install Go
-#        uses: actions/setup-go@v2
-#        with:
-#          go-version: ${{ matrix.goversion }}
-#      - name: Install pulumictl
-#        uses: jaxxstorm/action-install-gh-release@v1.1.0
-#        with:
-#          repo: pulumi/pulumictl
-#      - name: Install Pulumi CLI
-#        uses: pulumi/action-install-pulumi-cli@v1.0.1
-#      - name: Setup Node
-#        uses: actions/setup-node@v1
-#        with:
-#          node-version: ${{matrix.nodeversion}}
-#          registry-url: https://registry.npmjs.org
-#      - name: Setup Python
-#        uses: actions/setup-python@v2
-#        with:
-#          python-version: ${{matrix.pythonversion}}
-#      - name: Install Python deps
-#        run: |-
-#          pip3 install virtualenv==20.0.23
-#          pip3 install pipenv
-#      - name: Download provider binary
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: ${{ env.PROVIDER }}-provider.tar.gz
-#          path: ${{ github.workspace }}/bin
-#      - name: Untar provider binaries
-#        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
-#          }}/bin
-#      - name: Restore binary perms
-#        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
-#          -exec chmod +x {} \;
-#      - name: Update path
-#        run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-#      - name: Download NodeJS SDK
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: nodejs-sdk.tar.gz
-#          path: ${{ github.workspace}}
-#      - name: Uncompress NodeJS SDK folder
-#        run: tar -zxf ${{ github.workspace}}/nodejs.tar.gz -C ${{github.workspace}}/nodejs
-#      - name: Install NodeJS SDK
-#        run: make install_nodejs_sdk
-#      - name: Download Python SDK
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: python-sdk.tar.gz
-#          path: ${{ github.workspace}}/sdk
-#      - name: Uncompress Python SDK folder
-#        run: tar -zxf ${{ github.workspace}}/sdk/python.tar.gz -C ${{github.workspace}}/sdk/python
-#      - name: Install dependencies
-#        run: make install_python_sdk
-#      - name: Install gotestfmt
-#        uses: jaxxstorm/action-install-gh-release@v1.2.0
-#        with:
-#          repo: haveyoudebuggedit/gotestfmt
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-region: ${{ env.AWS_REGION }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          role-duration-seconds: 3600
-#          role-session-name: ${{ env.PROVIDER }}@githubActions
-#          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
-#      - name: Configure AWS CLI
-#        run: |
-#          aws configure set default.aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws configure set default.aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws configure set aws_access_key_id ${{ secrets.ALT_AWS_ACCESS_KEY_ID }} --profile ${{ secrets.ALT_AWS_PROFILE }}
-#          aws configure set aws_secret_access_key ${{ secrets.ALT_AWS_SECRET_ACCESS_KEY }} --profile ${{ secrets.ALT_AWS_PROFILE }}
-#      - name: Link nodejs binary for testing
-#        run: |
-#          cd ${{ github.workspace }}/bin
-#          yarn install && yarn link @pulumi/awsx
-#      - name: Run tests
-#        run: make test_python
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        goversion:
-#          - 1.17.x
-#        pythonversion:
-#          - 3.8
-#        nodeversion:
-#          - 14.x
-#  test-dotnet:
-#    name: Run DotNet Tests
-#    needs: build_sdk
-#    runs-on: ubuntu-latest
-#    if: github.event_name == 'repository_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
-#    steps:
-#      - name: Checkout Repo
-#        uses: actions/checkout@v2
-#      - name: Checkout Scripts Repo
-#        uses: actions/checkout@v2
-#        with:
-#          path: ci-scripts
-#          repository: pulumi/scripts
-#      - name: Unshallow clone for tags
-#        run: git fetch --prune --unshallow --tags
-#      - name: Install Go
-#        uses: actions/setup-go@v2
-#        with:
-#          go-version: ${{ matrix.goversion }}
-#      - name: Install pulumictl
-#        uses: jaxxstorm/action-install-gh-release@v1.1.0
-#        with:
-#          repo: pulumi/pulumictl
-#      - name: Install Pulumi CLI
-#        uses: pulumi/action-install-pulumi-cli@v1.0.1
-#      - name: Setup Node
-#        uses: actions/setup-node@v1
-#        with:
-#          node-version: ${{matrix.nodeversion}}
-#          registry-url: https://registry.npmjs.org
-#      - name: Setup DotNet
-#        uses: actions/setup-dotnet@v1
-#        with:
-#          dotnet-version: ${{matrix.dotnetverson}}
-#      - name: Download provider binary
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: ${{ env.PROVIDER }}-provider.tar.gz
-#          path: ${{ github.workspace }}/bin
-#      - name: Untar provider binaries
-#        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
-#          }}/bin
-#      - name: Restore binary perms
-#        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
-#          -exec chmod +x {} \;
-#      - name: Update path
-#        run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-#      - name: Download NodeJS SDK
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: nodejs-sdk.tar.gz
-#          path: ${{ github.workspace}}
-#      - name: Uncompress NodeJS SDK folder
-#        run: tar -zxf ${{ github.workspace}}/nodejs.tar.gz -C ${{github.workspace}}/nodejs
-#      - name: Install NodeJS SDK
-#        run: make install_nodejs_sdk
-#      - name: Download DotNet SDK
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: dotnet-sdk.tar.gz
-#          path: ${{ github.workspace}}/sdk
-#      - name: Uncompress DotNet SDK folder
-#        run: tar -zxf ${{ github.workspace}}/sdk/dotnet.tar.gz -C ${{github.workspace}}/sdk/dotnet
-#      - name: Install dependencies
-#        run: make install_dotnet_sdk
-#      - name: Install gotestfmt
-#        uses: jaxxstorm/action-install-gh-release@v1.2.0
-#        with:
-#          repo: haveyoudebuggedit/gotestfmt
-#      - run: dotnet nuget add source ${{ github.workspace }}/nuget
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v1
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-region: ${{ env.AWS_REGION }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          role-duration-seconds: 3600
-#          role-session-name: ${{ env.PROVIDER }}@githubActions
-#          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
-#      - name: Configure AWS CLI
-#        run: |
-#          aws configure set default.aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws configure set default.aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws configure set aws_access_key_id ${{ secrets.ALT_AWS_ACCESS_KEY_ID }} --profile ${{ secrets.ALT_AWS_PROFILE }}
-#          aws configure set aws_secret_access_key ${{ secrets.ALT_AWS_SECRET_ACCESS_KEY }} --profile ${{ secrets.ALT_AWS_PROFILE }}
-#      - name: Link nodejs binary for testing
-#        run: |
-#          cd ${{ github.workspace }}/bin
-#          yarn install && yarn link @pulumi/awsx
-#      - name: Run tests
-#        run: make test_dotnet
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        goversion:
-#          - 1.17.x
-#        dotnetversion:
-#          - 3.1
-#        nodeversion:
-#          - 14.x
+  acceptance-test:
+    needs: build_sdk
+    runs-on: ubuntu-latest
+    if: github.event_name == 'repository_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.goversion }}
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        with:
+          repo: pulumi/pulumictl
+      - name: Install Pulumi CLI
+        uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{matrix.nodeversion}}
+          registry-url: https://registry.npmjs.org
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.pythonversion}}
+      - name: Install Python deps
+        run: |-
+          pip3 install virtualenv==20.0.23
+          pip3 install pipenv
+      - name: Download provider binary
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PROVIDER }}-provider.tar.gz
+          path: ${{ github.workspace }}/bin
+      - name: Untar provider binaries
+        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
+          }}/bin
+      - name: Restore binary perms
+        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
+          -exec chmod +x {} \;
+      - name: Update path
+        run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+      - name: Install Provider Deps
+        run: yarn install
+        working-directory: ${{ github.workspace}}/bin
+      - name: Download SDK
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ matrix.language }}-sdk.tar.gz
+          path: ${{ github.workspace}}/sdk
+      - name: Uncompress SDK folder
+        run: tar -zxf ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz -C ${{github.workspace}}/sdk/${{ matrix.language }}
+      - name: Install dependencies
+        run: make install_${{ matrix.language }}_sdk
+      - name: Install gotestfmt
+        uses: jaxxstorm/action-install-gh-release@v1.2.0
+        with:
+          repo: haveyoudebuggedit/gotestfmt
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-region: ${{ env.AWS_REGION }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-duration-seconds: 3600
+          role-session-name: ${{ env.PROVIDER }}@githubActions
+          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
+      - name: Run tests
+        run: make test_${{ matrix.language }}
+    strategy:
+      fail-fast: false
+      matrix:
+        goversion:
+          - 1.17.x
+        pythonversion:
+          - 3.8
+        nodeversion:
+          - 14.x
+        language:
+          - nodejs
+          - python
+          - dotnet
+          - go
 name: Run Acceptance Tests from PR
 on:
   repository_dispatch:

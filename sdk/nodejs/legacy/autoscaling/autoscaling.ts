@@ -14,8 +14,9 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as ec2 from "../ec2";
+import * as lb from "../lb";
 
-import * as x from "..";
 import * as utils from "../utils";
 
 import { AutoScalingLaunchConfiguration, AutoScalingLaunchConfigurationArgs } from "./launchConfiguration";
@@ -24,7 +25,7 @@ import * as stepScaling from "./stepScaling";
 import * as targetTracking from "./targetTracking";
 
 export class AutoScalingGroup extends pulumi.ComponentResource {
-    public readonly vpc: x.ec2.Vpc;
+    public readonly vpc: ec2.Vpc;
 
     /**
      * The [cloudformation.Stack] that was used to create this [AutoScalingGroup].  [CloudFormation]
@@ -48,14 +49,14 @@ export class AutoScalingGroup extends pulumi.ComponentResource {
      * https://docs.aws.amazon.com/autoscaling/ec2/userguide/attach-load-balancer-asg.html
      * for more details.
      */
-    public readonly targetGroups: x.lb.TargetGroup[];
+    public readonly targetGroups: lb.TargetGroup[];
 
     constructor(name: string,
                 args: AutoScalingGroupArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:autoscaling:AutoScalingGroup", name, {}, opts);
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
+        this.vpc = args.vpc || ec2.Vpc.getDefault({ parent: this });
         const subnetIds = args.subnetIds || this.vpc.privateSubnetIds;
         this.targetGroups = args.targetGroups || [];
         const targetGroupArns = this.targetGroups.map(g => g.targetGroup.arn);
@@ -295,7 +296,7 @@ export interface AutoScalingGroupArgs {
      * The vpc this autoscaling group is for.  If not provided this autoscaling group will be
      * created for the default vpc.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * The subnets to use for the autoscaling group.  If not provided, the `private` subnets of
@@ -335,7 +336,7 @@ export interface AutoScalingGroupArgs {
      * A list of target groups to associate with the Auto Scaling group.  All target groups must
      * have the "instance" [targetType].
      */
-    targetGroups?: x.lb.TargetGroup[];
+    targetGroups?: lb.TargetGroup[];
 
     /**
      * Set to true to disable rollback of the underlying aws.cloudformation.Stack if that Stack

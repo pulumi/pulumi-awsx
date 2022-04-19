@@ -14,8 +14,10 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { InternetGateway } from "./internetGateway";
+import { NatGateway, NatGatewayArgs } from "./natGateway";
+import { Subnet } from "./subnet";
 
-import * as x from "..";
 import * as topology from "./vpcTopology";
 
 import * as utils from "../utils";
@@ -40,25 +42,25 @@ class VpcData {
     public readonly id: pulumi.Output<string>;
 
     /** @internal */
-    public readonly publicSubnets: x.ec2.Subnet[] = [];
+    public readonly publicSubnets: Subnet[] = [];
     /** @internal */
-    public readonly privateSubnets: x.ec2.Subnet[] = [];
+    public readonly privateSubnets: Subnet[] = [];
     /** @internal */
-    public readonly isolatedSubnets: x.ec2.Subnet[] = [];
+    public readonly isolatedSubnets: Subnet[] = [];
 
     /**
      * @internal
      * The internet gateway created to allow traffic to/from the internet to the public subnets.
      * Only available if this was created using [VpcArgs].
      */
-    public internetGateway?: x.ec2.InternetGateway;
+    public internetGateway?: InternetGateway;
 
     /**
      * @internal
      * The nat gateways created to allow private subnets access to the internet.
      * Only available if this was created using [VpcArgs].
      */
-    public readonly natGateways: x.ec2.NatGateway[] = [];
+    public readonly natGateways: NatGateway[] = [];
 
     /** @internal */
     private readonly parent: Vpc;
@@ -85,7 +87,7 @@ class VpcData {
             // to the vpc.
             if (args.internetGatewayId) {
                 const igName = `${name}-ig`;
-                this.internetGateway = new x.ec2.InternetGateway(igName, parent, {
+                this.internetGateway = new InternetGateway(igName, parent, {
                     internetGateway: aws.ec2.InternetGateway.get(igName, args.internetGatewayId, {}, { parent }),
                 }, { parent, aliases: [{ parent: pulumi.rootStackResource }] });
             }
@@ -94,7 +96,7 @@ class VpcData {
                 for (let i = 0, n = args.natGatewayIds.length; i < n; i++) {
                     const natGatewayId = args.natGatewayIds[i];
                     const natName = `${name}-nat-${i}`;
-                    this.natGateways.push(new x.ec2.NatGateway(natName, parent, {
+                    this.natGateways.push(new NatGateway(natName, parent, {
                         natGateway: aws.ec2.NatGateway.get(natName, natGatewayId, {}, { parent }),
                     }, { parent, aliases: [{ parent: pulumi.rootStackResource }] }));
                 }
@@ -153,7 +155,7 @@ class VpcData {
             const availabilityZone = desc.args.availabilityZone;
             const availabilityZoneId = availabilityZone ? undefined : desc.args.availabilityZoneId;
 
-            const subnet = new x.ec2.Subnet(desc.subnetName, this.parent, {
+            const subnet = new Subnet(desc.subnetName, this.parent, {
                 ...desc.args,
                 availabilityZone,
                 availabilityZoneId,
@@ -188,7 +190,7 @@ class VpcData {
     }
 
     /** @internal */
-    private addSubnet(type: VpcSubnetType, subnet: x.ec2.Subnet) {
+    private addSubnet(type: VpcSubnetType, subnet: Subnet) {
         this.getSubnets(type).push(subnet);
         this.getSubnetIds(type).push(subnet.id);
     }
@@ -221,7 +223,7 @@ class VpcData {
      * @param subnets The subnets to route the InternetGateway to.  Will default to the [public]
      *        subnets of this Vpc if not specified.
      */
-    public addInternetGateway(name: string, subnets?: x.ec2.Subnet[],
+    public addInternetGateway(name: string, subnets?: Subnet[],
                               args: aws.ec2.InternetGatewayArgs = {},
                               opts: pulumi.ComponentResourceOptions = {}) {
 
@@ -231,7 +233,7 @@ class VpcData {
 
         // See https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html#Add_IGW_Attach_Gateway
         // for more details.
-        this.internetGateway = new x.ec2.InternetGateway(name, this.parent, args, opts);
+        this.internetGateway = new InternetGateway(name, this.parent, args, opts);
 
         subnets = subnets || this.publicSubnets;
         for (const subnet of subnets) {
@@ -250,8 +252,8 @@ class VpcData {
      *
      * This can be done by calling [subnet.createRoute] and passing in the newly created NatGateway.
      */
-    public addNatGateway(name: string, args: x.ec2.NatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        const natGateway = new x.ec2.NatGateway(name, this.parent, args, opts);
+    public addNatGateway(name: string, args: NatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+        const natGateway = new NatGateway(name, this.parent, args, opts);
         this.natGateways.push(natGateway);
         return natGateway;
     }
@@ -325,7 +327,7 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
     }
 
     /** @internal */
-    public async initializeVpcArgs(name: string, args: x.ec2.VpcArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
+    public async initializeVpcArgs(name: string, args: VpcArgs, opts: pulumi.ComponentResourceOptions): Promise<VpcData> {
         const provider = Vpc.getProvider(opts);
         const availabilityZones = await getAvailabilityZones(opts.parent, provider, args.requestedAvailabilityZones ?? args.numberOfAvailabilityZones);
 
@@ -345,14 +347,14 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
     }
 
     public async addInternetGateway(
-        name: string, subnets?: x.ec2.Subnet[],
+        name: string, subnets?: Subnet[],
         args: aws.ec2.InternetGatewayArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
 
         const vpc = await this.getData();
         vpc.addInternetGateway(name, subnets, args, opts);
     }
 
-    public async addNatGateway(name: string, args: x.ec2.NatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    public async addNatGateway(name: string, args: NatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const vpc = await this.getData();
         vpc.addNatGateway(name, args, opts);
     }
@@ -536,7 +538,7 @@ function getExistingSubnets(vpcData: VpcData, vpc: Vpc, vpcName: string, type: V
 
     for (let i = 0, n = inputs.length; i < n; i++) {
         const subnetName = `${vpcName}-${type}-${i}`;
-        const subnet = new x.ec2.Subnet(subnetName, vpc, {
+        const subnet = new Subnet(subnetName, vpc, {
             subnet: aws.ec2.Subnet.get(subnetName, inputs[i], /*state:*/undefined, { parent: vpc }),
         }, { parent: vpc });
 

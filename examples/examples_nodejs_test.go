@@ -23,25 +23,23 @@ import (
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 )
 
-func TestAccTrailNodeJS(t *testing.T) {
-	test := getGoBaseOptions(t).
+func TestAccEcsCapactiyProviderService(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "trail-go"),
+			Dir:           filepath.Join(getCwd(t), "ecs", "capacity-provider-service-with-cluster-default-strategies"),
 		})
 
 	integration.ProgramTest(t, &test)
 }
 
-func getGoBaseOptions(t *testing.T) integration.ProgramTestOptions {
-	region := getEnvRegion(t)
+func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
 	base := getBaseOptions(t)
-	goBase := base.With(integration.ProgramTestOptions{
-		Config: map[string]string{
-			"aws:region": region,
+	nodeBase := base.With(integration.ProgramTestOptions{
+		Dependencies: []string{
+			"@pulumi/awsx",
 		},
-		Verbose: true,
 	})
 
-	return goBase
+	return nodeBase
 }

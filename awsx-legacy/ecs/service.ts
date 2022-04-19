@@ -14,31 +14,34 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as ec2 from "../ec2";
+import * as lb from "../lb";
+import { Cluster } from "./cluster";
+import { ContainerLoadBalancerProvider, isContainerLoadBalancerProvider } from "./container";
+import { TaskDefinition } from "./taskDefinition";
 
-import * as ecs from ".";
-import * as x from "..";
 import * as utils from "../utils";
 
 export abstract class Service extends pulumi.ComponentResource {
     public readonly service: aws.ecs.Service;
-    public readonly cluster: ecs.Cluster;
-    public readonly taskDefinition: ecs.TaskDefinition;
+    public readonly cluster: Cluster;
+    public readonly taskDefinition: TaskDefinition;
 
     /**
      * Mapping from container in this service to the ELB listener exposing it through a load
      * balancer. Only present if a listener was provided in [Container.portMappings] or in
      * [Container.applicationListener] or [Container.networkListener].
      */
-    public readonly listeners: Record<string, x.lb.Listener> = {};
-    public readonly applicationListeners: Record<string, x.lb.ApplicationListener> = {};
-    public readonly networkListeners: Record<string, x.lb.NetworkListener> = {};
+    public readonly listeners: Record<string, lb.Listener> = {};
+    public readonly applicationListeners: Record<string, lb.ApplicationListener> = {};
+    public readonly networkListeners: Record<string, lb.NetworkListener> = {};
 
     constructor(type: string, name: string,
                 args: ServiceArgs,
                 opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, opts);
 
-        this.cluster = args.cluster || x.ecs.Cluster.getDefault();
+        this.cluster = args.cluster || Cluster.getDefault();
 
         this.listeners = args.taskDefinition.listeners;
         this.applicationListeners = args.taskDefinition.applicationListeners;
@@ -64,7 +67,7 @@ export abstract class Service extends pulumi.ComponentResource {
     }
 }
 
-function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs) {
+function getLoadBalancers(service: Service, name: string, args: ServiceArgs) {
     const result: pulumi.Output<ServiceLoadBalancer>[] = [];
 
     // Get the initial set of load balancers if specified directly in our args.
@@ -77,7 +80,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
         }
     }
 
-    const containerLoadBalancerProviders: [string, ecs.ContainerLoadBalancerProvider][] = [];
+    const containerLoadBalancerProviders: [string, ContainerLoadBalancerProvider][] = [];
 
     // Now walk each container and see if it wants to add load balancer information as well.
     for (const containerName of Object.keys(args.taskDefinition.containers)) {
@@ -87,7 +90,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
         }
 
         for (const obj of container.portMappings) {
-            if (x.ecs.isContainerLoadBalancerProvider(obj)) {
+            if (isContainerLoadBalancerProvider(obj)) {
                 containerLoadBalancerProviders.push([containerName, obj]);
             }
         }
@@ -108,7 +111,7 @@ function getLoadBalancers(service: ecs.Service, name: string, args: ServiceArgs)
 
     return pulumi.output(result);
 
-    function processContainerLoadBalancerProvider(containerName: string, prov: ecs.ContainerLoadBalancerProvider) {
+    function processContainerLoadBalancerProvider(containerName: string, prov: ContainerLoadBalancerProvider) {
         // Containers don't know their own name.  So we add the name in here on their behalf.
         const containerLoadBalancer = prov.containerLoadBalancer(name, service);
         const serviceLoadBalancer = pulumi.output(containerLoadBalancer).apply(
@@ -137,9 +140,9 @@ export function isServiceLoadBalancerProvider(obj: any): obj is ServiceLoadBalan
 // work with. However, they internally allow us to succinctly express the shape we're trying to
 // provide. Code later on will ensure these types are compatible.
 type OverwriteShape = utils.Overwrite<utils.Mutable<aws.ecs.ServiceArgs>, {
-    cluster?: ecs.Cluster;
-    taskDefinition: ecs.TaskDefinition;
-    securityGroups: x.ec2.SecurityGroup[];
+    cluster?: Cluster;
+    taskDefinition: TaskDefinition;
+    securityGroups: ec2.SecurityGroup[];
     desiredCount?: pulumi.Input<number>;
     launchType?: pulumi.Input<"EC2" | "FARGATE">;
     os?: pulumi.Input<"linux" | "windows">;
@@ -317,17 +320,17 @@ export interface ServiceArgs {
     /**
      * Cluster this service will run in.  If not specified [Cluster.getDefault()] will be used.
      */
-    cluster?: ecs.Cluster;
+    cluster?: Cluster;
 
     /**
      * The task definition to create the service from.
      */
-    taskDefinition: ecs.TaskDefinition;
+    taskDefinition: TaskDefinition;
 
     /**
      * Security groups determining how this service can be reached.
      */
-    securityGroups: x.ec2.SecurityGroup[];
+    securityGroups: ec2.SecurityGroup[];
 }
 
 // Make sure our exported args shape is compatible with the overwrite shape we're trying to provide.

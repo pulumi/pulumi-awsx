@@ -14,12 +14,15 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as ec2 from "../ec2";
+import { Cluster } from "./cluster";
+import { Container } from "./container";
+import { Service, ServiceArgs, ServiceLoadBalancer, ServiceLoadBalancerProvider } from "./service";
+import { TaskDefinition, TaskDefinitionArgs } from "./taskDefinition";
 
-import * as ecs from ".";
-import * as x from "..";
 import * as utils from "../utils";
 
-export class EC2TaskDefinition extends ecs.TaskDefinition {
+export class EC2TaskDefinition extends TaskDefinition {
     constructor(name: string,
                 args: EC2TaskDefinitionArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
@@ -29,7 +32,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
 
         const containers = args.containers || { container: args.container! };
 
-        const argsCopy: ecs.TaskDefinitionArgs = {
+        const argsCopy: TaskDefinitionArgs = {
             ...args,
             containers,
             requiresCompatibilities: ["EC2"],
@@ -46,7 +49,7 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
     /**
      * Creates a service with this as its task definition.
      */
-    public createService(name: string, args: ecs.EC2ServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    public createService(name: string, args: EC2ServiceArgs, opts: pulumi.ComponentResourceOptions = {}) {
         if (args.taskDefinition) {
             throw new Error("[args.taskDefinition] should not be provided.");
         }
@@ -55,14 +58,14 @@ export class EC2TaskDefinition extends ecs.TaskDefinition {
             throw new Error("[args.taskDefinitionArgs] should not be provided.");
         }
 
-        return new ecs.EC2Service(name, {
+        return new EC2Service(name, {
             ...args,
             taskDefinition: this,
         }, { parent: this, ...opts });
     }
 }
 
-export class EC2Service extends ecs.Service {
+export class EC2Service extends Service {
     public readonly taskDefinition: EC2TaskDefinition;
 
     constructor(name: string,
@@ -73,15 +76,15 @@ export class EC2Service extends ecs.Service {
             throw new Error("Either [taskDefinition] or [taskDefinitionArgs] must be provided");
         }
 
-        const cluster = args.cluster || x.ecs.Cluster.getDefault();
+        const cluster = args.cluster || Cluster.getDefault();
 
         const taskDefinition = args.taskDefinition ||
-            new ecs.EC2TaskDefinition(name, {
+            new EC2TaskDefinition(name, {
                 ...args.taskDefinitionArgs,
                 vpc: cluster.vpc,
             }, opts);
 
-        const securityGroups = x.ec2.getSecurityGroups(
+        const securityGroups = ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
         const subnets = args.subnets || cluster.vpc.publicSubnetIds;
 
@@ -112,12 +115,12 @@ export class EC2Service extends ecs.Service {
     }
 }
 
-type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<ecs.TaskDefinitionArgs, {
+type OverwriteEC2TaskDefinitionArgs = utils.Overwrite<TaskDefinitionArgs, {
     requiresCompatibilities?: never;
     cpu?: never;
     memory?: never;
-    container?: ecs.Container;
-    containers?: Record<string, ecs.Container>;
+    container?: Container;
+    containers?: Record<string, Container>;
 }>;
 
 export interface EC2TaskDefinitionArgs {
@@ -127,7 +130,7 @@ export interface EC2TaskDefinitionArgs {
      * The vpc that the service for this task will run in.  Does not normally need to be explicitly
      * provided as it will be inferred from the cluster the service is associated with.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * A set of placement constraints rules that are taken into consideration during task placement.
@@ -185,7 +188,7 @@ export interface EC2TaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    container?: ecs.Container;
+    container?: Container;
 
     /**
      * All the containers to make a TaskDefinition from.  Useful when creating a
@@ -193,7 +196,7 @@ export interface EC2TaskDefinitionArgs {
      *
      * Either [container] or [containers] must be provided.
      */
-    containers?: Record<string, ecs.Container>;
+    containers?: Record<string, Container>;
 
     /**
      * Key-value mapping of resource tags
@@ -201,13 +204,13 @@ export interface EC2TaskDefinitionArgs {
     tags?: pulumi.Input<aws.Tags>;
 }
 
-type OverwriteEC2ServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
+type OverwriteEC2ServiceArgs = utils.Overwrite<ServiceArgs, {
     taskDefinition?: EC2TaskDefinition;
     taskDefinitionArgs?: EC2TaskDefinitionArgs;
     launchType?: never;
     networkConfiguration?: never;
     capacityProviderStrategies?: never;
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
 }>;
 
 export interface EC2ServiceArgs {
@@ -278,7 +281,7 @@ export interface EC2ServiceArgs {
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: (pulumi.Input<x.ecs.ServiceLoadBalancer> | x.ecs.ServiceLoadBalancerProvider)[];
+    loadBalancers?: (pulumi.Input<ServiceLoadBalancer> | ServiceLoadBalancerProvider)[];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
@@ -290,7 +293,7 @@ export interface EC2ServiceArgs {
      *
      * Defaults to [cluster.securityGroups] if unspecified.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
 
     /**
      * The subnets to connect the instances to.  If unspecified then these will be the public
@@ -332,7 +335,7 @@ export interface EC2ServiceArgs {
     /**
      * Cluster this service will run in.
      */
-    cluster?: ecs.Cluster;
+    cluster?: Cluster;
 
     os?: pulumi.Input<"linux" | "windows">;
 

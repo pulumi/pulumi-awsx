@@ -14,9 +14,8 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-
-import * as ecs from ".";
-import * as x from "..";
+import * as ec2 from "../ec2";
+import * as lb from "../lb";
 
 import * as utils from "../utils";
 
@@ -24,11 +23,11 @@ import * as utils from "../utils";
 export function computeContainerDefinition(
     parent: pulumi.Resource,
     name: string,
-    vpc: x.ec2.Vpc | undefined,
+    vpc: ec2.Vpc | undefined,
     containerName: string,
     container: Container,
-    applicationListeners: Record<string, x.lb.ApplicationListener>,
-    networkListeners: Record<string, x.lb.NetworkListener>,
+    applicationListeners: Record<string, lb.ApplicationListener>,
+    networkListeners: Record<string, lb.NetworkListener>,
     logGroup: aws.cloudwatch.LogGroup | undefined | null) {
 
     const image = isContainerImageProvider(container.image)
@@ -73,11 +72,11 @@ export function computeContainerDefinition(
 function getPortMappings(
     parent: pulumi.Resource,
     name: string,
-    vpc: x.ec2.Vpc | undefined,
+    vpc: ec2.Vpc | undefined,
     container: Container,
     containerName: string,
-    applicationListeners: Record<string, x.lb.ApplicationListener>,
-    networkListeners: Record<string, x.lb.NetworkListener>) {
+    applicationListeners: Record<string, lb.ApplicationListener>,
+    networkListeners: Record<string, lb.NetworkListener>) {
 
     if (container.applicationListener && container.networkListener) {
         throw new pulumi.ResourceError(`Container '${name}' supplied [applicationListener] and [networkListener]`, parent);
@@ -112,10 +111,10 @@ function getPortMappings(
         result.push(pulumi.output(listener.containerPortMapping(name, parent)));
     }
 
-    if (x.lb.ApplicationListener.isApplicationListenerInstance(possibleListener)) {
+    if (lb.ApplicationListener.isApplicationListenerInstance(possibleListener)) {
         applicationListeners[containerName] = possibleListener;
     }
-    else if (x.lb.NetworkListener.isNetworkListenerInstance(possibleListener)) {
+    else if (lb.NetworkListener.isNetworkListenerInstance(possibleListener)) {
         networkListeners[containerName] = possibleListener;
     }
 
@@ -134,7 +133,7 @@ function getPortMappings(
                 throw new pulumi.ResourceError(errorMessage, parent);
             }
 
-            return new x.lb.ApplicationListener(name, {
+            return new lb.ApplicationListener(name, {
                 ...container.applicationListener,
                 vpc,
             }, opts);
@@ -148,7 +147,7 @@ function getPortMappings(
                 throw new pulumi.ResourceError(errorMessage, parent);
             }
 
-            return new x.lb.NetworkListener(name, {
+            return new lb.NetworkListener(name, {
                 ...container.networkListener,
                 vpc,
             }, opts);
@@ -842,13 +841,13 @@ export interface Container {
      * Alternative to passing in `portMappings`.  If a listener (or args to create a listener) is
      * passed in, it will be used instead.
      */
-    applicationListener?: x.lb.ApplicationListener | x.lb.ApplicationListenerArgs;
+    applicationListener?: lb.ApplicationListener | lb.ApplicationListenerArgs;
 
     /**
      * Alternative to passing in `portMappings`.  If a listener (or args to create a listener) is
      * passed in, it will be used instead.
      */
-    networkListener?: x.lb.NetworkListener | x.lb.NetworkListenerArgs;
+    networkListener?: lb.NetworkListener | lb.NetworkListenerArgs;
 }
 
 export interface ContainerImageProvider {

@@ -15,13 +15,13 @@
 import * as aws from "@pulumi/aws";
 import * as docker from "@pulumi/docker";
 import * as pulumi from "@pulumi/pulumi";
+import { ContainerImageProvider, KeyValuePair } from "./container";
 
-import * as ecs from ".";
 import * as utils from "../utils";
 
-export abstract class Image implements ecs.ContainerImageProvider {
+export abstract class Image implements ContainerImageProvider {
     public abstract image(name: string, parent: pulumi.Resource): pulumi.Input<string>;
-    public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<ecs.KeyValuePair[]>;
+    public abstract environment(name: string, parent: pulumi.Resource): pulumi.Input<KeyValuePair[]>;
 
     /**
      * Creates an [Image] given a path to a folder in which a Docker build should be run.
@@ -75,7 +75,7 @@ class FunctionImage extends Image {
         return "lukehoban/nodejsrunner";
     }
 
-    public environment(): pulumi.Input<ecs.KeyValuePair[]> {
+    public environment(): pulumi.Input<KeyValuePair[]> {
         return pulumi.runtime.serializeFunction(this.func).then(value => [{
             name: "PULUMI_SRC",
             value: value.text,
@@ -97,7 +97,7 @@ class AssetImage extends Image {
         this.pathOrBuild = pulumi.output(pathOrBuild);
     }
 
-    public environment(name: string, parent: pulumi.Resource): pulumi.Input<ecs.KeyValuePair[]> {
+    public environment(name: string, parent: pulumi.Resource): pulumi.Input<KeyValuePair[]> {
         return [];
     }
 

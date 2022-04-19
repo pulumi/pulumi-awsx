@@ -1,11 +1,10 @@
-import * as pulumi from "@pulumi/pulumi";
-import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
-import * as ecsx from "@pulumi/awsx/ecsx";
+import * as ecs from "@pulumi/awsx/ecs";
+import * as legacy from "@pulumi/awsx/legacy";
 
-const vpc = awsx.ec2.Vpc.getDefault();
+const vpc = legacy.ec2.Vpc.getDefault();
 
-const cluster = new awsx.ecs.Cluster("cluster", {
+const cluster = new legacy.ecs.Cluster("cluster", {
     capacityProviders: ["FARGATE_SPOT"],
     defaultCapacityProviderStrategies: [
         {
@@ -16,10 +15,10 @@ const cluster = new awsx.ecs.Cluster("cluster", {
 });
 
 // // Create a load balancer on port 80 and spin up two instances of Nginx.
-const lb = new awsx.lb.ApplicationListener("nginx-lb", { port: 80 });
+const lb = new legacy.lb.ApplicationListener("nginx-lb", { port: 80 });
 const targetGroup = lb.defaultTargetGroup!.targetGroup;
 
-const fargateTask = new ecsx.FargateTaskDefinition("fargate-task", {
+const fargateTask = new ecs.FargateTaskDefinition("fargate-task", {
     container: {
         image: "nginx:latest",
         cpu: 512,
@@ -29,7 +28,7 @@ const fargateTask = new ecsx.FargateTaskDefinition("fargate-task", {
     },
 });
 
-const service = new ecsx.FargateService("my-service", {
+const service = new ecs.FargateService("my-service", {
     cluster: cluster.cluster.arn,
     taskDefinition: fargateTask.taskDefinition.arn,
     loadBalancers: fargateTask.loadBalancers,
