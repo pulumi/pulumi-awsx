@@ -14,15 +14,15 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { Vpc } from "./vpc";
 
-import * as x from "..";
 import * as utils from "../utils";
 
 export class Subnet extends pulumi.ComponentResource {
     // tslint:disable-next-line:variable-name
     private readonly __isSubnetInstance = true;
 
-    public readonly vpc: x.ec2.Vpc;
+    public readonly vpc: Vpc;
     public readonly subnetName: string;
 
     /**
@@ -36,9 +36,9 @@ export class Subnet extends pulumi.ComponentResource {
 
     public readonly routes: aws.ec2.Route[] = [];
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, vpc: Vpc, args: SubnetArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: Vpc, args: ExistingSubnetArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: Vpc, args: SubnetArgs | ExistingSubnetArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:Subnet", name, {}, { parent: vpc, ...opts });
 
         this.vpc = vpc;

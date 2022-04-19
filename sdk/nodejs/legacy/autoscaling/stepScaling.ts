@@ -14,8 +14,8 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as cloudwatch from "../cloudwatch";
 
-import * as x from "..";
 import * as utils from "../utils";
 
 import { AutoScalingGroup } from "./autoscaling";
@@ -119,7 +119,7 @@ export interface StepScalingPolicyArgs {
      * Note: the `period` of this metric will be set to `60s` from the default of `300s` to ensure
      * events come in in a timely enough manner to allow the ASG to respond accordingly.
      */
-    metric: x.cloudwatch.Metric;
+    metric: cloudwatch.Metric;
 
     /**
      * A set of adjustments that manage group scaling.
@@ -343,7 +343,7 @@ export function convertUpperSteps(upperSteps: pulumi.Unwrap<ScalingStep>[] | und
     return { threshold, stepAdjustments };
 }
 
-function sortSteps(steps: pulumi.UnwrappedObject<x.autoscaling.ScalingStep>[] | undefined) {
+function sortSteps(steps: pulumi.UnwrappedObject<ScalingStep>[] | undefined) {
     if (!steps) {
         return undefined;
     }

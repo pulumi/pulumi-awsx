@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as pulumi from "@pulumi/pulumi";
-
 import * as cloudwatch from "../cloudwatch";
 
 export namespace metrics {

@@ -14,8 +14,9 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { SubnetArgs } from "./subnet";
+import { VpcSubnetArgs, VpcSubnetType } from "./vpc";
 
-import * as x from "..";
 import { Cidr32Block, getIPv4Address } from "./cidr";
 
 import * as utils from "../utils";
@@ -30,7 +31,7 @@ export function create(
         resource: pulumi.Resource | undefined, vpcName: string, vpcCidr: string,
         ipv6CidrBlock: pulumi.Output<string> | undefined, availabilityZones: AvailabilityZoneDescription[],
         numberOfNatGateways: number, assignGeneratedIpv6CidrBlock: pulumi.Input<boolean>,
-        subnetArgsArray: x.ec2.VpcSubnetArgs[]) {
+        subnetArgsArray: VpcSubnetArgs[]) {
 
     // Check if the subnets were given explicit location information or not.  If so, we'll
     // respect the location information the user asked for.  If not, we'll automatically
@@ -72,7 +73,7 @@ abstract class VpcTopology {
         this.vpcCidrBlock = Cidr32Block.fromCidrNotation(vpcCidr);
     }
 
-    public abstract create(subnetArgsArray: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription;
+    public abstract create(subnetArgsArray: VpcSubnetArgs[]): VpcTopologyDescription;
 
     protected shouldCreateNatGateways(publicSubnets: SubnetDescription[], privateSubnets: SubnetDescription[]) {
         // To make natgateways:
@@ -84,7 +85,7 @@ abstract class VpcTopology {
 }
 
 class ComputedLocationTopology extends VpcTopology {
-    public create(subnetArgsArray: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription {
+    public create(subnetArgsArray: VpcSubnetArgs[]): VpcTopologyDescription {
         const maskedSubnets = subnetArgsArray.filter(s => s.cidrMask !== undefined);
         const unmaskedSubnets = subnetArgsArray.filter(s => s.cidrMask === undefined);
 
@@ -158,7 +159,7 @@ class ComputedLocationTopology extends VpcTopology {
         return { subnets: subnetDescriptions, natGateways, natRoutes };
     }
 
-    private computeCidrMaskForSubnets(subnets: x.ec2.VpcSubnetArgs[], checkResult: boolean): number {
+    private computeCidrMaskForSubnets(subnets: VpcSubnetArgs[], checkResult: boolean): number {
         // We need one cidr block for each of these subnets in each availability zone.
         const requiredCidrBlockCount = subnets.length * this.availabilityZones.length;
 
@@ -220,7 +221,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
         return nextCidrBlock;
     }
 
-    private createSubnetsWorker(subnetArgs: x.ec2.VpcSubnetArgs, cidrMask: number, currentSubnetIndex: number) {
+    private createSubnetsWorker(subnetArgs: VpcSubnetArgs, cidrMask: number, currentSubnetIndex: number) {
         if (cidrMask < 16 || cidrMask > 28) {
             throw new Error(`Cidr mask must be between "16" and "28" but was ${cidrMask}`);
         }
@@ -257,7 +258,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
 
         return result;
 
-        function getSubnetName(vpcName: string, subnetArgs: x.ec2.VpcSubnetArgs, i: number) {
+        function getSubnetName(vpcName: string, subnetArgs: VpcSubnetArgs, i: number) {
             let subnetName = `${subnetArgs.type}-${i}`;
             if (subnetArgs.name) {
                 subnetName = `${subnetArgs.name}-` + subnetName;
@@ -305,7 +306,7 @@ ${lastAllocatedIpAddress} > ${lastVpcIpAddress}`);
 }
 
 class ExplicitLocationTopology extends VpcTopology {
-    public create(subnets: x.ec2.VpcSubnetArgs[]): VpcTopologyDescription {
+    public create(subnets: VpcSubnetArgs[]): VpcTopologyDescription {
         const subnetDescriptions: SubnetDescription[] = [];
         const natGateways: NatGatewayDescription[] = [];
         const natRoutes: NatRouteDescription[] = [];
@@ -453,9 +454,9 @@ export interface VpcTopologyDescription {
 
 /** @internal */
 export interface SubnetDescription {
-    type: x.ec2.VpcSubnetType;
+    type: VpcSubnetType;
     subnetName: string;
-    args: x.ec2.SubnetArgs;
+    args: SubnetArgs;
     ignoreChanges?: string[];
 }
 

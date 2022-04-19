@@ -14,17 +14,19 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { EgressSecurityGroupRule, EgressSecurityGroupRuleArgs, IngressSecurityGroupRule, IngressSecurityGroupRuleArgs, SimpleSecurityGroupRuleArgs }
+    from "./securityGroupRule";
+import { Vpc } from "./vpc";
 
-import * as x from "..";
 import * as utils from "../utils";
 
 export class SecurityGroup extends pulumi.ComponentResource {
     public readonly securityGroup: aws.ec2.SecurityGroup;
     public readonly id: pulumi.Output<string>;
-    public readonly vpc: x.ec2.Vpc;
+    public readonly vpc: Vpc;
 
-    public readonly egressRules: x.ec2.EgressSecurityGroupRule[] = [];
-    public readonly ingressRules: x.ec2.IngressSecurityGroupRule[] = [];
+    public readonly egressRules: EgressSecurityGroupRule[] = [];
+    public readonly ingressRules: IngressSecurityGroupRule[] = [];
 
     // tslint:disable-next-line:variable-name
     private readonly __isSecurityGroupInstance = true;
@@ -47,7 +49,7 @@ export class SecurityGroup extends pulumi.ComponentResource {
         delete args.egress;
         delete args.ingress;
 
-        this.vpc = args.vpc || x.ec2.Vpc.getDefault({ parent: this });
+        this.vpc = args.vpc || Vpc.getDefault({ parent: this });
         this.securityGroup = args.securityGroup || new aws.ec2.SecurityGroup(name, {
             ...args,
             vpcId: this.vpc.id,
@@ -86,16 +88,16 @@ export class SecurityGroup extends pulumi.ComponentResource {
         }, opts);
     }
 
-    public createEgressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.EgressSecurityGroupRule;
-    public createEgressRule(name: string, args: x.ec2.EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.EgressSecurityGroupRule;
-    public createEgressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs | x.ec2.EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new x.ec2.EgressSecurityGroupRule(name, this, args, opts);
+    public createEgressRule(name: string, args: SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): EgressSecurityGroupRule;
+    public createEgressRule(name: string, args: EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): EgressSecurityGroupRule;
+    public createEgressRule(name: string, args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        return new EgressSecurityGroupRule(name, this, args, opts);
     }
 
-    public createIngressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.IngressSecurityGroupRule;
-    public createIngressRule(name: string, args: x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): x.ec2.IngressSecurityGroupRule;
-    public createIngressRule(name: string, args: x.ec2.SimpleSecurityGroupRuleArgs | x.ec2.IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
-        return new x.ec2.IngressSecurityGroupRule(name, this, args, opts);
+    public createIngressRule(name: string, args: SimpleSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): IngressSecurityGroupRule;
+    public createIngressRule(name: string, args: IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions): IngressSecurityGroupRule;
+    public createIngressRule(name: string, args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs, opts?: pulumi.ComponentResourceOptions) {
+        return new IngressSecurityGroupRule(name, this, args, opts);
     }
 }
 
@@ -106,20 +108,20 @@ export type SecurityGroupOrId = SecurityGroup | pulumi.Input<string>;
 
 /** @internal */
 export function getSecurityGroups(
-        vpc: x.ec2.Vpc, name: string, args: SecurityGroupOrId[] | undefined,
+        vpc: Vpc, name: string, args: SecurityGroupOrId[] | undefined,
         opts: pulumi.ResourceOptions | undefined) {
     if (!args) {
         return undefined;
     }
 
-    const result: x.ec2.SecurityGroup[] = [];
+    const result: SecurityGroup[] = [];
     for (let i = 0, n = args.length; i < n; i++) {
         const obj = args[i];
-        if (x.ec2.SecurityGroup.isSecurityGroupInstance(obj)) {
+        if (SecurityGroup.isSecurityGroupInstance(obj)) {
             result.push(obj);
         }
         else {
-            result.push(x.ec2.SecurityGroup.fromExistingId(`${name}-${i}`, obj, { vpc }, opts));
+            result.push(SecurityGroup.fromExistingId(`${name}-${i}`, obj, { vpc }, opts));
         }
     }
 
@@ -131,9 +133,9 @@ type OverwriteSecurityGroupArgs = utils.Overwrite<aws.ec2.SecurityGroupArgs, {
     namePrefix?: never;
     vpcId?: never;
 
-    vpc?: x.ec2.Vpc;
-    egress?: x.ec2.EgressSecurityGroupRuleArgs[];
-    ingress?: x.ec2.IngressSecurityGroupRuleArgs[];
+    vpc?: Vpc;
+    egress?: EgressSecurityGroupRuleArgs[];
+    ingress?: IngressSecurityGroupRuleArgs[];
 }>;
 
 export interface SecurityGroupArgs {
@@ -146,7 +148,7 @@ export interface SecurityGroupArgs {
     /**
      * The vpc this security group applies to.  Or [Vpc.getDefault] if unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: Vpc;
 
     /**
      * The security group description. Defaults to "Managed by Terraform". Cannot be "". __NOTE__:
@@ -159,13 +161,13 @@ export interface SecurityGroupArgs {
      * Can be specified multiple times for each egress rule. Each egress block supports fields
      * documented below.
      */
-    egress?: x.ec2.EgressSecurityGroupRuleArgs[];
+    egress?: EgressSecurityGroupRuleArgs[];
 
     /**
      * Can be specified multiple times for each ingress rule. Each ingress block supports fields
      * documented below.
      */
-    ingress?: x.ec2.IngressSecurityGroupRuleArgs[];
+    ingress?: IngressSecurityGroupRuleArgs[];
 
     /**
      * Instruct Terraform to revoke all of the Security Groups attached ingress and egress rules

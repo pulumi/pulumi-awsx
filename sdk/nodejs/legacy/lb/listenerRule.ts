@@ -16,8 +16,8 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { isListenerActions, Listener, ListenerActions } from "./listener";
 
-import * as x from "..";
 import * as utils from "../utils";
 
 /**
@@ -31,7 +31,7 @@ import * as utils from "../utils";
 export class ListenerRule extends pulumi.ComponentResource {
     public readonly listenerRule: aws.lb.ListenerRule;
 
-    constructor(name: string, listener: x.lb.Listener,
+    constructor(name: string, listener: Listener,
                 args: ListenerRuleArgs, opts: pulumi.ComponentResourceOptions = {}) {
         // We forgot to add the `ListenerRule` part of the name.  Add it in and create an alias from
         // the previous incorrect name.
@@ -42,7 +42,7 @@ export class ListenerRule extends pulumi.ComponentResource {
                 { type: "awsx:x:elasticloadbalancingv2:ListenerRule" }] }),
         });
 
-        const actions = x.lb.isListenerActions(args.actions)
+        const actions = isListenerActions(args.actions)
             ? args.actions.actions()
             : args.actions;
 
@@ -55,7 +55,7 @@ export class ListenerRule extends pulumi.ComponentResource {
         // If this is a rule hooking up this listener to a target group, then add our listener to
         // the set of listeners the target group knows about.  This is necessary so that anything
         // that depends on the target group will end up depending on this rule getting created.
-        if (x.lb.isListenerActions(args.actions)) {
+        if (isListenerActions(args.actions)) {
             args.actions.registerListener(listener);
         }
 
@@ -65,14 +65,14 @@ export class ListenerRule extends pulumi.ComponentResource {
 
 type OverwriteShape = utils.Overwrite<aws.lb.ListenerRuleArgs, {
     listenerArn?: never;
-    actions: aws.lb.ListenerRuleArgs["actions"] | x.lb.ListenerActions;
+    actions: aws.lb.ListenerRuleArgs["actions"] | ListenerActions;
 }>;
 
 export interface ListenerRuleArgs {
     /**
      * An Action block. Action blocks are documented below.
      */
-    actions: aws.lb.ListenerRuleArgs["actions"] | x.lb.ListenerActions;
+    actions: aws.lb.ListenerRuleArgs["actions"] | ListenerActions;
     /**
      * A Condition block. Condition blocks are documented below.
      */

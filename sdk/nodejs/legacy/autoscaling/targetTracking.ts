@@ -14,8 +14,8 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-
-import * as x from "..";
+import * as cloudwatch from "../cloudwatch";
+import * as lb from "../lb";
 
 import { AutoScalingGroup } from "./autoscaling";
 
@@ -62,7 +62,7 @@ export interface ApplicationTargetGroupTrackingPolicyArgs extends TargetTracking
      * This must be a [TargetGroup] that the [AutoScalingGroup] was created with.  These can
      * be provided to the [AutoScalingGroup] using [AutoScalingGroupArgs.targetGroups].
      */
-    targetGroup: x.lb.ApplicationTargetGroup;
+    targetGroup: lb.ApplicationTargetGroup;
 }
 
 /**
@@ -101,7 +101,7 @@ interface PredefinedMetricTargetTrackingPolicyArgs extends TargetTrackingPolicyA
  */
 export interface CustomMetricTargetTrackingPolicyArgs extends TargetTrackingPolicyArgs {
     /** The metric to track */
-    metric: x.cloudwatch.Metric;
+    metric: cloudwatch.Metric;
 }
 
 /** @internal */
@@ -148,7 +148,7 @@ export function createCustomMetricPolicy(
             namespace: args.metric.namespace,
             metricName: args.metric.name,
             unit: args.metric.unit.apply(u => <string>u),
-            statistic: x.cloudwatch.statisticString(args.metric),
+            statistic: cloudwatch.statisticString(args.metric),
             metricDimensions: convertDimensions(args.metric.dimensions),
         },
     }, opts);

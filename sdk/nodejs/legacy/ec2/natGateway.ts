@@ -14,22 +14,23 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { RouteArgs, Subnet, SubnetOrId, SubnetRouteProvider } from "./subnet";
+import { Vpc } from "./vpc";
 
-import * as x from "..";
 import * as utils from "../utils";
 
 export class NatGateway
         extends pulumi.ComponentResource
-        implements x.ec2.SubnetRouteProvider {
+        implements SubnetRouteProvider {
 
     public readonly natGatewayName: string;
-    public readonly vpc: x.ec2.Vpc;
+    public readonly vpc: Vpc;
     public readonly elasticIP: aws.ec2.Eip | undefined;
     public readonly natGateway: aws.ec2.NatGateway;
 
-    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
-    constructor(name: string, vpc: x.ec2.Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, vpc: Vpc, args: NatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: Vpc, args: ExistingNatGatewayArgs, opts?: pulumi.ComponentResourceOptions);
+    constructor(name: string, vpc: Vpc, args: NatGatewayArgs | ExistingNatGatewayArgs, opts: pulumi.ComponentResourceOptions = {}) {
         super("awsx:x:ec2:NatGateway", name, {}, { parent: vpc, ...opts });
 
         this.vpc = vpc;
@@ -52,7 +53,7 @@ export class NatGateway
                 tags: { Name: name },
             }, { parent: this });
 
-            const subnetId = x.ec2.Subnet.isSubnetInstance(args.subnet)
+            const subnetId = Subnet.isSubnetInstance(args.subnet)
                 ? args.subnet.id
                 : args.subnet;
 
@@ -66,7 +67,7 @@ export class NatGateway
         this.registerOutputs();
     }
 
-    public route(name: string, opts: pulumi.ComponentResourceOptions): x.ec2.RouteArgs {
+    public route(name: string, opts: pulumi.ComponentResourceOptions): RouteArgs {
         return {
             // From https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-create-route
             // Choose Add another route. For Destination, type 0.0.0.0/0. For Target, select the ID
@@ -81,7 +82,7 @@ export interface NatGatewayArgs {
     /**
      * The subnet the NatGateway should be placed in.
      */
-    subnet: x.ec2.SubnetOrId;
+    subnet: SubnetOrId;
 
     /**
      * A mapping of tags to assign to the resource.

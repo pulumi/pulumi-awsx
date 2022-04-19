@@ -16,20 +16,22 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-
-import * as mod from ".";
-import * as x from "..";
+import * as apigateway from "../apigateway";
+import * as ec2 from "../ec2";
+import { isListenerDefaultAction, Listener, ListenerDefaultAction, ListenerDefaultActionArgs } from "./listener";
+import { LoadBalancer, LoadBalancerArgs, LoadBalancerSubnets } from "./loadBalancer";
+import { TargetGroup, TargetGroupHealthCheck } from "./targetGroup";
 
 import * as utils from "../utils";
 
 export type NetworkProtocol = "HTTP" | "HTTPS" | "TCP" | "TLS" | "GENEVE" | "UDP" | "TCP_UDP";
 
-export class NetworkLoadBalancer extends mod.LoadBalancer {
+export class NetworkLoadBalancer extends LoadBalancer {
     public readonly listeners: NetworkListener[];
     public readonly targetGroups: NetworkTargetGroup[];
 
     constructor(name: string, args: NetworkLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        const argsCopy: x.lb.LoadBalancerArgs = {
+        const argsCopy: LoadBalancerArgs = {
             ...args,
             loadBalancerType: "network",
         };
@@ -75,10 +77,10 @@ export class NetworkLoadBalancer extends mod.LoadBalancer {
  * See https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html
  * for more details.
  */
-export class NetworkTargetGroup extends mod.TargetGroup {
+export class NetworkTargetGroup extends TargetGroup {
     public readonly loadBalancer: NetworkLoadBalancer;
 
-    public readonly listeners: x.lb.NetworkListener[];
+    public readonly listeners: NetworkListener[];
 
     constructor(name: string, args: NetworkTargetGroupArgs, opts: pulumi.ComponentResourceOptions = {}) {
         const loadBalancer = args.loadBalancer || new NetworkLoadBalancer(name, {
@@ -120,11 +122,11 @@ export class NetworkTargetGroup extends mod.TargetGroup {
  * for more details.
  */
 export class NetworkListener
-        extends mod.Listener
-        implements x.apigateway.IntegrationRouteTargetProvider {
+        extends Listener
+        implements apigateway.IntegrationRouteTargetProvider {
 
     public readonly loadBalancer: NetworkLoadBalancer;
-    public readonly defaultTargetGroup?: x.lb.NetworkTargetGroup;
+    public readonly defaultTargetGroup?: NetworkTargetGroup;
 
     // tslint:disable-next-line:variable-name
     private readonly __isNetworkListenerInstance: boolean;
@@ -172,7 +174,7 @@ export class NetworkListener
         return obj && !!(<NetworkListener>obj).__isNetworkListenerInstance;
     }
 
-    public target(name: string, parent: pulumi.Resource): pulumi.Input<x.apigateway.IntegrationTarget> {
+    public target(name: string, parent: pulumi.Resource): pulumi.Input<apigateway.IntegrationTarget> {
         // create a VpcLink to the load balancer in the VPC
         const vpcLink = new aws.apigateway.VpcLink(name, {
             targetArn: this.loadBalancer.loadBalancer.arn,
@@ -180,8 +182,8 @@ export class NetworkListener
 
         return this.endpoint.apply(ep => ({
             uri: `http://${ep.hostname}:${ep.port}/`,
-            type: <x.apigateway.IntegrationType>"http_proxy",
-            connectionType: <x.apigateway.IntegrationConnectionType>"VPC_LINK",
+            type: <apigateway.IntegrationType>"http_proxy",
+            connectionType: <apigateway.IntegrationConnectionType>"VPC_LINK",
             connectionId: vpcLink.id,
         }));
     }
@@ -198,7 +200,7 @@ function getDefaultActions(
     }
 
     if (args.defaultAction) {
-        return x.lb.isListenerDefaultAction(args.defaultAction)
+        return isListenerDefaultAction(args.defaultAction)
             ? { defaultActions: [args.defaultAction.listenerDefaultAction()], defaultListener: args.defaultAction }
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
@@ -245,7 +247,7 @@ export interface NetworkLoadBalancerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * The name of the LoadBalancer. This name must be unique within your AWS account, can have a
@@ -283,7 +285,7 @@ export interface NetworkLoadBalancerArgs {
      * type `network`. Changing this value for load balancers of type `network` will force a
      * recreation of the resource.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.lb.LoadBalancerSubnets;
+    subnets?: pulumi.Input<pulumi.Input<string>[]> | LoadBalancerSubnets;
 
     /**
      * A mapping of tags to assign to the resource.
@@ -307,7 +309,7 @@ export interface NetworkLoadBalancerArgs {
  * for a complete reference. Keep in mind, that health checks produce actual requests to the
  * backend. The underlying function is invoked when target_type is set to lambda.
  */
-export interface NetworkTargetGroupHealthCheck extends mod.TargetGroupHealthCheck {
+export interface NetworkTargetGroupHealthCheck extends TargetGroupHealthCheck {
     /**
      * For Network Load Balancers, you cannot set a custom value, and the default is 10 seconds
      * for TCP and HTTPS health checks and 6 seconds for HTTP health checks.
@@ -326,7 +328,7 @@ export interface NetworkTargetGroupArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * The name of the TargetGroup. If not specified, the [name] parameter passed into the
@@ -417,7 +419,7 @@ export interface NetworkListenerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * An explicit name to use for dependent resources.  Specifically, if a LoadBalancer or
@@ -448,7 +450,7 @@ export interface NetworkListenerArgs {
      *
      * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
-    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.lb.ListenerDefaultAction;
+    defaultAction?: pulumi.Input<ListenerDefaultActionArgs> | ListenerDefaultAction;
 
     /**
      * An list of Action blocks. If neither this nor [defaultAction] is provided, a suitable
@@ -457,7 +459,7 @@ export interface NetworkListenerArgs {
      *
      * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
-    defaultActions?: pulumi.Input<pulumi.Input<mod.ListenerDefaultActionArgs>[]>;
+    defaultActions?: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
 
     /**
      * Target group this listener is associated with.  This is used to determine the [defaultAction]
@@ -465,7 +467,7 @@ export interface NetworkListenerArgs {
      *
      * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
-    targetGroup?: x.lb.NetworkTargetGroup | x.lb.NetworkTargetGroupArgs;
+    targetGroup?: NetworkTargetGroup | NetworkTargetGroupArgs;
 
     /**
      * The ARN of the default SSL server certificate. Exactly one certificate is required if the

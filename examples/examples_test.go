@@ -28,17 +28,11 @@ func getCwd(t *testing.T) string {
 }
 
 func getBaseOptions(t *testing.T) integration.ProgramTestOptions {
-	//envRegion := getEnvRegion(t)
+	envRegion := getEnvRegion(t)
 	baseJS := integration.ProgramTestOptions{
-		//Config: map[string]string{
-		//	"aws:envRegion": envRegion,
-		//},
-		//Dependencies: []string{
-		//	"@pulumi/awsx",
-		//},
-		//Env: []string{
-		//	"NODE_PRESERVE_SYMLINKS=1",
-		//},
+		Config: map[string]string{
+			"aws:region": envRegion,
+		},
 		Quick:                true,
 		SkipRefresh:          true,
 		ExpectRefreshChanges: true,

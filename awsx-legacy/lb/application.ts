@@ -16,9 +16,10 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-
-import * as mod from ".";
-import * as x from "..";
+import * as ec2 from "../ec2";
+import { isListenerDefaultAction, Listener, ListenerDefaultAction, ListenerDefaultActionArgs } from "./listener";
+import { LoadBalancer, LoadBalancerArgs, LoadBalancerSubnets } from "./loadBalancer";
+import { TargetGroup, TargetGroupHealthCheck, TargetType } from "./targetGroup";
 
 import * as utils from "../utils";
 
@@ -33,19 +34,19 @@ export type ApplicationProtocol = "HTTP" | "HTTPS";
  * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html for
  * more details.
  */
-export class ApplicationLoadBalancer extends mod.LoadBalancer {
+export class ApplicationLoadBalancer extends LoadBalancer {
     public readonly listeners: ApplicationListener[];
     public readonly targetGroups: ApplicationTargetGroup[];
 
     constructor(name: string, args: ApplicationLoadBalancerArgs = {}, opts: pulumi.ComponentResourceOptions = {}) {
-        const argsCopy: x.lb.LoadBalancerArgs = {
-            vpc: args.vpc || x.ec2.Vpc.getDefault(opts),
+        const argsCopy: LoadBalancerArgs = {
+            vpc: args.vpc || ec2.Vpc.getDefault(opts),
             ...args,
             loadBalancerType: "application",
         };
 
         if (!argsCopy.securityGroups) {
-            argsCopy.securityGroups = [new x.ec2.SecurityGroup(name, {
+            argsCopy.securityGroups = [new ec2.SecurityGroup(name, {
                 description: `Default security group for ALB: ${name}`,
                 vpc: argsCopy.vpc,
             }, opts)];
@@ -90,10 +91,10 @@ export class ApplicationLoadBalancer extends mod.LoadBalancer {
  * on all targets registered to a target group that is specified in a listener rule for your load
  * balancer.
  */
-export class ApplicationTargetGroup extends mod.TargetGroup {
+export class ApplicationTargetGroup extends TargetGroup {
     public readonly loadBalancer: ApplicationLoadBalancer;
 
-    public readonly listeners: x.lb.ApplicationListener[];
+    public readonly listeners: ApplicationListener[];
 
     /** @internal */
     // tslint:disable-next-line:variable-name
@@ -179,9 +180,9 @@ function computePortInfo(
     return { port: computedPort, protocol };
 }
 
-export class ApplicationListener extends mod.Listener {
+export class ApplicationListener extends Listener {
     public readonly loadBalancer: ApplicationLoadBalancer;
-    public readonly defaultTargetGroup?: x.lb.ApplicationTargetGroup;
+    public readonly defaultTargetGroup?: ApplicationTargetGroup;
 
     // tslint:disable-next-line:variable-name
     private readonly __isApplicationListenerInstance: boolean;
@@ -236,8 +237,8 @@ export class ApplicationListener extends mod.Listener {
         // directions.
         if (!args.listener && args.external !== false) {
             const args = {
-                location: new x.ec2.AnyIPv4Location(),
-                ports: new x.ec2.TcpPorts(port),
+                location: new ec2.AnyIPv4Location(),
+                ports: new ec2.TcpPorts(port),
                 description: pulumi.interpolate`Externally available at port ${port}`,
             };
 
@@ -269,7 +270,7 @@ function getDefaultActions(
     }
 
     if (args.defaultAction) {
-        return x.lb.isListenerDefaultAction(args.defaultAction)
+        return isListenerDefaultAction(args.defaultAction)
             ? { defaultActions: [args.defaultAction.listenerDefaultAction()], defaultListener: args.defaultAction }
             : { defaultActions: [args.defaultAction], defaultListener: undefined };
     }
@@ -317,7 +318,7 @@ export interface ApplicationLoadBalancerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * The name of the LoadBalancer. This name must be unique within your AWS account, can have a
@@ -355,7 +356,7 @@ export interface ApplicationLoadBalancerArgs {
      * type `network`. Changing this value for load balancers of type `network` will force a
      * recreation of the resource.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]> | x.lb.LoadBalancerSubnets;
+    subnets?: pulumi.Input<pulumi.Input<string>[]> | LoadBalancerSubnets;
 
     /**
      * A mapping of tags to assign to the resource.
@@ -384,7 +385,7 @@ export interface ApplicationLoadBalancerArgs {
      * be created for the ALB.  To prevent a default instance from being created, pass in an empty
      * array here.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
 }
 
 /**
@@ -395,7 +396,7 @@ export interface ApplicationLoadBalancerArgs {
  * for a complete reference. Keep in mind, that health checks produce actual requests to the
  * backend. The underlying function is invoked when target_type is set to lambda.
  */
-export interface ApplicationTargetGroupHealthCheck extends mod.TargetGroupHealthCheck {
+export interface ApplicationTargetGroupHealthCheck extends TargetGroupHealthCheck {
     /**
      * (Required for HTTP/HTTPS ALB) The destination for the health check request.
      */
@@ -425,7 +426,7 @@ export interface ApplicationTargetGroupArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * The name of the TargetGroup. If not specified, the [name] parameter passed into the
@@ -488,7 +489,7 @@ export interface ApplicationTargetGroupArgs {
      * 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable
      * IP addresses.
      */
-    targetType?: pulumi.Input<mod.TargetType>;
+    targetType?: pulumi.Input<TargetType>;
 
     // Changed by us:
 
@@ -516,7 +517,7 @@ export interface ApplicationListenerArgs {
      * The vpc this load balancer will be used with.  Defaults to `[Vpc.getDefault]` if
      * unspecified.
      */
-    vpc?: x.ec2.Vpc;
+    vpc?: ec2.Vpc;
 
     /**
      * An explicit name to use for dependent resources.  Specifically, if a LoadBalancer or
@@ -546,7 +547,7 @@ export interface ApplicationListenerArgs {
      *
      * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
-    defaultAction?: pulumi.Input<mod.ListenerDefaultActionArgs> | x.lb.ListenerDefaultAction;
+    defaultAction?: pulumi.Input<ListenerDefaultActionArgs> | ListenerDefaultAction;
 
     /**
      * An list of Action blocks. If neither this nor [defaultActions] is provided, a suitable
@@ -555,7 +556,7 @@ export interface ApplicationListenerArgs {
      *
      * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
-    defaultActions?: pulumi.Input<pulumi.Input<mod.ListenerDefaultActionArgs>[]>;
+    defaultActions?: pulumi.Input<pulumi.Input<ListenerDefaultActionArgs>[]>;
 
     /**
      * Target group this listener is associated with.  This is used to determine the [defaultAction]
@@ -563,7 +564,7 @@ export interface ApplicationListenerArgs {
      *
      * Only provide one of [defaultAction], [defaultActions] or [targetGroup]
      */
-    targetGroup?: x.lb.ApplicationTargetGroup | x.lb.ApplicationTargetGroupArgs;
+    targetGroup?: ApplicationTargetGroup | ApplicationTargetGroupArgs;
 
     // TODO: consider extracting out an HttpsApplicationListener.
 

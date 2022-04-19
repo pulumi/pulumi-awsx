@@ -14,13 +14,16 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import * as ec2 from "../ec2";
 
-import * as ecs from ".";
-import * as x from "..";
 import * as utils from "../utils";
+import { Cluster } from "./cluster";
+import { EC2TaskDefinition } from "./ec2Service";
+import { FargateTaskDefinition, getSubnets } from "./fargateService";
+import { Service, ServiceArgs, ServiceLoadBalancer, ServiceLoadBalancerProvider } from "./service";
 
-export class CapacityProviderService extends ecs.Service {
-    public readonly taskDefinition: ecs.FargateTaskDefinition | ecs.EC2TaskDefinition;
+export class CapacityProviderService extends Service {
+    public readonly taskDefinition: FargateTaskDefinition | EC2TaskDefinition;
 
     constructor(name: string,
                 args: CapacityProviderServiceArgs,
@@ -30,19 +33,19 @@ export class CapacityProviderService extends ecs.Service {
             throw new Error("The [taskDefinition] must be provided");
         }
 
-        const cluster = args.cluster || x.ecs.Cluster.getDefault();
+        const cluster = args.cluster || Cluster.getDefault();
 
         const taskDefinition = args.taskDefinition;
 
-        const securityGroups = x.ec2.getSecurityGroups(
+        const securityGroups = ec2.getSecurityGroups(
             cluster.vpc, name, args.securityGroups || cluster.securityGroups, opts) || [];
 
         let assignPublicIp, networkConfiguration,
         subnets: pulumi.Input<pulumi.Input<string>[]>;
 
-        if (taskDefinition instanceof ecs.FargateTaskDefinition) {
+        if (taskDefinition instanceof FargateTaskDefinition) {
             assignPublicIp = utils.ifUndefined(args.assignPublicIp, true);
-            subnets = ecs.getSubnets(cluster, args.subnets, assignPublicIp);
+            subnets = getSubnets(cluster, args.subnets, assignPublicIp);
             networkConfiguration = {
                 subnets,
                 assignPublicIp,
@@ -80,11 +83,11 @@ export class CapacityProviderService extends ecs.Service {
     }
 }
 
-type OverwriteCapacityProviderServiceArgs = utils.Overwrite<ecs.ServiceArgs, {
-    taskDefinition: ecs.FargateTaskDefinition | ecs.EC2TaskDefinition;
+type OverwriteCapacityProviderServiceArgs = utils.Overwrite<ServiceArgs, {
+    taskDefinition: FargateTaskDefinition | EC2TaskDefinition;
     launchType?: never;
     networkConfiguration?: never;
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
 }>;
 
 export interface CapacityProviderServiceArgs {
@@ -162,7 +165,7 @@ export interface CapacityProviderServiceArgs {
     /**
      * A load balancer block. Load balancers documented below.
      */
-    loadBalancers?: (pulumi.Input<x.ecs.ServiceLoadBalancer> | x.ecs.ServiceLoadBalancerProvider)[];
+    loadBalancers?: (pulumi.Input<ServiceLoadBalancer> | ServiceLoadBalancerProvider)[];
 
     /**
      * The name of the service (up to 255 letters, numbers, hyphens, and underscores)
@@ -181,7 +184,7 @@ export interface CapacityProviderServiceArgs {
      *
      * Defaults to [cluster.securityGroups] if unspecified.
      */
-    securityGroups?: x.ec2.SecurityGroupOrId[];
+    securityGroups?: ec2.SecurityGroupOrId[];
 
     /**
      * The subnets to connect the instances to.  If unspecified and [assignPublicIp] is true, then
@@ -233,7 +236,7 @@ export interface CapacityProviderServiceArgs {
     /**
      * Cluster this service will run in.  If unspecified, [Cluster.getDefault()] will be used.
      */
-    cluster?: ecs.Cluster;
+    cluster?: Cluster;
 
     os?: pulumi.Input<"linux" | "windows">;
 
@@ -249,7 +252,7 @@ export interface CapacityProviderServiceArgs {
     /**
      * The task definition to create the service from.
      */
-    taskDefinition: ecs.FargateTaskDefinition | ecs.EC2TaskDefinition;
+    taskDefinition: FargateTaskDefinition | EC2TaskDefinition;
 
     /**
      * Key-value mapping of resource tags

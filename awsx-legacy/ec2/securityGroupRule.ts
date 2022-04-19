@@ -14,8 +14,8 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { SecurityGroup } from "./securityGroup";
 
-import * as x from "..";
 import * as utils from "../utils";
 
 export interface SecurityGroupRuleLocation {
@@ -107,10 +107,10 @@ export class AllTraffic implements SecurityGroupRulePorts {
 
 export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     public readonly securityGroupRule: aws.ec2.SecurityGroupRule;
-    public readonly securityGroup: x.ec2.SecurityGroup;
+    public readonly securityGroup: SecurityGroup;
 
     constructor(type: string, name: string,
-                securityGroup: x.ec2.SecurityGroup,
+                securityGroup: SecurityGroup,
                 args: SecurityGroupRuleArgs, opts: pulumi.ComponentResourceOptions) {
         super(type, name, {}, { parent: securityGroup, ...opts });
 
@@ -150,7 +150,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     }
 
     public static egress(
-        name: string, securityGroup: x.ec2.SecurityGroup,
+        name: string, securityGroup: SecurityGroup,
         destination: SecurityGroupRuleLocation,
         ports: SecurityGroupRulePorts,
         description?: pulumi.Input<string>,
@@ -163,7 +163,7 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
     }
 
     public static ingress(
-        name: string, securityGroup: x.ec2.SecurityGroup,
+        name: string, securityGroup: SecurityGroup,
         source: SecurityGroupRuleLocation,
         ports: SecurityGroupRulePorts,
         description?: pulumi.Input<string>,
@@ -177,12 +177,12 @@ export abstract class SecurityGroupRule extends pulumi.ComponentResource {
 }
 
 export class EgressSecurityGroupRule extends SecurityGroupRule {
-    constructor(name: string, securityGroup: x.ec2.SecurityGroup,
+    constructor(name: string, securityGroup: SecurityGroup,
                 args: SimpleSecurityGroupRuleArgs | EgressSecurityGroupRuleArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
 
-        if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
-            args = x.ec2.SecurityGroupRule.egressArgs(args.location, args.ports, args.description);
+        if (isSimpleSecurityGroupRuleArgs(args)) {
+            args = SecurityGroupRule.egressArgs(args.location, args.ports, args.description);
         }
 
         super("awsx:x:ec2:EgressSecurityGroupRule", name, securityGroup, {
@@ -195,12 +195,12 @@ export class EgressSecurityGroupRule extends SecurityGroupRule {
 }
 
 export class IngressSecurityGroupRule extends SecurityGroupRule {
-    constructor(name: string, securityGroup: x.ec2.SecurityGroup,
+    constructor(name: string, securityGroup: SecurityGroup,
                 args: SimpleSecurityGroupRuleArgs | IngressSecurityGroupRuleArgs,
                 opts: pulumi.ComponentResourceOptions = {}) {
 
-        if (x.ec2.isSimpleSecurityGroupRuleArgs(args)) {
-            args = x.ec2.SecurityGroupRule.ingressArgs(args.location, args.ports, args.description);
+        if (isSimpleSecurityGroupRuleArgs(args)) {
+            args = SecurityGroupRule.ingressArgs(args.location, args.ports, args.description);
         }
 
         super("awsx:x:ec2:IngressSecurityGroupRule", name, securityGroup, {

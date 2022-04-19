@@ -59,7 +59,9 @@ export function resourceToConstructResult<T extends pulumi.ComponentResource>(
             ([key, value]) =>
                 key !== "urn" &&
                 !key.startsWith("get") &&
-                typeof value !== "function",
+                !key.startsWith("_") &&
+                typeof value !== "function" &&
+                value !== undefined,
         ),
     );
     return {

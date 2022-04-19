@@ -16,6 +16,8 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
+import { isLoadBalancerTargetInfoProvider, LoadBalancerTarget, LoadBalancerTargetInfo } from "./loadBalancer";
+import { TargetGroup, TargetType } from "./targetGroup";
 
 import * as mod from ".";
 
@@ -24,7 +26,7 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     public readonly permission?: aws.lambda.Permission;
     public readonly func?: aws.lambda.Function;
 
-    constructor(name: string, targetGroup: mod.TargetGroup, args: mod.LoadBalancerTarget, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(name: string, targetGroup: TargetGroup, args: LoadBalancerTarget, opts: pulumi.ComponentResourceOptions = {}) {
         opts = pulumi.mergeOptions(opts, { aliases: [{ type: "awsx:elasticloadbalancingv2:TargetGroupAttachment" }] });
         super("awsx:lb:TargetGroupAttachment", name, undefined, { parent: targetGroup, ...opts });
 
@@ -46,7 +48,7 @@ export class TargetGroupAttachment extends pulumi.ComponentResource {
     }
 }
 
-function getTargetInfo(parent: TargetGroupAttachment, targetGroup: mod.TargetGroup, name: string, args: mod.LoadBalancerTarget) {
+function getTargetInfo(parent: TargetGroupAttachment, targetGroup: TargetGroup, name: string, args: LoadBalancerTarget) {
     if (aws.ec2.Instance.isInstance(args)) {
         return { targetInfo: getEc2InstanceTargetInfo(targetGroup, args), permission: undefined, func: undefined };
     }
@@ -59,8 +61,8 @@ function getTargetInfo(parent: TargetGroupAttachment, targetGroup: mod.TargetGro
         return getLambdaFunctionTargetInfo(parent, targetGroup, name, new aws.lambda.CallbackFunction(name, { callback: args }, { parent }));
     }
 
-    if (mod.isLoadBalancerTargetInfoProvider(args)) {
-        const targetType = <pulumi.Output<mod.TargetType>>targetGroup.targetGroup.targetType;
+    if (isLoadBalancerTargetInfoProvider(args)) {
+        const targetType = <pulumi.Output<TargetType>>targetGroup.targetGroup.targetType;
         return { targetInfo: args.loadBalancerTargetInfo(targetType), permission: undefined, func: undefined };
     }
 
@@ -70,7 +72,7 @@ function getTargetInfo(parent: TargetGroupAttachment, targetGroup: mod.TargetGro
 /**
  * Allows an EC2 instance to simply be used as the target of an ALB or NLB.  To use, just call:
  */
-function getEc2InstanceTargetInfo(targetGroup: mod.TargetGroup, instance: aws.ec2.Instance) {
+function getEc2InstanceTargetInfo(targetGroup: TargetGroup, instance: aws.ec2.Instance) {
     const targetInfo = pulumi.output([targetGroup.targetGroup.targetType, instance.id, instance.privateIp, instance.availabilityZone])
                              .apply(([targetType, instanceId, privateIp, availabilityZone]) => {
 
@@ -78,7 +80,7 @@ function getEc2InstanceTargetInfo(targetGroup: mod.TargetGroup, instance: aws.ec
             throw new pulumi.ResourceError("Cannot connect a [TargetGroup] with type [lambda] to an ec2.Instance", targetGroup);
         }
 
-        return <mod.LoadBalancerTargetInfo>{
+        return <LoadBalancerTargetInfo>{
             targetId: targetType === "instance" ? instanceId : privateIp,
             availabilityZone: availabilityZone,
         };
@@ -90,7 +92,7 @@ function getEc2InstanceTargetInfo(targetGroup: mod.TargetGroup, instance: aws.ec
 /**
  * Allows a Lambda to simply be used as the target of an ALB.  To use, just call:
  */
-function getLambdaFunctionTargetInfo(parent: TargetGroupAttachment, targetGroup: mod.TargetGroup, name: string, func: aws.lambda.Function) {
+function getLambdaFunctionTargetInfo(parent: TargetGroupAttachment, targetGroup: TargetGroup, name: string, func: aws.lambda.Function) {
     const permission = new aws.lambda.Permission(name, {
         action: "lambda:InvokeFunction",
         function: func,
@@ -105,7 +107,7 @@ function getLambdaFunctionTargetInfo(parent: TargetGroupAttachment, targetGroup:
             throw new pulumi.ResourceError("Can only connect a [TargetGroup] with type [lambda] to an aws.lambda.Function", targetGroup);
         }
 
-        return <mod.LoadBalancerTargetInfo>{
+        return <LoadBalancerTargetInfo>{
             targetId: lambdaArn,
         };
     });
