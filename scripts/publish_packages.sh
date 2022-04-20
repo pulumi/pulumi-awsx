@@ -14,7 +14,7 @@ publish() {
     cp "${ROOT}/scripts/install-pulumi-plugin.js" \
        "${ROOT}/sdk/nodejs/bin/scripts"
 
-    node "${ROOT}/add-plugin-installer-script.js" < \
+    node "${ROOT}/scripts/add-plugin-installer-script.js" < \
         "${ROOT}/sdk/nodejs/bin/package.json" > \
         "${ROOT}/sdk/nodejs/bin/package.json.publish"
 
