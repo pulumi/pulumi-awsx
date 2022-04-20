@@ -9,6 +9,7 @@ export type ResourceConstructor = {
     readonly "awsx:cloudtrail:Trail": ConstructComponent<Trail>;
     readonly "awsx:ecs:FargateService": ConstructComponent<FargateService>;
     readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
+    readonly "awsx:lb:ApplicationLoadBalancer": ConstructComponent<ApplicationLoadBalancer>;
 };
 import * as aws from "@pulumi/aws";
 export abstract class Trail extends pulumi.ComponentResource {
@@ -95,6 +96,30 @@ export interface FargateTaskDefinitionArgs {
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskRole?: DefaultRoleWithPolicyInputs;
     readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
+}
+export abstract class ApplicationLoadBalancer extends pulumi.ComponentResource {
+    public loadBalancer?: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:lb:ApplicationLoadBalancer", name, {}, opts); }
+}
+export interface ApplicationLoadBalancerArgs {
+    readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
+    readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
+    readonly desyncMitigationMode?: pulumi.Input<string>;
+    readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
+    readonly enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
+    readonly enableDeletionProtection?: pulumi.Input<boolean>;
+    readonly enableHttp2?: pulumi.Input<boolean>;
+    readonly enableWafFailOpen?: pulumi.Input<boolean>;
+    readonly idleTimeout?: pulumi.Input<number>;
+    readonly internal?: pulumi.Input<boolean>;
+    readonly ipAddressType?: pulumi.Input<string>;
+    readonly loadBalancerType?: pulumi.Input<string>;
+    readonly name?: pulumi.Input<string>;
+    readonly namePrefix?: pulumi.Input<string>;
+    readonly securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
+    readonly subnets?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface BucketInputs {
     readonly accelerationStatus?: pulumi.Input<string>;
