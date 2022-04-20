@@ -176,6 +176,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
+        dotnetversion:
+          - 3.1
         goversion:
           - 1.17.x
         language:
@@ -216,6 +218,10 @@ jobs:
         with:
           node-version: ${{matrix.nodeversion}}
           registry-url: https://registry.npmjs.org
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
