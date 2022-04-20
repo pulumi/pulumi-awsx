@@ -171,6 +171,57 @@ jobs:
           - 14.x
         pythonversion:
           - "3.7"
+  publish:
+    name: publish
+    needs: acceptance-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-region: us-east-2
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-duration-seconds: 3600
+          role-external-id: upload-pulumi-release
+          role-session-name: ${{ env.PROVIDER}}@githubActions
+          role-to-assume: ${{ secrets.AWS_UPLOAD_ROLE_ARN }}
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.x
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        with:
+          repo: pulumi/pulumictl
+      - name: Install Pulumi CLI
+        uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Download provider binary
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PROVIDER }}-provider.tar.gz
+          path: ${{ github.workspace }}/bin
+      - name: Untar provider binaries
+        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
+          }}/bin
+      - name: Restore binary perms
+        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
+          -exec chmod +x {} \;
+      - name: Create Provider Binaries
+        run: make dist
+      - name: Upload Provider Binaries
+        run: aws s3 cp dist s3://get.pulumi.com/releases/plugins/ --recursive
+#      - name: Create GH Release
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          files: |
+#            dist/*.tar.gz
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
 #  publish_sdk:
 #    name: publish_sdk
 #    needs: test
@@ -259,6 +310,7 @@ jobs:
       - name: Restore binary perms
         run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
           -exec chmod +x {} \;
+      - run: dotnet nuget add source ${{ github.workspace }}/nuget
       - name: Update path
         run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
       - name: Install Provider Deps
