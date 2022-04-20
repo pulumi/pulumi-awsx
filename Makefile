@@ -32,7 +32,7 @@ dist::
 	tar --gzip --exclude node_modules --exclude yarn.lock --exclude pulumi-resource-${PACK} -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz -C bin/ .
 
 
-install_provider:: provider
+install_provider::
 	mkdir -p bin && rm -rf bin/*
 	cp -a ${PACK}/bin/. bin
 	cd bin && yarn install
@@ -40,7 +40,6 @@ install_provider:: provider
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
 build_nodejs::
-	rm -rf sdk/nodejs
 	cd provider/cmd/$(CODEGEN) && go run . nodejs ../../../sdk/nodejs $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
 	cd sdk/nodejs && \
 		yarn install && \
@@ -50,8 +49,7 @@ build_nodejs::
 		cp ../../README.md ../../LICENSE bin/
 
 build_python:: PYPI_VERSION := $(shell pulumictl get version --language python)
-build_python:: schema
-	rm -rf sdk/python
+build_python::
 	cd provider/cmd/$(CODEGEN) && go run . python ../../../sdk/python $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
 	cd sdk/python/ && \
 		cp ../../README.md . && \
@@ -62,13 +60,11 @@ build_python:: schema
 		cd ./bin && python3 setup.py build sdist
 
 build_go:: VERSION := $(shell pulumictl get version --language generic)
-build_go:: schema
-	rm -rf sdk/go
+build_go::
 	cd provider/cmd/$(CODEGEN) && go run . go ../../../sdk/go $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
 
 build_dotnet:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
-build_dotnet:: schema
-	rm -rf sdk/dotnet
+build_dotnet::
 	cd provider/cmd/$(CODEGEN) && go run . dotnet ../../../sdk/dotnet $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
 	cd sdk/dotnet/ && \
 		echo "${DOTNET_VERSION}" >version.txt && \
@@ -78,10 +74,10 @@ istanbul_tests::
 	cd awsx-classic/tests && \
 		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
 
-install_nodejs_sdk:: build_nodejs
+install_nodejs_sdk::
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
-install_dotnet_sdk:: build_dotnet
+install_dotnet_sdk::
 	mkdir -p $(WORKING_DIR)/nuget
 	find . -name '*.nupkg' -print -exec cp -p {} ${WORKING_DIR}/nuget \;
 
@@ -101,23 +97,23 @@ lint:
 		yarn install && \
 		yarn lint
 
-test_nodejs:: install_nodejs_sdk
+test_nodejs::
 	cd examples && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-test_python:: install_provider
+test_python::
 	cd examples && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-test_dotnet:: install_provider
+test_dotnet::
 	cd examples && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-test_go:: install_provider
+test_go::
 	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-specific_test:: install_provider
+specific_test::
 	cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . --run=TestAcc$(TestName) 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 generate_schema:: schema
 
-dev:: lint lint-classic build_nodejs istanbul_tests
+dev:: provider build_nodejs install_provider install_nodejs_sdk
 
 test:: install_nodejs_sdk test_nodejs
