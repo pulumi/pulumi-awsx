@@ -98,12 +98,14 @@ export interface FargateTaskDefinitionArgs {
     readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
 }
 export abstract class ApplicationLoadBalancer extends pulumi.ComponentResource {
-    public loadBalancer?: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
+    public defaultSecurityGroup?: aws.ec2.SecurityGroup | pulumi.Output<aws.ec2.SecurityGroup>;
+    public loadBalancer!: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:lb:ApplicationLoadBalancer", name, {}, opts); }
 }
 export interface ApplicationLoadBalancerArgs {
     readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
+    readonly defaultSecurityGroup?: DefaultSecurityGroupInputs;
     readonly desyncMitigationMode?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
@@ -196,6 +198,16 @@ export interface DefaultRoleWithPolicyOutputs {
     readonly roleArn?: pulumi.Output<string>;
     readonly skip?: boolean;
 }
+export interface DefaultSecurityGroupInputs {
+    readonly args?: SecurityGroupInputs;
+    readonly securityGroupId?: pulumi.Input<string>;
+    readonly skip?: boolean;
+}
+export interface DefaultSecurityGroupOutputs {
+    readonly args?: SecurityGroupOutputs;
+    readonly securityGroupId?: pulumi.Output<string>;
+    readonly skip?: boolean;
+}
 export interface ExistingBucketInputs {
     readonly arn?: pulumi.Input<string>;
     readonly name?: pulumi.Input<string>;
@@ -279,6 +291,26 @@ export interface RoleWithPolicyOutputs {
     readonly permissionsBoundary?: pulumi.Output<string>;
     readonly policyArns?: string[];
     readonly tags?: pulumi.Output<Record<string, string>>;
+}
+export interface SecurityGroupInputs {
+    readonly description?: pulumi.Input<string>;
+    readonly egress?: pulumi.Input<pulumi.Input<aws.types.input.ec2.SecurityGroupEgress>[]>;
+    readonly ingress?: pulumi.Input<pulumi.Input<aws.types.input.ec2.SecurityGroupIngress>[]>;
+    readonly name?: pulumi.Input<string>;
+    readonly namePrefix?: pulumi.Input<string>;
+    readonly revokeRulesOnDelete?: pulumi.Input<boolean>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly vpcId?: pulumi.Input<string>;
+}
+export interface SecurityGroupOutputs {
+    readonly description?: pulumi.Output<string>;
+    readonly egress?: pulumi.Output<aws.types.output.ec2.SecurityGroupEgress[]>;
+    readonly ingress?: pulumi.Output<aws.types.output.ec2.SecurityGroupIngress[]>;
+    readonly name?: pulumi.Output<string>;
+    readonly namePrefix?: pulumi.Output<string>;
+    readonly revokeRulesOnDelete?: pulumi.Output<boolean>;
+    readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly vpcId?: pulumi.Output<string>;
 }
 export interface LogGroupInputs {
     readonly kmsKeyId?: pulumi.Input<string>;

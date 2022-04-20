@@ -5,6 +5,7 @@ import * as pulumi from "@pulumi/pulumi";
 import { input as inputs, output as outputs } from "../types";
 
 import * as pulumiAws from "@pulumi/aws";
+import * as utilities from "../utilities";
 
 export namespace awsx {
     /**
@@ -134,6 +135,33 @@ export namespace awsx {
          * Skips creation of the role if set to `true`.
          */
         skip?: boolean;
+    }
+
+    /**
+     * Security Group with default setup unless explicitly skipped or an existing security group id provided.
+     */
+    export interface DefaultSecurityGroupArgs {
+        /**
+         * Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
+         */
+        args?: inputs.awsx.SecurityGroupArgs;
+        /**
+         * Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
+         */
+        securityGroupId?: pulumi.Input<string>;
+        /**
+         * Skips creation of the security group if set to `true`.
+         */
+        skip?: boolean;
+    }
+    /**
+     * defaultSecurityGroupArgsProvideDefaults sets the appropriate defaults for DefaultSecurityGroupArgs
+     */
+    export function defaultSecurityGroupArgsProvideDefaults(val: DefaultSecurityGroupArgs): DefaultSecurityGroupArgs {
+        return {
+            ...val,
+            args: (val.args ? inputs.awsx.securityGroupArgsProvideDefaults(val.args) : undefined),
+        };
     }
 
     /**
@@ -278,6 +306,53 @@ export namespace awsx {
          * Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    }
+
+    /**
+     * The set of arguments for constructing a Security Group resource.
+     */
+    export interface SecurityGroupArgs {
+        /**
+         * Description of this egress rule.
+         */
+        description?: pulumi.Input<string>;
+        /**
+         * Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+         */
+        egress?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ec2.SecurityGroupEgress>[]>;
+        /**
+         * Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+         */
+        ingress?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ec2.SecurityGroupIngress>[]>;
+        /**
+         * Name of the security group. If omitted, this provider will assign a random, unique name.
+         */
+        name?: pulumi.Input<string>;
+        /**
+         * Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+         */
+        namePrefix?: pulumi.Input<string>;
+        /**
+         * Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+         */
+        revokeRulesOnDelete?: pulumi.Input<boolean>;
+        /**
+         * Map of tags to assign to the resource.
+         */
+        tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * VPC ID.
+         */
+        vpcId?: pulumi.Input<string>;
+    }
+    /**
+     * securityGroupArgsProvideDefaults sets the appropriate defaults for SecurityGroupArgs
+     */
+    export function securityGroupArgsProvideDefaults(val: SecurityGroupArgs): SecurityGroupArgs {
+        return {
+            ...val,
+            description: (val.description) ?? "Managed by Pulumi",
+        };
     }
 }
 

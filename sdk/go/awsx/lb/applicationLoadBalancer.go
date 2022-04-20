@@ -9,12 +9,15 @@ import (
 
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/awsx"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 type ApplicationLoadBalancer struct {
 	pulumi.ResourceState
 
+	// Default security group, if auto-created
+	DefaultSecurityGroup ec2.SecurityGroupOutput `pulumi:"defaultSecurityGroup"`
 	// Underlying Load Balancer resource
 	LoadBalancer lb.LoadBalancerOutput `pulumi:"loadBalancer"`
 }
@@ -26,6 +29,9 @@ func NewApplicationLoadBalancer(ctx *pulumi.Context,
 		args = &ApplicationLoadBalancerArgs{}
 	}
 
+	if args.DefaultSecurityGroup != nil {
+		args.DefaultSecurityGroup = args.DefaultSecurityGroup.ToDefaultSecurityGroupPtrOutput().ApplyT(func(v *awsx.DefaultSecurityGroup) *awsx.DefaultSecurityGroup { return v.Defaults() }).(awsx.DefaultSecurityGroupPtrOutput)
+	}
 	var resource ApplicationLoadBalancer
 	err := ctx.RegisterRemoteComponentResource("awsx:lb:ApplicationLoadBalancer", name, args, &resource, opts...)
 	if err != nil {
@@ -39,6 +45,8 @@ type applicationLoadBalancerArgs struct {
 	AccessLogs *lb.LoadBalancerAccessLogs `pulumi:"accessLogs"`
 	// The ID of the customer owned ipv4 pool to use for this load balancer.
 	CustomerOwnedIpv4Pool *string `pulumi:"customerOwnedIpv4Pool"`
+	// Options for creating a default security group if [securityGroups] not specified.
+	DefaultSecurityGroup *awsx.DefaultSecurityGroup `pulumi:"defaultSecurityGroup"`
 	// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
 	DesyncMitigationMode *string `pulumi:"desyncMitigationMode"`
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
@@ -82,6 +90,8 @@ type ApplicationLoadBalancerArgs struct {
 	AccessLogs lb.LoadBalancerAccessLogsPtrInput
 	// The ID of the customer owned ipv4 pool to use for this load balancer.
 	CustomerOwnedIpv4Pool pulumi.StringPtrInput
+	// Options for creating a default security group if [securityGroups] not specified.
+	DefaultSecurityGroup *awsx.DefaultSecurityGroupArgs
 	// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
 	DesyncMitigationMode pulumi.StringPtrInput
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.

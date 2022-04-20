@@ -35,7 +35,7 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             }),
         );
 
-        const { subnetIds, subnets, ...restArgs } = args;
+        const { subnetIds, subnets, defaultSecurityGroup, ...restArgs } = args;
         const lbArgs: aws.lb.LoadBalancerArgs = restArgs;
 
         if (subnetIds && subnets) {
@@ -50,6 +50,30 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
                 .output(subnets)
                 .apply((subnets) => subnets.map((s) => s.id));
         }
+
+        if (!lbArgs.securityGroups && !defaultSecurityGroup?.skip) {
+            if (
+                defaultSecurityGroup?.args &&
+                defaultSecurityGroup.securityGroupId
+            ) {
+                throw new Error(
+                    "Only one of [defaultSecurityGroup] [args] or [securityGroupId] can be specified",
+                );
+            }
+            const securityGroupId = defaultSecurityGroup?.securityGroupId;
+            if (securityGroupId) {
+                lbArgs.securityGroups = [securityGroupId];
+            } else {
+                const securityGroup = new aws.ec2.SecurityGroup(
+                    name,
+                    defaultSecurityGroup?.args ?? {}, // TODO: Add ingress/egress for listeners
+                    { parent: this },
+                );
+                this.defaultSecurityGroup = securityGroup;
+                lbArgs.securityGroups = [securityGroup.id];
+            }
+        }
+
         this.loadBalancer = new aws.lb.LoadBalancer(name, lbArgs, {
             parent: this,
         });

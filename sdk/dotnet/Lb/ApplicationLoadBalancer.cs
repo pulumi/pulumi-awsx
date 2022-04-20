@@ -13,10 +13,16 @@ namespace Pulumi.Awsx.Lb
     public partial class ApplicationLoadBalancer : Pulumi.ComponentResource
     {
         /// <summary>
+        /// Default security group, if auto-created
+        /// </summary>
+        [Output("defaultSecurityGroup")]
+        public Output<Pulumi.Aws.Ec2.SecurityGroup?> DefaultSecurityGroup { get; private set; } = null!;
+
+        /// <summary>
         /// Underlying Load Balancer resource
         /// </summary>
         [Output("loadBalancer")]
-        public Output<Pulumi.Aws.LB.LoadBalancer?> LoadBalancer { get; private set; } = null!;
+        public Output<Pulumi.Aws.LB.LoadBalancer> LoadBalancer { get; private set; } = null!;
 
 
         /// <summary>
@@ -57,6 +63,12 @@ namespace Pulumi.Awsx.Lb
         /// </summary>
         [Input("customerOwnedIpv4Pool")]
         public Input<string>? CustomerOwnedIpv4Pool { get; set; }
+
+        /// <summary>
+        /// Options for creating a default security group if [securityGroups] not specified.
+        /// </summary>
+        [Input("defaultSecurityGroup")]
+        public Pulumi.Awsx.Awsx.Inputs.DefaultSecurityGroupArgs? DefaultSecurityGroup { get; set; }
 
         /// <summary>
         /// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.

@@ -47,6 +47,13 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			},
 		},
 	}
+	inputProperties["defaultSecurityGroup"] = schema.PropertySpec{
+		Description: "Options for creating a default security group if [securityGroups] not specified.",
+		TypeSpec: schema.TypeSpec{
+			Ref: "#/types/awsx:awsx:DefaultSecurityGroup",
+			Plain: true,
+		},
+	}
 
 	return schema.ResourceSpec{
 		IsComponent: true,
@@ -61,7 +68,14 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 						Ref: awsRef("#/resources/aws:lb%2floadBalancer:LoadBalancer"),
 					},
 				},
+				"defaultSecurityGroup": {
+					Description: "Default security group, if auto-created",
+					TypeSpec: schema.TypeSpec{
+						Ref: awsRef("#/resources/aws:ec2%2fsecurityGroup:SecurityGroup"),
+					},
+				},
 			},
+			Required: []string{"loadBalancer"},
 		},
 	}
 }

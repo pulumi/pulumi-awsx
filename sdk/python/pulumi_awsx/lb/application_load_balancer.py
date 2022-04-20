@@ -7,6 +7,7 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
+from .. import awsx as _awsx
 import pulumi_aws
 
 __all__ = ['ApplicationLoadBalancerArgs', 'ApplicationLoadBalancer']
@@ -16,6 +17,7 @@ class ApplicationLoadBalancerArgs:
     def __init__(__self__, *,
                  access_logs: Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
+                 default_security_group: Optional['_awsx.DefaultSecurityGroupArgs'] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
                  enable_deletion_protection: Optional[pulumi.Input[bool]] = None,
@@ -35,6 +37,7 @@ class ApplicationLoadBalancerArgs:
         The set of arguments for constructing a ApplicationLoadBalancer resource.
         :param pulumi.Input['pulumi_aws.lb.LoadBalancerAccessLogsArgs'] access_logs: An Access Logs block. Access Logs documented below.
         :param pulumi.Input[str] customer_owned_ipv4_pool: The ID of the customer owned ipv4 pool to use for this load balancer.
+        :param '_awsx.DefaultSecurityGroupArgs' default_security_group: Options for creating a default security group if [securityGroups] not specified.
         :param pulumi.Input[str] desync_mitigation_mode: Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         :param pulumi.Input[bool] drop_invalid_header_fields: Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[bool] enable_deletion_protection: If true, deletion of the load balancer will be disabled via
@@ -60,6 +63,8 @@ class ApplicationLoadBalancerArgs:
             pulumi.set(__self__, "access_logs", access_logs)
         if customer_owned_ipv4_pool is not None:
             pulumi.set(__self__, "customer_owned_ipv4_pool", customer_owned_ipv4_pool)
+        if default_security_group is not None:
+            pulumi.set(__self__, "default_security_group", default_security_group)
         if desync_mitigation_mode is not None:
             pulumi.set(__self__, "desync_mitigation_mode", desync_mitigation_mode)
         if drop_invalid_header_fields is not None:
@@ -114,6 +119,18 @@ class ApplicationLoadBalancerArgs:
     @customer_owned_ipv4_pool.setter
     def customer_owned_ipv4_pool(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "customer_owned_ipv4_pool", value)
+
+    @property
+    @pulumi.getter(name="defaultSecurityGroup")
+    def default_security_group(self) -> Optional['_awsx.DefaultSecurityGroupArgs']:
+        """
+        Options for creating a default security group if [securityGroups] not specified.
+        """
+        return pulumi.get(self, "default_security_group")
+
+    @default_security_group.setter
+    def default_security_group(self, value: Optional['_awsx.DefaultSecurityGroupArgs']):
+        pulumi.set(self, "default_security_group", value)
 
     @property
     @pulumi.getter(name="desyncMitigationMode")
@@ -308,6 +325,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  access_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
+                 default_security_group: Optional[pulumi.InputType['_awsx.DefaultSecurityGroupArgs']] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
                  enable_deletion_protection: Optional[pulumi.Input[bool]] = None,
@@ -330,6 +348,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] access_logs: An Access Logs block. Access Logs documented below.
         :param pulumi.Input[str] customer_owned_ipv4_pool: The ID of the customer owned ipv4 pool to use for this load balancer.
+        :param pulumi.InputType['_awsx.DefaultSecurityGroupArgs'] default_security_group: Options for creating a default security group if [securityGroups] not specified.
         :param pulumi.Input[str] desync_mitigation_mode: Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         :param pulumi.Input[bool] drop_invalid_header_fields: Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[bool] enable_deletion_protection: If true, deletion of the load balancer will be disabled via
@@ -376,6 +395,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  access_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
+                 default_security_group: Optional[pulumi.InputType['_awsx.DefaultSecurityGroupArgs']] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
                  enable_deletion_protection: Optional[pulumi.Input[bool]] = None,
@@ -407,6 +427,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
 
             __props__.__dict__["access_logs"] = access_logs
             __props__.__dict__["customer_owned_ipv4_pool"] = customer_owned_ipv4_pool
+            __props__.__dict__["default_security_group"] = default_security_group
             __props__.__dict__["desync_mitigation_mode"] = desync_mitigation_mode
             __props__.__dict__["drop_invalid_header_fields"] = drop_invalid_header_fields
             __props__.__dict__["enable_deletion_protection"] = enable_deletion_protection
@@ -431,8 +452,16 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
             remote=True)
 
     @property
+    @pulumi.getter(name="defaultSecurityGroup")
+    def default_security_group(self) -> pulumi.Output[Optional['pulumi_aws.ec2.SecurityGroup']]:
+        """
+        Default security group, if auto-created
+        """
+        return pulumi.get(self, "default_security_group")
+
+    @property
     @pulumi.getter(name="loadBalancer")
-    def load_balancer(self) -> pulumi.Output[Optional['pulumi_aws.lb.LoadBalancer']]:
+    def load_balancer(self) -> pulumi.Output['pulumi_aws.lb.LoadBalancer']:
         """
         Underlying Load Balancer resource
         """

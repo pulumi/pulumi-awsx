@@ -183,6 +183,26 @@
             },
             "type": "object"
         },
+        "awsx:awsx:DefaultSecurityGroup": {
+            "description": "Security Group with default setup unless explicitly skipped or an existing security group id provided.",
+            "properties": {
+                "args": {
+                    "$ref": "#/types/awsx:awsx:SecurityGroup",
+                    "plain": true,
+                    "description": "Args to use when creating the security group. Can't be specified if `securityGroupId` is used."
+                },
+                "securityGroupId": {
+                    "type": "string",
+                    "description": "Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`."
+                },
+                "skip": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Skips creation of the security group if set to `true`."
+                }
+            },
+            "type": "object"
+        },
         "awsx:awsx:ExistingBucket": {
             "description": "Reference to an existing bucket.",
             "properties": {
@@ -357,6 +377,54 @@
                         "type": "string"
                     },
                     "description": "Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:awsx:SecurityGroup": {
+            "description": "The set of arguments for constructing a Security Group resource.",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Description of this egress rule.\n",
+                    "default": "Managed by Pulumi"
+                },
+                "egress": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ec2/SecurityGroupEgress:SecurityGroupEgress"
+                    },
+                    "description": "Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.\n"
+                },
+                "ingress": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ec2/SecurityGroupIngress:SecurityGroupIngress"
+                    },
+                    "description": "Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.\n"
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the security group. If omitted, this provider will assign a random, unique name.\n"
+                },
+                "namePrefix": {
+                    "type": "string",
+                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n"
+                },
+                "revokeRulesOnDelete": {
+                    "type": "boolean",
+                    "description": "Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.\n"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Map of tags to assign to the resource.\n"
+                },
+                "vpcId": {
+                    "type": "string",
+                    "description": "VPC ID.\n"
                 }
             },
             "type": "object"
@@ -1357,12 +1425,19 @@
         },
         "awsx:lb:ApplicationLoadBalancer": {
             "properties": {
+                "defaultSecurityGroup": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
+                    "description": "Default security group, if auto-created"
+                },
                 "loadBalancer": {
                     "$ref": "/aws/v4.37.1/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
                     "description": "Underlying Load Balancer resource"
                 }
             },
             "type": "object",
+            "required": [
+                "loadBalancer"
+            ],
             "inputProperties": {
                 "accessLogs": {
                     "$ref": "/aws/v4.37.1/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
@@ -1371,6 +1446,11 @@
                 "customerOwnedIpv4Pool": {
                     "type": "string",
                     "description": "The ID of the customer owned ipv4 pool to use for this load balancer.\n"
+                },
+                "defaultSecurityGroup": {
+                    "$ref": "#/types/awsx:awsx:DefaultSecurityGroup",
+                    "plain": true,
+                    "description": "Options for creating a default security group if [securityGroups] not specified."
                 },
                 "desyncMitigationMode": {
                     "type": "string",

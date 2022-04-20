@@ -2,6 +2,7 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs } from "../types";
 import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
@@ -22,9 +23,13 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
     }
 
     /**
+     * Default security group, if auto-created
+     */
+    public readonly defaultSecurityGroup!: pulumi.Output<pulumiAws.ec2.SecurityGroup | undefined>;
+    /**
      * Underlying Load Balancer resource
      */
-    public /*out*/ readonly loadBalancer!: pulumi.Output<pulumiAws.lb.LoadBalancer | undefined>;
+    public /*out*/ readonly loadBalancer!: pulumi.Output<pulumiAws.lb.LoadBalancer>;
 
     /**
      * Create a ApplicationLoadBalancer resource with the given unique name, arguments, and options.
@@ -39,6 +44,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
         if (!opts.id) {
             resourceInputs["accessLogs"] = args ? args.accessLogs : undefined;
             resourceInputs["customerOwnedIpv4Pool"] = args ? args.customerOwnedIpv4Pool : undefined;
+            resourceInputs["defaultSecurityGroup"] = args ? (args.defaultSecurityGroup ? inputs.awsx.defaultSecurityGroupArgsProvideDefaults(args.defaultSecurityGroup) : undefined) : undefined;
             resourceInputs["desyncMitigationMode"] = args ? args.desyncMitigationMode : undefined;
             resourceInputs["dropInvalidHeaderFields"] = args ? args.dropInvalidHeaderFields : undefined;
             resourceInputs["enableDeletionProtection"] = args ? args.enableDeletionProtection : undefined;
@@ -56,6 +62,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["loadBalancer"] = undefined /*out*/;
         } else {
+            resourceInputs["defaultSecurityGroup"] = undefined /*out*/;
             resourceInputs["loadBalancer"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
@@ -75,6 +82,10 @@ export interface ApplicationLoadBalancerArgs {
      * The ID of the customer owned ipv4 pool to use for this load balancer.
      */
     customerOwnedIpv4Pool?: pulumi.Input<string>;
+    /**
+     * Options for creating a default security group if [securityGroups] not specified.
+     */
+    defaultSecurityGroup?: inputs.awsx.DefaultSecurityGroupArgs;
     /**
      * Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
      */
