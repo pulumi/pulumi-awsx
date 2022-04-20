@@ -34,7 +34,23 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
                 ],
             }),
         );
-        this.loadBalancer = new aws.lb.LoadBalancer(name, args, {
+
+        const { subnetIds, subnets, ...restArgs } = args;
+        const lbArgs: aws.lb.LoadBalancerArgs = restArgs;
+
+        if (subnetIds && subnets) {
+            throw new Error(
+                "Only one of [subnets] or [subnetIds] can be specified",
+            );
+        }
+        if (subnetIds) {
+            lbArgs.subnets = subnetIds;
+        } else if (subnets) {
+            lbArgs.subnets = pulumi
+                .output(subnets)
+                .apply((subnets) => subnets.map((s) => s.id));
+        }
+        this.loadBalancer = new aws.lb.LoadBalancer(name, lbArgs, {
             parent: this,
         });
     }

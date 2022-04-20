@@ -133,6 +133,20 @@ namespace Pulumi.Awsx.Lb
             set => _securityGroups = value;
         }
 
+        [Input("subnetIds")]
+        private InputList<string>? _subnetIds;
+
+        /// <summary>
+        /// A list of subnet IDs to attach to the LB. Subnets
+        /// cannot be updated for Load Balancers of type `network`. Changing this value
+        /// for load balancers of type `network` will force a recreation of the resource.
+        /// </summary>
+        public InputList<string> SubnetIds
+        {
+            get => _subnetIds ?? (_subnetIds = new InputList<string>());
+            set => _subnetIds = value;
+        }
+
         [Input("subnetMappings")]
         private InputList<Pulumi.Aws.LB.Inputs.LoadBalancerSubnetMappingArgs>? _subnetMappings;
 
@@ -146,16 +160,14 @@ namespace Pulumi.Awsx.Lb
         }
 
         [Input("subnets")]
-        private InputList<string>? _subnets;
+        private InputList<Pulumi.Aws.Ec2.Subnet>? _subnets;
 
         /// <summary>
-        /// A list of subnet IDs to attach to the LB. Subnets
-        /// cannot be updated for Load Balancers of type `network`. Changing this value
-        /// for load balancers of type `network` will force a recreation of the resource.
+        /// A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified
         /// </summary>
-        public InputList<string> Subnets
+        public InputList<Pulumi.Aws.Ec2.Subnet> Subnets
         {
-            get => _subnets ?? (_subnets = new InputList<string>());
+            get => _subnets ?? (_subnets = new InputList<Pulumi.Aws.Ec2.Subnet>());
             set => _subnets = value;
         }
 

@@ -31,8 +31,22 @@ func generateLb(awsSpec schema.PackageSpec) schema.PackageSpec {
 func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	originalSpec := awsSpec.Resources["aws:lb/loadBalancer:LoadBalancer"]
 	inputProperties := renameAwsPropertiesRefs(originalSpec.InputProperties)
+
+	// Remove non-application properties
 	delete(inputProperties, "enableCrossZoneLoadBalancing")
 	delete(inputProperties, "loadBalancerType")
+
+	// Allow passing actual subnets in
+	inputProperties["subnetIds"] = inputProperties["subnets"]
+	inputProperties["subnets"] = schema.PropertySpec{
+		Description: "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified",
+		TypeSpec: schema.TypeSpec{
+			Type: "array",
+			Items: &schema.TypeSpec{
+				Ref: awsRef("#/resources/aws:ec2%2fsubnet:Subnet"),
+			},
+		},
+	}
 
 	return schema.ResourceSpec{
 		IsComponent: true,

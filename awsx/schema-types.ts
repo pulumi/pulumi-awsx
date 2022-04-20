@@ -115,8 +115,9 @@ export interface ApplicationLoadBalancerArgs {
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
     readonly securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
-    readonly subnets?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface BucketInputs {

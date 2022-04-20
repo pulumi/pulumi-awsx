@@ -7,6 +7,7 @@ import (
 	"context"
 	"reflect"
 
+	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -63,12 +64,14 @@ type applicationLoadBalancerArgs struct {
 	NamePrefix *string `pulumi:"namePrefix"`
 	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.
 	SecurityGroups []string `pulumi:"securityGroups"`
-	// A subnet mapping block as documented below.
-	SubnetMappings []lb.LoadBalancerSubnetMapping `pulumi:"subnetMappings"`
 	// A list of subnet IDs to attach to the LB. Subnets
 	// cannot be updated for Load Balancers of type `network`. Changing this value
 	// for load balancers of type `network` will force a recreation of the resource.
-	Subnets []string `pulumi:"subnets"`
+	SubnetIds []string `pulumi:"subnetIds"`
+	// A subnet mapping block as documented below.
+	SubnetMappings []lb.LoadBalancerSubnetMapping `pulumi:"subnetMappings"`
+	// A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified
+	Subnets []*ec2.Subnet `pulumi:"subnets"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 }
@@ -104,12 +107,14 @@ type ApplicationLoadBalancerArgs struct {
 	NamePrefix pulumi.StringPtrInput
 	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.
 	SecurityGroups pulumi.StringArrayInput
-	// A subnet mapping block as documented below.
-	SubnetMappings lb.LoadBalancerSubnetMappingArrayInput
 	// A list of subnet IDs to attach to the LB. Subnets
 	// cannot be updated for Load Balancers of type `network`. Changing this value
 	// for load balancers of type `network` will force a recreation of the resource.
-	Subnets pulumi.StringArrayInput
+	SubnetIds pulumi.StringArrayInput
+	// A subnet mapping block as documented below.
+	SubnetMappings lb.LoadBalancerSubnetMappingArrayInput
+	// A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified
+	Subnets ec2.SubnetArrayInput
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 }

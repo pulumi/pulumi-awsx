@@ -50,6 +50,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["namePrefix"] = args ? args.namePrefix : undefined;
             resourceInputs["securityGroups"] = args ? args.securityGroups : undefined;
+            resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
             resourceInputs["subnetMappings"] = args ? args.subnetMappings : undefined;
             resourceInputs["subnets"] = args ? args.subnets : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
@@ -122,15 +123,19 @@ export interface ApplicationLoadBalancerArgs {
      */
     securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
     /**
-     * A subnet mapping block as documented below.
-     */
-    subnetMappings?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.LoadBalancerSubnetMapping>[]>;
-    /**
      * A list of subnet IDs to attach to the LB. Subnets
      * cannot be updated for Load Balancers of type `network`. Changing this value
      * for load balancers of type `network` will force a recreation of the resource.
      */
-    subnets?: pulumi.Input<pulumi.Input<string>[]>;
+    subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * A subnet mapping block as documented below.
+     */
+    subnetMappings?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.LoadBalancerSubnetMapping>[]>;
+    /**
+     * A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified
+     */
+    subnets?: pulumi.Input<pulumi.Input<pulumiAws.ec2.Subnet>[]>;
     /**
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */

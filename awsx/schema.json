@@ -1419,6 +1419,13 @@
                     },
                     "description": "A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.\n"
                 },
+                "subnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of subnet IDs to attach to the LB. Subnets\ncannot be updated for Load Balancers of type `network`. Changing this value\nfor load balancers of type `network` will force a recreation of the resource.\n"
+                },
                 "subnetMappings": {
                     "type": "array",
                     "items": {
@@ -1429,9 +1436,9 @@
                 "subnets": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
-                    "description": "A list of subnet IDs to attach to the LB. Subnets\ncannot be updated for Load Balancers of type `network`. Changing this value\nfor load balancers of type `network` will force a recreation of the resource.\n"
+                    "description": "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified"
                 },
                 "tags": {
                     "type": "object",
