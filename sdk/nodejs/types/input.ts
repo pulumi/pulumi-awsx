@@ -6,10 +6,100 @@ import { input as inputs, output as outputs } from "../types";
 
 import * as pulumiAws from "@pulumi/aws";
 
-export namespace cloudtrail {
-}
+export namespace awsx {
+    /**
+     * The set of arguments for constructing a Bucket resource.
+     */
+    export interface BucketArgs {
+        /**
+         * Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
+         */
+        accelerationStatus?: pulumi.Input<string>;
+        /**
+         * The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
+         */
+        acl?: pulumi.Input<string>;
+        /**
+         * The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+         */
+        arn?: pulumi.Input<string>;
+        /**
+         * The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+         */
+        bucket?: pulumi.Input<string>;
+        /**
+         * Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+         */
+        bucketPrefix?: pulumi.Input<string>;
+        /**
+         * A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
+         */
+        corsRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketCorsRule>[]>;
+        /**
+         * A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
+         */
+        forceDestroy?: pulumi.Input<boolean>;
+        /**
+         * An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
+         */
+        grants?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketGrant>[]>;
+        /**
+         * The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+         */
+        hostedZoneId?: pulumi.Input<string>;
+        /**
+         * A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
+         */
+        lifecycleRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLifecycleRule>[]>;
+        /**
+         * A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
+         */
+        loggings?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLogging>[]>;
+        /**
+         * A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+         */
+        objectLockConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketObjectLockConfiguration>;
+        /**
+         * A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), the provider may view the policy as constantly changing in a `pulumi up / preview / update`. In this case, please make sure you use the verbose/specific version of the policy.
+         */
+        policy?: pulumi.Input<string>;
+        /**
+         * A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
+         */
+        replicationConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketReplicationConfiguration>;
+        /**
+         * Specifies who should bear the cost of Amazon S3 data transfer.
+         * Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+         * the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+         * developer guide for more information.
+         */
+        requestPayer?: pulumi.Input<string>;
+        /**
+         * A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
+         */
+        serverSideEncryptionConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketServerSideEncryptionConfiguration>;
+        /**
+         * A mapping of tags to assign to the bucket.
+         */
+        tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
+         */
+        versioning?: pulumi.Input<pulumiAws.types.input.s3.BucketVersioning>;
+        /**
+         * A website object (documented below).
+         */
+        website?: pulumi.Input<pulumiAws.types.input.s3.BucketWebsite>;
+        /**
+         * The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
+         */
+        websiteDomain?: pulumi.Input<string>;
+        /**
+         * The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
+         */
+        websiteEndpoint?: pulumi.Input<string>;
+    }
 
-export namespace cloudwatch {
     /**
      * Log group with default setup unless explicitly skipped.
      */
@@ -17,15 +107,47 @@ export namespace cloudwatch {
         /**
          * Arguments to use instead of the default values during creation.
          */
-        args?: inputs.cloudwatch.LogGroupArgs;
+        args?: inputs.awsx.LogGroupArgs;
         /**
          * Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
          */
-        existing?: inputs.cloudwatch.ExistingLogGroupArgs;
+        existing?: inputs.awsx.ExistingLogGroupArgs;
         /**
          * Skip creation of the log group.
          */
         skip?: boolean;
+    }
+
+    /**
+     * Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
+     */
+    export interface DefaultRoleWithPolicyArgs {
+        /**
+         * Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
+         */
+        args?: inputs.awsx.RoleWithPolicyArgs;
+        /**
+         * ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
+         */
+        roleArn?: pulumi.Input<string>;
+        /**
+         * Skips creation of the role if set to `true`.
+         */
+        skip?: boolean;
+    }
+
+    /**
+     * Reference to an existing bucket.
+     */
+    export interface ExistingBucketArgs {
+        /**
+         * Arn of the bucket. Only one of [arn] or [name] can be specified.
+         */
+        arn?: pulumi.Input<string>;
+        /**
+         * Name of the bucket. Only one of [arn] or [name] can be specified.
+         */
+        name?: pulumi.Input<string>;
     }
 
     /**
@@ -83,7 +205,7 @@ export namespace cloudwatch {
         /**
          * Arguments to use instead of the default values during creation.
          */
-        args?: inputs.cloudwatch.LogGroupArgs;
+        args?: inputs.awsx.LogGroupArgs;
         /**
          * Enable creation of the log group.
          */
@@ -91,9 +213,75 @@ export namespace cloudwatch {
         /**
          * Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
          */
-        existing?: inputs.cloudwatch.ExistingLogGroupArgs;
+        existing?: inputs.awsx.ExistingLogGroupArgs;
     }
 
+    /**
+     * Bucket with default setup.
+     */
+    export interface RequiredBucketArgs {
+        /**
+         * Arguments to use instead of the default values during creation.
+         */
+        args?: inputs.awsx.BucketArgs;
+        /**
+         * Identity of an existing bucket to use. Cannot be used in combination with `args`.
+         */
+        existing?: inputs.awsx.ExistingBucketArgs;
+    }
+
+    /**
+     * The set of arguments for constructing a Role resource and Policy attachments.
+     */
+    export interface RoleWithPolicyArgs {
+        /**
+         * Description of the role.
+         */
+        description?: pulumi.Input<string>;
+        /**
+         * Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+         */
+        forceDetachPolicies?: pulumi.Input<boolean>;
+        /**
+         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+         */
+        inlinePolicies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.iam.RoleInlinePolicy>[]>;
+        /**
+         * Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
+         */
+        managedPolicyArns?: pulumi.Input<pulumi.Input<string>[]>;
+        /**
+         * Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
+         */
+        maxSessionDuration?: pulumi.Input<number>;
+        /**
+         * Name of the role policy.
+         */
+        name?: pulumi.Input<string>;
+        /**
+         * Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+         */
+        namePrefix?: pulumi.Input<string>;
+        /**
+         * Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+         */
+        path?: pulumi.Input<string>;
+        /**
+         * ARN of the policy that is used to set the permissions boundary for the role.
+         */
+        permissionsBoundary?: pulumi.Input<string>;
+        /**
+         * ARNs of the policies to attach to the created role.
+         */
+        policyArns?: string[];
+        /**
+         * Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         */
+        tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    }
+}
+
+export namespace cloudtrail {
 }
 
 export namespace ecs {
@@ -129,7 +317,7 @@ export namespace ecs {
          * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
          * Will be created automatically if not defined.
          */
-        executionRole?: inputs.iam.DefaultRoleWithPolicyArgs;
+        executionRole?: inputs.awsx.DefaultRoleWithPolicyArgs;
         /**
          * An optional unique name for your task definition. If not specified, then a default will be created.
          */
@@ -145,7 +333,7 @@ export namespace ecs {
         /**
          * A set of volume blocks that containers in your task may use.
          */
-        logGroup?: inputs.cloudwatch.DefaultLogGroupArgs;
+        logGroup?: inputs.awsx.DefaultLogGroupArgs;
         /**
          * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
          * based on the cumulative needs specified by [containerDefinitions]
@@ -184,7 +372,7 @@ export namespace ecs {
          * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
          * Will be created automatically if not defined.
          */
-        taskRole?: inputs.iam.DefaultRoleWithPolicyArgs;
+        taskRole?: inputs.awsx.DefaultRoleWithPolicyArgs;
         /**
          * Configuration block for volumes that containers in your task may use. Detailed below.
          */
@@ -381,197 +569,4 @@ export namespace ecs {
         sourceContainer?: pulumi.Input<string>;
     }
 
-}
-
-export namespace iam {
-    /**
-     * Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
-     */
-    export interface DefaultRoleWithPolicyArgs {
-        /**
-         * Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
-         */
-        args?: inputs.iam.RoleWithPolicyArgs;
-        /**
-         * ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
-         */
-        roleArn?: pulumi.Input<string>;
-        /**
-         * Skips creation of the role if set to `true`.
-         */
-        skip?: boolean;
-    }
-
-    /**
-     * The set of arguments for constructing a Role resource and Policy attachments.
-     */
-    export interface RoleWithPolicyArgs {
-        /**
-         * Description of the role.
-         */
-        description?: pulumi.Input<string>;
-        /**
-         * Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
-         */
-        forceDetachPolicies?: pulumi.Input<boolean>;
-        /**
-         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
-         */
-        inlinePolicies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.iam.RoleInlinePolicy>[]>;
-        /**
-         * Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
-         */
-        managedPolicyArns?: pulumi.Input<pulumi.Input<string>[]>;
-        /**
-         * Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
-         */
-        maxSessionDuration?: pulumi.Input<number>;
-        /**
-         * Name of the role policy.
-         */
-        name?: pulumi.Input<string>;
-        /**
-         * Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
-         */
-        namePrefix?: pulumi.Input<string>;
-        /**
-         * Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
-         */
-        path?: pulumi.Input<string>;
-        /**
-         * ARN of the policy that is used to set the permissions boundary for the role.
-         */
-        permissionsBoundary?: pulumi.Input<string>;
-        /**
-         * ARNs of the policies to attach to the created role.
-         */
-        policyArns?: string[];
-        /**
-         * Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-         */
-        tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-    }
-}
-
-export namespace s3 {
-    /**
-     * The set of arguments for constructing a Bucket resource.
-     */
-    export interface BucketArgs {
-        /**
-         * Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
-         */
-        accelerationStatus?: pulumi.Input<string>;
-        /**
-         * The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
-         */
-        acl?: pulumi.Input<string>;
-        /**
-         * The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
-         */
-        arn?: pulumi.Input<string>;
-        /**
-         * The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
-         */
-        bucket?: pulumi.Input<string>;
-        /**
-         * Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
-         */
-        bucketPrefix?: pulumi.Input<string>;
-        /**
-         * A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
-         */
-        corsRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketCorsRule>[]>;
-        /**
-         * A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
-         */
-        forceDestroy?: pulumi.Input<boolean>;
-        /**
-         * An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
-         */
-        grants?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketGrant>[]>;
-        /**
-         * The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
-         */
-        hostedZoneId?: pulumi.Input<string>;
-        /**
-         * A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
-         */
-        lifecycleRules?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLifecycleRule>[]>;
-        /**
-         * A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
-         */
-        loggings?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLogging>[]>;
-        /**
-         * A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
-         */
-        objectLockConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketObjectLockConfiguration>;
-        /**
-         * A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), the provider may view the policy as constantly changing in a `pulumi up / preview / update`. In this case, please make sure you use the verbose/specific version of the policy.
-         */
-        policy?: pulumi.Input<string>;
-        /**
-         * A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
-         */
-        replicationConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketReplicationConfiguration>;
-        /**
-         * Specifies who should bear the cost of Amazon S3 data transfer.
-         * Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
-         * the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
-         * developer guide for more information.
-         */
-        requestPayer?: pulumi.Input<string>;
-        /**
-         * A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
-         */
-        serverSideEncryptionConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketServerSideEncryptionConfiguration>;
-        /**
-         * A mapping of tags to assign to the bucket.
-         */
-        tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-        /**
-         * A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
-         */
-        versioning?: pulumi.Input<pulumiAws.types.input.s3.BucketVersioning>;
-        /**
-         * A website object (documented below).
-         */
-        website?: pulumi.Input<pulumiAws.types.input.s3.BucketWebsite>;
-        /**
-         * The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
-         */
-        websiteDomain?: pulumi.Input<string>;
-        /**
-         * The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
-         */
-        websiteEndpoint?: pulumi.Input<string>;
-    }
-
-    /**
-     * Reference to an existing bucket.
-     */
-    export interface ExistingBucketArgs {
-        /**
-         * Arn of the bucket. Only one of [arn] or [name] can be specified.
-         */
-        arn?: pulumi.Input<string>;
-        /**
-         * Name of the bucket. Only one of [arn] or [name] can be specified.
-         */
-        name?: pulumi.Input<string>;
-    }
-
-    /**
-     * Bucket with default setup.
-     */
-    export interface RequiredBucketArgs {
-        /**
-         * Arguments to use instead of the default values during creation.
-         */
-        args?: inputs.s3.BucketArgs;
-        /**
-         * Identity of an existing bucket to use. Cannot be used in combination with `args`.
-         */
-        existing?: inputs.s3.ExistingBucketArgs;
-    }
 }

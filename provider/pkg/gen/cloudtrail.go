@@ -30,14 +30,14 @@ func generateCloudtrail(awsSpec schema.PackageSpec) schema.PackageSpec {
 	inputProperties["s3Bucket"] = schema.PropertySpec{
 		Description: "S3 bucket designated for publishing log files.",
 		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:s3:RequiredBucket",
+			Ref:   "#/types/awsx:awsx:RequiredBucket",
 			Plain: true,
 		},
 	}
 	inputProperties["cloudWatchLogsGroup"] = schema.PropertySpec{
 		Description: "Log group to which CloudTrail logs will be delivered.",
 		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:cloudwatch:OptionalLogGroup",
+			Ref:   "#/types/awsx:awsx:OptionalLogGroup",
 			Plain: true,
 		},
 	}

@@ -116,7 +116,7 @@ namespace Pulumi.Awsx.Ecs
         /// Will be created automatically if not defined.
         /// </summary>
         [Input("executionRole")]
-        public Pulumi.Awsx.Iam.Inputs.DefaultRoleWithPolicyArgs? ExecutionRole { get; set; }
+        public Pulumi.Awsx.Awsx.Inputs.DefaultRoleWithPolicyArgs? ExecutionRole { get; set; }
 
         /// <summary>
         /// An optional unique name for your task definition. If not specified, then a default will be created.
@@ -146,7 +146,7 @@ namespace Pulumi.Awsx.Ecs
         /// A set of volume blocks that containers in your task may use.
         /// </summary>
         [Input("logGroup")]
-        public Pulumi.Awsx.Cloudwatch.Inputs.DefaultLogGroupArgs? LogGroup { get; set; }
+        public Pulumi.Awsx.Awsx.Inputs.DefaultLogGroupArgs? LogGroup { get; set; }
 
         /// <summary>
         /// The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
@@ -223,7 +223,7 @@ namespace Pulumi.Awsx.Ecs
         /// Will be created automatically if not defined.
         /// </summary>
         [Input("taskRole")]
-        public Pulumi.Awsx.Iam.Inputs.DefaultRoleWithPolicyArgs? TaskRole { get; set; }
+        public Pulumi.Awsx.Awsx.Inputs.DefaultRoleWithPolicyArgs? TaskRole { get; set; }
 
         [Input("volumes")]
         private InputList<Pulumi.Aws.Ecs.Inputs.TaskDefinitionVolumeArgs>? _volumes;

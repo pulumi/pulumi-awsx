@@ -9,22 +9,16 @@ from .provider import *
 
 # Make subpackages available:
 if typing.TYPE_CHECKING:
+    import pulumi_awsx.awsx as __awsx
+    awsx = __awsx
     import pulumi_awsx.cloudtrail as __cloudtrail
     cloudtrail = __cloudtrail
-    import pulumi_awsx.cloudwatch as __cloudwatch
-    cloudwatch = __cloudwatch
     import pulumi_awsx.ecs as __ecs
     ecs = __ecs
-    import pulumi_awsx.iam as __iam
-    iam = __iam
-    import pulumi_awsx.s3 as __s3
-    s3 = __s3
 else:
+    awsx = _utilities.lazy_import('pulumi_awsx.awsx')
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
-    cloudwatch = _utilities.lazy_import('pulumi_awsx.cloudwatch')
     ecs = _utilities.lazy_import('pulumi_awsx.ecs')
-    iam = _utilities.lazy_import('pulumi_awsx.iam')
-    s3 = _utilities.lazy_import('pulumi_awsx.s3')
 
 _utilities.register(
     resource_modules="""

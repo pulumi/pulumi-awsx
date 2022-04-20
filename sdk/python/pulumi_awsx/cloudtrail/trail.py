@@ -7,8 +7,7 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
-from .. import cloudwatch as _cloudwatch
-from .. import s3 as _s3
+from .. import awsx as _awsx
 import pulumi_aws
 
 __all__ = ['TrailArgs', 'Trail']
@@ -17,7 +16,7 @@ __all__ = ['TrailArgs', 'Trail']
 class TrailArgs:
     def __init__(__self__, *,
                  advanced_event_selectors: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.cloudtrail.TrailAdvancedEventSelectorArgs']]]] = None,
-                 cloud_watch_logs_group: Optional['_cloudwatch.OptionalLogGroupArgs'] = None,
+                 cloud_watch_logs_group: Optional['_awsx.OptionalLogGroupArgs'] = None,
                  enable_log_file_validation: Optional[pulumi.Input[bool]] = None,
                  enable_logging: Optional[pulumi.Input[bool]] = None,
                  event_selectors: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.cloudtrail.TrailEventSelectorArgs']]]] = None,
@@ -27,14 +26,14 @@ class TrailArgs:
                  is_organization_trail: Optional[pulumi.Input[bool]] = None,
                  kms_key_id: Optional[pulumi.Input[str]] = None,
                  name: Optional[pulumi.Input[str]] = None,
-                 s3_bucket: Optional['_s3.RequiredBucketArgs'] = None,
+                 s3_bucket: Optional['_awsx.RequiredBucketArgs'] = None,
                  s3_key_prefix: Optional[pulumi.Input[str]] = None,
                  sns_topic_name: Optional[pulumi.Input[str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Trail resource.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.cloudtrail.TrailAdvancedEventSelectorArgs']]] advanced_event_selectors: Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
-        :param '_cloudwatch.OptionalLogGroupArgs' cloud_watch_logs_group: Log group to which CloudTrail logs will be delivered.
+        :param '_awsx.OptionalLogGroupArgs' cloud_watch_logs_group: Log group to which CloudTrail logs will be delivered.
         :param pulumi.Input[bool] enable_log_file_validation: Whether log file integrity validation is enabled. Defaults to `false`.
         :param pulumi.Input[bool] enable_logging: Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.cloudtrail.TrailEventSelectorArgs']]] event_selectors: Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.
@@ -44,7 +43,7 @@ class TrailArgs:
         :param pulumi.Input[bool] is_organization_trail: Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
         :param pulumi.Input[str] kms_key_id: KMS key ARN to use to encrypt the logs delivered by CloudTrail.
         :param pulumi.Input[str] name: Specifies the name of the advanced event selector.
-        :param '_s3.RequiredBucketArgs' s3_bucket: S3 bucket designated for publishing log files.
+        :param '_awsx.RequiredBucketArgs' s3_bucket: S3 bucket designated for publishing log files.
         :param pulumi.Input[str] s3_key_prefix: S3 key prefix that follows the name of the bucket you have designated for log file delivery.
         :param pulumi.Input[str] sns_topic_name: Name of the Amazon SNS topic defined for notification of log file delivery.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
@@ -94,14 +93,14 @@ class TrailArgs:
 
     @property
     @pulumi.getter(name="cloudWatchLogsGroup")
-    def cloud_watch_logs_group(self) -> Optional['_cloudwatch.OptionalLogGroupArgs']:
+    def cloud_watch_logs_group(self) -> Optional['_awsx.OptionalLogGroupArgs']:
         """
         Log group to which CloudTrail logs will be delivered.
         """
         return pulumi.get(self, "cloud_watch_logs_group")
 
     @cloud_watch_logs_group.setter
-    def cloud_watch_logs_group(self, value: Optional['_cloudwatch.OptionalLogGroupArgs']):
+    def cloud_watch_logs_group(self, value: Optional['_awsx.OptionalLogGroupArgs']):
         pulumi.set(self, "cloud_watch_logs_group", value)
 
     @property
@@ -214,14 +213,14 @@ class TrailArgs:
 
     @property
     @pulumi.getter(name="s3Bucket")
-    def s3_bucket(self) -> Optional['_s3.RequiredBucketArgs']:
+    def s3_bucket(self) -> Optional['_awsx.RequiredBucketArgs']:
         """
         S3 bucket designated for publishing log files.
         """
         return pulumi.get(self, "s3_bucket")
 
     @s3_bucket.setter
-    def s3_bucket(self, value: Optional['_s3.RequiredBucketArgs']):
+    def s3_bucket(self, value: Optional['_awsx.RequiredBucketArgs']):
         pulumi.set(self, "s3_bucket", value)
 
     @property
@@ -267,7 +266,7 @@ class Trail(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  advanced_event_selectors: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.cloudtrail.TrailAdvancedEventSelectorArgs']]]]] = None,
-                 cloud_watch_logs_group: Optional[pulumi.InputType['_cloudwatch.OptionalLogGroupArgs']] = None,
+                 cloud_watch_logs_group: Optional[pulumi.InputType['_awsx.OptionalLogGroupArgs']] = None,
                  enable_log_file_validation: Optional[pulumi.Input[bool]] = None,
                  enable_logging: Optional[pulumi.Input[bool]] = None,
                  event_selectors: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.cloudtrail.TrailEventSelectorArgs']]]]] = None,
@@ -277,7 +276,7 @@ class Trail(pulumi.ComponentResource):
                  is_organization_trail: Optional[pulumi.Input[bool]] = None,
                  kms_key_id: Optional[pulumi.Input[str]] = None,
                  name: Optional[pulumi.Input[str]] = None,
-                 s3_bucket: Optional[pulumi.InputType['_s3.RequiredBucketArgs']] = None,
+                 s3_bucket: Optional[pulumi.InputType['_awsx.RequiredBucketArgs']] = None,
                  s3_key_prefix: Optional[pulumi.Input[str]] = None,
                  sns_topic_name: Optional[pulumi.Input[str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
@@ -287,7 +286,7 @@ class Trail(pulumi.ComponentResource):
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.cloudtrail.TrailAdvancedEventSelectorArgs']]]] advanced_event_selectors: Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
-        :param pulumi.InputType['_cloudwatch.OptionalLogGroupArgs'] cloud_watch_logs_group: Log group to which CloudTrail logs will be delivered.
+        :param pulumi.InputType['_awsx.OptionalLogGroupArgs'] cloud_watch_logs_group: Log group to which CloudTrail logs will be delivered.
         :param pulumi.Input[bool] enable_log_file_validation: Whether log file integrity validation is enabled. Defaults to `false`.
         :param pulumi.Input[bool] enable_logging: Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.cloudtrail.TrailEventSelectorArgs']]]] event_selectors: Specifies an event selector for enabling data event logging. Fields documented below. Please note the [CloudTrail limits](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) when configuring these. Conflicts with `advanced_event_selector`.
@@ -297,7 +296,7 @@ class Trail(pulumi.ComponentResource):
         :param pulumi.Input[bool] is_organization_trail: Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
         :param pulumi.Input[str] kms_key_id: KMS key ARN to use to encrypt the logs delivered by CloudTrail.
         :param pulumi.Input[str] name: Specifies the name of the advanced event selector.
-        :param pulumi.InputType['_s3.RequiredBucketArgs'] s3_bucket: S3 bucket designated for publishing log files.
+        :param pulumi.InputType['_awsx.RequiredBucketArgs'] s3_bucket: S3 bucket designated for publishing log files.
         :param pulumi.Input[str] s3_key_prefix: S3 key prefix that follows the name of the bucket you have designated for log file delivery.
         :param pulumi.Input[str] sns_topic_name: Name of the Amazon SNS topic defined for notification of log file delivery.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
@@ -326,7 +325,7 @@ class Trail(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  advanced_event_selectors: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.cloudtrail.TrailAdvancedEventSelectorArgs']]]]] = None,
-                 cloud_watch_logs_group: Optional[pulumi.InputType['_cloudwatch.OptionalLogGroupArgs']] = None,
+                 cloud_watch_logs_group: Optional[pulumi.InputType['_awsx.OptionalLogGroupArgs']] = None,
                  enable_log_file_validation: Optional[pulumi.Input[bool]] = None,
                  enable_logging: Optional[pulumi.Input[bool]] = None,
                  event_selectors: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.cloudtrail.TrailEventSelectorArgs']]]]] = None,
@@ -336,7 +335,7 @@ class Trail(pulumi.ComponentResource):
                  is_organization_trail: Optional[pulumi.Input[bool]] = None,
                  kms_key_id: Optional[pulumi.Input[str]] = None,
                  name: Optional[pulumi.Input[str]] = None,
-                 s3_bucket: Optional[pulumi.InputType['_s3.RequiredBucketArgs']] = None,
+                 s3_bucket: Optional[pulumi.InputType['_awsx.RequiredBucketArgs']] = None,
                  s3_key_prefix: Optional[pulumi.Input[str]] = None,
                  sns_topic_name: Optional[pulumi.Input[str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,

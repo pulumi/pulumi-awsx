@@ -21,7 +21,7 @@ import (
 func generateS3(awsSpec schema.PackageSpec) schema.PackageSpec {
 	return schema.PackageSpec{
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:s3:DefaultBucket": {
+			"awsx:awsx:DefaultBucket": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "Bucket with default setup unless explicitly skipped.",
@@ -36,21 +36,21 @@ func generateS3(awsSpec schema.PackageSpec) schema.PackageSpec {
 						"existing": {
 							Description: "Identity of an existing bucket to use. Cannot be used in combination with `args`.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:s3:ExistingBucket",
+								Ref:   "#/types/awsx:awsx:ExistingBucket",
 								Plain: true,
 							},
 						},
 						"args": {
 							Description: "Arguments to use instead of the default values during creation.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:s3:Bucket",
+								Ref:   "#/types/awsx:awsx:Bucket",
 								Plain: true,
 							},
 						},
 					},
 				},
 			},
-			"awsx:s3:RequiredBucket": {
+			"awsx:awsx:RequiredBucket": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "Bucket with default setup.",
@@ -58,21 +58,21 @@ func generateS3(awsSpec schema.PackageSpec) schema.PackageSpec {
 						"existing": {
 							Description: "Identity of an existing bucket to use. Cannot be used in combination with `args`.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:s3:ExistingBucket",
+								Ref:   "#/types/awsx:awsx:ExistingBucket",
 								Plain: true,
 							},
 						},
 						"args": {
 							Description: "Arguments to use instead of the default values during creation.",
 							TypeSpec: schema.TypeSpec{
-								Ref:   "#/types/awsx:s3:Bucket",
+								Ref:   "#/types/awsx:awsx:Bucket",
 								Plain: true,
 							},
 						},
 					},
 				},
 			},
-			"awsx:s3:ExistingBucket": {
+			"awsx:awsx:ExistingBucket": {
 				ObjectTypeSpec: schema.ObjectTypeSpec{
 					Type:        "object",
 					Description: "Reference to an existing bucket.",
@@ -92,7 +92,7 @@ func generateS3(awsSpec schema.PackageSpec) schema.PackageSpec {
 					},
 				},
 			},
-			"awsx:s3:Bucket": bucketTypeSpec(awsSpec),
+			"awsx:awsx:Bucket": bucketTypeSpec(awsSpec),
 		},
 	}
 }

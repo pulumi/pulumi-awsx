@@ -21,8 +21,8 @@ import (
 func generateIam(awsSpec schema.PackageSpec) schema.PackageSpec {
 	return schema.PackageSpec{
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:iam:DefaultRoleWithPolicy": defaultRoleWithPolicyArgs(awsSpec),
-			"awsx:iam:RoleWithPolicy":        roleWithPolicyArgs(awsSpec),
+			"awsx:awsx:DefaultRoleWithPolicy": defaultRoleWithPolicyArgs(awsSpec),
+			"awsx:awsx:RoleWithPolicy":        roleWithPolicyArgs(awsSpec),
 		},
 	}
 }
@@ -49,7 +49,7 @@ func defaultRoleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpe
 				"args": {
 					Description: "Args to use when creating the role and policies. Can't be specified if `roleArn` is used.",
 					TypeSpec: schema.TypeSpec{
-						Ref:   "#/types/awsx:iam:RoleWithPolicy",
+						Ref:   "#/types/awsx:awsx:RoleWithPolicy",
 						Plain: true,
 					},
 				},
