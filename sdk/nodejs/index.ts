@@ -11,12 +11,14 @@ export * from "./provider";
 import * as classic from "./classic";
 import * as cloudtrail from "./cloudtrail";
 import * as ecs from "./ecs";
+import * as lb from "./lb";
 import * as types from "./types";
 
 export {
     classic,
     cloudtrail,
     ecs,
+    lb,
     types,
 };
 

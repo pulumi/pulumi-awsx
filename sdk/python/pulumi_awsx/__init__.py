@@ -15,10 +15,13 @@ if typing.TYPE_CHECKING:
     cloudtrail = __cloudtrail
     import pulumi_awsx.ecs as __ecs
     ecs = __ecs
+    import pulumi_awsx.lb as __lb
+    lb = __lb
 else:
     awsx = _utilities.lazy_import('pulumi_awsx.awsx')
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
     ecs = _utilities.lazy_import('pulumi_awsx.ecs')
+    lb = _utilities.lazy_import('pulumi_awsx.lb')
 
 _utilities.register(
     resource_modules="""
@@ -38,6 +41,14 @@ _utilities.register(
   "classes": {
    "awsx:ecs:FargateService": "FargateService",
    "awsx:ecs:FargateTaskDefinition": "FargateTaskDefinition"
+  }
+ },
+ {
+  "pkg": "awsx",
+  "mod": "lb",
+  "fqn": "pulumi_awsx.lb",
+  "classes": {
+   "awsx:lb:ApplicationLoadBalancer": "ApplicationLoadBalancer"
   }
  }
 ]
