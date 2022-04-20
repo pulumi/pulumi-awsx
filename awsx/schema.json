@@ -1380,10 +1380,6 @@
                     "type": "boolean",
                     "description": "Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.\n"
                 },
-                "enableCrossZoneLoadBalancing": {
-                    "type": "boolean",
-                    "description": "If true, cross-zone load balancing of the load balancer will be enabled.\nThis is a `network` load balancer feature. Defaults to `false`.\n"
-                },
                 "enableDeletionProtection": {
                     "type": "boolean",
                     "description": "If true, deletion of the load balancer will be disabled via\nthe AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.\n"
@@ -1407,10 +1403,6 @@
                 "ipAddressType": {
                     "type": "string",
                     "description": "The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`\n"
-                },
-                "loadBalancerType": {
-                    "type": "string",
-                    "description": "The type of load balancer to create. Possible values are `application`, `gateway`, or `network`. The default value is `application`.\n"
                 },
                 "name": {
                     "type": "string",

@@ -71,13 +71,6 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? DropInvalidHeaderFields { get; set; }
 
         /// <summary>
-        /// If true, cross-zone load balancing of the load balancer will be enabled.
-        /// This is a `network` load balancer feature. Defaults to `false`.
-        /// </summary>
-        [Input("enableCrossZoneLoadBalancing")]
-        public Input<bool>? EnableCrossZoneLoadBalancing { get; set; }
-
-        /// <summary>
         /// If true, deletion of the load balancer will be disabled via
         /// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
         /// </summary>
@@ -113,12 +106,6 @@ namespace Pulumi.Awsx.Lb
         /// </summary>
         [Input("ipAddressType")]
         public Input<string>? IpAddressType { get; set; }
-
-        /// <summary>
-        /// The type of load balancer to create. Possible values are `application`, `gateway`, or `network`. The default value is `application`.
-        /// </summary>
-        [Input("loadBalancerType")]
-        public Input<string>? LoadBalancerType { get; set; }
 
         /// <summary>
         /// The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,

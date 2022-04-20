@@ -41,14 +41,12 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["customerOwnedIpv4Pool"] = args ? args.customerOwnedIpv4Pool : undefined;
             resourceInputs["desyncMitigationMode"] = args ? args.desyncMitigationMode : undefined;
             resourceInputs["dropInvalidHeaderFields"] = args ? args.dropInvalidHeaderFields : undefined;
-            resourceInputs["enableCrossZoneLoadBalancing"] = args ? args.enableCrossZoneLoadBalancing : undefined;
             resourceInputs["enableDeletionProtection"] = args ? args.enableDeletionProtection : undefined;
             resourceInputs["enableHttp2"] = args ? args.enableHttp2 : undefined;
             resourceInputs["enableWafFailOpen"] = args ? args.enableWafFailOpen : undefined;
             resourceInputs["idleTimeout"] = args ? args.idleTimeout : undefined;
             resourceInputs["internal"] = args ? args.internal : undefined;
             resourceInputs["ipAddressType"] = args ? args.ipAddressType : undefined;
-            resourceInputs["loadBalancerType"] = args ? args.loadBalancerType : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["namePrefix"] = args ? args.namePrefix : undefined;
             resourceInputs["securityGroups"] = args ? args.securityGroups : undefined;
@@ -85,11 +83,6 @@ export interface ApplicationLoadBalancerArgs {
      */
     dropInvalidHeaderFields?: pulumi.Input<boolean>;
     /**
-     * If true, cross-zone load balancing of the load balancer will be enabled.
-     * This is a `network` load balancer feature. Defaults to `false`.
-     */
-    enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
-    /**
      * If true, deletion of the load balancer will be disabled via
      * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      */
@@ -114,10 +107,6 @@ export interface ApplicationLoadBalancerArgs {
      * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
      */
     ipAddressType?: pulumi.Input<string>;
-    /**
-     * The type of load balancer to create. Possible values are `application`, `gateway`, or `network`. The default value is `application`.
-     */
-    loadBalancerType?: pulumi.Input<string>;
     /**
      * The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
      * must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,

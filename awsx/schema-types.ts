@@ -106,14 +106,12 @@ export interface ApplicationLoadBalancerArgs {
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
     readonly desyncMitigationMode?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
-    readonly enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
     readonly enableHttp2?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
     readonly ipAddressType?: pulumi.Input<string>;
-    readonly loadBalancerType?: pulumi.Input<string>;
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
     readonly securityGroups?: pulumi.Input<pulumi.Input<string>[]>;

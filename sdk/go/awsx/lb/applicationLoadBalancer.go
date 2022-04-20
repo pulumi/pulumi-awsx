@@ -42,9 +42,6 @@ type applicationLoadBalancerArgs struct {
 	DesyncMitigationMode *string `pulumi:"desyncMitigationMode"`
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
 	DropInvalidHeaderFields *bool `pulumi:"dropInvalidHeaderFields"`
-	// If true, cross-zone load balancing of the load balancer will be enabled.
-	// This is a `network` load balancer feature. Defaults to `false`.
-	EnableCrossZoneLoadBalancing *bool `pulumi:"enableCrossZoneLoadBalancing"`
 	// If true, deletion of the load balancer will be disabled via
 	// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
 	EnableDeletionProtection *bool `pulumi:"enableDeletionProtection"`
@@ -58,8 +55,6 @@ type applicationLoadBalancerArgs struct {
 	Internal *bool `pulumi:"internal"`
 	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
 	IpAddressType *string `pulumi:"ipAddressType"`
-	// The type of load balancer to create. Possible values are `application`, `gateway`, or `network`. The default value is `application`.
-	LoadBalancerType *string `pulumi:"loadBalancerType"`
 	// The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
 	// must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
 	// this provider will autogenerate a name beginning with `tf-lb`.
@@ -88,9 +83,6 @@ type ApplicationLoadBalancerArgs struct {
 	DesyncMitigationMode pulumi.StringPtrInput
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
 	DropInvalidHeaderFields pulumi.BoolPtrInput
-	// If true, cross-zone load balancing of the load balancer will be enabled.
-	// This is a `network` load balancer feature. Defaults to `false`.
-	EnableCrossZoneLoadBalancing pulumi.BoolPtrInput
 	// If true, deletion of the load balancer will be disabled via
 	// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
 	EnableDeletionProtection pulumi.BoolPtrInput
@@ -104,8 +96,6 @@ type ApplicationLoadBalancerArgs struct {
 	Internal pulumi.BoolPtrInput
 	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
 	IpAddressType pulumi.StringPtrInput
-	// The type of load balancer to create. Possible values are `application`, `gateway`, or `network`. The default value is `application`.
-	LoadBalancerType pulumi.StringPtrInput
 	// The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
 	// must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
 	// this provider will autogenerate a name beginning with `tf-lb`.

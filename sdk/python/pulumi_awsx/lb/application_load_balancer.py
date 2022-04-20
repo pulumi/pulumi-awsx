@@ -18,14 +18,12 @@ class ApplicationLoadBalancerArgs:
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
-                 enable_cross_zone_load_balancing: Optional[pulumi.Input[bool]] = None,
                  enable_deletion_protection: Optional[pulumi.Input[bool]] = None,
                  enable_http2: Optional[pulumi.Input[bool]] = None,
                  enable_waf_fail_open: Optional[pulumi.Input[bool]] = None,
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
-                 load_balancer_type: Optional[pulumi.Input[str]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -38,8 +36,6 @@ class ApplicationLoadBalancerArgs:
         :param pulumi.Input[str] customer_owned_ipv4_pool: The ID of the customer owned ipv4 pool to use for this load balancer.
         :param pulumi.Input[str] desync_mitigation_mode: Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         :param pulumi.Input[bool] drop_invalid_header_fields: Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
-        :param pulumi.Input[bool] enable_cross_zone_load_balancing: If true, cross-zone load balancing of the load balancer will be enabled.
-               This is a `network` load balancer feature. Defaults to `false`.
         :param pulumi.Input[bool] enable_deletion_protection: If true, deletion of the load balancer will be disabled via
                the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
         :param pulumi.Input[bool] enable_http2: Indicates whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
@@ -47,7 +43,6 @@ class ApplicationLoadBalancerArgs:
         :param pulumi.Input[int] idle_timeout: The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal.
         :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
-        :param pulumi.Input[str] load_balancer_type: The type of load balancer to create. Possible values are `application`, `gateway`, or `network`. The default value is `application`.
         :param pulumi.Input[str] name: The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
                must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
                this provider will autogenerate a name beginning with `tf-lb`.
@@ -67,8 +62,6 @@ class ApplicationLoadBalancerArgs:
             pulumi.set(__self__, "desync_mitigation_mode", desync_mitigation_mode)
         if drop_invalid_header_fields is not None:
             pulumi.set(__self__, "drop_invalid_header_fields", drop_invalid_header_fields)
-        if enable_cross_zone_load_balancing is not None:
-            pulumi.set(__self__, "enable_cross_zone_load_balancing", enable_cross_zone_load_balancing)
         if enable_deletion_protection is not None:
             pulumi.set(__self__, "enable_deletion_protection", enable_deletion_protection)
         if enable_http2 is not None:
@@ -81,8 +74,6 @@ class ApplicationLoadBalancerArgs:
             pulumi.set(__self__, "internal", internal)
         if ip_address_type is not None:
             pulumi.set(__self__, "ip_address_type", ip_address_type)
-        if load_balancer_type is not None:
-            pulumi.set(__self__, "load_balancer_type", load_balancer_type)
         if name is not None:
             pulumi.set(__self__, "name", name)
         if name_prefix is not None:
@@ -143,19 +134,6 @@ class ApplicationLoadBalancerArgs:
     @drop_invalid_header_fields.setter
     def drop_invalid_header_fields(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "drop_invalid_header_fields", value)
-
-    @property
-    @pulumi.getter(name="enableCrossZoneLoadBalancing")
-    def enable_cross_zone_load_balancing(self) -> Optional[pulumi.Input[bool]]:
-        """
-        If true, cross-zone load balancing of the load balancer will be enabled.
-        This is a `network` load balancer feature. Defaults to `false`.
-        """
-        return pulumi.get(self, "enable_cross_zone_load_balancing")
-
-    @enable_cross_zone_load_balancing.setter
-    def enable_cross_zone_load_balancing(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "enable_cross_zone_load_balancing", value)
 
     @property
     @pulumi.getter(name="enableDeletionProtection")
@@ -229,18 +207,6 @@ class ApplicationLoadBalancerArgs:
     @ip_address_type.setter
     def ip_address_type(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "ip_address_type", value)
-
-    @property
-    @pulumi.getter(name="loadBalancerType")
-    def load_balancer_type(self) -> Optional[pulumi.Input[str]]:
-        """
-        The type of load balancer to create. Possible values are `application`, `gateway`, or `network`. The default value is `application`.
-        """
-        return pulumi.get(self, "load_balancer_type")
-
-    @load_balancer_type.setter
-    def load_balancer_type(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "load_balancer_type", value)
 
     @property
     @pulumi.getter
@@ -328,14 +294,12 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
-                 enable_cross_zone_load_balancing: Optional[pulumi.Input[bool]] = None,
                  enable_deletion_protection: Optional[pulumi.Input[bool]] = None,
                  enable_http2: Optional[pulumi.Input[bool]] = None,
                  enable_waf_fail_open: Optional[pulumi.Input[bool]] = None,
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
-                 load_balancer_type: Optional[pulumi.Input[str]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -351,8 +315,6 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[str] customer_owned_ipv4_pool: The ID of the customer owned ipv4 pool to use for this load balancer.
         :param pulumi.Input[str] desync_mitigation_mode: Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         :param pulumi.Input[bool] drop_invalid_header_fields: Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
-        :param pulumi.Input[bool] enable_cross_zone_load_balancing: If true, cross-zone load balancing of the load balancer will be enabled.
-               This is a `network` load balancer feature. Defaults to `false`.
         :param pulumi.Input[bool] enable_deletion_protection: If true, deletion of the load balancer will be disabled via
                the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
         :param pulumi.Input[bool] enable_http2: Indicates whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
@@ -360,7 +322,6 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[int] idle_timeout: The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal.
         :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
-        :param pulumi.Input[str] load_balancer_type: The type of load balancer to create. Possible values are `application`, `gateway`, or `network`. The default value is `application`.
         :param pulumi.Input[str] name: The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
                must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
                this provider will autogenerate a name beginning with `tf-lb`.
@@ -399,14 +360,12 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
-                 enable_cross_zone_load_balancing: Optional[pulumi.Input[bool]] = None,
                  enable_deletion_protection: Optional[pulumi.Input[bool]] = None,
                  enable_http2: Optional[pulumi.Input[bool]] = None,
                  enable_waf_fail_open: Optional[pulumi.Input[bool]] = None,
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
-                 load_balancer_type: Optional[pulumi.Input[str]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -431,14 +390,12 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["customer_owned_ipv4_pool"] = customer_owned_ipv4_pool
             __props__.__dict__["desync_mitigation_mode"] = desync_mitigation_mode
             __props__.__dict__["drop_invalid_header_fields"] = drop_invalid_header_fields
-            __props__.__dict__["enable_cross_zone_load_balancing"] = enable_cross_zone_load_balancing
             __props__.__dict__["enable_deletion_protection"] = enable_deletion_protection
             __props__.__dict__["enable_http2"] = enable_http2
             __props__.__dict__["enable_waf_fail_open"] = enable_waf_fail_open
             __props__.__dict__["idle_timeout"] = idle_timeout
             __props__.__dict__["internal"] = internal
             __props__.__dict__["ip_address_type"] = ip_address_type
-            __props__.__dict__["load_balancer_type"] = load_balancer_type
             __props__.__dict__["name"] = name
             __props__.__dict__["name_prefix"] = name_prefix
             __props__.__dict__["security_groups"] = security_groups

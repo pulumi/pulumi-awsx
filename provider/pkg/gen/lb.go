@@ -31,6 +31,8 @@ func generateLb(awsSpec schema.PackageSpec) schema.PackageSpec {
 func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	originalSpec := awsSpec.Resources["aws:lb/loadBalancer:LoadBalancer"]
 	inputProperties := renameAwsPropertiesRefs(originalSpec.InputProperties)
+	delete(inputProperties, "enableCrossZoneLoadBalancing")
+	delete(inputProperties, "loadBalancerType")
 
 	return schema.ResourceSpec{
 		IsComponent: true,
