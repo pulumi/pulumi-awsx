@@ -75,7 +75,7 @@ build_dotnet:: schema
 		dotnet build /p:Version=${DOTNET_VERSION}
 
 istanbul_tests::
-	cd awsx-legacy/tests && \
+	cd awsx-classic/tests && \
 		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
 
 install_nodejs_sdk:: build_nodejs
@@ -91,8 +91,8 @@ install_go_sdk::
 install_python_sdk::
 	#Intentionall empty for CI / CD templating
 
-lint-legacy:
-	cd awsx-legacy && \
+lint-classic:
+	cd awsx-classic && \
 		yarn install && \
 		yarn lint
 
@@ -118,6 +118,6 @@ specific_test:: install_provider
 
 generate_schema:: schema
 
-dev:: lint lint-legacy build_nodejs istanbul_tests
+dev:: lint lint-classic build_nodejs istanbul_tests
 
 test:: install_nodejs_sdk test_nodejs

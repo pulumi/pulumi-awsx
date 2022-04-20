@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.Cloudwatch.Inputs
+namespace Pulumi.Awsx.Awsx.Inputs
 {
 
     /// <summary>

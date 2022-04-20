@@ -10,8 +10,7 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/cloudtrail"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/cloudwatch"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/s3"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/cloudwatch"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/s3"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/awsx"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -45,7 +44,7 @@ type trailArgs struct {
 	// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
 	AdvancedEventSelectors []cloudtrail.TrailAdvancedEventSelector `pulumi:"advancedEventSelectors"`
 	// Log group to which CloudTrail logs will be delivered.
-	CloudWatchLogsGroup *cloudwatch.OptionalLogGroup `pulumi:"cloudWatchLogsGroup"`
+	CloudWatchLogsGroup *awsx.OptionalLogGroup `pulumi:"cloudWatchLogsGroup"`
 	// Whether log file integrity validation is enabled. Defaults to `false`.
 	EnableLogFileValidation *bool `pulumi:"enableLogFileValidation"`
 	// Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.
@@ -65,7 +64,7 @@ type trailArgs struct {
 	// Specifies the name of the advanced event selector.
 	Name *string `pulumi:"name"`
 	// S3 bucket designated for publishing log files.
-	S3Bucket *s3.RequiredBucket `pulumi:"s3Bucket"`
+	S3Bucket *awsx.RequiredBucket `pulumi:"s3Bucket"`
 	// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
 	S3KeyPrefix *string `pulumi:"s3KeyPrefix"`
 	// Name of the Amazon SNS topic defined for notification of log file delivery.
@@ -79,7 +78,7 @@ type TrailArgs struct {
 	// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
 	AdvancedEventSelectors cloudtrail.TrailAdvancedEventSelectorArrayInput
 	// Log group to which CloudTrail logs will be delivered.
-	CloudWatchLogsGroup *cloudwatch.OptionalLogGroupArgs
+	CloudWatchLogsGroup *awsx.OptionalLogGroupArgs
 	// Whether log file integrity validation is enabled. Defaults to `false`.
 	EnableLogFileValidation pulumi.BoolPtrInput
 	// Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.
@@ -99,7 +98,7 @@ type TrailArgs struct {
 	// Specifies the name of the advanced event selector.
 	Name pulumi.StringPtrInput
 	// S3 bucket designated for publishing log files.
-	S3Bucket *s3.RequiredBucketArgs
+	S3Bucket *awsx.RequiredBucketArgs
 	// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
 	S3KeyPrefix pulumi.StringPtrInput
 	// Name of the Amazon SNS topic defined for notification of log file delivery.
