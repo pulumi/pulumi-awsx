@@ -11,7 +11,6 @@
     "homepage": "https://pulumi.io",
     "repository": "https://github.com/pulumi/pulumi-awsx",
     "scripts": {
-        "postinstall": "install-peers",
         "gen-scripts": "curl https://raw.githubusercontent.com/pulumi/pulumi/master/pkg/codegen/schema/pulumi.json | json2ts -o scripts/pulumi-schema.d.ts --unreachableDefinitions --ignoreMinAndMaxItems",
         "gen-types": "ts-node scripts/generate-provider-types.ts",
         "format": "prettier --write .",
@@ -20,9 +19,7 @@
     "dependencies": {
         "@pulumi/docker": "^3.0.0",
         "@types/aws-lambda": "^8.10.23",
-        "mime": "^2.0.0"
-    },
-    "peerDependencies": {
+        "mime": "^2.0.0",
         "@pulumi/aws": "^4.23.0",
         "@pulumi/pulumi": "^3.0.0"
     },
