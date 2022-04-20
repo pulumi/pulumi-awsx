@@ -1,7 +1,7 @@
 #!/bin/bash
 # publish.sh builds and publishes a release.
 set -o nounset -o errexit -o pipefail
-ROOT=$(dirname $0)/..
+ROOT=$(pwd)
 
 echo "Publishing NPM packages to NPMjs.com:"
 
@@ -9,10 +9,16 @@ echo "Publishing NPM packages to NPMjs.com:"
 # development and testing the SDK, since we use symlinking for those workflows.  Namely, we must promote the SDK
 # dependencies from peerDependencies that are resolved via those links, to real installable dependencies.
 publish() {
-    node $(dirname $0)/promote.js ${@:2} < \
-        ${ROOT}/nodejs/$1/bin/package.json > \
-        ${ROOT}/nodejs/$1/bin/package.json.publish
-    pushd ${ROOT}/nodejs/$1/bin
+    mkdir -p "${ROOT}/sdk/nodejs/bin/scripts"
+
+    cp "${ROOT}/scripts/install-pulumi-plugin.js" \
+       "${ROOT}/sdk/nodejs/bin/scripts"
+
+    node "${ROOT}/add-plugin-installer-script.js" < \
+        "${ROOT}/sdk/nodejs/bin/package.json" > \
+        "${ROOT}/sdk/nodejs/bin/package.json.publish"
+
+    pushd ${ROOT}/sdk/nodejs/bin
     mv package.json package.json.dev
     mv package.json.publish package.json
 
@@ -91,4 +97,4 @@ publish() {
         -exec dotnet nuget push -k "${NUGET_PUBLISH_KEY}" -s https://api.nuget.org/v3/index.json {} ';'
 }
 
-publish awsx
+publish
