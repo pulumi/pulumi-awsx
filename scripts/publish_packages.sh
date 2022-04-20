@@ -88,12 +88,12 @@ publish() {
     echo "Publishing Pip package to pypi as ${PYPI_PUBLISH_USERNAME}:"
     twine upload \
         -u "${PYPI_PUBLISH_USERNAME}" -p "${PYPI_PASSWORD}" \
-        "${SOURCE_ROOT}/sdk/python/bin/dist/*.tar.gz" \
+        "${ROOT}/sdk/python/bin/dist/*.tar.gz" \
         --skip-existing \
         --verbose
 
     # Start DotNet Publish
-    find "${SOURCE_ROOT}/sdk/dotnet/bin/Debug/" -name 'Pulumi.*.nupkg' \
+    find "${ROOT}/sdk/dotnet/bin/Debug/" -name 'Pulumi.*.nupkg' \
         -exec dotnet nuget push -k "${NUGET_PUBLISH_KEY}" -s https://api.nuget.org/v3/index.json {} ';'
 }
 
