@@ -18,24 +18,35 @@ publish() {
 
     NPM_TAG="dev"
 
-    # We use the "features/" prefix on branches that we want to build and publish for doing
-    # cross repo work. But in this case, we don't want to publish over "dev", since the bits
-    # could be totally busted and the dev tag tracks master.
-    if [[ "${TRAVIS_BRANCH:-}" == features/* ]]; then
-        NPM_TAG=$(echo "${TRAVIS_BRANCH}" | sed -e 's|^features/|feature-|g')
-    fi
-    if [[ "${TRAVIS_BRANCH:-}" == feature-* ]]; then
-        NPM_TAG=$(echo "${TRAVIS_BRANCH}")
+    ## We need split the GITHUB_REF into the correct parts
+    ## so that we can test for NPM Tags
+    IFS='/' read -ra my_array <<< "${GITHUB_REF:-}"
+    BRANCH_NAME="${my_array[2]}"
+
+    if [[ "${BRANCH_NAME}" == features/* ]]; then
+        NPM_TAG=$(echo "${BRANCH_NAME}" | sed -e 's|^features/|feature-|g')
     fi
 
-    PKG_NAME=$(jq -r .name < package.json)
-    PKG_VERSION=$(jq -r .version < package.json)
+    if [[ "${BRANCH_NAME}" == feature-* ]]; then
+        NPM_TAG=$(echo "${BRANCH_NAME}")
+    fi
 
     # If the package doesn't have a pre-release tag, use the tag of latest instead of
     # dev. NPM uses this tag as the default version to add, so we want it to mean
     # the newest released version.
-    if [[ "${PKG_VERSION}" != *-* ]]; then
+    PKG_NAME=$(jq -r .name < package.json)
+    PKG_VERSION=$(jq -r .version < package.json)
+    if [[ "${PKG_VERSION}" != *-dev* ]] && [[ "${PKG_VERSION}" != *-alpha* ]]; then
         NPM_TAG="latest"
+    fi
+
+    # we need to set explicit beta and rc tags to ensure that we don't mutate to use the latest tag
+    if [[ "${PKG_VERSION}" == *-beta* ]]; then
+        NPM_TAG="beta"
+    fi
+
+    if [[ "${PKG_VERSION}" == *-rc* ]]; then
+        NPM_TAG="rc"
     fi
 
     # Now, perform the publish. The logic here is a little goofy because npm provides
@@ -64,6 +75,20 @@ publish() {
     mv package.json package.json.publish
     mv package.json.dev package.json
     popd
+
+    # Start Python Publish
+    PYPI_PUBLISH_USERNAME="pulumi"
+
+    echo "Publishing Pip package to pypi as ${PYPI_PUBLISH_USERNAME}:"
+    twine upload \
+        -u "${PYPI_PUBLISH_USERNAME}" -p "${PYPI_PASSWORD}" \
+        "${SOURCE_ROOT}/sdk/python/bin/dist/*.tar.gz" \
+        --skip-existing \
+        --verbose
+
+    # Start DotNet Publish
+    find "${SOURCE_ROOT}/sdk/dotnet/bin/Debug/" -name 'Pulumi.*.nupkg' \
+        -exec dotnet nuget push -k "${NUGET_PUBLISH_KEY}" -s https://api.nuget.org/v3/index.json {} ';'
 }
 
 publish awsx

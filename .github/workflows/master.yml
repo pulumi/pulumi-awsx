@@ -113,16 +113,16 @@ jobs:
           repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.goversion }}
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
@@ -160,6 +160,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
+        dotnetversion:
+          - 3.1
         goversion:
           - 1.17.x
         language:
@@ -190,10 +192,6 @@ jobs:
           role-external-id: upload-pulumi-release
           role-session-name: ${{ env.PROVIDER}}@githubActions
           role-to-assume: ${{ secrets.AWS_UPLOAD_ROLE_ARN }}
-      - name: Setup Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.16.x
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
@@ -209,7 +207,7 @@ jobs:
         run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
           }}/bin
       - name: Restore binary perms
-        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
+        run: find ${{ github.workspace }}/bin -name "pulumi-*-${{ env.PROVIDER }}" -print
           -exec chmod +x {} \;
       - name: Create Provider Binaries
         run: make dist
@@ -222,47 +220,81 @@ jobs:
 #            dist/*.tar.gz
 #        env:
 #          GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
-#  publish_sdk:
-#    name: publish_sdk
-#    needs: test
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Checkout Repo
-#        uses: actions/checkout@v2
-#      - name: Checkout Scripts Repo
-#        uses: actions/checkout@v2
-#        with:
-#          path: ci-scripts
-#          repository: pulumi/scripts
-#      - name: Unshallow clone for tags
-#        run: git fetch --prune --unshallow --tags
-#      - name: Install Go
-#        uses: actions/setup-go@v2
-#        with:
-#          go-version: ${{ matrix.goversion }}
-#      - name: Install pulumictl
-#        uses: jaxxstorm/action-install-gh-release@v1.1.0
-#        with:
-#          repo: pulumi/pulumictl
-#      - name: Install Pulumi CLI
-#        uses: pulumi/action-install-pulumi-cli@v1.0.1
-#      - name: Setup Node
-#        uses: actions/setup-node@v1
-#        with:
-#          always-auth: true
-#          registry-url: https://registry.npmjs.org
-#      - name: Download NodeJS SDK
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: nodejs-sdk.tar.gz
-#          path: ${{ github.workspace}}/nodejs
-#      - name: Uncompress SDK folder
-#        run: tar -zxf ${{ github.workspace}}/nodejs/nodejs.tar.gz -C ${{
-#          github.workspace}}/nodejs/awsx
-#      - env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-#        name: Publish SDK
-#        run: ./scripts/publish_packages.sh
+  publish_sdk:
+    name: publish_sdk
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        with:
+          repo: pulumi/pulumictl
+      - name: Install Pulumi CLI
+        uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.goversion }}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          always-auth: true
+          registry-url: https://registry.npmjs.org
+          node-version: ${{matrix.nodeversion}}
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.pythonversion}}
+      - name: Download python SDK
+        uses: actions/download-artifact@v2
+        with:
+          name: python-sdk.tar.gz
+          path: ${{ github.workspace}}/sdk/
+      - name: Uncompress python SDK
+        run: tar -zxf ${{github.workspace}}/sdk/python.tar.gz -C ${{github.workspace}}/sdk/python
+      - name: Download dotnet SDK
+        uses: actions/download-artifact@v2
+        with:
+          name: dotnet-sdk.tar.gz
+          path: ${{ github.workspace}}/sdk/
+      - name: Uncompress dotnet SDK
+        run: tar -zxf ${{github.workspace}}/sdk/dotnet.tar.gz -C ${{github.workspace}}/sdk/dotnet
+      - name: Download nodejs SDK
+        uses: actions/download-artifact@v2
+        with:
+          name: nodejs-sdk.tar.gz
+          path: ${{ github.workspace}}/sdk/
+      - name: Uncompress nodejs SDK
+        run: tar -zxf ${{github.workspace}}/sdk/nodejs.tar.gz -C ${{github.workspace}}/sdk/nodejs
+      - run: python -m pip install pip twine
+      - env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        name: Publish SDK
+        run: ./scripts/publish_packages.sh
+    strategy:
+      fail-fast: false
+      matrix:
+        goversion:
+          - 1.17.x
+        dotnetversion:
+          - 3.1
+        nodeversion:
+          - 14.x
+        pythonversion:
+          - "3.7"
   acceptance-test:
     needs: build_sdk
     runs-on: ubuntu-latest
@@ -276,16 +308,16 @@ jobs:
           repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.goversion }}
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
@@ -295,6 +327,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{matrix.pythonversion}}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
       - name: Install Python deps
         run: |-
           pip3 install virtualenv==20.0.23
@@ -346,6 +382,8 @@ jobs:
       matrix:
         goversion:
           - 1.17.x
+        dotnetversion:
+          - 3.1
         pythonversion:
           - 3.8
         nodeversion:
@@ -362,7 +400,6 @@ name: master
   push:
     branches:
       - master
-      - awsx-mlc
     paths-ignore:
       - CHANGELOG.md
     tags-ignore:
