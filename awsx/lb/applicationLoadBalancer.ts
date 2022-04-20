@@ -26,15 +26,13 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
         super(
             name,
             {},
-            {
-                ...opts,
+            pulumi.mergeOptions(opts, {
                 aliases: [
-                    ...(opts.aliases ?? []),
                     {
                         name: "awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer",
                     },
                 ],
-            },
+            }),
         );
         this.loadBalancer = new aws.lb.LoadBalancer(name, args, {
             parent: this,
