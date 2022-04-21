@@ -99,7 +99,7 @@ export interface FargateTaskDefinitionArgs {
 }
 export abstract class ApplicationLoadBalancer extends pulumi.ComponentResource {
     public defaultSecurityGroup?: aws.ec2.SecurityGroup | pulumi.Output<aws.ec2.SecurityGroup>;
-    public defaultTargetGroup?: aws.lb.TargetGroup | pulumi.Output<aws.lb.TargetGroup>;
+    public defaultTargetGroup!: aws.lb.TargetGroup | pulumi.Output<aws.lb.TargetGroup>;
     public listeners?: aws.lb.Listener[] | pulumi.Output<aws.lb.Listener[]>;
     public loadBalancer!: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
     public vpcId?: string | pulumi.Output<string>;
@@ -109,7 +109,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
     readonly defaultSecurityGroup?: DefaultSecurityGroupInputs;
-    readonly defaultTargetGroup?: DefaultTargetGroupInputs;
+    readonly defaultTargetGroup?: TargetGroupInputs;
     readonly desyncMitigationMode?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
@@ -634,16 +634,6 @@ export interface TaskDefinitionVolumeFromInputs {
 export interface TaskDefinitionVolumeFromOutputs {
     readonly readOnly?: pulumi.Output<boolean>;
     readonly sourceContainer?: pulumi.Output<string>;
-}
-export interface DefaultTargetGroupInputs {
-    readonly args?: TargetGroupInputs;
-    readonly skip?: boolean;
-    readonly targetGroupArn?: pulumi.Input<string>;
-}
-export interface DefaultTargetGroupOutputs {
-    readonly args?: TargetGroupOutputs;
-    readonly skip?: boolean;
-    readonly targetGroupArn?: pulumi.Output<string>;
 }
 export interface ListenerInputs {
     readonly alpnPolicy?: pulumi.Input<string>;

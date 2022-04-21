@@ -10,66 +10,9 @@ from .. import _utilities
 import pulumi_aws
 
 __all__ = [
-    'DefaultTargetGroupArgs',
     'ListenerArgs',
     'TargetGroupArgs',
 ]
-
-@pulumi.input_type
-class DefaultTargetGroupArgs:
-    def __init__(__self__, *,
-                 args: Optional['TargetGroupArgs'] = None,
-                 skip: Optional[bool] = None,
-                 target_group_arn: Optional[pulumi.Input[str]] = None):
-        """
-        Target Group with default setup unless explicitly skipped or an existing security group id provided.
-        :param 'TargetGroupArgs' args: Args to use when creating the target group. Can't be specified if [targetGroupArn] is used.
-        :param bool skip: Skips creation of the target group if set to `true`.
-        :param pulumi.Input[str] target_group_arn: ARN of existing target group to use instead of creating a new target group. Cannot be used in combination with [args].
-        """
-        if args is not None:
-            pulumi.set(__self__, "args", args)
-        if skip is not None:
-            pulumi.set(__self__, "skip", skip)
-        if target_group_arn is not None:
-            pulumi.set(__self__, "target_group_arn", target_group_arn)
-
-    @property
-    @pulumi.getter
-    def args(self) -> Optional['TargetGroupArgs']:
-        """
-        Args to use when creating the target group. Can't be specified if [targetGroupArn] is used.
-        """
-        return pulumi.get(self, "args")
-
-    @args.setter
-    def args(self, value: Optional['TargetGroupArgs']):
-        pulumi.set(self, "args", value)
-
-    @property
-    @pulumi.getter
-    def skip(self) -> Optional[bool]:
-        """
-        Skips creation of the target group if set to `true`.
-        """
-        return pulumi.get(self, "skip")
-
-    @skip.setter
-    def skip(self, value: Optional[bool]):
-        pulumi.set(self, "skip", value)
-
-    @property
-    @pulumi.getter(name="targetGroupArn")
-    def target_group_arn(self) -> Optional[pulumi.Input[str]]:
-        """
-        ARN of existing target group to use instead of creating a new target group. Cannot be used in combination with [args].
-        """
-        return pulumi.get(self, "target_group_arn")
-
-    @target_group_arn.setter
-    def target_group_arn(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "target_group_arn", value)
-
 
 @pulumi.input_type
 class ListenerArgs:

@@ -7,16 +7,6 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
 )
 
-// Target Group with default setup unless explicitly skipped or an existing security group id provided.
-type DefaultTargetGroup struct {
-	// Args to use when creating the target group. Can't be specified if [targetGroupArn] is used.
-	Args *TargetGroup `pulumi:"args"`
-	// Skips creation of the target group if set to `true`.
-	Skip *bool `pulumi:"skip"`
-	// ARN of existing target group to use instead of creating a new target group. Cannot be used in combination with [args].
-	TargetGroupArn *string `pulumi:"targetGroupArn"`
-}
-
 // Provides a Load Balancer Listener resource.
 //
 // > **Note:** `aws.alb.Listener` is known as `aws.lb.Listener`. The functionality is identical.

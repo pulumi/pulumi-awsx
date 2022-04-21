@@ -22,7 +22,7 @@ namespace Pulumi.Awsx.Lb
         /// Default target group, if auto-created
         /// </summary>
         [Output("defaultTargetGroup")]
-        public Output<Pulumi.Aws.LB.TargetGroup?> DefaultTargetGroup { get; private set; } = null!;
+        public Output<Pulumi.Aws.LB.TargetGroup> DefaultTargetGroup { get; private set; } = null!;
 
         /// <summary>
         /// Listeners created as part of this load balancer
@@ -92,7 +92,7 @@ namespace Pulumi.Awsx.Lb
         /// Options creating a default target group.
         /// </summary>
         [Input("defaultTargetGroup")]
-        public Inputs.DefaultTargetGroupArgs? DefaultTargetGroup { get; set; }
+        public Inputs.TargetGroupArgs? DefaultTargetGroup { get; set; }
 
         /// <summary>
         /// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.

@@ -648,24 +648,6 @@ export namespace ecs {
 
 export namespace lb {
     /**
-     * Target Group with default setup unless explicitly skipped or an existing security group id provided.
-     */
-    export interface DefaultTargetGroupArgs {
-        /**
-         * Args to use when creating the target group. Can't be specified if [targetGroupArn] is used.
-         */
-        args?: inputs.lb.TargetGroupArgs;
-        /**
-         * Skips creation of the target group if set to `true`.
-         */
-        skip?: boolean;
-        /**
-         * ARN of existing target group to use instead of creating a new target group. Cannot be used in combination with [args].
-         */
-        targetGroupArn?: pulumi.Input<string>;
-    }
-
-    /**
      * Provides a Load Balancer Listener resource.
      *
      * > **Note:** `aws.alb.Listener` is known as `aws.lb.Listener`. The functionality is identical.

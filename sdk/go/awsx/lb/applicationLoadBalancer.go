@@ -54,7 +54,7 @@ type applicationLoadBalancerArgs struct {
 	// Options for creating a default security group if [securityGroups] not specified.
 	DefaultSecurityGroup *awsx.DefaultSecurityGroup `pulumi:"defaultSecurityGroup"`
 	// Options creating a default target group.
-	DefaultTargetGroup *DefaultTargetGroup `pulumi:"defaultTargetGroup"`
+	DefaultTargetGroup *TargetGroup `pulumi:"defaultTargetGroup"`
 	// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
 	DesyncMitigationMode *string `pulumi:"desyncMitigationMode"`
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
@@ -103,7 +103,7 @@ type ApplicationLoadBalancerArgs struct {
 	// Options for creating a default security group if [securityGroups] not specified.
 	DefaultSecurityGroup *awsx.DefaultSecurityGroupArgs
 	// Options creating a default target group.
-	DefaultTargetGroup *DefaultTargetGroupArgs
+	DefaultTargetGroup *TargetGroupArgs
 	// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
 	DesyncMitigationMode pulumi.StringPtrInput
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.

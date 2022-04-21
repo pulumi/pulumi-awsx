@@ -18,7 +18,6 @@ const cluster = new classic.ecs.Cluster("cluster", {
 const lb = new awsx.lb.ApplicationLoadBalancer("nginx-lb", {
     subnetIds: pulumi.output(vpc.publicSubnetIds),
 });
-const targetGroup = lb.defaultTargetGroup.apply((t) => t!);
 
 const service = new awsx.ecs.FargateService("my-service", {
     cluster: cluster.cluster.arn,
@@ -28,7 +27,7 @@ const service = new awsx.ecs.FargateService("my-service", {
             cpu: 512,
             memory: 128,
             essential: true,
-            portMappings: [{ targetGroup }],
+            portMappings: [{ targetGroup: lb.defaultTargetGroup }],
         },
     },
     networkConfiguration: {

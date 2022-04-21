@@ -26,7 +26,6 @@ func generateLb(awsSpec schema.PackageSpec) schema.PackageSpec {
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx:lb:Listener":           lbListener(awsSpec),
 			"awsx:lb:TargetGroup":        lbTargetGroup(awsSpec),
-			"awsx:lb:DefaultTargetGroup": defaultTargetGroup(awsSpec),
 		},
 	}
 }
@@ -60,7 +59,7 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties["defaultTargetGroup"] = schema.PropertySpec{
 		Description: "Options creating a default target group.",
 		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:lb:DefaultTargetGroup",
+			Ref:   "#/types/awsx:lb:TargetGroup",
 			Plain: true,
 		},
 	}
@@ -117,7 +116,7 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					},
 				},
 			},
-			Required: []string{"loadBalancer"},
+			Required: []string{"loadBalancer", "defaultTargetGroup"},
 		},
 	}
 }
@@ -143,37 +142,6 @@ func lbTargetGroup(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 			Type:        "object",
 			Description: spec.Description,
 			Properties:  renameAwsPropertiesRefs(spec.InputProperties),
-		},
-	}
-}
-
-func defaultTargetGroup(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	return schema.ComplexTypeSpec{
-		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "Target Group with default setup unless explicitly skipped or an existing security group id provided.",
-			Properties: map[string]schema.PropertySpec{
-				"skip": {
-					Description: "Skips creation of the target group if set to `true`.",
-					TypeSpec: schema.TypeSpec{
-						Type:  "boolean",
-						Plain: true,
-					},
-				},
-				"targetGroupArn": {
-					Description: "ARN of existing target group to use instead of creating a new target group. Cannot be used in combination with [args].",
-					TypeSpec: schema.TypeSpec{
-						Type: "string",
-					},
-				},
-				"args": {
-					Description: "Args to use when creating the target group. Can't be specified if [targetGroupArn] is used.",
-					TypeSpec: schema.TypeSpec{
-						Ref:   "#/types/awsx:lb:TargetGroup",
-						Plain: true,
-					},
-				},
-			},
 		},
 	}
 }

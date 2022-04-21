@@ -29,7 +29,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
     /**
      * Default target group, if auto-created
      */
-    public readonly defaultTargetGroup!: pulumi.Output<pulumiAws.lb.TargetGroup | undefined>;
+    public readonly defaultTargetGroup!: pulumi.Output<pulumiAws.lb.TargetGroup>;
     /**
      * Listeners created as part of this load balancer
      */
@@ -107,7 +107,7 @@ export interface ApplicationLoadBalancerArgs {
     /**
      * Options creating a default target group.
      */
-    defaultTargetGroup?: inputs.lb.DefaultTargetGroupArgs;
+    defaultTargetGroup?: inputs.lb.TargetGroupArgs;
     /**
      * Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
      */

@@ -104,29 +104,17 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             parent: this,
         });
 
-        let defaultTargetGroupArn = defaultTargetGroup?.targetGroupArn;
-
-        if (defaultTargetGroupArn && defaultTargetGroup?.targetGroupArn) {
-            throw new Error(
-                "Only one of [defaultTargetGroup] [args] or [defaultTargetGroupArn] can be specified",
-            );
-        }
-        if (!defaultTargetGroup?.skip) {
-            if (!defaultTargetGroup?.targetGroupArn) {
-                this.defaultTargetGroup = new aws.lb.TargetGroup(
-                    name,
-                    { vpcId: this.vpcId, ...defaultTargetGroup?.args },
-                    { parent: this },
-                );
-                defaultTargetGroupArn = this.defaultTargetGroup.arn;
-            }
-        }
+        this.defaultTargetGroup = new aws.lb.TargetGroup(
+            name,
+            { vpcId: this.vpcId, ...defaultTargetGroup },
+            { parent: this },
+        );
 
         if (listeners) {
             const defaultActions: aws.lb.ListenerArgs["defaultActions"] = [
                 {
                     type: "forward",
-                    targetGroupArn: defaultTargetGroupArn,
+                    targetGroupArn: this.defaultTargetGroup.arn,
                 },
             ];
             this.listeners = listeners.map(
