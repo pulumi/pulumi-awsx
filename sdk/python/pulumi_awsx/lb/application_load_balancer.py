@@ -28,6 +28,7 @@ class ApplicationLoadBalancerArgs:
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
+                 listener: Optional['ListenerArgs'] = None,
                  listeners: Optional[Sequence['ListenerArgs']] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
@@ -51,7 +52,8 @@ class ApplicationLoadBalancerArgs:
         :param pulumi.Input[int] idle_timeout: The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal.
         :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
-        :param Sequence['ListenerArgs'] listeners: List of listeners to create
+        :param 'ListenerArgs' listener: A listener to create. Only one of [listener] and [listeners] can be specified.
+        :param Sequence['ListenerArgs'] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
         :param pulumi.Input[str] name: The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
                must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
                this provider will autogenerate a name beginning with `tf-lb`.
@@ -88,6 +90,8 @@ class ApplicationLoadBalancerArgs:
             pulumi.set(__self__, "internal", internal)
         if ip_address_type is not None:
             pulumi.set(__self__, "ip_address_type", ip_address_type)
+        if listener is not None:
+            pulumi.set(__self__, "listener", listener)
         if listeners is not None:
             pulumi.set(__self__, "listeners", listeners)
         if name is not None:
@@ -252,9 +256,21 @@ class ApplicationLoadBalancerArgs:
 
     @property
     @pulumi.getter
+    def listener(self) -> Optional['ListenerArgs']:
+        """
+        A listener to create. Only one of [listener] and [listeners] can be specified.
+        """
+        return pulumi.get(self, "listener")
+
+    @listener.setter
+    def listener(self, value: Optional['ListenerArgs']):
+        pulumi.set(self, "listener", value)
+
+    @property
+    @pulumi.getter
     def listeners(self) -> Optional[Sequence['ListenerArgs']]:
         """
-        List of listeners to create
+        List of listeners to create. Only one of [listener] and [listeners] can be specified.
         """
         return pulumi.get(self, "listeners")
 
@@ -368,6 +384,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
+                 listener: Optional[pulumi.InputType['ListenerArgs']] = None,
                  listeners: Optional[Sequence[pulumi.InputType['ListenerArgs']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
@@ -394,7 +411,8 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[int] idle_timeout: The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal.
         :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
-        :param Sequence[pulumi.InputType['ListenerArgs']] listeners: List of listeners to create
+        :param pulumi.InputType['ListenerArgs'] listener: A listener to create. Only one of [listener] and [listeners] can be specified.
+        :param Sequence[pulumi.InputType['ListenerArgs']] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
         :param pulumi.Input[str] name: The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
                must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
                this provider will autogenerate a name beginning with `tf-lb`.
@@ -442,6 +460,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
+                 listener: Optional[pulumi.InputType['ListenerArgs']] = None,
                  listeners: Optional[Sequence[pulumi.InputType['ListenerArgs']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
@@ -476,6 +495,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["idle_timeout"] = idle_timeout
             __props__.__dict__["internal"] = internal
             __props__.__dict__["ip_address_type"] = ip_address_type
+            __props__.__dict__["listener"] = listener
             __props__.__dict__["listeners"] = listeners
             __props__.__dict__["name"] = name
             __props__.__dict__["name_prefix"] = name_prefix

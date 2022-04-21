@@ -63,8 +63,15 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Plain: true,
 		},
 	}
+	inputProperties["listener"] = schema.PropertySpec{
+		Description: "A listener to create. Only one of [listener] and [listeners] can be specified.",
+		TypeSpec: schema.TypeSpec{
+			Ref:   "#/types/awsx:lb:Listener",
+			Plain: true,
+		},
+	}
 	inputProperties["listeners"] = schema.PropertySpec{
-		Description: "List of listeners to create",
+		Description: "List of listeners to create. Only one of [listener] and [listeners] can be specified.",
 		TypeSpec: schema.TypeSpec{
 			Type:  "array",
 			Plain: true,

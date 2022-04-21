@@ -1622,6 +1622,11 @@
                     "type": "string",
                     "description": "The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`\n"
                 },
+                "listener": {
+                    "$ref": "#/types/awsx:lb:Listener",
+                    "plain": true,
+                    "description": "A listener to create. Only one of [listener] and [listeners] can be specified."
+                },
                 "listeners": {
                     "type": "array",
                     "items": {
@@ -1629,7 +1634,7 @@
                         "plain": true
                     },
                     "plain": true,
-                    "description": "List of listeners to create"
+                    "description": "List of listeners to create. Only one of [listener] and [listeners] can be specified."
                 },
                 "name": {
                     "type": "string",

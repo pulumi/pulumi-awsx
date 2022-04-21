@@ -118,6 +118,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
     readonly ipAddressType?: pulumi.Input<string>;
+    readonly listener?: ListenerInputs;
     readonly listeners?: ListenerInputs[];
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;

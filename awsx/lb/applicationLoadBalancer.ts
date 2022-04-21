@@ -40,6 +40,7 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             subnets,
             defaultTargetGroup,
             defaultSecurityGroup,
+            listener,
             listeners,
             ...restArgs
         } = args;
@@ -104,9 +105,16 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             parent: this,
         });
 
+        const defaultProtocol = getDefaultProtocol(args);
+
         this.defaultTargetGroup = new aws.lb.TargetGroup(
             name,
-            { vpcId: this.vpcId, ...defaultTargetGroup },
+            {
+                vpcId: this.vpcId,
+                targetType: "ip",
+                ...defaultProtocol,
+                ...defaultTargetGroup,
+            },
             { parent: this },
         );
 
@@ -132,4 +140,53 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             );
         }
     }
+}
+
+/** Get default port if there's just 1 listener */
+function getDefaultProtocol(
+    args: Readonly<schema.ApplicationLoadBalancerArgs>,
+): { port: pulumi.Input<number>; protocol: pulumi.Input<string> } | undefined {
+    let { listener } = args;
+    if (args.listeners) {
+        if (args.listeners.length !== 1) {
+            listener = args.listeners[0];
+        } else {
+            return undefined;
+        }
+    }
+    if (listener) {
+        let { port, protocol } = listener;
+        if (port && protocol) {
+            return { port, protocol };
+        }
+        if (port) {
+            return {
+                port,
+                protocol: protocol ?? pulumi.output(port).apply(portToProtocol),
+            };
+        }
+        if (protocol) {
+            return {
+                protocol,
+                port: pulumi.output(protocol).apply(protocolToPort),
+            };
+        }
+    }
+    return { port: 80, protocol: "HTTP" };
+}
+
+function portToProtocol(port: number) {
+    if (port === 443) {
+        return "HTTPS";
+    }
+
+    return "HTTP";
+}
+
+function protocolToPort(protocol: string) {
+    if (protocol === "HTTPS") {
+        return 443;
+    }
+
+    return 80;
 }

@@ -16,7 +16,7 @@ const cluster = new classic.ecs.Cluster("cluster", {
 
 // // Create a load balancer on port 80 and spin up two instances of Nginx.
 const lb = new awsx.lb.ApplicationLoadBalancer("nginx-lb", {
-    subnetIds: pulumi.output(vpc.publicSubnetIds),
+    subnetIds: vpc.publicSubnetIds,
 });
 
 const service = new awsx.ecs.FargateService("my-service", {

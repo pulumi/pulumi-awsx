@@ -72,7 +72,9 @@ type applicationLoadBalancerArgs struct {
 	Internal *bool `pulumi:"internal"`
 	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
 	IpAddressType *string `pulumi:"ipAddressType"`
-	// List of listeners to create
+	// A listener to create. Only one of [listener] and [listeners] can be specified.
+	Listener *Listener `pulumi:"listener"`
+	// List of listeners to create. Only one of [listener] and [listeners] can be specified.
 	Listeners []Listener `pulumi:"listeners"`
 	// The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
 	// must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
@@ -121,7 +123,9 @@ type ApplicationLoadBalancerArgs struct {
 	Internal pulumi.BoolPtrInput
 	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
 	IpAddressType pulumi.StringPtrInput
-	// List of listeners to create
+	// A listener to create. Only one of [listener] and [listeners] can be specified.
+	Listener *ListenerArgs
+	// List of listeners to create. Only one of [listener] and [listeners] can be specified.
 	Listeners []ListenerArgs
 	// The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
 	// must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,

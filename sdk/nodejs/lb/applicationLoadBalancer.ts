@@ -66,6 +66,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["idleTimeout"] = args ? args.idleTimeout : undefined;
             resourceInputs["internal"] = args ? args.internal : undefined;
             resourceInputs["ipAddressType"] = args ? args.ipAddressType : undefined;
+            resourceInputs["listener"] = args ? args.listener : undefined;
             resourceInputs["listeners"] = args ? args.listeners : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["namePrefix"] = args ? args.namePrefix : undefined;
@@ -142,7 +143,11 @@ export interface ApplicationLoadBalancerArgs {
      */
     ipAddressType?: pulumi.Input<string>;
     /**
-     * List of listeners to create
+     * A listener to create. Only one of [listener] and [listeners] can be specified.
+     */
+    listener?: inputs.lb.ListenerArgs;
+    /**
+     * List of listeners to create. Only one of [listener] and [listeners] can be specified.
      */
     listeners?: inputs.lb.ListenerArgs[];
     /**

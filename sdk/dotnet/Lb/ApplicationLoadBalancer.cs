@@ -143,11 +143,17 @@ namespace Pulumi.Awsx.Lb
         [Input("ipAddressType")]
         public Input<string>? IpAddressType { get; set; }
 
+        /// <summary>
+        /// A listener to create. Only one of [listener] and [listeners] can be specified.
+        /// </summary>
+        [Input("listener")]
+        public Inputs.ListenerArgs? Listener { get; set; }
+
         [Input("listeners")]
         private List<Inputs.ListenerArgs>? _listeners;
 
         /// <summary>
-        /// List of listeners to create
+        /// List of listeners to create. Only one of [listener] and [listeners] can be specified.
         /// </summary>
         public List<Inputs.ListenerArgs> Listeners
         {
