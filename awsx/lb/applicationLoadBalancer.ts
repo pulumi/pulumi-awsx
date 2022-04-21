@@ -124,18 +124,20 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             { parent: this },
         );
 
-        const defaultActions: aws.lb.ListenerArgs["defaultActions"] = [
+        const defaultActions = [
             {
                 type: "forward",
                 targetGroupArn: this.defaultTargetGroup.arn,
             },
         ];
+
         if (listener) {
             this.listeners = [
                 new aws.lb.Listener(
                     `${name}-0`,
                     {
                         defaultActions,
+                        ...defaultProtocol,
                         ...listener,
                         loadBalancerArn: this.loadBalancer.arn,
                     },
@@ -150,6 +152,7 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
                         `${name}-${i}`,
                         {
                             defaultActions,
+                            ...getListenerProtocol(args),
                             ...args,
                             loadBalancerArn: this.loadBalancer.arn,
                         },
@@ -162,6 +165,7 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
                     `${name}-0`,
                     {
                         defaultActions,
+                        ...defaultProtocol,
                         loadBalancerArn: this.loadBalancer.arn,
                     },
                     { parent: this },
@@ -183,6 +187,12 @@ function getDefaultProtocol(
             return undefined;
         }
     }
+    return getListenerProtocol(listener);
+}
+
+function getListenerProtocol(
+    listener: schema.ListenerInputs | undefined,
+): { port: pulumi.Input<number>; protocol: pulumi.Input<string> } | undefined {
     if (listener) {
         let { port, protocol } = listener;
         if (port && protocol) {
