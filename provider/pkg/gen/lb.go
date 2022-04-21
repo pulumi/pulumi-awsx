@@ -24,6 +24,7 @@ func generateLb(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:lb:ApplicationLoadBalancer": applicationLoadBalancer(awsSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
+			"awsx:lb:Listener": lbListener(awsSpec),
 		},
 	}
 }
@@ -54,6 +55,17 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Plain: true,
 		},
 	}
+	inputProperties["listeners"] = schema.PropertySpec{
+		Description: "List of listeners to create",
+		TypeSpec: schema.TypeSpec{
+			Type: "array",
+			Plain: true,
+			Items: &schema.TypeSpec{
+				Ref: "#/types/awsx:lb:Listener",
+				Plain: true,
+			},
+		},
+	}
 
 	return schema.ResourceSpec{
 		IsComponent: true,
@@ -74,8 +86,38 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 						Ref: awsRef("#/resources/aws:ec2%2fsecurityGroup:SecurityGroup"),
 					},
 				},
+				"listeners": {
+					Description: "Listeners created as part of this load balancer",
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Ref: awsRef("#/resources/aws:lb%2flistener:Listener"),
+						},
+					},
+				},
 			},
 			Required: []string{"loadBalancer"},
+		},
+	}
+}
+
+func lbListener(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+	spec := awsSpec.Resources["aws:lb/listener:Listener"]
+	properties := renameAwsPropertiesRefs(spec.InputProperties)
+	delete(properties, "loadBalancerArn")
+	required := make([]string, 0, len(spec.RequiredInputs))
+	for _, key := range spec.RequiredInputs {
+		if key != "loadBalancerArn" {
+			required = append(required, key)
+		}
+	}
+
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type: "object",
+			Description: spec.Description,
+			Properties: properties,
+			Required: required,
 		},
 	}
 }

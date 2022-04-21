@@ -35,7 +35,13 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             }),
         );
 
-        const { subnetIds, subnets, defaultSecurityGroup, ...restArgs } = args;
+        const {
+            subnetIds,
+            subnets,
+            defaultSecurityGroup,
+            listeners,
+            ...restArgs
+        } = args;
         const lbArgs: aws.lb.LoadBalancerArgs = restArgs;
 
         if (subnetIds && subnets) {
@@ -77,5 +83,16 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
         this.loadBalancer = new aws.lb.LoadBalancer(name, lbArgs, {
             parent: this,
         });
+
+        if (listeners) {
+            this.listeners = listeners.map(
+                (args, i) =>
+                    new aws.lb.Listener(
+                        `${name}-${i}`,
+                        { ...args, loadBalancerArn: this.loadBalancer.arn },
+                        { parent: this },
+                    ),
+            );
+        }
     }
 }

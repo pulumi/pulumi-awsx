@@ -99,6 +99,7 @@ export interface FargateTaskDefinitionArgs {
 }
 export abstract class ApplicationLoadBalancer extends pulumi.ComponentResource {
     public defaultSecurityGroup?: aws.ec2.SecurityGroup | pulumi.Output<aws.ec2.SecurityGroup>;
+    public listeners?: aws.lb.Listener[] | pulumi.Output<aws.lb.Listener[]>;
     public loadBalancer!: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:lb:ApplicationLoadBalancer", name, {}, opts); }
 }
@@ -114,6 +115,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
     readonly ipAddressType?: pulumi.Input<string>;
+    readonly listeners?: ListenerInputs[];
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
     readonly securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
@@ -629,4 +631,22 @@ export interface TaskDefinitionVolumeFromInputs {
 export interface TaskDefinitionVolumeFromOutputs {
     readonly readOnly?: pulumi.Output<boolean>;
     readonly sourceContainer?: pulumi.Output<string>;
+}
+export interface ListenerInputs {
+    readonly alpnPolicy?: pulumi.Input<string>;
+    readonly certificateArn?: pulumi.Input<string>;
+    readonly defaultActions: pulumi.Input<pulumi.Input<aws.types.input.lb.ListenerDefaultAction>[]>;
+    readonly port?: pulumi.Input<number>;
+    readonly protocol?: pulumi.Input<string>;
+    readonly sslPolicy?: pulumi.Input<string>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export interface ListenerOutputs {
+    readonly alpnPolicy?: pulumi.Output<string>;
+    readonly certificateArn?: pulumi.Output<string>;
+    readonly defaultActions: pulumi.Output<aws.types.output.lb.ListenerDefaultAction[]>;
+    readonly port?: pulumi.Output<number>;
+    readonly protocol?: pulumi.Output<string>;
+    readonly sslPolicy?: pulumi.Output<string>;
+    readonly tags?: pulumi.Output<Record<string, string>>;
 }
