@@ -42,7 +42,9 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             defaultSecurityGroup,
             listener,
             listeners,
+            /* tslint:disable */ //rest args will always be last so don't have trailing commas
             ...restArgs
+            /* tslint:enable */
         } = args;
         const lbArgs: aws.lb.LoadBalancerArgs = restArgs;
 
@@ -194,7 +196,7 @@ function getListenerProtocol(
     listener: schema.ListenerInputs | undefined,
 ): { port: pulumi.Input<number>; protocol: pulumi.Input<string> } | undefined {
     if (listener) {
-        let { port, protocol } = listener;
+        const { port, protocol } = listener;
         if (port && protocol) {
             return { port, protocol };
         }
