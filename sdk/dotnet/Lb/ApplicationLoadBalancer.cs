@@ -19,10 +19,28 @@ namespace Pulumi.Awsx.Lb
         public Output<Pulumi.Aws.Ec2.SecurityGroup?> DefaultSecurityGroup { get; private set; } = null!;
 
         /// <summary>
+        /// Default target group, if auto-created
+        /// </summary>
+        [Output("defaultTargetGroup")]
+        public Output<Pulumi.Aws.LB.TargetGroup?> DefaultTargetGroup { get; private set; } = null!;
+
+        /// <summary>
+        /// Listeners created as part of this load balancer
+        /// </summary>
+        [Output("listeners")]
+        public Output<ImmutableArray<Pulumi.Aws.LB.Listener>> Listeners { get; private set; } = null!;
+
+        /// <summary>
         /// Underlying Load Balancer resource
         /// </summary>
         [Output("loadBalancer")]
         public Output<Pulumi.Aws.LB.LoadBalancer> LoadBalancer { get; private set; } = null!;
+
+        /// <summary>
+        /// Id of the VPC in which this load balancer is operating
+        /// </summary>
+        [Output("vpcId")]
+        public Output<string?> VpcId { get; private set; } = null!;
 
 
         /// <summary>
@@ -69,6 +87,12 @@ namespace Pulumi.Awsx.Lb
         /// </summary>
         [Input("defaultSecurityGroup")]
         public Pulumi.Awsx.Awsx.Inputs.DefaultSecurityGroupArgs? DefaultSecurityGroup { get; set; }
+
+        /// <summary>
+        /// Options creating a default target group.
+        /// </summary>
+        [Input("defaultTargetGroup")]
+        public Inputs.DefaultTargetGroupArgs? DefaultTargetGroup { get; set; }
 
         /// <summary>
         /// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
@@ -118,6 +142,18 @@ namespace Pulumi.Awsx.Lb
         /// </summary>
         [Input("ipAddressType")]
         public Input<string>? IpAddressType { get; set; }
+
+        [Input("listeners")]
+        private List<Inputs.ListenerArgs>? _listeners;
+
+        /// <summary>
+        /// List of listeners to create
+        /// </summary>
+        public List<Inputs.ListenerArgs> Listeners
+        {
+            get => _listeners ?? (_listeners = new List<Inputs.ListenerArgs>());
+            set => _listeners = value;
+        }
 
         /// <summary>
         /// The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,

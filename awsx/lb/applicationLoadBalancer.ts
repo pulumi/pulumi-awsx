@@ -38,23 +38,43 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
         const {
             subnetIds,
             subnets,
+            defaultTargetGroup,
             defaultSecurityGroup,
             listeners,
             ...restArgs
         } = args;
         const lbArgs: aws.lb.LoadBalancerArgs = restArgs;
 
-        if (subnetIds && subnets) {
+        const definedSubnetArgs = utils.countDefined([
+            subnetIds,
+            subnets,
+            restArgs.subnetMappings,
+        ]);
+        if (definedSubnetArgs > 1) {
             throw new Error(
-                "Only one of [subnets] or [subnetIds] can be specified",
+                "Only one of [subnets], [subnetIds] or [subnetMappings] can be specified",
             );
         }
-        if (subnetIds) {
-            lbArgs.subnets = subnetIds;
-        } else if (subnets) {
+        if (subnets) {
             lbArgs.subnets = pulumi
                 .output(subnets)
                 .apply((subnets) => subnets.map((s) => s.id));
+            this.vpcId = pulumi
+                .output(subnets)
+                .apply((subnets) => subnets[0].vpcId);
+        } else if (subnetIds) {
+            lbArgs.subnets = subnetIds;
+            this.vpcId = pulumi
+                .output(subnetIds)
+                .apply((ids) => aws.ec2.getSubnet({ id: ids[0] })).vpcId;
+        } else if (restArgs.subnetMappings) {
+            this.vpcId = pulumi
+                .output(restArgs.subnetMappings!)
+                .apply((s) => aws.ec2.getSubnet({ id: s[0].subnetId })).vpcId;
+        } else {
+            throw new Error(
+                "One of [subnets], [subnetIds] or [subnetMappings] must be specified",
+            );
         }
 
         if (!lbArgs.securityGroups && !defaultSecurityGroup?.skip) {
@@ -84,12 +104,41 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             parent: this,
         });
 
+        let defaultTargetGroupArn = defaultTargetGroup?.targetGroupArn;
+
+        if (defaultTargetGroupArn && defaultTargetGroup?.targetGroupArn) {
+            throw new Error(
+                "Only one of [defaultTargetGroup] [args] or [defaultTargetGroupArn] can be specified",
+            );
+        }
+        if (!defaultTargetGroup?.skip) {
+            if (!defaultTargetGroup?.targetGroupArn) {
+                this.defaultTargetGroup = new aws.lb.TargetGroup(
+                    name,
+                    { vpcId: this.vpcId, ...defaultTargetGroup?.args },
+                    { parent: this },
+                );
+                defaultTargetGroupArn = this.defaultTargetGroup.arn;
+            }
+        }
+
         if (listeners) {
+            const defaultActions: aws.lb.ListenerArgs["defaultActions"] = [
+                {
+                    type: "forward",
+                    targetGroupArn: defaultTargetGroupArn,
+                },
+            ];
             this.listeners = listeners.map(
                 (args, i) =>
+                    // TODO: Check name compat with classic
                     new aws.lb.Listener(
                         `${name}-${i}`,
-                        { ...args, loadBalancerArn: this.loadBalancer.arn },
+                        {
+                            defaultActions: defaultActions,
+                            ...args,
+                            loadBalancerArn: this.loadBalancer.arn,
+                        },
                         { parent: this },
                     ),
             );

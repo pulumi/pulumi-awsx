@@ -8,6 +8,7 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from .. import awsx as _awsx
+from ._inputs import *
 import pulumi_aws
 
 __all__ = ['ApplicationLoadBalancerArgs', 'ApplicationLoadBalancer']
@@ -18,6 +19,7 @@ class ApplicationLoadBalancerArgs:
                  access_logs: Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  default_security_group: Optional['_awsx.DefaultSecurityGroupArgs'] = None,
+                 default_target_group: Optional['DefaultTargetGroupArgs'] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
                  enable_deletion_protection: Optional[pulumi.Input[bool]] = None,
@@ -26,6 +28,7 @@ class ApplicationLoadBalancerArgs:
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
+                 listeners: Optional[Sequence['ListenerArgs']] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -38,6 +41,7 @@ class ApplicationLoadBalancerArgs:
         :param pulumi.Input['pulumi_aws.lb.LoadBalancerAccessLogsArgs'] access_logs: An Access Logs block. Access Logs documented below.
         :param pulumi.Input[str] customer_owned_ipv4_pool: The ID of the customer owned ipv4 pool to use for this load balancer.
         :param '_awsx.DefaultSecurityGroupArgs' default_security_group: Options for creating a default security group if [securityGroups] not specified.
+        :param 'DefaultTargetGroupArgs' default_target_group: Options creating a default target group.
         :param pulumi.Input[str] desync_mitigation_mode: Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         :param pulumi.Input[bool] drop_invalid_header_fields: Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[bool] enable_deletion_protection: If true, deletion of the load balancer will be disabled via
@@ -47,6 +51,7 @@ class ApplicationLoadBalancerArgs:
         :param pulumi.Input[int] idle_timeout: The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal.
         :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+        :param Sequence['ListenerArgs'] listeners: List of listeners to create
         :param pulumi.Input[str] name: The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
                must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
                this provider will autogenerate a name beginning with `tf-lb`.
@@ -65,6 +70,8 @@ class ApplicationLoadBalancerArgs:
             pulumi.set(__self__, "customer_owned_ipv4_pool", customer_owned_ipv4_pool)
         if default_security_group is not None:
             pulumi.set(__self__, "default_security_group", default_security_group)
+        if default_target_group is not None:
+            pulumi.set(__self__, "default_target_group", default_target_group)
         if desync_mitigation_mode is not None:
             pulumi.set(__self__, "desync_mitigation_mode", desync_mitigation_mode)
         if drop_invalid_header_fields is not None:
@@ -81,6 +88,8 @@ class ApplicationLoadBalancerArgs:
             pulumi.set(__self__, "internal", internal)
         if ip_address_type is not None:
             pulumi.set(__self__, "ip_address_type", ip_address_type)
+        if listeners is not None:
+            pulumi.set(__self__, "listeners", listeners)
         if name is not None:
             pulumi.set(__self__, "name", name)
         if name_prefix is not None:
@@ -131,6 +140,18 @@ class ApplicationLoadBalancerArgs:
     @default_security_group.setter
     def default_security_group(self, value: Optional['_awsx.DefaultSecurityGroupArgs']):
         pulumi.set(self, "default_security_group", value)
+
+    @property
+    @pulumi.getter(name="defaultTargetGroup")
+    def default_target_group(self) -> Optional['DefaultTargetGroupArgs']:
+        """
+        Options creating a default target group.
+        """
+        return pulumi.get(self, "default_target_group")
+
+    @default_target_group.setter
+    def default_target_group(self, value: Optional['DefaultTargetGroupArgs']):
+        pulumi.set(self, "default_target_group", value)
 
     @property
     @pulumi.getter(name="desyncMitigationMode")
@@ -231,6 +252,18 @@ class ApplicationLoadBalancerArgs:
 
     @property
     @pulumi.getter
+    def listeners(self) -> Optional[Sequence['ListenerArgs']]:
+        """
+        List of listeners to create
+        """
+        return pulumi.get(self, "listeners")
+
+    @listeners.setter
+    def listeners(self, value: Optional[Sequence['ListenerArgs']]):
+        pulumi.set(self, "listeners", value)
+
+    @property
+    @pulumi.getter
     def name(self) -> Optional[pulumi.Input[str]]:
         """
         The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
@@ -326,6 +359,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  access_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  default_security_group: Optional[pulumi.InputType['_awsx.DefaultSecurityGroupArgs']] = None,
+                 default_target_group: Optional[pulumi.InputType['DefaultTargetGroupArgs']] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
                  enable_deletion_protection: Optional[pulumi.Input[bool]] = None,
@@ -334,6 +368,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
+                 listeners: Optional[Sequence[pulumi.InputType['ListenerArgs']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -349,6 +384,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] access_logs: An Access Logs block. Access Logs documented below.
         :param pulumi.Input[str] customer_owned_ipv4_pool: The ID of the customer owned ipv4 pool to use for this load balancer.
         :param pulumi.InputType['_awsx.DefaultSecurityGroupArgs'] default_security_group: Options for creating a default security group if [securityGroups] not specified.
+        :param pulumi.InputType['DefaultTargetGroupArgs'] default_target_group: Options creating a default target group.
         :param pulumi.Input[str] desync_mitigation_mode: Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         :param pulumi.Input[bool] drop_invalid_header_fields: Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[bool] enable_deletion_protection: If true, deletion of the load balancer will be disabled via
@@ -358,6 +394,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[int] idle_timeout: The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         :param pulumi.Input[bool] internal: If true, the LB will be internal.
         :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+        :param Sequence[pulumi.InputType['ListenerArgs']] listeners: List of listeners to create
         :param pulumi.Input[str] name: The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
                must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
                this provider will autogenerate a name beginning with `tf-lb`.
@@ -396,6 +433,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  access_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  default_security_group: Optional[pulumi.InputType['_awsx.DefaultSecurityGroupArgs']] = None,
+                 default_target_group: Optional[pulumi.InputType['DefaultTargetGroupArgs']] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
                  enable_deletion_protection: Optional[pulumi.Input[bool]] = None,
@@ -404,6 +442,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  idle_timeout: Optional[pulumi.Input[int]] = None,
                  internal: Optional[pulumi.Input[bool]] = None,
                  ip_address_type: Optional[pulumi.Input[str]] = None,
+                 listeners: Optional[Sequence[pulumi.InputType['ListenerArgs']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -428,6 +467,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["access_logs"] = access_logs
             __props__.__dict__["customer_owned_ipv4_pool"] = customer_owned_ipv4_pool
             __props__.__dict__["default_security_group"] = default_security_group
+            __props__.__dict__["default_target_group"] = default_target_group
             __props__.__dict__["desync_mitigation_mode"] = desync_mitigation_mode
             __props__.__dict__["drop_invalid_header_fields"] = drop_invalid_header_fields
             __props__.__dict__["enable_deletion_protection"] = enable_deletion_protection
@@ -436,6 +476,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["idle_timeout"] = idle_timeout
             __props__.__dict__["internal"] = internal
             __props__.__dict__["ip_address_type"] = ip_address_type
+            __props__.__dict__["listeners"] = listeners
             __props__.__dict__["name"] = name
             __props__.__dict__["name_prefix"] = name_prefix
             __props__.__dict__["security_groups"] = security_groups
@@ -444,6 +485,7 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["subnets"] = subnets
             __props__.__dict__["tags"] = tags
             __props__.__dict__["load_balancer"] = None
+            __props__.__dict__["vpc_id"] = None
         super(ApplicationLoadBalancer, __self__).__init__(
             'awsx:lb:ApplicationLoadBalancer',
             resource_name,
@@ -460,10 +502,34 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
         return pulumi.get(self, "default_security_group")
 
     @property
+    @pulumi.getter(name="defaultTargetGroup")
+    def default_target_group(self) -> pulumi.Output[Optional['pulumi_aws.lb.TargetGroup']]:
+        """
+        Default target group, if auto-created
+        """
+        return pulumi.get(self, "default_target_group")
+
+    @property
+    @pulumi.getter
+    def listeners(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.lb.Listener']]]:
+        """
+        Listeners created as part of this load balancer
+        """
+        return pulumi.get(self, "listeners")
+
+    @property
     @pulumi.getter(name="loadBalancer")
     def load_balancer(self) -> pulumi.Output['pulumi_aws.lb.LoadBalancer']:
         """
         Underlying Load Balancer resource
         """
         return pulumi.get(self, "load_balancer")
+
+    @property
+    @pulumi.getter(name="vpcId")
+    def vpc_id(self) -> pulumi.Output[Optional[str]]:
+        """
+        Id of the VPC in which this load balancer is operating
+        """
+        return pulumi.get(self, "vpc_id")
 

@@ -24,7 +24,9 @@ func generateLb(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:lb:ApplicationLoadBalancer": applicationLoadBalancer(awsSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:lb:Listener": lbListener(awsSpec),
+			"awsx:lb:Listener":           lbListener(awsSpec),
+			"awsx:lb:TargetGroup":        lbTargetGroup(awsSpec),
+			"awsx:lb:DefaultTargetGroup": defaultTargetGroup(awsSpec),
 		},
 	}
 }
@@ -51,27 +53,34 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties["defaultSecurityGroup"] = schema.PropertySpec{
 		Description: "Options for creating a default security group if [securityGroups] not specified.",
 		TypeSpec: schema.TypeSpec{
-			Ref: "#/types/awsx:awsx:DefaultSecurityGroup",
+			Ref:   "#/types/awsx:awsx:DefaultSecurityGroup",
+			Plain: true,
+		},
+	}
+	inputProperties["defaultTargetGroup"] = schema.PropertySpec{
+		Description: "Options creating a default target group.",
+		TypeSpec: schema.TypeSpec{
+			Ref:   "#/types/awsx:lb:DefaultTargetGroup",
 			Plain: true,
 		},
 	}
 	inputProperties["listeners"] = schema.PropertySpec{
 		Description: "List of listeners to create",
 		TypeSpec: schema.TypeSpec{
-			Type: "array",
+			Type:  "array",
 			Plain: true,
 			Items: &schema.TypeSpec{
-				Ref: "#/types/awsx:lb:Listener",
+				Ref:   "#/types/awsx:lb:Listener",
 				Plain: true,
 			},
 		},
 	}
 
 	return schema.ResourceSpec{
-		IsComponent: true,
+		IsComponent:     true,
 		InputProperties: inputProperties,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type: "object",
+			Type:        "object",
 			Description: "",
 			Properties: map[string]schema.PropertySpec{
 				"loadBalancer": {
@@ -80,10 +89,22 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 						Ref: awsRef("#/resources/aws:lb%2floadBalancer:LoadBalancer"),
 					},
 				},
+				"vpcId": {
+					Description: "Id of the VPC in which this load balancer is operating",
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
 				"defaultSecurityGroup": {
 					Description: "Default security group, if auto-created",
 					TypeSpec: schema.TypeSpec{
 						Ref: awsRef("#/resources/aws:ec2%2fsecurityGroup:SecurityGroup"),
+					},
+				},
+				"defaultTargetGroup": {
+					Description: "Default target group, if auto-created",
+					TypeSpec: schema.TypeSpec{
+						Ref: awsRef("#/resources/aws:lb%2ftargetGroup:TargetGroup"),
 					},
 				},
 				"listeners": {
@@ -105,19 +126,54 @@ func lbListener(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	spec := awsSpec.Resources["aws:lb/listener:Listener"]
 	properties := renameAwsPropertiesRefs(spec.InputProperties)
 	delete(properties, "loadBalancerArn")
-	required := make([]string, 0, len(spec.RequiredInputs))
-	for _, key := range spec.RequiredInputs {
-		if key != "loadBalancerArn" {
-			required = append(required, key)
-		}
-	}
 
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type: "object",
+			Type:        "object",
 			Description: spec.Description,
-			Properties: properties,
-			Required: required,
+			Properties:  properties,
+		},
+	}
+}
+
+func lbTargetGroup(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+	spec := awsSpec.Resources["aws:lb/targetGroup:TargetGroup"]
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: spec.Description,
+			Properties:  renameAwsPropertiesRefs(spec.InputProperties),
+		},
+	}
+}
+
+func defaultTargetGroup(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: "Target Group with default setup unless explicitly skipped or an existing security group id provided.",
+			Properties: map[string]schema.PropertySpec{
+				"skip": {
+					Description: "Skips creation of the target group if set to `true`.",
+					TypeSpec: schema.TypeSpec{
+						Type:  "boolean",
+						Plain: true,
+					},
+				},
+				"targetGroupArn": {
+					Description: "ARN of existing target group to use instead of creating a new target group. Cannot be used in combination with [args].",
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
+				"args": {
+					Description: "Args to use when creating the target group. Can't be specified if [targetGroupArn] is used.",
+					TypeSpec: schema.TypeSpec{
+						Ref:   "#/types/awsx:lb:TargetGroup",
+						Plain: true,
+					},
+				},
+			},
 		},
 	}
 }

@@ -99,14 +99,17 @@ export interface FargateTaskDefinitionArgs {
 }
 export abstract class ApplicationLoadBalancer extends pulumi.ComponentResource {
     public defaultSecurityGroup?: aws.ec2.SecurityGroup | pulumi.Output<aws.ec2.SecurityGroup>;
+    public defaultTargetGroup?: aws.lb.TargetGroup | pulumi.Output<aws.lb.TargetGroup>;
     public listeners?: aws.lb.Listener[] | pulumi.Output<aws.lb.Listener[]>;
     public loadBalancer!: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
+    public vpcId?: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:lb:ApplicationLoadBalancer", name, {}, opts); }
 }
 export interface ApplicationLoadBalancerArgs {
     readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
     readonly defaultSecurityGroup?: DefaultSecurityGroupInputs;
+    readonly defaultTargetGroup?: DefaultTargetGroupInputs;
     readonly desyncMitigationMode?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
@@ -632,10 +635,20 @@ export interface TaskDefinitionVolumeFromOutputs {
     readonly readOnly?: pulumi.Output<boolean>;
     readonly sourceContainer?: pulumi.Output<string>;
 }
+export interface DefaultTargetGroupInputs {
+    readonly args?: TargetGroupInputs;
+    readonly skip?: boolean;
+    readonly targetGroupArn?: pulumi.Input<string>;
+}
+export interface DefaultTargetGroupOutputs {
+    readonly args?: TargetGroupOutputs;
+    readonly skip?: boolean;
+    readonly targetGroupArn?: pulumi.Output<string>;
+}
 export interface ListenerInputs {
     readonly alpnPolicy?: pulumi.Input<string>;
     readonly certificateArn?: pulumi.Input<string>;
-    readonly defaultActions: pulumi.Input<pulumi.Input<aws.types.input.lb.ListenerDefaultAction>[]>;
+    readonly defaultActions?: pulumi.Input<pulumi.Input<aws.types.input.lb.ListenerDefaultAction>[]>;
     readonly port?: pulumi.Input<number>;
     readonly protocol?: pulumi.Input<string>;
     readonly sslPolicy?: pulumi.Input<string>;
@@ -644,9 +657,47 @@ export interface ListenerInputs {
 export interface ListenerOutputs {
     readonly alpnPolicy?: pulumi.Output<string>;
     readonly certificateArn?: pulumi.Output<string>;
-    readonly defaultActions: pulumi.Output<aws.types.output.lb.ListenerDefaultAction[]>;
+    readonly defaultActions?: pulumi.Output<aws.types.output.lb.ListenerDefaultAction[]>;
     readonly port?: pulumi.Output<number>;
     readonly protocol?: pulumi.Output<string>;
     readonly sslPolicy?: pulumi.Output<string>;
     readonly tags?: pulumi.Output<Record<string, string>>;
+}
+export interface TargetGroupInputs {
+    readonly connectionTermination?: pulumi.Input<boolean>;
+    readonly deregistrationDelay?: pulumi.Input<number>;
+    readonly healthCheck?: pulumi.Input<aws.types.input.lb.TargetGroupHealthCheck>;
+    readonly lambdaMultiValueHeadersEnabled?: pulumi.Input<boolean>;
+    readonly loadBalancingAlgorithmType?: pulumi.Input<string>;
+    readonly name?: pulumi.Input<string>;
+    readonly namePrefix?: pulumi.Input<string>;
+    readonly port?: pulumi.Input<number>;
+    readonly preserveClientIp?: pulumi.Input<string>;
+    readonly protocol?: pulumi.Input<string>;
+    readonly protocolVersion?: pulumi.Input<string>;
+    readonly proxyProtocolV2?: pulumi.Input<boolean>;
+    readonly slowStart?: pulumi.Input<number>;
+    readonly stickiness?: pulumi.Input<aws.types.input.lb.TargetGroupStickiness>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly targetType?: pulumi.Input<string>;
+    readonly vpcId?: pulumi.Input<string>;
+}
+export interface TargetGroupOutputs {
+    readonly connectionTermination?: pulumi.Output<boolean>;
+    readonly deregistrationDelay?: pulumi.Output<number>;
+    readonly healthCheck?: pulumi.Output<aws.types.output.lb.TargetGroupHealthCheck>;
+    readonly lambdaMultiValueHeadersEnabled?: pulumi.Output<boolean>;
+    readonly loadBalancingAlgorithmType?: pulumi.Output<string>;
+    readonly name?: pulumi.Output<string>;
+    readonly namePrefix?: pulumi.Output<string>;
+    readonly port?: pulumi.Output<number>;
+    readonly preserveClientIp?: pulumi.Output<string>;
+    readonly protocol?: pulumi.Output<string>;
+    readonly protocolVersion?: pulumi.Output<string>;
+    readonly proxyProtocolV2?: pulumi.Output<boolean>;
+    readonly slowStart?: pulumi.Output<number>;
+    readonly stickiness?: pulumi.Output<aws.types.output.lb.TargetGroupStickiness>;
+    readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly targetType?: pulumi.Output<string>;
+    readonly vpcId?: pulumi.Output<string>;
 }

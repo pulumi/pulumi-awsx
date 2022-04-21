@@ -15,3 +15,6 @@ export namespace cloudtrail {
 
 export namespace ecs {
 }
+
+export namespace lb {
+}

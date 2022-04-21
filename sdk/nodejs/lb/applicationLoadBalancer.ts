@@ -27,9 +27,21 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
      */
     public readonly defaultSecurityGroup!: pulumi.Output<pulumiAws.ec2.SecurityGroup | undefined>;
     /**
+     * Default target group, if auto-created
+     */
+    public readonly defaultTargetGroup!: pulumi.Output<pulumiAws.lb.TargetGroup | undefined>;
+    /**
+     * Listeners created as part of this load balancer
+     */
+    public readonly listeners!: pulumi.Output<pulumiAws.lb.Listener[] | undefined>;
+    /**
      * Underlying Load Balancer resource
      */
     public /*out*/ readonly loadBalancer!: pulumi.Output<pulumiAws.lb.LoadBalancer>;
+    /**
+     * Id of the VPC in which this load balancer is operating
+     */
+    public /*out*/ readonly vpcId!: pulumi.Output<string | undefined>;
 
     /**
      * Create a ApplicationLoadBalancer resource with the given unique name, arguments, and options.
@@ -45,6 +57,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["accessLogs"] = args ? args.accessLogs : undefined;
             resourceInputs["customerOwnedIpv4Pool"] = args ? args.customerOwnedIpv4Pool : undefined;
             resourceInputs["defaultSecurityGroup"] = args ? (args.defaultSecurityGroup ? inputs.awsx.defaultSecurityGroupArgsProvideDefaults(args.defaultSecurityGroup) : undefined) : undefined;
+            resourceInputs["defaultTargetGroup"] = args ? args.defaultTargetGroup : undefined;
             resourceInputs["desyncMitigationMode"] = args ? args.desyncMitigationMode : undefined;
             resourceInputs["dropInvalidHeaderFields"] = args ? args.dropInvalidHeaderFields : undefined;
             resourceInputs["enableDeletionProtection"] = args ? args.enableDeletionProtection : undefined;
@@ -53,6 +66,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["idleTimeout"] = args ? args.idleTimeout : undefined;
             resourceInputs["internal"] = args ? args.internal : undefined;
             resourceInputs["ipAddressType"] = args ? args.ipAddressType : undefined;
+            resourceInputs["listeners"] = args ? args.listeners : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["namePrefix"] = args ? args.namePrefix : undefined;
             resourceInputs["securityGroups"] = args ? args.securityGroups : undefined;
@@ -61,9 +75,13 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["subnets"] = args ? args.subnets : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["loadBalancer"] = undefined /*out*/;
+            resourceInputs["vpcId"] = undefined /*out*/;
         } else {
             resourceInputs["defaultSecurityGroup"] = undefined /*out*/;
+            resourceInputs["defaultTargetGroup"] = undefined /*out*/;
+            resourceInputs["listeners"] = undefined /*out*/;
             resourceInputs["loadBalancer"] = undefined /*out*/;
+            resourceInputs["vpcId"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(ApplicationLoadBalancer.__pulumiType, name, resourceInputs, opts, true /*remote*/);
@@ -86,6 +104,10 @@ export interface ApplicationLoadBalancerArgs {
      * Options for creating a default security group if [securityGroups] not specified.
      */
     defaultSecurityGroup?: inputs.awsx.DefaultSecurityGroupArgs;
+    /**
+     * Options creating a default target group.
+     */
+    defaultTargetGroup?: inputs.lb.DefaultTargetGroupArgs;
     /**
      * Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
      */
@@ -119,6 +141,10 @@ export interface ApplicationLoadBalancerArgs {
      * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
      */
     ipAddressType?: pulumi.Input<string>;
+    /**
+     * List of listeners to create
+     */
+    listeners?: inputs.lb.ListenerArgs[];
     /**
      * The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
      * must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
