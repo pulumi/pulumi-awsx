@@ -78,6 +78,12 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             );
         }
 
+        if (listener && listeners) {
+            throw new Error(
+                "Only one of [listener] and [listeners] can be specified",
+            );
+        }
+
         if (!lbArgs.securityGroups && !defaultSecurityGroup?.skip) {
             if (
                 defaultSecurityGroup?.args &&
@@ -118,26 +124,49 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             { parent: this },
         );
 
-        if (listeners) {
-            const defaultActions: aws.lb.ListenerArgs["defaultActions"] = [
-                {
-                    type: "forward",
-                    targetGroupArn: this.defaultTargetGroup.arn,
-                },
+        const defaultActions: aws.lb.ListenerArgs["defaultActions"] = [
+            {
+                type: "forward",
+                targetGroupArn: this.defaultTargetGroup.arn,
+            },
+        ];
+        if (listener) {
+            this.listeners = [
+                new aws.lb.Listener(
+                    `${name}-0`,
+                    {
+                        defaultActions,
+                        ...listener,
+                        loadBalancerArn: this.loadBalancer.arn,
+                    },
+                    { parent: this },
+                ),
             ];
+        } else if (listeners) {
             this.listeners = listeners.map(
                 (args, i) =>
                     // TODO: Check name compat with classic
                     new aws.lb.Listener(
                         `${name}-${i}`,
                         {
-                            defaultActions: defaultActions,
+                            defaultActions,
                             ...args,
                             loadBalancerArn: this.loadBalancer.arn,
                         },
                         { parent: this },
                     ),
             );
+        } else {
+            this.listeners = [
+                new aws.lb.Listener(
+                    `${name}-0`,
+                    {
+                        defaultActions,
+                        loadBalancerArn: this.loadBalancer.arn,
+                    },
+                    { parent: this },
+                ),
+            ];
         }
     }
 }
