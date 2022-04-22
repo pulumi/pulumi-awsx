@@ -97,7 +97,7 @@ export interface FargateTaskDefinitionArgs {
     readonly taskRole?: DefaultRoleWithPolicyInputs;
     readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
 }
-export abstract class ApplicationLoadBalancer extends pulumi.ComponentResource {
+export abstract class ApplicationLoadBalancer<TData = any> extends pulumi.ComponentResource<TData> {
     public defaultSecurityGroup?: aws.ec2.SecurityGroup | pulumi.Output<aws.ec2.SecurityGroup>;
     public defaultTargetGroup!: aws.lb.TargetGroup | pulumi.Output<aws.lb.TargetGroup>;
     public listeners?: aws.lb.Listener[] | pulumi.Output<aws.lb.Listener[]>;
