@@ -214,7 +214,12 @@ const genResourceAbstractType = (
                     undefined,
                     "ComponentResource",
                 ),
-                undefined,
+                [
+                    ts.factory.createTypeReferenceNode(
+                        ts.factory.createIdentifier("TData"),
+                        undefined,
+                    ),
+                ],
             ),
         ],
     );
@@ -272,7 +277,13 @@ const genResourceAbstractType = (
             ts.factory.createModifier(ts.SyntaxKind.AbstractKeyword),
         ],
         typeName,
-        undefined,
+        [
+            ts.factory.createTypeParameterDeclaration(
+                ts.factory.createIdentifier("TData"),
+                undefined,
+                ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
+            ),
+        ],
         [heritage],
         [
             ...genClassProperties(
