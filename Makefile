@@ -14,11 +14,14 @@ build:: provider build_nodejs build_python build_go build_dotnet
 schema::
 	cd provider/cmd/$(CODEGEN) && go run . schema $(WORKING_DIR)/$(PACK)
 
-provider:: schema
-	rm -rf awsx/bin
+ensure_provider::
 	cd awsx && \
 		yarn install && \
-		yarn gen-types && \
+		yarn gen-types
+
+provider:: schema ensure_provider
+	rm -rf awsx/bin
+	cd awsx && \
 		yarn tsc && \
 		cp package.json schema.json yarn.lock ${PROVIDER} ${PROVIDER}.cmd PulumiPlugin.yaml ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
@@ -101,6 +104,9 @@ lint:
 		yarn install && \
 		yarn lint
 
+test_provider:: ensure_provider
+	cd awsx && yarn test
+
 test_nodejs:: install_nodejs_sdk
 	cd examples && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
@@ -120,4 +126,4 @@ generate_schema:: schema
 
 dev:: lint lint-classic build_nodejs istanbul_tests
 
-test:: install_nodejs_sdk test_nodejs
+test:: test_nodejs test_provider
