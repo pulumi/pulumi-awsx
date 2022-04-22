@@ -43,6 +43,16 @@ func TestAccEcsCapacityProviderService(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestLbSimple(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ts-lb-simple"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
 	base := getBaseOptions(t)
 	nodeBase := base.With(integration.ProgramTestOptions{

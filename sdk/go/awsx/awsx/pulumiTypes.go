@@ -4,6 +4,7 @@
 package awsx
 
 import (
+	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/s3"
 )
@@ -85,6 +86,27 @@ type DefaultRoleWithPolicy struct {
 	RoleArn *string `pulumi:"roleArn"`
 	// Skips creation of the role if set to `true`.
 	Skip *bool `pulumi:"skip"`
+}
+
+// Security Group with default setup unless explicitly skipped or an existing security group id provided.
+type DefaultSecurityGroup struct {
+	// Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
+	Args *SecurityGroup `pulumi:"args"`
+	// Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
+	SecurityGroupId *string `pulumi:"securityGroupId"`
+	// Skips creation of the security group if set to `true`.
+	Skip *bool `pulumi:"skip"`
+}
+
+// Defaults sets the appropriate defaults for DefaultSecurityGroup
+func (val *DefaultSecurityGroup) Defaults() *DefaultSecurityGroup {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	tmp.Args = tmp.Args.Defaults()
+
+	return &tmp
 }
 
 // Reference to an existing bucket.
@@ -175,5 +197,37 @@ type RoleWithPolicy struct {
 	Tags map[string]string `pulumi:"tags"`
 }
 
+// The set of arguments for constructing a Security Group resource.
+type SecurityGroup struct {
+	// Description of this egress rule.
+	Description *string `pulumi:"description"`
+	// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+	Egress []ec2.SecurityGroupEgress `pulumi:"egress"`
+	// Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+	Ingress []ec2.SecurityGroupIngress `pulumi:"ingress"`
+	// Name of the security group. If omitted, this provider will assign a random, unique name.
+	Name *string `pulumi:"name"`
+	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+	NamePrefix *string `pulumi:"namePrefix"`
+	// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+	RevokeRulesOnDelete *bool `pulumi:"revokeRulesOnDelete"`
+	// Map of tags to assign to the resource.
+	Tags map[string]string `pulumi:"tags"`
+	// VPC ID.
+	VpcId *string `pulumi:"vpcId"`
+}
+
+// Defaults sets the appropriate defaults for SecurityGroup
+func (val *SecurityGroup) Defaults() *SecurityGroup {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if isZero(tmp.Description) {
+		description_ := "Managed by Pulumi"
+		tmp.Description = &description_
+	}
+	return &tmp
+}
 func init() {
 }

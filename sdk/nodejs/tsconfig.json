@@ -109,6 +109,8 @@
         "ecs/fargateTaskDefinition.ts",
         "ecs/index.ts",
         "index.ts",
+        "lb/applicationLoadBalancer.ts",
+        "lb/index.ts",
         "provider.ts",
         "types/index.ts",
         "types/input.ts",

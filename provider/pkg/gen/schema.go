@@ -93,9 +93,11 @@ func GenerateSchema() schema.PackageSpec {
 	return extendSchemas(packageSpec,
 		generateCloudtrail(awsSpec),
 		generateEcs(awsSpec, awsNativeSpec),
+		generateLb(awsSpec),
 		generateCloudwatch(awsSpec),
 		generateIam(awsSpec),
 		generateS3(awsSpec),
+		generateEc2(awsSpec),
 	)
 }
 
@@ -128,6 +130,10 @@ func getSpecFromUrl(url string) schema.PackageSpec {
 func renameComplexRefs(spec schema.ComplexTypeSpec, old, new string) schema.ComplexTypeSpec {
 	spec.Properties = renamePropertiesRefs(spec.Properties, old, new)
 	return spec
+}
+
+func renameAwsPropertiesRefs(propertySpec map[string]schema.PropertySpec) map[string]schema.PropertySpec {
+	return renamePropertiesRefs(propertySpec, "#/types/aws:", awsRef("#/types/aws:"))
 }
 
 func renamePropertiesRefs(propertySpec map[string]schema.PropertySpec, old, new string) map[string]schema.PropertySpec {

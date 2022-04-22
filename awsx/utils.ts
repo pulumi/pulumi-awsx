@@ -38,6 +38,10 @@ export function sha1hash(s: string): string {
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
 
+export function countDefined(source: ReadonlyArray<unknown>): number {
+    return source.reduce<number>((c, x) => (x ? c + 1 : c), 0);
+}
+
 /** @internal */
 export function ifUndefined<T>(
     input: pulumi.Input<T> | undefined,

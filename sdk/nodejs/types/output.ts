@@ -5,6 +5,7 @@ import * as pulumi from "@pulumi/pulumi";
 import { input as inputs, output as outputs } from "../types";
 
 import * as pulumiAws from "@pulumi/aws";
+import * as utilities from "../utilities";
 
 export namespace awsx {
 }
@@ -13,4 +14,7 @@ export namespace cloudtrail {
 }
 
 export namespace ecs {
+}
+
+export namespace lb {
 }
