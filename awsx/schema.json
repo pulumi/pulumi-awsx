@@ -1250,6 +1250,85 @@
                 }
             },
             "type": "object"
+        },
+        "awsx:vpc:NatGatewayConfiguration": {
+            "description": "Configuration for NAT Gateways.",
+            "properties": {
+                "elasticIpAllocationIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "plain": true,
+                    "description": "A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones)."
+                },
+                "strategy": {
+                    "$ref": "#/types/awsx:vpc:NatGatewayStrategy",
+                    "plain": true,
+                    "description": "The strategy for deploying NAT Gateways."
+                }
+            },
+            "type": "object",
+            "required": [
+                "strategy"
+            ]
+        },
+        "awsx:vpc:NatGatewayStrategy": {
+            "description": "A strategy for creating NAT Gateways for private subnets within a VPC.",
+            "type": "string",
+            "enum": [
+                {
+                    "description": "Do not create any NAT Gateways. Resources in private subnets will not be able to access the internet.",
+                    "value": "None"
+                },
+                {
+                    "description": "Create a single NAT Gateway for the entire VPC. This configuration is not recommended for production infrastructure as it creates a single point of failure.",
+                    "value": "Single"
+                },
+                {
+                    "description": "Create a NAT Gateway in each availability zone. This is the recommended configuration for production infrastructure.",
+                    "value": "OnePerAz"
+                }
+            ]
+        },
+        "awsx:vpc:SubnetConfiguration": {
+            "description": "Configuration for a VPC subnet.",
+            "properties": {
+                "cidrMask": {
+                    "type": "integer",
+                    "plain": true,
+                    "description": "The bitmask for the subnet's CIDR block."
+                },
+                "name": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The subnet's name. Will be templated upon creation."
+                },
+                "type": {
+                    "$ref": "#/types/awsx:vpc:SubnetType",
+                    "plain": true,
+                    "description": "The type of subnet."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:vpc:SubnetType": {
+            "description": "A type of subnet within a VPC.",
+            "type": "string",
+            "enum": [
+                {
+                    "description": "A subnet whose hosts can directly communicate with the internet.",
+                    "value": "Public"
+                },
+                {
+                    "description": "A subnet whose hosts can not directly communicate with the internet, but can initiate outbound network traffic via a NAT Gateway.",
+                    "value": "Private"
+                },
+                {
+                    "description": "A subnet whose hosts have no connectivity with the internet.",
+                    "value": "Isolated"
+                }
+            ]
         }
     },
     "provider": {},
@@ -1999,6 +2078,110 @@
                         "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
                     },
                     "description": "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "isComponent": true
+        },
+        "awsx:vpc:Vpc": {
+            "properties": {
+                "subnets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                    },
+                    "description": "The VPC's subnets."
+                },
+                "vpc": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2fvpc:Vpc",
+                    "description": "The VPC.",
+                    "language": {
+                        "csharp": {
+                            "name": "AwsVpc"
+                        }
+                    }
+                }
+            },
+            "inputProperties": {
+                "assignGeneratedIpv6CidrBlock": {
+                    "type": "boolean",
+                    "description": "Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`\n"
+                },
+                "availabilityZoneNames": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Required."
+                },
+                "cidr": {
+                    "type": "string",
+                    "plain": true,
+                    "description": "The CIDR block for the VPC. Required."
+                },
+                "cidrBlock": {
+                    "type": "string",
+                    "description": "The IPv4 CIDR block for the VPC. CIDR can be explicitly set or it can be derived from IPAM using `ipv4_netmask_length`.\n"
+                },
+                "enableClassiclink": {
+                    "type": "boolean",
+                    "description": "A boolean flag to enable/disable ClassicLink\nfor the VPC. Only valid in regions and accounts that support EC2 Classic.\nSee the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.\n"
+                },
+                "enableClassiclinkDnsSupport": {
+                    "type": "boolean",
+                    "description": "A boolean flag to enable/disable ClassicLink DNS Support for the VPC.\nOnly valid in regions and accounts that support EC2 Classic.\n"
+                },
+                "enableDnsHostnames": {
+                    "type": "boolean",
+                    "description": "A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.\n"
+                },
+                "enableDnsSupport": {
+                    "type": "boolean",
+                    "description": "A boolean flag to enable/disable DNS support in the VPC. Defaults true.\n"
+                },
+                "instanceTenancy": {
+                    "type": "string",
+                    "description": "A tenancy option for instances launched into the VPC. Default is `default`, which makes your instances shared on the host. Using either of the other options (`dedicated` or `host`) costs at least $2/hr.\n"
+                },
+                "ipv4IpamPoolId": {
+                    "type": "string",
+                    "description": "The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.\n"
+                },
+                "ipv4NetmaskLength": {
+                    "type": "integer",
+                    "description": "The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4_ipam_pool_id`.\n"
+                },
+                "ipv6CidrBlock": {
+                    "type": "string",
+                    "description": "IPv6 CIDR block to request from an IPAM Pool. Can be set explicitly or derived from IPAM using `ipv6_netmask_length`.\n"
+                },
+                "ipv6CidrBlockNetworkBorderGroup": {
+                    "type": "string",
+                    "description": "By default when an IPv6 CIDR is assigned to a VPC a default ipv6_cidr_block_network_border_group will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.\n"
+                },
+                "ipv6IpamPoolId": {
+                    "type": "string",
+                    "description": "IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.\n"
+                },
+                "ipv6NetmaskLength": {
+                    "type": "integer",
+                    "description": "Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.\n"
+                },
+                "natGateways": {
+                    "$ref": "#/types/awsx:vpc:NatGatewayConfiguration",
+                    "plain": true,
+                    "description": "Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created."
+                },
+                "subnetsPerAz": {
+                    "description": "A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC."
                 },
                 "tags": {
                     "type": "object",
