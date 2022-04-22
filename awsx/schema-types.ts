@@ -209,7 +209,7 @@ export interface VpcArgs {
     readonly ipv6IpamPoolId?: pulumi.Input<string>;
     readonly ipv6NetmaskLength?: pulumi.Input<number>;
     readonly natGateways?: NatGatewayConfigurationInputs;
-    readonly subnetsPerAz?: pulumi.Input<unknown>;
+    readonly subnetsPerAz?: SubnetConfigurationInputs[];
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface BucketInputs {

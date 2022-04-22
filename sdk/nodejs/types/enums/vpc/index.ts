@@ -4,7 +4,7 @@
 
 export const NatGatewayStrategy = {
     /**
-     * Do not create any NAT Gateways.
+     * Do not create any NAT Gateways. Resources in private subnets will not be able to access the internet.
      */
     None: "None",
     /**
@@ -21,3 +21,23 @@ export const NatGatewayStrategy = {
  * A strategy for creating NAT Gateways for private subnets within a VPC.
  */
 export type NatGatewayStrategy = (typeof NatGatewayStrategy)[keyof typeof NatGatewayStrategy];
+
+export const SubnetType = {
+    /**
+     * A subnet whose hosts can directly communicate with the internet.
+     */
+    Public: "Public",
+    /**
+     * A subnet whose hosts can not directly communicate with the internet, but can initiate outbound network traffic via a NAT Gateway.
+     */
+    Private: "Private",
+    /**
+     * A subnet whose hosts have no connectivity with the internet.
+     */
+    Isolated: "Isolated",
+} as const;
+
+/**
+ * A type of subnet within a VPC.
+ */
+export type SubnetType = (typeof SubnetType)[keyof typeof SubnetType];

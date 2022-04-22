@@ -15,21 +15,9 @@ export namespace cloudtrail {
 
 export namespace ecs {
 }
-<<<<<<< HEAD
 
 export namespace lb {
-}
-=======
-<<<<<<< HEAD
-=======
-
-export namespace iam {
-}
-
-export namespace s3 {
 }
 
 export namespace vpc {
 }
->>>>>>> bef5e8c (WIP)
->>>>>>> 226f527 (WIP)

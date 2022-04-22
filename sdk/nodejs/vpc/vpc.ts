@@ -58,6 +58,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["ipv6IpamPoolId"] = args ? args.ipv6IpamPoolId : undefined;
             resourceInputs["ipv6NetmaskLength"] = args ? args.ipv6NetmaskLength : undefined;
             resourceInputs["natGateways"] = args ? args.natGateways : undefined;
+            resourceInputs["subnetsPerAz"] = args ? args.subnetsPerAz : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
@@ -79,7 +80,7 @@ export interface VpcArgs {
      */
     assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
     /**
-     * A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+     * A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Required.
      */
     availabilityZoneNames?: string[];
     /**
@@ -140,7 +141,11 @@ export interface VpcArgs {
     /**
      * Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
      */
-    natGateways?: pulumi.Input<inputs.vpc.NatGatewayConfigurationArgs>;
+    natGateways?: inputs.vpc.NatGatewayConfigurationArgs;
+    /**
+     * A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+     */
+    subnetsPerAz?: inputs.vpc.SubnetConfigurationArgs[];
     /**
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */

@@ -50,7 +50,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			TypeSpec: plainArrayOfPlainStrings(),
 		},
 		"cidr": {
-			Description: "The CIDR block for the VPC. Required.",
+			Description: "The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.",
 			TypeSpec:    plainString(),
 		},
 		"natGateways": {
@@ -62,6 +62,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		},
 		subnetsPerAz: {
 			Description: fmt.Sprintf("A list of subnets that should be deployed to each AZ specified in %s. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.", availabilityZoneNames),
+			TypeSpec:    plainArrayOfPlainComplexType("SubnetConfiguration"),
 		},
 	}
 	for k, v := range awsVpcResource.InputProperties {
@@ -225,6 +226,17 @@ func plainArrayOfPulumiStrings() schema.TypeSpec {
 		Type: "array",
 		Items: &schema.TypeSpec{
 			Type: "string",
+		},
+		Plain: true,
+	}
+}
+
+func plainArrayOfPlainComplexType(name string) schema.TypeSpec {
+	return schema.TypeSpec{
+		Type: "array",
+		Items: &schema.TypeSpec{
+			Ref:   localRef(name),
+			Plain: true,
 		},
 		Plain: true,
 	}

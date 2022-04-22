@@ -15,7 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import * as utils from "../utils";
 
 interface VpcData {
     vpc: aws.ec2.Vpc;
@@ -37,36 +36,17 @@ export class Vpc extends schema.Vpc<VpcData> {
         const natGatewayStrategy: schema.NatGatewayStrategyInputs = args.natGateways?.strategy ?? "OnePerAz";
         const eips = args.natGateways?.elasticIpAllocationIds;
 
-        // We are strict about matching NAT Gateway strategies with the number of supplied EIPs (if supplied) because if
-        // EIPs are supplied, we are assuming the user has a scenario where all outbound traffic from the VPC must come
-        // from known IP addresses, e.g. because they are hitting a data center-based service with a firewall that must
-        // allowlist specific IP addresses. Assuming this is the user's scenario, e.g. we have 3 AZs, and only 2 EIPs
-        // specified, 1/3 of the traffic coming from the VPC will be seemingly randomly rejected, which is a difficult
-        // and frustrating problem to debug. Therefore, we feel it's better to be strict about the acceptable inputs to
-        // avoid potentially confusing problems in production.
-        switch (natGatewayStrategy) {
-            case "None":
-                if (eips?.length ?? 0 !== 0) {
-                    throw new Error(`Elastic IP allocation IDs cannot be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`);
-                }
-                break;
-            case "Single":
-                if (eips && eips.length !== 1) {
-                    throw new Error(`Exactly one Elastic IP may be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`);
-                }
-                break;
-            case "OnePerAz":
-                if (eips && eips.length !== availabilityZones.length) {
-                    throw new Error(`The number of Elastic IPs, if specified, must match the number of availability zones for the VPC (${availabilityZones.length}) when NAT Gateway strategy is '${natGatewayStrategy}'`);
-                }
-                break;
-            default:
-                throw new Error(`Unknown NatGatewayStrategy '${natGatewayStrategy}'`);
-        }
+        const vpcCidr = args.cidr ?? "10.0.0.0/16";
+        const subnetSpecs = args.subnetsPerAz ?? getDefaultSubnetSpecs(vpcCidr);
+
+        validateNatGatewayStrategy(natGatewayStrategy, eips, availabilityZones);
+
+        const vpc = new aws.ec2.Vpc(name, args, {parent: this});
+        const subnets = this.getSubnets(vpc, availabilityZones, subnetSpecs);
 
         return {
-            vpc: new aws.ec2.Vpc(name, args, {parent: this}),
-            subnets: [],
+            vpc: vpc,
+            subnets: subnets,
         };
     }
 
@@ -77,4 +57,75 @@ export class Vpc extends schema.Vpc<VpcData> {
         }
         return result.names.slice(0, 2);
     }
+
+    getSubnets(vpc: aws.ec2.Vpc, azs: string[], subnetSpecs: schema.SubnetConfigurationInputs[]): aws.ec2.Subnet[] {
+        const subnets: aws.ec2.Subnet[] = [];
+
+        for (let i = 0; i < azs.length; i++) {
+            subnetSpecs.forEach(subnet => {
+                const name = `${subnet.name}-${i}`;
+                subnets.push(new aws.ec2.Subnet(name, {
+                    vpcId: vpc.id,
+                    availabilityZone: azs[i],
+                    cidrBlock: "",
+                }));
+            });
+        }
+
+        return subnets;
+    }
+}
+
+export function validateNatGatewayStrategy(
+    natGatewayStrategy: schema.NatGatewayStrategyInputs,
+    eips: pulumi.Input<string>[] | undefined,
+    availabilityZones: string[] = [],
+) {
+    // We are strict about matching NAT Gateway strategies with the number of supplied EIPs (if supplied) because if
+    // EIPs are supplied, we are assuming the user has a scenario where all outbound traffic from the VPC must come
+    // from known IP addresses, e.g. because they are hitting a data center-based service with a firewall that must
+    // allowlist specific IP addresses. Assuming this is the user's scenario, e.g. we have 3 AZs, and only 2 EIPs
+    // specified, 1/3 of the traffic coming from the VPC will be seemingly randomly rejected, which is a difficult
+    // and frustrating problem to debug. Therefore, we feel it's better to be strict about the acceptable inputs to
+    // avoid potentially confusing problems in production.
+    switch (natGatewayStrategy) {
+        case "None":
+            if (eips?.length ?? 0 !== 0) {
+                throw new Error(`Elastic IP allocation IDs cannot be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`);
+            }
+            break;
+        case "Single":
+            if (eips && eips.length !== 1) {
+                throw new Error(`Exactly one Elastic IP may be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`);
+            }
+            break;
+        case "OnePerAz":
+            if (eips && eips.length !== availabilityZones.length) {
+                throw new Error(`The number of Elastic IPs, if specified, must match the number of availability zones for the VPC (${availabilityZones.length}) when NAT Gateway strategy is '${natGatewayStrategy}'`);
+            }
+            break;
+        default:
+            throw new Error(`Unknown NatGatewayStrategy '${natGatewayStrategy}'`);
+    }
+}
+
+export function getDefaultSubnetSpecs(vpcCidr: string): schema.SubnetConfigurationInputs[] {
+    const ipAddress = require("ip-address");
+
+    const ipv4 = new ipAddress.Address4(vpcCidr);
+
+    const publicCidrMask = ipv4.subnetMask + 4;
+    const privateCidrMask = ipv4.subnetMask + 3;
+    return [
+        {
+            name: "private",
+            type: "Private",
+            cidrMask: privateCidrMask,
+        },
+        {
+            name: "public",
+            type: "Public",
+            cidrMask: publicCidrMask,
+        },
+    ];
 }
