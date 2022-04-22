@@ -11,7 +11,7 @@ export type ResourceConstructor = {
     readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
 };
 import * as aws from "@pulumi/aws";
-export abstract class Trail extends pulumi.ComponentResource {
+export abstract class Trail<TData = any> extends pulumi.ComponentResource<TData> {
     public bucket?: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
     public trail!: aws.cloudtrail.Trail | pulumi.Output<aws.cloudtrail.Trail>;
@@ -34,7 +34,7 @@ export interface TrailArgs {
     readonly snsTopicName?: pulumi.Input<string>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
-export abstract class FargateService extends pulumi.ComponentResource {
+export abstract class FargateService<TData = any> extends pulumi.ComponentResource<TData> {
     public service!: aws.ecs.Service | pulumi.Output<aws.ecs.Service>;
     public taskDefinition?: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:FargateService", name, {}, opts); }
@@ -66,7 +66,7 @@ export interface FargateServiceArgs {
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
 }
-export abstract class FargateTaskDefinition extends pulumi.ComponentResource {
+export abstract class FargateTaskDefinition<TData = any> extends pulumi.ComponentResource<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
     public loadBalancers!: aws.types.output.ecs.ServiceLoadBalancer[] | pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]>;
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
