@@ -12,6 +12,10 @@ export type ResourceConstructor = {
     readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
     readonly "awsx:lb:ApplicationLoadBalancer": ConstructComponent<ApplicationLoadBalancer>;
 };
+export type Functions = {
+    "awsx:ecr:Repository/buildAndPushImage": (inputs: Repository_buildAndPushImageInputs) => Promise<Repository_buildAndPushImageOutputs>;
+    "awsx:ecr:buildAndPushImage": (inputs: buildAndPushImageInputs) => Promise<buildAndPushImageOutputs>;
+};
 import * as aws from "@pulumi/aws";
 export abstract class Trail<TData = any> extends pulumi.ComponentResource<TData> {
     public bucket?: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;

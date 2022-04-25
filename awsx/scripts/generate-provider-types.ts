@@ -439,6 +439,47 @@ function genFunctions(
     });
 }
 
+function genFunctionCallsType(
+    functions: pulumiSchema.PulumiPackageMetaschema["functions"],
+) {
+    return ts.factory.createTypeAliasDeclaration(
+        undefined,
+        [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+        "Functions",
+        undefined,
+        ts.factory.createTypeLiteralNode(
+            Object.keys(functions ?? {}).map((token) => {
+                const functionName = getFunctionName(token);
+                return ts.factory.createPropertySignature(
+                    undefined,
+                    ts.factory.createStringLiteral(token),
+                    undefined,
+                    ts.factory.createFunctionTypeNode(
+                        undefined,
+                        [
+                            ts.factory.createParameterDeclaration(
+                                undefined,
+                                undefined,
+                                undefined,
+                                "inputs",
+                                undefined,
+                                ts.factory.createTypeReferenceNode(
+                                    functionName + "Inputs",
+                                ),
+                            ),
+                        ],
+                        ts.factory.createTypeReferenceNode("Promise", [
+                            ts.factory.createTypeReferenceNode(
+                                functionName + "Outputs",
+                            ),
+                        ]),
+                    ),
+                );
+            }),
+        ),
+    );
+}
+
 function genResourceConstructors(
     resources: pulumiSchema.PulumiPackageMetaschema["resources"],
 ) {
@@ -549,6 +590,7 @@ export function generateProviderTypes(args: { schama: string; out: string }) {
         ),
         resourceConstructorType(),
         genResourceConstructors(schema.resources),
+        genFunctionCallsType(schema.functions),
         ...Object.values(externalRefs).map((externalRef) =>
             ts.factory.createImportDeclaration(
                 undefined,
