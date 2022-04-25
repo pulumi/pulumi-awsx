@@ -23,7 +23,8 @@
         "@pulumi/pulumi": "^3.0.0",
         "@types/aws-lambda": "^8.10.23",
         "ip-address": "^8.1.0",
-        "mime": "^2.0.0"
+        "mime": "^2.0.0",
+        "netmask": "^2.0.2"
     },
     "devDependencies": {
         "@babel/core": "^7.17.9",

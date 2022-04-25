@@ -44,6 +44,8 @@ export class Vpc extends schema.Vpc<VpcData> {
         const vpc = new aws.ec2.Vpc(name, args, {parent: this});
         const subnets = this.getSubnets(vpc, availabilityZones, subnetSpecs);
 
+        // TODO: Create IGW only if any subnet is non-isolated
+
         return {
             vpc: vpc,
             subnets: subnets,
@@ -60,6 +62,15 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     getSubnets(vpc: aws.ec2.Vpc, azs: string[], subnetSpecs: schema.SubnetConfigurationInputs[]): aws.ec2.Subnet[] {
         const subnets: aws.ec2.Subnet[] = [];
+
+        const subnetCidrBlocks = [
+            "10.0.0.0/19",
+            "10.0.32.0/19",
+            "10.0.64.0/19",
+            "10.0.96.0/20",
+            "10.0.112.0/20",
+            "10.0.128.0/20",
+        ];
 
         for (let i = 0; i < azs.length; i++) {
             subnetSpecs.forEach(subnet => {
@@ -128,4 +139,16 @@ export function getDefaultSubnetSpecs(vpcCidr: string): schema.SubnetConfigurati
             cidrMask: publicCidrMask,
         },
     ];
+}
+
+export function getCidrBlock(baseCidr: string, subnetMask: number, subnetNumber: number): string {
+    const Netmask = require("netmask").Netmask;
+    const vpcBlock = new Netmask(baseCidr);
+    const subnetBlock = new Netmask().next(subnetNumber);
+
+    if (!vpcBlock.contains(subnetBlock)) {
+        throw new Error(`VPC cidr block '${baseCidr}' is not large enough to contain the subnet with block '${block}'.`);
+    }
+
+    return `${subnetBlock.base}/${subnetBlock.mask}`;
 }
