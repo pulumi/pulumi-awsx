@@ -40,6 +40,16 @@ const resolveRef = (ref: unknown, direction: Direction): ts.TypeNode => {
             typeName[2] + direction + "s",
         );
     }
+    if (ref.startsWith(resourcesPrefix)) {
+        const typeName = ref.substring(resourcesPrefix.length);
+        const typeParts = typeName.split(":");
+        const resourceName = typeParts[2];
+        const path = decodeURIComponent(typeParts[1]).split("/");
+        path.pop(); // Last section is same as the resource name
+        return ts.factory.createTypeReferenceNode(
+            [...path, resourceName].join("."),
+        );
+    }
     const externalName = ref.split("#")[0];
     const externalRef = externalRefs[externalName];
     if (externalRef !== undefined) {
@@ -129,8 +139,8 @@ const getType = (
 };
 
 function genTypeProperties(
-    properties: Record<string, pulumiSchema.TypeReference>,
-    required: string[],
+    properties: Record<string, pulumiSchema.TypeReference> | undefined,
+    required: string[] | undefined,
     direction: Direction,
 ): ts.TypeElement[] {
     if (properties === undefined) {
@@ -303,7 +313,9 @@ const genTypeInterfaces = (
 ): (ts.InterfaceDeclaration | ts.TypeAliasDeclaration)[] => {
     if (resource.enum) {
         const unionTypeMembers = (resource.enum as any).map((x: any) =>
-            ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(x.value)),
+            ts.factory.createLiteralTypeNode(
+                ts.factory.createStringLiteral(x.value),
+            ),
         );
 
         const genEnumType = (suffix: string) =>
@@ -315,10 +327,7 @@ const genTypeInterfaces = (
                 ts.factory.createUnionTypeNode(unionTypeMembers),
             );
 
-        return [
-            genEnumType("Inputs"),
-            genEnumType("Outputs"),
-        ];
+        return [genEnumType("Inputs"), genEnumType("Outputs")];
     }
 
     const inputProperties = genTypeProperties(
@@ -352,10 +361,52 @@ const genTypeInterfaces = (
     return [inputs, outputs];
 };
 
+function genFunctionInputs(
+    functionName: string,
+    objectDef: pulumiSchema.ObjectTypeDetails1 | undefined,
+) {
+    const inputProperties = genTypeProperties(
+        objectDef?.properties,
+        objectDef?.required,
+        "Input",
+    );
+    return ts.factory.createInterfaceDeclaration(
+        undefined,
+        [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+        functionName + "Inputs",
+        undefined,
+        undefined,
+        inputProperties,
+    );
+}
+
+function genFunctionOutputs(
+    functionName: string,
+    objectDef: pulumiSchema.ObjectTypeDetails2 | undefined,
+) {
+    const outputProperties = genTypeProperties(
+        objectDef?.properties,
+        objectDef?.required,
+        "Output",
+    );
+    return ts.factory.createInterfaceDeclaration(
+        undefined,
+        [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+        functionName + "Outputs",
+        undefined,
+        undefined,
+        outputProperties,
+    );
+}
+
 function getTypeName(typeToken: string) {
     const tokenParts = typeToken.split(":");
     const typeName = tokenParts[2];
     return typeName;
+}
+
+function getFunctionName(typeToken: string) {
+    return getTypeName(typeToken).replace("/", "_");
 }
 
 function genResources(
@@ -374,6 +425,18 @@ function genTypes(resources: pulumiSchema.PulumiPackageMetaschema["types"]) {
     return Object.entries(resources ?? {}).flatMap(([key, value]) =>
         genTypeInterfaces(getTypeName(key), value),
     );
+}
+
+function genFunctions(
+    functions: pulumiSchema.PulumiPackageMetaschema["functions"],
+) {
+    return Object.entries(functions ?? {}).flatMap(([token, value]) => {
+        const functionName = getFunctionName(token);
+        return [
+            genFunctionInputs(functionName, value.inputs),
+            genFunctionOutputs(functionName, value.outputs),
+        ];
+    });
 }
 
 function genResourceConstructors(
@@ -500,6 +563,7 @@ export function generateProviderTypes(args: { schama: string; out: string }) {
         ),
         ...genResources(schema.resources),
         ...genTypes(schema.types),
+        ...genFunctions(schema.functions),
     ]);
     const sourceFile = ts.createSourceFile(
         "provider-types.d.ts",

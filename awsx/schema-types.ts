@@ -748,3 +748,24 @@ export interface TargetGroupOutputs {
     readonly targetType?: pulumi.Output<string>;
     readonly vpcId?: pulumi.Output<string>;
 }
+export interface Repository_buildAndPushImageInputs {
+    readonly __self__: pulumi.Input<Repository>;
+    readonly args?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly dockerfile?: pulumi.Input<string>;
+    readonly env?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly path?: pulumi.Input<string>;
+    readonly target?: pulumi.Input<string>;
+}
+export interface Repository_buildAndPushImageOutputs {
+    readonly image?: pulumi.Output<string>;
+}
+export interface buildAndPushImageInputs {
+    readonly docker?: pulumi.Input<DockerBuildInputs>;
+    readonly registryId?: pulumi.Input<string>;
+    readonly repositoryName: pulumi.Input<string>;
+}
+export interface buildAndPushImageOutputs {
+    readonly image?: pulumi.Output<string>;
+}
