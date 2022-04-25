@@ -384,10 +384,8 @@ export interface lifecyclePolicyRuleOutputs {
     readonly tagPrefixList?: pulumi.Output<string[]>;
     readonly tagStatus: pulumi.Output<lifecycleTagStatusOutputs>;
 }
-export interface lifecycleTagStatusInputs {
-}
-export interface lifecycleTagStatusOutputs {
-}
+export type lifecycleTagStatusInputs = "any" | "untagged" | "tagged";
+export type lifecycleTagStatusOutputs = "any" | "untagged" | "tagged";
 export interface FargateServiceTaskDefinitionInputs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;
     readonly containers?: Record<string, TaskDefinitionContainerDefinitionInputs>;
