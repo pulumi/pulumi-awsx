@@ -2,10 +2,16 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
+import { input as inputs, output as outputs, enums } from "../types";
 import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
 
+/**
+ * A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo.
+ *
+ * Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
+ */
 export class Repository extends pulumi.ComponentResource {
     /** @internal */
     public static readonly __pulumiType = 'awsx:ecr:Repository';
@@ -21,6 +27,10 @@ export class Repository extends pulumi.ComponentResource {
         return obj['__pulumiType'] === Repository.__pulumiType;
     }
 
+    /**
+     * Underlying repository lifecycle policy
+     */
+    public readonly lifecyclePolicy!: pulumi.Output<pulumiAws.ecr.LifecyclePolicy | undefined>;
     /**
      * Underlying Repository resource
      */
@@ -40,10 +50,12 @@ export class Repository extends pulumi.ComponentResource {
             resourceInputs["encryptionConfigurations"] = args ? args.encryptionConfigurations : undefined;
             resourceInputs["imageScanningConfiguration"] = args ? args.imageScanningConfiguration : undefined;
             resourceInputs["imageTagMutability"] = args ? args.imageTagMutability : undefined;
+            resourceInputs["lifecyclePolicy"] = args ? args.lifecyclePolicy : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["repository"] = undefined /*out*/;
         } else {
+            resourceInputs["lifecyclePolicy"] = undefined /*out*/;
             resourceInputs["repository"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
@@ -84,6 +96,10 @@ export interface RepositoryArgs {
      * The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
      */
     imageTagMutability?: pulumi.Input<string>;
+    /**
+     * A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
+     */
+    lifecyclePolicy?: inputs.ecr.LifecyclePolicyArgs;
     /**
      * Name of the repository.
      */

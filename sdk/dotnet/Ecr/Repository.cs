@@ -9,9 +9,20 @@ using Pulumi.Serialization;
 
 namespace Pulumi.Awsx.Ecr
 {
+    /// <summary>
+    /// A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo.
+    /// 
+    /// Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
+    /// </summary>
     [AwsxResourceType("awsx:ecr:Repository")]
     public partial class Repository : Pulumi.ComponentResource
     {
+        /// <summary>
+        /// Underlying repository lifecycle policy
+        /// </summary>
+        [Output("lifecyclePolicy")]
+        public Output<Pulumi.Aws.Ecr.LifecyclePolicy?> LifecyclePolicy { get; private set; } = null!;
+
         /// <summary>
         /// Underlying Repository resource
         /// </summary>
@@ -75,6 +86,12 @@ namespace Pulumi.Awsx.Ecr
         /// </summary>
         [Input("imageTagMutability")]
         public Input<string>? ImageTagMutability { get; set; }
+
+        /// <summary>
+        /// A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
+        /// </summary>
+        [Input("lifecyclePolicy")]
+        public Inputs.LifecyclePolicyArgs? LifecyclePolicy { get; set; }
 
         /// <summary>
         /// Name of the repository.

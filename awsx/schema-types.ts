@@ -37,6 +37,7 @@ export interface TrailArgs {
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class Repository<TData = any> extends pulumi.ComponentResource<TData> {
+    public lifecyclePolicy?: aws.ecr.LifecyclePolicy | pulumi.Output<aws.ecr.LifecyclePolicy>;
     public repository!: aws.ecr.Repository | pulumi.Output<aws.ecr.Repository>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecr:Repository", name, {}, opts); }
 }
@@ -44,6 +45,7 @@ export interface RepositoryArgs {
     readonly encryptionConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ecr.RepositoryEncryptionConfiguration>[]>;
     readonly imageScanningConfiguration?: pulumi.Input<aws.types.input.ecr.RepositoryImageScanningConfiguration>;
     readonly imageTagMutability?: pulumi.Input<string>;
+    readonly lifecyclePolicy?: lifecyclePolicyInputs;
     readonly name?: pulumi.Input<string>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
@@ -359,6 +361,32 @@ export interface DockerBuildOutputs {
     readonly extraOptions?: pulumi.Output<string[]>;
     readonly path?: pulumi.Output<string>;
     readonly target?: pulumi.Output<string>;
+}
+export interface lifecyclePolicyInputs {
+    readonly rules?: pulumi.Input<pulumi.Input<lifecyclePolicyRuleInputs>[]>;
+    readonly skip?: boolean;
+}
+export interface lifecyclePolicyOutputs {
+    readonly rules?: pulumi.Output<lifecyclePolicyRuleOutputs[]>;
+    readonly skip?: boolean;
+}
+export interface lifecyclePolicyRuleInputs {
+    readonly description?: pulumi.Input<string>;
+    readonly maximumAgeLimit?: pulumi.Input<number>;
+    readonly maximumNumberOfImages?: pulumi.Input<number>;
+    readonly tagPrefixList?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly tagStatus: pulumi.Input<lifecycleTagStatusInputs>;
+}
+export interface lifecyclePolicyRuleOutputs {
+    readonly description?: pulumi.Output<string>;
+    readonly maximumAgeLimit?: pulumi.Output<number>;
+    readonly maximumNumberOfImages?: pulumi.Output<number>;
+    readonly tagPrefixList?: pulumi.Output<string[]>;
+    readonly tagStatus: pulumi.Output<lifecycleTagStatusOutputs>;
+}
+export interface lifecycleTagStatusInputs {
+}
+export interface lifecycleTagStatusOutputs {
 }
 export interface FargateServiceTaskDefinitionInputs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;

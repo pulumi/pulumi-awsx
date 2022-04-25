@@ -11,9 +11,14 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo.
+//
+// Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
 type Repository struct {
 	pulumi.ResourceState
 
+	// Underlying repository lifecycle policy
+	LifecyclePolicy ecr.LifecyclePolicyOutput `pulumi:"lifecyclePolicy"`
 	// Underlying Repository resource
 	Repository ecr.RepositoryOutput `pulumi:"repository"`
 }
@@ -40,6 +45,8 @@ type repositoryArgs struct {
 	ImageScanningConfiguration *ecr.RepositoryImageScanningConfiguration `pulumi:"imageScanningConfiguration"`
 	// The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
 	ImageTagMutability *string `pulumi:"imageTagMutability"`
+	// A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
+	LifecyclePolicy *LifecyclePolicy `pulumi:"lifecyclePolicy"`
 	// Name of the repository.
 	Name *string `pulumi:"name"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -54,6 +61,8 @@ type RepositoryArgs struct {
 	ImageScanningConfiguration ecr.RepositoryImageScanningConfigurationPtrInput
 	// The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
 	ImageTagMutability pulumi.StringPtrInput
+	// A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
+	LifecyclePolicy *LifecyclePolicyArgs
 	// Name of the repository.
 	Name pulumi.StringPtrInput
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.

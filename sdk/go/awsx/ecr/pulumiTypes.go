@@ -264,9 +264,157 @@ func (o DockerBuildPtrOutput) Target() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
+// Simplified lifecycle policy model consisting of one or more rules that determine which images in a repository should be expired. See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for more details.
+type LifecyclePolicy struct {
+	// Specifies the rules to determine how images should be retired from this repository. Rules are ordered from lowest priority to highest.  If there is a rule with a `selection` value of `any`, then it will have the highest priority.
+	Rules []LifecyclePolicyRule `pulumi:"rules"`
+	// Skips creation of the policy if set to `true`.
+	Skip *bool `pulumi:"skip"`
+}
+
+// A lifecycle policy rule that determine which images in a repository should be expired.
+type LifecyclePolicyRule struct {
+	// Describes the purpose of a rule within a lifecycle policy.
+	Description *string `pulumi:"description"`
+	// The maximum age limit (in days) for your images. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.
+	MaximumAgeLimit *float64 `pulumi:"maximumAgeLimit"`
+	// The maximum number of images that you want to retain in your repository. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.
+	MaximumNumberOfImages *float64 `pulumi:"maximumNumberOfImages"`
+	// A list of image tag prefixes on which to take action with your lifecycle policy. Only used if you specified "tagStatus": "tagged". For example, if your images are tagged as prod, prod1, prod2, and so on, you would use the tag prefix prod to specify all of them. If you specify multiple tags, only the images with all specified tags are selected.
+	TagPrefixList []string `pulumi:"tagPrefixList"`
+	// Determines whether the lifecycle policy rule that you are adding specifies a tag for an image. Acceptable options are tagged, untagged, or any. If you specify any, then all images have the rule evaluated against them. If you specify tagged, then you must also specify a tagPrefixList value. If you specify untagged, then you must omit tagPrefixList.
+	TagStatus LifecycleTagStatus `pulumi:"tagStatus"`
+}
+
+// LifecyclePolicyRuleInput is an input type that accepts LifecyclePolicyRuleArgs and LifecyclePolicyRuleOutput values.
+// You can construct a concrete instance of `LifecyclePolicyRuleInput` via:
+//
+//          LifecyclePolicyRuleArgs{...}
+type LifecyclePolicyRuleInput interface {
+	pulumi.Input
+
+	ToLifecyclePolicyRuleOutput() LifecyclePolicyRuleOutput
+	ToLifecyclePolicyRuleOutputWithContext(context.Context) LifecyclePolicyRuleOutput
+}
+
+// A lifecycle policy rule that determine which images in a repository should be expired.
+type LifecyclePolicyRuleArgs struct {
+	// Describes the purpose of a rule within a lifecycle policy.
+	Description pulumi.StringPtrInput `pulumi:"description"`
+	// The maximum age limit (in days) for your images. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.
+	MaximumAgeLimit pulumi.Float64PtrInput `pulumi:"maximumAgeLimit"`
+	// The maximum number of images that you want to retain in your repository. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.
+	MaximumNumberOfImages pulumi.Float64PtrInput `pulumi:"maximumNumberOfImages"`
+	// A list of image tag prefixes on which to take action with your lifecycle policy. Only used if you specified "tagStatus": "tagged". For example, if your images are tagged as prod, prod1, prod2, and so on, you would use the tag prefix prod to specify all of them. If you specify multiple tags, only the images with all specified tags are selected.
+	TagPrefixList pulumi.StringArrayInput `pulumi:"tagPrefixList"`
+	// Determines whether the lifecycle policy rule that you are adding specifies a tag for an image. Acceptable options are tagged, untagged, or any. If you specify any, then all images have the rule evaluated against them. If you specify tagged, then you must also specify a tagPrefixList value. If you specify untagged, then you must omit tagPrefixList.
+	TagStatus LifecycleTagStatusInput `pulumi:"tagStatus"`
+}
+
+func (LifecyclePolicyRuleArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*LifecyclePolicyRule)(nil)).Elem()
+}
+
+func (i LifecyclePolicyRuleArgs) ToLifecyclePolicyRuleOutput() LifecyclePolicyRuleOutput {
+	return i.ToLifecyclePolicyRuleOutputWithContext(context.Background())
+}
+
+func (i LifecyclePolicyRuleArgs) ToLifecyclePolicyRuleOutputWithContext(ctx context.Context) LifecyclePolicyRuleOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LifecyclePolicyRuleOutput)
+}
+
+// LifecyclePolicyRuleArrayInput is an input type that accepts LifecyclePolicyRuleArray and LifecyclePolicyRuleArrayOutput values.
+// You can construct a concrete instance of `LifecyclePolicyRuleArrayInput` via:
+//
+//          LifecyclePolicyRuleArray{ LifecyclePolicyRuleArgs{...} }
+type LifecyclePolicyRuleArrayInput interface {
+	pulumi.Input
+
+	ToLifecyclePolicyRuleArrayOutput() LifecyclePolicyRuleArrayOutput
+	ToLifecyclePolicyRuleArrayOutputWithContext(context.Context) LifecyclePolicyRuleArrayOutput
+}
+
+type LifecyclePolicyRuleArray []LifecyclePolicyRuleInput
+
+func (LifecyclePolicyRuleArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]LifecyclePolicyRule)(nil)).Elem()
+}
+
+func (i LifecyclePolicyRuleArray) ToLifecyclePolicyRuleArrayOutput() LifecyclePolicyRuleArrayOutput {
+	return i.ToLifecyclePolicyRuleArrayOutputWithContext(context.Background())
+}
+
+func (i LifecyclePolicyRuleArray) ToLifecyclePolicyRuleArrayOutputWithContext(ctx context.Context) LifecyclePolicyRuleArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LifecyclePolicyRuleArrayOutput)
+}
+
+// A lifecycle policy rule that determine which images in a repository should be expired.
+type LifecyclePolicyRuleOutput struct{ *pulumi.OutputState }
+
+func (LifecyclePolicyRuleOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*LifecyclePolicyRule)(nil)).Elem()
+}
+
+func (o LifecyclePolicyRuleOutput) ToLifecyclePolicyRuleOutput() LifecyclePolicyRuleOutput {
+	return o
+}
+
+func (o LifecyclePolicyRuleOutput) ToLifecyclePolicyRuleOutputWithContext(ctx context.Context) LifecyclePolicyRuleOutput {
+	return o
+}
+
+// Describes the purpose of a rule within a lifecycle policy.
+func (o LifecyclePolicyRuleOutput) Description() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v LifecyclePolicyRule) *string { return v.Description }).(pulumi.StringPtrOutput)
+}
+
+// The maximum age limit (in days) for your images. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.
+func (o LifecyclePolicyRuleOutput) MaximumAgeLimit() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v LifecyclePolicyRule) *float64 { return v.MaximumAgeLimit }).(pulumi.Float64PtrOutput)
+}
+
+// The maximum number of images that you want to retain in your repository. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.
+func (o LifecyclePolicyRuleOutput) MaximumNumberOfImages() pulumi.Float64PtrOutput {
+	return o.ApplyT(func(v LifecyclePolicyRule) *float64 { return v.MaximumNumberOfImages }).(pulumi.Float64PtrOutput)
+}
+
+// A list of image tag prefixes on which to take action with your lifecycle policy. Only used if you specified "tagStatus": "tagged". For example, if your images are tagged as prod, prod1, prod2, and so on, you would use the tag prefix prod to specify all of them. If you specify multiple tags, only the images with all specified tags are selected.
+func (o LifecyclePolicyRuleOutput) TagPrefixList() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v LifecyclePolicyRule) []string { return v.TagPrefixList }).(pulumi.StringArrayOutput)
+}
+
+// Determines whether the lifecycle policy rule that you are adding specifies a tag for an image. Acceptable options are tagged, untagged, or any. If you specify any, then all images have the rule evaluated against them. If you specify tagged, then you must also specify a tagPrefixList value. If you specify untagged, then you must omit tagPrefixList.
+func (o LifecyclePolicyRuleOutput) TagStatus() LifecycleTagStatusOutput {
+	return o.ApplyT(func(v LifecyclePolicyRule) LifecycleTagStatus { return v.TagStatus }).(LifecycleTagStatusOutput)
+}
+
+type LifecyclePolicyRuleArrayOutput struct{ *pulumi.OutputState }
+
+func (LifecyclePolicyRuleArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]LifecyclePolicyRule)(nil)).Elem()
+}
+
+func (o LifecyclePolicyRuleArrayOutput) ToLifecyclePolicyRuleArrayOutput() LifecyclePolicyRuleArrayOutput {
+	return o
+}
+
+func (o LifecyclePolicyRuleArrayOutput) ToLifecyclePolicyRuleArrayOutputWithContext(ctx context.Context) LifecyclePolicyRuleArrayOutput {
+	return o
+}
+
+func (o LifecyclePolicyRuleArrayOutput) Index(i pulumi.IntInput) LifecyclePolicyRuleOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) LifecyclePolicyRule {
+		return vs[0].([]LifecyclePolicyRule)[vs[1].(int)]
+	}).(LifecyclePolicyRuleOutput)
+}
+
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*DockerBuildInput)(nil)).Elem(), DockerBuildArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*DockerBuildPtrInput)(nil)).Elem(), DockerBuildArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LifecyclePolicyRuleInput)(nil)).Elem(), LifecyclePolicyRuleArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LifecyclePolicyRuleArrayInput)(nil)).Elem(), LifecyclePolicyRuleArray{})
 	pulumi.RegisterOutputType(DockerBuildOutput{})
 	pulumi.RegisterOutputType(DockerBuildPtrOutput{})
+	pulumi.RegisterOutputType(LifecyclePolicyRuleOutput{})
+	pulumi.RegisterOutputType(LifecyclePolicyRuleArrayOutput{})
 }

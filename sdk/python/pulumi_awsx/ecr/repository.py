@@ -7,6 +7,8 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
+from ._enums import *
+from ._inputs import *
 import pulumi_aws
 
 __all__ = ['RepositoryArgs', 'Repository']
@@ -17,6 +19,7 @@ class RepositoryArgs:
                  encryption_configurations: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecr.RepositoryEncryptionConfigurationArgs']]]] = None,
                  image_scanning_configuration: Optional[pulumi.Input['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']] = None,
                  image_tag_mutability: Optional[pulumi.Input[str]] = None,
+                 lifecycle_policy: Optional['LifecyclePolicyArgs'] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
@@ -24,6 +27,7 @@ class RepositoryArgs:
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecr.RepositoryEncryptionConfigurationArgs']]] encryption_configurations: Encryption configuration for the repository. See below for schema.
         :param pulumi.Input['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs'] image_scanning_configuration: Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.
         :param pulumi.Input[str] image_tag_mutability: The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
+        :param 'LifecyclePolicyArgs' lifecycle_policy: A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
         :param pulumi.Input[str] name: Name of the repository.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
@@ -33,6 +37,8 @@ class RepositoryArgs:
             pulumi.set(__self__, "image_scanning_configuration", image_scanning_configuration)
         if image_tag_mutability is not None:
             pulumi.set(__self__, "image_tag_mutability", image_tag_mutability)
+        if lifecycle_policy is not None:
+            pulumi.set(__self__, "lifecycle_policy", lifecycle_policy)
         if name is not None:
             pulumi.set(__self__, "name", name)
         if tags is not None:
@@ -75,6 +81,18 @@ class RepositoryArgs:
         pulumi.set(self, "image_tag_mutability", value)
 
     @property
+    @pulumi.getter(name="lifecyclePolicy")
+    def lifecycle_policy(self) -> Optional['LifecyclePolicyArgs']:
+        """
+        A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
+        """
+        return pulumi.get(self, "lifecycle_policy")
+
+    @lifecycle_policy.setter
+    def lifecycle_policy(self, value: Optional['LifecyclePolicyArgs']):
+        pulumi.set(self, "lifecycle_policy", value)
+
+    @property
     @pulumi.getter
     def name(self) -> Optional[pulumi.Input[str]]:
         """
@@ -107,16 +125,21 @@ class Repository(pulumi.ComponentResource):
                  encryption_configurations: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryEncryptionConfigurationArgs']]]]] = None,
                  image_scanning_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']]] = None,
                  image_tag_mutability: Optional[pulumi.Input[str]] = None,
+                 lifecycle_policy: Optional[pulumi.InputType['LifecyclePolicyArgs']] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
-        Create a Repository resource with the given unique name, props, and options.
+        A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo.
+
+        Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryEncryptionConfigurationArgs']]]] encryption_configurations: Encryption configuration for the repository. See below for schema.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']] image_scanning_configuration: Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.
         :param pulumi.Input[str] image_tag_mutability: The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
+        :param pulumi.InputType['LifecyclePolicyArgs'] lifecycle_policy: A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
         :param pulumi.Input[str] name: Name of the repository.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
@@ -127,7 +150,10 @@ class Repository(pulumi.ComponentResource):
                  args: Optional[RepositoryArgs] = None,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
-        Create a Repository resource with the given unique name, props, and options.
+        A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo.
+
+        Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
+
         :param str resource_name: The name of the resource.
         :param RepositoryArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -146,6 +172,7 @@ class Repository(pulumi.ComponentResource):
                  encryption_configurations: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryEncryptionConfigurationArgs']]]]] = None,
                  image_scanning_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecr.RepositoryImageScanningConfigurationArgs']]] = None,
                  image_tag_mutability: Optional[pulumi.Input[str]] = None,
+                 lifecycle_policy: Optional[pulumi.InputType['LifecyclePolicyArgs']] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
@@ -165,6 +192,7 @@ class Repository(pulumi.ComponentResource):
             __props__.__dict__["encryption_configurations"] = encryption_configurations
             __props__.__dict__["image_scanning_configuration"] = image_scanning_configuration
             __props__.__dict__["image_tag_mutability"] = image_tag_mutability
+            __props__.__dict__["lifecycle_policy"] = lifecycle_policy
             __props__.__dict__["name"] = name
             __props__.__dict__["tags"] = tags
             __props__.__dict__["repository"] = None
@@ -174,6 +202,14 @@ class Repository(pulumi.ComponentResource):
             __props__,
             opts,
             remote=True)
+
+    @property
+    @pulumi.getter(name="lifecyclePolicy")
+    def lifecycle_policy(self) -> pulumi.Output[Optional['pulumi_aws.ecr.LifecyclePolicy']]:
+        """
+        Underlying repository lifecycle policy
+        """
+        return pulumi.get(self, "lifecycle_policy")
 
     @property
     @pulumi.getter

@@ -28,7 +28,10 @@ func generateEcr(awsSpec, dockerSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:ecr:Repository/buildAndPushImage": buildAndPushImage(true),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:ecr:DockerBuild": dockerBuild(),
+			"awsx:ecr:DockerBuild":         dockerBuild(),
+			"awsx:ecr:lifecyclePolicy":     lifecyclePolicy(awsSpec),
+			"awsx:ecr:lifecyclePolicyRule": lifecyclePolicyRule(awsSpec),
+			"awsx:ecr:lifecycleTagStatus":  lifecycleTagStatus(awsSpec),
 		},
 	}
 }
@@ -36,13 +39,20 @@ func generateEcr(awsSpec, dockerSpec schema.PackageSpec) schema.PackageSpec {
 func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	originalSpec := awsSpec.Resources["aws:ecr/repository:Repository"]
 	inputProperties := renameAwsPropertiesRefs(originalSpec.InputProperties)
+	inputProperties["lifecyclePolicy"] = schema.PropertySpec{
+		Description: "A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.",
+		TypeSpec: schema.TypeSpec{
+			Ref:   "#/types/awsx:ecr:lifecyclePolicy",
+			Plain: true,
+		},
+	}
 
 	return schema.ResourceSpec{
 		IsComponent:     true,
 		InputProperties: inputProperties,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
-			Description: "",
+			Description: "A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo. \n\nDocker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.",
 			Properties: map[string]schema.PropertySpec{
 				"repository": {
 					Description: "Underlying Repository resource",
@@ -55,6 +65,12 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 						}),
 					},
 				},
+				"lifecyclePolicy": {
+					Description: "Underlying repository lifecycle policy",
+					TypeSpec: schema.TypeSpec{
+						Ref: awsRef("#/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy"),
+					},
+				},
 			},
 			Required: []string{"repository"},
 		},
@@ -64,12 +80,109 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	}
 }
 
+func lifecyclePolicy(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: "Simplified lifecycle policy model consisting of one or more rules that determine which images in a repository should be expired. See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for more details.",
+			Properties: map[string]schema.PropertySpec{
+				"rules": {
+					Description: "Specifies the rules to determine how images should be retired from this repository. Rules are ordered from lowest priority to highest.  If there is a rule with a `selection` value of `any`, then it will have the highest priority.",
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Ref: "#/types/awsx:ecr:lifecyclePolicyRule",
+						},
+					},
+				},
+				"skip": {
+					Description: "Skips creation of the policy if set to `true`.",
+					TypeSpec: schema.TypeSpec{
+						Type:  "boolean",
+						Plain: true,
+					},
+				},
+			},
+		},
+	}
+}
+
+func lifecyclePolicyRule(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: "A lifecycle policy rule that determine which images in a repository should be expired.",
+			Properties: map[string]schema.PropertySpec{
+				"description": {
+					Description: "Describes the purpose of a rule within a lifecycle policy.",
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
+				"maximumNumberOfImages": {
+					Description: "The maximum number of images that you want to retain in your repository. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.",
+					TypeSpec: schema.TypeSpec{
+						Type: "number",
+					},
+				},
+				"maximumAgeLimit": {
+					Description: "The maximum age limit (in days) for your images. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.",
+					TypeSpec: schema.TypeSpec{
+						Type: "number",
+					},
+				},
+				"tagStatus": {
+					Description: "Determines whether the lifecycle policy rule that you are adding specifies a tag for an image. Acceptable options are tagged, untagged, or any. If you specify any, then all images have the rule evaluated against them. If you specify tagged, then you must also specify a tagPrefixList value. If you specify untagged, then you must omit tagPrefixList.",
+					TypeSpec: schema.TypeSpec{
+						Ref: "#/types/awsx:ecr:lifecycleTagStatus",
+					},
+				},
+				"tagPrefixList": {
+					Description: "A list of image tag prefixes on which to take action with your lifecycle policy. Only used if you specified \"tagStatus\": \"tagged\". For example, if your images are tagged as prod, prod1, prod2, and so on, you would use the tag prefix prod to specify all of them. If you specify multiple tags, only the images with all specified tags are selected.",
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+			},
+			Required: []string{"tagStatus"},
+		},
+	}
+}
+
+func lifecycleTagStatus(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type: "string",
+		},
+		Enum: []schema.EnumValueSpec{
+			{
+				Name:        "any",
+				Description: "Evaluate rule against all images",
+				Value:       "any",
+			},
+			{
+				Name:        "untagged",
+				Description: "Only evaluate rule against untagged images",
+				Value:       "untagged",
+			},
+			{
+				Name:        "tagged",
+				Description: "Only evaluated rule against images with specified prefixes",
+				Value:       "tagged",
+			},
+		},
+	}
+}
+
 func buildAndPushImage(asMember bool) schema.FunctionSpec {
 	spec := schema.FunctionSpec{
 		Description: "Build and push a docker image to ECR",
 		Inputs: &schema.ObjectTypeSpec{
 			Description: "Arguments for building and publishing a docker image to ECR",
-			Properties: map[string]schema.PropertySpec{},
+			Properties:  map[string]schema.PropertySpec{},
 		},
 		Outputs: &schema.ObjectTypeSpec{
 			Description: "Outputs from the pushed docker image",
@@ -95,7 +208,7 @@ func buildAndPushImage(asMember bool) schema.FunctionSpec {
 		spec.Inputs.Required = []string{"__self__"}
 	} else {
 		spec.Inputs.Properties["docker"] = schema.PropertySpec{
-		Description: "Arguments for building the docker image.",
+			Description: "Arguments for building the docker image.",
 			TypeSpec: schema.TypeSpec{
 				Ref: "#/types/awsx:ecr:DockerBuild",
 			},
@@ -122,7 +235,7 @@ func dockerBuild() schema.ComplexTypeSpec {
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
 			Description: "Arguments for building a docker image",
-			Properties: dockerBuildProperties(),
+			Properties:  dockerBuildProperties(),
 		},
 	}
 }

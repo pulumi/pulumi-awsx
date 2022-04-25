@@ -2,7 +2,7 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import { input as inputs, output as outputs } from "../types";
+import { input as inputs, output as outputs, enums } from "../types";
 
 import * as pulumiAws from "@pulumi/aws";
 import * as utilities from "../utilities";
@@ -426,6 +426,46 @@ export namespace ecr {
          * The target of the dockerfile to build
          */
         target?: pulumi.Input<string>;
+    }
+
+    /**
+     * Simplified lifecycle policy model consisting of one or more rules that determine which images in a repository should be expired. See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for more details.
+     */
+    export interface LifecyclePolicyArgs {
+        /**
+         * Specifies the rules to determine how images should be retired from this repository. Rules are ordered from lowest priority to highest.  If there is a rule with a `selection` value of `any`, then it will have the highest priority.
+         */
+        rules?: pulumi.Input<pulumi.Input<inputs.ecr.LifecyclePolicyRuleArgs>[]>;
+        /**
+         * Skips creation of the policy if set to `true`.
+         */
+        skip?: boolean;
+    }
+
+    /**
+     * A lifecycle policy rule that determine which images in a repository should be expired.
+     */
+    export interface LifecyclePolicyRuleArgs {
+        /**
+         * Describes the purpose of a rule within a lifecycle policy.
+         */
+        description?: pulumi.Input<string>;
+        /**
+         * The maximum age limit (in days) for your images. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.
+         */
+        maximumAgeLimit?: pulumi.Input<number>;
+        /**
+         * The maximum number of images that you want to retain in your repository. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.
+         */
+        maximumNumberOfImages?: pulumi.Input<number>;
+        /**
+         * A list of image tag prefixes on which to take action with your lifecycle policy. Only used if you specified "tagStatus": "tagged". For example, if your images are tagged as prod, prod1, prod2, and so on, you would use the tag prefix prod to specify all of them. If you specify multiple tags, only the images with all specified tags are selected.
+         */
+        tagPrefixList?: pulumi.Input<pulumi.Input<string>[]>;
+        /**
+         * Determines whether the lifecycle policy rule that you are adding specifies a tag for an image. Acceptable options are tagged, untagged, or any. If you specify any, then all images have the rule evaluated against them. If you specify tagged, then you must also specify a tagPrefixList value. If you specify untagged, then you must omit tagPrefixList.
+         */
+        tagStatus: pulumi.Input<enums.ecr.LifecycleTagStatus>;
     }
 }
 

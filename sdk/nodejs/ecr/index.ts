@@ -8,6 +8,9 @@ import * as utilities from "../utilities";
 export * from "./buildAndPushImage";
 export * from "./repository";
 
+// Export enums:
+export * from "../types/enums/ecr";
+
 // Import resources to register:
 import { Repository } from "./repository";
 
