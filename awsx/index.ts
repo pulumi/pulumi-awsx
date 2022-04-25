@@ -14,7 +14,7 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
-import { construct } from "./resources";
+import { construct, functions } from "./resources";
 import { resourceToConstructResult } from "./utils";
 
 class Provider implements pulumi.provider.Provider {
@@ -31,6 +31,20 @@ class Provider implements pulumi.provider.Provider {
             throw new Error(`unknown resource type ${type}`);
         }
         return resourceToConstructResult(resource);
+    }
+
+    async call(
+        token: string,
+        inputs: pulumi.Inputs,
+    ): Promise<pulumi.provider.InvokeResult> {
+        const untypedFunctions: Record<string, (inputs: any) => Promise<any>> =
+            functions;
+        const handler = untypedFunctions[token];
+        if (!handler) {
+            throw new Error(`unknown method ${token}`);
+        }
+        const outputs = await handler(inputs);
+        return { outputs };
     }
 }
 

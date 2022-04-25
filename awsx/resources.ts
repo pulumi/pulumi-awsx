@@ -15,9 +15,17 @@
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
 import { Repository } from "./ecr";
+import {
+    buildAndPushImage,
+    Repository_buildAndPushImage,
+} from "./ecr/buildAndPushImage";
 import { FargateService, FargateTaskDefinition } from "./ecs";
 import { ApplicationLoadBalancer } from "./lb";
-import { ConstructComponent, ResourceConstructor } from "./schema-types";
+import {
+    ConstructComponent,
+    Functions,
+    ResourceConstructor,
+} from "./schema-types";
 
 const resources: ResourceConstructor = {
     "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
@@ -42,3 +50,8 @@ export function construct(
     }
     return resource(name, inputs, options);
 }
+
+export const functions: Functions = {
+    "awsx:ecr:Repository/buildAndPushImage": Repository_buildAndPushImage,
+    "awsx:ecr:buildAndPushImage": buildAndPushImage,
+};
