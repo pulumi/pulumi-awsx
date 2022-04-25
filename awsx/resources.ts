@@ -14,13 +14,16 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
-import { FargateService, FargateTaskDefinition } from "./ecs";
+import { EC2Service, EC2TaskDefinition, FargateService, FargateTaskDefinition } from "./ecs";
 import { ApplicationLoadBalancer } from "./lb";
 import { ConstructComponent, ResourceConstructor } from "./schema-types";
 
 const resources: ResourceConstructor = {
     "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
     "awsx:ecs:FargateService": (...args) => new FargateService(...args),
+    "awsx:ecs:EC2Service": (...args) => new EC2Service(...args),
+    "awsx:ecs:EC2TaskDefinition": (...args) =>
+        new EC2TaskDefinition(...args),
     "awsx:ecs:FargateTaskDefinition": (...args) =>
         new FargateTaskDefinition(...args),
     "awsx:lb:ApplicationLoadBalancer": (...args) =>

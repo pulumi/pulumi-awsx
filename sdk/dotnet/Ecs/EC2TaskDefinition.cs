@@ -7,15 +7,73 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.Ecs.Inputs
+namespace Pulumi.Awsx.Ecs
 {
-
     /// <summary>
     /// Create a TaskDefinition resource with the given unique name, arguments, and options.
     /// Creates required log-group and task &amp; execution roles.
     /// Presents required Service load balancers if target group included in port mappings.
     /// </summary>
-    public sealed class FargateServiceTaskDefinitionArgs : Pulumi.ResourceArgs
+    [AwsxResourceType("awsx:ecs:EC2TaskDefinition")]
+    public partial class EC2TaskDefinition : Pulumi.ComponentResource
+    {
+        /// <summary>
+        /// Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.
+        /// </summary>
+        [Output("executionRole")]
+        public Output<Pulumi.Aws.Iam.Role?> ExecutionRole { get; private set; } = null!;
+
+        /// <summary>
+        /// Computed load balancers from target groups specified of container port mappings.
+        /// </summary>
+        [Output("loadBalancers")]
+        public Output<ImmutableArray<Pulumi.Aws.Ecs.Outputs.ServiceLoadBalancer>> LoadBalancers { get; private set; } = null!;
+
+        /// <summary>
+        /// Auto-created Log Group resource for use by containers.
+        /// </summary>
+        [Output("logGroup")]
+        public Output<Pulumi.Aws.CloudWatch.LogGroup?> LogGroup { get; private set; } = null!;
+
+        /// <summary>
+        /// Underlying ECS Task Definition resource
+        /// </summary>
+        [Output("taskDefinition")]
+        public Output<Pulumi.Aws.Ecs.TaskDefinition> TaskDefinition { get; private set; } = null!;
+
+        /// <summary>
+        /// Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+        /// </summary>
+        [Output("taskRole")]
+        public Output<Pulumi.Aws.Iam.Role?> TaskRole { get; private set; } = null!;
+
+
+        /// <summary>
+        /// Create a EC2TaskDefinition resource with the given unique name, arguments, and options.
+        /// </summary>
+        ///
+        /// <param name="name">The unique name of the resource</param>
+        /// <param name="args">The arguments used to populate this resource's properties</param>
+        /// <param name="options">A bag of options that control this resource's behavior</param>
+        public EC2TaskDefinition(string name, EC2TaskDefinitionArgs? args = null, ComponentResourceOptions? options = null)
+            : base("awsx:ecs:EC2TaskDefinition", name, args ?? new EC2TaskDefinitionArgs(), MakeResourceOptions(options, ""), remote: true)
+        {
+        }
+
+        private static ComponentResourceOptions MakeResourceOptions(ComponentResourceOptions? options, Input<string>? id)
+        {
+            var defaultOptions = new ComponentResourceOptions
+            {
+                Version = Utilities.Version,
+            };
+            var merged = ComponentResourceOptions.Merge(defaultOptions, options);
+            // Override the ID if one was specified for consistency with other language SDKs.
+            merged.Id = id ?? merged.Id;
+            return merged;
+        }
+    }
+
+    public sealed class EC2TaskDefinitionArgs : Pulumi.ResourceArgs
     {
         /// <summary>
         /// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -98,6 +156,12 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public Input<string>? Memory { get; set; }
 
         /// <summary>
+        /// Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
+        /// </summary>
+        [Input("networkMode")]
+        public Input<string>? NetworkMode { get; set; }
+
+        /// <summary>
         /// Process namespace to use for the containers in the task. The valid values are `host` and `task`.
         /// </summary>
         [Input("pidMode")]
@@ -161,7 +225,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
             set => _volumes = value;
         }
 
-        public FargateServiceTaskDefinitionArgs()
+        public EC2TaskDefinitionArgs()
         {
         }
     }

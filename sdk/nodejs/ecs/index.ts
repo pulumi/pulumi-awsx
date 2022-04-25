@@ -5,10 +5,14 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
+export * from "./ec2service";
+export * from "./ec2taskDefinition";
 export * from "./fargateService";
 export * from "./fargateTaskDefinition";
 
 // Import resources to register:
+import { EC2Service } from "./ec2service";
+import { EC2TaskDefinition } from "./ec2taskDefinition";
 import { FargateService } from "./fargateService";
 import { FargateTaskDefinition } from "./fargateTaskDefinition";
 
@@ -16,6 +20,10 @@ const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
+            case "awsx:ecs:EC2Service":
+                return new EC2Service(name, <any>undefined, { urn })
+            case "awsx:ecs:EC2TaskDefinition":
+                return new EC2TaskDefinition(name, <any>undefined, { urn })
             case "awsx:ecs:FargateService":
                 return new FargateService(name, <any>undefined, { urn })
             case "awsx:ecs:FargateTaskDefinition":

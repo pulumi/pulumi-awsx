@@ -21,6 +21,10 @@ func (m *module) Version() semver.Version {
 
 func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi.Resource, err error) {
 	switch typ {
+	case "awsx:ecs:EC2Service":
+		r = &EC2Service{}
+	case "awsx:ecs:EC2TaskDefinition":
+		r = &EC2TaskDefinition{}
 	case "awsx:ecs:FargateService":
 		r = &FargateService{}
 	case "awsx:ecs:FargateTaskDefinition":

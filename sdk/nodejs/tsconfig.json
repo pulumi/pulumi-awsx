@@ -105,6 +105,8 @@
         "classic/utils.ts",
         "cloudtrail/index.ts",
         "cloudtrail/trail.ts",
+        "ecs/ec2service.ts",
+        "ecs/ec2taskDefinition.ts",
         "ecs/fargateService.ts",
         "ecs/fargateTaskDefinition.ts",
         "ecs/index.ts",

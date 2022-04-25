@@ -11,10 +11,10 @@ from .. import awsx as _awsx
 from ._inputs import *
 import pulumi_aws
 
-__all__ = ['FargateTaskDefinitionArgs', 'FargateTaskDefinition']
+__all__ = ['EC2TaskDefinitionArgs', 'EC2TaskDefinition']
 
 @pulumi.input_type
-class FargateTaskDefinitionArgs:
+class EC2TaskDefinitionArgs:
     def __init__(__self__, *,
                  container: Optional['TaskDefinitionContainerDefinitionArgs'] = None,
                  containers: Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']] = None,
@@ -26,6 +26,7 @@ class FargateTaskDefinitionArgs:
                  ipc_mode: Optional[pulumi.Input[str]] = None,
                  log_group: Optional['_awsx.DefaultLogGroupArgs'] = None,
                  memory: Optional[pulumi.Input[str]] = None,
+                 network_mode: Optional[pulumi.Input[str]] = None,
                  pid_mode: Optional[pulumi.Input[str]] = None,
                  placement_constraints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] = None,
                  proxy_configuration: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] = None,
@@ -35,7 +36,7 @@ class FargateTaskDefinitionArgs:
                  task_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
                  volumes: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] = None):
         """
-        The set of arguments for constructing a FargateTaskDefinition resource.
+        The set of arguments for constructing a EC2TaskDefinition resource.
         :param 'TaskDefinitionContainerDefinitionArgs' container: Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
                multiple containers, especially when creating a TaskDefinition to call [run] on.
                
@@ -54,6 +55,7 @@ class FargateTaskDefinitionArgs:
         :param '_awsx.DefaultLogGroupArgs' log_group: A set of volume blocks that containers in your task may use.
         :param pulumi.Input[str] memory: The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
                based on the cumulative needs specified by [containerDefinitions]
+        :param pulumi.Input[str] network_mode: Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
         :param pulumi.Input[str] pid_mode: Process namespace to use for the containers in the task. The valid values are `host` and `task`.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs'] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
@@ -83,6 +85,8 @@ class FargateTaskDefinitionArgs:
             pulumi.set(__self__, "log_group", log_group)
         if memory is not None:
             pulumi.set(__self__, "memory", memory)
+        if network_mode is not None:
+            pulumi.set(__self__, "network_mode", network_mode)
         if pid_mode is not None:
             pulumi.set(__self__, "pid_mode", pid_mode)
         if placement_constraints is not None:
@@ -229,6 +233,18 @@ class FargateTaskDefinitionArgs:
         pulumi.set(self, "memory", value)
 
     @property
+    @pulumi.getter(name="networkMode")
+    def network_mode(self) -> Optional[pulumi.Input[str]]:
+        """
+        Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
+        """
+        return pulumi.get(self, "network_mode")
+
+    @network_mode.setter
+    def network_mode(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "network_mode", value)
+
+    @property
     @pulumi.getter(name="pidMode")
     def pid_mode(self) -> Optional[pulumi.Input[str]]:
         """
@@ -323,7 +339,7 @@ class FargateTaskDefinitionArgs:
         pulumi.set(self, "volumes", value)
 
 
-class FargateTaskDefinition(pulumi.ComponentResource):
+class EC2TaskDefinition(pulumi.ComponentResource):
     @overload
     def __init__(__self__,
                  resource_name: str,
@@ -338,6 +354,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
                  ipc_mode: Optional[pulumi.Input[str]] = None,
                  log_group: Optional[pulumi.InputType['_awsx.DefaultLogGroupArgs']] = None,
                  memory: Optional[pulumi.Input[str]] = None,
+                 network_mode: Optional[pulumi.Input[str]] = None,
                  pid_mode: Optional[pulumi.Input[str]] = None,
                  placement_constraints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]] = None,
                  proxy_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]] = None,
@@ -372,6 +389,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         :param pulumi.InputType['_awsx.DefaultLogGroupArgs'] log_group: A set of volume blocks that containers in your task may use.
         :param pulumi.Input[str] memory: The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
                based on the cumulative needs specified by [containerDefinitions]
+        :param pulumi.Input[str] network_mode: Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
         :param pulumi.Input[str] pid_mode: Process namespace to use for the containers in the task. The valid values are `host` and `task`.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
@@ -385,7 +403,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
     @overload
     def __init__(__self__,
                  resource_name: str,
-                 args: Optional[FargateTaskDefinitionArgs] = None,
+                 args: Optional[EC2TaskDefinitionArgs] = None,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create a TaskDefinition resource with the given unique name, arguments, and options.
@@ -393,12 +411,12 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         Presents required Service load balancers if target group included in port mappings.
 
         :param str resource_name: The name of the resource.
-        :param FargateTaskDefinitionArgs args: The arguments to use to populate this resource's properties.
+        :param EC2TaskDefinitionArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.
         """
         ...
     def __init__(__self__, resource_name: str, *args, **kwargs):
-        resource_args, opts = _utilities.get_resource_args_opts(FargateTaskDefinitionArgs, pulumi.ResourceOptions, *args, **kwargs)
+        resource_args, opts = _utilities.get_resource_args_opts(EC2TaskDefinitionArgs, pulumi.ResourceOptions, *args, **kwargs)
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
@@ -417,6 +435,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
                  ipc_mode: Optional[pulumi.Input[str]] = None,
                  log_group: Optional[pulumi.InputType['_awsx.DefaultLogGroupArgs']] = None,
                  memory: Optional[pulumi.Input[str]] = None,
+                 network_mode: Optional[pulumi.Input[str]] = None,
                  pid_mode: Optional[pulumi.Input[str]] = None,
                  placement_constraints: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]]] = None,
                  proxy_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']]] = None,
@@ -437,7 +456,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         else:
             if __props__ is not None:
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
-            __props__ = FargateTaskDefinitionArgs.__new__(FargateTaskDefinitionArgs)
+            __props__ = EC2TaskDefinitionArgs.__new__(EC2TaskDefinitionArgs)
 
             __props__.__dict__["container"] = container
             __props__.__dict__["containers"] = containers
@@ -449,6 +468,7 @@ class FargateTaskDefinition(pulumi.ComponentResource):
             __props__.__dict__["ipc_mode"] = ipc_mode
             __props__.__dict__["log_group"] = log_group
             __props__.__dict__["memory"] = memory
+            __props__.__dict__["network_mode"] = network_mode
             __props__.__dict__["pid_mode"] = pid_mode
             __props__.__dict__["placement_constraints"] = placement_constraints
             __props__.__dict__["proxy_configuration"] = proxy_configuration
@@ -459,8 +479,8 @@ class FargateTaskDefinition(pulumi.ComponentResource):
             __props__.__dict__["volumes"] = volumes
             __props__.__dict__["load_balancers"] = None
             __props__.__dict__["task_definition"] = None
-        super(FargateTaskDefinition, __self__).__init__(
-            'awsx:ecs:FargateTaskDefinition',
+        super(EC2TaskDefinition, __self__).__init__(
+            'awsx:ecs:EC2TaskDefinition',
             resource_name,
             __props__,
             opts,

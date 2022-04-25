@@ -156,12 +156,6 @@ namespace Pulumi.Awsx.Ecs
         public Input<string>? Memory { get; set; }
 
         /// <summary>
-        /// Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
-        /// </summary>
-        [Input("networkMode")]
-        public Input<string>? NetworkMode { get; set; }
-
-        /// <summary>
         /// Process namespace to use for the containers in the task. The valid values are `host` and `task`.
         /// </summary>
         [Input("pidMode")]
@@ -184,18 +178,6 @@ namespace Pulumi.Awsx.Ecs
         /// </summary>
         [Input("proxyConfiguration")]
         public Input<Pulumi.Aws.Ecs.Inputs.TaskDefinitionProxyConfigurationArgs>? ProxyConfiguration { get; set; }
-
-        [Input("requiresCompatibilities")]
-        private InputList<string>? _requiresCompatibilities;
-
-        /// <summary>
-        /// Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
-        /// </summary>
-        public InputList<string> RequiresCompatibilities
-        {
-            get => _requiresCompatibilities ?? (_requiresCompatibilities = new InputList<string>());
-            set => _requiresCompatibilities = value;
-        }
 
         /// <summary>
         /// Configuration block for runtime_platform that containers in your task may use.
