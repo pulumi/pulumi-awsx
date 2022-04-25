@@ -7,6 +7,7 @@ import * as pulumi from "@pulumi/pulumi";
 export type ConstructComponent<T extends pulumi.ComponentResource = pulumi.ComponentResource> = (name: string, inputs: any, options: pulumi.ComponentResourceOptions) => T;
 export type ResourceConstructor = {
     readonly "awsx:cloudtrail:Trail": ConstructComponent<Trail>;
+    readonly "awsx:ecr:Repository": ConstructComponent<Repository>;
     readonly "awsx:ecs:FargateService": ConstructComponent<FargateService>;
     readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
     readonly "awsx:lb:ApplicationLoadBalancer": ConstructComponent<ApplicationLoadBalancer>;
@@ -33,6 +34,17 @@ export interface TrailArgs {
     readonly s3Bucket?: RequiredBucketInputs;
     readonly s3KeyPrefix?: pulumi.Input<string>;
     readonly snsTopicName?: pulumi.Input<string>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export abstract class Repository<TData = any> extends pulumi.ComponentResource<TData> {
+    public repository!: aws.ecr.Repository | pulumi.Output<aws.ecr.Repository>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecr:Repository", name, {}, opts); }
+}
+export interface RepositoryArgs {
+    readonly encryptionConfigurations?: pulumi.Input<pulumi.Input<aws.types.input.ecr.RepositoryEncryptionConfiguration>[]>;
+    readonly imageScanningConfiguration?: pulumi.Input<aws.types.input.ecr.RepositoryImageScanningConfiguration>;
+    readonly imageTagMutability?: pulumi.Input<string>;
+    readonly name?: pulumi.Input<string>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class FargateService<TData = any> extends pulumi.ComponentResource<TData> {
@@ -329,6 +341,24 @@ export interface LogGroupOutputs {
     readonly namePrefix?: pulumi.Output<string>;
     readonly retentionInDays?: pulumi.Output<number>;
     readonly tags?: pulumi.Output<Record<string, string>>;
+}
+export interface DockerBuildInputs {
+    readonly args?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly dockerfile?: pulumi.Input<string>;
+    readonly env?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly path?: pulumi.Input<string>;
+    readonly target?: pulumi.Input<string>;
+}
+export interface DockerBuildOutputs {
+    readonly args?: pulumi.Output<Record<string, string>>;
+    readonly cacheFrom?: pulumi.Output<string[]>;
+    readonly dockerfile?: pulumi.Output<string>;
+    readonly env?: pulumi.Output<Record<string, string>>;
+    readonly extraOptions?: pulumi.Output<string[]>;
+    readonly path?: pulumi.Output<string>;
+    readonly target?: pulumi.Output<string>;
 }
 export interface FargateServiceTaskDefinitionInputs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;

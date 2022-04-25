@@ -359,6 +359,76 @@ export namespace awsx {
 export namespace cloudtrail {
 }
 
+export namespace ecr {
+    /**
+     * Arguments for building a docker image
+     */
+    export interface DockerBuild {
+        /**
+         * An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+         */
+        args?: {[key: string]: string};
+        /**
+         * Images to consider as cache sources
+         */
+        cacheFrom?: string[];
+        /**
+         * dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
+         */
+        dockerfile?: string;
+        /**
+         * Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
+         */
+        env?: {[key: string]: string};
+        /**
+         * An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
+         */
+        extraOptions?: string[];
+        /**
+         * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+         */
+        path?: string;
+        /**
+         * The target of the dockerfile to build
+         */
+        target?: string;
+    }
+
+    /**
+     * Arguments for building a docker image
+     */
+    export interface DockerBuildArgs {
+        /**
+         * An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+         */
+        args?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * Images to consider as cache sources
+         */
+        cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
+        /**
+         * dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
+         */
+        dockerfile?: pulumi.Input<string>;
+        /**
+         * Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
+         */
+        env?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
+         */
+        extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
+        /**
+         * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+         */
+        path?: pulumi.Input<string>;
+        /**
+         * The target of the dockerfile to build
+         */
+        target?: pulumi.Input<string>;
+    }
+}
+
 export namespace ecs {
     /**
      * Create a TaskDefinition resource with the given unique name, arguments, and options.

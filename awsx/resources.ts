@@ -14,6 +14,7 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
+import { Repository } from "./ecr";
 import { FargateService, FargateTaskDefinition } from "./ecs";
 import { ApplicationLoadBalancer } from "./lb";
 import { ConstructComponent, ResourceConstructor } from "./schema-types";
@@ -25,6 +26,7 @@ const resources: ResourceConstructor = {
         new FargateTaskDefinition(...args),
     "awsx:lb:ApplicationLoadBalancer": (...args) =>
         new ApplicationLoadBalancer(...args),
+    "awsx:ecr:Repository": (...args) => new Repository(...args),
 };
 
 export function construct(

@@ -10,6 +10,7 @@ export * from "./provider";
 // Export sub-modules:
 import * as classic from "./classic";
 import * as cloudtrail from "./cloudtrail";
+import * as ecr from "./ecr";
 import * as ecs from "./ecs";
 import * as lb from "./lb";
 import * as types from "./types";
@@ -17,6 +18,7 @@ import * as types from "./types";
 export {
     classic,
     cloudtrail,
+    ecr,
     ecs,
     lb,
     types,

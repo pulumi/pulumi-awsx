@@ -13,6 +13,8 @@ if typing.TYPE_CHECKING:
     awsx = __awsx
     import pulumi_awsx.cloudtrail as __cloudtrail
     cloudtrail = __cloudtrail
+    import pulumi_awsx.ecr as __ecr
+    ecr = __ecr
     import pulumi_awsx.ecs as __ecs
     ecs = __ecs
     import pulumi_awsx.lb as __lb
@@ -20,6 +22,7 @@ if typing.TYPE_CHECKING:
 else:
     awsx = _utilities.lazy_import('pulumi_awsx.awsx')
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
+    ecr = _utilities.lazy_import('pulumi_awsx.ecr')
     ecs = _utilities.lazy_import('pulumi_awsx.ecs')
     lb = _utilities.lazy_import('pulumi_awsx.lb')
 
@@ -32,6 +35,14 @@ _utilities.register(
   "fqn": "pulumi_awsx.cloudtrail",
   "classes": {
    "awsx:cloudtrail:Trail": "Trail"
+  }
+ },
+ {
+  "pkg": "awsx",
+  "mod": "ecr",
+  "fqn": "pulumi_awsx.ecr",
+  "classes": {
+   "awsx:ecr:Repository": "Repository"
   }
  },
  {
