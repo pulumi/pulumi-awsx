@@ -21,3 +21,6 @@ export namespace ecs {
 
 export namespace lb {
 }
+
+export namespace vpc {
+}

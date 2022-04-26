@@ -107,6 +107,8 @@
         "cloudtrail/trail.ts",
         "ecr/index.ts",
         "ecr/repository.ts",
+        "ecs/ec2service.ts",
+        "ecs/ec2taskDefinition.ts",
         "ecs/fargateService.ts",
         "ecs/fargateTaskDefinition.ts",
         "ecs/index.ts",
@@ -116,9 +118,12 @@
         "provider.ts",
         "types/enums/ecr/index.ts",
         "types/enums/index.ts",
+        "types/enums/vpc/index.ts",
         "types/index.ts",
         "types/input.ts",
         "types/output.ts",
-        "utilities.ts"
+        "utilities.ts",
+        "vpc/index.ts",
+        "vpc/vpc.ts"
     ]
 }

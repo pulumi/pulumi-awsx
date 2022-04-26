@@ -49,7 +49,6 @@ export class FargateService extends pulumi.ComponentResource {
             if ((!args || args.networkConfiguration === undefined) && !opts.urn) {
                 throw new Error("Missing required property 'networkConfiguration'");
             }
-            resourceInputs["capacityProviderStrategies"] = args ? args.capacityProviderStrategies : undefined;
             resourceInputs["cluster"] = args ? args.cluster : undefined;
             resourceInputs["continueBeforeSteadyState"] = args ? args.continueBeforeSteadyState : undefined;
             resourceInputs["deploymentCircuitBreaker"] = args ? args.deploymentCircuitBreaker : undefined;
@@ -65,7 +64,6 @@ export class FargateService extends pulumi.ComponentResource {
             resourceInputs["loadBalancers"] = args ? args.loadBalancers : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["networkConfiguration"] = args ? args.networkConfiguration : undefined;
-            resourceInputs["orderedPlacementStrategies"] = args ? args.orderedPlacementStrategies : undefined;
             resourceInputs["placementConstraints"] = args ? args.placementConstraints : undefined;
             resourceInputs["platformVersion"] = args ? args.platformVersion : undefined;
             resourceInputs["propagateTags"] = args ? args.propagateTags : undefined;
@@ -88,10 +86,6 @@ export class FargateService extends pulumi.ComponentResource {
  * The set of arguments for constructing a FargateService resource.
  */
 export interface FargateServiceArgs {
-    /**
-     * Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below.
-     */
-    capacityProviderStrategies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceCapacityProviderStrategy>[]>;
     /**
      * ARN of an ECS cluster.
      */
@@ -152,10 +146,6 @@ export interface FargateServiceArgs {
      * Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
      */
     networkConfiguration: pulumi.Input<pulumiAws.types.input.ecs.ServiceNetworkConfiguration>;
-    /**
-     * Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
-     */
-    orderedPlacementStrategies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceOrderedPlacementStrategy>[]>;
     /**
      * Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
      */

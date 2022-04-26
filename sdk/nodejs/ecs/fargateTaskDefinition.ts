@@ -69,11 +69,9 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
             resourceInputs["ipcMode"] = args ? args.ipcMode : undefined;
             resourceInputs["logGroup"] = args ? args.logGroup : undefined;
             resourceInputs["memory"] = args ? args.memory : undefined;
-            resourceInputs["networkMode"] = args ? args.networkMode : undefined;
             resourceInputs["pidMode"] = args ? args.pidMode : undefined;
             resourceInputs["placementConstraints"] = args ? args.placementConstraints : undefined;
             resourceInputs["proxyConfiguration"] = args ? args.proxyConfiguration : undefined;
-            resourceInputs["requiresCompatibilities"] = args ? args.requiresCompatibilities : undefined;
             resourceInputs["runtimePlatform"] = args ? args.runtimePlatform : undefined;
             resourceInputs["skipDestroy"] = args ? args.skipDestroy : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
@@ -146,10 +144,6 @@ export interface FargateTaskDefinitionArgs {
      */
     memory?: pulumi.Input<string>;
     /**
-     * Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
-     */
-    networkMode?: pulumi.Input<string>;
-    /**
      * Process namespace to use for the containers in the task. The valid values are `host` and `task`.
      */
     pidMode?: pulumi.Input<string>;
@@ -161,10 +155,6 @@ export interface FargateTaskDefinitionArgs {
      * Configuration block for the App Mesh proxy. Detailed below.
      */
     proxyConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionProxyConfiguration>;
-    /**
-     * Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
-     */
-    requiresCompatibilities?: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * Configuration block for runtime_platform that containers in your task may use.
      */

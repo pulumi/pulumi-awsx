@@ -76,16 +76,12 @@ type fargateTaskDefinitionArgs struct {
 	// The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
 	// based on the cumulative needs specified by [containerDefinitions]
 	Memory *string `pulumi:"memory"`
-	// Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
-	NetworkMode *string `pulumi:"networkMode"`
 	// Process namespace to use for the containers in the task. The valid values are `host` and `task`.
 	PidMode *string `pulumi:"pidMode"`
 	// Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
 	PlacementConstraints []ecs.TaskDefinitionPlacementConstraint `pulumi:"placementConstraints"`
 	// Configuration block for the App Mesh proxy. Detailed below.
 	ProxyConfiguration *ecs.TaskDefinitionProxyConfiguration `pulumi:"proxyConfiguration"`
-	// Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
-	RequiresCompatibilities []string `pulumi:"requiresCompatibilities"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform *ecs.TaskDefinitionRuntimePlatform `pulumi:"runtimePlatform"`
 	SkipDestroy     *bool                              `pulumi:"skipDestroy"`
@@ -128,16 +124,12 @@ type FargateTaskDefinitionArgs struct {
 	// The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
 	// based on the cumulative needs specified by [containerDefinitions]
 	Memory pulumi.StringPtrInput
-	// Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
-	NetworkMode pulumi.StringPtrInput
 	// Process namespace to use for the containers in the task. The valid values are `host` and `task`.
 	PidMode pulumi.StringPtrInput
 	// Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
 	PlacementConstraints ecs.TaskDefinitionPlacementConstraintArrayInput
 	// Configuration block for the App Mesh proxy. Detailed below.
 	ProxyConfiguration ecs.TaskDefinitionProxyConfigurationPtrInput
-	// Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
-	RequiresCompatibilities pulumi.StringArrayInput
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform ecs.TaskDefinitionRuntimePlatformPtrInput
 	SkipDestroy     pulumi.BoolPtrInput

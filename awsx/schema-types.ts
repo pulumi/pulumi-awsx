@@ -8,9 +8,12 @@ export type ConstructComponent<T extends pulumi.ComponentResource = pulumi.Compo
 export type ResourceConstructor = {
     readonly "awsx:cloudtrail:Trail": ConstructComponent<Trail>;
     readonly "awsx:ecr:Repository": ConstructComponent<Repository>;
+    readonly "awsx:ecs:EC2Service": ConstructComponent<EC2Service>;
+    readonly "awsx:ecs:EC2TaskDefinition": ConstructComponent<EC2TaskDefinition>;
     readonly "awsx:ecs:FargateService": ConstructComponent<FargateService>;
     readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
     readonly "awsx:lb:ApplicationLoadBalancer": ConstructComponent<ApplicationLoadBalancer>;
+    readonly "awsx:vpc:Vpc": ConstructComponent<Vpc>;
 };
 export type Functions = {
     "awsx:ecr:Repository/buildAndPushImage": (inputs: Repository_buildAndPushImageInputs) => Promise<Repository_buildAndPushImageOutputs>;
@@ -56,15 +59,14 @@ export interface RepositoryArgs {
     readonly name?: pulumi.Input<string>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
-export abstract class FargateService<TData = any> extends pulumi.ComponentResource<TData> {
+export abstract class EC2Service<TData = any> extends pulumi.ComponentResource<TData> {
     public service!: aws.ecs.Service | pulumi.Output<aws.ecs.Service>;
     public taskDefinition?: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecs:FargateService", name, opts.urn ? { service: undefined, taskDefinition: undefined } : { name, args, opts }, opts);
+        super("awsx:ecs:EC2Service", name, opts.urn ? { service: undefined, taskDefinition: undefined } : { name, args, opts }, opts);
     }
 }
-export interface FargateServiceArgs {
-    readonly capacityProviderStrategies?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceCapacityProviderStrategy>[]>;
+export interface EC2ServiceArgs {
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
@@ -81,6 +83,69 @@ export interface FargateServiceArgs {
     readonly name?: pulumi.Input<string>;
     readonly networkConfiguration: pulumi.Input<aws.types.input.ecs.ServiceNetworkConfiguration>;
     readonly orderedPlacementStrategies?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceOrderedPlacementStrategy>[]>;
+    readonly placementConstraints?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServicePlacementConstraint>[]>;
+    readonly platformVersion?: pulumi.Input<string>;
+    readonly propagateTags?: pulumi.Input<string>;
+    readonly schedulingStrategy?: pulumi.Input<string>;
+    readonly serviceRegistries?: pulumi.Input<aws.types.input.ecs.ServiceServiceRegistries>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly taskDefinition?: pulumi.Input<string>;
+    readonly taskDefinitionArgs?: EC2ServiceTaskDefinitionInputs;
+}
+export abstract class EC2TaskDefinition<TData = any> extends pulumi.ComponentResource<TData> {
+    public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
+    public loadBalancers!: aws.types.output.ecs.ServiceLoadBalancer[] | pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]>;
+    public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
+    public taskDefinition!: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
+    public taskRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:ecs:EC2TaskDefinition", name, opts.urn ? { executionRole: undefined, loadBalancers: undefined, logGroup: undefined, taskDefinition: undefined, taskRole: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface EC2TaskDefinitionArgs {
+    readonly container?: TaskDefinitionContainerDefinitionInputs;
+    readonly containers?: Record<string, TaskDefinitionContainerDefinitionInputs>;
+    readonly cpu?: pulumi.Input<string>;
+    readonly ephemeralStorage?: pulumi.Input<aws.types.input.ecs.TaskDefinitionEphemeralStorage>;
+    readonly executionRole?: DefaultRoleWithPolicyInputs;
+    readonly family?: pulumi.Input<string>;
+    readonly inferenceAccelerators?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionInferenceAccelerator>[]>;
+    readonly ipcMode?: pulumi.Input<string>;
+    readonly logGroup?: DefaultLogGroupInputs;
+    readonly memory?: pulumi.Input<string>;
+    readonly networkMode?: pulumi.Input<string>;
+    readonly pidMode?: pulumi.Input<string>;
+    readonly placementConstraints?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionPlacementConstraint>[]>;
+    readonly proxyConfiguration?: pulumi.Input<aws.types.input.ecs.TaskDefinitionProxyConfiguration>;
+    readonly runtimePlatform?: pulumi.Input<aws.types.input.ecs.TaskDefinitionRuntimePlatform>;
+    readonly skipDestroy?: pulumi.Input<boolean>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly taskRole?: DefaultRoleWithPolicyInputs;
+    readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
+}
+export abstract class FargateService<TData = any> extends pulumi.ComponentResource<TData> {
+    public service!: aws.ecs.Service | pulumi.Output<aws.ecs.Service>;
+    public taskDefinition?: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:ecs:FargateService", name, opts.urn ? { service: undefined, taskDefinition: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface FargateServiceArgs {
+    readonly cluster?: pulumi.Input<string>;
+    readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
+    readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
+    readonly deploymentController?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentController>;
+    readonly deploymentMaximumPercent?: pulumi.Input<number>;
+    readonly deploymentMinimumHealthyPercent?: pulumi.Input<number>;
+    readonly desiredCount?: pulumi.Input<number>;
+    readonly enableEcsManagedTags?: pulumi.Input<boolean>;
+    readonly enableExecuteCommand?: pulumi.Input<boolean>;
+    readonly forceNewDeployment?: pulumi.Input<boolean>;
+    readonly healthCheckGracePeriodSeconds?: pulumi.Input<number>;
+    readonly iamRole?: pulumi.Input<string>;
+    readonly loadBalancers?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceLoadBalancer>[]>;
+    readonly name?: pulumi.Input<string>;
+    readonly networkConfiguration: pulumi.Input<aws.types.input.ecs.ServiceNetworkConfiguration>;
     readonly placementConstraints?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServicePlacementConstraint>[]>;
     readonly platformVersion?: pulumi.Input<string>;
     readonly propagateTags?: pulumi.Input<string>;
@@ -111,11 +176,9 @@ export interface FargateTaskDefinitionArgs {
     readonly ipcMode?: pulumi.Input<string>;
     readonly logGroup?: DefaultLogGroupInputs;
     readonly memory?: pulumi.Input<string>;
-    readonly networkMode?: pulumi.Input<string>;
     readonly pidMode?: pulumi.Input<string>;
     readonly placementConstraints?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionPlacementConstraint>[]>;
     readonly proxyConfiguration?: pulumi.Input<aws.types.input.ecs.TaskDefinitionProxyConfiguration>;
-    readonly requiresCompatibilities?: pulumi.Input<pulumi.Input<string>[]>;
     readonly runtimePlatform?: pulumi.Input<aws.types.input.ecs.TaskDefinitionRuntimePlatform>;
     readonly skipDestroy?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
@@ -153,6 +216,32 @@ export interface ApplicationLoadBalancerArgs {
     readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
     readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
+    public subnets?: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;
+    public vpc?: aws.ec2.Vpc | pulumi.Output<aws.ec2.Vpc>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:vpc:Vpc", name, opts.urn ? { subnets: undefined, vpc: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface VpcArgs {
+    readonly assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
+    readonly availabilityZoneNames?: string[];
+    readonly cidrBlock?: string;
+    readonly enableClassiclink?: pulumi.Input<boolean>;
+    readonly enableClassiclinkDnsSupport?: pulumi.Input<boolean>;
+    readonly enableDnsHostnames?: pulumi.Input<boolean>;
+    readonly enableDnsSupport?: pulumi.Input<boolean>;
+    readonly instanceTenancy?: pulumi.Input<string>;
+    readonly ipv4IpamPoolId?: pulumi.Input<string>;
+    readonly ipv4NetmaskLength?: pulumi.Input<number>;
+    readonly ipv6CidrBlock?: pulumi.Input<string>;
+    readonly ipv6CidrBlockNetworkBorderGroup?: pulumi.Input<string>;
+    readonly ipv6IpamPoolId?: pulumi.Input<string>;
+    readonly ipv6NetmaskLength?: pulumi.Input<number>;
+    readonly natGateways?: NatGatewayConfigurationInputs;
+    readonly subnetsPerAz?: SubnetConfigurationInputs[];
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface BucketInputs {
@@ -399,7 +488,7 @@ export interface lifecyclePolicyRuleOutputs {
 }
 export type lifecycleTagStatusInputs = "any" | "untagged" | "tagged";
 export type lifecycleTagStatusOutputs = "any" | "untagged" | "tagged";
-export interface FargateServiceTaskDefinitionInputs {
+export interface EC2ServiceTaskDefinitionInputs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;
     readonly containers?: Record<string, TaskDefinitionContainerDefinitionInputs>;
     readonly cpu?: pulumi.Input<string>;
@@ -414,7 +503,47 @@ export interface FargateServiceTaskDefinitionInputs {
     readonly pidMode?: pulumi.Input<string>;
     readonly placementConstraints?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionPlacementConstraint>[]>;
     readonly proxyConfiguration?: pulumi.Input<aws.types.input.ecs.TaskDefinitionProxyConfiguration>;
-    readonly requiresCompatibilities?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly runtimePlatform?: pulumi.Input<aws.types.input.ecs.TaskDefinitionRuntimePlatform>;
+    readonly skipDestroy?: pulumi.Input<boolean>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly taskRole?: DefaultRoleWithPolicyInputs;
+    readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
+}
+export interface EC2ServiceTaskDefinitionOutputs {
+    readonly container?: TaskDefinitionContainerDefinitionOutputs;
+    readonly containers?: Record<string, TaskDefinitionContainerDefinitionOutputs>;
+    readonly cpu?: pulumi.Output<string>;
+    readonly ephemeralStorage?: pulumi.Output<aws.types.output.ecs.TaskDefinitionEphemeralStorage>;
+    readonly executionRole?: DefaultRoleWithPolicyOutputs;
+    readonly family?: pulumi.Output<string>;
+    readonly inferenceAccelerators?: pulumi.Output<aws.types.output.ecs.TaskDefinitionInferenceAccelerator[]>;
+    readonly ipcMode?: pulumi.Output<string>;
+    readonly logGroup?: DefaultLogGroupOutputs;
+    readonly memory?: pulumi.Output<string>;
+    readonly networkMode?: pulumi.Output<string>;
+    readonly pidMode?: pulumi.Output<string>;
+    readonly placementConstraints?: pulumi.Output<aws.types.output.ecs.TaskDefinitionPlacementConstraint[]>;
+    readonly proxyConfiguration?: pulumi.Output<aws.types.output.ecs.TaskDefinitionProxyConfiguration>;
+    readonly runtimePlatform?: pulumi.Output<aws.types.output.ecs.TaskDefinitionRuntimePlatform>;
+    readonly skipDestroy?: pulumi.Output<boolean>;
+    readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly taskRole?: DefaultRoleWithPolicyOutputs;
+    readonly volumes?: pulumi.Output<aws.types.output.ecs.TaskDefinitionVolume[]>;
+}
+export interface FargateServiceTaskDefinitionInputs {
+    readonly container?: TaskDefinitionContainerDefinitionInputs;
+    readonly containers?: Record<string, TaskDefinitionContainerDefinitionInputs>;
+    readonly cpu?: pulumi.Input<string>;
+    readonly ephemeralStorage?: pulumi.Input<aws.types.input.ecs.TaskDefinitionEphemeralStorage>;
+    readonly executionRole?: DefaultRoleWithPolicyInputs;
+    readonly family?: pulumi.Input<string>;
+    readonly inferenceAccelerators?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionInferenceAccelerator>[]>;
+    readonly ipcMode?: pulumi.Input<string>;
+    readonly logGroup?: DefaultLogGroupInputs;
+    readonly memory?: pulumi.Input<string>;
+    readonly pidMode?: pulumi.Input<string>;
+    readonly placementConstraints?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionPlacementConstraint>[]>;
+    readonly proxyConfiguration?: pulumi.Input<aws.types.input.ecs.TaskDefinitionProxyConfiguration>;
     readonly runtimePlatform?: pulumi.Input<aws.types.input.ecs.TaskDefinitionRuntimePlatform>;
     readonly skipDestroy?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
@@ -432,11 +561,9 @@ export interface FargateServiceTaskDefinitionOutputs {
     readonly ipcMode?: pulumi.Output<string>;
     readonly logGroup?: DefaultLogGroupOutputs;
     readonly memory?: pulumi.Output<string>;
-    readonly networkMode?: pulumi.Output<string>;
     readonly pidMode?: pulumi.Output<string>;
     readonly placementConstraints?: pulumi.Output<aws.types.output.ecs.TaskDefinitionPlacementConstraint[]>;
     readonly proxyConfiguration?: pulumi.Output<aws.types.output.ecs.TaskDefinitionProxyConfiguration>;
-    readonly requiresCompatibilities?: pulumi.Output<string[]>;
     readonly runtimePlatform?: pulumi.Output<aws.types.output.ecs.TaskDefinitionRuntimePlatform>;
     readonly skipDestroy?: pulumi.Output<boolean>;
     readonly tags?: pulumi.Output<Record<string, string>>;
@@ -761,6 +888,28 @@ export interface TargetGroupOutputs {
     readonly targetType?: pulumi.Output<string>;
     readonly vpcId?: pulumi.Output<string>;
 }
+export interface NatGatewayConfigurationInputs {
+    readonly elasticIpAllocationIds?: pulumi.Input<string>[];
+    readonly strategy: NatGatewayStrategyInputs;
+}
+export interface NatGatewayConfigurationOutputs {
+    readonly elasticIpAllocationIds?: string[];
+    readonly strategy: NatGatewayStrategyOutputs;
+}
+export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
+export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
+export interface SubnetConfigurationInputs {
+    readonly cidrMask: number;
+    readonly name: string;
+    readonly type: SubnetTypeInputs;
+}
+export interface SubnetConfigurationOutputs {
+    readonly cidrMask: number;
+    readonly name: string;
+    readonly type: SubnetTypeOutputs;
+}
+export type SubnetTypeInputs = "Public" | "Private" | "Isolated";
+export type SubnetTypeOutputs = "Public" | "Private" | "Isolated";
 export interface Repository_buildAndPushImageInputs {
     readonly __self__: pulumi.Input<Repository>;
     readonly args?: pulumi.Input<Record<string, pulumi.Input<string>>>;

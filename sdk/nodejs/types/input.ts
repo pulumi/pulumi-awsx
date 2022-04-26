@@ -407,7 +407,7 @@ export namespace ecs {
      * Creates required log-group and task & execution roles.
      * Presents required Service load balancers if target group included in port mappings.
      */
-    export interface FargateServiceTaskDefinitionArgs {
+    export interface EC2ServiceTaskDefinitionArgs {
         /**
          * Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
          * multiple containers, especially when creating a TaskDefinition to call [run] on.
@@ -473,9 +473,91 @@ export namespace ecs {
          */
         proxyConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionProxyConfiguration>;
         /**
-         * Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
+         * Configuration block for runtime_platform that containers in your task may use.
          */
-        requiresCompatibilities?: pulumi.Input<pulumi.Input<string>[]>;
+        runtimePlatform?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionRuntimePlatform>;
+        skipDestroy?: pulumi.Input<boolean>;
+        /**
+         * Key-value map of resource tags.
+         */
+        tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+         * Will be created automatically if not defined.
+         */
+        taskRole?: inputs.awsx.DefaultRoleWithPolicyArgs;
+        /**
+         * Configuration block for volumes that containers in your task may use. Detailed below.
+         */
+        volumes?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionVolume>[]>;
+    }
+
+    /**
+     * Create a TaskDefinition resource with the given unique name, arguments, and options.
+     * Creates required log-group and task & execution roles.
+     * Presents required Service load balancers if target group included in port mappings.
+     */
+    export interface FargateServiceTaskDefinitionArgs {
+        /**
+         * Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
+         * multiple containers, especially when creating a TaskDefinition to call [run] on.
+         *
+         * Either [container] or [containers] must be provided.
+         */
+        container?: inputs.ecs.TaskDefinitionContainerDefinitionArgs;
+        /**
+         * All the containers to make a TaskDefinition from.  Useful when creating a Service that will
+         * contain many containers within.
+         *
+         * Either [container] or [containers] must be provided.
+         */
+        containers?: {[key: string]: inputs.ecs.TaskDefinitionContainerDefinitionArgs};
+        /**
+         * The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+         */
+        cpu?: pulumi.Input<string>;
+        /**
+         * The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+         */
+        ephemeralStorage?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionEphemeralStorage>;
+        /**
+         * The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+         * Will be created automatically if not defined.
+         */
+        executionRole?: inputs.awsx.DefaultRoleWithPolicyArgs;
+        /**
+         * An optional unique name for your task definition. If not specified, then a default will be created.
+         */
+        family?: pulumi.Input<string>;
+        /**
+         * Configuration block(s) with Inference Accelerators settings. Detailed below.
+         */
+        inferenceAccelerators?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionInferenceAccelerator>[]>;
+        /**
+         * IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+         */
+        ipcMode?: pulumi.Input<string>;
+        /**
+         * A set of volume blocks that containers in your task may use.
+         */
+        logGroup?: inputs.awsx.DefaultLogGroupArgs;
+        /**
+         * The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+         * based on the cumulative needs specified by [containerDefinitions]
+         */
+        memory?: pulumi.Input<string>;
+        /**
+         * Process namespace to use for the containers in the task. The valid values are `host` and `task`.
+         */
+        pidMode?: pulumi.Input<string>;
+        /**
+         * Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+         */
+        placementConstraints?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionPlacementConstraint>[]>;
+        /**
+         * Configuration block for the App Mesh proxy. Detailed below.
+         */
+        proxyConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionProxyConfiguration>;
         /**
          * Configuration block for runtime_platform that containers in your task may use.
          */
@@ -1967,5 +2049,39 @@ export namespace lb {
          * Identifier of the VPC in which to create the target group. Required when `target_type` is `instance` or `ip`. Does not apply when `target_type` is `lambda`.
          */
         vpcId?: pulumi.Input<string>;
+    }
+}
+
+export namespace vpc {
+    /**
+     * Configuration for NAT Gateways.
+     */
+    export interface NatGatewayConfigurationArgs {
+        /**
+         * A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
+         */
+        elasticIpAllocationIds?: pulumi.Input<string>[];
+        /**
+         * The strategy for deploying NAT Gateways.
+         */
+        strategy: enums.vpc.NatGatewayStrategy;
+    }
+
+    /**
+     * Configuration for a VPC subnet.
+     */
+    export interface SubnetConfigurationArgs {
+        /**
+         * The bitmask for the subnet's CIDR block.
+         */
+        cidrMask: number;
+        /**
+         * The subnet's name. Will be templated upon creation.
+         */
+        name: string;
+        /**
+         * The type of subnet.
+         */
+        type: enums.vpc.SubnetType;
     }
 }

@@ -14,10 +14,11 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import { defaultLogGroup, LogGroupId } from "../cloudwatch/logGroup";
+import { defaultLogGroup } from "../cloudwatch/logGroup";
 import * as role from "../role";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
+import { computeContainerDefinitions, computeLoadBalancers } from "./containers";
 import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
 
 /**
@@ -56,7 +57,7 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
             },
         );
 
-        const containers = normalizeContainers(args);
+        const containers = normalizeFargateTaskDefinitionContainers(args);
 
         const { logGroup, logGroupId } = defaultLogGroup(
             name,
@@ -70,8 +71,8 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
             `${name}-task`,
             args.taskRole,
             {
-                assumeRolePolicy: defaultRoleAssumeRolePolicy(),
-                policyArns: defaultTaskRolePolicyARNs(),
+                assumeRolePolicy: role.defaultRoleAssumeRolePolicy(),
+                policyArns: role.defaultTaskRolePolicyARNs(),
             },
             { parent: this },
         );
@@ -79,8 +80,8 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
             `${name}-execution`,
             args.executionRole,
             {
-                assumeRolePolicy: defaultRoleAssumeRolePolicy(),
-                policyArns: defaultExecutionRolePolicyARNs(),
+                assumeRolePolicy: role.defaultRoleAssumeRolePolicy(),
+                policyArns: role.defaultExecutionRolePolicyARNs(),
             },
             { parent: this },
         );
@@ -109,7 +110,7 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
     }
 }
 
-function normalizeContainers(args: schema.FargateTaskDefinitionArgs) {
+function normalizeFargateTaskDefinitionContainers(args: schema.FargateTaskDefinitionArgs) {
     const { container, containers } = args;
     if (containers !== undefined && container === undefined) {
         return containers;
@@ -171,166 +172,4 @@ function buildTaskDefinitionArgs(
         family,
         containerDefinitions: containerString,
     };
-}
-
-function computeContainerDefinitions(
-    parent: pulumi.Resource,
-    containers: Record<string, schema.TaskDefinitionContainerDefinitionInputs>,
-    logGroupId: pulumi.Input<LogGroupId> | undefined,
-): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs[]> {
-    const result: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>[] =
-        [];
-
-    for (const containerName of Object.keys(containers)) {
-        const container = containers[containerName];
-
-        result.push(
-            computeContainerDefinition(
-                parent,
-                containerName,
-                container,
-                logGroupId,
-            ),
-        );
-    }
-
-    return pulumi.all(result);
-}
-
-function computeContainerDefinition(
-    parent: pulumi.Resource,
-    containerName: string,
-    container: schema.TaskDefinitionContainerDefinitionInputs,
-    logGroupId: pulumi.Input<LogGroupId> | undefined,
-): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs> {
-    const resolvedMappings = container.portMappings
-        ? pulumi.output(container.portMappings).apply((portMappings) =>
-              portMappings.map((mappingInput) => {
-                  return pulumi
-                      .output(mappingInput.targetGroup?.port)
-                      .apply(
-                          (tgPort): schema.TaskDefinitionPortMappingInputs => {
-                              return {
-                                  containerPort:
-                                      mappingInput.containerPort ??
-                                      tgPort ??
-                                      mappingInput.hostPort,
-                                  hostPort: tgPort ?? mappingInput.hostPort,
-                                  protocol: mappingInput.protocol,
-                              };
-                          },
-                      );
-              }),
-          )
-        : undefined;
-    const region = utils.getRegion(parent);
-    return pulumi
-        .all([container, resolvedMappings, region, logGroupId])
-        .apply(([container, portMappings, region, logGroupId]) => {
-            const containerDefinition = {
-                ...container,
-                portMappings,
-                name: containerName,
-            };
-            if (
-                containerDefinition.logConfiguration === undefined &&
-                logGroupId !== undefined
-            ) {
-                containerDefinition.logConfiguration = {
-                    logDriver: "awslogs",
-                    options: {
-                        "awslogs-group": logGroupId.logGroupName,
-                        "awslogs-region": logGroupId.logGroupRegion,
-                        "awslogs-stream-prefix": containerName,
-                    },
-                };
-            }
-            return containerDefinition;
-        });
-}
-
-function computeLoadBalancers(
-    containers: Record<string, schema.TaskDefinitionContainerDefinitionInputs>,
-): pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]> {
-    const mappedContainers = Object.entries(containers).map(
-        ([containerName, containerDefinition]) => {
-            const portMappings:
-                | pulumi.Input<
-                      pulumi.Input<schema.TaskDefinitionPortMappingInputs>[]
-                  >
-                | undefined = containerDefinition.portMappings;
-            if (portMappings === undefined) {
-                return pulumi.output([]);
-            }
-            const mappedMappings = pulumi
-                .output(portMappings)
-                .apply((mappings) => {
-                    return mappings.map((m) => {
-                        const targetGroup = m.targetGroup;
-                        return {
-                            containerName,
-                            tgArn: targetGroup?.arn,
-                            tgPort: targetGroup?.port,
-                        };
-                    });
-                });
-            return mappedMappings;
-        },
-    );
-    return pulumi.all(mappedContainers).apply((containerGroups) =>
-        utils.collect(containerGroups, (cg) => {
-            if (cg === undefined) {
-                return [];
-            }
-            return utils.choose(
-                cg,
-                ({
-                    containerName,
-                    tgArn,
-                    tgPort,
-                }): aws.types.output.ecs.ServiceLoadBalancer | undefined => {
-                    if (tgArn === undefined || tgPort === undefined) {
-                        return undefined;
-                    }
-                    return {
-                        containerName,
-                        containerPort: tgPort,
-                        targetGroupArn: tgArn,
-                    };
-                },
-            );
-        }),
-    );
-}
-
-function defaultRoleAssumeRolePolicy(): aws.iam.PolicyDocument {
-    return {
-        Version: "2012-10-17",
-        Statement: [
-            {
-                Action: "sts:AssumeRole",
-                Principal: {
-                    Service: "ecs-tasks.amazonaws.com",
-                },
-                Effect: "Allow",
-                Sid: "",
-            },
-        ],
-    };
-}
-
-function defaultTaskRolePolicyARNs() {
-    return [
-        // Provides full access to Lambda
-        // aws.iam.ManagedPolicy.LambdaFullAccess,
-        // Required for lambda compute to be able to run Tasks
-        // aws.iam.ManagedPolicy.AmazonECSFullAccess,
-    ];
-}
-
-function defaultExecutionRolePolicyARNs() {
-    return [
-        "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
-        // aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
-    ];
 }

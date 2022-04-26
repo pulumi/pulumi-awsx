@@ -56,18 +56,6 @@ namespace Pulumi.Awsx.Ecs
 
     public sealed class FargateServiceArgs : Pulumi.ResourceArgs
     {
-        [Input("capacityProviderStrategies")]
-        private InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs>? _capacityProviderStrategies;
-
-        /// <summary>
-        /// Capacity provider strategies to use for the service. Can be one or more. These can be updated without destroying and recreating the service only if `force_new_deployment = true` and not changing from 0 `capacity_provider_strategy` blocks to greater than 0, or vice versa. See below.
-        /// </summary>
-        public InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs> CapacityProviderStrategies
-        {
-            get => _capacityProviderStrategies ?? (_capacityProviderStrategies = new InputList<Pulumi.Aws.Ecs.Inputs.ServiceCapacityProviderStrategyArgs>());
-            set => _capacityProviderStrategies = value;
-        }
-
         /// <summary>
         /// ARN of an ECS cluster.
         /// </summary>
@@ -163,18 +151,6 @@ namespace Pulumi.Awsx.Ecs
         /// </summary>
         [Input("networkConfiguration", required: true)]
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceNetworkConfigurationArgs> NetworkConfiguration { get; set; } = null!;
-
-        [Input("orderedPlacementStrategies")]
-        private InputList<Pulumi.Aws.Ecs.Inputs.ServiceOrderedPlacementStrategyArgs>? _orderedPlacementStrategies;
-
-        /// <summary>
-        /// Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
-        /// </summary>
-        public InputList<Pulumi.Aws.Ecs.Inputs.ServiceOrderedPlacementStrategyArgs> OrderedPlacementStrategies
-        {
-            get => _orderedPlacementStrategies ?? (_orderedPlacementStrategies = new InputList<Pulumi.Aws.Ecs.Inputs.ServiceOrderedPlacementStrategyArgs>());
-            set => _orderedPlacementStrategies = value;
-        }
 
         [Input("placementConstraints")]
         private InputList<Pulumi.Aws.Ecs.Inputs.ServicePlacementConstraintArgs>? _placementConstraints;
