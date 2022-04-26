@@ -18,22 +18,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
 
-/** Placeholder resource for image build logs */
-class Image extends pulumi.ComponentResource {
-    constructor(name: string, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecr:Image", name, {}, opts);
-    }
-}
-
-export async function buildAndPushImage(
-    inputs: schema.buildAndPushImageInputs,
-): Promise<schema.buildAndPushImageOutputs> {
-    const image = pulumi
-        .output(inputs)
-        .apply((inputs) => computeImageFromAsset(inputs));
-    return { image };
-}
-
 export async function Repository_buildAndPushImage(
     inputs: schema.Repository_buildAndPushImageInputs,
 ): Promise<schema.Repository_buildAndPushImageOutputs> {
@@ -42,24 +26,31 @@ export async function Repository_buildAndPushImage(
     repository.repository.name;
     const image = pulumi
         .all([
-            {
-                repositoryUrl: repository.repository.repositoryUrl,
-                registryId: repository.repository.registryId,
-                docker,
-            },
+            docker,
+            repository.repository.repositoryUrl,
+            repository.repository.registryId,
             repository,
         ])
-        .apply(([inputs, parent]) => computeImageFromAsset(inputs, parent));
+        .apply(([inputs, repositoryUrl, registryId, parent]) =>
+            computeImageFromAsset(inputs, repositoryUrl, registryId, parent),
+        );
     return { image };
 }
 
+type DockerInputs = Omit<
+    pulumi.Unwrap<schema.Repository_buildAndPushImageInputs>,
+    "__self__"
+>;
+
 /** @internal */
 export function computeImageFromAsset(
-    inputs: pulumi.Unwrap<schema.buildAndPushImageInputs>,
-    parent?: pulumi.Resource,
+    inputs: DockerInputs,
+    repositoryUrl: string,
+    registryId: string | undefined,
+    parent: pulumi.Resource,
 ) {
-    const dockerInputs = inputs.docker ?? {};
-    const { repositoryUrl, registryId } = inputs;
+    const dockerInputs = inputs ?? {};
+
     pulumi.log.debug(
         `Building container image at '${JSON.stringify(dockerInputs)}'`,
         parent,
@@ -87,7 +78,7 @@ export function computeImageFromAsset(
         imageName,
         dockerBuild,
         repositoryUrl,
-        parent ?? new Image(imageName),
+        parent,
         async () => {
             // Construct Docker registry auth data by getting the short-lived authorizationToken from ECR, and
             // extracting the username/password pair after base64-decoding the token.

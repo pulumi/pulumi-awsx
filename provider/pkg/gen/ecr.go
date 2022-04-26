@@ -24,8 +24,7 @@ func generateEcr(awsSpec, dockerSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:ecr:Repository": repository(awsSpec),
 		},
 		Functions: map[string]schema.FunctionSpec{
-			"awsx:ecr:buildAndPushImage":            buildAndPushImage(false),
-			"awsx:ecr:Repository/buildAndPushImage": buildAndPushImage(true),
+			"awsx:ecr:Repository/buildAndPushImage": buildAndPushImage(),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx:ecr:DockerBuild":         dockerBuild(),
@@ -177,7 +176,7 @@ func lifecycleTagStatus(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
-func buildAndPushImage(asMember bool) schema.FunctionSpec {
+func buildAndPushImage() schema.FunctionSpec {
 	spec := schema.FunctionSpec{
 		Description: "Build and push a docker image to ECR",
 		Inputs: &schema.ObjectTypeSpec{
@@ -197,35 +196,14 @@ func buildAndPushImage(asMember bool) schema.FunctionSpec {
 		},
 	}
 
-	if asMember {
-		// Pull args to top-level as there's nothing else
-		spec.Inputs.Properties = dockerBuildProperties()
-		spec.Inputs.Properties["__self__"] = schema.PropertySpec{
-			TypeSpec: schema.TypeSpec{
-				Ref: "#/resources/awsx:ecr:Repository",
-			},
-		}
-		spec.Inputs.Required = []string{"__self__"}
-	} else {
-		spec.Inputs.Properties["docker"] = schema.PropertySpec{
-			Description: "Arguments for building the docker image.",
-			TypeSpec: schema.TypeSpec{
-				Ref: "#/types/awsx:ecr:DockerBuild",
-			},
-		}
-		spec.Inputs.Properties["repositoryUrl"] = schema.PropertySpec{
-			TypeSpec: schema.TypeSpec{
-				Type: "string",
-			},
-		}
-		spec.Inputs.Properties["registryId"] = schema.PropertySpec{
-			Description: "The Amazon Web Services account ID associated with the registry that contains the repository. If you do not specify a registry, the default registry is assumed.",
-			TypeSpec: schema.TypeSpec{
-				Type: "string",
-			},
-		}
-		spec.Inputs.Required = []string{"repositoryUrl"}
+	// Pull args to top-level as there's nothing else
+	spec.Inputs.Properties = dockerBuildProperties()
+	spec.Inputs.Properties["__self__"] = schema.PropertySpec{
+		TypeSpec: schema.TypeSpec{
+			Ref: "#/resources/awsx:ecr:Repository",
+		},
 	}
+	spec.Inputs.Required = []string{"__self__"}
 
 	return spec
 }

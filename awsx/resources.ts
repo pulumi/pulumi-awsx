@@ -15,10 +15,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
 import { Repository } from "./ecr";
-import {
-    buildAndPushImage,
-    Repository_buildAndPushImage,
-} from "./ecr/buildAndPushImage";
+import { Repository_buildAndPushImage } from "./ecr/buildAndPushImage";
 import { FargateService, FargateTaskDefinition } from "./ecs";
 import { ApplicationLoadBalancer } from "./lb";
 import {
@@ -53,5 +50,4 @@ export function construct(
 
 export const functions: Functions = {
     "awsx:ecr:Repository/buildAndPushImage": Repository_buildAndPushImage,
-    "awsx:ecr:buildAndPushImage": buildAndPushImage,
 };

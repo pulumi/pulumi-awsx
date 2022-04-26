@@ -1921,37 +1921,6 @@
                     }
                 }
             }
-        },
-        "awsx:ecr:buildAndPushImage": {
-            "description": "Build and push a docker image to ECR",
-            "inputs": {
-                "description": "Arguments for building and publishing a docker image to ECR",
-                "properties": {
-                    "docker": {
-                        "$ref": "#/types/awsx:ecr:DockerBuild",
-                        "description": "Arguments for building the docker image."
-                    },
-                    "registryId": {
-                        "type": "string",
-                        "description": "The Amazon Web Services account ID associated with the registry that contains the repository. If you do not specify a registry, the default registry is assumed."
-                    },
-                    "repositoryUrl": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "repositoryUrl"
-                ]
-            },
-            "outputs": {
-                "description": "Outputs from the pushed docker image",
-                "properties": {
-                    "image": {
-                        "type": "string",
-                        "description": "Unique identifier of the pushed image"
-                    }
-                }
-            }
         }
     },
     "language": {

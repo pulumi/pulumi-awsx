@@ -105,7 +105,6 @@
         "classic/utils.ts",
         "cloudtrail/index.ts",
         "cloudtrail/trail.ts",
-        "ecr/buildAndPushImage.ts",
         "ecr/index.ts",
         "ecr/repository.ts",
         "ecs/fargateService.ts",

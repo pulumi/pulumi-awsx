@@ -14,7 +14,6 @@ export type ResourceConstructor = {
 };
 export type Functions = {
     "awsx:ecr:Repository/buildAndPushImage": (inputs: Repository_buildAndPushImageInputs) => Promise<Repository_buildAndPushImageOutputs>;
-    "awsx:ecr:buildAndPushImage": (inputs: buildAndPushImageInputs) => Promise<buildAndPushImageOutputs>;
 };
 import * as aws from "@pulumi/aws";
 export abstract class Trail<TData = any> extends pulumi.ComponentResource<TData> {
@@ -763,13 +762,5 @@ export interface Repository_buildAndPushImageInputs {
     readonly target?: pulumi.Input<string>;
 }
 export interface Repository_buildAndPushImageOutputs {
-    readonly image?: pulumi.Output<string>;
-}
-export interface buildAndPushImageInputs {
-    readonly docker?: pulumi.Input<DockerBuildInputs>;
-    readonly registryId?: pulumi.Input<string>;
-    readonly repositoryUrl: pulumi.Input<string>;
-}
-export interface buildAndPushImageOutputs {
     readonly image?: pulumi.Output<string>;
 }
