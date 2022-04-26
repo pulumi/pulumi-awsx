@@ -17,6 +17,7 @@ import { Trail } from "./cloudtrail";
 import { EC2Service, EC2TaskDefinition, FargateService, FargateTaskDefinition } from "./ecs";
 import { ApplicationLoadBalancer } from "./lb";
 import { ConstructComponent, ResourceConstructor } from "./schema-types";
+import { Vpc } from "./vpc";
 
 const resources: ResourceConstructor = {
     "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
@@ -28,6 +29,7 @@ const resources: ResourceConstructor = {
         new FargateTaskDefinition(...args),
     "awsx:lb:ApplicationLoadBalancer": (...args) =>
         new ApplicationLoadBalancer(...args),
+    "awsx:vpc:Vpc": (...args) => new Vpc(...args),
 };
 
 export function construct(

@@ -98,6 +98,7 @@ func GenerateSchema() schema.PackageSpec {
 		generateIam(awsSpec),
 		generateS3(awsSpec),
 		generateEc2(awsSpec),
+		generateVpc(awsSpec),
 	)
 }
 

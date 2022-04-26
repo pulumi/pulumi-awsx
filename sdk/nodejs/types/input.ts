@@ -2,7 +2,7 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import { input as inputs, output as outputs } from "../types";
+import { input as inputs, output as outputs, enums } from "../types";
 
 import * as pulumiAws from "@pulumi/aws";
 import * as utilities from "../utilities";
@@ -2007,5 +2007,39 @@ export namespace lb {
          * Identifier of the VPC in which to create the target group. Required when `target_type` is `instance` or `ip`. Does not apply when `target_type` is `lambda`.
          */
         vpcId?: pulumi.Input<string>;
+    }
+}
+
+export namespace vpc {
+    /**
+     * Configuration for NAT Gateways.
+     */
+    export interface NatGatewayConfigurationArgs {
+        /**
+         * A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
+         */
+        elasticIpAllocationIds?: pulumi.Input<string>[];
+        /**
+         * The strategy for deploying NAT Gateways.
+         */
+        strategy: enums.vpc.NatGatewayStrategy;
+    }
+
+    /**
+     * Configuration for a VPC subnet.
+     */
+    export interface SubnetConfigurationArgs {
+        /**
+         * The bitmask for the subnet's CIDR block.
+         */
+        cidrMask: number;
+        /**
+         * The subnet's name. Will be templated upon creation.
+         */
+        name: string;
+        /**
+         * The type of subnet.
+         */
+        type: enums.vpc.SubnetType;
     }
 }

@@ -263,7 +263,23 @@ const genResourceAbstractType = (
                     [
                         ts.factory.createStringLiteral(typeToken),
                         ts.factory.createIdentifier("name"),
-                        ts.factory.createObjectLiteralExpression([]),
+                        ts.factory.createObjectLiteralExpression(
+                            [
+                                ts.factory.createShorthandPropertyAssignment(
+                                    ts.factory.createIdentifier("name"),
+                                    undefined,
+                                ),
+                                ts.factory.createShorthandPropertyAssignment(
+                                    ts.factory.createIdentifier("args"),
+                                    undefined,
+                                ),
+                                ts.factory.createShorthandPropertyAssignment(
+                                    ts.factory.createIdentifier("opts"),
+                                    undefined,
+                                ),
+                            ],
+                            false,
+                        ),
                         ts.factory.createIdentifier("opts"),
                     ],
                 ),
@@ -300,7 +316,27 @@ const genResourceAbstractType = (
 const genTypeInterfaces = (
     typeName: string,
     resource: pulumiSchema.TypeDefinition,
-): ts.InterfaceDeclaration[] => {
+): (ts.InterfaceDeclaration | ts.TypeAliasDeclaration)[] => {
+    if (resource.enum) {
+        const unionTypeMembers = (resource.enum as any).map((x: any) =>
+            ts.factory.createLiteralTypeNode(ts.factory.createStringLiteral(x.value)),
+        );
+
+        const genEnumType = (suffix: string) =>
+            ts.factory.createTypeAliasDeclaration(
+                undefined,
+                [ts.factory.createModifier(ts.SyntaxKind.ExportKeyword)],
+                ts.factory.createIdentifier(typeName + suffix),
+                undefined,
+                ts.factory.createUnionTypeNode(unionTypeMembers),
+            );
+
+        return [
+            genEnumType("Inputs"),
+            genEnumType("Outputs"),
+        ];
+    }
+
     const inputProperties = genTypeProperties(
         resource.properties as any,
         resource.required as any,

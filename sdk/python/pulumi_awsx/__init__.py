@@ -17,11 +17,14 @@ if typing.TYPE_CHECKING:
     ecs = __ecs
     import pulumi_awsx.lb as __lb
     lb = __lb
+    import pulumi_awsx.vpc as __vpc
+    vpc = __vpc
 else:
     awsx = _utilities.lazy_import('pulumi_awsx.awsx')
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
     ecs = _utilities.lazy_import('pulumi_awsx.ecs')
     lb = _utilities.lazy_import('pulumi_awsx.lb')
+    vpc = _utilities.lazy_import('pulumi_awsx.vpc')
 
 _utilities.register(
     resource_modules="""
@@ -51,6 +54,14 @@ _utilities.register(
   "fqn": "pulumi_awsx.lb",
   "classes": {
    "awsx:lb:ApplicationLoadBalancer": "ApplicationLoadBalancer"
+  }
+ },
+ {
+  "pkg": "awsx",
+  "mod": "vpc",
+  "fqn": "pulumi_awsx.vpc",
+  "classes": {
+   "awsx:vpc:Vpc": "Vpc"
   }
  }
 ]
