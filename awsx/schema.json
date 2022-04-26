@@ -1919,7 +1919,10 @@
                         "type": "string",
                         "description": "Unique identifier of the pushed image"
                     }
-                }
+                },
+                "required": [
+                    "image"
+                ]
             }
         }
     },

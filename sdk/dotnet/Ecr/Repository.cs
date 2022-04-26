@@ -57,7 +57,7 @@ namespace Pulumi.Awsx.Ecr
         /// <summary>
         /// Build and push a docker image to ECR
         /// </summary>
-        public Pulumi.Output<string?> BuildAndPushImage(RepositoryBuildAndPushImageArgs? args = null)
+        public Pulumi.Output<string> BuildAndPushImage(RepositoryBuildAndPushImageArgs? args = null)
             => Pulumi.Deployment.Instance.Call<RepositoryBuildAndPushImageResult>("awsx:ecr:Repository/buildAndPushImage", args ?? new RepositoryBuildAndPushImageArgs(), this).Apply(v => v.Image);
     }
 
@@ -201,10 +201,10 @@ namespace Pulumi.Awsx.Ecr
         /// <summary>
         /// Unique identifier of the pushed image
         /// </summary>
-        public readonly string? Image;
+        public readonly string Image;
 
         [OutputConstructor]
-        private RepositoryBuildAndPushImageResult(string? image)
+        private RepositoryBuildAndPushImageResult(string image)
         {
             Image = image;
         }

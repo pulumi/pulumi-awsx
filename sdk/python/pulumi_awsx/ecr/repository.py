@@ -231,7 +231,7 @@ class Repository(pulumi.ComponentResource):
 
         @property
         @pulumi.getter
-        def image(self) -> Optional[str]:
+        def image(self) -> str:
             """
             Unique identifier of the pushed image
             """

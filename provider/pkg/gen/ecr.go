@@ -193,6 +193,7 @@ func buildAndPushImage() schema.FunctionSpec {
 					},
 				},
 			},
+			Required: []string{"image"},
 		},
 	}
 

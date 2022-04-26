@@ -74,10 +74,10 @@ func (RepositoryArgs) ElementType() reflect.Type {
 }
 
 // Build and push a docker image to ECR
-func (r *Repository) BuildAndPushImage(ctx *pulumi.Context, args *RepositoryBuildAndPushImageArgs) (pulumi.StringPtrOutput, error) {
+func (r *Repository) BuildAndPushImage(ctx *pulumi.Context, args *RepositoryBuildAndPushImageArgs) (pulumi.StringOutput, error) {
 	out, err := ctx.Call("awsx:ecr:Repository/buildAndPushImage", args, repositoryBuildAndPushImageResultOutput{}, r)
 	if err != nil {
-		return pulumi.StringPtrOutput{}, err
+		return pulumi.StringOutput{}, err
 	}
 	return out.(repositoryBuildAndPushImageResultOutput).Image(), nil
 }
@@ -124,7 +124,7 @@ func (RepositoryBuildAndPushImageArgs) ElementType() reflect.Type {
 // Outputs from the pushed docker image
 type repositoryBuildAndPushImageResult struct {
 	// Unique identifier of the pushed image
-	Image *string `pulumi:"image"`
+	Image string `pulumi:"image"`
 }
 
 type repositoryBuildAndPushImageResultOutput struct{ *pulumi.OutputState }
@@ -134,8 +134,8 @@ func (repositoryBuildAndPushImageResultOutput) ElementType() reflect.Type {
 }
 
 // Unique identifier of the pushed image
-func (o repositoryBuildAndPushImageResultOutput) Image() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v repositoryBuildAndPushImageResult) *string { return v.Image }).(pulumi.StringPtrOutput)
+func (o repositoryBuildAndPushImageResultOutput) Image() pulumi.StringOutput {
+	return o.ApplyT(func(v repositoryBuildAndPushImageResult) string { return v.Image }).(pulumi.StringOutput)
 }
 
 type RepositoryInput interface {

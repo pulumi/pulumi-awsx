@@ -762,5 +762,5 @@ export interface Repository_buildAndPushImageInputs {
     readonly target?: pulumi.Input<string>;
 }
 export interface Repository_buildAndPushImageOutputs {
-    readonly image?: pulumi.Output<string>;
+    readonly image: pulumi.Output<string>;
 }

@@ -152,7 +152,7 @@ export namespace Repository {
         /**
          * Unique identifier of the pushed image
          */
-        readonly image?: string;
+        readonly image: string;
     }
 
 }
