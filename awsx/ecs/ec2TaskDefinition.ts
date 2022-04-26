@@ -19,14 +19,13 @@ import * as role from "../role";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
 import { computeContainerDefinitions, computeLoadBalancers } from "./containers";
-import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
 
 /**
  * Create a TaskDefinition resource with the given unique name, arguments, and options.
  * Creates required log-group and task & execution roles.
  * Presents required Service load balancers if target group included in port mappings.
  */
-export class FargateTaskDefinition extends schema.FargateTaskDefinition {
+export class EC2TaskDefinition extends schema.EC2TaskDefinition {
     /** Created ECS Task Definition resource. */
     public readonly taskDefinition: aws.ecs.TaskDefinition;
     /** Auto-created Log Group resource for use by containers. */
@@ -42,7 +41,7 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
 
     constructor(
         name: string,
-        args: schema.FargateTaskDefinitionArgs,
+        args: schema.EC2TaskDefinitionArgs,
         opts: pulumi.ComponentResourceOptions = {},
     ) {
         super(
@@ -51,13 +50,13 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
             {
                 ...opts,
                 aliases: [
-                    { type: "awsx:x:ecs:FargateTaskDefinition" },
+                    { type: "awsx:x:ecs:EC2TaskDefinition" },
                     ...(opts.aliases ?? []),
                 ],
             },
         );
 
-        const containers = normalizeFargateTaskDefinitionContainers(args);
+        const containers = normalizeEC2TaskDefinitionContainers(args);
 
         const { logGroup, logGroupId } = defaultLogGroup(
             name,
@@ -110,7 +109,7 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
     }
 }
 
-function normalizeFargateTaskDefinitionContainers(args: schema.FargateTaskDefinitionArgs) {
+function normalizeEC2TaskDefinitionContainers(args: schema.EC2TaskDefinitionArgs) {
     const { container, containers } = args;
     if (containers !== undefined && container === undefined) {
         return containers;
@@ -125,7 +124,7 @@ function normalizeFargateTaskDefinitionContainers(args: schema.FargateTaskDefini
 
 function buildTaskDefinitionArgs(
     name: string,
-    args: schema.FargateTaskDefinitionArgs,
+    args: schema.EC2TaskDefinitionArgs,
     containerDefinitions: pulumi.Output<
         schema.TaskDefinitionContainerDefinitionInputs[]
     >,
@@ -133,28 +132,7 @@ function buildTaskDefinitionArgs(
     executionRoleArn?: pulumi.Input<string>,
 ): aws.ecs.TaskDefinitionArgs {
     const mutableArgs = { ...args };
-    const requiredMemoryAndCPU = containerDefinitions
-        .apply((defs) =>
-            pulumi.all(
-                defs.map((def) =>
-                    pulumi
-                        .all([def.cpu, def.memory, def.memoryReservation])
-                        .apply(([cpu, memory, memoryReservation]) => ({
-                            cpu,
-                            memory,
-                            memoryReservation,
-                        })),
-                ),
-            ),
-        )
-        .apply((defs) => calculateFargateMemoryAndCPU(defs));
 
-    if (mutableArgs.cpu === undefined) {
-        mutableArgs.cpu = requiredMemoryAndCPU.cpu;
-    }
-    if (mutableArgs.memory === undefined) {
-        mutableArgs.memory = requiredMemoryAndCPU.memory;
-    }
     const containerString = containerDefinitions.apply((d) =>
         JSON.stringify(d),
     );
@@ -165,7 +143,7 @@ function buildTaskDefinitionArgs(
 
     return {
         ...mutableArgs,
-        requiresCompatibilities: ["FARGATE"],
+        requiresCompatibilities: ["EC2"],
         networkMode: "awsvpc",
         taskRoleArn: taskRoleArn,
         executionRoleArn: executionRoleArn,

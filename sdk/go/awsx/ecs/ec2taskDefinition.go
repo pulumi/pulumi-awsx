@@ -17,7 +17,7 @@ import (
 // Create a TaskDefinition resource with the given unique name, arguments, and options.
 // Creates required log-group and task & execution roles.
 // Presents required Service load balancers if target group included in port mappings.
-type FargateTaskDefinition struct {
+type EC2TaskDefinition struct {
 	pulumi.ResourceState
 
 	// Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -32,22 +32,22 @@ type FargateTaskDefinition struct {
 	TaskRole iam.RoleOutput `pulumi:"taskRole"`
 }
 
-// NewFargateTaskDefinition registers a new resource with the given unique name, arguments, and options.
-func NewFargateTaskDefinition(ctx *pulumi.Context,
-	name string, args *FargateTaskDefinitionArgs, opts ...pulumi.ResourceOption) (*FargateTaskDefinition, error) {
+// NewEC2TaskDefinition registers a new resource with the given unique name, arguments, and options.
+func NewEC2TaskDefinition(ctx *pulumi.Context,
+	name string, args *EC2TaskDefinitionArgs, opts ...pulumi.ResourceOption) (*EC2TaskDefinition, error) {
 	if args == nil {
-		args = &FargateTaskDefinitionArgs{}
+		args = &EC2TaskDefinitionArgs{}
 	}
 
-	var resource FargateTaskDefinition
-	err := ctx.RegisterRemoteComponentResource("awsx:ecs:FargateTaskDefinition", name, args, &resource, opts...)
+	var resource EC2TaskDefinition
+	err := ctx.RegisterRemoteComponentResource("awsx:ecs:EC2TaskDefinition", name, args, &resource, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &resource, nil
 }
 
-type fargateTaskDefinitionArgs struct {
+type ec2taskDefinitionArgs struct {
 	// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
 	// multiple containers, especially when creating a TaskDefinition to call [run] on.
 	//
@@ -76,6 +76,8 @@ type fargateTaskDefinitionArgs struct {
 	// The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
 	// based on the cumulative needs specified by [containerDefinitions]
 	Memory *string `pulumi:"memory"`
+	// Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
+	NetworkMode *string `pulumi:"networkMode"`
 	// Process namespace to use for the containers in the task. The valid values are `host` and `task`.
 	PidMode *string `pulumi:"pidMode"`
 	// Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
@@ -94,8 +96,8 @@ type fargateTaskDefinitionArgs struct {
 	Volumes []ecs.TaskDefinitionVolume `pulumi:"volumes"`
 }
 
-// The set of arguments for constructing a FargateTaskDefinition resource.
-type FargateTaskDefinitionArgs struct {
+// The set of arguments for constructing a EC2TaskDefinition resource.
+type EC2TaskDefinitionArgs struct {
 	// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
 	// multiple containers, especially when creating a TaskDefinition to call [run] on.
 	//
@@ -124,6 +126,8 @@ type FargateTaskDefinitionArgs struct {
 	// The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
 	// based on the cumulative needs specified by [containerDefinitions]
 	Memory pulumi.StringPtrInput
+	// Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
+	NetworkMode pulumi.StringPtrInput
 	// Process namespace to use for the containers in the task. The valid values are `host` and `task`.
 	PidMode pulumi.StringPtrInput
 	// Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
@@ -142,138 +146,138 @@ type FargateTaskDefinitionArgs struct {
 	Volumes ecs.TaskDefinitionVolumeArrayInput
 }
 
-func (FargateTaskDefinitionArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*fargateTaskDefinitionArgs)(nil)).Elem()
+func (EC2TaskDefinitionArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ec2taskDefinitionArgs)(nil)).Elem()
 }
 
-type FargateTaskDefinitionInput interface {
+type EC2TaskDefinitionInput interface {
 	pulumi.Input
 
-	ToFargateTaskDefinitionOutput() FargateTaskDefinitionOutput
-	ToFargateTaskDefinitionOutputWithContext(ctx context.Context) FargateTaskDefinitionOutput
+	ToEC2TaskDefinitionOutput() EC2TaskDefinitionOutput
+	ToEC2TaskDefinitionOutputWithContext(ctx context.Context) EC2TaskDefinitionOutput
 }
 
-func (*FargateTaskDefinition) ElementType() reflect.Type {
-	return reflect.TypeOf((**FargateTaskDefinition)(nil)).Elem()
+func (*EC2TaskDefinition) ElementType() reflect.Type {
+	return reflect.TypeOf((**EC2TaskDefinition)(nil)).Elem()
 }
 
-func (i *FargateTaskDefinition) ToFargateTaskDefinitionOutput() FargateTaskDefinitionOutput {
-	return i.ToFargateTaskDefinitionOutputWithContext(context.Background())
+func (i *EC2TaskDefinition) ToEC2TaskDefinitionOutput() EC2TaskDefinitionOutput {
+	return i.ToEC2TaskDefinitionOutputWithContext(context.Background())
 }
 
-func (i *FargateTaskDefinition) ToFargateTaskDefinitionOutputWithContext(ctx context.Context) FargateTaskDefinitionOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(FargateTaskDefinitionOutput)
+func (i *EC2TaskDefinition) ToEC2TaskDefinitionOutputWithContext(ctx context.Context) EC2TaskDefinitionOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(EC2TaskDefinitionOutput)
 }
 
-// FargateTaskDefinitionArrayInput is an input type that accepts FargateTaskDefinitionArray and FargateTaskDefinitionArrayOutput values.
-// You can construct a concrete instance of `FargateTaskDefinitionArrayInput` via:
+// EC2TaskDefinitionArrayInput is an input type that accepts EC2TaskDefinitionArray and EC2TaskDefinitionArrayOutput values.
+// You can construct a concrete instance of `EC2TaskDefinitionArrayInput` via:
 //
-//          FargateTaskDefinitionArray{ FargateTaskDefinitionArgs{...} }
-type FargateTaskDefinitionArrayInput interface {
+//          EC2TaskDefinitionArray{ EC2TaskDefinitionArgs{...} }
+type EC2TaskDefinitionArrayInput interface {
 	pulumi.Input
 
-	ToFargateTaskDefinitionArrayOutput() FargateTaskDefinitionArrayOutput
-	ToFargateTaskDefinitionArrayOutputWithContext(context.Context) FargateTaskDefinitionArrayOutput
+	ToEC2TaskDefinitionArrayOutput() EC2TaskDefinitionArrayOutput
+	ToEC2TaskDefinitionArrayOutputWithContext(context.Context) EC2TaskDefinitionArrayOutput
 }
 
-type FargateTaskDefinitionArray []FargateTaskDefinitionInput
+type EC2TaskDefinitionArray []EC2TaskDefinitionInput
 
-func (FargateTaskDefinitionArray) ElementType() reflect.Type {
-	return reflect.TypeOf((*[]*FargateTaskDefinition)(nil)).Elem()
+func (EC2TaskDefinitionArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]*EC2TaskDefinition)(nil)).Elem()
 }
 
-func (i FargateTaskDefinitionArray) ToFargateTaskDefinitionArrayOutput() FargateTaskDefinitionArrayOutput {
-	return i.ToFargateTaskDefinitionArrayOutputWithContext(context.Background())
+func (i EC2TaskDefinitionArray) ToEC2TaskDefinitionArrayOutput() EC2TaskDefinitionArrayOutput {
+	return i.ToEC2TaskDefinitionArrayOutputWithContext(context.Background())
 }
 
-func (i FargateTaskDefinitionArray) ToFargateTaskDefinitionArrayOutputWithContext(ctx context.Context) FargateTaskDefinitionArrayOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(FargateTaskDefinitionArrayOutput)
+func (i EC2TaskDefinitionArray) ToEC2TaskDefinitionArrayOutputWithContext(ctx context.Context) EC2TaskDefinitionArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(EC2TaskDefinitionArrayOutput)
 }
 
-// FargateTaskDefinitionMapInput is an input type that accepts FargateTaskDefinitionMap and FargateTaskDefinitionMapOutput values.
-// You can construct a concrete instance of `FargateTaskDefinitionMapInput` via:
+// EC2TaskDefinitionMapInput is an input type that accepts EC2TaskDefinitionMap and EC2TaskDefinitionMapOutput values.
+// You can construct a concrete instance of `EC2TaskDefinitionMapInput` via:
 //
-//          FargateTaskDefinitionMap{ "key": FargateTaskDefinitionArgs{...} }
-type FargateTaskDefinitionMapInput interface {
+//          EC2TaskDefinitionMap{ "key": EC2TaskDefinitionArgs{...} }
+type EC2TaskDefinitionMapInput interface {
 	pulumi.Input
 
-	ToFargateTaskDefinitionMapOutput() FargateTaskDefinitionMapOutput
-	ToFargateTaskDefinitionMapOutputWithContext(context.Context) FargateTaskDefinitionMapOutput
+	ToEC2TaskDefinitionMapOutput() EC2TaskDefinitionMapOutput
+	ToEC2TaskDefinitionMapOutputWithContext(context.Context) EC2TaskDefinitionMapOutput
 }
 
-type FargateTaskDefinitionMap map[string]FargateTaskDefinitionInput
+type EC2TaskDefinitionMap map[string]EC2TaskDefinitionInput
 
-func (FargateTaskDefinitionMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]*FargateTaskDefinition)(nil)).Elem()
+func (EC2TaskDefinitionMap) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]*EC2TaskDefinition)(nil)).Elem()
 }
 
-func (i FargateTaskDefinitionMap) ToFargateTaskDefinitionMapOutput() FargateTaskDefinitionMapOutput {
-	return i.ToFargateTaskDefinitionMapOutputWithContext(context.Background())
+func (i EC2TaskDefinitionMap) ToEC2TaskDefinitionMapOutput() EC2TaskDefinitionMapOutput {
+	return i.ToEC2TaskDefinitionMapOutputWithContext(context.Background())
 }
 
-func (i FargateTaskDefinitionMap) ToFargateTaskDefinitionMapOutputWithContext(ctx context.Context) FargateTaskDefinitionMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(FargateTaskDefinitionMapOutput)
+func (i EC2TaskDefinitionMap) ToEC2TaskDefinitionMapOutputWithContext(ctx context.Context) EC2TaskDefinitionMapOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(EC2TaskDefinitionMapOutput)
 }
 
-type FargateTaskDefinitionOutput struct{ *pulumi.OutputState }
+type EC2TaskDefinitionOutput struct{ *pulumi.OutputState }
 
-func (FargateTaskDefinitionOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**FargateTaskDefinition)(nil)).Elem()
+func (EC2TaskDefinitionOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**EC2TaskDefinition)(nil)).Elem()
 }
 
-func (o FargateTaskDefinitionOutput) ToFargateTaskDefinitionOutput() FargateTaskDefinitionOutput {
+func (o EC2TaskDefinitionOutput) ToEC2TaskDefinitionOutput() EC2TaskDefinitionOutput {
 	return o
 }
 
-func (o FargateTaskDefinitionOutput) ToFargateTaskDefinitionOutputWithContext(ctx context.Context) FargateTaskDefinitionOutput {
+func (o EC2TaskDefinitionOutput) ToEC2TaskDefinitionOutputWithContext(ctx context.Context) EC2TaskDefinitionOutput {
 	return o
 }
 
-type FargateTaskDefinitionArrayOutput struct{ *pulumi.OutputState }
+type EC2TaskDefinitionArrayOutput struct{ *pulumi.OutputState }
 
-func (FargateTaskDefinitionArrayOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*[]*FargateTaskDefinition)(nil)).Elem()
+func (EC2TaskDefinitionArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]*EC2TaskDefinition)(nil)).Elem()
 }
 
-func (o FargateTaskDefinitionArrayOutput) ToFargateTaskDefinitionArrayOutput() FargateTaskDefinitionArrayOutput {
+func (o EC2TaskDefinitionArrayOutput) ToEC2TaskDefinitionArrayOutput() EC2TaskDefinitionArrayOutput {
 	return o
 }
 
-func (o FargateTaskDefinitionArrayOutput) ToFargateTaskDefinitionArrayOutputWithContext(ctx context.Context) FargateTaskDefinitionArrayOutput {
+func (o EC2TaskDefinitionArrayOutput) ToEC2TaskDefinitionArrayOutputWithContext(ctx context.Context) EC2TaskDefinitionArrayOutput {
 	return o
 }
 
-func (o FargateTaskDefinitionArrayOutput) Index(i pulumi.IntInput) FargateTaskDefinitionOutput {
-	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *FargateTaskDefinition {
-		return vs[0].([]*FargateTaskDefinition)[vs[1].(int)]
-	}).(FargateTaskDefinitionOutput)
+func (o EC2TaskDefinitionArrayOutput) Index(i pulumi.IntInput) EC2TaskDefinitionOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *EC2TaskDefinition {
+		return vs[0].([]*EC2TaskDefinition)[vs[1].(int)]
+	}).(EC2TaskDefinitionOutput)
 }
 
-type FargateTaskDefinitionMapOutput struct{ *pulumi.OutputState }
+type EC2TaskDefinitionMapOutput struct{ *pulumi.OutputState }
 
-func (FargateTaskDefinitionMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]*FargateTaskDefinition)(nil)).Elem()
+func (EC2TaskDefinitionMapOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*map[string]*EC2TaskDefinition)(nil)).Elem()
 }
 
-func (o FargateTaskDefinitionMapOutput) ToFargateTaskDefinitionMapOutput() FargateTaskDefinitionMapOutput {
+func (o EC2TaskDefinitionMapOutput) ToEC2TaskDefinitionMapOutput() EC2TaskDefinitionMapOutput {
 	return o
 }
 
-func (o FargateTaskDefinitionMapOutput) ToFargateTaskDefinitionMapOutputWithContext(ctx context.Context) FargateTaskDefinitionMapOutput {
+func (o EC2TaskDefinitionMapOutput) ToEC2TaskDefinitionMapOutputWithContext(ctx context.Context) EC2TaskDefinitionMapOutput {
 	return o
 }
 
-func (o FargateTaskDefinitionMapOutput) MapIndex(k pulumi.StringInput) FargateTaskDefinitionOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) *FargateTaskDefinition {
-		return vs[0].(map[string]*FargateTaskDefinition)[vs[1].(string)]
-	}).(FargateTaskDefinitionOutput)
+func (o EC2TaskDefinitionMapOutput) MapIndex(k pulumi.StringInput) EC2TaskDefinitionOutput {
+	return pulumi.All(o, k).ApplyT(func(vs []interface{}) *EC2TaskDefinition {
+		return vs[0].(map[string]*EC2TaskDefinition)[vs[1].(string)]
+	}).(EC2TaskDefinitionOutput)
 }
 
 func init() {
-	pulumi.RegisterInputType(reflect.TypeOf((*FargateTaskDefinitionInput)(nil)).Elem(), &FargateTaskDefinition{})
-	pulumi.RegisterInputType(reflect.TypeOf((*FargateTaskDefinitionArrayInput)(nil)).Elem(), FargateTaskDefinitionArray{})
-	pulumi.RegisterInputType(reflect.TypeOf((*FargateTaskDefinitionMapInput)(nil)).Elem(), FargateTaskDefinitionMap{})
-	pulumi.RegisterOutputType(FargateTaskDefinitionOutput{})
-	pulumi.RegisterOutputType(FargateTaskDefinitionArrayOutput{})
-	pulumi.RegisterOutputType(FargateTaskDefinitionMapOutput{})
+	pulumi.RegisterInputType(reflect.TypeOf((*EC2TaskDefinitionInput)(nil)).Elem(), &EC2TaskDefinition{})
+	pulumi.RegisterInputType(reflect.TypeOf((*EC2TaskDefinitionArrayInput)(nil)).Elem(), EC2TaskDefinitionArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*EC2TaskDefinitionMapInput)(nil)).Elem(), EC2TaskDefinitionMap{})
+	pulumi.RegisterOutputType(EC2TaskDefinitionOutput{})
+	pulumi.RegisterOutputType(EC2TaskDefinitionArrayOutput{})
+	pulumi.RegisterOutputType(EC2TaskDefinitionMapOutput{})
 }

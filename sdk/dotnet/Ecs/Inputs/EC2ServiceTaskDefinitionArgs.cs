@@ -15,7 +15,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
     /// Creates required log-group and task &amp; execution roles.
     /// Presents required Service load balancers if target group included in port mappings.
     /// </summary>
-    public sealed class FargateServiceTaskDefinitionArgs : Pulumi.ResourceArgs
+    public sealed class EC2ServiceTaskDefinitionArgs : Pulumi.ResourceArgs
     {
         /// <summary>
         /// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -98,6 +98,12 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public Input<string>? Memory { get; set; }
 
         /// <summary>
+        /// Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
+        /// </summary>
+        [Input("networkMode")]
+        public Input<string>? NetworkMode { get; set; }
+
+        /// <summary>
         /// Process namespace to use for the containers in the task. The valid values are `host` and `task`.
         /// </summary>
         [Input("pidMode")]
@@ -161,7 +167,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
             set => _volumes = value;
         }
 
-        public FargateServiceTaskDefinitionArgs()
+        public EC2ServiceTaskDefinitionArgs()
         {
         }
     }

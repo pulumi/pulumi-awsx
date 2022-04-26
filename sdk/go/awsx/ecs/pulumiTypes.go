@@ -13,7 +13,7 @@ import (
 // Create a TaskDefinition resource with the given unique name, arguments, and options.
 // Creates required log-group and task & execution roles.
 // Presents required Service load balancers if target group included in port mappings.
-type FargateServiceTaskDefinition struct {
+type EC2ServiceTaskDefinition struct {
 	// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
 	// multiple containers, especially when creating a TaskDefinition to call [run] on.
 	//
@@ -50,8 +50,56 @@ type FargateServiceTaskDefinition struct {
 	PlacementConstraints []ecs.TaskDefinitionPlacementConstraint `pulumi:"placementConstraints"`
 	// Configuration block for the App Mesh proxy. Detailed below.
 	ProxyConfiguration *ecs.TaskDefinitionProxyConfiguration `pulumi:"proxyConfiguration"`
-	// Set of launch types required by the task. The valid values are `EC2` and `FARGATE`.
-	RequiresCompatibilities []string `pulumi:"requiresCompatibilities"`
+	// Configuration block for runtime_platform that containers in your task may use.
+	RuntimePlatform *ecs.TaskDefinitionRuntimePlatform `pulumi:"runtimePlatform"`
+	SkipDestroy     *bool                              `pulumi:"skipDestroy"`
+	// Key-value map of resource tags.
+	Tags map[string]string `pulumi:"tags"`
+	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+	// Will be created automatically if not defined.
+	TaskRole *awsx.DefaultRoleWithPolicy `pulumi:"taskRole"`
+	// Configuration block for volumes that containers in your task may use. Detailed below.
+	Volumes []ecs.TaskDefinitionVolume `pulumi:"volumes"`
+}
+
+// Create a TaskDefinition resource with the given unique name, arguments, and options.
+// Creates required log-group and task & execution roles.
+// Presents required Service load balancers if target group included in port mappings.
+type FargateServiceTaskDefinition struct {
+	// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
+	// multiple containers, especially when creating a TaskDefinition to call [run] on.
+	//
+	// Either [container] or [containers] must be provided.
+	Container *TaskDefinitionContainerDefinition `pulumi:"container"`
+	// All the containers to make a TaskDefinition from.  Useful when creating a Service that will
+	// contain many containers within.
+	//
+	// Either [container] or [containers] must be provided.
+	Containers map[string]TaskDefinitionContainerDefinition `pulumi:"containers"`
+	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
+	Cpu *string `pulumi:"cpu"`
+	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
+	EphemeralStorage *ecs.TaskDefinitionEphemeralStorage `pulumi:"ephemeralStorage"`
+	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
+	// Will be created automatically if not defined.
+	ExecutionRole *awsx.DefaultRoleWithPolicy `pulumi:"executionRole"`
+	// An optional unique name for your task definition. If not specified, then a default will be created.
+	Family *string `pulumi:"family"`
+	// Configuration block(s) with Inference Accelerators settings. Detailed below.
+	InferenceAccelerators []ecs.TaskDefinitionInferenceAccelerator `pulumi:"inferenceAccelerators"`
+	// IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
+	IpcMode *string `pulumi:"ipcMode"`
+	// A set of volume blocks that containers in your task may use.
+	LogGroup *awsx.DefaultLogGroup `pulumi:"logGroup"`
+	// The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
+	// based on the cumulative needs specified by [containerDefinitions]
+	Memory *string `pulumi:"memory"`
+	// Process namespace to use for the containers in the task. The valid values are `host` and `task`.
+	PidMode *string `pulumi:"pidMode"`
+	// Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
+	PlacementConstraints []ecs.TaskDefinitionPlacementConstraint `pulumi:"placementConstraints"`
+	// Configuration block for the App Mesh proxy. Detailed below.
+	ProxyConfiguration *ecs.TaskDefinitionProxyConfiguration `pulumi:"proxyConfiguration"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform *ecs.TaskDefinitionRuntimePlatform `pulumi:"runtimePlatform"`
 	SkipDestroy     *bool                              `pulumi:"skipDestroy"`

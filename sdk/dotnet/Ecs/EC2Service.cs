@@ -10,11 +10,11 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs
 {
     /// <summary>
-    /// Create an ECS Service resource for Fargate with the given unique name, arguments, and options.
+    /// Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
     /// Creates Task definition if `taskDefinitionArgs` is specified.
     /// </summary>
-    [AwsxResourceType("awsx:ecs:FargateService")]
-    public partial class FargateService : Pulumi.ComponentResource
+    [AwsxResourceType("awsx:ecs:EC2Service")]
+    public partial class EC2Service : Pulumi.ComponentResource
     {
         /// <summary>
         /// Underlying ECS Service resource
@@ -23,21 +23,21 @@ namespace Pulumi.Awsx.Ecs
         public Output<Pulumi.Aws.Ecs.Service> Service { get; private set; } = null!;
 
         /// <summary>
-        /// Underlying Fargate component resource if created from args
+        /// Underlying EC2 Task definition component resource if created from args
         /// </summary>
         [Output("taskDefinition")]
         public Output<Pulumi.Aws.Ecs.TaskDefinition?> TaskDefinition { get; private set; } = null!;
 
 
         /// <summary>
-        /// Create a FargateService resource with the given unique name, arguments, and options.
+        /// Create a EC2Service resource with the given unique name, arguments, and options.
         /// </summary>
         ///
         /// <param name="name">The unique name of the resource</param>
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public FargateService(string name, FargateServiceArgs args, ComponentResourceOptions? options = null)
-            : base("awsx:ecs:FargateService", name, args ?? new FargateServiceArgs(), MakeResourceOptions(options, ""), remote: true)
+        public EC2Service(string name, EC2ServiceArgs args, ComponentResourceOptions? options = null)
+            : base("awsx:ecs:EC2Service", name, args ?? new EC2ServiceArgs(), MakeResourceOptions(options, ""), remote: true)
         {
         }
 
@@ -54,7 +54,7 @@ namespace Pulumi.Awsx.Ecs
         }
     }
 
-    public sealed class FargateServiceArgs : Pulumi.ResourceArgs
+    public sealed class EC2ServiceArgs : Pulumi.ResourceArgs
     {
         /// <summary>
         /// ARN of an ECS cluster.
@@ -152,6 +152,18 @@ namespace Pulumi.Awsx.Ecs
         [Input("networkConfiguration", required: true)]
         public Input<Pulumi.Aws.Ecs.Inputs.ServiceNetworkConfigurationArgs> NetworkConfiguration { get; set; } = null!;
 
+        [Input("orderedPlacementStrategies")]
+        private InputList<Pulumi.Aws.Ecs.Inputs.ServiceOrderedPlacementStrategyArgs>? _orderedPlacementStrategies;
+
+        /// <summary>
+        /// Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
+        /// </summary>
+        public InputList<Pulumi.Aws.Ecs.Inputs.ServiceOrderedPlacementStrategyArgs> OrderedPlacementStrategies
+        {
+            get => _orderedPlacementStrategies ?? (_orderedPlacementStrategies = new InputList<Pulumi.Aws.Ecs.Inputs.ServiceOrderedPlacementStrategyArgs>());
+            set => _orderedPlacementStrategies = value;
+        }
+
         [Input("placementConstraints")]
         private InputList<Pulumi.Aws.Ecs.Inputs.ServicePlacementConstraintArgs>? _placementConstraints;
 
@@ -210,9 +222,9 @@ namespace Pulumi.Awsx.Ecs
         /// The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         /// </summary>
         [Input("taskDefinitionArgs")]
-        public Inputs.FargateServiceTaskDefinitionArgs? TaskDefinitionArgs { get; set; }
+        public Inputs.EC2ServiceTaskDefinitionArgs? TaskDefinitionArgs { get; set; }
 
-        public FargateServiceArgs()
+        public EC2ServiceArgs()
         {
         }
     }

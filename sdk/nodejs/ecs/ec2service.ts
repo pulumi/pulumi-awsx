@@ -8,22 +8,22 @@ import * as utilities from "../utilities";
 import * as pulumiAws from "@pulumi/aws";
 
 /**
- * Create an ECS Service resource for Fargate with the given unique name, arguments, and options.
+ * Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
  * Creates Task definition if `taskDefinitionArgs` is specified.
  */
-export class FargateService extends pulumi.ComponentResource {
+export class EC2Service extends pulumi.ComponentResource {
     /** @internal */
-    public static readonly __pulumiType = 'awsx:ecs:FargateService';
+    public static readonly __pulumiType = 'awsx:ecs:EC2Service';
 
     /**
-     * Returns true if the given object is an instance of FargateService.  This is designed to work even
+     * Returns true if the given object is an instance of EC2Service.  This is designed to work even
      * when multiple copies of the Pulumi SDK have been loaded into the same process.
      */
-    public static isInstance(obj: any): obj is FargateService {
+    public static isInstance(obj: any): obj is EC2Service {
         if (obj === undefined || obj === null) {
             return false;
         }
-        return obj['__pulumiType'] === FargateService.__pulumiType;
+        return obj['__pulumiType'] === EC2Service.__pulumiType;
     }
 
     /**
@@ -31,18 +31,18 @@ export class FargateService extends pulumi.ComponentResource {
      */
     public /*out*/ readonly service!: pulumi.Output<pulumiAws.ecs.Service>;
     /**
-     * Underlying Fargate component resource if created from args
+     * Underlying EC2 Task definition component resource if created from args
      */
     public readonly taskDefinition!: pulumi.Output<pulumiAws.ecs.TaskDefinition | undefined>;
 
     /**
-     * Create a FargateService resource with the given unique name, arguments, and options.
+     * Create a EC2Service resource with the given unique name, arguments, and options.
      *
      * @param name The _unique_ name of the resource.
      * @param args The arguments to use to populate this resource's properties.
      * @param opts A bag of options that control this resource's behavior.
      */
-    constructor(name: string, args: FargateServiceArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args: EC2ServiceArgs, opts?: pulumi.ComponentResourceOptions) {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
@@ -64,6 +64,7 @@ export class FargateService extends pulumi.ComponentResource {
             resourceInputs["loadBalancers"] = args ? args.loadBalancers : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["networkConfiguration"] = args ? args.networkConfiguration : undefined;
+            resourceInputs["orderedPlacementStrategies"] = args ? args.orderedPlacementStrategies : undefined;
             resourceInputs["placementConstraints"] = args ? args.placementConstraints : undefined;
             resourceInputs["platformVersion"] = args ? args.platformVersion : undefined;
             resourceInputs["propagateTags"] = args ? args.propagateTags : undefined;
@@ -78,14 +79,14 @@ export class FargateService extends pulumi.ComponentResource {
             resourceInputs["taskDefinition"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
-        super(FargateService.__pulumiType, name, resourceInputs, opts, true /*remote*/);
+        super(EC2Service.__pulumiType, name, resourceInputs, opts, true /*remote*/);
     }
 }
 
 /**
- * The set of arguments for constructing a FargateService resource.
+ * The set of arguments for constructing a EC2Service resource.
  */
-export interface FargateServiceArgs {
+export interface EC2ServiceArgs {
     /**
      * ARN of an ECS cluster.
      */
@@ -147,6 +148,10 @@ export interface FargateServiceArgs {
      */
     networkConfiguration: pulumi.Input<pulumiAws.types.input.ecs.ServiceNetworkConfiguration>;
     /**
+     * Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
+     */
+    orderedPlacementStrategies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceOrderedPlacementStrategy>[]>;
+    /**
      * Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
      */
     placementConstraints?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServicePlacementConstraint>[]>;
@@ -177,5 +182,5 @@ export interface FargateServiceArgs {
     /**
      * The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
      */
-    taskDefinitionArgs?: inputs.ecs.FargateServiceTaskDefinitionArgs;
+    taskDefinitionArgs?: inputs.ecs.EC2ServiceTaskDefinitionArgs;
 }

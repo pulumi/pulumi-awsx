@@ -39,6 +39,8 @@ _utilities.register(
   "mod": "ecs",
   "fqn": "pulumi_awsx.ecs",
   "classes": {
+   "awsx:ecs:EC2Service": "EC2Service",
+   "awsx:ecs:EC2TaskDefinition": "EC2TaskDefinition",
    "awsx:ecs:FargateService": "FargateService",
    "awsx:ecs:FargateTaskDefinition": "FargateTaskDefinition"
   }

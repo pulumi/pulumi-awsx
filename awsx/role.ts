@@ -26,6 +26,41 @@ interface RolePolicyAttachments {
 }
 
 /** @internal */
+export function defaultExecutionRolePolicyARNs() {
+    return [
+        "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+        // aws.iam.ManagedPolicies.AWSLambdaBasicExecutionRole,
+    ];
+}
+
+/** @internal */
+export function defaultRoleAssumeRolePolicy(): aws.iam.PolicyDocument {
+    return {
+        Version: "2012-10-17",
+        Statement: [
+            {
+                Action: "sts:AssumeRole",
+                Principal: {
+                    Service: "ecs-tasks.amazonaws.com",
+                },
+                Effect: "Allow",
+                Sid: "",
+            },
+        ],
+    };
+}
+
+/** @internal */
+export function defaultTaskRolePolicyARNs() {
+    return [
+        // Provides full access to Lambda
+        // aws.iam.ManagedPolicy.LambdaFullAccess,
+        // Required for lambda compute to be able to run Tasks
+        // aws.iam.ManagedPolicy.AmazonECSFullAccess,
+    ];
+}
+
+/** @internal */
 export function defaultRoleWithPolicies(
     name: string,
     inputs: schema.DefaultRoleWithPolicyInputs | undefined,

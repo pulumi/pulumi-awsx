@@ -12,19 +12,19 @@ import * as pulumiAws from "@pulumi/aws";
  * Creates required log-group and task & execution roles.
  * Presents required Service load balancers if target group included in port mappings.
  */
-export class FargateTaskDefinition extends pulumi.ComponentResource {
+export class EC2TaskDefinition extends pulumi.ComponentResource {
     /** @internal */
-    public static readonly __pulumiType = 'awsx:ecs:FargateTaskDefinition';
+    public static readonly __pulumiType = 'awsx:ecs:EC2TaskDefinition';
 
     /**
-     * Returns true if the given object is an instance of FargateTaskDefinition.  This is designed to work even
+     * Returns true if the given object is an instance of EC2TaskDefinition.  This is designed to work even
      * when multiple copies of the Pulumi SDK have been loaded into the same process.
      */
-    public static isInstance(obj: any): obj is FargateTaskDefinition {
+    public static isInstance(obj: any): obj is EC2TaskDefinition {
         if (obj === undefined || obj === null) {
             return false;
         }
-        return obj['__pulumiType'] === FargateTaskDefinition.__pulumiType;
+        return obj['__pulumiType'] === EC2TaskDefinition.__pulumiType;
     }
 
     /**
@@ -49,13 +49,13 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
     public readonly taskRole!: pulumi.Output<pulumiAws.iam.Role | undefined>;
 
     /**
-     * Create a FargateTaskDefinition resource with the given unique name, arguments, and options.
+     * Create a EC2TaskDefinition resource with the given unique name, arguments, and options.
      *
      * @param name The _unique_ name of the resource.
      * @param args The arguments to use to populate this resource's properties.
      * @param opts A bag of options that control this resource's behavior.
      */
-    constructor(name: string, args?: FargateTaskDefinitionArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args?: EC2TaskDefinitionArgs, opts?: pulumi.ComponentResourceOptions) {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
@@ -69,6 +69,7 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
             resourceInputs["ipcMode"] = args ? args.ipcMode : undefined;
             resourceInputs["logGroup"] = args ? args.logGroup : undefined;
             resourceInputs["memory"] = args ? args.memory : undefined;
+            resourceInputs["networkMode"] = args ? args.networkMode : undefined;
             resourceInputs["pidMode"] = args ? args.pidMode : undefined;
             resourceInputs["placementConstraints"] = args ? args.placementConstraints : undefined;
             resourceInputs["proxyConfiguration"] = args ? args.proxyConfiguration : undefined;
@@ -87,14 +88,14 @@ export class FargateTaskDefinition extends pulumi.ComponentResource {
             resourceInputs["taskRole"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
-        super(FargateTaskDefinition.__pulumiType, name, resourceInputs, opts, true /*remote*/);
+        super(EC2TaskDefinition.__pulumiType, name, resourceInputs, opts, true /*remote*/);
     }
 }
 
 /**
- * The set of arguments for constructing a FargateTaskDefinition resource.
+ * The set of arguments for constructing a EC2TaskDefinition resource.
  */
-export interface FargateTaskDefinitionArgs {
+export interface EC2TaskDefinitionArgs {
     /**
      * Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
      * multiple containers, especially when creating a TaskDefinition to call [run] on.
@@ -143,6 +144,10 @@ export interface FargateTaskDefinitionArgs {
      * based on the cumulative needs specified by [containerDefinitions]
      */
     memory?: pulumi.Input<string>;
+    /**
+     * Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.
+     */
+    networkMode?: pulumi.Input<string>;
     /**
      * Process namespace to use for the containers in the task. The valid values are `host` and `task`.
      */
