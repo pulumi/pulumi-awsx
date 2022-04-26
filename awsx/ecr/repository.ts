@@ -15,7 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import * as utils from "../utils";
 
 export class Repository extends schema.Repository {
     constructor(
@@ -24,6 +23,9 @@ export class Repository extends schema.Repository {
         opts: pulumi.ComponentResourceOptions,
     ) {
         super(name, {}, opts);
+        if (opts.urn) {
+            return; // Rehydrating, skip construction
+        }
         const lowerCaseName = name.toLowerCase();
         const { lifecyclePolicy, ...repoArgs } = args;
 
@@ -37,6 +39,11 @@ export class Repository extends schema.Repository {
                 policy: buildLifecyclePolicy(lifecyclePolicy),
             });
         }
+
+        this.registerOutputs({
+            repository: this.repository,
+            lifecyclePolicy: this.lifecyclePolicy,
+        });
     }
 }
 

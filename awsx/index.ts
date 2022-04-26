@@ -14,11 +14,25 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
+import { Repository } from "./ecr";
 import { construct, functions } from "./resources";
 import { resourceToConstructResult } from "./utils";
 
 class Provider implements pulumi.provider.Provider {
-    constructor(readonly version: string, readonly schema: string) {}
+    constructor(readonly version: string, readonly schema: string) {
+        // Register any resources that can come back as resource references that need to be rehydrated.
+        pulumi.runtime.registerResourceModule("awsx", "ecr", {
+            version: this.version,
+            construct: (name, type, urn) => {
+                switch (type) {
+                    case "awsx:ecr:Repository":
+                        return new Repository(name, <any>undefined, { urn });
+                    default:
+                        throw new Error(`unknown resource type ${type}`);
+                }
+            },
+        });
+    }
 
     async construct(
         name: string,

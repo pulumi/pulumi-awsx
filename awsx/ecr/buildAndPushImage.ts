@@ -23,15 +23,16 @@ export async function Repository_buildAndPushImage(
 ): Promise<schema.Repository_buildAndPushImageOutputs> {
     const { __self__, ...docker } = inputs;
     const repository = pulumi.output(inputs.__self__);
+
     const image = pulumi
-        .all([
-            docker,
-            repository.repository.repositoryUrl,
-            repository.repository.registryId,
-            repository,
-        ])
-        .apply(([inputs, repositoryUrl, registryId, parent]) =>
-            computeImageFromAsset(inputs, repositoryUrl, registryId, parent),
+        .all([docker, repository])
+        .apply(([inputs, parent]) =>
+            computeImageFromAsset(
+                inputs,
+                repository.repository.repositoryUrl,
+                repository.repository.registryId,
+                parent,
+            ),
         );
     return { image };
 }
@@ -43,9 +44,9 @@ type DockerInputs = Omit<
 
 /** @internal */
 export function computeImageFromAsset(
-    inputs: DockerInputs,
-    repositoryUrl: string,
-    registryId: string | undefined,
+    inputs: DockerInputs | undefined,
+    repositoryUrl: pulumi.Input<string>,
+    registryId: pulumi.Input<string> | undefined,
     parent: pulumi.Resource,
 ) {
     const dockerInputs = inputs ?? {};
@@ -73,12 +74,14 @@ export function computeImageFromAsset(
         target: dockerInputs.target,
     };
 
+    pulumi.log.info("dockerBuild: " + JSON.stringify(dockerBuild));
+
     const uniqueImageName = docker.buildAndPushImage(
         imageName,
         dockerBuild,
         repositoryUrl,
         parent,
-        async () => {
+        () => {
             // Construct Docker registry auth data by getting the short-lived authorizationToken from ECR, and
             // extracting the username/password pair after base64-decoding the token.
             //
@@ -89,23 +92,27 @@ export function computeImageFromAsset(
                 );
             }
 
-            const credentials = await aws.ecr.getCredentials(
+            const credentials = aws.ecr.getCredentialsOutput(
                 { registryId: registryId },
                 { parent, async: true },
             );
-            const decodedCredentials = Buffer.from(
-                credentials.authorizationToken,
-                "base64",
-            ).toString();
-            const [username, password] = decodedCredentials.split(":");
-            if (!password || !username) {
-                throw new Error("Invalid credentials");
-            }
-            return {
-                registry: credentials.proxyEndpoint,
-                username: username,
-                password: password,
-            };
+            return credentials.authorizationToken.apply(
+                (authorizationToken) => {
+                    const decodedCredentials = Buffer.from(
+                        authorizationToken,
+                        "base64",
+                    ).toString();
+                    const [username, password] = decodedCredentials.split(":");
+                    if (!password || !username) {
+                        throw new Error("Invalid credentials");
+                    }
+                    return {
+                        registry: credentials.proxyEndpoint,
+                        username: username,
+                        password: password,
+                    };
+                },
+            );
         },
     );
 
