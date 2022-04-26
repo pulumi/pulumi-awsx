@@ -25,8 +25,8 @@ type BuildAndPushImageArgs struct {
 	// Arguments for building the docker image.
 	Docker *DockerBuild `pulumi:"docker"`
 	// The Amazon Web Services account ID associated with the registry that contains the repository. If you do not specify a registry, the default registry is assumed.
-	RegistryId     *string `pulumi:"registryId"`
-	RepositoryName string  `pulumi:"repositoryName"`
+	RegistryId    *string `pulumi:"registryId"`
+	RepositoryUrl string  `pulumi:"repositoryUrl"`
 }
 
 // Outputs from the pushed docker image
@@ -49,8 +49,8 @@ type BuildAndPushImageOutputArgs struct {
 	// Arguments for building the docker image.
 	Docker DockerBuildPtrInput `pulumi:"docker"`
 	// The Amazon Web Services account ID associated with the registry that contains the repository. If you do not specify a registry, the default registry is assumed.
-	RegistryId     pulumi.StringPtrInput `pulumi:"registryId"`
-	RepositoryName pulumi.StringInput    `pulumi:"repositoryName"`
+	RegistryId    pulumi.StringPtrInput `pulumi:"registryId"`
+	RepositoryUrl pulumi.StringInput    `pulumi:"repositoryUrl"`
 }
 
 func (BuildAndPushImageOutputArgs) ElementType() reflect.Type {

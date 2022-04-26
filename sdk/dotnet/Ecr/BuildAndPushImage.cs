@@ -39,8 +39,8 @@ namespace Pulumi.Awsx.Ecr
         [Input("registryId")]
         public string? RegistryId { get; set; }
 
-        [Input("repositoryName", required: true)]
-        public string RepositoryName { get; set; } = null!;
+        [Input("repositoryUrl", required: true)]
+        public string RepositoryUrl { get; set; } = null!;
 
         public BuildAndPushImageArgs()
         {
@@ -61,8 +61,8 @@ namespace Pulumi.Awsx.Ecr
         [Input("registryId")]
         public Input<string>? RegistryId { get; set; }
 
-        [Input("repositoryName", required: true)]
-        public Input<string> RepositoryName { get; set; } = null!;
+        [Input("repositoryUrl", required: true)]
+        public Input<string> RepositoryUrl { get; set; } = null!;
 
         public BuildAndPushImageInvokeArgs()
         {

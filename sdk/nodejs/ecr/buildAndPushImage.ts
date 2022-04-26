@@ -17,7 +17,7 @@ export function buildAndPushImage(args: BuildAndPushImageArgs, opts?: pulumi.Inv
     return pulumi.runtime.invoke("awsx:ecr:buildAndPushImage", {
         "docker": args.docker,
         "registryId": args.registryId,
-        "repositoryName": args.repositoryName,
+        "repositoryUrl": args.repositoryUrl,
     }, opts);
 }
 
@@ -33,7 +33,7 @@ export interface BuildAndPushImageArgs {
      * The Amazon Web Services account ID associated with the registry that contains the repository. If you do not specify a registry, the default registry is assumed.
      */
     registryId?: string;
-    repositoryName: string;
+    repositoryUrl: string;
 }
 
 /**
@@ -62,5 +62,5 @@ export interface BuildAndPushImageOutputArgs {
      * The Amazon Web Services account ID associated with the registry that contains the repository. If you do not specify a registry, the default registry is assumed.
      */
     registryId?: pulumi.Input<string>;
-    repositoryName: pulumi.Input<string>;
+    repositoryUrl: pulumi.Input<string>;
 }

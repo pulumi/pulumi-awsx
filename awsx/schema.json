@@ -1935,12 +1935,12 @@
                         "type": "string",
                         "description": "The Amazon Web Services account ID associated with the registry that contains the repository. If you do not specify a registry, the default registry is assumed."
                     },
-                    "repositoryName": {
+                    "repositoryUrl": {
                         "type": "string"
                     }
                 },
                 "required": [
-                    "repositoryName"
+                    "repositoryUrl"
                 ]
             },
             "outputs": {

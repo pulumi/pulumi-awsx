@@ -213,7 +213,7 @@ func buildAndPushImage(asMember bool) schema.FunctionSpec {
 				Ref: "#/types/awsx:ecr:DockerBuild",
 			},
 		}
-		spec.Inputs.Properties["repositoryName"] = schema.PropertySpec{
+		spec.Inputs.Properties["repositoryUrl"] = schema.PropertySpec{
 			TypeSpec: schema.TypeSpec{
 				Type: "string",
 			},
@@ -224,7 +224,7 @@ func buildAndPushImage(asMember bool) schema.FunctionSpec {
 				Type: "string",
 			},
 		}
-		spec.Inputs.Required = []string{"repositoryName"}
+		spec.Inputs.Required = []string{"repositoryUrl"}
 	}
 
 	return spec

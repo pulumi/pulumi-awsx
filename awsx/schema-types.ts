@@ -768,7 +768,7 @@ export interface Repository_buildAndPushImageOutputs {
 export interface buildAndPushImageInputs {
     readonly docker?: pulumi.Input<DockerBuildInputs>;
     readonly registryId?: pulumi.Input<string>;
-    readonly repositoryName: pulumi.Input<string>;
+    readonly repositoryUrl: pulumi.Input<string>;
 }
 export interface buildAndPushImageOutputs {
     readonly image?: pulumi.Output<string>;

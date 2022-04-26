@@ -46,7 +46,7 @@ class AwaitableBuildAndPushImageResult(BuildAndPushImageResult):
 
 def build_and_push_image(docker: Optional[pulumi.InputType['DockerBuild']] = None,
                          registry_id: Optional[str] = None,
-                         repository_name: Optional[str] = None,
+                         repository_url: Optional[str] = None,
                          opts: Optional[pulumi.InvokeOptions] = None) -> AwaitableBuildAndPushImageResult:
     """
     Build and push a docker image to ECR
@@ -58,7 +58,7 @@ def build_and_push_image(docker: Optional[pulumi.InputType['DockerBuild']] = Non
     __args__ = dict()
     __args__['docker'] = docker
     __args__['registryId'] = registry_id
-    __args__['repositoryName'] = repository_name
+    __args__['repositoryUrl'] = repository_url
     if opts is None:
         opts = pulumi.InvokeOptions()
     if opts.version is None:
@@ -72,7 +72,7 @@ def build_and_push_image(docker: Optional[pulumi.InputType['DockerBuild']] = Non
 @_utilities.lift_output_func(build_and_push_image)
 def build_and_push_image_output(docker: Optional[pulumi.Input[Optional[pulumi.InputType['DockerBuild']]]] = None,
                                 registry_id: Optional[pulumi.Input[Optional[str]]] = None,
-                                repository_name: Optional[pulumi.Input[str]] = None,
+                                repository_url: Optional[pulumi.Input[str]] = None,
                                 opts: Optional[pulumi.InvokeOptions] = None) -> pulumi.Output[BuildAndPushImageResult]:
     """
     Build and push a docker image to ECR

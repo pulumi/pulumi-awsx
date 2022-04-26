@@ -30,6 +30,7 @@ export class Repository extends schema.Repository {
         this.repository = new aws.ecr.Repository(lowerCaseName, repoArgs, {
             parent: this,
         });
+
         if (!lifecyclePolicy?.skip) {
             this.lifecyclePolicy = new aws.ecr.LifecyclePolicy(lowerCaseName, {
                 repository: this.repository.name,
