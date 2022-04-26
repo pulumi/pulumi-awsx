@@ -84,7 +84,7 @@ export interface VpcArgs {
      */
     availabilityZoneNames?: string[];
     /**
-     * The CIDR block for the VPC. Required.
+     * The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
      */
     cidr?: string;
     /**

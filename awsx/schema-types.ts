@@ -825,14 +825,14 @@ export interface NatGatewayConfigurationOutputs {
 export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
 export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
 export interface SubnetConfigurationInputs {
-    readonly cidrMask?: number;
-    readonly name?: string;
-    readonly type?: SubnetTypeInputs;
+    readonly cidrMask: number;
+    readonly name: string;
+    readonly type: SubnetTypeInputs;
 }
 export interface SubnetConfigurationOutputs {
-    readonly cidrMask?: number;
-    readonly name?: string;
-    readonly type?: SubnetTypeOutputs;
+    readonly cidrMask: number;
+    readonly name: string;
+    readonly type: SubnetTypeOutputs;
 }
 export type SubnetTypeInputs = "Public" | "Private" | "Isolated";
 export type SubnetTypeOutputs = "Public" | "Private" | "Isolated";

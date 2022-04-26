@@ -123,6 +123,11 @@ func subnetConfigType() schema.ComplexTypeSpec {
 					TypeSpec:    plainInt(),
 				},
 			},
+			Required: []string{
+				"type",
+				"name",
+				"cidrMask",
+			},
 		},
 	}
 }

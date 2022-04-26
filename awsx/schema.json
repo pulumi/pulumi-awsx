@@ -1310,7 +1310,12 @@
                     "description": "The type of subnet."
                 }
             },
-            "type": "object"
+            "type": "object",
+            "required": [
+                "type",
+                "name",
+                "cidrMask"
+            ]
         },
         "awsx:vpc:SubnetType": {
             "description": "A type of subnet within a VPC.",
@@ -2125,7 +2130,7 @@
                 "cidr": {
                     "type": "string",
                     "plain": true,
-                    "description": "The CIDR block for the VPC. Required."
+                    "description": "The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16."
                 },
                 "cidrBlock": {
                     "type": "string",

@@ -22,7 +22,7 @@ interface SubnetSpec {
     azName: string;
 }
 
-export function getSubnetSpecs(vpcCidr: string, azNames: string[], specs?: SubnetConfigurationInputs[]) {
+export function getSubnetSpecs(vpcCidr: string, azNames: string[], subnetInputs?: SubnetConfigurationInputs[]) {
     const newBitsPerAZ = Math.log2(nextPow2(azNames.length));
 
     const azBases: string[] = [];
@@ -30,7 +30,7 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], specs?: Subne
         azBases.push(cidrSubnetV4(vpcCidr, newBitsPerAZ, i));
     }
 
-    if (specs === undefined) {
+    if (subnetInputs === undefined) {
         return generateDefaultSubnets(vpcCidr, azNames, azBases);
     }
 
@@ -44,7 +44,7 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], specs?: Subne
 
     for (let i = 0; i < azNames.length; i++) {
 
-        specs.filter(x => x.type === "Private").forEach(privateSubnet => {
+        subnetInputs.filter(x => x.type === "Private").forEach(privateSubnet => {
             const newBits = privateSubnet.cidrMask - baseSubnetMask;
             const privateSubnetCidrBlock = cidrSubnetV4(azBases[i], newBits, 0);
             privateSubnets.push({
@@ -54,7 +54,7 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], specs?: Subne
             });
         });
 
-        specs.filter(x => x.type === "Public").forEach(publicSubnet => {
+        subnetInputs.filter(x => x.type === "Public").forEach(publicSubnet => {
             const baseCidr = privateSubnets.length > 0 ? privateSubnets[i].cidrBlock : azBases[i];
 
             const baseIp = new ipAddress.Address4(baseCidr);
@@ -72,7 +72,7 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], specs?: Subne
             });
         });
 
-        specs.filter(x => x.type === "Isolated").forEach(isolatedSubnet => {
+        subnetInputs.filter(x => x.type === "Isolated").forEach(isolatedSubnet => {
             let baseCidr: string;
             if (publicSubnets.length > 0 ) {
                 baseCidr = publicSubnets[i].cidrBlock;

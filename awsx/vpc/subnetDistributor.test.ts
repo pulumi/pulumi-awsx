@@ -57,7 +57,7 @@ describe("getSubnetSpecs", () => {
     });
 
     describe
-        .each([
+        .each<SubnetTypeInputs>([
             "Private",
             "Public",
             "Isolated",
@@ -66,6 +66,7 @@ describe("getSubnetSpecs", () => {
                 {
                     cidrMask: 19,
                     type: type,
+                    name: "foo",
                 },
             ];
 
@@ -91,7 +92,7 @@ describe("getSubnetSpecs", () => {
         });
 
     describe
-        .each([
+        .each<SubnetTypeInputs[]>([
             ["Private", "Public"],
             ["Public", "Isolated"],
             ["Private", "Isolated"],
@@ -100,10 +101,12 @@ describe("getSubnetSpecs", () => {
                 {
                     cidrMask: 19,
                     type: slash19Type,
+                    name: "foo",
                 },
                 {
                     cidrMask: 20,
                     type: slash20Type,
+                    name: "bar",
                 },
             ];
 

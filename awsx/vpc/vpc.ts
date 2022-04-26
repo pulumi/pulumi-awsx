@@ -31,6 +31,8 @@ export class Vpc extends schema.Vpc<VpcData> {
     }
 
     protected async initialize(props: { name: string, args: schema.VpcArgs, opts: pulumi.ComponentResourceOptions }) {
+        pulumi.log.debug(`props = ${JSON.stringify(props)}`);
+
         const {name, args} = props;
         const availabilityZones = args.availabilityZoneNames ?? await this.getDefaultAzs();
 
@@ -38,12 +40,12 @@ export class Vpc extends schema.Vpc<VpcData> {
         const eips = args.natGateways?.elasticIpAllocationIds;
 
         const vpcCidr = args.cidr ?? "10.0.0.0/16";
-        const subnetSpecs = args.subnetsPerAz ?? getDefaultSubnetSpecs(vpcCidr);
+        const subnetSpecs = args.subnetsPerAz;
 
         validateNatGatewayStrategy(natGatewayStrategy, eips, availabilityZones);
 
         const vpc = new aws.ec2.Vpc(name, args, {parent: this});
-        const subnets = this.getSubnets(vpc, availabilityZones, subnetSpecs);
+        const subnets = this.getSubnets(vpc, vpcCidr, availabilityZones, subnetSpecs);
 
         // TODO: Create IGW only if any subnet is non-isolated
 
@@ -61,7 +63,7 @@ export class Vpc extends schema.Vpc<VpcData> {
         return result.names.slice(0, 2);
     }
 
-    getSubnets(vpc: aws.ec2.Vpc, vpcCidr: string, azs: string[], inputs: schema.SubnetConfigurationInputs[]): aws.ec2.Subnet[] {
+    getSubnets(vpc: aws.ec2.Vpc, vpcCidr: string, azs: string[], inputs?: schema.SubnetConfigurationInputs[]): aws.ec2.Subnet[] {
         const specs = getSubnetSpecs(vpcCidr, azs, inputs);
         const subnets: aws.ec2.Subnet[] = [];
 
@@ -118,37 +120,4 @@ export function validateNatGatewayStrategy(
         default:
             throw new Error(`Unknown NatGatewayStrategy '${natGatewayStrategy}'`);
     }
-}
-
-export function getDefaultSubnetSpecs(vpcCidr: string): schema.SubnetConfigurationInputs[] {
-    const ipAddress = require("ip-address");
-
-    const ipv4 = new ipAddress.Address4(vpcCidr);
-
-    const publicCidrMask = ipv4.subnetMask + 4;
-    const privateCidrMask = ipv4.subnetMask + 3;
-    return [
-        {
-            name: "private",
-            type: "Private",
-            cidrMask: privateCidrMask,
-        },
-        {
-            name: "public",
-            type: "Public",
-            cidrMask: publicCidrMask,
-        },
-    ];
-}
-
-export function getCidrBlock(baseCidr: string, subnetMask: number, subnetNumber: number): string {
-    const Netmask = require("netmask").Netmask;
-    const vpcBlock = new Netmask(baseCidr);
-    const subnetBlock = new Netmask().next(subnetNumber);
-
-    if (!vpcBlock.contains(subnetBlock)) {
-        throw new Error(`VPC cidr block '${baseCidr}' is not large enough to contain the subnet with block '${block}'.`);
-    }
-
-    return `${subnetBlock.base}/${subnetBlock.mask}`;
 }

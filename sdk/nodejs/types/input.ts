@@ -2032,14 +2032,14 @@ export namespace vpc {
         /**
          * The bitmask for the subnet's CIDR block.
          */
-        cidrMask?: number;
+        cidrMask: number;
         /**
          * The subnet's name. Will be templated upon creation.
          */
-        name?: string;
+        name: string;
         /**
          * The type of subnet.
          */
-        type?: enums.vpc.SubnetType;
+        type: enums.vpc.SubnetType;
     }
 }
