@@ -23,7 +23,6 @@ export async function Repository_buildAndPushImage(
 ): Promise<schema.Repository_buildAndPushImageOutputs> {
     const { __self__, ...docker } = inputs;
     const repository = pulumi.output(inputs.__self__);
-    repository.repository.name;
     const image = pulumi
         .all([
             docker,
