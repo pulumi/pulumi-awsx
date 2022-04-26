@@ -2125,16 +2125,12 @@
                         "plain": true
                     },
                     "plain": true,
-                    "description": "A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Required."
-                },
-                "cidr": {
-                    "type": "string",
-                    "plain": true,
-                    "description": "The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16."
+                    "description": "A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region."
                 },
                 "cidrBlock": {
                     "type": "string",
-                    "description": "The IPv4 CIDR block for the VPC. CIDR can be explicitly set or it can be derived from IPAM using `ipv4_netmask_length`.\n"
+                    "plain": true,
+                    "description": "The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16."
                 },
                 "enableClassiclink": {
                     "type": "boolean",

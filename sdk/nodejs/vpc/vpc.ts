@@ -44,7 +44,6 @@ export class Vpc extends pulumi.ComponentResource {
         if (!opts.id) {
             resourceInputs["assignGeneratedIpv6CidrBlock"] = args ? args.assignGeneratedIpv6CidrBlock : undefined;
             resourceInputs["availabilityZoneNames"] = args ? args.availabilityZoneNames : undefined;
-            resourceInputs["cidr"] = args ? args.cidr : undefined;
             resourceInputs["cidrBlock"] = args ? args.cidrBlock : undefined;
             resourceInputs["enableClassiclink"] = args ? args.enableClassiclink : undefined;
             resourceInputs["enableClassiclinkDnsSupport"] = args ? args.enableClassiclinkDnsSupport : undefined;
@@ -80,17 +79,13 @@ export interface VpcArgs {
      */
     assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
     /**
-     * A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Required.
+     * A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
      */
     availabilityZoneNames?: string[];
     /**
      * The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
      */
-    cidr?: string;
-    /**
-     * The IPv4 CIDR block for the VPC. CIDR can be explicitly set or it can be derived from IPAM using `ipv4_netmask_length`.
-     */
-    cidrBlock?: pulumi.Input<string>;
+    cidrBlock?: string;
     /**
      * A boolean flag to enable/disable ClassicLink
      * for the VPC. Only valid in regions and accounts that support EC2 Classic.

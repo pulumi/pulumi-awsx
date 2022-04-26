@@ -7,6 +7,8 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
+from ._enums import *
+from ._inputs import *
 import pulumi_aws
 
 __all__ = ['VpcArgs', 'Vpc']
@@ -15,7 +17,8 @@ __all__ = ['VpcArgs', 'Vpc']
 class VpcArgs:
     def __init__(__self__, *,
                  assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
-                 cidr_block: Optional[pulumi.Input[str]] = None,
+                 availability_zone_names: Optional[Sequence[str]] = None,
+                 cidr_block: Optional[str] = None,
                  enable_classiclink: Optional[pulumi.Input[bool]] = None,
                  enable_classiclink_dns_support: Optional[pulumi.Input[bool]] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
@@ -27,11 +30,14 @@ class VpcArgs:
                  ipv6_cidr_block_network_border_group: Optional[pulumi.Input[str]] = None,
                  ipv6_ipam_pool_id: Optional[pulumi.Input[str]] = None,
                  ipv6_netmask_length: Optional[pulumi.Input[int]] = None,
+                 nat_gateways: Optional['NatGatewayConfigurationArgs'] = None,
+                 subnets_per_az: Optional[Sequence['SubnetConfigurationArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Vpc resource.
         :param pulumi.Input[bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
-        :param pulumi.Input[str] cidr_block: The IPv4 CIDR block for the VPC. CIDR can be explicitly set or it can be derived from IPAM using `ipv4_netmask_length`.
+        :param Sequence[str] availability_zone_names: A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         :param pulumi.Input[bool] enable_classiclink: A boolean flag to enable/disable ClassicLink
                for the VPC. Only valid in regions and accounts that support EC2 Classic.
                See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
@@ -46,10 +52,14 @@ class VpcArgs:
         :param pulumi.Input[str] ipv6_cidr_block_network_border_group: By default when an IPv6 CIDR is assigned to a VPC a default ipv6_cidr_block_network_border_group will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
         :param pulumi.Input[str] ipv6_ipam_pool_id: IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
         :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
+        :param 'NatGatewayConfigurationArgs' nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
+        :param Sequence['SubnetConfigurationArgs'] subnets_per_az: A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         if assign_generated_ipv6_cidr_block is not None:
             pulumi.set(__self__, "assign_generated_ipv6_cidr_block", assign_generated_ipv6_cidr_block)
+        if availability_zone_names is not None:
+            pulumi.set(__self__, "availability_zone_names", availability_zone_names)
         if cidr_block is not None:
             pulumi.set(__self__, "cidr_block", cidr_block)
         if enable_classiclink is not None:
@@ -74,6 +84,10 @@ class VpcArgs:
             pulumi.set(__self__, "ipv6_ipam_pool_id", ipv6_ipam_pool_id)
         if ipv6_netmask_length is not None:
             pulumi.set(__self__, "ipv6_netmask_length", ipv6_netmask_length)
+        if nat_gateways is not None:
+            pulumi.set(__self__, "nat_gateways", nat_gateways)
+        if subnets_per_az is not None:
+            pulumi.set(__self__, "subnets_per_az", subnets_per_az)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
 
@@ -90,15 +104,27 @@ class VpcArgs:
         pulumi.set(self, "assign_generated_ipv6_cidr_block", value)
 
     @property
-    @pulumi.getter(name="cidrBlock")
-    def cidr_block(self) -> Optional[pulumi.Input[str]]:
+    @pulumi.getter(name="availabilityZoneNames")
+    def availability_zone_names(self) -> Optional[Sequence[str]]:
         """
-        The IPv4 CIDR block for the VPC. CIDR can be explicitly set or it can be derived from IPAM using `ipv4_netmask_length`.
+        A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        """
+        return pulumi.get(self, "availability_zone_names")
+
+    @availability_zone_names.setter
+    def availability_zone_names(self, value: Optional[Sequence[str]]):
+        pulumi.set(self, "availability_zone_names", value)
+
+    @property
+    @pulumi.getter(name="cidrBlock")
+    def cidr_block(self) -> Optional[str]:
+        """
+        The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         """
         return pulumi.get(self, "cidr_block")
 
     @cidr_block.setter
-    def cidr_block(self, value: Optional[pulumi.Input[str]]):
+    def cidr_block(self, value: Optional[str]):
         pulumi.set(self, "cidr_block", value)
 
     @property
@@ -237,6 +263,30 @@ class VpcArgs:
         pulumi.set(self, "ipv6_netmask_length", value)
 
     @property
+    @pulumi.getter(name="natGateways")
+    def nat_gateways(self) -> Optional['NatGatewayConfigurationArgs']:
+        """
+        Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
+        """
+        return pulumi.get(self, "nat_gateways")
+
+    @nat_gateways.setter
+    def nat_gateways(self, value: Optional['NatGatewayConfigurationArgs']):
+        pulumi.set(self, "nat_gateways", value)
+
+    @property
+    @pulumi.getter(name="subnetsPerAz")
+    def subnets_per_az(self) -> Optional[Sequence['SubnetConfigurationArgs']]:
+        """
+        A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+        """
+        return pulumi.get(self, "subnets_per_az")
+
+    @subnets_per_az.setter
+    def subnets_per_az(self, value: Optional[Sequence['SubnetConfigurationArgs']]):
+        pulumi.set(self, "subnets_per_az", value)
+
+    @property
     @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
         """
@@ -255,7 +305,8 @@ class Vpc(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
-                 cidr_block: Optional[pulumi.Input[str]] = None,
+                 availability_zone_names: Optional[Sequence[str]] = None,
+                 cidr_block: Optional[str] = None,
                  enable_classiclink: Optional[pulumi.Input[bool]] = None,
                  enable_classiclink_dns_support: Optional[pulumi.Input[bool]] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
@@ -267,6 +318,8 @@ class Vpc(pulumi.ComponentResource):
                  ipv6_cidr_block_network_border_group: Optional[pulumi.Input[str]] = None,
                  ipv6_ipam_pool_id: Optional[pulumi.Input[str]] = None,
                  ipv6_netmask_length: Optional[pulumi.Input[int]] = None,
+                 nat_gateways: Optional[pulumi.InputType['NatGatewayConfigurationArgs']] = None,
+                 subnets_per_az: Optional[Sequence[pulumi.InputType['SubnetConfigurationArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
@@ -274,7 +327,8 @@ class Vpc(pulumi.ComponentResource):
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
-        :param pulumi.Input[str] cidr_block: The IPv4 CIDR block for the VPC. CIDR can be explicitly set or it can be derived from IPAM using `ipv4_netmask_length`.
+        :param Sequence[str] availability_zone_names: A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         :param pulumi.Input[bool] enable_classiclink: A boolean flag to enable/disable ClassicLink
                for the VPC. Only valid in regions and accounts that support EC2 Classic.
                See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
@@ -289,6 +343,8 @@ class Vpc(pulumi.ComponentResource):
         :param pulumi.Input[str] ipv6_cidr_block_network_border_group: By default when an IPv6 CIDR is assigned to a VPC a default ipv6_cidr_block_network_border_group will be set to the region of the VPC. This can be changed to restrict advertisement of public addresses to specific Network Border Groups such as LocalZones.
         :param pulumi.Input[str] ipv6_ipam_pool_id: IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
         :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
+        :param pulumi.InputType['NatGatewayConfigurationArgs'] nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
+        :param Sequence[pulumi.InputType['SubnetConfigurationArgs']] subnets_per_az: A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         ...
@@ -315,7 +371,8 @@ class Vpc(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
-                 cidr_block: Optional[pulumi.Input[str]] = None,
+                 availability_zone_names: Optional[Sequence[str]] = None,
+                 cidr_block: Optional[str] = None,
                  enable_classiclink: Optional[pulumi.Input[bool]] = None,
                  enable_classiclink_dns_support: Optional[pulumi.Input[bool]] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
@@ -327,6 +384,8 @@ class Vpc(pulumi.ComponentResource):
                  ipv6_cidr_block_network_border_group: Optional[pulumi.Input[str]] = None,
                  ipv6_ipam_pool_id: Optional[pulumi.Input[str]] = None,
                  ipv6_netmask_length: Optional[pulumi.Input[int]] = None,
+                 nat_gateways: Optional[pulumi.InputType['NatGatewayConfigurationArgs']] = None,
+                 subnets_per_az: Optional[Sequence[pulumi.InputType['SubnetConfigurationArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         if opts is None:
@@ -343,6 +402,7 @@ class Vpc(pulumi.ComponentResource):
             __props__ = VpcArgs.__new__(VpcArgs)
 
             __props__.__dict__["assign_generated_ipv6_cidr_block"] = assign_generated_ipv6_cidr_block
+            __props__.__dict__["availability_zone_names"] = availability_zone_names
             __props__.__dict__["cidr_block"] = cidr_block
             __props__.__dict__["enable_classiclink"] = enable_classiclink
             __props__.__dict__["enable_classiclink_dns_support"] = enable_classiclink_dns_support
@@ -355,6 +415,8 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["ipv6_cidr_block_network_border_group"] = ipv6_cidr_block_network_border_group
             __props__.__dict__["ipv6_ipam_pool_id"] = ipv6_ipam_pool_id
             __props__.__dict__["ipv6_netmask_length"] = ipv6_netmask_length
+            __props__.__dict__["nat_gateways"] = nat_gateways
+            __props__.__dict__["subnets_per_az"] = subnets_per_az
             __props__.__dict__["tags"] = tags
             __props__.__dict__["subnets"] = None
             __props__.__dict__["vpc"] = None

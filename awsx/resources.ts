@@ -16,8 +16,8 @@ import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
 import { EC2Service, EC2TaskDefinition, FargateService, FargateTaskDefinition } from "./ecs";
 import { ApplicationLoadBalancer } from "./lb";
-import { Vpc } from "./vpc";
 import { ConstructComponent, ResourceConstructor } from "./schema-types";
+import { Vpc } from "./vpc";
 
 const resources: ResourceConstructor = {
     "awsx:cloudtrail:Trail": (...args) => new Trail(...args),

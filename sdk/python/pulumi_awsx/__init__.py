@@ -15,34 +15,16 @@ if typing.TYPE_CHECKING:
     cloudtrail = __cloudtrail
     import pulumi_awsx.ecs as __ecs
     ecs = __ecs
-<<<<<<< HEAD
     import pulumi_awsx.lb as __lb
     lb = __lb
-=======
-<<<<<<< HEAD
-=======
-    import pulumi_awsx.iam as __iam
-    iam = __iam
-    import pulumi_awsx.s3 as __s3
-    s3 = __s3
     import pulumi_awsx.vpc as __vpc
     vpc = __vpc
->>>>>>> bef5e8c (WIP)
->>>>>>> 226f527 (WIP)
 else:
     awsx = _utilities.lazy_import('pulumi_awsx.awsx')
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
     ecs = _utilities.lazy_import('pulumi_awsx.ecs')
-<<<<<<< HEAD
     lb = _utilities.lazy_import('pulumi_awsx.lb')
-=======
-<<<<<<< HEAD
-=======
-    iam = _utilities.lazy_import('pulumi_awsx.iam')
-    s3 = _utilities.lazy_import('pulumi_awsx.s3')
     vpc = _utilities.lazy_import('pulumi_awsx.vpc')
->>>>>>> bef5e8c (WIP)
->>>>>>> 226f527 (WIP)
 
 _utilities.register(
     resource_modules="""
@@ -68,17 +50,18 @@ _utilities.register(
  },
  {
   "pkg": "awsx",
-<<<<<<< HEAD
   "mod": "lb",
   "fqn": "pulumi_awsx.lb",
   "classes": {
    "awsx:lb:ApplicationLoadBalancer": "ApplicationLoadBalancer"
-=======
+  }
+ },
+ {
+  "pkg": "awsx",
   "mod": "vpc",
   "fqn": "pulumi_awsx.vpc",
   "classes": {
    "awsx:vpc:Vpc": "Vpc"
->>>>>>> 226f527 (WIP)
   }
  }
 ]

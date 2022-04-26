@@ -19,7 +19,7 @@ export abstract class Trail<TData = any> extends pulumi.ComponentResource<TData>
     public bucket?: aws.s3.Bucket | pulumi.Output<aws.s3.Bucket>;
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
     public trail!: aws.cloudtrail.Trail | pulumi.Output<aws.cloudtrail.Trail>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:cloudtrail:Trail", name, {}, opts); }
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:cloudtrail:Trail", name, { name, args, opts }, opts); }
 }
 export interface TrailArgs {
     readonly advancedEventSelectors?: pulumi.Input<pulumi.Input<aws.types.input.cloudtrail.TrailAdvancedEventSelector>[]>;
@@ -41,7 +41,7 @@ export interface TrailArgs {
 export abstract class EC2Service<TData = any> extends pulumi.ComponentResource<TData> {
     public service!: aws.ecs.Service | pulumi.Output<aws.ecs.Service>;
     public taskDefinition?: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:EC2Service", name, {}, opts); }
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:EC2Service", name, { name, args, opts }, opts); }
 }
 export interface EC2ServiceArgs {
     readonly cluster?: pulumi.Input<string>;
@@ -75,7 +75,7 @@ export abstract class EC2TaskDefinition<TData = any> extends pulumi.ComponentRes
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
     public taskDefinition!: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     public taskRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:EC2TaskDefinition", name, {}, opts); }
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:EC2TaskDefinition", name, { name, args, opts }, opts); }
 }
 export interface EC2TaskDefinitionArgs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;
@@ -101,7 +101,7 @@ export interface EC2TaskDefinitionArgs {
 export abstract class FargateService<TData = any> extends pulumi.ComponentResource<TData> {
     public service!: aws.ecs.Service | pulumi.Output<aws.ecs.Service>;
     public taskDefinition?: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:FargateService", name, {}, opts); }
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:FargateService", name, { name, args, opts }, opts); }
 }
 export interface FargateServiceArgs {
     readonly cluster?: pulumi.Input<string>;
@@ -134,7 +134,7 @@ export abstract class FargateTaskDefinition<TData = any> extends pulumi.Componen
     public logGroup?: aws.cloudwatch.LogGroup | pulumi.Output<aws.cloudwatch.LogGroup>;
     public taskDefinition!: aws.ecs.TaskDefinition | pulumi.Output<aws.ecs.TaskDefinition>;
     public taskRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:FargateTaskDefinition", name, {}, opts); }
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:ecs:FargateTaskDefinition", name, { name, args, opts }, opts); }
 }
 export interface FargateTaskDefinitionArgs {
     readonly container?: TaskDefinitionContainerDefinitionInputs;
@@ -162,7 +162,7 @@ export abstract class ApplicationLoadBalancer<TData = any> extends pulumi.Compon
     public listeners?: aws.lb.Listener[] | pulumi.Output<aws.lb.Listener[]>;
     public loadBalancer!: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
     public vpcId?: string | pulumi.Output<string>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:lb:ApplicationLoadBalancer", name, {}, opts); }
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:lb:ApplicationLoadBalancer", name, { name, args, opts }, opts); }
 }
 export interface ApplicationLoadBalancerArgs {
     readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
@@ -190,13 +190,12 @@ export interface ApplicationLoadBalancerArgs {
 export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
     public subnets?: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;
     public vpc?: aws.ec2.Vpc | pulumi.Output<aws.ec2.Vpc>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:vpc:Vpc", name, {}, opts); }
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) { super("awsx:vpc:Vpc", name, { name, args, opts }, opts); }
 }
 export interface VpcArgs {
     readonly assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
     readonly availabilityZoneNames?: string[];
-    readonly cidr?: string;
-    readonly cidrBlock?: pulumi.Input<string>;
+    readonly cidrBlock?: string;
     readonly enableClassiclink?: pulumi.Input<boolean>;
     readonly enableClassiclinkDnsSupport?: pulumi.Input<boolean>;
     readonly enableDnsHostnames?: pulumi.Input<boolean>;

@@ -58,11 +58,23 @@ namespace Pulumi.Awsx.Vpc
         [Input("assignGeneratedIpv6CidrBlock")]
         public Input<bool>? AssignGeneratedIpv6CidrBlock { get; set; }
 
+        [Input("availabilityZoneNames")]
+        private List<string>? _availabilityZoneNames;
+
         /// <summary>
-        /// The IPv4 CIDR block for the VPC. CIDR can be explicitly set or it can be derived from IPAM using `ipv4_netmask_length`.
+        /// A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        /// </summary>
+        public List<string> AvailabilityZoneNames
+        {
+            get => _availabilityZoneNames ?? (_availabilityZoneNames = new List<string>());
+            set => _availabilityZoneNames = value;
+        }
+
+        /// <summary>
+        /// The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         /// </summary>
         [Input("cidrBlock")]
-        public Input<string>? CidrBlock { get; set; }
+        public string? CidrBlock { get; set; }
 
         /// <summary>
         /// A boolean flag to enable/disable ClassicLink
@@ -132,6 +144,24 @@ namespace Pulumi.Awsx.Vpc
         /// </summary>
         [Input("ipv6NetmaskLength")]
         public Input<int>? Ipv6NetmaskLength { get; set; }
+
+        /// <summary>
+        /// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
+        /// </summary>
+        [Input("natGateways")]
+        public Inputs.NatGatewayConfigurationArgs? NatGateways { get; set; }
+
+        [Input("subnetsPerAz")]
+        private List<Inputs.SubnetConfigurationArgs>? _subnetsPerAz;
+
+        /// <summary>
+        /// A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+        /// </summary>
+        public List<Inputs.SubnetConfigurationArgs> SubnetsPerAz
+        {
+            get => _subnetsPerAz ?? (_subnetsPerAz = new List<Inputs.SubnetConfigurationArgs>());
+            set => _subnetsPerAz = value;
+        }
 
         [Input("tags")]
         private InputMap<string>? _tags;

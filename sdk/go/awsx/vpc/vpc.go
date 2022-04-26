@@ -38,7 +38,9 @@ func NewVpc(ctx *pulumi.Context,
 type vpcArgs struct {
 	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
 	AssignGeneratedIpv6CidrBlock *bool `pulumi:"assignGeneratedIpv6CidrBlock"`
-	// The IPv4 CIDR block for the VPC. CIDR can be explicitly set or it can be derived from IPAM using `ipv4_netmask_length`.
+	// A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+	AvailabilityZoneNames []string `pulumi:"availabilityZoneNames"`
+	// The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
 	CidrBlock *string `pulumi:"cidrBlock"`
 	// A boolean flag to enable/disable ClassicLink
 	// for the VPC. Only valid in regions and accounts that support EC2 Classic.
@@ -65,6 +67,10 @@ type vpcArgs struct {
 	Ipv6IpamPoolId *string `pulumi:"ipv6IpamPoolId"`
 	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
 	Ipv6NetmaskLength *int `pulumi:"ipv6NetmaskLength"`
+	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
+	NatGateways *NatGatewayConfiguration `pulumi:"natGateways"`
+	// A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+	SubnetsPerAz []SubnetConfiguration `pulumi:"subnetsPerAz"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 }
@@ -73,8 +79,10 @@ type vpcArgs struct {
 type VpcArgs struct {
 	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
 	AssignGeneratedIpv6CidrBlock pulumi.BoolPtrInput
-	// The IPv4 CIDR block for the VPC. CIDR can be explicitly set or it can be derived from IPAM using `ipv4_netmask_length`.
-	CidrBlock pulumi.StringPtrInput
+	// A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+	AvailabilityZoneNames []string
+	// The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
+	CidrBlock *string
 	// A boolean flag to enable/disable ClassicLink
 	// for the VPC. Only valid in regions and accounts that support EC2 Classic.
 	// See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
@@ -100,6 +108,10 @@ type VpcArgs struct {
 	Ipv6IpamPoolId pulumi.StringPtrInput
 	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
 	Ipv6NetmaskLength pulumi.IntPtrInput
+	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
+	NatGateways *NatGatewayConfigurationArgs
+	// A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+	SubnetsPerAz []SubnetConfigurationArgs
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 }

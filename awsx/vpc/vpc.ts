@@ -24,28 +24,37 @@ interface VpcData {
 
 export class Vpc extends schema.Vpc<VpcData> {
     constructor(name: string, args: schema.VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
-        super(name, {}, opts);
+        super(name, args, opts);
 
         const data = pulumi.output(this.getData());
         this.vpc = data.vpc;
     }
 
     protected async initialize(props: { name: string, args: schema.VpcArgs, opts: pulumi.ComponentResourceOptions }) {
-        pulumi.log.debug(`props = ${JSON.stringify(props)}`);
-
         const {name, args} = props;
         const availabilityZones = args.availabilityZoneNames ?? await this.getDefaultAzs();
 
         const natGatewayStrategy: schema.NatGatewayStrategyInputs = args.natGateways?.strategy ?? "OnePerAz";
         const eips = args.natGateways?.elasticIpAllocationIds;
 
-        const vpcCidr = args.cidr ?? "10.0.0.0/16";
+        const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
         const subnetSpecs = args.subnetsPerAz;
 
         validateNatGatewayStrategy(natGatewayStrategy, eips, availabilityZones);
 
-        const vpc = new aws.ec2.Vpc(name, args, {parent: this});
-        const subnets = this.getSubnets(vpc, vpcCidr, availabilityZones, subnetSpecs);
+        const vpc = new aws.ec2.Vpc(
+            name,
+            {
+                ...args,
+                cidrBlock,
+                tags: {
+                    ...args.tags,
+                    Name: name,
+                },
+            },
+            {parent: this},
+        );
+        const subnets = this.getSubnets(vpc, name, cidrBlock, availabilityZones, subnetSpecs);
 
         // TODO: Create IGW only if any subnet is non-isolated
 
@@ -63,24 +72,23 @@ export class Vpc extends schema.Vpc<VpcData> {
         return result.names.slice(0, 2);
     }
 
-    getSubnets(vpc: aws.ec2.Vpc, vpcCidr: string, azs: string[], inputs?: schema.SubnetConfigurationInputs[]): aws.ec2.Subnet[] {
-        const specs = getSubnetSpecs(vpcCidr, azs, inputs);
+    getSubnets(vpc: aws.ec2.Vpc, vpcName: string, vpcCidr: string, azs: string[], inputs?: schema.SubnetConfigurationInputs[]): aws.ec2.Subnet[] {
+        const specs = getSubnetSpecs(vpcName, vpcCidr, azs, inputs);
         const subnets: aws.ec2.Subnet[] = [];
 
         for (let i = 0; i < azs.length; i++) {
             specs
                 .filter(x => x.azName === azs[i])
                 .forEach(spec => {
-                    const name = `${spec.name}-${i + 1}`;
-                    const subnet = new aws.ec2.Subnet(name, {
+                    const subnet = new aws.ec2.Subnet(spec.subnetName, {
                         vpcId: vpc.id,
                         availabilityZone: spec.azName,
                         mapPublicIpOnLaunch: (spec.type === "Public"),
                         cidrBlock: spec.cidrBlock,
                         tags: {
-                            "Name": name,
+                            "Name": spec.subnetName,
                         },
-                    });
+                    }, { parent: this});
                     subnets.push(subnet);
                 });
         }

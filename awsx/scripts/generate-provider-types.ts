@@ -263,7 +263,23 @@ const genResourceAbstractType = (
                     [
                         ts.factory.createStringLiteral(typeToken),
                         ts.factory.createIdentifier("name"),
-                        ts.factory.createObjectLiteralExpression([]),
+                        ts.factory.createObjectLiteralExpression(
+                            [
+                                ts.factory.createShorthandPropertyAssignment(
+                                    ts.factory.createIdentifier("name"),
+                                    undefined,
+                                ),
+                                ts.factory.createShorthandPropertyAssignment(
+                                    ts.factory.createIdentifier("args"),
+                                    undefined,
+                                ),
+                                ts.factory.createShorthandPropertyAssignment(
+                                    ts.factory.createIdentifier("opts"),
+                                    undefined,
+                                ),
+                            ],
+                            false,
+                        ),
                         ts.factory.createIdentifier("opts"),
                     ],
                 ),

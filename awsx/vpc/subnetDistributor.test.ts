@@ -13,47 +13,54 @@
 // limitations under the License.
 
 import { SubnetTypeInputs } from "../schema-types";
-import { getSubnetSpecs } from "./subnetDistributor";
+import { getSubnetSpecs, SubnetSpec } from "./subnetDistributor";
 
 describe("getSubnetSpecs", () => {
     const azs = ["us-east-1a", "us-east-1b", "us-east-1c"];
     const vpcCidr = "10.0.0.0/16";
-    const defaultSubnets = [
-        {
-            type: "Private",
-            cidrBlock: "10.0.0.0/19",
-            azName: "us-east-1a",
-        },
-        {
-            type: "Private",
-            cidrBlock: "10.0.64.0/19",
-            azName: "us-east-1b",
-        },
-        {
-            type: "Private",
-            cidrBlock: "10.0.128.0/19",
-            azName: "us-east-1c",
-        },
-        {
-            type: "Public",
-            cidrBlock: "10.0.32.0/20",
-            azName: "us-east-1a",
-        },
-        {
-            type: "Public",
-            cidrBlock: "10.0.96.0/20",
-            azName: "us-east-1b",
-        },
-        {
-            type: "Public",
-            cidrBlock: "10.0.160.0/20",
-            azName: "us-east-1c",
-        },
-    ];
+    const vpcName = "vpcname";
 
     it("should return the default subnets with no parameters and 3 AZs", () => {
-       const result = getSubnetSpecs("10.0.0.0/16", azs);
-       expect(result).toEqual(defaultSubnets);
+       const result = getSubnetSpecs(vpcName, vpcCidr, azs);
+       const expected: SubnetSpec[] = [
+            {
+                type: "Private",
+                cidrBlock: "10.0.0.0/19",
+                azName: "us-east-1a",
+                subnetName: "vpcname-private-1",
+            },
+            {
+                type: "Private",
+                cidrBlock: "10.0.64.0/19",
+                azName: "us-east-1b",
+                subnetName: "vpcname-private-2",
+            },
+            {
+                type: "Private",
+                cidrBlock: "10.0.128.0/19",
+                azName: "us-east-1c",
+                subnetName: "vpcname-private-3",
+            },
+            {
+                type: "Public",
+                cidrBlock: "10.0.32.0/20",
+                azName: "us-east-1a",
+                subnetName: "vpcname-public-1",
+            },
+            {
+                type: "Public",
+                cidrBlock: "10.0.96.0/20",
+                azName: "us-east-1b",
+                subnetName: "vpcname-public-2",
+            },
+            {
+                type: "Public",
+                cidrBlock: "10.0.160.0/20",
+                azName: "us-east-1c",
+                subnetName: "vpcname-public-3",
+            },
+        ];
+       expect(result).toEqual(expected);
     });
 
     describe
@@ -75,20 +82,23 @@ describe("getSubnetSpecs", () => {
                     type: type,
                     cidrBlock: "10.0.0.0/19",
                     azName: "us-east-1a",
+                    name: "vpcname-foo-1",
                 },
                 {
                     type: type,
                     cidrBlock: "10.0.64.0/19",
                     azName: "us-east-1b",
+                    name: "vpcname-foo-2",
                 },
                 {
                     type: type,
                     cidrBlock: "10.0.128.0/19",
                     azName: "us-east-1c",
+                    name: "vpcname-foo-3",
                 },
             ];
 
-            expect(getSubnetSpecs(vpcCidr, azs, inputs)).toEqual(expected);
+            expect(getSubnetSpecs(vpcName, vpcCidr, azs, inputs)).toEqual(expected);
         });
 
     describe
@@ -115,34 +125,40 @@ describe("getSubnetSpecs", () => {
                     type: slash19Type,
                     cidrBlock: "10.0.0.0/19",
                     azName: "us-east-1a",
+                    name: "vpcname-foo-1",
                 },
                 {
                     type: slash19Type,
                     cidrBlock: "10.0.64.0/19",
                     azName: "us-east-1b",
+                    name: "vpcname-foo-2",
                 },
                 {
                     type: slash19Type,
                     cidrBlock: "10.0.128.0/19",
                     azName: "us-east-1c",
+                    name: "vpcname-foo-3",
                 },
                 {
                     type: slash20Type,
                     cidrBlock: "10.0.32.0/20",
                     azName: "us-east-1a",
+                    name: "vpcname-bar-1",
                 },
                 {
                     type: slash20Type,
                     cidrBlock: "10.0.96.0/20",
                     azName: "us-east-1b",
+                    name: "vpcname-bar-2",
                 },
                 {
                     type: slash20Type,
                     cidrBlock: "10.0.160.0/20",
                     azName: "us-east-1c",
+                    name: "vpcname-bar-3",
                 },
             ];
 
-            expect(getSubnetSpecs(vpcCidr, azs, inputs)).toEqual(expected);
+            expect(getSubnetSpecs(vpcName, vpcCidr, azs, inputs)).toEqual(expected);
         });
 });

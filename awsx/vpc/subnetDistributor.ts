@@ -16,13 +16,14 @@
 
 import { SubnetConfigurationInputs, SubnetTypeInputs } from "../schema-types";
 
-interface SubnetSpec {
+export interface SubnetSpec {
     cidrBlock: string;
     type: SubnetTypeInputs;
     azName: string;
+    subnetName: string;
 }
 
-export function getSubnetSpecs(vpcCidr: string, azNames: string[], subnetInputs?: SubnetConfigurationInputs[]) {
+export function getSubnetSpecs(vpcName: string, vpcCidr: string, azNames: string[], subnetInputs?: SubnetConfigurationInputs[]): SubnetSpec[] {
     const newBitsPerAZ = Math.log2(nextPow2(azNames.length));
 
     const azBases: string[] = [];
@@ -31,7 +32,7 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], subnetInputs?
     }
 
     if (subnetInputs === undefined) {
-        return generateDefaultSubnets(vpcCidr, azNames, azBases);
+        return generateDefaultSubnets(vpcName, vpcCidr, azNames, azBases);
     }
 
     const ipAddress = require("ip-address");
@@ -51,6 +52,7 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], subnetInputs?
                 azName: azNames[i],
                 cidrBlock: privateSubnetCidrBlock,
                 type: "Private",
+                subnetName: `${vpcName}-${privateSubnet.name}-${i + 1}`,
             });
         });
 
@@ -69,6 +71,7 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], subnetInputs?
                 azName: azNames[i],
                 cidrBlock: publicSubnetCidrBlock,
                 type: "Public",
+                subnetName: `${vpcName}-${publicSubnet.name}-${i + 1}`,
             });
         });
 
@@ -98,6 +101,7 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], subnetInputs?
                 azName: azNames[i],
                 cidrBlock: isolatedSubnetCidrBlock,
                 type: "Isolated",
+                subnetName: `${vpcName}-${isolatedSubnet.name}-${i + 1}`,
             });
         });
     }
@@ -105,7 +109,7 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], subnetInputs?
     return Array.prototype.concat(privateSubnets, publicSubnets, isolatedSubnets);
 }
 
-function generateDefaultSubnets(vpcCidr: string, azNames: string[], azBases: string[]): SubnetSpec[] {
+function generateDefaultSubnets(vpcName: string, vpcCidr: string, azNames: string[], azBases: string[]): SubnetSpec[] {
     const privateSubnets: SubnetSpec[] = [];
 
     for (let i = 0; i < azNames.length; i++) {
@@ -113,6 +117,7 @@ function generateDefaultSubnets(vpcCidr: string, azNames: string[], azBases: str
             azName: azNames[i],
             cidrBlock: cidrSubnetV4(azBases[i], 1, 0),
             type: "Private",
+            subnetName: `${vpcName}-private-${i + 1}`,
         });
     }
 
@@ -126,6 +131,7 @@ function generateDefaultSubnets(vpcCidr: string, azNames: string[], azBases: str
             azName: azNames[i],
             cidrBlock: cidrSubnetV4(splitBase, 1, 0),
             type: "Public",
+            subnetName: `${vpcName}-public-${i + 1}`,
         });
     }
 

@@ -44,12 +44,10 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	awsVpcResource := awsSpec.Resources["aws:ec2/vpc:Vpc"]
 	inputProperties := map[string]schema.PropertySpec{
 		availabilityZoneNames: {
-			Description: fmt.Sprintf("A list of availability zones to which the subnets defined in %s will be deployed. Required.", subnetsPerAz),
-			// TODO: Make this optional if possible. Need to resolve whether we can use initialize() in the generated TS
-			// Description: fmt.Sprintf("A list of availability zones to which the subnets defined in %s will be deployed. Optional, defaults to the first 3 AZs in the current region.", subnetsPerAz),
-			TypeSpec: plainArrayOfPlainStrings(),
+			Description: fmt.Sprintf("A list of availability zones to which the subnets defined in %s will be deployed. Optional, defaults to the first 3 AZs in the current region.", subnetsPerAz),
+			TypeSpec:    plainArrayOfPlainStrings(),
 		},
-		"cidr": {
+		"cidrBlock": {
 			Description: "The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.",
 			TypeSpec:    plainString(),
 		},
@@ -66,6 +64,13 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		},
 	}
 	for k, v := range awsVpcResource.InputProperties {
+		// We redefine some of the aws.Vpc properties above as plain types because they have default values in the
+		// provider implementation. In this case, we should skip the property on the raw VPC resource:
+		_, containsKey := inputProperties[k]
+		if containsKey {
+			continue
+		}
+
 		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", awsRef("#/types/aws:"))
 	}
 
