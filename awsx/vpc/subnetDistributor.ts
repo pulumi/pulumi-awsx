@@ -36,9 +36,6 @@ export function getSubnetSpecs(vpcCidr: string, azNames: string[], specs?: Subne
 
     const ipAddress = require("ip-address");
     const ipv4 = new ipAddress.Address4(azBases[0]);
-    if (!ipv4.isValid()) {
-        throw new Error(`Invalid IP address range: ${azBases[0]}`);
-    }
     const baseSubnetMask = ipv4.subnetMask;
 
     const privateSubnets: SubnetSpec[] = [];

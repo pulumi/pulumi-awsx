@@ -15,6 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
+import { getSubnetSpecs } from "./subnetDistributor";
 
 interface VpcData {
     vpc: aws.ec2.Vpc;
@@ -60,27 +61,26 @@ export class Vpc extends schema.Vpc<VpcData> {
         return result.names.slice(0, 2);
     }
 
-    getSubnets(vpc: aws.ec2.Vpc, azs: string[], subnetSpecs: schema.SubnetConfigurationInputs[]): aws.ec2.Subnet[] {
+    getSubnets(vpc: aws.ec2.Vpc, vpcCidr: string, azs: string[], inputs: schema.SubnetConfigurationInputs[]): aws.ec2.Subnet[] {
+        const specs = getSubnetSpecs(vpcCidr, azs, inputs);
         const subnets: aws.ec2.Subnet[] = [];
 
-        const subnetCidrBlocks = [
-            "10.0.0.0/19",
-            "10.0.32.0/19",
-            "10.0.64.0/19",
-            "10.0.96.0/20",
-            "10.0.112.0/20",
-            "10.0.128.0/20",
-        ];
-
         for (let i = 0; i < azs.length; i++) {
-            subnetSpecs.forEach(subnet => {
-                const name = `${subnet.name}-${i}`;
-                subnets.push(new aws.ec2.Subnet(name, {
-                    vpcId: vpc.id,
-                    availabilityZone: azs[i],
-                    cidrBlock: "",
-                }));
-            });
+            specs
+                .filter(x => x.azName === azs[i])
+                .forEach(spec => {
+                    const name = `${spec.name}-${i + 1}`;
+                    const subnet = new aws.ec2.Subnet(name, {
+                        vpcId: vpc.id,
+                        availabilityZone: spec.azName,
+                        mapPublicIpOnLaunch: (spec.type === "Public"),
+                        cidrBlock: spec.cidrBlock,
+                        tags: {
+                            "Name": name,
+                        },
+                    });
+                    subnets.push(subnet);
+                });
         }
 
         return subnets;
