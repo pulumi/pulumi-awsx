@@ -265,36 +265,65 @@ const genResourceAbstractType = (
                 ts.factory.createObjectLiteralExpression(undefined),
             ),
         ],
-        ts.factory.createBlock([
-            ts.factory.createExpressionStatement(
-                ts.factory.createCallExpression(
-                    ts.factory.createSuper(),
-                    undefined,
-                    [
-                        ts.factory.createStringLiteral(typeToken),
-                        ts.factory.createIdentifier("name"),
-                        ts.factory.createObjectLiteralExpression(
-                            [
-                                ts.factory.createShorthandPropertyAssignment(
-                                    ts.factory.createIdentifier("name"),
-                                    undefined,
-                                ),
-                                ts.factory.createShorthandPropertyAssignment(
-                                    ts.factory.createIdentifier("args"),
-                                    undefined,
-                                ),
-                                ts.factory.createShorthandPropertyAssignment(
+        ts.factory.createBlock(
+            [
+                ts.factory.createExpressionStatement(
+                    ts.factory.createCallExpression(
+                        ts.factory.createSuper(),
+                        undefined,
+                        [
+                            ts.factory.createStringLiteral(typeToken),
+                            ts.factory.createIdentifier("name"),
+                            ts.factory.createConditionalExpression(
+                                ts.factory.createPropertyAccessExpression(
                                     ts.factory.createIdentifier("opts"),
-                                    undefined,
+                                    ts.factory.createIdentifier("urn"),
                                 ),
-                            ],
-                            false,
-                        ),
-                        ts.factory.createIdentifier("opts"),
-                    ],
+                                ts.factory.createToken(
+                                    ts.SyntaxKind.QuestionToken,
+                                ),
+                                ts.factory.createObjectLiteralExpression(
+                                    Object.keys(resource.properties as any).map(
+                                        (prop) =>
+                                            ts.factory.createPropertyAssignment(
+                                                ts.factory.createIdentifier(
+                                                    prop,
+                                                ),
+                                                ts.factory.createIdentifier(
+                                                    "undefined",
+                                                ),
+                                            ),
+                                    ),
+                                    false,
+                                ),
+                                ts.factory.createToken(
+                                    ts.SyntaxKind.ColonToken,
+                                ),
+                                ts.factory.createObjectLiteralExpression(
+                                    [
+                                        ts.factory.createShorthandPropertyAssignment(
+                                            ts.factory.createIdentifier("name"),
+                                            undefined,
+                                        ),
+                                        ts.factory.createShorthandPropertyAssignment(
+                                            ts.factory.createIdentifier("args"),
+                                            undefined,
+                                        ),
+                                        ts.factory.createShorthandPropertyAssignment(
+                                            ts.factory.createIdentifier("opts"),
+                                            undefined,
+                                        ),
+                                    ],
+                                    false,
+                                ),
+                            ),
+                            ts.factory.createIdentifier("opts"),
+                        ],
+                    ),
                 ),
-            ),
-        ]),
+            ],
+            true,
+        ),
     );
     const resourceType = ts.factory.createClassDeclaration(
         undefined,
