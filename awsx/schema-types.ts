@@ -13,6 +13,7 @@ export type ResourceConstructor = {
     readonly "awsx:ecs:FargateService": ConstructComponent<FargateService>;
     readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
     readonly "awsx:lb:ApplicationLoadBalancer": ConstructComponent<ApplicationLoadBalancer>;
+    readonly "awsx:vpc:DefaultVpc": ConstructComponent<DefaultVpc>;
     readonly "awsx:vpc:Vpc": ConstructComponent<Vpc>;
 };
 export type Functions = {
@@ -218,6 +219,16 @@ export interface ApplicationLoadBalancerArgs {
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
     readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export abstract class DefaultVpc<TData = any> extends pulumi.ComponentResource<TData> {
+    public privateSubnetIds!: string[] | pulumi.Output<string[]>;
+    public publicSubnetIds!: string[] | pulumi.Output<string[]>;
+    public vpcId!: string | pulumi.Output<string>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:vpc:DefaultVpc", name, opts.urn ? { privateSubnetIds: undefined, publicSubnetIds: undefined, vpcId: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface DefaultVpcArgs {
 }
 export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
     public subnets?: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;

@@ -23,6 +23,7 @@ func generateVpc(awsSpec schema.PackageSpec) schema.PackageSpec {
 	packageSpec := schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
 			"awsx:vpc:Vpc": vpcResource(awsSpec),
+			"awsx:vpc:DefaultVpc": defaultVpcResource(awsSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx:vpc:NatGatewayStrategy":      natGatewayStrategyType(),
@@ -205,6 +206,40 @@ func natGatewayStrategyType() schema.ComplexTypeSpec {
 				Value:       "OnePerAz",
 				Description: "Create a NAT Gateway in each availability zone. This is the recommended configuration for production infrastructure.",
 			},
+		},
+	}
+}
+
+func defaultVpcResource(spec schema.PackageSpec) schema.ResourceSpec {
+	return schema.ResourceSpec{
+		IsComponent:        true,
+		ObjectTypeSpec:     schema.ObjectTypeSpec{
+			Description: "Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.",
+			Properties: map[string]schema.PropertySpec{
+				"vpcId": {
+					Description: "The VPC ID for the default VPC",
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
+				"publicSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+				"privateSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+			},
+			Required: []string{"vpcId", "publicSubnetIds", "privateSubnetIds"},
 		},
 	}
 }

@@ -2269,6 +2269,33 @@
             },
             "isComponent": true
         },
+        "awsx:vpc:DefaultVpc": {
+            "description": "Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.",
+            "properties": {
+                "privateSubnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publicSubnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "vpcId": {
+                    "type": "string",
+                    "description": "The VPC ID for the default VPC"
+                }
+            },
+            "required": [
+                "vpcId",
+                "publicSubnetIds",
+                "privateSubnetIds"
+            ],
+            "isComponent": true
+        },
         "awsx:vpc:Vpc": {
             "properties": {
                 "subnets": {

@@ -28,7 +28,7 @@ import {
     Functions,
     ResourceConstructor,
 } from "./schema-types";
-import { Vpc } from "./vpc";
+import { Vpc, DefaultVpc } from "./vpc";
 import { getDefaultVpc } from "./vpc/getDefaultVpc";
 
 const resources: ResourceConstructor = {
@@ -41,6 +41,7 @@ const resources: ResourceConstructor = {
     "awsx:lb:ApplicationLoadBalancer": (...args) =>
         new ApplicationLoadBalancer(...args),
     "awsx:vpc:Vpc": (...args) => new Vpc(...args),
+    "awsx:vpc:DefaultVpc": (...args) => new DefaultVpc(...args),
     "awsx:ecr:Repository": (...args) => new Repository(...args),
 };
 

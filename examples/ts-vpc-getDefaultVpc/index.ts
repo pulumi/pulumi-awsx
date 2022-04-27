@@ -15,4 +15,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as awsx from "@pulumi/awsx";
 
-const defaultVpc = pulumi.output(awsx.vpc.getDefaultVpc());
+const defaultVpc = new awsx.vpc.DefaultVpc("default-vpc");
+
+export const { vpcId, publicSubnetIds } = defaultVpc;
