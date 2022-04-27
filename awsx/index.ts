@@ -14,11 +14,25 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { readFileSync } from "fs";
-import { construct } from "./resources";
+import { Repository } from "./ecr";
+import { construct, functions } from "./resources";
 import { resourceToConstructResult } from "./utils";
 
 class Provider implements pulumi.provider.Provider {
-    constructor(readonly version: string, readonly schema: string) {}
+    constructor(readonly version: string, readonly schema: string) {
+        // Register any resources that can come back as resource references that need to be rehydrated.
+        pulumi.runtime.registerResourceModule("awsx", "ecr", {
+            version: this.version,
+            construct: (name, type, urn) => {
+                switch (type) {
+                    case "awsx:ecr:Repository":
+                        return new Repository(name, <any>undefined, { urn });
+                    default:
+                        throw new Error(`unknown resource type ${type}`);
+                }
+            },
+        });
+    }
 
     async construct(
         name: string,
@@ -31,6 +45,20 @@ class Provider implements pulumi.provider.Provider {
             throw new Error(`unknown resource type ${type}`);
         }
         return resourceToConstructResult(resource);
+    }
+
+    async call(
+        token: string,
+        inputs: pulumi.Inputs,
+    ): Promise<pulumi.provider.InvokeResult> {
+        const untypedFunctions: Record<string, (inputs: any) => Promise<any>> =
+            functions;
+        const handler = untypedFunctions[token];
+        if (!handler) {
+            throw new Error(`unknown method ${token}`);
+        }
+        const outputs = await handler(inputs);
+        return { outputs };
     }
 }
 

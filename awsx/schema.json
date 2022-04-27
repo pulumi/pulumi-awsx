@@ -454,6 +454,122 @@
             },
             "type": "object"
         },
+        "awsx:ecr:DockerBuild": {
+            "description": "Arguments for building a docker image",
+            "properties": {
+                "args": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction."
+                },
+                "cacheFrom": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Images to consider as cache sources"
+                },
+                "dockerfile": {
+                    "type": "string",
+                    "description": "dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context."
+                },
+                "env": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`."
+                },
+                "extraOptions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`."
+                },
+                "path": {
+                    "type": "string",
+                    "description": "Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating."
+                },
+                "target": {
+                    "type": "string",
+                    "description": "The target of the dockerfile to build"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecr:lifecyclePolicy": {
+            "description": "Simplified lifecycle policy model consisting of one or more rules that determine which images in a repository should be expired. See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for more details.",
+            "properties": {
+                "rules": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:ecr:lifecyclePolicyRule"
+                    },
+                    "description": "Specifies the rules to determine how images should be retired from this repository. Rules are ordered from lowest priority to highest.  If there is a rule with a `selection` value of `any`, then it will have the highest priority."
+                },
+                "skip": {
+                    "type": "boolean",
+                    "plain": true,
+                    "description": "Skips creation of the policy if set to `true`."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:ecr:lifecyclePolicyRule": {
+            "description": "A lifecycle policy rule that determine which images in a repository should be expired.",
+            "properties": {
+                "description": {
+                    "type": "string",
+                    "description": "Describes the purpose of a rule within a lifecycle policy."
+                },
+                "maximumAgeLimit": {
+                    "type": "number",
+                    "description": "The maximum age limit (in days) for your images. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided."
+                },
+                "maximumNumberOfImages": {
+                    "type": "number",
+                    "description": "The maximum number of images that you want to retain in your repository. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided."
+                },
+                "tagPrefixList": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of image tag prefixes on which to take action with your lifecycle policy. Only used if you specified \"tagStatus\": \"tagged\". For example, if your images are tagged as prod, prod1, prod2, and so on, you would use the tag prefix prod to specify all of them. If you specify multiple tags, only the images with all specified tags are selected."
+                },
+                "tagStatus": {
+                    "$ref": "#/types/awsx:ecr:lifecycleTagStatus",
+                    "description": "Determines whether the lifecycle policy rule that you are adding specifies a tag for an image. Acceptable options are tagged, untagged, or any. If you specify any, then all images have the rule evaluated against them. If you specify tagged, then you must also specify a tagPrefixList value. If you specify untagged, then you must omit tagPrefixList."
+                }
+            },
+            "type": "object",
+            "required": [
+                "tagStatus"
+            ]
+        },
+        "awsx:ecr:lifecycleTagStatus": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "any",
+                    "description": "Evaluate rule against all images",
+                    "value": "any"
+                },
+                {
+                    "name": "untagged",
+                    "description": "Only evaluate rule against untagged images",
+                    "value": "untagged"
+                },
+                {
+                    "name": "tagged",
+                    "description": "Only evaluated rule against images with specified prefixes",
+                    "value": "tagged"
+                }
+            ]
+        },
         "awsx:ecs:EC2ServiceTaskDefinition": {
             "description": "Create a TaskDefinition resource with the given unique name, arguments, and options.\nCreates required log-group and task \u0026 execution roles.\nPresents required Service load balancers if target group included in port mappings.",
             "properties": {
@@ -1439,6 +1555,65 @@
             },
             "isComponent": true
         },
+        "awsx:ecr:Repository": {
+            "description": "A [Repository] represents an [aws.ecr.Repository] along with an associated [LifecyclePolicy] controlling how images are retained in the repo. \n\nDocker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.",
+            "properties": {
+                "lifecyclePolicy": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy",
+                    "description": "Underlying repository lifecycle policy"
+                },
+                "repository": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ecr%2frepository:Repository",
+                    "description": "Underlying Repository resource",
+                    "language": {
+                        "csharp": {
+                            "name": "AwsRepository"
+                        }
+                    }
+                }
+            },
+            "type": "object",
+            "required": [
+                "repository"
+            ],
+            "inputProperties": {
+                "encryptionConfigurations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecr/RepositoryEncryptionConfiguration:RepositoryEncryptionConfiguration"
+                    },
+                    "description": "Encryption configuration for the repository. See below for schema.\n"
+                },
+                "imageScanningConfiguration": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:ecr/RepositoryImageScanningConfiguration:RepositoryImageScanningConfiguration",
+                    "description": "Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.\n"
+                },
+                "imageTagMutability": {
+                    "type": "string",
+                    "description": "The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.\n"
+                },
+                "lifecyclePolicy": {
+                    "$ref": "#/types/awsx:ecr:lifecyclePolicy",
+                    "plain": true,
+                    "description": "A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the repository.\n"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "isComponent": true,
+            "methods": {
+                "buildAndPushImage": "awsx:ecr:Repository/buildAndPushImage"
+            }
+        },
         "awsx:ecs:EC2Service": {
             "description": "Create an ECS Service resource for EC2 with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
             "properties": {
@@ -2199,6 +2374,74 @@
                 }
             },
             "isComponent": true
+        }
+    },
+    "functions": {
+        "awsx:ecr:Repository/buildAndPushImage": {
+            "description": "Build and push a docker image to ECR",
+            "inputs": {
+                "description": "Arguments for building and publishing a docker image to ECR",
+                "properties": {
+                    "__self__": {
+                        "$ref": "#/resources/awsx:ecr:Repository"
+                    },
+                    "args": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction."
+                    },
+                    "cacheFrom": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Images to consider as cache sources"
+                    },
+                    "dockerfile": {
+                        "type": "string",
+                        "description": "dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context."
+                    },
+                    "env": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "description": "Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`."
+                    },
+                    "extraOptions": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`."
+                    },
+                    "path": {
+                        "type": "string",
+                        "description": "Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating."
+                    },
+                    "target": {
+                        "type": "string",
+                        "description": "The target of the dockerfile to build"
+                    }
+                },
+                "required": [
+                    "__self__"
+                ]
+            },
+            "outputs": {
+                "description": "Outputs from the pushed docker image",
+                "properties": {
+                    "image": {
+                        "type": "string",
+                        "description": "Unique identifier of the pushed image"
+                    }
+                },
+                "required": [
+                    "image"
+                ]
+            }
         }
     },
     "language": {

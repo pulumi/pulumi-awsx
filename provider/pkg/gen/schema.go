@@ -29,6 +29,7 @@ import (
 const (
 	awsVersion            = "v4.37.1"
 	awsNativeTypesVersion = "v0.13.0"
+	dockerVersion         = "v3.2.0"
 )
 
 func awsRef(ref string) string {
@@ -39,6 +40,7 @@ func awsRef(ref string) string {
 func GenerateSchema() schema.PackageSpec {
 	awsSpec := getAwsSpec()
 	awsNativeSpec := getAwsNativeSpec()
+	dockerSpec := getDockerSpec()
 
 	packageSpec := schema.PackageSpec{
 		Name:        "awsx",
@@ -99,6 +101,7 @@ func GenerateSchema() schema.PackageSpec {
 		generateS3(awsSpec),
 		generateEc2(awsSpec),
 		generateVpc(awsSpec),
+		generateEcr(awsSpec, dockerSpec),
 	)
 }
 
@@ -108,6 +111,10 @@ func getAwsSpec() schema.PackageSpec {
 
 func getAwsNativeSpec() schema.PackageSpec {
 	return getSpecFromUrl(fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-aws-native/%s/provider/cmd/pulumi-resource-aws-native/schema.json", awsNativeTypesVersion))
+}
+
+func getDockerSpec() schema.PackageSpec {
+	return getSpecFromUrl(fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-docker/%s/provider/cmd/pulumi-resource-docker/schema.json", dockerVersion))
 }
 
 func getSpecFromUrl(url string) schema.PackageSpec {

@@ -2,8 +2,10 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 // Export sub-modules:
+import * as ecr from "./ecr";
 import * as vpc from "./vpc";
 
 export {
+    ecr,
     vpc,
 };

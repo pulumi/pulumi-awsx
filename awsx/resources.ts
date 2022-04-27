@@ -14,22 +14,33 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
-import { EC2Service, EC2TaskDefinition, FargateService, FargateTaskDefinition } from "./ecs";
+import { Repository } from "./ecr";
+import { Repository_buildAndPushImage } from "./ecr/buildAndPushImage";
+import {
+    EC2Service,
+    EC2TaskDefinition,
+    FargateService,
+    FargateTaskDefinition,
+} from "./ecs";
 import { ApplicationLoadBalancer } from "./lb";
-import { ConstructComponent, ResourceConstructor } from "./schema-types";
+import {
+    ConstructComponent,
+    Functions,
+    ResourceConstructor,
+} from "./schema-types";
 import { Vpc } from "./vpc";
 
 const resources: ResourceConstructor = {
     "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
     "awsx:ecs:FargateService": (...args) => new FargateService(...args),
     "awsx:ecs:EC2Service": (...args) => new EC2Service(...args),
-    "awsx:ecs:EC2TaskDefinition": (...args) =>
-        new EC2TaskDefinition(...args),
+    "awsx:ecs:EC2TaskDefinition": (...args) => new EC2TaskDefinition(...args),
     "awsx:ecs:FargateTaskDefinition": (...args) =>
         new FargateTaskDefinition(...args),
     "awsx:lb:ApplicationLoadBalancer": (...args) =>
         new ApplicationLoadBalancer(...args),
     "awsx:vpc:Vpc": (...args) => new Vpc(...args),
+    "awsx:ecr:Repository": (...args) => new Repository(...args),
 };
 
 export function construct(
@@ -45,3 +56,7 @@ export function construct(
     }
     return resource(name, inputs, options);
 }
+
+export const functions: Functions = {
+    "awsx:ecr:Repository/buildAndPushImage": Repository_buildAndPushImage,
+};
