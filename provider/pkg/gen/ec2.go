@@ -22,7 +22,7 @@ func generateEc2(awsSpec schema.PackageSpec) schema.PackageSpec {
 	return schema.PackageSpec{
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx:awsx:DefaultSecurityGroup": defaultSecurityGroupArgs(awsSpec),
-			"awsx:awsx:SecurityGroup": securityGroupArgs(awsSpec),
+			"awsx:awsx:SecurityGroup":        securityGroupArgs(awsSpec),
 		},
 	}
 }

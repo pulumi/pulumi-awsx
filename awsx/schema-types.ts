@@ -17,6 +17,7 @@ export type ResourceConstructor = {
 };
 export type Functions = {
     "awsx:ecr:Repository/buildAndPushImage": (inputs: Repository_buildAndPushImageInputs) => Promise<Repository_buildAndPushImageOutputs>;
+    "awsx:vpc:getDefaultVpc": (inputs: getDefaultVpcInputs) => Promise<getDefaultVpcOutputs>;
 };
 import * as aws from "@pulumi/aws";
 export abstract class Trail<TData = any> extends pulumi.ComponentResource<TData> {
@@ -922,4 +923,11 @@ export interface Repository_buildAndPushImageInputs {
 }
 export interface Repository_buildAndPushImageOutputs {
     readonly image: pulumi.Output<string>;
+}
+export interface getDefaultVpcInputs {
+}
+export interface getDefaultVpcOutputs {
+    readonly privateSubnetIds: pulumi.Output<string[]>;
+    readonly publicSubnetIds: pulumi.Output<string[]>;
+    readonly vpcId: pulumi.Output<string>;
 }

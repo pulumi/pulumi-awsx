@@ -2373,7 +2373,10 @@
                     "description": "A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
                 }
             },
-            "isComponent": true
+            "isComponent": true,
+            "methods": {
+                "getDefault": "awsx:vpc:Vpc/getDefault"
+            }
         }
     },
     "functions": {
@@ -2440,6 +2443,38 @@
                 },
                 "required": [
                     "image"
+                ]
+            }
+        },
+        "awsx:vpc:getDefaultVpc": {
+            "description": "Get the Default VPC for a region",
+            "inputs": {
+                "description": "Arguments for getting the default VPC"
+            },
+            "outputs": {
+                "description": "Outputs from the default VPC configuration",
+                "properties": {
+                    "privateSubnetIds": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "publicSubnetIds": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "vpcId": {
+                        "type": "string",
+                        "description": "The VPC ID for the default VPC"
+                    }
+                },
+                "required": [
+                    "vpcId",
+                    "publicSubnetIds",
+                    "privateSubnetIds"
                 ]
             }
         }

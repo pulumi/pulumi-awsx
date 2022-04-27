@@ -30,6 +30,9 @@ func generateVpc(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:vpc:SubnetType":              subnetType(),
 			"awsx:vpc:SubnetConfiguration":     subnetConfigType(),
 		},
+		Functions: map[string]schema.FunctionSpec{
+			"awsx:vpc:getDefaultVpc": defaultVpcArgs(),
+		},
 	}
 
 	return packageSpec
@@ -101,6 +104,9 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			},
 		},
 		InputProperties: inputProperties,
+		Methods: map[string]string{
+			"getDefault": "awsx:vpc:Vpc/getDefault",
+		},
 	}
 }
 
@@ -204,6 +210,45 @@ func natGatewayStrategyType() schema.ComplexTypeSpec {
 			},
 		},
 	}
+}
+
+func defaultVpcArgs() schema.FunctionSpec {
+	spec := schema.FunctionSpec{
+		Description: "Get the Default VPC for a region",
+		Inputs: &schema.ObjectTypeSpec{
+			Description: "Arguments for getting the default VPC",
+			Properties:  map[string]schema.PropertySpec{},
+		},
+		Outputs: &schema.ObjectTypeSpec{
+			Description: "Outputs from the default VPC configuration",
+			Properties: map[string]schema.PropertySpec{
+				"vpcId": {
+					Description: "The VPC ID for the default VPC",
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
+				"publicSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+				"privateSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+			},
+			Required: []string{"vpcId", "publicSubnetIds", "privateSubnetIds"},
+		},
+	}
+	return spec
 }
 
 func plainInt() schema.TypeSpec {
