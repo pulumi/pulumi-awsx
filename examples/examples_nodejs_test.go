@@ -54,6 +54,7 @@ func TestLbSimple(t *testing.T) {
 }
 
 func TestEcrSimple(t *testing.T) {
+	t.Skip("https://github.com/pulumi/pulumi-awsx/issues/784")
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
