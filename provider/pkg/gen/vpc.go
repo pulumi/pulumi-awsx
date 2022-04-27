@@ -104,9 +104,6 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			},
 		},
 		InputProperties: inputProperties,
-		Methods: map[string]string{
-			"getDefault": "awsx:vpc:Vpc/getDefault",
-		},
 	}
 }
 
