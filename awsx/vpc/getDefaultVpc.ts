@@ -15,13 +15,28 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import * as utils from "../utils";
 
-export async function getDefault(): Promise<schema.getDefaultVpcOutputs> {
+export async function getDefaultVpc(): Promise<schema.getDefaultVpcOutputs> {
+    const vpc = pulumi.output(aws.ec2.getVpcOutput({ default: true }));
 
-    const vpcId = pulumi.output(aws.ec2.getVpc({ default: true }).then(x => x.id));
+    const subnetIds = aws.ec2.getSubnetsOutput({
+        filters: [{ name: "vpc-id", values: [vpc.id] }],
+    }).ids;
 
-    const privateSubnets = aws.ec2.getSubnets({fil})
+    const subnets = subnetIds.apply((subnetIds) =>
+        pulumi.all(subnetIds.map((id) => aws.ec2.getSubnetOutput({ id }))),
+    );
 
-    return { vpcId: vpcId};
+    const { publicSubnetIds, privateSubnetIds } = subnets.apply((ss) => {
+        const publicSubnets = ss.filter((s) => s.mapPublicIpOnLaunch);
+        const privateSubnets = ss.filter((s) => !s.mapPublicIpOnLaunch);
+        const publicSubnetIds = publicSubnets.map((s) => s.id);
+        const privateSubnetIds = privateSubnets.map((s) => s.id);
+        return {
+            publicSubnetIds,
+            privateSubnetIds,
+        };
+    });
+
+    return { vpcId: vpc.id, publicSubnetIds, privateSubnetIds };
 }

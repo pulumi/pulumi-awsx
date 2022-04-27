@@ -29,6 +29,7 @@ import {
     ResourceConstructor,
 } from "./schema-types";
 import { Vpc } from "./vpc";
+import { getDefaultVpc } from "./vpc/getDefaultVpc";
 
 const resources: ResourceConstructor = {
     "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
@@ -59,4 +60,5 @@ export function construct(
 
 export const functions: Functions = {
     "awsx:ecr:Repository/buildAndPushImage": Repository_buildAndPushImage,
+    "awsx:vpc:getDefaultVpc": getDefaultVpc,
 };
