@@ -60,6 +60,20 @@ class Provider implements pulumi.provider.Provider {
         const outputs = await handler(inputs);
         return { outputs };
     }
+
+    async invoke(
+        token: string,
+        inputs: any,
+    ): Promise<pulumi.provider.InvokeResult> {
+        const untypedFunctions: Record<string, (inputs: any) => Promise<any>> =
+            functions;
+        const handler = untypedFunctions[token];
+        if (!handler) {
+            throw new Error(`unknown method ${token}`);
+        }
+        const outputs = await handler(inputs);
+        return { outputs };
+    }
 }
 
 function main(args: string[]) {
