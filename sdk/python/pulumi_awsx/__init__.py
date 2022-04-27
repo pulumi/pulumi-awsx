@@ -72,6 +72,7 @@ _utilities.register(
   "mod": "vpc",
   "fqn": "pulumi_awsx.vpc",
   "classes": {
+   "awsx:vpc:DefaultVpc": "DefaultVpc",
    "awsx:vpc:Vpc": "Vpc"
   }
  }

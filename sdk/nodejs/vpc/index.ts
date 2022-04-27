@@ -5,18 +5,23 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
+export * from "./defaultVpc";
+export * from "./getDefaultVpc";
 export * from "./vpc";
 
 // Export enums:
 export * from "../types/enums/vpc";
 
 // Import resources to register:
+import { DefaultVpc } from "./defaultVpc";
 import { Vpc } from "./vpc";
 
 const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
+            case "awsx:vpc:DefaultVpc":
+                return new DefaultVpc(name, <any>undefined, { urn })
             case "awsx:vpc:Vpc":
                 return new Vpc(name, <any>undefined, { urn })
             default:

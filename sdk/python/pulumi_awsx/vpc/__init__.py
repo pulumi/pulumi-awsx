@@ -6,5 +6,7 @@ from .. import _utilities
 import typing
 # Export this package's modules as members:
 from ._enums import *
+from .default_vpc import *
+from .get_default_vpc import *
 from .vpc import *
 from ._inputs import *

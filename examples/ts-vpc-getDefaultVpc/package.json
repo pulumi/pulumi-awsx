@@ -1,0 +1,18 @@
+{
+    "name": "ts-vpc-get-default-vpc",
+    "version": "0.0.1",
+    "license": "Apache-2.0",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@pulumi/pulumi": "^3.0.0",
+        "@pulumi/aws": "^4.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^8.0.0"
+    },
+    "peerDependencies": {
+        "@pulumi/awsx": "latest"
+    }
+}

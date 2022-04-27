@@ -1,4 +1,4 @@
-// Copyright 2016-2022, Pulumi Corporation.
+// Copyright 2016-2018, Pulumi Corporation.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,5 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from "./defaultVpc";
-export * from "./vpc";
+import * as pulumi from "@pulumi/pulumi";
+import * as awsx from "@pulumi/awsx";
+
+const defaultVpc = new awsx.vpc.DefaultVpc("default-vpc");
+
+export const { vpcId, publicSubnetIds } = defaultVpc;

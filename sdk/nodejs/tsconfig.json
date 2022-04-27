@@ -123,6 +123,8 @@
         "types/input.ts",
         "types/output.ts",
         "utilities.ts",
+        "vpc/defaultVpc.ts",
+        "vpc/getDefaultVpc.ts",
         "vpc/index.ts",
         "vpc/vpc.ts"
     ]

@@ -23,12 +23,16 @@ func generateVpc(awsSpec schema.PackageSpec) schema.PackageSpec {
 	packageSpec := schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
 			"awsx:vpc:Vpc": vpcResource(awsSpec),
+			"awsx:vpc:DefaultVpc": defaultVpcResource(awsSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx:vpc:NatGatewayStrategy":      natGatewayStrategyType(),
 			"awsx:vpc:NatGatewayConfiguration": natGatewayConfigurationType(),
 			"awsx:vpc:SubnetType":              subnetType(),
 			"awsx:vpc:SubnetConfiguration":     subnetConfigType(),
+		},
+		Functions: map[string]schema.FunctionSpec{
+			"awsx:vpc:getDefaultVpc": defaultVpcArgs(),
 		},
 	}
 
@@ -204,6 +208,80 @@ func natGatewayStrategyType() schema.ComplexTypeSpec {
 			},
 		},
 	}
+}
+
+func defaultVpcResource(spec schema.PackageSpec) schema.ResourceSpec {
+	return schema.ResourceSpec{
+		IsComponent:        true,
+		ObjectTypeSpec:     schema.ObjectTypeSpec{
+			Description: "Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.",
+			Properties: map[string]schema.PropertySpec{
+				"vpcId": {
+					Description: "The VPC ID for the default VPC",
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
+				"publicSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+				"privateSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+			},
+			Required: []string{"vpcId", "publicSubnetIds", "privateSubnetIds"},
+		},
+	}
+}
+
+func defaultVpcArgs() schema.FunctionSpec {
+	spec := schema.FunctionSpec{
+		Description: "[NOT YET IMPLEMENTED] Get the Default VPC for a region.",
+		DeprecationMessage: "Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.",
+		Inputs: &schema.ObjectTypeSpec{
+			Description: "Arguments for getting the default VPC",
+			Properties:  map[string]schema.PropertySpec{},
+		},
+		Outputs: &schema.ObjectTypeSpec{
+			Description: "Outputs from the default VPC configuration",
+			Properties: map[string]schema.PropertySpec{
+				"vpcId": {
+					Description: "The VPC ID for the default VPC",
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
+				"publicSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+				"privateSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+			},
+			Required: []string{"vpcId", "publicSubnetIds", "privateSubnetIds"},
+		},
+	}
+	return spec
 }
 
 func plainInt() schema.TypeSpec {
