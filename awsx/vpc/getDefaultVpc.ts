@@ -15,9 +15,10 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
+import { format } from "util";
 
 export async function getDefaultVpc(): Promise<schema.getDefaultVpcOutputs> {
-    const vpc = pulumi.output(aws.ec2.getVpcOutput({ default: true }));
+    const vpc = await aws.ec2.getVpc({ default: true });
 
     const subnetIds = aws.ec2.getSubnetsOutput({
         filters: [{ name: "vpc-id", values: [vpc.id] }],
@@ -38,5 +39,9 @@ export async function getDefaultVpc(): Promise<schema.getDefaultVpcOutputs> {
         };
     });
 
-    return { vpcId: vpc.id, publicSubnetIds, privateSubnetIds };
+    return {
+        vpcId: pulumi.output(vpc.id),
+        publicSubnetIds,
+        privateSubnetIds,
+    };
 }

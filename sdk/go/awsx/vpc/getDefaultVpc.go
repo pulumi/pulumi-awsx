@@ -7,7 +7,9 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-// Get the Default VPC for a region
+// [NOT YET IMPLEMENTED] Get the Default VPC for a region.
+//
+// Deprecated: Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.
 func GetDefaultVpc(ctx *pulumi.Context, args *GetDefaultVpcArgs, opts ...pulumi.InvokeOption) (*GetDefaultVpcResult, error) {
 	var rv GetDefaultVpcResult
 	err := ctx.Invoke("awsx:vpc:getDefaultVpc", args, &rv, opts...)

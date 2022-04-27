@@ -211,7 +211,8 @@ func natGatewayStrategyType() schema.ComplexTypeSpec {
 
 func defaultVpcArgs() schema.FunctionSpec {
 	spec := schema.FunctionSpec{
-		Description: "Get the Default VPC for a region",
+		Description: "[NOT YET IMPLEMENTED] Get the Default VPC for a region.",
+		DeprecationMessage: "Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.",
 		Inputs: &schema.ObjectTypeSpec{
 			Description: "Arguments for getting the default VPC",
 			Properties:  map[string]schema.PropertySpec{},

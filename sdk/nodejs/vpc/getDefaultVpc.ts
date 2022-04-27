@@ -5,9 +5,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 /**
- * Get the Default VPC for a region
+ * [NOT YET IMPLEMENTED] Get the Default VPC for a region.
  */
+/** @deprecated Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved. */
 export function getDefaultVpc(args?: GetDefaultVpcArgs, opts?: pulumi.InvokeOptions): Promise<GetDefaultVpcResult> {
+    pulumi.log.warn("getDefaultVpc is deprecated: Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.")
     args = args || {};
     if (!opts) {
         opts = {}

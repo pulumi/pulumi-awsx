@@ -9,10 +9,11 @@ using Pulumi.Serialization;
 
 namespace Pulumi.Awsx.Vpc
 {
+    [Obsolete(@"Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.")]
     public static class GetDefaultVpc
     {
         /// <summary>
-        /// Get the Default VPC for a region
+        /// [NOT YET IMPLEMENTED] Get the Default VPC for a region.
         /// </summary>
         public static Task<GetDefaultVpcResult> InvokeAsync(GetDefaultVpcArgs? args = null, InvokeOptions? options = null)
             => Pulumi.Deployment.Instance.InvokeAsync<GetDefaultVpcResult>("awsx:vpc:getDefaultVpc", args ?? new GetDefaultVpcArgs(), options.WithDefaults());

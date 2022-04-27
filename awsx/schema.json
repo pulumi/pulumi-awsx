@@ -2444,7 +2444,7 @@
             }
         },
         "awsx:vpc:getDefaultVpc": {
-            "description": "Get the Default VPC for a region",
+            "description": "[NOT YET IMPLEMENTED] Get the Default VPC for a region.",
             "inputs": {
                 "description": "Arguments for getting the default VPC"
             },
@@ -2473,7 +2473,8 @@
                     "publicSubnetIds",
                     "privateSubnetIds"
                 ]
-            }
+            },
+            "deprecationMessage": "Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved."
         }
     },
     "language": {

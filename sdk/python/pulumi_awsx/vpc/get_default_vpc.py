@@ -14,6 +14,8 @@ __all__ = [
     'get_default_vpc',
 ]
 
+warnings.warn("""Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.""", DeprecationWarning)
+
 @pulumi.output_type
 class GetDefaultVpcResult:
     """
@@ -62,8 +64,9 @@ class AwaitableGetDefaultVpcResult(GetDefaultVpcResult):
 
 def get_default_vpc(opts: Optional[pulumi.InvokeOptions] = None) -> AwaitableGetDefaultVpcResult:
     """
-    Get the Default VPC for a region
+    [NOT YET IMPLEMENTED] Get the Default VPC for a region.
     """
+    pulumi.log.warn("""get_default_vpc is deprecated: Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.""")
     __args__ = dict()
     if opts is None:
         opts = pulumi.InvokeOptions()
