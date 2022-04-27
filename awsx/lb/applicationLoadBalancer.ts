@@ -16,6 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
+import { getDefaultVpc } from "../vpc";
 
 export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
     constructor(
@@ -75,9 +76,9 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
                 .output(restArgs.subnetMappings!)
                 .apply((s) => aws.ec2.getSubnet({ id: s[0].subnetId })).vpcId;
         } else {
-            throw new Error(
-                "One of [subnets], [subnetIds] or [subnetMappings] must be specified",
-            );
+           const defaultVpc = pulumi.output(getDefaultVpc());
+           this.vpcId = defaultVpc.vpcId;
+           lbArgs.subnets = defaultVpc.publicSubnetIds;
         }
 
         if (listener && listeners) {
@@ -101,7 +102,24 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             } else {
                 const securityGroup = new aws.ec2.SecurityGroup(
                     name,
-                    defaultSecurityGroup?.args ?? {}, // TODO: Add ingress/egress for listeners
+                    defaultSecurityGroup?.args ??
+                    // TO-DO: we default to open SG rules at this point - we should review this!
+                    {
+                        ingress: [{
+                            fromPort: 0,
+                            toPort: 0,
+                            protocol: "-1",
+                            cidrBlocks: ["0.0.0.0/0"],
+                            ipv6CidrBlocks: ["::/0"],
+                        }],
+                        egress: [{
+                            fromPort: 0,
+                            toPort: 65535,
+                            protocol: "tcp",
+                            cidrBlocks: ["0.0.0.0/0"],
+                            ipv6CidrBlocks: ["::/0"],
+                        }],
+                    },
                     { parent: this },
                 );
                 this.defaultSecurityGroup = securityGroup;

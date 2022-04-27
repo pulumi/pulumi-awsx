@@ -42,13 +42,10 @@ export class FargateService extends pulumi.ComponentResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param opts A bag of options that control this resource's behavior.
      */
-    constructor(name: string, args: FargateServiceArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args?: FargateServiceArgs, opts?: pulumi.ComponentResourceOptions) {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.networkConfiguration === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'networkConfiguration'");
-            }
             resourceInputs["cluster"] = args ? args.cluster : undefined;
             resourceInputs["continueBeforeSteadyState"] = args ? args.continueBeforeSteadyState : undefined;
             resourceInputs["deploymentCircuitBreaker"] = args ? args.deploymentCircuitBreaker : undefined;
@@ -145,7 +142,7 @@ export interface FargateServiceArgs {
     /**
      * Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
      */
-    networkConfiguration: pulumi.Input<pulumiAws.types.input.ecs.ServiceNetworkConfiguration>;
+    networkConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceNetworkConfiguration>;
     /**
      * Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
      */

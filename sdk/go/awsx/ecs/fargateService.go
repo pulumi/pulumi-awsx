@@ -7,7 +7,6 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pkg/errors"
 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ecs"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -27,12 +26,9 @@ type FargateService struct {
 func NewFargateService(ctx *pulumi.Context,
 	name string, args *FargateServiceArgs, opts ...pulumi.ResourceOption) (*FargateService, error) {
 	if args == nil {
-		return nil, errors.New("missing one or more required arguments")
+		args = &FargateServiceArgs{}
 	}
 
-	if args.NetworkConfiguration == nil {
-		return nil, errors.New("invalid value for required argument 'NetworkConfiguration'")
-	}
 	var resource FargateService
 	err := ctx.RegisterRemoteComponentResource("awsx:ecs:FargateService", name, args, &resource, opts...)
 	if err != nil {
@@ -71,7 +67,7 @@ type fargateServiceArgs struct {
 	// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
 	Name *string `pulumi:"name"`
 	// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
-	NetworkConfiguration ecs.ServiceNetworkConfiguration `pulumi:"networkConfiguration"`
+	NetworkConfiguration *ecs.ServiceNetworkConfiguration `pulumi:"networkConfiguration"`
 	// Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
 	PlacementConstraints []ecs.ServicePlacementConstraint `pulumi:"placementConstraints"`
 	// Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
@@ -121,7 +117,7 @@ type FargateServiceArgs struct {
 	// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
 	Name pulumi.StringPtrInput
 	// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
-	NetworkConfiguration ecs.ServiceNetworkConfigurationInput
+	NetworkConfiguration ecs.ServiceNetworkConfigurationPtrInput
 	// Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
 	PlacementConstraints ecs.ServicePlacementConstraintArrayInput
 	// Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).

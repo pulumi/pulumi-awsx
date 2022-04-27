@@ -19,6 +19,12 @@ import * as schema from "../schema-types";
 export async function getDefaultVpc(): Promise<schema.getDefaultVpcOutputs> {
     const vpc = await aws.ec2.getVpc({ default: true });
 
+    if (vpc === undefined) {
+        throw new Error(
+            "unable to find default VPC for this region and account",
+        );
+    }
+
     const subnetIds = aws.ec2.getSubnetsOutput({
         filters: [{ name: "vpc-id", values: [vpc.id] }],
     }).ids;
