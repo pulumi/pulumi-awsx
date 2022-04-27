@@ -16,6 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
+import { getDefaultVpc } from "../vpc";
 import { FargateTaskDefinition } from "./fargateTaskDefinition";
 
 /**
@@ -70,7 +71,11 @@ export class FargateService extends schema.FargateService {
         this.service = new aws.ecs.Service(
             name,
             {
+                desiredCount: 1,
                 ...args,
+                networkConfiguration:
+                    args.networkConfiguration ??
+                    getDefaultNetworkConfiguration(name, this),
                 cluster: aws.ecs.Cluster.isInstance(args.cluster)
                     ? args.cluster.arn
                     : args.cluster,
@@ -88,4 +93,43 @@ export class FargateService extends schema.FargateService {
 
         this.registerOutputs();
     }
+}
+
+function getDefaultNetworkConfiguration(
+    name: string,
+    parent: pulumi.Resource,
+): aws.types.input.ecs.ServiceNetworkConfiguration {
+    const defaultVpc = pulumi.output(getDefaultVpc());
+    const sg = new aws.ec2.SecurityGroup(
+        `${name}-sg`,
+        {
+            vpcId: defaultVpc.vpcId,
+            ingress: [
+                {
+                    fromPort: 0,
+                    toPort: 0,
+                    protocol: "-1",
+                    cidrBlocks: ["0.0.0.0/0"],
+                    ipv6CidrBlocks: ["::/0"],
+                },
+            ],
+            egress: [
+                {
+                    fromPort: 0,
+                    toPort: 65535,
+                    protocol: "tcp",
+                    cidrBlocks: ["0.0.0.0/0"],
+                    ipv6CidrBlocks: ["::/0"],
+                },
+            ],
+        },
+        {
+            parent,
+        },
+    );
+    return {
+        subnets: defaultVpc.publicSubnetIds,
+        assignPublicIp: true,
+        securityGroups: [sg.id],
+    };
 }

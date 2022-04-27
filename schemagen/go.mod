@@ -1,4 +1,4 @@
-module github.com/pulumi/pulumi-awsx/provider
+module github.com/pulumi/pulumi-awsx/schemagen
 
 go 1.17
 

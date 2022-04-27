@@ -160,7 +160,6 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Required: []string{"service"},
 		},
 		InputProperties: inputProperties,
-		RequiredInputs:  []string{"networkConfiguration"},
 	}
 }
 

@@ -36,7 +36,7 @@ namespace Pulumi.Awsx.Ecs
         /// <param name="name">The unique name of the resource</param>
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public FargateService(string name, FargateServiceArgs args, ComponentResourceOptions? options = null)
+        public FargateService(string name, FargateServiceArgs? args = null, ComponentResourceOptions? options = null)
             : base("awsx:ecs:FargateService", name, args ?? new FargateServiceArgs(), MakeResourceOptions(options, ""), remote: true)
         {
         }
@@ -149,8 +149,8 @@ namespace Pulumi.Awsx.Ecs
         /// <summary>
         /// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
         /// </summary>
-        [Input("networkConfiguration", required: true)]
-        public Input<Pulumi.Aws.Ecs.Inputs.ServiceNetworkConfigurationArgs> NetworkConfiguration { get; set; } = null!;
+        [Input("networkConfiguration")]
+        public Input<Pulumi.Aws.Ecs.Inputs.ServiceNetworkConfigurationArgs>? NetworkConfiguration { get; set; }
 
         [Input("placementConstraints")]
         private InputList<Pulumi.Aws.Ecs.Inputs.ServicePlacementConstraintArgs>? _placementConstraints;

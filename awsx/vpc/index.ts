@@ -13,4 +13,5 @@
 // limitations under the License.
 
 export * from "./defaultVpc";
+export * from "./getDefaultVpc";
 export * from "./vpc";
