@@ -28,7 +28,7 @@ import {
     Functions,
     ResourceConstructor,
 } from "./schema-types";
-import { Vpc, DefaultVpc } from "./vpc";
+import { DefaultVpc, Vpc } from "./vpc";
 import { getDefaultVpc } from "./vpc/getDefaultVpc";
 
 const resources: ResourceConstructor = {

@@ -15,7 +15,6 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import { format } from "util";
 
 export async function getDefaultVpc(): Promise<schema.getDefaultVpcOutputs> {
     const vpc = await aws.ec2.getVpc({ default: true });
