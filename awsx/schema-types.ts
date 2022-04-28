@@ -19,7 +19,6 @@ export type ResourceConstructor = {
     readonly "awsx:vpc:Vpc": ConstructComponent<Vpc>;
 };
 export type Functions = {
-    "awsx:ecr:Repository/buildAndPushImage": (inputs: Repository_buildAndPushImageInputs) => Promise<Repository_buildAndPushImageOutputs>;
     "awsx:vpc:getDefaultVpc": (inputs: getDefaultVpcInputs) => Promise<getDefaultVpcOutputs>;
 };
 import * as aws from "@pulumi/aws";
@@ -68,8 +67,9 @@ export interface ImageArgs {
 export abstract class Repository<TData = any> extends pulumi.ComponentResource<TData> {
     public lifecyclePolicy?: aws.ecr.LifecyclePolicy | pulumi.Output<aws.ecr.LifecyclePolicy>;
     public repository!: aws.ecr.Repository | pulumi.Output<aws.ecr.Repository>;
+    public url!: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ecr:Repository", name, opts.urn ? { lifecyclePolicy: undefined, repository: undefined } : { name, args, opts }, opts);
+        super("awsx:ecr:Repository", name, opts.urn ? { lifecyclePolicy: undefined, repository: undefined, url: undefined } : { name, args, opts }, opts);
     }
 }
 export interface RepositoryArgs {
@@ -972,19 +972,6 @@ export interface SubnetConfigurationOutputs {
 }
 export type SubnetTypeInputs = "Public" | "Private" | "Isolated";
 export type SubnetTypeOutputs = "Public" | "Private" | "Isolated";
-export interface Repository_buildAndPushImageInputs {
-    readonly __self__: pulumi.Input<Repository>;
-    readonly args?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-    readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
-    readonly dockerfile?: pulumi.Input<string>;
-    readonly env?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-    readonly extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
-    readonly path?: pulumi.Input<string>;
-    readonly target?: pulumi.Input<string>;
-}
-export interface Repository_buildAndPushImageOutputs {
-    readonly image: pulumi.Output<string>;
-}
 export interface getDefaultVpcInputs {
 }
 export interface getDefaultVpcOutputs {

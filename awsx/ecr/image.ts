@@ -32,11 +32,6 @@ export class Image extends schema.Image {
     }
 }
 
-type DockerInputs = Omit<
-    pulumi.Unwrap<schema.Repository_buildAndPushImageInputs>,
-    "__self__"
->;
-
 /** @internal */
 export function computeImageFromAsset(
     args: pulumi.Unwrap<schema.ImageArgs>,

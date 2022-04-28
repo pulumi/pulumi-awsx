@@ -24,9 +24,6 @@ func generateEcr(awsSpec, dockerSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:ecr:Repository": repository(awsSpec),
 			"awsx:ecr:Image":      ecrImage(awsSpec),
 		},
-		Functions: map[string]schema.FunctionSpec{
-			"awsx:ecr:Repository/buildAndPushImage": buildAndPushImage(),
-		},
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx:ecr:DockerBuild":         dockerBuild(),
 			"awsx:ecr:lifecyclePolicy":     lifecyclePolicy(awsSpec),
@@ -65,6 +62,12 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 						}),
 					},
 				},
+				"url": {
+					Description: "The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).\n",
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
 				"lifecyclePolicy": {
 					Description: "Underlying repository lifecycle policy",
 					TypeSpec: schema.TypeSpec{
@@ -72,10 +75,7 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					},
 				},
 			},
-			Required: []string{"repository"},
-		},
-		Methods: map[string]string{
-			"buildAndPushImage": "awsx:ecr:Repository/buildAndPushImage",
+			Required: []string{"repository", "url"},
 		},
 	}
 }
@@ -203,39 +203,6 @@ func ecrImage(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Required: []string{"imageUri"},
 		},
 	}
-}
-
-func buildAndPushImage() schema.FunctionSpec {
-	spec := schema.FunctionSpec{
-		Description: "Build and push a docker image to ECR",
-		Inputs: &schema.ObjectTypeSpec{
-			Description: "Arguments for building and publishing a docker image to ECR",
-			Properties:  map[string]schema.PropertySpec{},
-		},
-		Outputs: &schema.ObjectTypeSpec{
-			Description: "Outputs from the pushed docker image",
-			Properties: map[string]schema.PropertySpec{
-				"image": {
-					Description: "Unique identifier of the pushed image",
-					TypeSpec: schema.TypeSpec{
-						Type: "string",
-					},
-				},
-			},
-			Required: []string{"image"},
-		},
-	}
-
-	// Pull args to top-level as there's nothing else
-	spec.Inputs.Properties = dockerBuildProperties()
-	spec.Inputs.Properties["__self__"] = schema.PropertySpec{
-		TypeSpec: schema.TypeSpec{
-			Ref: "#/resources/awsx:ecr:Repository",
-		},
-	}
-	spec.Inputs.Required = []string{"__self__"}
-
-	return spec
 }
 
 func dockerBuild() schema.ComplexTypeSpec {

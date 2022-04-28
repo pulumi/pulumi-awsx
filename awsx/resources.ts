@@ -15,7 +15,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
 import { Repository } from "./ecr";
-import { Repository_buildAndPushImage } from "./ecr/buildAndPushImage";
 import { Image } from "./ecr/image";
 import {
     EC2Service,
@@ -64,6 +63,5 @@ export function construct(
 }
 
 export const functions: Functions = {
-    "awsx:ecr:Repository/buildAndPushImage": Repository_buildAndPushImage,
     "awsx:vpc:getDefaultVpc": getDefaultVpc,
 };

@@ -21,6 +21,8 @@ type Repository struct {
 	LifecyclePolicy ecr.LifecyclePolicyOutput `pulumi:"lifecyclePolicy"`
 	// Underlying Repository resource
 	Repository ecr.RepositoryOutput `pulumi:"repository"`
+	// The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
+	Url pulumi.StringOutput `pulumi:"url"`
 }
 
 // NewRepository registers a new resource with the given unique name, arguments, and options.
@@ -71,71 +73,6 @@ type RepositoryArgs struct {
 
 func (RepositoryArgs) ElementType() reflect.Type {
 	return reflect.TypeOf((*repositoryArgs)(nil)).Elem()
-}
-
-// Build and push a docker image to ECR
-func (r *Repository) BuildAndPushImage(ctx *pulumi.Context, args *RepositoryBuildAndPushImageArgs) (pulumi.StringOutput, error) {
-	out, err := ctx.Call("awsx:ecr:Repository/buildAndPushImage", args, repositoryBuildAndPushImageResultOutput{}, r)
-	if err != nil {
-		return pulumi.StringOutput{}, err
-	}
-	return out.(repositoryBuildAndPushImageResultOutput).Image(), nil
-}
-
-type repositoryBuildAndPushImageArgs struct {
-	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
-	Args map[string]string `pulumi:"args"`
-	// Images to consider as cache sources
-	CacheFrom []string `pulumi:"cacheFrom"`
-	// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
-	Dockerfile *string `pulumi:"dockerfile"`
-	// Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-	Env map[string]string `pulumi:"env"`
-	// An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-	ExtraOptions []string `pulumi:"extraOptions"`
-	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-	Path *string `pulumi:"path"`
-	// The target of the dockerfile to build
-	Target *string `pulumi:"target"`
-}
-
-// The set of arguments for the BuildAndPushImage method of the Repository resource.
-type RepositoryBuildAndPushImageArgs struct {
-	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
-	Args pulumi.StringMapInput
-	// Images to consider as cache sources
-	CacheFrom pulumi.StringArrayInput
-	// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
-	Dockerfile pulumi.StringPtrInput
-	// Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-	Env pulumi.StringMapInput
-	// An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-	ExtraOptions pulumi.StringArrayInput
-	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-	Path pulumi.StringPtrInput
-	// The target of the dockerfile to build
-	Target pulumi.StringPtrInput
-}
-
-func (RepositoryBuildAndPushImageArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*repositoryBuildAndPushImageArgs)(nil)).Elem()
-}
-
-// Outputs from the pushed docker image
-type repositoryBuildAndPushImageResult struct {
-	// Unique identifier of the pushed image
-	Image string `pulumi:"image"`
-}
-
-type repositoryBuildAndPushImageResultOutput struct{ *pulumi.OutputState }
-
-func (repositoryBuildAndPushImageResultOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*repositoryBuildAndPushImageResult)(nil)).Elem()
-}
-
-// Unique identifier of the pushed image
-func (o repositoryBuildAndPushImageResultOutput) Image() pulumi.StringOutput {
-	return o.ApplyT(func(v repositoryBuildAndPushImageResult) string { return v.Image }).(pulumi.StringOutput)
 }
 
 type RepositoryInput interface {
@@ -266,7 +203,6 @@ func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*RepositoryArrayInput)(nil)).Elem(), RepositoryArray{})
 	pulumi.RegisterInputType(reflect.TypeOf((*RepositoryMapInput)(nil)).Elem(), RepositoryMap{})
 	pulumi.RegisterOutputType(RepositoryOutput{})
-	pulumi.RegisterOutputType(repositoryBuildAndPushImageResultOutput{})
 	pulumi.RegisterOutputType(RepositoryArrayOutput{})
 	pulumi.RegisterOutputType(RepositoryMapOutput{})
 }

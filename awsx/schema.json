@@ -1633,11 +1633,16 @@
                             "name": "AwsRepository"
                         }
                     }
+                },
+                "url": {
+                    "type": "string",
+                    "description": "The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).\n"
                 }
             },
             "type": "object",
             "required": [
-                "repository"
+                "repository",
+                "url"
             ],
             "inputProperties": {
                 "encryptionConfigurations": {
@@ -1672,10 +1677,7 @@
                     "description": "A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
                 }
             },
-            "isComponent": true,
-            "methods": {
-                "buildAndPushImage": "awsx:ecr:Repository/buildAndPushImage"
-            }
+            "isComponent": true
         },
         "awsx:ecs:EC2Service": {
             "description": "Create an ECS Service resource for EC2 with the given unique name, arguments, and options.\nCreates Task definition if `taskDefinitionArgs` is specified.",
@@ -2594,72 +2596,6 @@
         }
     },
     "functions": {
-        "awsx:ecr:Repository/buildAndPushImage": {
-            "description": "Build and push a docker image to ECR",
-            "inputs": {
-                "description": "Arguments for building and publishing a docker image to ECR",
-                "properties": {
-                    "__self__": {
-                        "$ref": "#/resources/awsx:ecr:Repository"
-                    },
-                    "args": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        },
-                        "description": "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction."
-                    },
-                    "cacheFrom": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "Images to consider as cache sources"
-                    },
-                    "dockerfile": {
-                        "type": "string",
-                        "description": "dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context."
-                    },
-                    "env": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        },
-                        "description": "Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`."
-                    },
-                    "extraOptions": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`."
-                    },
-                    "path": {
-                        "type": "string",
-                        "description": "Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating."
-                    },
-                    "target": {
-                        "type": "string",
-                        "description": "The target of the dockerfile to build"
-                    }
-                },
-                "required": [
-                    "__self__"
-                ]
-            },
-            "outputs": {
-                "description": "Outputs from the pushed docker image",
-                "properties": {
-                    "image": {
-                        "type": "string",
-                        "description": "Unique identifier of the pushed image"
-                    }
-                },
-                "required": [
-                    "image"
-                ]
-            }
-        },
         "awsx:vpc:getDefaultVpc": {
             "description": "[NOT YET IMPLEMENTED] Get the Default VPC for a region.",
             "inputs": {
