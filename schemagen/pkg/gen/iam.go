@@ -67,7 +67,7 @@ func roleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 
 	// The assumeRolePolicy ref doesn't point to a valid type ... and we don't need it for now
 	delete(properties, "assumeRolePolicy")
-	properties["inlinePolicies"].Items.Ref = awsRef(properties["inlinePolicies"].Items.Ref)
+	properties["inlinePolicies"].Items.Ref = packageRef(awsSpec, properties["inlinePolicies"].Items.Ref)
 
 	properties["policyArns"] = schema.PropertySpec{
 		Description: "ARNs of the policies to attach to the created role.",

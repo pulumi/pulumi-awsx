@@ -22,7 +22,7 @@ import (
 func generateVpc(awsSpec schema.PackageSpec) schema.PackageSpec {
 	packageSpec := schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
-			"awsx:vpc:Vpc": vpcResource(awsSpec),
+			"awsx:vpc:Vpc":        vpcResource(awsSpec),
 			"awsx:vpc:DefaultVpc": defaultVpcResource(awsSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
@@ -75,7 +75,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			continue
 		}
 
-		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", awsRef("#/types/aws:"))
+		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", packageRef(awsSpec, "/types/aws:"))
 	}
 
 	return schema.ResourceSpec{
@@ -85,7 +85,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				"vpc": {
 					Description: "The VPC.",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ec2%2fvpc:Vpc"),
+						Ref: packageRef(awsSpec, "/resources/aws:ec2%2fvpc:Vpc"),
 					},
 					Language: map[string]schema.RawMessage{
 						"csharp": schema.RawMessage(`{
@@ -98,7 +98,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					TypeSpec: schema.TypeSpec{
 						Type: "array",
 						Items: &schema.TypeSpec{
-							Ref: awsRef("#/resources/aws:ec2%2fsubnet:Subnet"),
+							Ref: packageRef(awsSpec, "/resources/aws:ec2%2fsubnet:Subnet"),
 						},
 					},
 				},
@@ -212,8 +212,8 @@ func natGatewayStrategyType() schema.ComplexTypeSpec {
 
 func defaultVpcResource(spec schema.PackageSpec) schema.ResourceSpec {
 	return schema.ResourceSpec{
-		IsComponent:        true,
-		ObjectTypeSpec:     schema.ObjectTypeSpec{
+		IsComponent: true,
+		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Description: "Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.",
 			Properties: map[string]schema.PropertySpec{
 				"vpcId": {
@@ -246,7 +246,7 @@ func defaultVpcResource(spec schema.PackageSpec) schema.ResourceSpec {
 
 func defaultVpcArgs() schema.FunctionSpec {
 	spec := schema.FunctionSpec{
-		Description: "[NOT YET IMPLEMENTED] Get the Default VPC for a region.",
+		Description:        "[NOT YET IMPLEMENTED] Get the Default VPC for a region.",
 		DeprecationMessage: "Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.",
 		Inputs: &schema.ObjectTypeSpec{
 			Description: "Arguments for getting the default VPC",

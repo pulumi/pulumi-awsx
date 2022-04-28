@@ -33,7 +33,7 @@ func generateLb(awsSpec schema.PackageSpec) schema.PackageSpec {
 
 func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema.ResourceSpec {
 	originalSpec := awsSpec.Resources["aws:lb/loadBalancer:LoadBalancer"]
-	inputProperties := renameAwsPropertiesRefs(originalSpec.InputProperties)
+	inputProperties := renameAwsPropertiesRefs(awsSpec, originalSpec.InputProperties)
 
 	// Remove non-application properties
 	if !isNetworkLoadBalancer {
@@ -55,7 +55,7 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 		TypeSpec: schema.TypeSpec{
 			Type: "array",
 			Items: &schema.TypeSpec{
-				Ref: awsRef("#/resources/aws:ec2%2fsubnet:Subnet"),
+				Ref: packageRef(awsSpec, "/resources/aws:ec2%2fsubnet:Subnet"),
 			},
 		},
 	}
@@ -102,7 +102,7 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 			"loadBalancer": {
 				Description: "Underlying Load Balancer resource",
 				TypeSpec: schema.TypeSpec{
-					Ref: awsRef("#/resources/aws:lb%2floadBalancer:LoadBalancer"),
+					Ref: packageRef(awsSpec, "/resources/aws:lb%2floadBalancer:LoadBalancer"),
 				},
 			},
 			"vpcId": {
@@ -114,13 +114,13 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 			"defaultSecurityGroup": {
 				Description: "Default security group, if auto-created",
 				TypeSpec: schema.TypeSpec{
-					Ref: awsRef("#/resources/aws:ec2%2fsecurityGroup:SecurityGroup"),
+					Ref: packageRef(awsSpec, "/resources/aws:ec2%2fsecurityGroup:SecurityGroup"),
 				},
 			},
 			"defaultTargetGroup": {
 				Description: "Default target group, if auto-created",
 				TypeSpec: schema.TypeSpec{
-					Ref: awsRef("#/resources/aws:lb%2ftargetGroup:TargetGroup"),
+					Ref: packageRef(awsSpec, "/resources/aws:lb%2ftargetGroup:TargetGroup"),
 				},
 			},
 			"listeners": {
@@ -128,7 +128,7 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 				TypeSpec: schema.TypeSpec{
 					Type: "array",
 					Items: &schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:lb%2flistener:Listener"),
+						Ref: packageRef(awsSpec, "/resources/aws:lb%2flistener:Listener"),
 					},
 				},
 			},
@@ -149,7 +149,7 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 
 func lbListener(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	spec := awsSpec.Resources["aws:lb/listener:Listener"]
-	properties := renameAwsPropertiesRefs(spec.InputProperties)
+	properties := renameAwsPropertiesRefs(awsSpec, spec.InputProperties)
 	delete(properties, "loadBalancerArn")
 
 	return schema.ComplexTypeSpec{
@@ -167,7 +167,7 @@ func lbTargetGroup(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
 			Description: spec.Description,
-			Properties:  renameAwsPropertiesRefs(spec.InputProperties),
+			Properties:  renameAwsPropertiesRefs(awsSpec, spec.InputProperties),
 		},
 	}
 }

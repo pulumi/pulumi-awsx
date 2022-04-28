@@ -65,7 +65,7 @@ func securityGroupArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
 			Description: "The set of arguments for constructing a Security Group resource.",
-			Properties:  renameAwsPropertiesRefs(role.InputProperties),
+			Properties:  renameAwsPropertiesRefs(awsSpec, role.InputProperties),
 		},
 	}
 }

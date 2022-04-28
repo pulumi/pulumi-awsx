@@ -115,7 +115,7 @@ func bucketTypeSpec(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
 			Description: "The set of arguments for constructing a Bucket resource.",
-			Properties:  renamePropertiesRefs(properties, "#/types/aws:", awsRef("#/types/aws:")),
+			Properties:  renamePropertiesRefs(properties, "#/types/aws:", packageRef(awsSpec, "/types/aws:")),
 		},
 	}
 }

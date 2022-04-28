@@ -32,15 +32,17 @@ const (
 	dockerVersion         = "v3.2.0"
 )
 
-func awsRef(ref string) string {
-	return fmt.Sprintf("/aws/%s/schema.json%s", awsVersion, ref)
+func packageRef(spec schema.PackageSpec, ref string) string {
+	version := spec.Version
+	refWithoutHash := strings.TrimLeft(ref, "#")
+	return fmt.Sprintf("/%s/%s/schema.json#%s", spec.Name, version, refWithoutHash)
 }
 
 // nolint: lll
 func GenerateSchema() schema.PackageSpec {
-	awsSpec := getAwsSpec()
-	awsNativeSpec := getAwsNativeSpec()
-	dockerSpec := getDockerSpec()
+	awsSpec := getPackageSpec("aws", awsVersion)
+	awsNativeSpec := getPackageSpec("aws-native", awsNativeTypesVersion)
+	dockerSpec := getPackageSpec("docker", dockerVersion)
 
 	packageSpec := schema.PackageSpec{
 		Name:        "awsx",
@@ -105,16 +107,14 @@ func GenerateSchema() schema.PackageSpec {
 	)
 }
 
-func getAwsSpec() schema.PackageSpec {
-	return getSpecFromUrl(fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-aws/%s/provider/cmd/pulumi-resource-aws/schema.json", awsVersion))
-}
-
-func getAwsNativeSpec() schema.PackageSpec {
-	return getSpecFromUrl(fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-aws-native/%s/provider/cmd/pulumi-resource-aws-native/schema.json", awsNativeTypesVersion))
-}
-
-func getDockerSpec() schema.PackageSpec {
-	return getSpecFromUrl(fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-docker/%s/provider/cmd/pulumi-resource-docker/schema.json", dockerVersion))
+func getPackageSpec(name, version string) schema.PackageSpec {
+	url := fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-%s/%s/provider/cmd/pulumi-resource-%s/schema.json", name, version, name)
+	spec := getSpecFromUrl(url)
+	if spec.Version == "" {
+		// Version is rarely included, so we'll just add it.
+		spec.Version = version
+	}
+	return spec
 }
 
 func getSpecFromUrl(url string) schema.PackageSpec {
@@ -131,6 +131,7 @@ func getSpecFromUrl(url string) schema.PackageSpec {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	return spec
 }
 
@@ -140,8 +141,8 @@ func renameComplexRefs(spec schema.ComplexTypeSpec, old, new string) schema.Comp
 	return spec
 }
 
-func renameAwsPropertiesRefs(propertySpec map[string]schema.PropertySpec) map[string]schema.PropertySpec {
-	return renamePropertiesRefs(propertySpec, "#/types/aws:", awsRef("#/types/aws:"))
+func renameAwsPropertiesRefs(spec schema.PackageSpec, propertySpec map[string]schema.PropertySpec) map[string]schema.PropertySpec {
+	return renamePropertiesRefs(propertySpec, "#/types/aws:", packageRef(spec, "/types/aws:"))
 }
 
 func renamePropertiesRefs(propertySpec map[string]schema.PropertySpec, old, new string) map[string]schema.PropertySpec {
