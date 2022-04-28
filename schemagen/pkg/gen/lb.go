@@ -95,55 +95,56 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 		},
 	}
 
-	outputs := schema.ObjectTypeSpec{
-		Type:        "object",
-		Description: "",
-		Properties: map[string]schema.PropertySpec{
-			"loadBalancer": {
-				Description: "Underlying Load Balancer resource",
-				TypeSpec: schema.TypeSpec{
-					Ref: packageRef(awsSpec, "/resources/aws:lb%2floadBalancer:LoadBalancer"),
-				},
+	outputs := map[string]schema.PropertySpec{
+		"loadBalancer": {
+			Description: "Underlying Load Balancer resource",
+			TypeSpec: schema.TypeSpec{
+				Ref: packageRef(awsSpec, "/resources/aws:lb%2floadBalancer:LoadBalancer"),
 			},
-			"vpcId": {
-				Description: "Id of the VPC in which this load balancer is operating",
-				TypeSpec: schema.TypeSpec{
-					Type: "string",
-				},
+		},
+		"vpcId": {
+			Description: "Id of the VPC in which this load balancer is operating",
+			TypeSpec: schema.TypeSpec{
+				Type: "string",
 			},
-			"defaultSecurityGroup": {
-				Description: "Default security group, if auto-created",
-				TypeSpec: schema.TypeSpec{
-					Ref: packageRef(awsSpec, "/resources/aws:ec2%2fsecurityGroup:SecurityGroup"),
-				},
+		},
+		"defaultSecurityGroup": {
+			Description: "Default security group, if auto-created",
+			TypeSpec: schema.TypeSpec{
+				Ref: packageRef(awsSpec, "/resources/aws:ec2%2fsecurityGroup:SecurityGroup"),
 			},
-			"defaultTargetGroup": {
-				Description: "Default target group, if auto-created",
-				TypeSpec: schema.TypeSpec{
-					Ref: packageRef(awsSpec, "/resources/aws:lb%2ftargetGroup:TargetGroup"),
-				},
+		},
+		"defaultTargetGroup": {
+			Description: "Default target group, if auto-created",
+			TypeSpec: schema.TypeSpec{
+				Ref: packageRef(awsSpec, "/resources/aws:lb%2ftargetGroup:TargetGroup"),
 			},
-			"listeners": {
-				Description: "Listeners created as part of this load balancer",
-				TypeSpec: schema.TypeSpec{
-					Type: "array",
-					Items: &schema.TypeSpec{
-						Ref: packageRef(awsSpec, "/resources/aws:lb%2flistener:Listener"),
-					},
+		},
+		"listeners": {
+			Description: "Listeners created as part of this load balancer",
+			TypeSpec: schema.TypeSpec{
+				Type: "array",
+				Items: &schema.TypeSpec{
+					Ref: packageRef(awsSpec, "/resources/aws:lb%2flistener:Listener"),
 				},
 			},
 		},
-		Required: []string{"loadBalancer", "defaultTargetGroup"},
 	}
+
 	if isNetworkLoadBalancer {
 		// NLB don't have Security Groups
-		delete(inputProperties, "defaultSecurityGroup")
+		delete(outputs, "defaultSecurityGroup")
 	}
 
 	return schema.ResourceSpec{
 		IsComponent:     true,
 		InputProperties: inputProperties,
-		ObjectTypeSpec:  outputs,
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: "",
+			Properties:  outputs,
+			Required:    []string{"loadBalancer", "defaultTargetGroup"},
+		},
 	}
 }
 

@@ -2505,10 +2505,6 @@
         },
         "awsx:lb:NetworkLoadBalancer": {
             "properties": {
-                "defaultSecurityGroup": {
-                    "$ref": "/aws/v5.3.0/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
-                    "description": "Default security group, if auto-created"
-                },
                 "defaultTargetGroup": {
                     "$ref": "/aws/v5.3.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Default target group, if auto-created"

@@ -13,12 +13,6 @@ namespace Pulumi.Awsx.Lb
     public partial class NetworkLoadBalancer : Pulumi.ComponentResource
     {
         /// <summary>
-        /// Default security group, if auto-created
-        /// </summary>
-        [Output("defaultSecurityGroup")]
-        public Output<Pulumi.Aws.Ec2.SecurityGroup?> DefaultSecurityGroup { get; private set; } = null!;
-
-        /// <summary>
         /// Default target group, if auto-created
         /// </summary>
         [Output("defaultTargetGroup")]
