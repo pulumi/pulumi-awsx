@@ -65,9 +65,11 @@ build_python:: schema
 		cd ./bin && python3 setup.py build sdist
 
 build_go:: VERSION := $(shell pulumictl get version --language generic)
+build_go:: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
 build_go:: schema
 	rm -rf sdk/go
 	cd schemagen/cmd/$(CODEGEN) && go run . go ../../../sdk/go $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
+	cd sdk && go get github.com/pulumi/pulumi-aws/sdk/v5@v$(AWS_VERSION) && go mod tidy
 
 build_dotnet:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 build_dotnet:: schema
