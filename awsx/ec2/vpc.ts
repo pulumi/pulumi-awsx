@@ -29,7 +29,11 @@ interface VpcData {
 }
 
 export class Vpc extends schema.Vpc<VpcData> {
-    constructor(name: string, args: schema.VpcArgs, opts: pulumi.ComponentResourceOptions = {}) {
+    constructor(
+        name: string,
+        args: schema.VpcArgs,
+        opts: pulumi.ComponentResourceOptions = {},
+    ) {
         super(name, args, opts);
 
         const data = pulumi.output(this.getData());
@@ -44,17 +48,28 @@ export class Vpc extends schema.Vpc<VpcData> {
         this.eips = data.eips;
     }
 
-    protected async initialize(props: { name: string, args: schema.VpcArgs, opts: pulumi.ComponentResourceOptions; }) {
+    protected async initialize(props: {
+        name: string;
+        args: schema.VpcArgs;
+        opts: pulumi.ComponentResourceOptions;
+    }) {
         const { name, args } = props;
-        const availabilityZones = args.availabilityZoneNames ?? await this.getDefaultAzs();
+        const availabilityZones =
+            args.availabilityZoneNames ?? (await this.getDefaultAzs());
 
-        const natGatewayStrategy: schema.NatGatewayStrategyInputs = args.natGateways?.strategy ?? "OnePerAz";
+        const natGatewayStrategy: schema.NatGatewayStrategyInputs =
+            args.natGateways?.strategy ?? "OnePerAz";
         const allocationIds = args.natGateways?.elasticIpAllocationIds ?? [];
         validateEips(natGatewayStrategy, allocationIds, availabilityZones);
 
         const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
 
-        const subnetSpecs = getSubnetSpecs(name, cidrBlock, availabilityZones, args.subnetsPerAz);
+        const subnetSpecs = getSubnetSpecs(
+            name,
+            cidrBlock,
+            availabilityZones,
+            args.subnetsPerAz,
+        );
         validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
 
         const vpc = new aws.ec2.Vpc(
@@ -75,9 +90,13 @@ export class Vpc extends schema.Vpc<VpcData> {
         // therefore there's no harm in adding it, whereas conditional resources
         // must be declared in the constructor, which significantly complicates the
         // code.
-        const igw = new aws.ec2.InternetGateway(`${name}`, {
-            vpcId: vpc.id,
-        }, { parent: vpc });
+        const igw = new aws.ec2.InternetGateway(
+            `${name}`,
+            {
+                vpcId: vpc.id,
+            },
+            { parent: vpc, dependsOn: [vpc] },
+        );
 
         const subnets: aws.ec2.Subnet[] = [];
         const routeTables: aws.ec2.RouteTable[] = [];
@@ -88,75 +107,112 @@ export class Vpc extends schema.Vpc<VpcData> {
 
         for (let i = 0; i < availabilityZones.length; i++) {
             subnetSpecs
-                .filter(x => x.azName === availabilityZones[i])
+                .filter((x) => x.azName === availabilityZones[i])
                 .sort(compareSubnetSpecs)
-                .forEach(spec => {
-                    const subnet = new aws.ec2.Subnet(spec.subnetName, {
-                        vpcId: vpc.id,
-                        availabilityZone: spec.azName,
-                        mapPublicIpOnLaunch: spec.type === "Public",
-                        cidrBlock: spec.cidrBlock,
-                        tags: {
-                            "Name": spec.subnetName,
+                .forEach((spec) => {
+                    const subnet = new aws.ec2.Subnet(
+                        spec.subnetName,
+                        {
+                            vpcId: vpc.id,
+                            availabilityZone: spec.azName,
+                            mapPublicIpOnLaunch: spec.type === "Public",
+                            cidrBlock: spec.cidrBlock,
+                            tags: {
+                                Name: spec.subnetName,
+                            },
                         },
-                    }, { parent: vpc });
+                        { parent: vpc, dependsOn: [vpc] },
+                    );
                     subnets.push(subnet);
 
-                    const routeTable = new aws.ec2.RouteTable(spec.subnetName, {
-                        vpcId: vpc.id,
-                        tags: {
-                            "Name": spec.subnetName,
+                    const routeTable = new aws.ec2.RouteTable(
+                        spec.subnetName,
+                        {
+                            vpcId: vpc.id,
+                            tags: {
+                                Name: spec.subnetName,
+                            },
                         },
-                    }, { parent: subnet });
+                        { parent: subnet, dependsOn: [subnet] },
+                    );
                     routeTables.push(routeTable);
 
-                    const routeTableAssoc = new aws.ec2.RouteTableAssociation(spec.subnetName, {
-                        routeTableId: routeTable.id,
-                        subnetId: subnet.id,
-                    }, { parent: routeTable });
+                    const routeTableAssoc = new aws.ec2.RouteTableAssociation(
+                        spec.subnetName,
+                        {
+                            routeTableId: routeTable.id,
+                            subnetId: subnet.id,
+                        },
+                        { parent: routeTable, dependsOn: [routeTable] },
+                    );
                     routeTableAssociations.push(routeTableAssoc);
 
-                    if (spec.type === "Public" && shouldCreateNatGateway(natGatewayStrategy, natGateways.length, i)) {
+                    if (
+                        spec.type === "Public" &&
+                        shouldCreateNatGateway(
+                            natGatewayStrategy,
+                            natGateways.length,
+                            i,
+                        )
+                    ) {
                         const createEip = allocationIds.length === 0;
 
                         if (createEip) {
-                            const eip = new aws.ec2.Eip(`${name}-${i + 1}`,
-                                {}, { parent: subnet });
+                            const eip = new aws.ec2.Eip(
+                                `${name}-${i + 1}`,
+                                {},
+                                { parent: subnet, dependsOn: [subnet] },
+                            );
                             eips.push(eip);
                         }
 
-                        const natGateway = new aws.ec2.NatGateway(`${name}-${i + 1}`, {
-                            subnetId: subnet.id,
-                            allocationId: createEip ? eips[i].allocationId : allocationIds[i],
-                            tags: {
-                                "Name": `${name}-${i + 1}`,
+                        const natGateway = new aws.ec2.NatGateway(
+                            `${name}-${i + 1}`,
+                            {
+                                subnetId: subnet.id,
+                                allocationId: createEip
+                                    ? eips[i].allocationId
+                                    : allocationIds[i],
+                                tags: {
+                                    Name: `${name}-${i + 1}`,
+                                },
                             },
-                        }, { parent: subnet });
+                            { parent: subnet, dependsOn: [subnet] },
+                        );
                         natGateways.push(natGateway);
                     }
 
                     if (spec.type === "Public") {
                         // Public subnets communicate directly with the internet via the Internet Gateway.
-                        const route = new aws.ec2.Route(spec.subnetName, {
-                            routeTableId: routeTable.id,
-                            gatewayId: igw.id,
-                            destinationCidrBlock: "0.0.0.0/0",
-                        }, { parent: routeTable });
+                        const route = new aws.ec2.Route(
+                            spec.subnetName,
+                            {
+                                routeTableId: routeTable.id,
+                                gatewayId: igw.id,
+                                destinationCidrBlock: "0.0.0.0/0",
+                            },
+                            { parent: routeTable, dependsOn: [routeTable] },
+                        );
                         routes.push(route);
                     } else if (spec.type === "Private") {
                         // Private subnets communicate indirectly with the internet via a NAT Gateway.
 
                         // Because we've already validated the strategy and have ensured that public subnets are created
                         // first via the sort above, we know the necessary NAT Gateway already exists.
-                        const natGatewayId = natGatewayStrategy === "Single"
-                            ? natGateways[0].id
-                            : natGateways[i].id;
+                        const natGatewayId =
+                            natGatewayStrategy === "Single"
+                                ? natGateways[0].id
+                                : natGateways[i].id;
 
-                        const route = new aws.ec2.Route(spec.subnetName, {
-                            routeTableId: routeTable.id,
-                            natGatewayId,
-                            destinationCidrBlock: "0.0.0.0/0",
-                        }, { parent: routeTable });
+                        const route = new aws.ec2.Route(
+                            spec.subnetName,
+                            {
+                                routeTableId: routeTable.id,
+                                natGatewayId,
+                                destinationCidrBlock: "0.0.0.0/0",
+                            },
+                            { parent: routeTable, dependsOn: [routeTable] },
+                        );
                         routes.push(route);
                     }
 
@@ -179,7 +235,9 @@ export class Vpc extends schema.Vpc<VpcData> {
     async getDefaultAzs(): Promise<string[]> {
         const result = await aws.getAvailabilityZones();
         if (result.names.length < 3) {
-            throw new Error("The configured region for this provider does not have at least 3 Availability Zones. Either specify an explicit list of zones in availabilityZoneNames or choose a region with at least 3 AZs.");
+            throw new Error(
+                "The configured region for this provider does not have at least 3 Availability Zones. Either specify an explicit list of zones in availabilityZoneNames or choose a region with at least 3 AZs.",
+            );
         }
         return result.names.slice(0, 3);
     }
@@ -200,44 +258,72 @@ export function validateEips(
     switch (natGatewayStrategy) {
         case "None":
             if (eips?.length ?? 0 !== 0) {
-                throw new Error(`Elastic IP allocation IDs cannot be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`);
+                throw new Error(
+                    `Elastic IP allocation IDs cannot be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`,
+                );
             }
             break;
         case "Single":
             if (eips && eips.length !== 1) {
-                throw new Error(`Exactly one Elastic IP may be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`);
+                throw new Error(
+                    `Exactly one Elastic IP may be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`,
+                );
             }
             break;
         case "OnePerAz":
-            if (eips && eips.length > 0 && eips.length !== availabilityZones.length) {
-                throw new Error(`The number of Elastic IPs, if specified, must match the number of availability zones for the VPC (${availabilityZones.length}) when NAT Gateway strategy is '${natGatewayStrategy}'`);
+            if (
+                eips &&
+                eips.length > 0 &&
+                eips.length !== availabilityZones.length
+            ) {
+                throw new Error(
+                    `The number of Elastic IPs, if specified, must match the number of availability zones for the VPC (${availabilityZones.length}) when NAT Gateway strategy is '${natGatewayStrategy}'`,
+                );
             }
             break;
         default:
-            throw new Error(`Unknown NatGatewayStrategy '${natGatewayStrategy}'`);
+            throw new Error(
+                `Unknown NatGatewayStrategy '${natGatewayStrategy}'`,
+            );
     }
 }
 
-export function validateNatGatewayStrategy(natGatewayStrategy: schema.NatGatewayStrategyInputs, subnets: SubnetSpec[]) {
+export function validateNatGatewayStrategy(
+    natGatewayStrategy: schema.NatGatewayStrategyInputs,
+    subnets: SubnetSpec[],
+) {
     // This logic assumes that the same subnets exist in every AZ:
     switch (natGatewayStrategy) {
         case "OnePerAz":
         case "Single":
-            if (subnets.some(x => x.type === "Public") && subnets.some(x => x.type === "Private")) {
+            if (
+                subnets.some((x) => x.type === "Public") &&
+                subnets.some((x) => x.type === "Private")
+            ) {
                 return;
             }
-            throw new Error("If NAT Gateway strategy is 'OnePerAz' or 'Single', both private and public subnets must be declared. The private subnet creates the need for a NAT Gateway, and the public subnet is required to host the NAT Gateway resource.");
+            throw new Error(
+                "If NAT Gateway strategy is 'OnePerAz' or 'Single', both private and public subnets must be declared. The private subnet creates the need for a NAT Gateway, and the public subnet is required to host the NAT Gateway resource.",
+            );
         case "None":
-            if (subnets.some(x => x.type === "Private")) {
-                throw new Error("If private subnets are specified, NAT Gateway strategy cannot be 'None'.");
+            if (subnets.some((x) => x.type === "Private")) {
+                throw new Error(
+                    "If private subnets are specified, NAT Gateway strategy cannot be 'None'.",
+                );
             }
             break;
         default:
-            throw new Error(`Unknown NAT Gateway strategy '${natGatewayStrategy}'`);
+            throw new Error(
+                `Unknown NAT Gateway strategy '${natGatewayStrategy}'`,
+            );
     }
 }
 
-export function shouldCreateNatGateway(strategy: schema.NatGatewayStrategyInputs, numGateways: number, azIndex: number) {
+export function shouldCreateNatGateway(
+    strategy: schema.NatGatewayStrategyInputs,
+    numGateways: number,
+    azIndex: number,
+) {
     switch (strategy) {
         case "None":
             return false;
@@ -250,7 +336,10 @@ export function shouldCreateNatGateway(strategy: schema.NatGatewayStrategyInputs
     }
 }
 
-export function compareSubnetSpecs(spec1: SubnetSpec, spec2: SubnetSpec): number {
+export function compareSubnetSpecs(
+    spec1: SubnetSpec,
+    spec2: SubnetSpec,
+): number {
     if (spec1.type === spec2.type) {
         return 0;
     }
