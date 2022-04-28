@@ -95,7 +95,7 @@ type NetworkLoadBalancerArgs struct {
 	// The ID of the customer owned ipv4 pool to use for this load balancer.
 	CustomerOwnedIpv4Pool pulumi.StringPtrInput
 	// Options creating a default target group.
-	DefaultTargetGroup *TargetGroupArgs
+	DefaultTargetGroup *TargetGroup
 	// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
 	DesyncMitigationMode pulumi.StringPtrInput
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
@@ -115,9 +115,9 @@ type NetworkLoadBalancerArgs struct {
 	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
 	IpAddressType pulumi.StringPtrInput
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
-	Listener *ListenerArgs
+	Listener *Listener
 	// List of listeners to create. Only one of [listener] and [listeners] can be specified.
-	Listeners []ListenerArgs
+	Listeners []Listener
 	// The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
 	// must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
 	// this provider will autogenerate a name beginning with `tf-lb`.
