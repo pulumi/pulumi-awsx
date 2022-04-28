@@ -13,6 +13,7 @@ export type ResourceConstructor = {
     readonly "awsx:ecs:FargateService": ConstructComponent<FargateService>;
     readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
     readonly "awsx:lb:ApplicationLoadBalancer": ConstructComponent<ApplicationLoadBalancer>;
+    readonly "awsx:lb:NetworkLoadBalancer": ConstructComponent<NetworkLoadBalancer>;
     readonly "awsx:vpc:DefaultVpc": ConstructComponent<DefaultVpc>;
     readonly "awsx:vpc:Vpc": ConstructComponent<Vpc>;
 };
@@ -215,6 +216,37 @@ export interface ApplicationLoadBalancerArgs {
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
     readonly securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
+    readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export abstract class NetworkLoadBalancer<TData = any> extends pulumi.ComponentResource<TData> {
+    public defaultSecurityGroup?: aws.ec2.SecurityGroup | pulumi.Output<aws.ec2.SecurityGroup>;
+    public defaultTargetGroup!: aws.lb.TargetGroup | pulumi.Output<aws.lb.TargetGroup>;
+    public listeners?: aws.lb.Listener[] | pulumi.Output<aws.lb.Listener[]>;
+    public loadBalancer!: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
+    public vpcId?: string | pulumi.Output<string>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:lb:NetworkLoadBalancer", name, opts.urn ? { defaultSecurityGroup: undefined, defaultTargetGroup: undefined, listeners: undefined, loadBalancer: undefined, vpcId: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface NetworkLoadBalancerArgs {
+    readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
+    readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
+    readonly defaultTargetGroup?: TargetGroupInputs;
+    readonly desyncMitigationMode?: pulumi.Input<string>;
+    readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
+    readonly enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
+    readonly enableDeletionProtection?: pulumi.Input<boolean>;
+    readonly enableWafFailOpen?: pulumi.Input<boolean>;
+    readonly idleTimeout?: pulumi.Input<number>;
+    readonly internal?: pulumi.Input<boolean>;
+    readonly ipAddressType?: pulumi.Input<string>;
+    readonly listener?: ListenerInputs;
+    readonly listeners?: ListenerInputs[];
+    readonly name?: pulumi.Input<string>;
+    readonly namePrefix?: pulumi.Input<string>;
     readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
     readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;

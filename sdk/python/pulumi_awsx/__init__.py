@@ -64,7 +64,8 @@ _utilities.register(
   "mod": "lb",
   "fqn": "pulumi_awsx.lb",
   "classes": {
-   "awsx:lb:ApplicationLoadBalancer": "ApplicationLoadBalancer"
+   "awsx:lb:ApplicationLoadBalancer": "ApplicationLoadBalancer",
+   "awsx:lb:NetworkLoadBalancer": "NetworkLoadBalancer"
   }
  },
  {

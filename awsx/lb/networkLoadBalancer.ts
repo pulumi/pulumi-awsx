@@ -18,10 +18,10 @@ import * as schema from "../schema-types";
 import * as utils from "../utils";
 import { getDefaultVpc } from "../vpc";
 
-export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
+export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
     constructor(
         name: string,
-        args: schema.ApplicationLoadBalancerArgs,
+        args: schema.NetworkLoadBalancerArgs,
         opts: pulumi.ComponentResourceOptions = {},
     ) {
         super(
@@ -30,7 +30,7 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             pulumi.mergeOptions(opts, {
                 aliases: [
                     {
-                        name: "awsx:x:elasticloadbalancingv2:ApplicationLoadBalancer",
+                        name: "awsx:x:elasticloadbalancingv2:NetworkLoadBalancer",
                     },
                 ],
             }),
@@ -40,7 +40,6 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             subnetIds,
             subnets,
             defaultTargetGroup,
-            defaultSecurityGroup,
             listener,
             listeners,
             /* tslint:disable */ //rest args will always be last so don't have trailing commas
@@ -87,64 +86,24 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
             );
         }
 
-        if (!lbArgs.securityGroups && !defaultSecurityGroup?.skip) {
-            if (
-                defaultSecurityGroup?.args &&
-                defaultSecurityGroup.securityGroupId
-            ) {
-                throw new Error(
-                    "Only one of [defaultSecurityGroup] [args] or [securityGroupId] can be specified",
-                );
-            }
-            const securityGroupId = defaultSecurityGroup?.securityGroupId;
-            if (securityGroupId) {
-                lbArgs.securityGroups = [securityGroupId];
-            } else {
-                const securityGroup = new aws.ec2.SecurityGroup(
-                    name,
-                    defaultSecurityGroup?.args ?? { // TO-DO: we default to open SG rules at this point - we should review this!
-                        ingress: [
-                            {
-                                fromPort: 0,
-                                toPort: 0,
-                                protocol: "-1",
-                                cidrBlocks: ["0.0.0.0/0"],
-                                ipv6CidrBlocks: ["::/0"],
-                            },
-                        ],
-                        egress: [
-                            {
-                                fromPort: 0,
-                                toPort: 65535,
-                                protocol: "tcp",
-                                cidrBlocks: ["0.0.0.0/0"],
-                                ipv6CidrBlocks: ["::/0"],
-                            },
-                        ],
-                    },
-                    { parent: this },
-                );
-                this.defaultSecurityGroup = securityGroup;
-                lbArgs.securityGroups = [securityGroup.id];
-            }
-        }
-
-        // this is an application loadbalancer so we set this explicitly
+        // this is a network loadbalancer so we set this explicitly
         // we have removed this from the input properties in the schema
-        lbArgs.loadBalancerType = "application";
+        lbArgs.loadBalancerType = "network";
+        // enableHttp2 is not valid in NLB
+        lbArgs.enableHttp2 = false;
+        // idleTimeout is not valid in NLB
+        lbArgs.idleTimeout = 0;
 
         this.loadBalancer = new aws.lb.LoadBalancer(name, lbArgs, {
             parent: this,
         });
 
-        const defaultProtocol = getDefaultProtocol(args);
-
         this.defaultTargetGroup = new aws.lb.TargetGroup(
             name,
             {
                 vpcId: this.vpcId,
-                targetType: "ip",
-                ...defaultProtocol,
+                protocol: "TCP",
+                port: 80,
                 ...defaultTargetGroup,
             },
             { parent: this },
@@ -163,7 +122,8 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
                     `${name}-0`,
                     {
                         defaultActions,
-                        ...defaultProtocol,
+                        protocol: "TCP",
+                        port: 80,
                         ...listener,
                         loadBalancerArn: this.loadBalancer.arn,
                     },
@@ -173,12 +133,12 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
         } else if (listeners) {
             this.listeners = listeners.map(
                 (args, i) =>
-                    // TODO: Check name compat with classic
                     new aws.lb.Listener(
                         `${name}-${i}`,
                         {
                             defaultActions,
-                            ...getListenerProtocol(args),
+                            protocol: "TCP",
+                            port: 80,
                             ...args,
                             loadBalancerArn: this.loadBalancer.arn,
                         },
@@ -191,7 +151,8 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
                     `${name}-0`,
                     {
                         defaultActions,
-                        ...defaultProtocol,
+                        protocol: "TCP",
+                        port: 80,
                         loadBalancerArn: this.loadBalancer.arn,
                     },
                     { parent: this },
@@ -201,57 +162,3 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
     }
 }
 
-/** Get default port if there's just 1 listener */
-function getDefaultProtocol(
-    args: Readonly<schema.ApplicationLoadBalancerArgs>,
-): { port: pulumi.Input<number>; protocol: pulumi.Input<string> } | undefined {
-    let { listener } = args;
-    if (args.listeners) {
-        if (args.listeners.length !== 1) {
-            listener = args.listeners[0];
-        } else {
-            return undefined;
-        }
-    }
-    return getListenerProtocol(listener);
-}
-
-function getListenerProtocol(
-    listener: schema.ListenerInputs | undefined,
-): { port: pulumi.Input<number>; protocol: pulumi.Input<string> } | undefined {
-    if (listener) {
-        const { port, protocol } = listener;
-        if (port && protocol) {
-            return { port, protocol };
-        }
-        if (port) {
-            return {
-                port,
-                protocol: protocol ?? pulumi.output(port).apply(portToProtocol),
-            };
-        }
-        if (protocol) {
-            return {
-                protocol,
-                port: pulumi.output(protocol).apply(protocolToPort),
-            };
-        }
-    }
-    return { port: 80, protocol: "HTTP" };
-}
-
-function portToProtocol(port: number) {
-    if (port === 443) {
-        return "HTTPS";
-    }
-
-    return "HTTP";
-}
-
-function protocolToPort(protocol: string) {
-    if (protocol === "HTTPS") {
-        return 443;
-    }
-
-    return 80;
-}

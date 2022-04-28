@@ -22,7 +22,7 @@ import {
     FargateService,
     FargateTaskDefinition,
 } from "./ecs";
-import { ApplicationLoadBalancer } from "./lb";
+import { ApplicationLoadBalancer, NetworkLoadBalancer } from "./lb";
 import {
     ConstructComponent,
     Functions,
@@ -40,6 +40,8 @@ const resources: ResourceConstructor = {
         new FargateTaskDefinition(...args),
     "awsx:lb:ApplicationLoadBalancer": (...args) =>
         new ApplicationLoadBalancer(...args),
+    "awsx:lb:NetworkLoadBalancer": (...args) =>
+        new NetworkLoadBalancer(...args),
     "awsx:vpc:Vpc": (...args) => new Vpc(...args),
     "awsx:vpc:DefaultVpc": (...args) => new DefaultVpc(...args),
     "awsx:ecr:Repository": (...args) => new Repository(...args),
