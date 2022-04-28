@@ -159,7 +159,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 		if err != nil {
     /// 			return err
     /// 		}
-    /// 		_, err = lb.NewTargetGroup(ctx, "ip_example", &amp;lb.TargetGroupArgs{
+    /// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &amp;lb.TargetGroupArgs{
     /// 			Port:       pulumi.Int(80),
     /// 			Protocol:   pulumi.String("HTTP"),
     /// 			TargetType: pulumi.String("ip"),
@@ -216,7 +216,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// func main() {
     /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		_, err := lb.NewTargetGroup(ctx, "lambda_example", &amp;lb.TargetGroupArgs{
+    /// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &amp;lb.TargetGroupArgs{
     /// 			TargetType: pulumi.String("lambda"),
     /// 		})
     /// 		if err != nil {

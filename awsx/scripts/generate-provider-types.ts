@@ -16,14 +16,25 @@ interface ExternalRef {
     import: string;
     name: string;
 }
-const externalRefs: Record<string, ExternalRef> = {
-    "/aws/v4.37.1/schema.json": {
-        import: "@pulumi/aws",
-        name: "aws",
-    },
-};
 
 type Direction = "Input" | "Output";
+
+const externalRefs = (() => {
+    const packageJson = JSON.parse(fs.readFileSync("package.json", "utf-8"));
+
+    const externalRefs: Record<string, ExternalRef> = {};
+    const addRef = (name: string) => {
+        const importName = "@pulumi/" + name;
+        const version = packageJson.dependencies[importName];
+        externalRefs[`/${name}/v${version}/schema.json`] = {
+            import: importName,
+            name,
+        };
+    };
+    addRef("aws");
+    addRef("docker");
+    return externalRefs;
+})();
 
 const resolveRef = (ref: unknown, direction: Direction): ts.TypeNode => {
     if (typeof ref !== "string") {

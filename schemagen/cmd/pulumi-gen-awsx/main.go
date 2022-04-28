@@ -78,7 +78,7 @@ func main() {
 	case Nodejs:
 		genNodejs(readSchema(schemaFile, version), outdir)
 	case Schema:
-		pkgSpec := gen.GenerateSchema()
+		pkgSpec := gen.GenerateSchema(outdir)
 		mustWritePulumiSchema(pkgSpec, outdir)
 	default:
 		panic(fmt.Sprintf("Unrecognized language %q", language))

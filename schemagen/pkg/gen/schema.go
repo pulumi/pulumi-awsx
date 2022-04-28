@@ -20,6 +20,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
@@ -27,22 +28,15 @@ import (
 )
 
 const (
-	awsVersion            = "v4.37.1"
-	awsNativeTypesVersion = "v0.13.0"
-	dockerVersion         = "v3.2.0"
+	awsNativeTypesVersion = "0.13.0"
 )
 
-func packageRef(spec schema.PackageSpec, ref string) string {
-	version := spec.Version
-	refWithoutHash := strings.TrimLeft(ref, "#")
-	return fmt.Sprintf("/%s/%s/schema.json#%s", spec.Name, version, refWithoutHash)
-}
-
 // nolint: lll
-func GenerateSchema() schema.PackageSpec {
-	awsSpec := getPackageSpec("aws", awsVersion)
+func GenerateSchema(packageDir string) schema.PackageSpec {
+	dependencies := readPackageDependencies(packageDir)
+	awsSpec := getPackageSpec("aws", dependencies.Aws)
 	awsNativeSpec := getPackageSpec("aws-native", awsNativeTypesVersion)
-	dockerSpec := getPackageSpec("docker", dockerVersion)
+	dockerSpec := getPackageSpec("docker", dependencies.Docker)
 
 	packageSpec := schema.PackageSpec{
 		Name:        "awsx",
@@ -107,12 +101,18 @@ func GenerateSchema() schema.PackageSpec {
 	)
 }
 
+func packageRef(spec schema.PackageSpec, ref string) string {
+	version := spec.Version
+	refWithoutHash := strings.TrimLeft(ref, "#")
+	return fmt.Sprintf("/%s/%s/schema.json#%s", spec.Name, version, refWithoutHash)
+}
+
 func getPackageSpec(name, version string) schema.PackageSpec {
-	url := fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-%s/%s/provider/cmd/pulumi-resource-%s/schema.json", name, version, name)
+	url := fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-%s/v%s/provider/cmd/pulumi-resource-%s/schema.json", name, version, name)
 	spec := getSpecFromUrl(url)
 	if spec.Version == "" {
 		// Version is rarely included, so we'll just add it.
-		spec.Version = version
+		spec.Version = "v" + version
 	}
 	return spec
 }
@@ -224,4 +224,29 @@ func rawMessage(v interface{}) schema.RawMessage {
 	bytes, err := json.Marshal(v)
 	contract.Assert(err == nil)
 	return bytes
+}
+
+type Dependencies struct {
+	Aws    string `json:"@pulumi/aws"`
+	Docker string `json:"@pulumi/docker"`
+	Pulumi string `json:"@pulumi/pulumi"`
+}
+
+type PackageJson struct {
+	Dependencies Dependencies
+}
+
+func readPackageDependencies(packageDir string) Dependencies {
+	content, err := ioutil.ReadFile(path.Join(packageDir, "package.json"))
+	if err != nil {
+		log.Fatal("Error when opening file: ", err)
+	}
+
+	var payload PackageJson
+	err = json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+
+	return payload.Dependencies
 }
