@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.Vpc
+namespace Pulumi.Awsx.Ec2
 {
     [Obsolete(@"Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.")]
     public static class GetDefaultVpc
@@ -16,7 +16,7 @@ namespace Pulumi.Awsx.Vpc
         /// [NOT YET IMPLEMENTED] Get the Default VPC for a region.
         /// </summary>
         public static Task<GetDefaultVpcResult> InvokeAsync(GetDefaultVpcArgs? args = null, InvokeOptions? options = null)
-            => Pulumi.Deployment.Instance.InvokeAsync<GetDefaultVpcResult>("awsx:vpc:getDefaultVpc", args ?? new GetDefaultVpcArgs(), options.WithDefaults());
+            => Pulumi.Deployment.Instance.InvokeAsync<GetDefaultVpcResult>("awsx:ec2:getDefaultVpc", args ?? new GetDefaultVpcArgs(), options.WithDefaults());
     }
 
 

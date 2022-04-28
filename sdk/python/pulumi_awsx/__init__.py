@@ -13,21 +13,21 @@ if typing.TYPE_CHECKING:
     awsx = __awsx
     import pulumi_awsx.cloudtrail as __cloudtrail
     cloudtrail = __cloudtrail
+    import pulumi_awsx.ec2 as __ec2
+    ec2 = __ec2
     import pulumi_awsx.ecr as __ecr
     ecr = __ecr
     import pulumi_awsx.ecs as __ecs
     ecs = __ecs
     import pulumi_awsx.lb as __lb
     lb = __lb
-    import pulumi_awsx.vpc as __vpc
-    vpc = __vpc
 else:
     awsx = _utilities.lazy_import('pulumi_awsx.awsx')
     cloudtrail = _utilities.lazy_import('pulumi_awsx.cloudtrail')
+    ec2 = _utilities.lazy_import('pulumi_awsx.ec2')
     ecr = _utilities.lazy_import('pulumi_awsx.ecr')
     ecs = _utilities.lazy_import('pulumi_awsx.ecs')
     lb = _utilities.lazy_import('pulumi_awsx.lb')
-    vpc = _utilities.lazy_import('pulumi_awsx.vpc')
 
 _utilities.register(
     resource_modules="""
@@ -38,6 +38,15 @@ _utilities.register(
   "fqn": "pulumi_awsx.cloudtrail",
   "classes": {
    "awsx:cloudtrail:Trail": "Trail"
+  }
+ },
+ {
+  "pkg": "awsx",
+  "mod": "ec2",
+  "fqn": "pulumi_awsx.ec2",
+  "classes": {
+   "awsx:ec2:DefaultVpc": "DefaultVpc",
+   "awsx:ec2:Vpc": "Vpc"
   }
  },
  {
@@ -67,15 +76,6 @@ _utilities.register(
   "classes": {
    "awsx:lb:ApplicationLoadBalancer": "ApplicationLoadBalancer",
    "awsx:lb:NetworkLoadBalancer": "NetworkLoadBalancer"
-  }
- },
- {
-  "pkg": "awsx",
-  "mod": "vpc",
-  "fqn": "pulumi_awsx.vpc",
-  "classes": {
-   "awsx:vpc:DefaultVpc": "DefaultVpc",
-   "awsx:vpc:Vpc": "Vpc"
   }
  }
 ]

@@ -7,11 +7,47 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.Vpc
+namespace Pulumi.Awsx.Ec2
 {
-    [AwsxResourceType("awsx:vpc:Vpc")]
+    [AwsxResourceType("awsx:ec2:Vpc")]
     public partial class Vpc : Pulumi.ComponentResource
     {
+        /// <summary>
+        /// The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+        /// </summary>
+        [Output("eips")]
+        public Output<ImmutableArray<Pulumi.Aws.Ec2.Eip>> Eips { get; private set; } = null!;
+
+        /// <summary>
+        /// The Internet Gateway for the VPC.
+        /// </summary>
+        [Output("internetGateway")]
+        public Output<Pulumi.Aws.Ec2.InternetGateway?> InternetGateway { get; private set; } = null!;
+
+        /// <summary>
+        /// The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+        /// </summary>
+        [Output("natGateways")]
+        public Output<ImmutableArray<Pulumi.Aws.Ec2.NatGateway>> NatGateways { get; private set; } = null!;
+
+        /// <summary>
+        /// The Route Table Associations for the VPC.
+        /// </summary>
+        [Output("routeTableAssociations")]
+        public Output<ImmutableArray<Pulumi.Aws.Ec2.RouteTableAssociation>> RouteTableAssociations { get; private set; } = null!;
+
+        /// <summary>
+        /// The Route Tables for the VPC.
+        /// </summary>
+        [Output("routeTables")]
+        public Output<ImmutableArray<Pulumi.Aws.Ec2.RouteTable>> RouteTables { get; private set; } = null!;
+
+        /// <summary>
+        /// The Routes for the VPC.
+        /// </summary>
+        [Output("routes")]
+        public Output<ImmutableArray<Pulumi.Aws.Ec2.Route>> Routes { get; private set; } = null!;
+
         /// <summary>
         /// The VPC's subnets.
         /// </summary>
@@ -33,7 +69,7 @@ namespace Pulumi.Awsx.Vpc
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
         public Vpc(string name, VpcArgs? args = null, ComponentResourceOptions? options = null)
-            : base("awsx:vpc:Vpc", name, args ?? new VpcArgs(), MakeResourceOptions(options, ""), remote: true)
+            : base("awsx:ec2:Vpc", name, args ?? new VpcArgs(), MakeResourceOptions(options, ""), remote: true)
         {
         }
 

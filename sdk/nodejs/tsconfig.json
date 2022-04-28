@@ -105,6 +105,10 @@
         "classic/utils.ts",
         "cloudtrail/index.ts",
         "cloudtrail/trail.ts",
+        "ec2/defaultVpc.ts",
+        "ec2/getDefaultVpc.ts",
+        "ec2/index.ts",
+        "ec2/vpc.ts",
         "ecr/image.ts",
         "ecr/index.ts",
         "ecr/repository.ts",
@@ -118,16 +122,12 @@
         "lb/index.ts",
         "lb/networkLoadBalancer.ts",
         "provider.ts",
+        "types/enums/ec2/index.ts",
         "types/enums/ecr/index.ts",
         "types/enums/index.ts",
-        "types/enums/vpc/index.ts",
         "types/index.ts",
         "types/input.ts",
         "types/output.ts",
-        "utilities.ts",
-        "vpc/defaultVpc.ts",
-        "vpc/getDefaultVpc.ts",
-        "vpc/index.ts",
-        "vpc/vpc.ts"
+        "utilities.ts"
     ]
 }

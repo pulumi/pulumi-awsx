@@ -9,7 +9,7 @@ import * as pulumiAws from "@pulumi/aws";
 
 export class Vpc extends pulumi.ComponentResource {
     /** @internal */
-    public static readonly __pulumiType = 'awsx:vpc:Vpc';
+    public static readonly __pulumiType = 'awsx:ec2:Vpc';
 
     /**
      * Returns true if the given object is an instance of Vpc.  This is designed to work even
@@ -22,6 +22,30 @@ export class Vpc extends pulumi.ComponentResource {
         return obj['__pulumiType'] === Vpc.__pulumiType;
     }
 
+    /**
+     * The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+     */
+    public /*out*/ readonly eips!: pulumi.Output<pulumiAws.ec2.Eip[] | undefined>;
+    /**
+     * The Internet Gateway for the VPC.
+     */
+    public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway | undefined>;
+    /**
+     * The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+     */
+    public readonly natGateways!: pulumi.Output<pulumiAws.ec2.NatGateway[] | undefined>;
+    /**
+     * The Route Table Associations for the VPC.
+     */
+    public /*out*/ readonly routeTableAssociations!: pulumi.Output<pulumiAws.ec2.RouteTableAssociation[] | undefined>;
+    /**
+     * The Route Tables for the VPC.
+     */
+    public /*out*/ readonly routeTables!: pulumi.Output<pulumiAws.ec2.RouteTable[] | undefined>;
+    /**
+     * The Routes for the VPC.
+     */
+    public /*out*/ readonly routes!: pulumi.Output<pulumiAws.ec2.Route[] | undefined>;
     /**
      * The VPC's subnets.
      */
@@ -59,9 +83,20 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["natGateways"] = args ? args.natGateways : undefined;
             resourceInputs["subnetsPerAz"] = args ? args.subnetsPerAz : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
+            resourceInputs["eips"] = undefined /*out*/;
+            resourceInputs["internetGateway"] = undefined /*out*/;
+            resourceInputs["routeTableAssociations"] = undefined /*out*/;
+            resourceInputs["routeTables"] = undefined /*out*/;
+            resourceInputs["routes"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
         } else {
+            resourceInputs["eips"] = undefined /*out*/;
+            resourceInputs["internetGateway"] = undefined /*out*/;
+            resourceInputs["natGateways"] = undefined /*out*/;
+            resourceInputs["routeTableAssociations"] = undefined /*out*/;
+            resourceInputs["routeTables"] = undefined /*out*/;
+            resourceInputs["routes"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
         }
@@ -136,11 +171,11 @@ export interface VpcArgs {
     /**
      * Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
      */
-    natGateways?: inputs.vpc.NatGatewayConfigurationArgs;
+    natGateways?: inputs.ec2.NatGatewayConfigurationArgs;
     /**
      * A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
      */
-    subnetsPerAz?: inputs.vpc.SubnetConfigurationArgs[];
+    subnetsPerAz?: inputs.ec2.SubnetConfigurationArgs[];
     /**
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */

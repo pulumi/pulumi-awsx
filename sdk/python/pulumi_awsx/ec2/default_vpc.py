@@ -73,7 +73,7 @@ class DefaultVpc(pulumi.ComponentResource):
             __props__.__dict__["public_subnet_ids"] = None
             __props__.__dict__["vpc_id"] = None
         super(DefaultVpc, __self__).__init__(
-            'awsx:vpc:DefaultVpc',
+            'awsx:ec2:DefaultVpc',
             resource_name,
             __props__,
             opts,

@@ -418,14 +418,67 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["nat_gateways"] = nat_gateways
             __props__.__dict__["subnets_per_az"] = subnets_per_az
             __props__.__dict__["tags"] = tags
+            __props__.__dict__["eips"] = None
+            __props__.__dict__["internet_gateway"] = None
+            __props__.__dict__["route_table_associations"] = None
+            __props__.__dict__["route_tables"] = None
+            __props__.__dict__["routes"] = None
             __props__.__dict__["subnets"] = None
             __props__.__dict__["vpc"] = None
         super(Vpc, __self__).__init__(
-            'awsx:vpc:Vpc',
+            'awsx:ec2:Vpc',
             resource_name,
             __props__,
             opts,
             remote=True)
+
+    @property
+    @pulumi.getter
+    def eips(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.Eip']]]:
+        """
+        The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+        """
+        return pulumi.get(self, "eips")
+
+    @property
+    @pulumi.getter(name="internetGateway")
+    def internet_gateway(self) -> pulumi.Output[Optional['pulumi_aws.ec2.InternetGateway']]:
+        """
+        The Internet Gateway for the VPC.
+        """
+        return pulumi.get(self, "internet_gateway")
+
+    @property
+    @pulumi.getter(name="natGateways")
+    def nat_gateways(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.NatGateway']]]:
+        """
+        The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+        """
+        return pulumi.get(self, "nat_gateways")
+
+    @property
+    @pulumi.getter(name="routeTableAssociations")
+    def route_table_associations(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.RouteTableAssociation']]]:
+        """
+        The Route Table Associations for the VPC.
+        """
+        return pulumi.get(self, "route_table_associations")
+
+    @property
+    @pulumi.getter(name="routeTables")
+    def route_tables(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.RouteTable']]]:
+        """
+        The Route Tables for the VPC.
+        """
+        return pulumi.get(self, "route_tables")
+
+    @property
+    @pulumi.getter
+    def routes(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.Route']]]:
+        """
+        The Routes for the VPC.
+        """
+        return pulumi.get(self, "routes")
 
     @property
     @pulumi.getter

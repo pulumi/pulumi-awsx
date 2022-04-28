@@ -84,6 +84,16 @@ func TestDefaultVpc(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestVpcDeaultArgs(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "vpc", "nodejs", "default-args"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
 	base := getBaseOptions(t)
 	nodeBase := base.With(integration.ProgramTestOptions{

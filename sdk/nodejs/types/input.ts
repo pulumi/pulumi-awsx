@@ -359,6 +359,40 @@ export namespace awsx {
 export namespace cloudtrail {
 }
 
+export namespace ec2 {
+    /**
+     * Configuration for NAT Gateways.
+     */
+    export interface NatGatewayConfigurationArgs {
+        /**
+         * A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
+         */
+        elasticIpAllocationIds?: pulumi.Input<string>[];
+        /**
+         * The strategy for deploying NAT Gateways.
+         */
+        strategy: enums.ec2.NatGatewayStrategy;
+    }
+
+    /**
+     * Configuration for a VPC subnet.
+     */
+    export interface SubnetConfigurationArgs {
+        /**
+         * The bitmask for the subnet's CIDR block.
+         */
+        cidrMask: number;
+        /**
+         * The subnet's name. Will be templated upon creation.
+         */
+        name: string;
+        /**
+         * The type of subnet.
+         */
+        type: enums.ec2.SubnetType;
+    }
+}
+
 export namespace ecr {
     /**
      * Simplified lifecycle policy model consisting of one or more rules that determine which images in a repository should be expired. See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for more details.
@@ -2116,39 +2150,5 @@ export namespace lb {
          * Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
          */
         vpcId?: pulumi.Input<string>;
-    }
-}
-
-export namespace vpc {
-    /**
-     * Configuration for NAT Gateways.
-     */
-    export interface NatGatewayConfigurationArgs {
-        /**
-         * A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
-         */
-        elasticIpAllocationIds?: pulumi.Input<string>[];
-        /**
-         * The strategy for deploying NAT Gateways.
-         */
-        strategy: enums.vpc.NatGatewayStrategy;
-    }
-
-    /**
-     * Configuration for a VPC subnet.
-     */
-    export interface SubnetConfigurationArgs {
-        /**
-         * The bitmask for the subnet's CIDR block.
-         */
-        cidrMask: number;
-        /**
-         * The subnet's name. Will be templated upon creation.
-         */
-        name: string;
-        /**
-         * The type of subnet.
-         */
-        type: enums.vpc.SubnetType;
     }
 }
