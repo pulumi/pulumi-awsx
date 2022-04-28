@@ -113,7 +113,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -213,7 +213,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -321,7 +321,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -435,7 +435,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -598,8 +598,8 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/cognito"
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -767,7 +767,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -915,7 +915,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1157,8 +1157,8 @@ class TargetGroupArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1236,8 +1236,8 @@ class TargetGroupArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1300,7 +1300,7 @@ class TargetGroupArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1308,6 +1308,73 @@ class TargetGroupArgs:
         	pulumi.Run(func(ctx *pulumi.Context) error {
         		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
         			TargetType: pulumi.String("lambda"),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        {{% /example %}}
+        {{% example %}}
+        ### ALB Target Group
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const lambda_example = new aws.lb.TargetGroup("lambda-example", {
+            targetType: "alb",
+            port: 80,
+            protocol: "TCP",
+            vpcId: aws_vpc.main.id,
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        lambda_example = aws.lb.TargetGroup("lambda-example",
+            target_type="alb",
+            port=80,
+            protocol="TCP",
+            vpc_id=aws_vpc["main"]["id"])
+        ```
+        ```csharp
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        class MyStack : Stack
+        {
+            public MyStack()
+            {
+                var lambda_example = new Aws.LB.TargetGroup("lambda-example", new Aws.LB.TargetGroupArgs
+                {
+                    TargetType = "alb",
+                    Port = 80,
+                    Protocol = "TCP",
+                    VpcId = aws_vpc.Main.Id,
+                });
+            }
+
+        }
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+        			TargetType: pulumi.String("alb"),
+        			Port:       pulumi.Int(80),
+        			Protocol:   pulumi.String("TCP"),
+        			VpcId:      pulumi.Any(aws_vpc.Main.Id),
         		})
         		if err != nil {
         			return err
@@ -1344,7 +1411,7 @@ class TargetGroupArgs:
         :param pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs'] stickiness: Stickiness configuration block. Detailed below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] target_type: Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
-        :param pulumi.Input[str] vpc_id: Identifier of the VPC in which to create the target group. Required when `target_type` is `instance` or `ip`. Does not apply when `target_type` is `lambda`.
+        :param pulumi.Input[str] vpc_id: Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         """
         if connection_termination is not None:
             pulumi.set(__self__, "connection_termination", connection_termination)
@@ -1577,7 +1644,7 @@ class TargetGroupArgs:
     @pulumi.getter(name="vpcId")
     def vpc_id(self) -> Optional[pulumi.Input[str]]:
         """
-        Identifier of the VPC in which to create the target group. Required when `target_type` is `instance` or `ip`. Does not apply when `target_type` is `lambda`.
+        Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         """
         return pulumi.get(self, "vpc_id")
 

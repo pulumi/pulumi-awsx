@@ -4,7 +4,7 @@
 package lb
 
 import (
-	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 )
 
 // Provides a Load Balancer Listener resource.
@@ -17,7 +17,7 @@ import (
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -57,7 +57,7 @@ import (
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -88,7 +88,7 @@ import (
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -125,7 +125,7 @@ import (
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -162,8 +162,8 @@ import (
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/cognito"
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -220,7 +220,7 @@ import (
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -268,7 +268,7 @@ import (
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -348,8 +348,8 @@ type Listener struct {
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -378,8 +378,8 @@ type Listener struct {
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -409,7 +409,7 @@ type Listener struct {
 // package main
 //
 // import (
-// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 // 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
@@ -417,6 +417,30 @@ type Listener struct {
 // 	pulumi.Run(func(ctx *pulumi.Context) error {
 // 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
 // 			TargetType: pulumi.String("lambda"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### ALB Target Group
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("alb"),
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("TCP"),
+// 			VpcId:      pulumi.Any(aws_vpc.Main.Id),
 // 		})
 // 		if err != nil {
 // 			return err
@@ -466,7 +490,7 @@ type TargetGroup struct {
 	Tags map[string]string `pulumi:"tags"`
 	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
 	TargetType *string `pulumi:"targetType"`
-	// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance` or `ip`. Does not apply when `target_type` is `lambda`.
+	// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 	VpcId *string `pulumi:"vpcId"`
 }
 

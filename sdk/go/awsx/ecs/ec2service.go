@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pkg/errors"
-	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ecs"
+	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ecs"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 

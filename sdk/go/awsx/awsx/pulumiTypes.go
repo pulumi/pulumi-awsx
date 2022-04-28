@@ -4,9 +4,9 @@
 package awsx
 
 import (
-	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
-	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/iam"
-	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/s3"
+	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
+	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/s3"
 )
 
 // The set of arguments for constructing a Bucket resource.
@@ -35,7 +35,7 @@ type Bucket struct {
 	Loggings []s3.BucketLogging `pulumi:"loggings"`
 	// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
 	ObjectLockConfiguration *s3.BucketObjectLockConfiguration `pulumi:"objectLockConfiguration"`
-	// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), the provider may view the policy as constantly changing in a `pulumi up / preview / update`. In this case, please make sure you use the verbose/specific version of the policy.
+	// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
 	Policy *string `pulumi:"policy"`
 	// A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
 	ReplicationConfiguration *s3.BucketReplicationConfiguration `pulumi:"replicationConfiguration"`
@@ -46,7 +46,7 @@ type Bucket struct {
 	RequestPayer *string `pulumi:"requestPayer"`
 	// A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
 	ServerSideEncryptionConfiguration *s3.BucketServerSideEncryptionConfiguration `pulumi:"serverSideEncryptionConfiguration"`
-	// A mapping of tags to assign to the bucket.
+	// A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 	// A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
 	Versioning *s3.BucketVersioning `pulumi:"versioning"`

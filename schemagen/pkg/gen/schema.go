@@ -65,7 +65,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
 					"@pulumi/pulumi": "^3.0.0",
-					"@pulumi/aws":    "^4.23.0",
+					"@pulumi/aws":    "^5.3.0",
 					"@pulumi/docker": "^3.0.0",
 					"mime":           "^2.0.0",
 				},
