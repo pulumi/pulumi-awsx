@@ -16,3 +16,5 @@ ci-scripts/
 *.tar.gz
 
 **/venv
+
+!/awsx/yarn.lock

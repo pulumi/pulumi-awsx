@@ -37,7 +37,7 @@ func generateEcr(awsSpec, dockerSpec schema.PackageSpec) schema.PackageSpec {
 
 func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	originalSpec := awsSpec.Resources["aws:ecr/repository:Repository"]
-	inputProperties := renameAwsPropertiesRefs(originalSpec.InputProperties)
+	inputProperties := renameAwsPropertiesRefs(awsSpec, originalSpec.InputProperties)
 	inputProperties["lifecyclePolicy"] = schema.PropertySpec{
 		Description: "A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.",
 		TypeSpec: schema.TypeSpec{
@@ -56,7 +56,7 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				"repository": {
 					Description: "Underlying Repository resource",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ecr%2frepository:Repository"),
+						Ref: packageRef(awsSpec, "/resources/aws:ecr%2frepository:Repository"),
 					},
 					Language: map[string]schema.RawMessage{
 						"csharp": rawMessage(map[string]string{
@@ -67,7 +67,7 @@ func repository(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				"lifecyclePolicy": {
 					Description: "Underlying repository lifecycle policy",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy"),
+						Ref: packageRef(awsSpec, "/resources/aws:ecr%2flifecyclePolicy:LifecyclePolicy"),
 					},
 				},
 			},

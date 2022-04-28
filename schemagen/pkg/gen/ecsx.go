@@ -46,7 +46,7 @@ func generateEcs(awsSpec, awsNativeSpec schema.PackageSpec) schema.PackageSpec {
 		},
 	}
 
-	for k, v := range containerDefinitionTypes(awsNativeSpec) {
+	for k, v := range containerDefinitionTypes(awsSpec, awsNativeSpec) {
 		packageSpec.Types[k] = v
 	}
 
@@ -57,7 +57,7 @@ func ec2Service(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	service := awsSpec.Resources["aws:ecs/service:Service"]
 	inputProperties := map[string]schema.PropertySpec{}
 	for k, v := range service.InputProperties {
-		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", awsRef("#/types/aws:"))
+		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", packageRef(awsSpec, "/types/aws:"))
 	}
 	delete(inputProperties, "taskDefinition")
 	delete(inputProperties, "waitForSteadyState")
@@ -91,13 +91,13 @@ func ec2Service(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				"service": {
 					Description: "Underlying ECS Service resource",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ecs%2fservice:Service"),
+						Ref: packageRef(awsSpec, "/resources/aws:ecs%2fservice:Service"),
 					},
 				},
 				"taskDefinition": {
 					Description: "Underlying EC2 Task definition component resource if created from args",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ecs%2FtaskDefinition:TaskDefinition"),
+						Ref: packageRef(awsSpec, "/resources/aws:ecs%2FtaskDefinition:TaskDefinition"),
 					},
 				},
 			},
@@ -112,7 +112,7 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	service := awsSpec.Resources["aws:ecs/service:Service"]
 	inputProperties := map[string]schema.PropertySpec{}
 	for k, v := range service.InputProperties {
-		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", awsRef("#/types/aws:"))
+		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", packageRef(awsSpec, "/types/aws:"))
 	}
 	delete(inputProperties, "launchType")
 	delete(inputProperties, "taskDefinition")
@@ -147,13 +147,13 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				"service": {
 					Description: "Underlying ECS Service resource",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ecs%2fservice:Service"),
+						Ref: packageRef(awsSpec, "/resources/aws:ecs%2fservice:Service"),
 					},
 				},
 				"taskDefinition": {
 					Description: "Underlying Fargate component resource if created from args",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ecs%2FtaskDefinition:TaskDefinition"),
+						Ref: packageRef(awsSpec, "/resources/aws:ecs%2FtaskDefinition:TaskDefinition"),
 					},
 				},
 			},
@@ -167,7 +167,7 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	taskDefinition := awsSpec.Resources["aws:ecs/taskDefinition:TaskDefinition"]
 	inputProperties := map[string]schema.PropertySpec{}
 	for k, v := range taskDefinition.InputProperties {
-		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", awsRef("#/types/aws:"))
+		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", packageRef(awsSpec, "/types/aws:"))
 	}
 	delete(inputProperties, "containerDefinitions")
 	delete(inputProperties, "cpu")
@@ -244,25 +244,25 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				"taskDefinition": {
 					Description: "Underlying ECS Task Definition resource",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ecs%2FtaskDefinition:TaskDefinition"),
+						Ref: packageRef(awsSpec, "/resources/aws:ecs%2FtaskDefinition:TaskDefinition"),
 					},
 				},
 				"logGroup": {
 					Description: "Auto-created Log Group resource for use by containers.",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:cloudwatch%2FlogGroup:LogGroup"),
+						Ref: packageRef(awsSpec, "/resources/aws:cloudwatch%2FlogGroup:LogGroup"),
 					},
 				},
 				"taskRole": {
 					Description: "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services.",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:iam%2Frole:Role"),
+						Ref: packageRef(awsSpec, "/resources/aws:iam%2Frole:Role"),
 					},
 				},
 				"executionRole": {
 					Description: "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:iam%2Frole:Role"),
+						Ref: packageRef(awsSpec, "/resources/aws:iam%2Frole:Role"),
 					},
 				},
 				"loadBalancers": {
@@ -270,7 +270,7 @@ func fargateTaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					TypeSpec: schema.TypeSpec{
 						Type: "array",
 						Items: &schema.TypeSpec{
-							Ref: awsRef("#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"),
+							Ref: packageRef(awsSpec, "/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"),
 						},
 					},
 				},
@@ -285,7 +285,7 @@ func ec2TaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	taskDefinition := awsSpec.Resources["aws:ecs/taskDefinition:TaskDefinition"]
 	inputProperties := map[string]schema.PropertySpec{}
 	for k, v := range taskDefinition.InputProperties {
-		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", awsRef("#/types/aws:"))
+		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", packageRef(awsSpec, "/types/aws:"))
 	}
 	delete(inputProperties, "containerDefinitions")
 	delete(inputProperties, "cpu")
@@ -361,25 +361,25 @@ func ec2TaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				"taskDefinition": {
 					Description: "Underlying ECS Task Definition resource",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ecs%2FtaskDefinition:TaskDefinition"),
+						Ref: packageRef(awsSpec, "/resources/aws:ecs%2FtaskDefinition:TaskDefinition"),
 					},
 				},
 				"logGroup": {
 					Description: "Auto-created Log Group resource for use by containers.",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:cloudwatch%2FlogGroup:LogGroup"),
+						Ref: packageRef(awsSpec, "/resources/aws:cloudwatch%2FlogGroup:LogGroup"),
 					},
 				},
 				"taskRole": {
 					Description: "Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services.",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:iam%2Frole:Role"),
+						Ref: packageRef(awsSpec, "/resources/aws:iam%2Frole:Role"),
 					},
 				},
 				"executionRole": {
 					Description: "Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.",
 					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:iam%2Frole:Role"),
+						Ref: packageRef(awsSpec, "/resources/aws:iam%2Frole:Role"),
 					},
 				},
 				"loadBalancers": {
@@ -387,7 +387,7 @@ func ec2TaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					TypeSpec: schema.TypeSpec{
 						Type: "array",
 						Items: &schema.TypeSpec{
-							Ref: awsRef("#/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"),
+							Ref: packageRef(awsSpec, "/types/aws:ecs%2FServiceLoadBalancer:ServiceLoadBalancer"),
 						},
 					},
 				},
@@ -402,7 +402,7 @@ func ec2TaskDefinition(awsSpec schema.PackageSpec) schema.ResourceSpec {
 // Manually list all dependencies to also copy. If new dependencies are added the SDK builds will fail
 // indicating that we need to add them to be copied here. We're not just referencing from aws-native
 // as that would require adding a new package dependency just for the purpose of accessing some interfaces.
-func containerDefinitionTypes(awsNativeSpec schema.PackageSpec) map[string]schema.ComplexTypeSpec {
+func containerDefinitionTypes(awsSpec, awsNativeSpec schema.PackageSpec) map[string]schema.ComplexTypeSpec {
 	names := []string{
 		"TaskDefinitionContainerDefinition",
 		"TaskDefinitionContainerDependency",
@@ -432,7 +432,7 @@ func containerDefinitionTypes(awsNativeSpec schema.PackageSpec) map[string]schem
 	}
 	types["awsx:ecs:TaskDefinitionPortMapping"].Properties["targetGroup"] = schema.PropertySpec{
 		TypeSpec: schema.TypeSpec{
-			Ref: awsRef("#/resources/aws:lb%2FtargetGroup:TargetGroup"),
+			Ref: packageRef(awsSpec, "/resources/aws:lb%2FtargetGroup:TargetGroup"),
 		},
 	}
 	return types

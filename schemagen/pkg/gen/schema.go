@@ -20,6 +20,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"path"
 	"strings"
 
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
@@ -27,20 +28,15 @@ import (
 )
 
 const (
-	awsVersion            = "v4.37.1"
-	awsNativeTypesVersion = "v0.13.0"
-	dockerVersion         = "v3.2.0"
+	awsNativeTypesVersion = "0.13.0"
 )
 
-func awsRef(ref string) string {
-	return fmt.Sprintf("/aws/%s/schema.json%s", awsVersion, ref)
-}
-
 // nolint: lll
-func GenerateSchema() schema.PackageSpec {
-	awsSpec := getAwsSpec()
-	awsNativeSpec := getAwsNativeSpec()
-	dockerSpec := getDockerSpec()
+func GenerateSchema(packageDir string) schema.PackageSpec {
+	dependencies := readPackageDependencies(packageDir)
+	awsSpec := getPackageSpec("aws", dependencies.Aws)
+	awsNativeSpec := getPackageSpec("aws-native", awsNativeTypesVersion)
+	dockerSpec := getPackageSpec("docker", dependencies.Docker)
 
 	packageSpec := schema.PackageSpec{
 		Name:        "awsx",
@@ -57,7 +53,7 @@ func GenerateSchema() schema.PackageSpec {
 			"csharp": rawMessage(map[string]interface{}{
 				"packageReferences": map[string]string{
 					"Pulumi":     "3.*",
-					"Pulumi.Aws": "4.*",
+					"Pulumi.Aws": "5.*",
 				},
 				"liftSingleValueMethodReturns": true,
 			}),
@@ -69,7 +65,7 @@ func GenerateSchema() schema.PackageSpec {
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
 					"@pulumi/pulumi": "^3.0.0",
-					"@pulumi/aws":    "^4.23.0",
+					"@pulumi/aws":    "^5.3.0",
 					"@pulumi/docker": "^3.0.0",
 					"mime":           "^2.0.0",
 				},
@@ -83,7 +79,7 @@ func GenerateSchema() schema.PackageSpec {
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
 					"pulumi":     ">=3.0.0,<4.0.0",
-					"pulumi-aws": ">=4.15.0,<5.0.0",
+					"pulumi-aws": ">=5.3.0,<6.0.0",
 				},
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",
@@ -105,16 +101,20 @@ func GenerateSchema() schema.PackageSpec {
 	)
 }
 
-func getAwsSpec() schema.PackageSpec {
-	return getSpecFromUrl(fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-aws/%s/provider/cmd/pulumi-resource-aws/schema.json", awsVersion))
+func packageRef(spec schema.PackageSpec, ref string) string {
+	version := spec.Version
+	refWithoutHash := strings.TrimLeft(ref, "#")
+	return fmt.Sprintf("/%s/%s/schema.json#%s", spec.Name, version, refWithoutHash)
 }
 
-func getAwsNativeSpec() schema.PackageSpec {
-	return getSpecFromUrl(fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-aws-native/%s/provider/cmd/pulumi-resource-aws-native/schema.json", awsNativeTypesVersion))
-}
-
-func getDockerSpec() schema.PackageSpec {
-	return getSpecFromUrl(fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-docker/%s/provider/cmd/pulumi-resource-docker/schema.json", dockerVersion))
+func getPackageSpec(name, version string) schema.PackageSpec {
+	url := fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-%s/v%s/provider/cmd/pulumi-resource-%s/schema.json", name, version, name)
+	spec := getSpecFromUrl(url)
+	if spec.Version == "" {
+		// Version is rarely included, so we'll just add it.
+		spec.Version = "v" + version
+	}
+	return spec
 }
 
 func getSpecFromUrl(url string) schema.PackageSpec {
@@ -131,6 +131,7 @@ func getSpecFromUrl(url string) schema.PackageSpec {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	return spec
 }
 
@@ -140,8 +141,8 @@ func renameComplexRefs(spec schema.ComplexTypeSpec, old, new string) schema.Comp
 	return spec
 }
 
-func renameAwsPropertiesRefs(propertySpec map[string]schema.PropertySpec) map[string]schema.PropertySpec {
-	return renamePropertiesRefs(propertySpec, "#/types/aws:", awsRef("#/types/aws:"))
+func renameAwsPropertiesRefs(spec schema.PackageSpec, propertySpec map[string]schema.PropertySpec) map[string]schema.PropertySpec {
+	return renamePropertiesRefs(propertySpec, "#/types/aws:", packageRef(spec, "/types/aws:"))
 }
 
 func renamePropertiesRefs(propertySpec map[string]schema.PropertySpec, old, new string) map[string]schema.PropertySpec {
@@ -223,4 +224,29 @@ func rawMessage(v interface{}) schema.RawMessage {
 	bytes, err := json.Marshal(v)
 	contract.Assert(err == nil)
 	return bytes
+}
+
+type Dependencies struct {
+	Aws    string `json:"@pulumi/aws"`
+	Docker string `json:"@pulumi/docker"`
+	Pulumi string `json:"@pulumi/pulumi"`
+}
+
+type PackageJson struct {
+	Dependencies Dependencies
+}
+
+func readPackageDependencies(packageDir string) Dependencies {
+	content, err := ioutil.ReadFile(path.Join(packageDir, "package.json"))
+	if err != nil {
+		log.Fatal("Error when opening file: ", err)
+	}
+
+	var payload PackageJson
+	err = json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatal("Error during Unmarshal(): ", err)
+	}
+
+	return payload.Dependencies
 }

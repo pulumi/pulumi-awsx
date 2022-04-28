@@ -67,8 +67,8 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -146,8 +146,8 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/ec2"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -159,7 +159,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 		if err != nil {
     /// 			return err
     /// 		}
-    /// 		_, err = lb.NewTargetGroup(ctx, "ip_example", &amp;lb.TargetGroupArgs{
+    /// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &amp;lb.TargetGroupArgs{
     /// 			Port:       pulumi.Int(80),
     /// 			Protocol:   pulumi.String("HTTP"),
     /// 			TargetType: pulumi.String("ip"),
@@ -210,14 +210,81 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v4/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
     /// func main() {
     /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		_, err := lb.NewTargetGroup(ctx, "lambda_example", &amp;lb.TargetGroupArgs{
+    /// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &amp;lb.TargetGroupArgs{
     /// 			TargetType: pulumi.String("lambda"),
+    /// 		})
+    /// 		if err != nil {
+    /// 			return err
+    /// 		}
+    /// 		return nil
+    /// 	})
+    /// }
+    /// ```
+    /// {{% /example %}}
+    /// {{% example %}}
+    /// ### ALB Target Group
+    /// 
+    /// ```typescript
+    /// import * as pulumi from "@pulumi/pulumi";
+    /// import * as aws from "@pulumi/aws";
+    /// 
+    /// const lambda_example = new aws.lb.TargetGroup("lambda-example", {
+    ///     targetType: "alb",
+    ///     port: 80,
+    ///     protocol: "TCP",
+    ///     vpcId: aws_vpc.main.id,
+    /// });
+    /// ```
+    /// ```python
+    /// import pulumi
+    /// import pulumi_aws as aws
+    /// 
+    /// lambda_example = aws.lb.TargetGroup("lambda-example",
+    ///     target_type="alb",
+    ///     port=80,
+    ///     protocol="TCP",
+    ///     vpc_id=aws_vpc["main"]["id"])
+    /// ```
+    /// ```csharp
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// class MyStack : Stack
+    /// {
+    ///     public MyStack()
+    ///     {
+    ///         var lambda_example = new Aws.LB.TargetGroup("lambda-example", new Aws.LB.TargetGroupArgs
+    ///         {
+    ///             TargetType = "alb",
+    ///             Port = 80,
+    ///             Protocol = "TCP",
+    ///             VpcId = aws_vpc.Main.Id,
+    ///         });
+    ///     }
+    /// 
+    /// }
+    /// ```
+    /// ```go
+    /// package main
+    /// 
+    /// import (
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+    /// )
+    /// 
+    /// func main() {
+    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
+    /// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &amp;lb.TargetGroupArgs{
+    /// 			TargetType: pulumi.String("alb"),
+    /// 			Port:       pulumi.Int(80),
+    /// 			Protocol:   pulumi.String("TCP"),
+    /// 			VpcId:      pulumi.Any(aws_vpc.Main.Id),
     /// 		})
     /// 		if err != nil {
     /// 			return err
@@ -344,7 +411,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? TargetType { get; set; }
 
         /// <summary>
-        /// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance` or `ip`. Does not apply when `target_type` is `lambda`.
+        /// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         /// </summary>
         [Input("vpcId")]
         public Input<string>? VpcId { get; set; }

@@ -22,7 +22,7 @@ func generateCloudtrail(awsSpec schema.PackageSpec) schema.PackageSpec {
 	awsTrail := awsSpec.Resources["aws:cloudtrail/trail:Trail"]
 	inputProperties := map[string]schema.PropertySpec{}
 	for k, v := range awsTrail.InputProperties {
-		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", awsRef("#/types/aws:"))
+		inputProperties[k] = renamePropertyRefs(v, "#/types/aws:", packageRef(awsSpec, "/types/aws:"))
 	}
 	delete(inputProperties, "cloudWatchLogsGroupArn")
 	delete(inputProperties, "cloudWatchLogsRoleArn")
@@ -51,19 +51,19 @@ func generateCloudtrail(awsSpec schema.PackageSpec) schema.PackageSpec {
 						"bucket": {
 							Description: "The managed S3 Bucket where the Trail will place its logs.",
 							TypeSpec: schema.TypeSpec{
-								Ref: awsRef("#/resources/aws:s3%2Fbucket:Bucket"),
+								Ref: packageRef(awsSpec, "/resources/aws:s3%2Fbucket:Bucket"),
 							},
 						},
 						"logGroup": {
 							Description: "The managed Cloudwatch Log Group.",
 							TypeSpec: schema.TypeSpec{
-								Ref: awsRef("#/resources/aws:cloudwatch%2FlogGroup:LogGroup"),
+								Ref: packageRef(awsSpec, "/resources/aws:cloudwatch%2FlogGroup:LogGroup"),
 							},
 						},
 						"trail": {
 							Description: "The CloudTrail Trail.",
 							TypeSpec: schema.TypeSpec{
-								Ref: awsRef("#/resources/aws:cloudtrail%2Ftrail:Trail"),
+								Ref: packageRef(awsSpec, "/resources/aws:cloudtrail%2Ftrail:Trail"),
 							},
 							Language: map[string]schema.RawMessage{
 								"csharp": schema.RawMessage(`{
