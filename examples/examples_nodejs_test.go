@@ -53,6 +53,16 @@ func TestLbSimple(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestNlbSimple(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ts-nlb-simple"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func TestEcrSimple(t *testing.T) {
 	t.Skip("https://github.com/pulumi/pulumi-awsx/issues/784")
 	test := getNodeJSBaseOptions(t).

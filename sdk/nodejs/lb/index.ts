@@ -6,9 +6,11 @@ import * as utilities from "../utilities";
 
 // Export members:
 export * from "./applicationLoadBalancer";
+export * from "./networkLoadBalancer";
 
 // Import resources to register:
 import { ApplicationLoadBalancer } from "./applicationLoadBalancer";
+import { NetworkLoadBalancer } from "./networkLoadBalancer";
 
 const _module = {
     version: utilities.getVersion(),
@@ -16,6 +18,8 @@ const _module = {
         switch (type) {
             case "awsx:lb:ApplicationLoadBalancer":
                 return new ApplicationLoadBalancer(name, <any>undefined, { urn })
+            case "awsx:lb:NetworkLoadBalancer":
+                return new NetworkLoadBalancer(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }

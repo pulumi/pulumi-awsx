@@ -115,6 +115,7 @@
         "index.ts",
         "lb/applicationLoadBalancer.ts",
         "lb/index.ts",
+        "lb/networkLoadBalancer.ts",
         "provider.ts",
         "types/enums/ecr/index.ts",
         "types/enums/index.ts",

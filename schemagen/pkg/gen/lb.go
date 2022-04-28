@@ -21,21 +21,31 @@ import (
 func generateLb(awsSpec schema.PackageSpec) schema.PackageSpec {
 	return schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
-			"awsx:lb:ApplicationLoadBalancer": applicationLoadBalancer(awsSpec),
+			"awsx:lb:ApplicationLoadBalancer": loadBalancer(awsSpec, false),
+			"awsx:lb:NetworkLoadBalancer":     loadBalancer(awsSpec, true),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:lb:Listener":           lbListener(awsSpec),
-			"awsx:lb:TargetGroup":        lbTargetGroup(awsSpec),
+			"awsx:lb:Listener":    lbListener(awsSpec),
+			"awsx:lb:TargetGroup": lbTargetGroup(awsSpec),
 		},
 	}
 }
 
-func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
+func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema.ResourceSpec {
 	originalSpec := awsSpec.Resources["aws:lb/loadBalancer:LoadBalancer"]
 	inputProperties := renameAwsPropertiesRefs(originalSpec.InputProperties)
 
 	// Remove non-application properties
-	delete(inputProperties, "enableCrossZoneLoadBalancing")
+	if !isNetworkLoadBalancer {
+		// enableCrossZoneLoadBalancing is only for NLB
+		delete(inputProperties, "enableCrossZoneLoadBalancing")
+	}
+	if isNetworkLoadBalancer {
+		// "enableHttp2" is only for ApplicationLoadBalancers
+		delete(inputProperties, "enableHttp2")
+		// NLBs don't allow security groups
+		delete(inputProperties, "securityGroups")
+	}
 	delete(inputProperties, "loadBalancerType")
 
 	// Allow passing actual subnets in
@@ -49,12 +59,15 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			},
 		},
 	}
-	inputProperties["defaultSecurityGroup"] = schema.PropertySpec{
-		Description: "Options for creating a default security group if [securityGroups] not specified.",
-		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:awsx:DefaultSecurityGroup",
-			Plain: true,
-		},
+	if !isNetworkLoadBalancer {
+		// NLBs don't allow security groups
+		inputProperties["defaultSecurityGroup"] = schema.PropertySpec{
+			Description: "Options for creating a default security group if [securityGroups] not specified.",
+			TypeSpec: schema.TypeSpec{
+				Ref:   "#/types/awsx:awsx:DefaultSecurityGroup",
+				Plain: true,
+			},
+		}
 	}
 	inputProperties["defaultTargetGroup"] = schema.PropertySpec{
 		Description: "Options creating a default target group.",
@@ -82,49 +95,55 @@ func applicationLoadBalancer(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		},
 	}
 
-	return schema.ResourceSpec{
-		IsComponent:     true,
-		InputProperties: inputProperties,
-		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "object",
-			Description: "",
-			Properties: map[string]schema.PropertySpec{
-				"loadBalancer": {
-					Description: "Underlying Load Balancer resource",
-					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:lb%2floadBalancer:LoadBalancer"),
-					},
+	outputs := schema.ObjectTypeSpec{
+		Type:        "object",
+		Description: "",
+		Properties: map[string]schema.PropertySpec{
+			"loadBalancer": {
+				Description: "Underlying Load Balancer resource",
+				TypeSpec: schema.TypeSpec{
+					Ref: awsRef("#/resources/aws:lb%2floadBalancer:LoadBalancer"),
 				},
-				"vpcId": {
-					Description: "Id of the VPC in which this load balancer is operating",
-					TypeSpec: schema.TypeSpec{
-						Type: "string",
-					},
+			},
+			"vpcId": {
+				Description: "Id of the VPC in which this load balancer is operating",
+				TypeSpec: schema.TypeSpec{
+					Type: "string",
 				},
-				"defaultSecurityGroup": {
-					Description: "Default security group, if auto-created",
-					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:ec2%2fsecurityGroup:SecurityGroup"),
-					},
+			},
+			"defaultSecurityGroup": {
+				Description: "Default security group, if auto-created",
+				TypeSpec: schema.TypeSpec{
+					Ref: awsRef("#/resources/aws:ec2%2fsecurityGroup:SecurityGroup"),
 				},
-				"defaultTargetGroup": {
-					Description: "Default target group, if auto-created",
-					TypeSpec: schema.TypeSpec{
-						Ref: awsRef("#/resources/aws:lb%2ftargetGroup:TargetGroup"),
-					},
+			},
+			"defaultTargetGroup": {
+				Description: "Default target group, if auto-created",
+				TypeSpec: schema.TypeSpec{
+					Ref: awsRef("#/resources/aws:lb%2ftargetGroup:TargetGroup"),
 				},
-				"listeners": {
-					Description: "Listeners created as part of this load balancer",
-					TypeSpec: schema.TypeSpec{
-						Type: "array",
-						Items: &schema.TypeSpec{
-							Ref: awsRef("#/resources/aws:lb%2flistener:Listener"),
-						},
+			},
+			"listeners": {
+				Description: "Listeners created as part of this load balancer",
+				TypeSpec: schema.TypeSpec{
+					Type: "array",
+					Items: &schema.TypeSpec{
+						Ref: awsRef("#/resources/aws:lb%2flistener:Listener"),
 					},
 				},
 			},
-			Required: []string{"loadBalancer", "defaultTargetGroup"},
 		},
+		Required: []string{"loadBalancer", "defaultTargetGroup"},
+	}
+	if isNetworkLoadBalancer {
+		// NLB don't have Security Groups
+		delete(inputProperties, "defaultSecurityGroup")
+	}
+
+	return schema.ResourceSpec{
+		IsComponent:     true,
+		InputProperties: inputProperties,
+		ObjectTypeSpec:  outputs,
 	}
 }
 

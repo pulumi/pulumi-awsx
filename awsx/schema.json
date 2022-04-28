@@ -2266,6 +2266,136 @@
             },
             "isComponent": true
         },
+        "awsx:lb:NetworkLoadBalancer": {
+            "properties": {
+                "defaultSecurityGroup": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
+                    "description": "Default security group, if auto-created"
+                },
+                "defaultTargetGroup": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "description": "Default target group, if auto-created"
+                },
+                "listeners": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/resources/aws:lb%2flistener:Listener"
+                    },
+                    "description": "Listeners created as part of this load balancer"
+                },
+                "loadBalancer": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:lb%2floadBalancer:LoadBalancer",
+                    "description": "Underlying Load Balancer resource"
+                },
+                "vpcId": {
+                    "type": "string",
+                    "description": "Id of the VPC in which this load balancer is operating"
+                }
+            },
+            "type": "object",
+            "required": [
+                "loadBalancer",
+                "defaultTargetGroup"
+            ],
+            "inputProperties": {
+                "accessLogs": {
+                    "$ref": "/aws/v4.37.1/schema.json#/types/aws:lb/LoadBalancerAccessLogs:LoadBalancerAccessLogs",
+                    "description": "An Access Logs block. Access Logs documented below.\n"
+                },
+                "customerOwnedIpv4Pool": {
+                    "type": "string",
+                    "description": "The ID of the customer owned ipv4 pool to use for this load balancer.\n"
+                },
+                "defaultTargetGroup": {
+                    "$ref": "#/types/awsx:lb:TargetGroup",
+                    "plain": true,
+                    "description": "Options creating a default target group."
+                },
+                "desyncMitigationMode": {
+                    "type": "string",
+                    "description": "Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.\n"
+                },
+                "dropInvalidHeaderFields": {
+                    "type": "boolean",
+                    "description": "Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.\n"
+                },
+                "enableCrossZoneLoadBalancing": {
+                    "type": "boolean",
+                    "description": "If true, cross-zone load balancing of the load balancer will be enabled.\nThis is a `network` load balancer feature. Defaults to `false`.\n"
+                },
+                "enableDeletionProtection": {
+                    "type": "boolean",
+                    "description": "If true, deletion of the load balancer will be disabled via\nthe AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.\n"
+                },
+                "enableWafFailOpen": {
+                    "type": "boolean",
+                    "description": "Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.\n"
+                },
+                "idleTimeout": {
+                    "type": "integer",
+                    "description": "The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.\n"
+                },
+                "internal": {
+                    "type": "boolean",
+                    "description": "If true, the LB will be internal.\n"
+                },
+                "ipAddressType": {
+                    "type": "string",
+                    "description": "The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`\n"
+                },
+                "listener": {
+                    "$ref": "#/types/awsx:lb:Listener",
+                    "plain": true,
+                    "description": "A listener to create. Only one of [listener] and [listeners] can be specified."
+                },
+                "listeners": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/types/awsx:lb:Listener",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "List of listeners to create. Only one of [listener] and [listeners] can be specified."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,\nmust contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,\nthis provider will autogenerate a name beginning with `tf-lb`.\n"
+                },
+                "namePrefix": {
+                    "type": "string",
+                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n"
+                },
+                "subnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "A list of subnet IDs to attach to the LB. Subnets\ncannot be updated for Load Balancers of type `network`. Changing this value\nfor load balancers of type `network` will force a recreation of the resource.\n"
+                },
+                "subnetMappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
+                    },
+                    "description": "A subnet mapping block as documented below.\n"
+                },
+                "subnets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2fsubnet:Subnet"
+                    },
+                    "description": "A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "isComponent": true
+        },
         "awsx:vpc:DefaultVpc": {
             "description": "Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.",
             "properties": {

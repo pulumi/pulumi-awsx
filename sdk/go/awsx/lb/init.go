@@ -23,6 +23,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 	switch typ {
 	case "awsx:lb:ApplicationLoadBalancer":
 		r = &ApplicationLoadBalancer{}
+	case "awsx:lb:NetworkLoadBalancer":
+		r = &NetworkLoadBalancer{}
 	default:
 		return nil, fmt.Errorf("unknown resource type: %s", typ)
 	}
