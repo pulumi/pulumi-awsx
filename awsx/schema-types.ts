@@ -240,13 +240,12 @@ export interface ApplicationLoadBalancerArgs {
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class NetworkLoadBalancer<TData = any> extends pulumi.ComponentResource<TData> {
-    public defaultSecurityGroup?: aws.ec2.SecurityGroup | pulumi.Output<aws.ec2.SecurityGroup>;
     public defaultTargetGroup!: aws.lb.TargetGroup | pulumi.Output<aws.lb.TargetGroup>;
     public listeners?: aws.lb.Listener[] | pulumi.Output<aws.lb.Listener[]>;
     public loadBalancer!: aws.lb.LoadBalancer | pulumi.Output<aws.lb.LoadBalancer>;
     public vpcId?: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:lb:NetworkLoadBalancer", name, opts.urn ? { defaultSecurityGroup: undefined, defaultTargetGroup: undefined, listeners: undefined, loadBalancer: undefined, vpcId: undefined } : { name, args, opts }, opts);
+        super("awsx:lb:NetworkLoadBalancer", name, opts.urn ? { defaultTargetGroup: undefined, listeners: undefined, loadBalancer: undefined, vpcId: undefined } : { name, args, opts }, opts);
     }
 }
 export interface NetworkLoadBalancerArgs {

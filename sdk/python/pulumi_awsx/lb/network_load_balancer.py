@@ -466,7 +466,6 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["subnet_mappings"] = subnet_mappings
             __props__.__dict__["subnets"] = subnets
             __props__.__dict__["tags"] = tags
-            __props__.__dict__["default_security_group"] = None
             __props__.__dict__["load_balancer"] = None
             __props__.__dict__["vpc_id"] = None
         super(NetworkLoadBalancer, __self__).__init__(
@@ -475,14 +474,6 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
             __props__,
             opts,
             remote=True)
-
-    @property
-    @pulumi.getter(name="defaultSecurityGroup")
-    def default_security_group(self) -> pulumi.Output[Optional['pulumi_aws.ec2.SecurityGroup']]:
-        """
-        Default security group, if auto-created
-        """
-        return pulumi.get(self, "default_security_group")
 
     @property
     @pulumi.getter(name="defaultTargetGroup")

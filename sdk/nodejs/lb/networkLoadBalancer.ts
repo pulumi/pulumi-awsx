@@ -23,10 +23,6 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
     }
 
     /**
-     * Default security group, if auto-created
-     */
-    public /*out*/ readonly defaultSecurityGroup!: pulumi.Output<pulumiAws.ec2.SecurityGroup | undefined>;
-    /**
      * Default target group, if auto-created
      */
     public readonly defaultTargetGroup!: pulumi.Output<pulumiAws.lb.TargetGroup>;
@@ -73,11 +69,9 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["subnetMappings"] = args ? args.subnetMappings : undefined;
             resourceInputs["subnets"] = args ? args.subnets : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
-            resourceInputs["defaultSecurityGroup"] = undefined /*out*/;
             resourceInputs["loadBalancer"] = undefined /*out*/;
             resourceInputs["vpcId"] = undefined /*out*/;
         } else {
-            resourceInputs["defaultSecurityGroup"] = undefined /*out*/;
             resourceInputs["defaultTargetGroup"] = undefined /*out*/;
             resourceInputs["listeners"] = undefined /*out*/;
             resourceInputs["loadBalancer"] = undefined /*out*/;

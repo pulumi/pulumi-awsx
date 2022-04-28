@@ -15,8 +15,6 @@ import (
 type NetworkLoadBalancer struct {
 	pulumi.ResourceState
 
-	// Default security group, if auto-created
-	DefaultSecurityGroup ec2.SecurityGroupOutput `pulumi:"defaultSecurityGroup"`
 	// Default target group, if auto-created
 	DefaultTargetGroup lb.TargetGroupOutput `pulumi:"defaultTargetGroup"`
 	// Listeners created as part of this load balancer
