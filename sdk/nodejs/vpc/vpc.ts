@@ -23,6 +23,30 @@ export class Vpc extends pulumi.ComponentResource {
     }
 
     /**
+     * The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+     */
+    public /*out*/ readonly eips!: pulumi.Output<pulumiAws.ec2.Eip[] | undefined>;
+    /**
+     * The Internet Gateway for the VPC.
+     */
+    public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway | undefined>;
+    /**
+     * The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+     */
+    public readonly natGateways!: pulumi.Output<pulumiAws.ec2.NatGateway[] | undefined>;
+    /**
+     * The Route Table Associations for the VPC.
+     */
+    public /*out*/ readonly routeTableAssociations!: pulumi.Output<pulumiAws.ec2.RouteTableAssociation[] | undefined>;
+    /**
+     * The Route Tables for the VPC.
+     */
+    public /*out*/ readonly routeTables!: pulumi.Output<pulumiAws.ec2.RouteTable[] | undefined>;
+    /**
+     * The Routes for the VPC.
+     */
+    public /*out*/ readonly routes!: pulumi.Output<pulumiAws.ec2.Route[] | undefined>;
+    /**
      * The VPC's subnets.
      */
     public /*out*/ readonly subnets!: pulumi.Output<pulumiAws.ec2.Subnet[] | undefined>;
@@ -59,9 +83,20 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["natGateways"] = args ? args.natGateways : undefined;
             resourceInputs["subnetsPerAz"] = args ? args.subnetsPerAz : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
+            resourceInputs["eips"] = undefined /*out*/;
+            resourceInputs["internetGateway"] = undefined /*out*/;
+            resourceInputs["routeTableAssociations"] = undefined /*out*/;
+            resourceInputs["routeTables"] = undefined /*out*/;
+            resourceInputs["routes"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
         } else {
+            resourceInputs["eips"] = undefined /*out*/;
+            resourceInputs["internetGateway"] = undefined /*out*/;
+            resourceInputs["natGateways"] = undefined /*out*/;
+            resourceInputs["routeTableAssociations"] = undefined /*out*/;
+            resourceInputs["routeTables"] = undefined /*out*/;
+            resourceInputs["routes"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
         }

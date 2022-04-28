@@ -281,10 +281,16 @@ export abstract class DefaultVpc<TData = any> extends pulumi.ComponentResource<T
 export interface DefaultVpcArgs {
 }
 export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
+    public eips?: aws.ec2.Eip[] | pulumi.Output<aws.ec2.Eip[]>;
+    public internetGateway?: aws.ec2.InternetGateway | pulumi.Output<aws.ec2.InternetGateway>;
+    public natGateways?: aws.ec2.NatGateway[] | pulumi.Output<aws.ec2.NatGateway[]>;
+    public routeTableAssociations?: aws.ec2.RouteTableAssociation[] | pulumi.Output<aws.ec2.RouteTableAssociation[]>;
+    public routeTables?: aws.ec2.RouteTable[] | pulumi.Output<aws.ec2.RouteTable[]>;
+    public routes?: aws.ec2.Route[] | pulumi.Output<aws.ec2.Route[]>;
     public subnets?: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;
     public vpc?: aws.ec2.Vpc | pulumi.Output<aws.ec2.Vpc>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:vpc:Vpc", name, opts.urn ? { subnets: undefined, vpc: undefined } : { name, args, opts }, opts);
+        super("awsx:vpc:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, natGateways: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined } : { name, args, opts }, opts);
     }
 }
 export interface VpcArgs {

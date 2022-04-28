@@ -2490,6 +2490,45 @@
         },
         "awsx:vpc:Vpc": {
             "properties": {
+                "eips": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2feip:Eip"
+                    },
+                    "description": "The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list."
+                },
+                "internetGateway": {
+                    "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2finternetGateway:InternetGateway",
+                    "description": "The Internet Gateway for the VPC."
+                },
+                "natGateways": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2fnatGateway:NatGateway"
+                    },
+                    "description": "The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list."
+                },
+                "routeTableAssociations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2frouteTableAssociation:RouteTableAssociation"
+                    },
+                    "description": "The Route Table Associations for the VPC."
+                },
+                "routeTables": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2frouteTable:RouteTable"
+                    },
+                    "description": "The Route Tables for the VPC."
+                },
+                "routes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v4.37.1/schema.json#/resources/aws:ec2%2froute:Route"
+                    },
+                    "description": "The Routes for the VPC."
+                },
                 "subnets": {
                     "type": "array",
                     "items": {

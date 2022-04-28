@@ -14,6 +14,18 @@ import (
 type Vpc struct {
 	pulumi.ResourceState
 
+	// The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+	Eips ec2.EipArrayOutput `pulumi:"eips"`
+	// The Internet Gateway for the VPC.
+	InternetGateway ec2.InternetGatewayOutput `pulumi:"internetGateway"`
+	// The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+	NatGateways ec2.NatGatewayArrayOutput `pulumi:"natGateways"`
+	// The Route Table Associations for the VPC.
+	RouteTableAssociations ec2.RouteTableAssociationArrayOutput `pulumi:"routeTableAssociations"`
+	// The Route Tables for the VPC.
+	RouteTables ec2.RouteTableArrayOutput `pulumi:"routeTables"`
+	// The Routes for the VPC.
+	Routes ec2.RouteArrayOutput `pulumi:"routes"`
 	// The VPC's subnets.
 	Subnets ec2.SubnetArrayOutput `pulumi:"subnets"`
 	// The VPC.

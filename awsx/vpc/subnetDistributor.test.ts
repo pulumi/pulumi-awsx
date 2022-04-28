@@ -82,19 +82,19 @@ describe("getSubnetSpecs", () => {
                     type: type,
                     cidrBlock: "10.0.0.0/19",
                     azName: "us-east-1a",
-                    name: "vpcname-foo-1",
+                    subnetName: "vpcname-foo-1",
                 },
                 {
                     type: type,
                     cidrBlock: "10.0.64.0/19",
                     azName: "us-east-1b",
-                    name: "vpcname-foo-2",
+                    subnetName: "vpcname-foo-2",
                 },
                 {
                     type: type,
                     cidrBlock: "10.0.128.0/19",
                     azName: "us-east-1c",
-                    name: "vpcname-foo-3",
+                    subnetName: "vpcname-foo-3",
                 },
             ];
 
@@ -125,37 +125,37 @@ describe("getSubnetSpecs", () => {
                     type: slash19Type,
                     cidrBlock: "10.0.0.0/19",
                     azName: "us-east-1a",
-                    name: "vpcname-foo-1",
+                    subnetName: "vpcname-foo-1",
                 },
                 {
                     type: slash19Type,
                     cidrBlock: "10.0.64.0/19",
                     azName: "us-east-1b",
-                    name: "vpcname-foo-2",
+                    subnetName: "vpcname-foo-2",
                 },
                 {
                     type: slash19Type,
                     cidrBlock: "10.0.128.0/19",
                     azName: "us-east-1c",
-                    name: "vpcname-foo-3",
+                    subnetName: "vpcname-foo-3",
                 },
                 {
                     type: slash20Type,
                     cidrBlock: "10.0.32.0/20",
                     azName: "us-east-1a",
-                    name: "vpcname-bar-1",
+                    subnetName: "vpcname-bar-1",
                 },
                 {
                     type: slash20Type,
                     cidrBlock: "10.0.96.0/20",
                     azName: "us-east-1b",
-                    name: "vpcname-bar-2",
+                    subnetName: "vpcname-bar-2",
                 },
                 {
                     type: slash20Type,
                     cidrBlock: "10.0.160.0/20",
                     azName: "us-east-1c",
-                    name: "vpcname-bar-3",
+                    subnetName: "vpcname-bar-3",
                 },
             ];
 

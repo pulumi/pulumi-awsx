@@ -17,6 +17,7 @@ package gen
 import (
 	"fmt"
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
+	"strings"
 )
 
 func generateVpc(awsSpec schema.PackageSpec) schema.PackageSpec {
@@ -84,9 +85,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Properties: map[string]schema.PropertySpec{
 				"vpc": {
 					Description: "The VPC.",
-					TypeSpec: schema.TypeSpec{
-						Ref: packageRef(awsSpec, "/resources/aws:ec2%2fvpc:Vpc"),
-					},
+					TypeSpec:    awsType(awsSpec, "ec2", "vpc"),
 					Language: map[string]schema.RawMessage{
 						"csharp": schema.RawMessage(`{
 									"name": "AwsVpc"
@@ -95,16 +94,65 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				},
 				"subnets": {
 					Description: "The VPC's subnets.",
-					TypeSpec: schema.TypeSpec{
-						Type: "array",
-						Items: &schema.TypeSpec{
-							Ref: packageRef(awsSpec, "/resources/aws:ec2%2fsubnet:Subnet"),
-						},
-					},
+					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "subnet"),
+				},
+				"routeTables": {
+					Description: "The Route Tables for the VPC.",
+					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "routeTable"),
+				},
+				"routeTableAssociations": {
+					Description: "The Route Table Associations for the VPC.",
+					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "routeTableAssociation"),
+				},
+				"routes": {
+					Description: "The Routes for the VPC.",
+					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "route"),
+				},
+				"internetGateway": {
+					Description: "The Internet Gateway for the VPC.",
+					TypeSpec:    awsType(awsSpec, "ec2", "internetGateway"),
+				},
+				"natGateways": {
+					Description: "The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.",
+					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "natGateway"),
+				},
+				"eips": {
+					Description: "The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.",
+					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "eip"),
 				},
 			},
 		},
 		InputProperties: inputProperties,
+	}
+}
+
+func arrayOfAwsType(packageSpec schema.PackageSpec, awsNamespace, resourceNameCamelCase string) schema.TypeSpec {
+	awsRefInput := fmt.Sprintf(
+		"#/resources/aws:%s%s%s:%s",
+		strings.ToLower(awsNamespace),
+		"%2f",
+		resourceNameCamelCase,
+		strings.Title(resourceNameCamelCase),
+	)
+
+	return schema.TypeSpec{
+		Type: "array",
+		Items: &schema.TypeSpec{
+			Ref: packageRef(packageSpec, awsRefInput),
+		},
+	}
+}
+
+func awsType(packageSpec schema.PackageSpec, awsNamespace, resourceNameCamelCase string) schema.TypeSpec {
+	awsRefInput := fmt.Sprintf(
+		"#/resources/aws:%s%s%s:%s",
+		strings.ToLower(awsNamespace),
+		"%2f",
+		resourceNameCamelCase,
+		strings.Title(resourceNameCamelCase),
+	)
+	return schema.TypeSpec{
+		Ref: packageRef(packageSpec, awsRefInput),
 	}
 }
 
