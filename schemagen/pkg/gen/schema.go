@@ -53,7 +53,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"csharp": rawMessage(map[string]interface{}{
 				"packageReferences": map[string]string{
 					"Pulumi":     "3.*",
-					"Pulumi.Aws": "4.*",
+					"Pulumi.Aws": "5.*",
 				},
 				"liftSingleValueMethodReturns": true,
 			}),
@@ -79,7 +79,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
 					"pulumi":     ">=3.0.0,<4.0.0",
-					"pulumi-aws": ">=4.15.0,<5.0.0",
+					"pulumi-aws": ">=5.3.0,<6.0.0",
 				},
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",

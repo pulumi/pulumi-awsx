@@ -2636,7 +2636,7 @@
             "liftSingleValueMethodReturns": true,
             "packageReferences": {
                 "Pulumi": "3.*",
-                "Pulumi.Aws": "4.*"
+                "Pulumi.Aws": "5.*"
             }
         },
         "go": {
@@ -2663,7 +2663,7 @@
             "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
             "requires": {
                 "pulumi": "\u003e=3.0.0,\u003c4.0.0",
-                "pulumi-aws": "\u003e=4.15.0,\u003c5.0.0"
+                "pulumi-aws": "\u003e=5.3.0,\u003c6.0.0"
             },
             "usesIOClasses": true
         }
