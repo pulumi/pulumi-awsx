@@ -77,7 +77,7 @@ export class Vpc extends schema.Vpc<VpcData> {
         // code.
         const igw = new aws.ec2.InternetGateway(`${name}`, {
             vpcId: vpc.id,
-        }, { parent: this });
+        }, { parent: vpc });
 
         const subnets: aws.ec2.Subnet[] = [];
         const routeTables: aws.ec2.RouteTable[] = [];
@@ -99,7 +99,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                         tags: {
                             "Name": spec.subnetName,
                         },
-                    }, { parent: this });
+                    }, { parent: vpc });
                     subnets.push(subnet);
 
                     const routeTable = new aws.ec2.RouteTable(spec.subnetName, {
@@ -107,13 +107,13 @@ export class Vpc extends schema.Vpc<VpcData> {
                         tags: {
                             "Name": spec.subnetName,
                         },
-                    }, { parent: this });
+                    }, { parent: subnet });
                     routeTables.push(routeTable);
 
                     const routeTableAssoc = new aws.ec2.RouteTableAssociation(spec.subnetName, {
                         routeTableId: routeTable.id,
                         subnetId: subnet.id,
-                    }, { parent: this });
+                    }, { parent: routeTable });
                     routeTableAssociations.push(routeTableAssoc);
 
                     if (spec.type === "Public" && shouldCreateNatGateway(natGatewayStrategy, natGateways.length, i)) {
@@ -121,7 +121,7 @@ export class Vpc extends schema.Vpc<VpcData> {
 
                         if (createEip) {
                             const eip = new aws.ec2.Eip(`${name}-${i + 1}`,
-                                {}, { parent: this });
+                                {}, { parent: subnet });
                             eips.push(eip);
                         }
 
@@ -131,7 +131,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                             tags: {
                                 "Name": `${name}-${i + 1}`,
                             },
-                        }, { parent: this });
+                        }, { parent: subnet });
                         natGateways.push(natGateway);
                     }
 
@@ -141,7 +141,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                             routeTableId: routeTable.id,
                             gatewayId: igw.id,
                             destinationCidrBlock: "0.0.0.0/0",
-                        }, { parent: this });
+                        }, { parent: routeTable });
                         routes.push(route);
                     } else if (spec.type === "Private") {
                         // Private subnets communicate indirectly with the internet via a NAT Gateway.
@@ -156,7 +156,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                             routeTableId: routeTable.id,
                             natGatewayId,
                             destinationCidrBlock: "0.0.0.0/0",
-                        }, { parent: this });
+                        }, { parent: routeTable });
                         routes.push(route);
                     }
 

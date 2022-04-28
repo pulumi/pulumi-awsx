@@ -1,3 +1,3 @@
 import * as awsx from "@pulumi/awsx";
 
-new awsx.vpc.Vpc('awsx-nodejs-default-args', {});
+new awsx.ec2.Vpc('awsx-nodejs-default-args', {});
