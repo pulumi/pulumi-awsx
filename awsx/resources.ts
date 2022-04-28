@@ -15,7 +15,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
 import { Repository } from "./ecr";
-import { Repository_buildAndPushImage } from "./ecr/buildAndPushImage";
+import { Image } from "./ecr/image";
 import {
     EC2Service,
     EC2TaskDefinition,
@@ -45,6 +45,7 @@ const resources: ResourceConstructor = {
     "awsx:vpc:Vpc": (...args) => new Vpc(...args),
     "awsx:vpc:DefaultVpc": (...args) => new DefaultVpc(...args),
     "awsx:ecr:Repository": (...args) => new Repository(...args),
+    "awsx:ecr:Image": (...args) => new Image(...args),
 };
 
 export function construct(
@@ -62,6 +63,5 @@ export function construct(
 }
 
 export const functions: Functions = {
-    "awsx:ecr:Repository/buildAndPushImage": Repository_buildAndPushImage,
     "awsx:vpc:getDefaultVpc": getDefaultVpc,
 };

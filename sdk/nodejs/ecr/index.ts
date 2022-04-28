@@ -5,18 +5,22 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
+export * from "./image";
 export * from "./repository";
 
 // Export enums:
 export * from "../types/enums/ecr";
 
 // Import resources to register:
+import { Image } from "./image";
 import { Repository } from "./repository";
 
 const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
+            case "awsx:ecr:Image":
+                return new Image(name, <any>undefined, { urn })
             case "awsx:ecr:Repository":
                 return new Repository(name, <any>undefined, { urn })
             default:

@@ -21,6 +21,8 @@ func (m *module) Version() semver.Version {
 
 func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi.Resource, err error) {
 	switch typ {
+	case "awsx:ecr:Image":
+		r = &Image{}
 	case "awsx:ecr:Repository":
 		r = &Repository{}
 	default:

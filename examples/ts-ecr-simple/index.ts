@@ -18,4 +18,7 @@ import * as awsx from "@pulumi/awsx";
 
 const repository = new awsx.ecr.Repository("repository", {});
 
-export const image = repository.buildAndPushImage({ path: "./app" }).image;
+export const image = new awsx.ecr.Image("image", {
+    repositoryUrl: repository.repository.repositoryUrl,
+    path: "./app",
+}).imageUri;

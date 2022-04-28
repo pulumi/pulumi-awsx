@@ -18,38 +18,28 @@ import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
 
-export async function Repository_buildAndPushImage(
-    inputs: schema.Repository_buildAndPushImageInputs,
-): Promise<schema.Repository_buildAndPushImageOutputs> {
-    const { __self__, ...docker } = inputs;
-    const repository = pulumi.output(inputs.__self__);
-
-    const image = pulumi
-        .all([docker, repository])
-        .apply(([inputs, parent]) =>
-            computeImageFromAsset(
-                inputs,
-                repository.repository.repositoryUrl,
-                repository.repository.registryId,
-                parent,
-            ),
-        );
-    return { image };
+export class Image extends schema.Image {
+    constructor(
+        name: string,
+        args: schema.ImageArgs,
+        opts: pulumi.ComponentResourceOptions = {},
+    ) {
+        super(name, args, opts);
+        const { repositoryUrl, ...dockerArgs } = args;
+        this.imageUri = pulumi
+            .output(args)
+            .apply((args) => computeImageFromAsset(args, this));
+    }
 }
-
-type DockerInputs = Omit<
-    pulumi.Unwrap<schema.Repository_buildAndPushImageInputs>,
-    "__self__"
->;
 
 /** @internal */
 export function computeImageFromAsset(
-    inputs: DockerInputs | undefined,
-    repositoryUrl: pulumi.Input<string>,
-    registryId: pulumi.Input<string> | undefined,
+    args: pulumi.Unwrap<schema.ImageArgs>,
     parent: pulumi.Resource,
 ) {
-    const dockerInputs = inputs ?? {};
+    const { repositoryUrl, ...dockerInputs } = args ?? {};
+    const url = new URL("https://" + repositoryUrl); // Add protocol to help it parse
+    const registryId = url.hostname.split(".")[0];
 
     pulumi.log.debug(
         `Building container image at '${JSON.stringify(dockerInputs)}'`,

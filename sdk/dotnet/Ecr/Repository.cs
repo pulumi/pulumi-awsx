@@ -29,6 +29,12 @@ namespace Pulumi.Awsx.Ecr
         [Output("repository")]
         public Output<Pulumi.Aws.Ecr.Repository> AwsRepository { get; private set; } = null!;
 
+        /// <summary>
+        /// The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
+        /// </summary>
+        [Output("url")]
+        public Output<string> Url { get; private set; } = null!;
+
 
         /// <summary>
         /// Create a Repository resource with the given unique name, arguments, and options.
@@ -53,12 +59,6 @@ namespace Pulumi.Awsx.Ecr
             merged.Id = id ?? merged.Id;
             return merged;
         }
-
-        /// <summary>
-        /// Build and push a docker image to ECR
-        /// </summary>
-        public Pulumi.Output<string> BuildAndPushImage(RepositoryBuildAndPushImageArgs? args = null)
-            => Pulumi.Deployment.Instance.Call<RepositoryBuildAndPushImageResult>("awsx:ecr:Repository/buildAndPushImage", args ?? new RepositoryBuildAndPushImageArgs(), this).Apply(v => v.Image);
     }
 
     public sealed class RepositoryArgs : Pulumi.ResourceArgs
@@ -113,100 +113,6 @@ namespace Pulumi.Awsx.Ecr
 
         public RepositoryArgs()
         {
-        }
-    }
-
-    /// <summary>
-    /// Arguments for building and publishing a docker image to ECR
-    /// </summary>
-    public sealed class RepositoryBuildAndPushImageArgs : Pulumi.CallArgs
-    {
-        [Input("args")]
-        private InputMap<string>? _args;
-
-        /// <summary>
-        /// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
-        /// </summary>
-        public InputMap<string> Args
-        {
-            get => _args ?? (_args = new InputMap<string>());
-            set => _args = value;
-        }
-
-        [Input("cacheFrom")]
-        private InputList<string>? _cacheFrom;
-
-        /// <summary>
-        /// Images to consider as cache sources
-        /// </summary>
-        public InputList<string> CacheFrom
-        {
-            get => _cacheFrom ?? (_cacheFrom = new InputList<string>());
-            set => _cacheFrom = value;
-        }
-
-        /// <summary>
-        /// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
-        /// </summary>
-        [Input("dockerfile")]
-        public Input<string>? Dockerfile { get; set; }
-
-        [Input("env")]
-        private InputMap<string>? _env;
-
-        /// <summary>
-        /// Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-        /// </summary>
-        public InputMap<string> Env
-        {
-            get => _env ?? (_env = new InputMap<string>());
-            set => _env = value;
-        }
-
-        [Input("extraOptions")]
-        private InputList<string>? _extraOptions;
-
-        /// <summary>
-        /// An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-        /// </summary>
-        public InputList<string> ExtraOptions
-        {
-            get => _extraOptions ?? (_extraOptions = new InputList<string>());
-            set => _extraOptions = value;
-        }
-
-        /// <summary>
-        /// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-        /// </summary>
-        [Input("path")]
-        public Input<string>? Path { get; set; }
-
-        /// <summary>
-        /// The target of the dockerfile to build
-        /// </summary>
-        [Input("target")]
-        public Input<string>? Target { get; set; }
-
-        public RepositoryBuildAndPushImageArgs()
-        {
-        }
-    }
-
-    /// <summary>
-    /// Arguments for building and publishing a docker image to ECR
-    /// </summary>
-    [OutputType]
-    internal sealed class RepositoryBuildAndPushImageResult
-    {
-        /// <summary>
-        /// Unique identifier of the pushed image
-        /// </summary>
-        public readonly string Image;
-
-        [OutputConstructor]
-        private RepositoryBuildAndPushImageResult(string image)
-        {
-            Image = image;
         }
     }
 }

@@ -35,6 +35,10 @@ export class Repository extends pulumi.ComponentResource {
      * Underlying Repository resource
      */
     public /*out*/ readonly repository!: pulumi.Output<pulumiAws.ecr.Repository>;
+    /**
+     * The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
+     */
+    public /*out*/ readonly url!: pulumi.Output<string>;
 
     /**
      * Create a Repository resource with the given unique name, arguments, and options.
@@ -54,29 +58,14 @@ export class Repository extends pulumi.ComponentResource {
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["repository"] = undefined /*out*/;
+            resourceInputs["url"] = undefined /*out*/;
         } else {
             resourceInputs["lifecyclePolicy"] = undefined /*out*/;
             resourceInputs["repository"] = undefined /*out*/;
+            resourceInputs["url"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Repository.__pulumiType, name, resourceInputs, opts, true /*remote*/);
-    }
-
-    /**
-     * Build and push a docker image to ECR
-     */
-    buildAndPushImage(args?: Repository.BuildAndPushImageArgs): pulumi.Output<Repository.BuildAndPushImageResult> {
-        args = args || {};
-        return pulumi.runtime.call("awsx:ecr:Repository/buildAndPushImage", {
-            "__self__": this,
-            "args": args.args,
-            "cacheFrom": args.cacheFrom,
-            "dockerfile": args.dockerfile,
-            "env": args.env,
-            "extraOptions": args.extraOptions,
-            "path": args.path,
-            "target": args.target,
-        }, this);
     }
 }
 
@@ -108,51 +97,4 @@ export interface RepositoryArgs {
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */
     tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-}
-
-export namespace Repository {
-    /**
-     * Arguments for building and publishing a docker image to ECR
-     */
-    export interface BuildAndPushImageArgs {
-        /**
-         * An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
-         */
-        args?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-        /**
-         * Images to consider as cache sources
-         */
-        cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
-        /**
-         * dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
-         */
-        dockerfile?: pulumi.Input<string>;
-        /**
-         * Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-         */
-        env?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-        /**
-         * An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-         */
-        extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
-        /**
-         * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-         */
-        path?: pulumi.Input<string>;
-        /**
-         * The target of the dockerfile to build
-         */
-        target?: pulumi.Input<string>;
-    }
-
-    /**
-     * Arguments for building and publishing a docker image to ECR
-     */
-    export interface BuildAndPushImageResult {
-        /**
-         * Unique identifier of the pushed image
-         */
-        readonly image: string;
-    }
-
 }

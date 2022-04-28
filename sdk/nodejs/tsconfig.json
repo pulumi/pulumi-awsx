@@ -105,6 +105,7 @@
         "classic/utils.ts",
         "cloudtrail/index.ts",
         "cloudtrail/trail.ts",
+        "ecr/image.ts",
         "ecr/index.ts",
         "ecr/repository.ts",
         "ecs/ec2service.ts",

@@ -196,6 +196,7 @@ class Repository(pulumi.ComponentResource):
             __props__.__dict__["name"] = name
             __props__.__dict__["tags"] = tags
             __props__.__dict__["repository"] = None
+            __props__.__dict__["url"] = None
         super(Repository, __self__).__init__(
             'awsx:ecr:Repository',
             resource_name,
@@ -219,53 +220,11 @@ class Repository(pulumi.ComponentResource):
         """
         return pulumi.get(self, "repository")
 
-    @pulumi.output_type
-    class BuildAndPushImageResult:
+    @property
+    @pulumi.getter
+    def url(self) -> pulumi.Output[str]:
         """
-        Outputs from the pushed docker image
+        The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
         """
-        def __init__(__self__, image=None):
-            if image and not isinstance(image, str):
-                raise TypeError("Expected argument 'image' to be a str")
-            pulumi.set(__self__, "image", image)
-
-        @property
-        @pulumi.getter
-        def image(self) -> str:
-            """
-            Unique identifier of the pushed image
-            """
-            return pulumi.get(self, "image")
-
-    def build_and_push_image(__self__, *,
-                             args: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                             cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                             dockerfile: Optional[pulumi.Input[str]] = None,
-                             env: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                             extra_options: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                             path: Optional[pulumi.Input[str]] = None,
-                             target: Optional[pulumi.Input[str]] = None) -> pulumi.Output['str']:
-        """
-        Build and push a docker image to ECR
-
-
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
-        :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_from: Images to consider as cache sources
-        :param pulumi.Input[str] dockerfile: dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] env: Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-        :param pulumi.Input[Sequence[pulumi.Input[str]]] extra_options: An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-        :param pulumi.Input[str] path: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-        :param pulumi.Input[str] target: The target of the dockerfile to build
-        """
-        __args__ = dict()
-        __args__['__self__'] = __self__
-        __args__['args'] = args
-        __args__['cacheFrom'] = cache_from
-        __args__['dockerfile'] = dockerfile
-        __args__['env'] = env
-        __args__['extraOptions'] = extra_options
-        __args__['path'] = path
-        __args__['target'] = target
-        __result__ = pulumi.runtime.call('awsx:ecr:Repository/buildAndPushImage', __args__, res=__self__, typ=Repository.BuildAndPushImageResult)
-        return __result__.image
+        return pulumi.get(self, "url")
 
