@@ -22,6 +22,7 @@ func generateEcr(awsSpec, dockerSpec schema.PackageSpec) schema.PackageSpec {
 	return schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
 			"awsx:ecr:Repository": repository(awsSpec),
+			"awsx:ecr:Image":      ecrImage(awsSpec),
 		},
 		Functions: map[string]schema.FunctionSpec{
 			"awsx:ecr:Repository/buildAndPushImage": buildAndPushImage(),
@@ -172,6 +173,34 @@ func lifecycleTagStatus(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 				Description: "Only evaluated rule against images with specified prefixes",
 				Value:       "tagged",
 			},
+		},
+	}
+}
+
+func ecrImage(awsSpec schema.PackageSpec) schema.ResourceSpec {
+	inputs := dockerBuildProperties()
+	inputs["repositoryUrl"] = schema.PropertySpec{
+		Description: "Url of the repository",
+		TypeSpec: schema.TypeSpec{
+			Type: "string",
+		},
+	}
+	return schema.ResourceSpec{
+		IsComponent:     true,
+		InputProperties: inputs,
+		RequiredInputs:  []string{"repositoryUrl"},
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Description: "Builds a docker image and pushes to the ECR repository",
+			Type:        "object",
+			Properties: map[string]schema.PropertySpec{
+				"imageUri": {
+					Description: "Unique identifier of the pushed image",
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
+			},
+			Required: []string{"imageUri"},
 		},
 	}
 }

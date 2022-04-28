@@ -7,6 +7,7 @@ import * as pulumi from "@pulumi/pulumi";
 export type ConstructComponent<T extends pulumi.ComponentResource = pulumi.ComponentResource> = (name: string, inputs: any, options: pulumi.ComponentResourceOptions) => T;
 export type ResourceConstructor = {
     readonly "awsx:cloudtrail:Trail": ConstructComponent<Trail>;
+    readonly "awsx:ecr:Image": ConstructComponent<Image>;
     readonly "awsx:ecr:Repository": ConstructComponent<Repository>;
     readonly "awsx:ecs:EC2Service": ConstructComponent<EC2Service>;
     readonly "awsx:ecs:EC2TaskDefinition": ConstructComponent<EC2TaskDefinition>;
@@ -47,6 +48,22 @@ export interface TrailArgs {
     readonly s3KeyPrefix?: pulumi.Input<string>;
     readonly snsTopicName?: pulumi.Input<string>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export abstract class Image<TData = any> extends pulumi.ComponentResource<TData> {
+    public imageUri!: string | pulumi.Output<string>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:ecr:Image", name, opts.urn ? { imageUri: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface ImageArgs {
+    readonly args?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly dockerfile?: pulumi.Input<string>;
+    readonly env?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly path?: pulumi.Input<string>;
+    readonly repositoryUrl: pulumi.Input<string>;
+    readonly target?: pulumi.Input<string>;
 }
 export abstract class Repository<TData = any> extends pulumi.ComponentResource<TData> {
     public lifecyclePolicy?: aws.ecr.LifecyclePolicy | pulumi.Output<aws.ecr.LifecyclePolicy>;
