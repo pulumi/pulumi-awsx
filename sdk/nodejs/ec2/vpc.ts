@@ -9,7 +9,7 @@ import * as pulumiAws from "@pulumi/aws";
 
 export class Vpc extends pulumi.ComponentResource {
     /** @internal */
-    public static readonly __pulumiType = 'awsx:vpc:Vpc';
+    public static readonly __pulumiType = 'awsx:ec2:Vpc';
 
     /**
      * Returns true if the given object is an instance of Vpc.  This is designed to work even
@@ -171,11 +171,11 @@ export interface VpcArgs {
     /**
      * Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
      */
-    natGateways?: inputs.vpc.NatGatewayConfigurationArgs;
+    natGateways?: inputs.ec2.NatGatewayConfigurationArgs;
     /**
      * A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
      */
-    subnetsPerAz?: inputs.vpc.SubnetConfigurationArgs[];
+    subnetsPerAz?: inputs.ec2.SubnetConfigurationArgs[];
     /**
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */

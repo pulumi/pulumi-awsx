@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel;
 using Pulumi;
 
-namespace Pulumi.Awsx.Vpc
+namespace Pulumi.Awsx.Ec2
 {
     /// <summary>
     /// A strategy for creating NAT Gateways for private subnets within a VPC.

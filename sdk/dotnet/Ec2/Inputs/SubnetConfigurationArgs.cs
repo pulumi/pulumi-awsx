@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.Vpc.Inputs
+namespace Pulumi.Awsx.Ec2.Inputs
 {
 
     /// <summary>
@@ -31,7 +31,7 @@ namespace Pulumi.Awsx.Vpc.Inputs
         /// The type of subnet.
         /// </summary>
         [Input("type", required: true)]
-        public Pulumi.Awsx.Vpc.SubnetType Type { get; set; }
+        public Pulumi.Awsx.Ec2.SubnetType Type { get; set; }
 
         public SubnetConfigurationArgs()
         {

@@ -9,7 +9,7 @@ import * as utilities from "../utilities";
  */
 export class DefaultVpc extends pulumi.ComponentResource {
     /** @internal */
-    public static readonly __pulumiType = 'awsx:vpc:DefaultVpc';
+    public static readonly __pulumiType = 'awsx:ec2:DefaultVpc';
 
     /**
      * Returns true if the given object is an instance of DefaultVpc.  This is designed to work even

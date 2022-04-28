@@ -426,7 +426,7 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["subnets"] = None
             __props__.__dict__["vpc"] = None
         super(Vpc, __self__).__init__(
-            'awsx:vpc:Vpc',
+            'awsx:ec2:Vpc',
             resource_name,
             __props__,
             opts,

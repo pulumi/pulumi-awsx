@@ -7,7 +7,7 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.Vpc.Inputs
+namespace Pulumi.Awsx.Ec2.Inputs
 {
 
     /// <summary>
@@ -31,7 +31,7 @@ namespace Pulumi.Awsx.Vpc.Inputs
         /// The strategy for deploying NAT Gateways.
         /// </summary>
         [Input("strategy", required: true)]
-        public Pulumi.Awsx.Vpc.NatGatewayStrategy Strategy { get; set; }
+        public Pulumi.Awsx.Ec2.NatGatewayStrategy Strategy { get; set; }
 
         public NatGatewayConfigurationArgs()
         {

@@ -7,9 +7,9 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.Vpc
+namespace Pulumi.Awsx.Ec2
 {
-    [AwsxResourceType("awsx:vpc:Vpc")]
+    [AwsxResourceType("awsx:ec2:Vpc")]
     public partial class Vpc : Pulumi.ComponentResource
     {
         /// <summary>
@@ -69,7 +69,7 @@ namespace Pulumi.Awsx.Vpc
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
         public Vpc(string name, VpcArgs? args = null, ComponentResourceOptions? options = null)
-            : base("awsx:vpc:Vpc", name, args ?? new VpcArgs(), MakeResourceOptions(options, ""), remote: true)
+            : base("awsx:ec2:Vpc", name, args ?? new VpcArgs(), MakeResourceOptions(options, ""), remote: true)
         {
         }
 

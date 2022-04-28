@@ -14,6 +14,7 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
+import { DefaultVpc, getDefaultVpc, Vpc } from "./ec2";
 import { Repository } from "./ecr";
 import { Image } from "./ecr/image";
 import {
@@ -28,8 +29,6 @@ import {
     Functions,
     ResourceConstructor,
 } from "./schema-types";
-import { DefaultVpc, Vpc } from "./vpc";
-import { getDefaultVpc } from "./vpc/getDefaultVpc";
 
 const resources: ResourceConstructor = {
     "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
@@ -42,8 +41,8 @@ const resources: ResourceConstructor = {
         new ApplicationLoadBalancer(...args),
     "awsx:lb:NetworkLoadBalancer": (...args) =>
         new NetworkLoadBalancer(...args),
-    "awsx:vpc:Vpc": (...args) => new Vpc(...args),
-    "awsx:vpc:DefaultVpc": (...args) => new DefaultVpc(...args),
+    "awsx:ec2:Vpc": (...args) => new Vpc(...args),
+    "awsx:ec2:DefaultVpc": (...args) => new DefaultVpc(...args),
     "awsx:ecr:Repository": (...args) => new Repository(...args),
     "awsx:ecr:Image": (...args) => new Image(...args),
 };
@@ -63,5 +62,5 @@ export function construct(
 }
 
 export const functions: Functions = {
-    "awsx:vpc:getDefaultVpc": getDefaultVpc,
+    "awsx:ec2:getDefaultVpc": getDefaultVpc,
 };

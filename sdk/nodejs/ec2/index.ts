@@ -10,7 +10,7 @@ export * from "./getDefaultVpc";
 export * from "./vpc";
 
 // Export enums:
-export * from "../types/enums/vpc";
+export * from "../types/enums/ec2";
 
 // Import resources to register:
 import { DefaultVpc } from "./defaultVpc";
@@ -20,13 +20,13 @@ const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {
         switch (type) {
-            case "awsx:vpc:DefaultVpc":
+            case "awsx:ec2:DefaultVpc":
                 return new DefaultVpc(name, <any>undefined, { urn })
-            case "awsx:vpc:Vpc":
+            case "awsx:ec2:Vpc":
                 return new Vpc(name, <any>undefined, { urn })
             default:
                 throw new Error(`unknown resource type ${type}`);
         }
     },
 };
-pulumi.runtime.registerResourceModule("awsx", "vpc", _module)
+pulumi.runtime.registerResourceModule("awsx", "ec2", _module)

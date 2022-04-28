@@ -16,7 +16,7 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
-import { getDefaultVpc } from "../vpc";
+import { getDefaultVpc } from "../ec2";
 
 export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
     constructor(

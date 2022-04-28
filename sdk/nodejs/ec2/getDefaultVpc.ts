@@ -16,7 +16,7 @@ export function getDefaultVpc(args?: GetDefaultVpcArgs, opts?: pulumi.InvokeOpti
     }
 
     opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
-    return pulumi.runtime.invoke("awsx:vpc:getDefaultVpc", {
+    return pulumi.runtime.invoke("awsx:ec2:getDefaultVpc", {
     }, opts);
 }
 

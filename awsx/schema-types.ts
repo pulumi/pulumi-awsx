@@ -7,6 +7,8 @@ import * as pulumi from "@pulumi/pulumi";
 export type ConstructComponent<T extends pulumi.ComponentResource = pulumi.ComponentResource> = (name: string, inputs: any, options: pulumi.ComponentResourceOptions) => T;
 export type ResourceConstructor = {
     readonly "awsx:cloudtrail:Trail": ConstructComponent<Trail>;
+    readonly "awsx:ec2:DefaultVpc": ConstructComponent<DefaultVpc>;
+    readonly "awsx:ec2:Vpc": ConstructComponent<Vpc>;
     readonly "awsx:ecr:Image": ConstructComponent<Image>;
     readonly "awsx:ecr:Repository": ConstructComponent<Repository>;
     readonly "awsx:ecs:EC2Service": ConstructComponent<EC2Service>;
@@ -15,11 +17,9 @@ export type ResourceConstructor = {
     readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
     readonly "awsx:lb:ApplicationLoadBalancer": ConstructComponent<ApplicationLoadBalancer>;
     readonly "awsx:lb:NetworkLoadBalancer": ConstructComponent<NetworkLoadBalancer>;
-    readonly "awsx:vpc:DefaultVpc": ConstructComponent<DefaultVpc>;
-    readonly "awsx:vpc:Vpc": ConstructComponent<Vpc>;
 };
 export type Functions = {
-    "awsx:vpc:getDefaultVpc": (inputs: getDefaultVpcInputs) => Promise<getDefaultVpcOutputs>;
+    "awsx:ec2:getDefaultVpc": (inputs: getDefaultVpcInputs) => Promise<getDefaultVpcOutputs>;
 };
 import * as aws from "@pulumi/aws";
 import * as docker from "@pulumi/docker";
@@ -46,6 +46,48 @@ export interface TrailArgs {
     readonly s3Bucket?: RequiredBucketInputs;
     readonly s3KeyPrefix?: pulumi.Input<string>;
     readonly snsTopicName?: pulumi.Input<string>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export abstract class DefaultVpc<TData = any> extends pulumi.ComponentResource<TData> {
+    public privateSubnetIds!: string[] | pulumi.Output<string[]>;
+    public publicSubnetIds!: string[] | pulumi.Output<string[]>;
+    public vpcId!: string | pulumi.Output<string>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:ec2:DefaultVpc", name, opts.urn ? { privateSubnetIds: undefined, publicSubnetIds: undefined, vpcId: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface DefaultVpcArgs {
+}
+export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
+    public eips?: aws.ec2.Eip[] | pulumi.Output<aws.ec2.Eip[]>;
+    public internetGateway?: aws.ec2.InternetGateway | pulumi.Output<aws.ec2.InternetGateway>;
+    public natGateways?: aws.ec2.NatGateway[] | pulumi.Output<aws.ec2.NatGateway[]>;
+    public routeTableAssociations?: aws.ec2.RouteTableAssociation[] | pulumi.Output<aws.ec2.RouteTableAssociation[]>;
+    public routeTables?: aws.ec2.RouteTable[] | pulumi.Output<aws.ec2.RouteTable[]>;
+    public routes?: aws.ec2.Route[] | pulumi.Output<aws.ec2.Route[]>;
+    public subnets?: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;
+    public vpc?: aws.ec2.Vpc | pulumi.Output<aws.ec2.Vpc>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, natGateways: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface VpcArgs {
+    readonly assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
+    readonly availabilityZoneNames?: string[];
+    readonly cidrBlock?: string;
+    readonly enableClassiclink?: pulumi.Input<boolean>;
+    readonly enableClassiclinkDnsSupport?: pulumi.Input<boolean>;
+    readonly enableDnsHostnames?: pulumi.Input<boolean>;
+    readonly enableDnsSupport?: pulumi.Input<boolean>;
+    readonly instanceTenancy?: pulumi.Input<string>;
+    readonly ipv4IpamPoolId?: pulumi.Input<string>;
+    readonly ipv4NetmaskLength?: pulumi.Input<number>;
+    readonly ipv6CidrBlock?: pulumi.Input<string>;
+    readonly ipv6CidrBlockNetworkBorderGroup?: pulumi.Input<string>;
+    readonly ipv6IpamPoolId?: pulumi.Input<string>;
+    readonly ipv6NetmaskLength?: pulumi.Input<number>;
+    readonly natGateways?: NatGatewayConfigurationInputs;
+    readonly subnetsPerAz?: SubnetConfigurationInputs[];
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class Image<TData = any> extends pulumi.ComponentResource<TData> {
@@ -270,48 +312,6 @@ export interface NetworkLoadBalancerArgs {
     readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
-export abstract class DefaultVpc<TData = any> extends pulumi.ComponentResource<TData> {
-    public privateSubnetIds!: string[] | pulumi.Output<string[]>;
-    public publicSubnetIds!: string[] | pulumi.Output<string[]>;
-    public vpcId!: string | pulumi.Output<string>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:vpc:DefaultVpc", name, opts.urn ? { privateSubnetIds: undefined, publicSubnetIds: undefined, vpcId: undefined } : { name, args, opts }, opts);
-    }
-}
-export interface DefaultVpcArgs {
-}
-export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
-    public eips?: aws.ec2.Eip[] | pulumi.Output<aws.ec2.Eip[]>;
-    public internetGateway?: aws.ec2.InternetGateway | pulumi.Output<aws.ec2.InternetGateway>;
-    public natGateways?: aws.ec2.NatGateway[] | pulumi.Output<aws.ec2.NatGateway[]>;
-    public routeTableAssociations?: aws.ec2.RouteTableAssociation[] | pulumi.Output<aws.ec2.RouteTableAssociation[]>;
-    public routeTables?: aws.ec2.RouteTable[] | pulumi.Output<aws.ec2.RouteTable[]>;
-    public routes?: aws.ec2.Route[] | pulumi.Output<aws.ec2.Route[]>;
-    public subnets?: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;
-    public vpc?: aws.ec2.Vpc | pulumi.Output<aws.ec2.Vpc>;
-    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:vpc:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, natGateways: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined } : { name, args, opts }, opts);
-    }
-}
-export interface VpcArgs {
-    readonly assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
-    readonly availabilityZoneNames?: string[];
-    readonly cidrBlock?: string;
-    readonly enableClassiclink?: pulumi.Input<boolean>;
-    readonly enableClassiclinkDnsSupport?: pulumi.Input<boolean>;
-    readonly enableDnsHostnames?: pulumi.Input<boolean>;
-    readonly enableDnsSupport?: pulumi.Input<boolean>;
-    readonly instanceTenancy?: pulumi.Input<string>;
-    readonly ipv4IpamPoolId?: pulumi.Input<string>;
-    readonly ipv4NetmaskLength?: pulumi.Input<number>;
-    readonly ipv6CidrBlock?: pulumi.Input<string>;
-    readonly ipv6CidrBlockNetworkBorderGroup?: pulumi.Input<string>;
-    readonly ipv6IpamPoolId?: pulumi.Input<string>;
-    readonly ipv6NetmaskLength?: pulumi.Input<number>;
-    readonly natGateways?: NatGatewayConfigurationInputs;
-    readonly subnetsPerAz?: SubnetConfigurationInputs[];
-    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-}
 export interface BucketInputs {
     readonly accelerationStatus?: pulumi.Input<string>;
     readonly acl?: pulumi.Input<string>;
@@ -514,6 +514,28 @@ export interface LogGroupOutputs {
     readonly retentionInDays?: pulumi.Output<number>;
     readonly tags?: pulumi.Output<Record<string, string>>;
 }
+export interface NatGatewayConfigurationInputs {
+    readonly elasticIpAllocationIds?: pulumi.Input<string>[];
+    readonly strategy: NatGatewayStrategyInputs;
+}
+export interface NatGatewayConfigurationOutputs {
+    readonly elasticIpAllocationIds?: string[];
+    readonly strategy: NatGatewayStrategyOutputs;
+}
+export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
+export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
+export interface SubnetConfigurationInputs {
+    readonly cidrMask: number;
+    readonly name: string;
+    readonly type: SubnetTypeInputs;
+}
+export interface SubnetConfigurationOutputs {
+    readonly cidrMask: number;
+    readonly name: string;
+    readonly type: SubnetTypeOutputs;
+}
+export type SubnetTypeInputs = "Public" | "Private" | "Isolated";
+export type SubnetTypeOutputs = "Public" | "Private" | "Isolated";
 export interface DockerBuildInputs {
     readonly args?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
@@ -956,28 +978,6 @@ export interface TargetGroupOutputs {
     readonly targetType?: pulumi.Output<string>;
     readonly vpcId?: pulumi.Output<string>;
 }
-export interface NatGatewayConfigurationInputs {
-    readonly elasticIpAllocationIds?: pulumi.Input<string>[];
-    readonly strategy: NatGatewayStrategyInputs;
-}
-export interface NatGatewayConfigurationOutputs {
-    readonly elasticIpAllocationIds?: string[];
-    readonly strategy: NatGatewayStrategyOutputs;
-}
-export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
-export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
-export interface SubnetConfigurationInputs {
-    readonly cidrMask: number;
-    readonly name: string;
-    readonly type: SubnetTypeInputs;
-}
-export interface SubnetConfigurationOutputs {
-    readonly cidrMask: number;
-    readonly name: string;
-    readonly type: SubnetTypeOutputs;
-}
-export type SubnetTypeInputs = "Public" | "Private" | "Isolated";
-export type SubnetTypeOutputs = "Public" | "Private" | "Isolated";
 export interface getDefaultVpcInputs {
 }
 export interface getDefaultVpcOutputs {

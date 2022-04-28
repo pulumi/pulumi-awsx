@@ -13,6 +13,9 @@ export namespace awsx {
 export namespace cloudtrail {
 }
 
+export namespace ec2 {
+}
+
 export namespace ecr {
 }
 
@@ -20,7 +23,4 @@ export namespace ecs {
 }
 
 export namespace lb {
-}
-
-export namespace vpc {
 }

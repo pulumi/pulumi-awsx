@@ -7,12 +7,12 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.Vpc
+namespace Pulumi.Awsx.Ec2
 {
     /// <summary>
     /// Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.
     /// </summary>
-    [AwsxResourceType("awsx:vpc:DefaultVpc")]
+    [AwsxResourceType("awsx:ec2:DefaultVpc")]
     public partial class DefaultVpc : Pulumi.ComponentResource
     {
         [Output("privateSubnetIds")]
@@ -36,7 +36,7 @@ namespace Pulumi.Awsx.Vpc
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
         public DefaultVpc(string name, DefaultVpcArgs? args = null, ComponentResourceOptions? options = null)
-            : base("awsx:vpc:DefaultVpc", name, args ?? new DefaultVpcArgs(), MakeResourceOptions(options, ""), remote: true)
+            : base("awsx:ec2:DefaultVpc", name, args ?? new DefaultVpcArgs(), MakeResourceOptions(options, ""), remote: true)
         {
         }
 
