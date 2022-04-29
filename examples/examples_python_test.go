@@ -32,6 +32,16 @@ func TestAccTrailPython(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestAccEcsPython(t *testing.T) {
+	test := getPythonBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ecs", "python"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func getPythonBaseOptions(t *testing.T) integration.ProgramTestOptions {
 	region := getEnvRegion(t)
 	base := getBaseOptions(t)
