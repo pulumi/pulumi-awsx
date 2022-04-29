@@ -84,7 +84,7 @@ export interface TargetGroupAttachmentArgs {
     /**
      * Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
      */
-    targetGroup?: pulumiAws.lb.TargetGroup;
+    targetGroup?: pulumi.Input<pulumiAws.lb.TargetGroup>;
     /**
      * ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
      */

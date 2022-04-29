@@ -1,0 +1,3 @@
+name: ts-lb-attach-lambda
+runtime: nodejs
+description: LoadBalancer Lambda attach test

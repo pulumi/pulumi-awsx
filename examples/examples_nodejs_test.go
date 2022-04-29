@@ -53,6 +53,16 @@ func TestLbSimple(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestLbLambdaAttach(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ts-lb-attach-lambda"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func TestNlbSimple(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{

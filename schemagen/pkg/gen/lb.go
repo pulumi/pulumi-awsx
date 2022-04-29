@@ -163,8 +163,7 @@ func targetGroupAttachment(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			"targetGroup": {
 				Description: "Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.",
 				TypeSpec: schema.TypeSpec{
-					Ref:   packageRef(awsSpec, "/resources/aws:lb%2ftargetGroup:TargetGroup"),
-					Plain: true,
+					Ref: packageRef(awsSpec, "/resources/aws:lb%2ftargetGroup:TargetGroup"),
 				},
 			},
 			"targetGroupArn": {

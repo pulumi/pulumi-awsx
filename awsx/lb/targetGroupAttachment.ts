@@ -24,7 +24,7 @@ export class TargetGroupAttachment extends schema.TargetGroupAttachment {
         opts: pulumi.ComponentResourceOptions = {},
     ) {
         super(name, args, opts);
-        if (utils.countDefined([args.targetGroup, args.targetGroupArn]) != 1) {
+        if (utils.countDefined([args.targetGroup, args.targetGroupArn]) !== 1) {
             throw new Error(
                 "Exactly 1 of [targetGroup] or [targetGroupArn] must be provided",
             );
@@ -35,20 +35,34 @@ export class TargetGroupAttachment extends schema.TargetGroupAttachment {
                 args.instanceId,
                 args.lambda,
                 args.lambdaArn,
-            ]) != 1
+            ]) !== 1
         ) {
             throw new Error(
-                "Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided",
+                "Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
             );
         }
 
-        const targetGroupArn = args.targetGroup?.arn ?? args.targetGroupArn!;
-        const targetType = args.targetGroup
-            ? args.targetGroup.targetType
-            : pulumi
-                  .output(args.targetGroupArn!)
-                  .apply((arn) => aws.lb.getTargetGroup({ arn }))
-                  .apply((tg) => tg.targetType);
+        const { targetGroupArn, targetType } = (() => {
+            const { targetGroup, targetGroupArn } = args;
+            if (targetGroup) {
+                const tgOutput = pulumi.output(args.targetGroup!);
+                return {
+                    targetGroupArn: tgOutput.arn,
+                    targetType: tgOutput.targetType,
+                };
+            }
+            if (targetGroupArn) {
+                const arnOutput = pulumi.output(targetGroupArn);
+                return {
+                    targetGroupArn: arnOutput,
+                    targetType: arnOutput
+                        .apply((arn) => aws.lb.getTargetGroup({ arn }))
+                        .apply((tg) => tg.targetType),
+                };
+            }
+            throw new Error("Unreachable");
+        })();
+
         const { instance, instanceId, lambda, lambdaArn } = args;
 
         const attachmentArgs = (() => {
@@ -108,7 +122,10 @@ export class TargetGroupAttachment extends schema.TargetGroupAttachment {
                 ...attachmentArgs,
                 targetGroupArn: targetGroupArn,
             },
-            { parent: this },
+            {
+                parent: this,
+                dependsOn: this.lambdaPermission ? [this.lambdaPermission] : [],
+            },
         );
     }
 }

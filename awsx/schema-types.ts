@@ -329,7 +329,7 @@ export interface TargetGroupAttachmentArgs {
     readonly instanceId?: pulumi.Input<string>;
     readonly lambda?: pulumi.Input<aws.lambda.Function>;
     readonly lambdaArn?: pulumi.Input<string>;
-    readonly targetGroup?: aws.lb.TargetGroup;
+    readonly targetGroup?: pulumi.Input<aws.lb.TargetGroup>;
     readonly targetGroupArn?: pulumi.Input<string>;
 }
 export interface BucketInputs {
