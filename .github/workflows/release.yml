@@ -1,18 +1,20 @@
 env:
   AWS_REGION: us-west-2
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GO111MODULE: "on"
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+  NUGET_PUBLISH_KEY: ${{ secrets.NUGET_PUBLISH_KEY }}
   PROVIDER: awsx
   PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
   PULUMI_API: https://api.pulumi-staging.io
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  TRAVIS_OS_NAME: linux
+  PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+  PULUMI_LOCAL_NUGET: ${{ github.workspace }}/nuget
 jobs:
   lint:
     name: lint
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
@@ -37,8 +39,7 @@ jobs:
         run: make lint
       - name: Lint classic AWSX Code
         run: make lint-classic
-  build_sdk:
-    name: build_sdk
+  prerequisites:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -54,43 +55,173 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.goversion }}
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
-        with:
-          repo: pulumi/pulumictl
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
           node-version: ${{matrix.nodeversion}}
           registry-url: https://registry.npmjs.org
+      - name: Install Yarn
+        run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
+      - name: Update PATH for Yarn
+        run: |
+          echo "$HOME/.yarn/bin" >> $GITHUB_PATH
+          echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        with:
+          repo: pulumi/pulumictl
+      - name: Install Pulumi CLI
+        uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Build provider
+        run: make provider
+      - name: Check worktree clean
+        run: ./ci-scripts/ci/check-worktree-is-clean
+      - name: Tar provider binaries
+        run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace
+          }}/${{ env.PROVIDER }}/bin/ .
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.PROVIDER }}-provider.tar.gz
+          path: ${{ github.workspace }}/provider.tar.gz
+      - if: failure() && github.event_name == 'push'
+        name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          author_name: Failure in building provider prerequisites
+          fields: repo,commit,author,action
+          status: ${{ job.status }}
+    strategy:
+      fail-fast: false
+      matrix:
+        goversion:
+          - 1.17.x
+        nodeversion:
+          - 14.x
+  build_sdk:
+    name: build_sdk
+    runs-on: ubuntu-latest
+    needs: prerequisites
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        with:
+          repo: pulumi/pulumictl
+      - name: Install Pulumi CLI
+        uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.goversion }}
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.pythonversion}}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetverson}}
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{matrix.nodeversion}}
+          registry-url: https://registry.npmjs.org
+      - name: Install Yarn
+        run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
+      - name: Update PATH for Yarn
+        run: |
+          echo "$HOME/.yarn/bin" >> $GITHUB_PATH
+          echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
       - name: Build SDK
         run: make build_${{ matrix.language }}
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Compress SDK folder
-        run: tar -zcf ${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{ matrix.language }}/awsx
+        run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
           .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: ${{ matrix.language  }}-sdk.tar.gz
-          path: ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz
-      - name: Run SDK tests
-        run: make istanbul_tests
+          path: ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz
+    #      - name: Run SDK tests
+    #        if: matrix.language == 'nodejs'
+    #        run: make istanbul_tests
     strategy:
       fail-fast: true
       matrix:
+        dotnetversion:
+          - 3.1
         goversion:
-          - 1.16.x
+          - 1.17.x
         language:
           - nodejs
+          - python
+          - dotnet
+          - go
         nodeversion:
-          - 13.x
+          - 14.x
+        pythonversion:
+          - "3.7"
+  publish:
+    name: publish
+    needs: acceptance-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-region: us-east-2
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-duration-seconds: 3600
+          role-external-id: upload-pulumi-release
+          role-session-name: ${{ env.PROVIDER}}@githubActions
+          role-to-assume: ${{ secrets.AWS_UPLOAD_ROLE_ARN }}
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        with:
+          repo: pulumi/pulumictl
+      - name: Install Pulumi CLI
+        uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Download provider binary
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PROVIDER }}-provider.tar.gz
+          path: ${{ github.workspace }}/bin
+      - name: Untar provider binaries
+        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
+          }}/bin
+      - name: Restore binary perms
+        run: find ${{ github.workspace }}/bin -name "pulumi-*-${{ env.PROVIDER }}" -print
+          -exec chmod +x {} \;
+      - name: Create Provider Binaries
+        run: make dist
+      - name: Upload Provider Binaries
+        run: aws s3 cp dist s3://get.pulumi.com/releases/plugins/ --recursive
+      - name: Create GH Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
   publish_sdk:
     name: publish_sdk
-    needs: test
+    needs: publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -102,33 +233,67 @@ jobs:
           repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.goversion }}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
           always-auth: true
           registry-url: https://registry.npmjs.org
-      - name: Download NodeJS SDK
+          node-version: ${{matrix.nodeversion}}
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.pythonversion}}
+      - name: Download python SDK
+        uses: actions/download-artifact@v2
+        with:
+          name: python-sdk.tar.gz
+          path: ${{ github.workspace}}/sdk/
+      - name: Uncompress python SDK
+        run: tar -zxf ${{github.workspace}}/sdk/python.tar.gz -C ${{github.workspace}}/sdk/python
+      - name: Download dotnet SDK
+        uses: actions/download-artifact@v2
+        with:
+          name: dotnet-sdk.tar.gz
+          path: ${{ github.workspace}}/sdk/
+      - name: Uncompress dotnet SDK
+        run: tar -zxf ${{github.workspace}}/sdk/dotnet.tar.gz -C ${{github.workspace}}/sdk/dotnet
+      - name: Download nodejs SDK
         uses: actions/download-artifact@v2
         with:
           name: nodejs-sdk.tar.gz
-          path: ${{ github.workspace}}/nodejs
-      - name: Uncompress SDK folder
-        run: tar -zxf ${{ github.workspace}}/nodejs/nodejs.tar.gz -C ${{
-          github.workspace}}/nodejs/awsx
+          path: ${{ github.workspace}}/sdk/
+      - name: Uncompress nodejs SDK
+        run: tar -zxf ${{github.workspace}}/sdk/nodejs.tar.gz -C ${{github.workspace}}/sdk/nodejs
+      - run: python -m pip install pip twine
       - env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         name: Publish SDK
         run: ./scripts/publish_packages.sh
+    strategy:
+      fail-fast: false
+      matrix:
+        goversion:
+          - 1.17.x
+        dotnetversion:
+          - 3.1
+        nodeversion:
+          - 14.x
+        pythonversion:
+          - "3.7"
   create_docs_build:
     name: Create docs build
     needs: publish_sdk
@@ -142,8 +307,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
         name: Dispatch event
         run: pulumictl create docs-build pulumi-${{ env.PROVIDER }} ${GITHUB_REF#refs/tags/}
-  test:
-    name: test
+  acceptance-test:
     needs: build_sdk
     runs-on: ubuntu-latest
     steps:
@@ -156,31 +320,64 @@ jobs:
           repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.goversion }}
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
           node-version: ${{matrix.nodeversion}}
           registry-url: https://registry.npmjs.org
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.pythonversion}}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
+      - name: Install Python deps
+        run: |-
+          pip3 install virtualenv==20.0.23
+          pip3 install pipenv
+      - name: Download provider binary
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PROVIDER }}-provider.tar.gz
+          path: ${{ github.workspace }}/bin
+      - name: Untar provider binaries
+        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
+          }}/bin
+      - name: Restore binary perms
+        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
+          -exec chmod +x {} \;
+      - name: Update path
+        run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+      - name: Install Provider Deps
+        run: yarn install
+        working-directory: ${{ github.workspace}}/bin
       - name: Download SDK
         uses: actions/download-artifact@v2
         with:
           name: ${{ matrix.language }}-sdk.tar.gz
-          path: ${{ github.workspace}}/${{ matrix.language }}/
+          path: ${{ github.workspace}}/sdk
       - name: Uncompress SDK folder
-        run: tar -zxf ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{
-          github.workspace}}/${{ matrix.language}}/awsx
+        run: tar -zxf ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz -C ${{github.workspace}}/sdk/${{ matrix.language }}
       - name: Install dependencies
-        run: make install_${{ matrix.language}}_sdk
+        run: make install_${{ matrix.language }}_sdk
+      - if: matrix.language == 'dotnet'
+        run: dotnet nuget add source ${{ github.workspace }}/nuget
+      - name: Install gotestfmt
+        uses: jaxxstorm/action-install-gh-release@v1.2.0
+        with:
+          repo: haveyoudebuggedit/gotestfmt
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -191,16 +388,23 @@ jobs:
           role-session-name: ${{ env.PROVIDER }}@githubActions
           role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
       - name: Run tests
-        run: make test_${{ matrix.language}}
+        run: make test_${{ matrix.language }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         goversion:
-          - 1.16.x
+          - 1.17.x
+        dotnetversion:
+          - 3.1
+        pythonversion:
+          - 3.8
+        nodeversion:
+          - 14.x
         language:
           - nodejs
-        nodeversion:
-          - 13.x
+          - python
+          - dotnet
+          - go
 name: release
 "on":
   push:

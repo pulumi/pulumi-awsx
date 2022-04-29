@@ -10,7 +10,6 @@ env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
   PULUMI_LOCAL_NUGET: ${{ github.workspace }}/nuget
-  VERSION_PREFIX: 1.0.0
 jobs:
   lint:
     name: lint
@@ -154,9 +153,9 @@ jobs:
         with:
           name: ${{ matrix.language  }}-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz
-#      - name: Run SDK tests
-#        if: matrix.language == 'nodejs'
-#        run: make istanbul_tests
+    #      - name: Run SDK tests
+    #        if: matrix.language == 'nodejs'
+    #        run: make istanbul_tests
     strategy:
       fail-fast: true
       matrix:
@@ -213,6 +212,14 @@ jobs:
         run: make dist
       - name: Upload Provider Binaries
         run: aws s3 cp dist s3://get.pulumi.com/releases/plugins/ --recursive
+      - name: Create GH Release
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: true
+          files: |
+            dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
   publish_sdk:
     name: publish_sdk
     needs: publish
@@ -386,16 +393,8 @@ jobs:
           - python
           - dotnet
           - go
-name: master
-"on":
-  schedule:
-    - cron: '0 7 * * *'
+name: prerelease
+on:
   push:
-    branches:
-      - master
-    paths-ignore:
-      - CHANGELOG.md
-    tags-ignore:
-      - v*
-      - sdk/*
-      - '**'
+    tags:
+      - v*.*.*-**
