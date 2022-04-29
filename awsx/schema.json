@@ -1660,6 +1660,20 @@
                     "type": "string"
                 }
             },
+            "required": [
+                "vpc",
+                "subnets",
+                "routeTables",
+                "routeTableAssociations",
+                "routes",
+                "internetGateway",
+                "natGateways",
+                "eips",
+                "publicSubnetIds",
+                "privateSubnetIds",
+                "isolatedSubnetIds",
+                "vpcId"
+            ],
             "inputProperties": {
                 "assignGeneratedIpv6CidrBlock": {
                     "type": "boolean",

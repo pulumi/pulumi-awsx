@@ -25,39 +25,39 @@ export class Vpc extends pulumi.ComponentResource {
     /**
      * The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
      */
-    public /*out*/ readonly eips!: pulumi.Output<pulumiAws.ec2.Eip[] | undefined>;
+    public /*out*/ readonly eips!: pulumi.Output<pulumiAws.ec2.Eip[]>;
     /**
      * The Internet Gateway for the VPC.
      */
-    public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway | undefined>;
-    public /*out*/ readonly isolatedSubnetIds!: pulumi.Output<string[] | undefined>;
+    public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway>;
+    public /*out*/ readonly isolatedSubnetIds!: pulumi.Output<string[]>;
     /**
      * The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
      */
-    public readonly natGateways!: pulumi.Output<pulumiAws.ec2.NatGateway[] | undefined>;
-    public /*out*/ readonly privateSubnetIds!: pulumi.Output<string[] | undefined>;
-    public /*out*/ readonly publicSubnetIds!: pulumi.Output<string[] | undefined>;
+    public readonly natGateways!: pulumi.Output<pulumiAws.ec2.NatGateway[]>;
+    public /*out*/ readonly privateSubnetIds!: pulumi.Output<string[]>;
+    public /*out*/ readonly publicSubnetIds!: pulumi.Output<string[]>;
     /**
      * The Route Table Associations for the VPC.
      */
-    public /*out*/ readonly routeTableAssociations!: pulumi.Output<pulumiAws.ec2.RouteTableAssociation[] | undefined>;
+    public /*out*/ readonly routeTableAssociations!: pulumi.Output<pulumiAws.ec2.RouteTableAssociation[]>;
     /**
      * The Route Tables for the VPC.
      */
-    public /*out*/ readonly routeTables!: pulumi.Output<pulumiAws.ec2.RouteTable[] | undefined>;
+    public /*out*/ readonly routeTables!: pulumi.Output<pulumiAws.ec2.RouteTable[]>;
     /**
      * The Routes for the VPC.
      */
-    public /*out*/ readonly routes!: pulumi.Output<pulumiAws.ec2.Route[] | undefined>;
+    public /*out*/ readonly routes!: pulumi.Output<pulumiAws.ec2.Route[]>;
     /**
      * The VPC's subnets.
      */
-    public /*out*/ readonly subnets!: pulumi.Output<pulumiAws.ec2.Subnet[] | undefined>;
+    public /*out*/ readonly subnets!: pulumi.Output<pulumiAws.ec2.Subnet[]>;
     /**
      * The VPC.
      */
-    public /*out*/ readonly vpc!: pulumi.Output<pulumiAws.ec2.Vpc | undefined>;
-    public /*out*/ readonly vpcId!: pulumi.Output<string | undefined>;
+    public /*out*/ readonly vpc!: pulumi.Output<pulumiAws.ec2.Vpc>;
+    public /*out*/ readonly vpcId!: pulumi.Output<string>;
 
     /**
      * Create a Vpc resource with the given unique name, arguments, and options.
