@@ -21,7 +21,7 @@ class MyStack : Stack
                     Cpu = 512,
                     Memory = 128,
                     Essential = true,
-                    PortMappings = {new awsx.ecs.Inputs.TaskDefinitionPortMappingArgs
+                    PortMappings = {new Awsx.ecs.Inputs.TaskDefinitionPortMappingArgs
                     {
                         TargetGroup = lb.default_target_group,
                     }},

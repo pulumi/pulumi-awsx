@@ -15,7 +15,7 @@ service = awsx.ecs.FargateService("my-service",
             image="nginx:latest",
             cpu=512,
             memory= 128,
-            essential= true,
+            essential= True,
             port_mappings=[awsx.ecs.TaskDefinitionPortMappingArgs(
                 target_group=lb.default_target_group
             )],
