@@ -31,7 +31,7 @@ import (
 // 		if err != nil {
 // 			return err
 // 		}
-// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.Listener{
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
 // 			LoadBalancerArn: frontEndLoadBalancer.Arn,
 // 			Port:            pulumi.Int(443),
 // 			Protocol:        pulumi.String("HTTPS"),
@@ -63,7 +63,7 @@ import (
 //
 // func main() {
 // 	pulumi.Run(func(ctx *pulumi.Context) error {
-// 		_, err := lb.NewListener(ctx, "frontEnd", &lb.Listener{
+// 		_, err := lb.NewListener(ctx, "frontEnd", &lb.ListenerArgs{
 // 			LoadBalancerArn: pulumi.Any(aws_lb.Front_end.Arn),
 // 			Port:            pulumi.Int(443),
 // 			Protocol:        pulumi.String("TLS"),
@@ -98,7 +98,7 @@ import (
 // 		if err != nil {
 // 			return err
 // 		}
-// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.Listener{
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
 // 			LoadBalancerArn: frontEndLoadBalancer.Arn,
 // 			Port:            pulumi.Int(80),
 // 			Protocol:        pulumi.String("HTTP"),
@@ -135,7 +135,7 @@ import (
 // 		if err != nil {
 // 			return err
 // 		}
-// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.Listener{
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
 // 			LoadBalancerArn: frontEndLoadBalancer.Arn,
 // 			Port:            pulumi.Int(80),
 // 			Protocol:        pulumi.String("HTTP"),
@@ -189,7 +189,7 @@ import (
 // 		if err != nil {
 // 			return err
 // 		}
-// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.Listener{
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
 // 			LoadBalancerArn: frontEndLoadBalancer.Arn,
 // 			Port:            pulumi.Int(80),
 // 			Protocol:        pulumi.String("HTTP"),
@@ -234,7 +234,7 @@ import (
 // 		if err != nil {
 // 			return err
 // 		}
-// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.Listener{
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
 // 			LoadBalancerArn: frontEndLoadBalancer.Arn,
 // 			Port:            pulumi.Int(80),
 // 			Protocol:        pulumi.String("HTTP"),
@@ -285,7 +285,7 @@ import (
 // 		if err != nil {
 // 			return err
 // 		}
-// 		exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroup{
+// 		exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroupArgs{
 // 			Port:     pulumi.Int(6081),
 // 			Protocol: pulumi.String("GENEVE"),
 // 			VpcId:    pulumi.Any(aws_vpc.Example.Id),
@@ -297,7 +297,7 @@ import (
 // 		if err != nil {
 // 			return err
 // 		}
-// 		_, err = lb.NewListener(ctx, "exampleListener", &lb.Listener{
+// 		_, err = lb.NewListener(ctx, "exampleListener", &lb.ListenerArgs{
 // 			LoadBalancerArn: exampleLoadBalancer.ID(),
 // 			DefaultActions: lb.ListenerDefaultActionArray{
 // 				&lb.ListenerDefaultActionArgs{
@@ -361,7 +361,7 @@ type Listener struct {
 // 		if err != nil {
 // 			return err
 // 		}
-// 		_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroup{
+// 		_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroupArgs{
 // 			Port:     pulumi.Int(80),
 // 			Protocol: pulumi.String("HTTP"),
 // 			VpcId:    main.ID(),
@@ -391,7 +391,7 @@ type Listener struct {
 // 		if err != nil {
 // 			return err
 // 		}
-// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroup{
+// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroupArgs{
 // 			Port:       pulumi.Int(80),
 // 			Protocol:   pulumi.String("HTTP"),
 // 			TargetType: pulumi.String("ip"),
@@ -415,7 +415,7 @@ type Listener struct {
 //
 // func main() {
 // 	pulumi.Run(func(ctx *pulumi.Context) error {
-// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroup{
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
 // 			TargetType: pulumi.String("lambda"),
 // 		})
 // 		if err != nil {
@@ -436,7 +436,7 @@ type Listener struct {
 //
 // func main() {
 // 	pulumi.Run(func(ctx *pulumi.Context) error {
-// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroup{
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
 // 			TargetType: pulumi.String("alb"),
 // 			Port:       pulumi.Int(80),
 // 			Protocol:   pulumi.String("TCP"),

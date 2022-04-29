@@ -127,17 +127,11 @@ type VpcArgs struct {
 	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
 	Ipv6NetmaskLength pulumi.IntPtrInput
 	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
-<<<<<<< HEAD:sdk/go/awsx/ec2/vpc.go
-	NatGateways *NatGatewayConfigurationArgs
+	NatGateways *NatGatewayConfiguration
 	// A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
 	NumberOfAvailabilityZones *int
 	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
-	SubnetSpecs []SubnetSpecArgs
-=======
-	NatGateways *NatGatewayConfiguration
-	// A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
-	SubnetsPerAz []SubnetConfiguration
->>>>>>> bedd417 (Attempt to workaround codegen issues):sdk/go/awsx/vpc/vpc.go
+	SubnetSpecs []SubnetSpec
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 }

@@ -36,6 +36,9 @@ func NewApplicationLoadBalancer(ctx *pulumi.Context,
 		args = &ApplicationLoadBalancerArgs{}
 	}
 
+	if args.DefaultSecurityGroup != nil {
+		args.DefaultSecurityGroup = args.DefaultSecurityGroup.Defaults()
+	}
 	var resource ApplicationLoadBalancer
 	err := ctx.RegisterRemoteComponentResource("awsx:lb:ApplicationLoadBalancer", name, args, &resource, opts...)
 	if err != nil {

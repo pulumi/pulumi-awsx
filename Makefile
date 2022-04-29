@@ -69,7 +69,6 @@ build_go:: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.j
 build_go:: schema
 	rm -rf sdk/go
 	cd schemagen/cmd/$(CODEGEN) && go run . go ../../../sdk/go $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
-	find sdk/go -type f -not -path '*/\.*' -exec sed -i '' -r 's/((DefaultLogGroup)|(DefaultRoleWithPolicy)|(DefaultSecurityGroup)|(EC2ServiceTaskDefinition)|(FargateServiceTaskDefinition)|(LifecyclePolicy)|(Listener)|(NatGatewayConfiguration)|(OptionalLogGroup)|(RequiredBucket)|(SubnetConfiguration)|(TargetGroup)|(TaskDefinitionContainerDefinition))Args/\1/g' {} +
 	cd sdk && \
 		go get github.com/pulumi/pulumi-aws/sdk/v5@v$(AWS_VERSION) && \
 		go mod tidy && \
