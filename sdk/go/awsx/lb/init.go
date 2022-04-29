@@ -25,6 +25,8 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 		r = &ApplicationLoadBalancer{}
 	case "awsx:lb:NetworkLoadBalancer":
 		r = &NetworkLoadBalancer{}
+	case "awsx:lb:TargetGroupAttachment":
+		r = &TargetGroupAttachment{}
 	default:
 		return nil, fmt.Errorf("unknown resource type: %s", typ)
 	}

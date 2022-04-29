@@ -14,35 +14,29 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { Trail } from "./cloudtrail";
-import { DefaultVpc, getDefaultVpc, Vpc } from "./ec2";
+import * as ec2 from "./ec2";
 import { Repository } from "./ecr";
 import { Image } from "./ecr/image";
-import {
-    EC2Service,
-    EC2TaskDefinition,
-    FargateService,
-    FargateTaskDefinition,
-} from "./ecs";
-import { ApplicationLoadBalancer, NetworkLoadBalancer } from "./lb";
-import {
-    ConstructComponent,
-    Functions,
-    ResourceConstructor,
-} from "./schema-types";
+import * as ecs from "./ecs";
+import * as lb from "./lb";
+import * as schemaTypes from "./schema-types";
 
-const resources: ResourceConstructor = {
+const resources: schemaTypes.ResourceConstructor = {
     "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
-    "awsx:ecs:FargateService": (...args) => new FargateService(...args),
-    "awsx:ecs:EC2Service": (...args) => new EC2Service(...args),
-    "awsx:ecs:EC2TaskDefinition": (...args) => new EC2TaskDefinition(...args),
+    "awsx:ecs:FargateService": (...args) => new ecs.FargateService(...args),
+    "awsx:ecs:EC2Service": (...args) => new ecs.EC2Service(...args),
+    "awsx:ecs:EC2TaskDefinition": (...args) =>
+        new ecs.EC2TaskDefinition(...args),
     "awsx:ecs:FargateTaskDefinition": (...args) =>
-        new FargateTaskDefinition(...args),
+        new ecs.FargateTaskDefinition(...args),
     "awsx:lb:ApplicationLoadBalancer": (...args) =>
-        new ApplicationLoadBalancer(...args),
+        new lb.ApplicationLoadBalancer(...args),
     "awsx:lb:NetworkLoadBalancer": (...args) =>
-        new NetworkLoadBalancer(...args),
-    "awsx:ec2:Vpc": (...args) => new Vpc(...args),
-    "awsx:ec2:DefaultVpc": (...args) => new DefaultVpc(...args),
+        new lb.NetworkLoadBalancer(...args),
+    "awsx:lb:TargetGroupAttachment": (...args) =>
+        new lb.TargetGroupAttachment(...args),
+    "awsx:ec2:Vpc": (...args) => new ec2.Vpc(...args),
+    "awsx:ec2:DefaultVpc": (...args) => new ec2.DefaultVpc(...args),
     "awsx:ecr:Repository": (...args) => new Repository(...args),
     "awsx:ecr:Image": (...args) => new Image(...args),
 };
@@ -53,7 +47,8 @@ export function construct(
     inputs: pulumi.Inputs,
     options: pulumi.ComponentResourceOptions,
 ) {
-    const genericResources: Record<string, ConstructComponent> = resources;
+    const genericResources: Record<string, schemaTypes.ConstructComponent> =
+        resources;
     const resource = genericResources[type];
     if (resource === undefined) {
         return undefined;
@@ -61,6 +56,6 @@ export function construct(
     return resource(name, inputs, options);
 }
 
-export const functions: Functions = {
-    "awsx:ec2:getDefaultVpc": getDefaultVpc,
+export const functions: schemaTypes.Functions = {
+    "awsx:ec2:getDefaultVpc": ec2.getDefaultVpc,
 };

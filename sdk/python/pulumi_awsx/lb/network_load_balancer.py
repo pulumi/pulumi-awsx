@@ -362,7 +362,8 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
-        Create a NetworkLoadBalancer resource with the given unique name, props, and options.
+        Provides a Network Load Balancer resource with listeners and default target group.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] access_logs: An Access Logs block. Access Logs documented below.
@@ -398,7 +399,8 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  args: Optional[NetworkLoadBalancerArgs] = None,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
-        Create a NetworkLoadBalancer resource with the given unique name, props, and options.
+        Provides a Network Load Balancer resource with listeners and default target group.
+
         :param str resource_name: The name of the resource.
         :param NetworkLoadBalancerArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.

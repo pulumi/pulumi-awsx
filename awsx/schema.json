@@ -2387,6 +2387,7 @@
             "isComponent": true
         },
         "awsx:lb:ApplicationLoadBalancer": {
+            "description": "Provides an Application Load Balancer resource with listeners, default target group and default security group.",
             "properties": {
                 "defaultSecurityGroup": {
                     "$ref": "/aws/v5.3.0/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
@@ -2529,6 +2530,7 @@
             "isComponent": true
         },
         "awsx:lb:NetworkLoadBalancer": {
+            "description": "Provides a Network Load Balancer resource with listeners and default target group.",
             "properties": {
                 "defaultTargetGroup": {
                     "$ref": "/aws/v5.3.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
@@ -2650,6 +2652,60 @@
                         "type": "string"
                     },
                     "description": "A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "isComponent": true
+        },
+        "awsx:lb:TargetGroupAttachment": {
+            "description": "Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.",
+            "properties": {
+                "lambdaPermission": {
+                    "$ref": "/aws/v5.3.0/schema.json#/resources/aws:lambda%2fpermission:Permission",
+                    "description": "Auto-created Lambda permission, if targeting a Lambda function"
+                },
+                "targetGroupAttachment": {
+                    "$ref": "/aws/v5.3.0/schema.json#/resources/aws:lb%2ftargetGroupAttachment:TargetGroupAttachment",
+                    "description": "Underlying Target Group Attachment resource",
+                    "language": {
+                        "csharp": {
+                            "name": "Attachment"
+                        }
+                    }
+                }
+            },
+            "type": "object",
+            "required": [
+                "targetGroupAttachment"
+            ],
+            "inputProperties": {
+                "instance": {
+                    "$ref": "/aws/v5.3.0/schema.json#/resources/aws:ec2%2finstance:Instance",
+                    "description": "EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
+                },
+                "instanceId": {
+                    "type": "string",
+                    "description": "ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
+                },
+                "lambda": {
+                    "$ref": "/aws/v5.3.0/schema.json#/resources/aws:lambda%2ffunction:Function",
+                    "description": "Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
+                    "language": {
+                        "python": {
+                            "name": "function"
+                        }
+                    }
+                },
+                "lambdaArn": {
+                    "type": "string",
+                    "description": "ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided."
+                },
+                "targetGroup": {
+                    "$ref": "/aws/v5.3.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
+                    "description": "Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified."
+                },
+                "targetGroupArn": {
+                    "type": "string",
+                    "description": "ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified."
                 }
             },
             "isComponent": true

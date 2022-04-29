@@ -14,3 +14,4 @@
 
 export * from "./applicationLoadBalancer";
 export * from "./networkLoadBalancer";
+export * from "./targetGroupAttachment";

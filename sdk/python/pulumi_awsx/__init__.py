@@ -75,7 +75,8 @@ _utilities.register(
   "fqn": "pulumi_awsx.lb",
   "classes": {
    "awsx:lb:ApplicationLoadBalancer": "ApplicationLoadBalancer",
-   "awsx:lb:NetworkLoadBalancer": "NetworkLoadBalancer"
+   "awsx:lb:NetworkLoadBalancer": "NetworkLoadBalancer",
+   "awsx:lb:TargetGroupAttachment": "TargetGroupAttachment"
   }
  }
 ]

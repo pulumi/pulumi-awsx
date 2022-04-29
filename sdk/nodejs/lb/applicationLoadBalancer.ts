@@ -7,6 +7,9 @@ import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
 
+/**
+ * Provides an Application Load Balancer resource with listeners, default target group and default security group.
+ */
 export class ApplicationLoadBalancer extends pulumi.ComponentResource {
     /** @internal */
     public static readonly __pulumiType = 'awsx:lb:ApplicationLoadBalancer';
