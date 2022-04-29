@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// <summary>
     /// Configuration for a VPC subnet.
     /// </summary>
-    public sealed class SubnetConfigurationArgs : Pulumi.ResourceArgs
+    public sealed class SubnetSpecArgs : Pulumi.ResourceArgs
     {
         /// <summary>
         /// The bitmask for the subnet's CIDR block.
@@ -24,8 +24,8 @@ namespace Pulumi.Awsx.Ec2.Inputs
         /// <summary>
         /// The subnet's name. Will be templated upon creation.
         /// </summary>
-        [Input("name", required: true)]
-        public string Name { get; set; } = null!;
+        [Input("name")]
+        public string? Name { get; set; }
 
         /// <summary>
         /// The type of subnet.
@@ -33,7 +33,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         [Input("type", required: true)]
         public Pulumi.Awsx.Ec2.SubnetType Type { get; set; }
 
-        public SubnetConfigurationArgs()
+        public SubnetSpecArgs()
         {
         }
     }

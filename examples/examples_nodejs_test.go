@@ -84,11 +84,21 @@ func TestDefaultVpc(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
-func TestVpcDeaultArgs(t *testing.T) {
+func TestVpcDefaultArgs(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
 			Dir:           filepath.Join(getCwd(t), "vpc", "nodejs", "default-args"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestVpcSpecificSubnetSpecArgs(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "vpc", "nodejs", "specific-vpc-layout"),
 		})
 
 	integration.ProgramTest(t, &test)

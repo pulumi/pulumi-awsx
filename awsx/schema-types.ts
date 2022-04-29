@@ -61,14 +61,18 @@ export interface DefaultVpcArgs {
 export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
     public eips?: aws.ec2.Eip[] | pulumi.Output<aws.ec2.Eip[]>;
     public internetGateway?: aws.ec2.InternetGateway | pulumi.Output<aws.ec2.InternetGateway>;
+    public isolatedSubnetIds?: string[] | pulumi.Output<string[]>;
     public natGateways?: aws.ec2.NatGateway[] | pulumi.Output<aws.ec2.NatGateway[]>;
+    public privateSubnetIds?: string[] | pulumi.Output<string[]>;
+    public publicSubnetIds?: string[] | pulumi.Output<string[]>;
     public routeTableAssociations?: aws.ec2.RouteTableAssociation[] | pulumi.Output<aws.ec2.RouteTableAssociation[]>;
     public routeTables?: aws.ec2.RouteTable[] | pulumi.Output<aws.ec2.RouteTable[]>;
     public routes?: aws.ec2.Route[] | pulumi.Output<aws.ec2.Route[]>;
     public subnets?: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;
     public vpc?: aws.ec2.Vpc | pulumi.Output<aws.ec2.Vpc>;
+    public vpcId?: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, natGateways: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined } : { name, args, opts }, opts);
+        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, isolatedSubnetIds: undefined, natGateways: undefined, privateSubnetIds: undefined, publicSubnetIds: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined, vpcId: undefined } : { name, args, opts }, opts);
     }
 }
 export interface VpcArgs {
@@ -87,7 +91,8 @@ export interface VpcArgs {
     readonly ipv6IpamPoolId?: pulumi.Input<string>;
     readonly ipv6NetmaskLength?: pulumi.Input<number>;
     readonly natGateways?: NatGatewayConfigurationInputs;
-    readonly subnetsPerAz?: SubnetConfigurationInputs[];
+    readonly numberOfAvailabilityZones?: number;
+    readonly subnetSpecs?: SubnetSpecInputs[];
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class Image<TData = any> extends pulumi.ComponentResource<TData> {
@@ -523,14 +528,14 @@ export interface NatGatewayConfigurationOutputs {
 }
 export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
 export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
-export interface SubnetConfigurationInputs {
+export interface SubnetSpecInputs {
     readonly cidrMask: number;
-    readonly name: string;
+    readonly name?: string;
     readonly type: SubnetTypeInputs;
 }
-export interface SubnetConfigurationOutputs {
+export interface SubnetSpecOutputs {
     readonly cidrMask: number;
-    readonly name: string;
+    readonly name?: string;
     readonly type: SubnetTypeOutputs;
 }
 export type SubnetTypeInputs = "Public" | "Private" | "Isolated";

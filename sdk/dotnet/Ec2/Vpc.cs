@@ -24,11 +24,20 @@ namespace Pulumi.Awsx.Ec2
         [Output("internetGateway")]
         public Output<Pulumi.Aws.Ec2.InternetGateway?> InternetGateway { get; private set; } = null!;
 
+        [Output("isolatedSubnetIds")]
+        public Output<ImmutableArray<string>> IsolatedSubnetIds { get; private set; } = null!;
+
         /// <summary>
         /// The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
         /// </summary>
         [Output("natGateways")]
         public Output<ImmutableArray<Pulumi.Aws.Ec2.NatGateway>> NatGateways { get; private set; } = null!;
+
+        [Output("privateSubnetIds")]
+        public Output<ImmutableArray<string>> PrivateSubnetIds { get; private set; } = null!;
+
+        [Output("publicSubnetIds")]
+        public Output<ImmutableArray<string>> PublicSubnetIds { get; private set; } = null!;
 
         /// <summary>
         /// The Route Table Associations for the VPC.
@@ -59,6 +68,9 @@ namespace Pulumi.Awsx.Ec2
         /// </summary>
         [Output("vpc")]
         public Output<Pulumi.Aws.Ec2.Vpc?> AwsVpc { get; private set; } = null!;
+
+        [Output("vpcId")]
+        public Output<string?> VpcId { get; private set; } = null!;
 
 
         /// <summary>
@@ -98,7 +110,7 @@ namespace Pulumi.Awsx.Ec2
         private List<string>? _availabilityZoneNames;
 
         /// <summary>
-        /// A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        /// A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         /// </summary>
         public List<string> AvailabilityZoneNames
         {
@@ -187,16 +199,22 @@ namespace Pulumi.Awsx.Ec2
         [Input("natGateways")]
         public Inputs.NatGatewayConfigurationArgs? NatGateways { get; set; }
 
-        [Input("subnetsPerAz")]
-        private List<Inputs.SubnetConfigurationArgs>? _subnetsPerAz;
+        /// <summary>
+        /// A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        /// </summary>
+        [Input("numberOfAvailabilityZones")]
+        public int? NumberOfAvailabilityZones { get; set; }
+
+        [Input("subnetSpecs")]
+        private List<Inputs.SubnetSpecArgs>? _subnetSpecs;
 
         /// <summary>
-        /// A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+        /// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
         /// </summary>
-        public List<Inputs.SubnetConfigurationArgs> SubnetsPerAz
+        public List<Inputs.SubnetSpecArgs> SubnetSpecs
         {
-            get => _subnetsPerAz ?? (_subnetsPerAz = new List<Inputs.SubnetConfigurationArgs>());
-            set => _subnetsPerAz = value;
+            get => _subnetSpecs ?? (_subnetSpecs = new List<Inputs.SubnetSpecArgs>());
+            set => _subnetSpecs = value;
         }
 
         [Input("tags")]

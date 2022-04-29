@@ -26,6 +26,9 @@ interface VpcData {
     igw: aws.ec2.InternetGateway;
     natGateways: aws.ec2.NatGateway[];
     eips: aws.ec2.Eip[];
+    publicSubnetIds: pulumi.Output<string>[];
+    privateSubnetIds: pulumi.Output<string>[];
+    isolatedSubnetIds: pulumi.Output<string>[];
 }
 
 export class Vpc extends schema.Vpc<VpcData> {
@@ -46,6 +49,12 @@ export class Vpc extends schema.Vpc<VpcData> {
         this.internetGateway = data.igw;
         this.natGateways = data.natGateways;
         this.eips = data.eips;
+
+        this.privateSubnetIds = data.privateSubnetIds;
+        this.publicSubnetIds = data.publicSubnetIds;
+        this.isolatedSubnetIds = data.isolatedSubnetIds;
+
+        this.vpcId = data.vpc.id;
     }
 
     protected async initialize(props: {
@@ -54,8 +63,15 @@ export class Vpc extends schema.Vpc<VpcData> {
         opts: pulumi.ComponentResourceOptions;
     }) {
         const { name, args } = props;
+        if (args.availabilityZoneNames && args.numberOfAvailabilityZones) {
+            throw new Error(
+                "Only one of [availabilityZoneNames] and [numberOfAvailabilityZones] can be specified",
+            );
+        }
+
         const availabilityZones =
-            args.availabilityZoneNames ?? (await this.getDefaultAzs());
+            args.availabilityZoneNames ??
+            (await this.getDefaultAzs(args.numberOfAvailabilityZones));
 
         const natGatewayStrategy: schema.NatGatewayStrategyInputs =
             args.natGateways?.strategy ?? "OnePerAz";
@@ -68,7 +84,7 @@ export class Vpc extends schema.Vpc<VpcData> {
             name,
             cidrBlock,
             availabilityZones,
-            args.subnetsPerAz,
+            args.subnetSpecs,
         );
         validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
 
@@ -104,6 +120,9 @@ export class Vpc extends schema.Vpc<VpcData> {
         const routes: aws.ec2.Route[] = [];
         const natGateways: aws.ec2.NatGateway[] = [];
         const eips: aws.ec2.Eip[] = [];
+        const publicSubnetIds: pulumi.Output<string>[] = [];
+        const privateSubnetIds: pulumi.Output<string>[] = [];
+        const isolatedSubnetIds: pulumi.Output<string>[] = [];
 
         for (let i = 0; i < availabilityZones.length; i++) {
             subnetSpecs
@@ -124,6 +143,13 @@ export class Vpc extends schema.Vpc<VpcData> {
                         { parent: vpc, dependsOn: [vpc] },
                     );
                     subnets.push(subnet);
+                    if (spec.type === "Public") {
+                        publicSubnetIds.push(subnet.id);
+                    } else if (spec.type === "Private") {
+                        privateSubnetIds.push(subnet.id);
+                    } else {
+                        isolatedSubnetIds.push(subnet.id);
+                    }
 
                     const routeTable = new aws.ec2.RouteTable(
                         spec.subnetName,
@@ -229,17 +255,21 @@ export class Vpc extends schema.Vpc<VpcData> {
             routes,
             natGateways,
             eips,
+            privateSubnetIds,
+            publicSubnetIds,
+            isolatedSubnetIds,
         };
     }
 
-    async getDefaultAzs(): Promise<string[]> {
+    async getDefaultAzs(azCount?: number): Promise<string[]> {
+        const desiredCount = azCount ?? 3;
         const result = await aws.getAvailabilityZones();
-        if (result.names.length < 3) {
+        if (result.names.length < desiredCount) {
             throw new Error(
-                "The configured region for this provider does not have at least 3 Availability Zones. Either specify an explicit list of zones in availabilityZoneNames or choose a region with at least 3 AZs.",
+                `The configured region for this provider does not have at least ${desiredCount} Availability Zones. Either specify an explicit list of zones in availabilityZoneNames or choose a region with at least ${desiredCount} AZs.`,
             );
         }
-        return result.names.slice(0, 3);
+        return result.names.slice(0, desiredCount);
     }
 }
 

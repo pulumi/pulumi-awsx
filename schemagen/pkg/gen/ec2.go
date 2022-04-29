@@ -32,7 +32,7 @@ func generateEc2(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:ec2:NatGatewayStrategy":      natGatewayStrategyType(),
 			"awsx:ec2:NatGatewayConfiguration": natGatewayConfigurationType(),
 			"awsx:ec2:SubnetType":              subnetType(),
-			"awsx:ec2:SubnetConfiguration":     subnetConfigType(),
+			"awsx:ec2:SubnetSpec":              subnetSpecType(),
 		},
 		Functions: map[string]schema.FunctionSpec{
 			"awsx:ec2:getDefaultVpc": defaultVpcArgs(),
@@ -41,7 +41,7 @@ func generateEc2(awsSpec schema.PackageSpec) schema.PackageSpec {
 }
 
 const (
-	subnetsPerAz          = "subnetsPerAz"
+	subnetSpecs           = "subnetSpecs"
 	availabilityZoneNames = "availabilityZoneNames"
 )
 
@@ -92,8 +92,15 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	awsVpcResource := awsSpec.Resources["aws:ec2/vpc:Vpc"]
 	inputProperties := map[string]schema.PropertySpec{
 		availabilityZoneNames: {
-			Description: fmt.Sprintf("A list of availability zones to which the subnets defined in %s will be deployed. Optional, defaults to the first 3 AZs in the current region.", subnetsPerAz),
+			Description: fmt.Sprintf("A list of availability zone names to which the subnets defined in %v will be deployed. Optional, defaults to the first 3 AZs in the current region.", subnetSpecs),
 			TypeSpec:    plainArrayOfPlainStrings(),
+		},
+		"numberOfAvailabilityZones": {
+			Description: fmt.Sprintf("A number of availability zones to which the subnets defined in %v will be deployed. Optional, defaults to the first 3 AZs in the current region.", subnetSpecs),
+			TypeSpec: schema.TypeSpec{
+				Type:  "integer",
+				Plain: true,
+			},
 		},
 		"cidrBlock": {
 			Description: "The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.",
@@ -106,9 +113,9 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				Plain: true,
 			},
 		},
-		subnetsPerAz: {
-			Description: fmt.Sprintf("A list of subnets that should be deployed to each AZ specified in %s. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.", availabilityZoneNames),
-			TypeSpec:    plainArrayOfPlainComplexType("SubnetConfiguration"),
+		subnetSpecs: {
+			Description: fmt.Sprintf("A list of subnet specs that should be deployed to each AZ specified in %s. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.", availabilityZoneNames),
+			TypeSpec:    plainArrayOfPlainComplexType("SubnetSpec"),
 		},
 	}
 	for k, v := range awsVpcResource.InputProperties {
@@ -163,6 +170,35 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					Description: "The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.",
 					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "eip"),
 				},
+				"publicSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+				"privateSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+				"isolatedSubnetIds": {
+					TypeSpec: schema.TypeSpec{
+						Type: "array",
+						Items: &schema.TypeSpec{
+							Type: "string",
+						},
+					},
+				},
+				"vpcId": {
+					TypeSpec: schema.TypeSpec{
+						Type: "string",
+					},
+				},
 			},
 		},
 		InputProperties: inputProperties,
@@ -199,7 +235,7 @@ func awsType(packageSpec schema.PackageSpec, awsNamespace, resourceNameCamelCase
 	}
 }
 
-func subnetConfigType() schema.ComplexTypeSpec {
+func subnetSpecType() schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
@@ -225,7 +261,6 @@ func subnetConfigType() schema.ComplexTypeSpec {
 			},
 			Required: []string{
 				"type",
-				"name",
 				"cidrMask",
 			},
 		},
