@@ -32,8 +32,8 @@ type Vpc struct {
 	// The VPC's subnets.
 	Subnets ec2.SubnetArrayOutput `pulumi:"subnets"`
 	// The VPC.
-	Vpc   ec2.VpcOutput          `pulumi:"vpc"`
-	VpcId pulumi.StringPtrOutput `pulumi:"vpcId"`
+	Vpc   ec2.VpcOutput       `pulumi:"vpc"`
+	VpcId pulumi.StringOutput `pulumi:"vpcId"`
 }
 
 // NewVpc registers a new resource with the given unique name, arguments, and options.

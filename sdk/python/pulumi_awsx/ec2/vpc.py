@@ -458,7 +458,7 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter
-    def eips(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.Eip']]]:
+    def eips(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.Eip']]:
         """
         The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
         """
@@ -466,7 +466,7 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter(name="internetGateway")
-    def internet_gateway(self) -> pulumi.Output[Optional['pulumi_aws.ec2.InternetGateway']]:
+    def internet_gateway(self) -> pulumi.Output['pulumi_aws.ec2.InternetGateway']:
         """
         The Internet Gateway for the VPC.
         """
@@ -474,12 +474,12 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter(name="isolatedSubnetIds")
-    def isolated_subnet_ids(self) -> pulumi.Output[Optional[Sequence[str]]]:
+    def isolated_subnet_ids(self) -> pulumi.Output[Sequence[str]]:
         return pulumi.get(self, "isolated_subnet_ids")
 
     @property
     @pulumi.getter(name="natGateways")
-    def nat_gateways(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.NatGateway']]]:
+    def nat_gateways(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.NatGateway']]:
         """
         The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
         """
@@ -487,17 +487,17 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter(name="privateSubnetIds")
-    def private_subnet_ids(self) -> pulumi.Output[Optional[Sequence[str]]]:
+    def private_subnet_ids(self) -> pulumi.Output[Sequence[str]]:
         return pulumi.get(self, "private_subnet_ids")
 
     @property
     @pulumi.getter(name="publicSubnetIds")
-    def public_subnet_ids(self) -> pulumi.Output[Optional[Sequence[str]]]:
+    def public_subnet_ids(self) -> pulumi.Output[Sequence[str]]:
         return pulumi.get(self, "public_subnet_ids")
 
     @property
     @pulumi.getter(name="routeTableAssociations")
-    def route_table_associations(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.RouteTableAssociation']]]:
+    def route_table_associations(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.RouteTableAssociation']]:
         """
         The Route Table Associations for the VPC.
         """
@@ -505,7 +505,7 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter(name="routeTables")
-    def route_tables(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.RouteTable']]]:
+    def route_tables(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.RouteTable']]:
         """
         The Route Tables for the VPC.
         """
@@ -513,7 +513,7 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter
-    def routes(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.Route']]]:
+    def routes(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.Route']]:
         """
         The Routes for the VPC.
         """
@@ -521,7 +521,7 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter
-    def subnets(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.Subnet']]]:
+    def subnets(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.Subnet']]:
         """
         The VPC's subnets.
         """
@@ -529,7 +529,7 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter
-    def vpc(self) -> pulumi.Output[Optional['pulumi_aws.ec2.Vpc']]:
+    def vpc(self) -> pulumi.Output['pulumi_aws.ec2.Vpc']:
         """
         The VPC.
         """
@@ -537,6 +537,6 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter(name="vpcId")
-    def vpc_id(self) -> pulumi.Output[Optional[str]]:
+    def vpc_id(self) -> pulumi.Output[str]:
         return pulumi.get(self, "vpc_id")
 
