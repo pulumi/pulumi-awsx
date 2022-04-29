@@ -18,7 +18,7 @@ class TargetGroupAttachmentArgs:
                  instance_id: Optional[pulumi.Input[str]] = None,
                  lambda_: Optional[pulumi.Input['pulumi_aws.lambda_.Function']] = None,
                  lambda_arn: Optional[pulumi.Input[str]] = None,
-                 target_group: Optional['pulumi_aws.lb.TargetGroup'] = None,
+                 target_group: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']] = None,
                  target_group_arn: Optional[pulumi.Input[str]] = None):
         """
         The set of arguments for constructing a TargetGroupAttachment resource.
@@ -26,7 +26,7 @@ class TargetGroupAttachmentArgs:
         :param pulumi.Input[str] instance_id: ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         :param pulumi.Input['pulumi_aws.lambda_.Function'] lambda_: Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         :param pulumi.Input[str] lambda_arn: ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
-        :param 'pulumi_aws.lb.TargetGroup' target_group: Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
+        :param pulumi.Input['pulumi_aws.lb.TargetGroup'] target_group: Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         :param pulumi.Input[str] target_group_arn: ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         """
         if instance is not None:
@@ -92,14 +92,14 @@ class TargetGroupAttachmentArgs:
 
     @property
     @pulumi.getter(name="targetGroup")
-    def target_group(self) -> Optional['pulumi_aws.lb.TargetGroup']:
+    def target_group(self) -> Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']]:
         """
         Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         """
         return pulumi.get(self, "target_group")
 
     @target_group.setter
-    def target_group(self, value: Optional['pulumi_aws.lb.TargetGroup']):
+    def target_group(self, value: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']]):
         pulumi.set(self, "target_group", value)
 
     @property
@@ -124,7 +124,7 @@ class TargetGroupAttachment(pulumi.ComponentResource):
                  instance_id: Optional[pulumi.Input[str]] = None,
                  lambda_: Optional[pulumi.Input['pulumi_aws.lambda_.Function']] = None,
                  lambda_arn: Optional[pulumi.Input[str]] = None,
-                 target_group: Optional['pulumi_aws.lb.TargetGroup'] = None,
+                 target_group: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']] = None,
                  target_group_arn: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         """
@@ -136,7 +136,7 @@ class TargetGroupAttachment(pulumi.ComponentResource):
         :param pulumi.Input[str] instance_id: ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         :param pulumi.Input['pulumi_aws.lambda_.Function'] lambda_: Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
         :param pulumi.Input[str] lambda_arn: ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
-        :param 'pulumi_aws.lb.TargetGroup' target_group: Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
+        :param pulumi.Input['pulumi_aws.lb.TargetGroup'] target_group: Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         :param pulumi.Input[str] target_group_arn: ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         """
         ...
@@ -167,7 +167,7 @@ class TargetGroupAttachment(pulumi.ComponentResource):
                  instance_id: Optional[pulumi.Input[str]] = None,
                  lambda_: Optional[pulumi.Input['pulumi_aws.lambda_.Function']] = None,
                  lambda_arn: Optional[pulumi.Input[str]] = None,
-                 target_group: Optional['pulumi_aws.lb.TargetGroup'] = None,
+                 target_group: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']] = None,
                  target_group_arn: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         if opts is None:

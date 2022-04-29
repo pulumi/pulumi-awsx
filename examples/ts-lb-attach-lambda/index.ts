@@ -2,7 +2,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-// // Create a load balancer on port 80 and spin up two instances of Nginx.
 const lb = new awsx.lb.ApplicationLoadBalancer("lb", {
     defaultTargetGroup: { targetType: "lambda" },
 });

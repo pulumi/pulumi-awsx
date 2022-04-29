@@ -64,7 +64,7 @@ type TargetGroupAttachmentArgs struct {
 	// ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
 	LambdaArn pulumi.StringPtrInput
 	// Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
-	TargetGroup *lb.TargetGroup
+	TargetGroup lb.TargetGroupInput
 	// ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
 	TargetGroupArn pulumi.StringPtrInput
 }

@@ -83,7 +83,7 @@ namespace Pulumi.Awsx.Lb
         /// Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         /// </summary>
         [Input("targetGroup")]
-        public Pulumi.Aws.LB.TargetGroup? TargetGroup { get; set; }
+        public Input<Pulumi.Aws.LB.TargetGroup>? TargetGroup { get; set; }
 
         /// <summary>
         /// ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
