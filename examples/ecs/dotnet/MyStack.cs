@@ -10,18 +10,18 @@ class MyStack : Stack
 
         var lb = new Awsx.Lb.ApplicationLoadBalancer("nginx-lb");
 
-        var service = new Awsx.Ecs.FargateService("my-service", new FargateServiceArgs
+        var service = new Awsx.Ecs.FargateService("my-service", new Awsx.Ecs.FargateServiceArgs
         {
             Cluster = cluster.Arn,
-            TaskDefinition = new Awsx.Ecs.FargateServiceTaskDefinitionArgs
+            TaskDefinition = new Awsx.Ecs.Inputs.FargateServiceTaskDefinitionArgs
             {
-                Container = new Awsx.Ecs.TaskDefinitionContainerDefinitionArgs
+                Container = new Awsx.Ecs.Inputs.TaskDefinitionContainerDefinitionArgs
                 {
                     Image = "nginx:latest",
                     Cpu = 512,
                     Memory = 128,
                     Essential = true,
-                    PortMappings = {new awsx.ecs.TaskDefinitionPortMappingArgs
+                    PortMappings = {new awsx.ecs.Inputs.TaskDefinitionPortMappingArgs
                     {
                         TargetGroup = lb.default_target_group,
                     }},
@@ -29,7 +29,7 @@ class MyStack : Stack
             }
         });
 
-        this.Url = lb.AwsLoadBalancer.DnsName;
+        this.Url = lb.LoadBalancer.DnsName;
     }
 
     [Output] public Output<string> Url { get; set; }

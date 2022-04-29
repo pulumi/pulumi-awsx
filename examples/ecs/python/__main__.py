@@ -9,7 +9,7 @@ cluster = aws.ecs.Cluster("default-cluster")
 lb = awsx.lb.ApplicationLoadBalancer("nginx-lb")
 
 service = awsx.ecs.FargateService("my-service",
-    cluster=cluster.arn
+    cluster=cluster.arn,
     task_definition_args=awsx.ecs.FargateServiceTaskDefinitionArgs(
         container=awsx.ecs.TaskDefinitionContainerDefinitionArgs(
             image="nginx:latest",
