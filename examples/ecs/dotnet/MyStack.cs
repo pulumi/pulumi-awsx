@@ -21,15 +21,15 @@ class MyStack : Stack
                     Cpu = 512,
                     Memory = 128,
                     Essential = true,
-                    PortMappings = {new Awsx.ecs.Inputs.TaskDefinitionPortMappingArgs
+                    PortMappings = {new Awsx.Ecs.Inputs.TaskDefinitionPortMappingArgs
                     {
-                        TargetGroup = lb.default_target_group,
+                        TargetGroup = lb.DefaultTargetGroup,
                     }},
                 }
             }
         });
 
-        this.Url = lb.LoadBalancer.DnsName;
+        this.Url = lb.LoadBalancer.Apply(lb => lb.DnsName);
     }
 
     [Output] public Output<string> Url { get; set; }
