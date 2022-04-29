@@ -27,149 +27,129 @@ import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
  * Presents required Service load balancers if target group included in port mappings.
  */
 export class FargateTaskDefinition extends schema.FargateTaskDefinition {
-    /** Created ECS Task Definition resource. */
-    public readonly taskDefinition: aws.ecs.TaskDefinition;
-    /** Auto-created Log Group resource for use by containers. */
-    public readonly logGroup?: aws.cloudwatch.LogGroup;
-    /** Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services. */
-    public readonly taskRole?: aws.iam.Role;
-    /** Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume. */
-    public readonly executionRole?: aws.iam.Role;
-    /** Computed load balancers from target groups specified of container port mappings. */
-    public readonly loadBalancers: pulumi.Output<
-        aws.types.output.ecs.ServiceLoadBalancer[]
-    >;
+  /** Created ECS Task Definition resource. */
+  public readonly taskDefinition: aws.ecs.TaskDefinition;
+  /** Auto-created Log Group resource for use by containers. */
+  public readonly logGroup?: aws.cloudwatch.LogGroup;
+  /** Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services. */
+  public readonly taskRole?: aws.iam.Role;
+  /** Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume. */
+  public readonly executionRole?: aws.iam.Role;
+  /** Computed load balancers from target groups specified of container port mappings. */
+  public readonly loadBalancers: pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]>;
 
-    constructor(
-        name: string,
-        args: schema.FargateTaskDefinitionArgs,
-        opts: pulumi.ComponentResourceOptions = {},
-    ) {
-        super(
-            name,
-            {},
-            {
-                ...opts,
-                aliases: [
-                    { type: "awsx:x:ecs:FargateTaskDefinition" },
-                    ...(opts.aliases ?? []),
-                ],
-            },
-        );
+  constructor(
+    name: string,
+    args: schema.FargateTaskDefinitionArgs,
+    opts: pulumi.ComponentResourceOptions = {},
+  ) {
+    super(
+      name,
+      {},
+      {
+        ...opts,
+        aliases: [{ type: "awsx:x:ecs:FargateTaskDefinition" }, ...(opts.aliases ?? [])],
+      },
+    );
 
-        const containers = normalizeFargateTaskDefinitionContainers(args);
+    const containers = normalizeFargateTaskDefinitionContainers(args);
 
-        const { logGroup, logGroupId } = defaultLogGroup(
-            name,
-            args.logGroup,
-            {},
-            { parent: this },
-        );
-        this.logGroup = logGroup;
+    const { logGroup, logGroupId } = defaultLogGroup(name, args.logGroup, {}, { parent: this });
+    this.logGroup = logGroup;
 
-        const taskRole = role.defaultRoleWithPolicies(
-            `${name}-task`,
-            args.taskRole,
-            {
-                assumeRolePolicy: role.defaultRoleAssumeRolePolicy(),
-                policyArns: role.defaultTaskRolePolicyARNs(),
-            },
-            { parent: this },
-        );
-        const executionRole = role.defaultRoleWithPolicies(
-            `${name}-execution`,
-            args.executionRole,
-            {
-                assumeRolePolicy: role.defaultRoleAssumeRolePolicy(),
-                policyArns: role.defaultExecutionRolePolicyARNs(),
-            },
-            { parent: this },
-        );
-        this.taskRole = taskRole.role;
-        this.executionRole = executionRole.role;
+    const taskRole = role.defaultRoleWithPolicies(
+      `${name}-task`,
+      args.taskRole,
+      {
+        assumeRolePolicy: role.defaultRoleAssumeRolePolicy(),
+        policyArns: role.defaultTaskRolePolicyARNs(),
+      },
+      { parent: this },
+    );
+    const executionRole = role.defaultRoleWithPolicies(
+      `${name}-execution`,
+      args.executionRole,
+      {
+        assumeRolePolicy: role.defaultRoleAssumeRolePolicy(),
+        policyArns: role.defaultExecutionRolePolicyARNs(),
+      },
+      { parent: this },
+    );
+    this.taskRole = taskRole.role;
+    this.executionRole = executionRole.role;
 
-        const containerDefinitions = computeContainerDefinitions(
-            this,
-            containers,
-            logGroupId,
-        );
+    const containerDefinitions = computeContainerDefinitions(this, containers, logGroupId);
 
-        this.loadBalancers = computeLoadBalancers(containers);
+    this.loadBalancers = computeLoadBalancers(containers);
 
-        this.taskDefinition = new aws.ecs.TaskDefinition(
-            name,
-            buildTaskDefinitionArgs(
-                name,
-                args,
-                containerDefinitions,
-                taskRole.roleArn,
-                executionRole.roleArn,
-            ),
-            { parent: this },
-        );
-    }
+    this.taskDefinition = new aws.ecs.TaskDefinition(
+      name,
+      buildTaskDefinitionArgs(
+        name,
+        args,
+        containerDefinitions,
+        taskRole.roleArn,
+        executionRole.roleArn,
+      ),
+      { parent: this },
+    );
+  }
 }
 
 function normalizeFargateTaskDefinitionContainers(args: schema.FargateTaskDefinitionArgs) {
-    const { container, containers } = args;
-    if (containers !== undefined && container === undefined) {
-        return containers;
-    } else if (container !== undefined && containers === undefined) {
-        return { container: container };
-    } else {
-        throw new Error(
-            "Exactly one of [container] or [containers] must be provided",
-        );
-    }
+  const { container, containers } = args;
+  if (containers !== undefined && container === undefined) {
+    return containers;
+  } else if (container !== undefined && containers === undefined) {
+    return { container: container };
+  } else {
+    throw new Error("Exactly one of [container] or [containers] must be provided");
+  }
 }
 
 function buildTaskDefinitionArgs(
-    name: string,
-    args: schema.FargateTaskDefinitionArgs,
-    containerDefinitions: pulumi.Output<
-        schema.TaskDefinitionContainerDefinitionInputs[]
-    >,
-    taskRoleArn?: pulumi.Input<string>,
-    executionRoleArn?: pulumi.Input<string>,
+  name: string,
+  args: schema.FargateTaskDefinitionArgs,
+  containerDefinitions: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs[]>,
+  taskRoleArn?: pulumi.Input<string>,
+  executionRoleArn?: pulumi.Input<string>,
 ): aws.ecs.TaskDefinitionArgs {
-    const mutableArgs = { ...args };
-    const requiredMemoryAndCPU = containerDefinitions
-        .apply((defs) =>
-            pulumi.all(
-                defs.map((def) =>
-                    pulumi
-                        .all([def.cpu, def.memory, def.memoryReservation])
-                        .apply(([cpu, memory, memoryReservation]) => ({
-                            cpu,
-                            memory,
-                            memoryReservation,
-                        })),
-                ),
-            ),
-        )
-        .apply((defs) => calculateFargateMemoryAndCPU(defs));
+  const mutableArgs = { ...args };
+  const requiredMemoryAndCPU = containerDefinitions
+    .apply((defs) =>
+      pulumi.all(
+        defs.map((def) =>
+          pulumi
+            .all([def.cpu, def.memory, def.memoryReservation])
+            .apply(([cpu, memory, memoryReservation]) => ({
+              cpu,
+              memory,
+              memoryReservation,
+            })),
+        ),
+      ),
+    )
+    .apply((defs) => calculateFargateMemoryAndCPU(defs));
 
-    if (mutableArgs.cpu === undefined) {
-        mutableArgs.cpu = requiredMemoryAndCPU.cpu;
-    }
-    if (mutableArgs.memory === undefined) {
-        mutableArgs.memory = requiredMemoryAndCPU.memory;
-    }
-    const containerString = containerDefinitions.apply((d) =>
-        JSON.stringify(d),
-    );
-    const defaultFamily = containerString.apply(
-        (s) => name + "-" + utils.sha1hash(pulumi.getStack() + s),
-    );
-    const family = utils.ifUndefined(args.family, defaultFamily);
+  if (mutableArgs.cpu === undefined) {
+    mutableArgs.cpu = requiredMemoryAndCPU.cpu;
+  }
+  if (mutableArgs.memory === undefined) {
+    mutableArgs.memory = requiredMemoryAndCPU.memory;
+  }
+  const containerString = containerDefinitions.apply((d) => JSON.stringify(d));
+  const defaultFamily = containerString.apply(
+    (s) => name + "-" + utils.sha1hash(pulumi.getStack() + s),
+  );
+  const family = utils.ifUndefined(args.family, defaultFamily);
 
-    return {
-        ...mutableArgs,
-        requiresCompatibilities: ["FARGATE"],
-        networkMode: "awsvpc",
-        taskRoleArn: taskRoleArn,
-        executionRoleArn: executionRoleArn,
-        family,
-        containerDefinitions: containerString,
-    };
+  return {
+    ...mutableArgs,
+    requiresCompatibilities: ["FARGATE"],
+    networkMode: "awsvpc",
+    taskRoleArn: taskRoleArn,
+    executionRoleArn: executionRoleArn,
+    family,
+    containerDefinitions: containerString,
+  };
 }

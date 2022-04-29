@@ -17,10 +17,9 @@ import * as pulumi from "@pulumi/pulumi";
 
 import * as crypto from "crypto";
 
-type Diff<
-    T extends string | number | symbol,
-    U extends string | number | symbol,
-> = ({ [P in T]: P } & { [P in U]: never } & { [x: string]: never })[T];
+type Diff<T extends string | number | symbol, U extends string | number | symbol> = ({
+  [P in T]: P;
+} & { [P in U]: never } & { [x: string]: never })[T];
 
 // Overwrite allows you to take an existing type, and then overwrite existing properties in it
 // with properties of the same name, but with entirely different types.
@@ -29,76 +28,69 @@ export type Overwrite<T, U> = Pick<T, Diff<keyof T, keyof U>> & U;
 // sha1hash returns a partial SHA1 hash of the input string.
 /** @internal */
 export function sha1hash(s: string): string {
-    const shasum: crypto.Hash = crypto.createHash("sha1");
-    shasum.update(s);
-    // TODO[pulumi/pulumi#377] Workaround for issue with long names not generating per-deplioyment randomness, leading
-    //     to collisions.  For now, limit the size of hashes to ensure we generate shorter/ resource names.
-    return shasum.digest("hex").substring(0, 8);
+  const shasum: crypto.Hash = crypto.createHash("sha1");
+  shasum.update(s);
+  // TODO[pulumi/pulumi#377] Workaround for issue with long names not generating per-deplioyment randomness, leading
+  //     to collisions.  For now, limit the size of hashes to ensure we generate shorter/ resource names.
+  return shasum.digest("hex").substring(0, 8);
 }
 
 type WithoutUndefined<T> = T extends undefined ? never : T;
 
 export function countDefined(source: ReadonlyArray<unknown>): number {
-    return source.reduce<number>(
-        (c, x) => (x !== undefined && x !== null ? c + 1 : c),
-        0,
-    );
+  return source.reduce<number>((c, x) => (x !== undefined && x !== null ? c + 1 : c), 0);
 }
 
 /** @internal */
 export function ifUndefined<T>(
-    input: pulumi.Input<T> | undefined,
-    value: pulumi.Input<T>,
+  input: pulumi.Input<T> | undefined,
+  value: pulumi.Input<T>,
 ): pulumi.Output<WithoutUndefined<T>> {
-    return <any>(
-        pulumi
-            .all([input, value])
-            .apply(([input, value]) => (input !== undefined ? input : value))
-    );
+  return <any>(
+    pulumi.all([input, value]).apply(([input, value]) => (input !== undefined ? input : value))
+  );
 }
 
 /** @internal */
 export function resourceToConstructResult<T extends pulumi.ComponentResource>(
-    resource: T,
+  resource: T,
 ): pulumi.provider.ConstructResult {
-    const state = Object.fromEntries(
-        Object.entries(resource).filter(
-            ([key, value]) =>
-                key !== "urn" &&
-                !key.startsWith("get") &&
-                !key.startsWith("_") &&
-                typeof value !== "function" &&
-                value !== undefined,
-        ),
-    );
-    return {
-        urn: resource.urn,
-        state,
-    };
+  const state = Object.fromEntries(
+    Object.entries(resource).filter(
+      ([key, value]) =>
+        key !== "urn" &&
+        !key.startsWith("get") &&
+        !key.startsWith("_") &&
+        typeof value !== "function" &&
+        value !== undefined,
+    ),
+  );
+  return {
+    urn: resource.urn,
+    state,
+  };
 }
 
 /** @internal */
-export function getRegionFromOpts(
-    opts: pulumi.CustomResourceOptions,
-): pulumi.Output<aws.Region> {
-    if (opts.parent) {
-        return getRegion(opts.parent);
-    }
+export function getRegionFromOpts(opts: pulumi.CustomResourceOptions): pulumi.Output<aws.Region> {
+  if (opts.parent) {
+    return getRegion(opts.parent);
+  }
 
-    return getRegionFromProvider(opts.provider);
+  return getRegionFromProvider(opts.provider);
 }
 
 /** @internal */
 export function getRegion(res: pulumi.Resource): pulumi.Output<aws.Region> {
-    // A little strange, but all we're doing is passing a fake type-token simply to get
-    // the AWS provider from this resource.
-    const provider = res.getProvider ? res.getProvider("aws::") : undefined;
-    return getRegionFromProvider(provider);
+  // A little strange, but all we're doing is passing a fake type-token simply to get
+  // the AWS provider from this resource.
+  const provider = res.getProvider ? res.getProvider("aws::") : undefined;
+  return getRegionFromProvider(provider);
 }
 
 function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
-    const region = provider ? (<any>provider).region : undefined;
-    return region || aws.config.region;
+  const region = provider ? (<any>provider).region : undefined;
+  return region || aws.config.region;
 }
 
 /**
@@ -113,19 +105,19 @@ function getRegionFromProvider(provider: pulumi.ProviderResource | undefined) {
  * @internal
  */
 export function choose<T, U>(
-    source: ReadonlyArray<T>,
-    chooser: (item: T, index: number) => U | undefined,
+  source: ReadonlyArray<T>,
+  chooser: (item: T, index: number) => U | undefined,
 ): U[] {
-    const target = [];
-    let index = 0;
-    for (const item of source) {
-        const chosen = chooser(item, index);
-        if (chosen !== undefined) {
-            target.push(chosen);
-        }
-        index++;
+  const target = [];
+  let index = 0;
+  for (const item of source) {
+    const chosen = chooser(item, index);
+    if (chosen !== undefined) {
+      target.push(chosen);
     }
-    return target;
+    index++;
+  }
+  return target;
 }
 
 /**
@@ -137,67 +129,60 @@ export function choose<T, U>(
  * @internal
  */
 export function collect<T, U>(
-    source: ReadonlyArray<T>,
-    mapping: (item: T, index: number) => Iterable<U>,
+  source: ReadonlyArray<T>,
+  mapping: (item: T, index: number) => Iterable<U>,
 ): U[] {
-    const target = [];
-    let index = 0;
-    for (const item of source) {
-        const children = mapping(item, index);
-        for (const child of children) {
-            target.push(child);
-        }
-        index++;
+  const target = [];
+  let index = 0;
+  for (const item of source) {
+    const children = mapping(item, index);
+    for (const child of children) {
+      target.push(child);
     }
-    return target;
+    index++;
+  }
+  return target;
 }
 
 export interface Arn {
-    resourceType?: string;
-    resourceId: string;
-    partition: string;
-    service: string;
-    region: string;
-    accountId: string;
+  resourceType?: string;
+  resourceId: string;
+  partition: string;
+  service: string;
+  region: string;
+  accountId: string;
 }
 
 export function parseArn(arn: string): Arn {
-    const parts = arn.split(":");
-    const [
-        arnPrefix,
-        partition,
-        service,
-        region,
-        accountId,
-        resourceIdOrType,
-        optionalResourceId,
-    ] = parts;
-    if (arnPrefix !== "arn") {
-        throw new Error(`Invalid ARN: must start with "arn:"`);
-    }
-    if (parts.length !== 6 && parts.length !== 7) {
-        throw new Error(`Invalid ARN: must be between 6 or 7 parts"`);
-    }
-    const simpleProps = {
-        partition,
-        service,
-        region,
-        accountId,
+  const parts = arn.split(":");
+  const [arnPrefix, partition, service, region, accountId, resourceIdOrType, optionalResourceId] =
+    parts;
+  if (arnPrefix !== "arn") {
+    throw new Error(`Invalid ARN: must start with "arn:"`);
+  }
+  if (parts.length !== 6 && parts.length !== 7) {
+    throw new Error(`Invalid ARN: must be between 6 or 7 parts"`);
+  }
+  const simpleProps = {
+    partition,
+    service,
+    region,
+    accountId,
+  };
+  if (optionalResourceId !== undefined) {
+    return {
+      ...simpleProps,
+      resourceType: resourceIdOrType,
+      resourceId: optionalResourceId,
     };
-    if (optionalResourceId !== undefined) {
-        return {
-            ...simpleProps,
-            resourceType: resourceIdOrType,
-            resourceId: optionalResourceId,
-        };
-    }
-    const slashIndex = resourceIdOrType.indexOf("/");
-    if (slashIndex > -1) {
-        return {
-            ...simpleProps,
-            resourceType: resourceIdOrType.substring(0, slashIndex),
-            resourceId: resourceIdOrType.substring(slashIndex + 1),
-        };
-    }
-    return { ...simpleProps, resourceId: resourceIdOrType };
+  }
+  const slashIndex = resourceIdOrType.indexOf("/");
+  if (slashIndex > -1) {
+    return {
+      ...simpleProps,
+      resourceType: resourceIdOrType.substring(0, slashIndex),
+      resourceId: resourceIdOrType.substring(slashIndex + 1),
+    };
+  }
+  return { ...simpleProps, resourceId: resourceIdOrType };
 }

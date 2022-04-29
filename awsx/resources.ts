@@ -22,40 +22,34 @@ import * as lb from "./lb";
 import * as schemaTypes from "./schema-types";
 
 const resources: schemaTypes.ResourceConstructor = {
-    "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
-    "awsx:ecs:FargateService": (...args) => new ecs.FargateService(...args),
-    "awsx:ecs:EC2Service": (...args) => new ecs.EC2Service(...args),
-    "awsx:ecs:EC2TaskDefinition": (...args) =>
-        new ecs.EC2TaskDefinition(...args),
-    "awsx:ecs:FargateTaskDefinition": (...args) =>
-        new ecs.FargateTaskDefinition(...args),
-    "awsx:lb:ApplicationLoadBalancer": (...args) =>
-        new lb.ApplicationLoadBalancer(...args),
-    "awsx:lb:NetworkLoadBalancer": (...args) =>
-        new lb.NetworkLoadBalancer(...args),
-    "awsx:lb:TargetGroupAttachment": (...args) =>
-        new lb.TargetGroupAttachment(...args),
-    "awsx:ec2:Vpc": (...args) => new ec2.Vpc(...args),
-    "awsx:ec2:DefaultVpc": (...args) => new ec2.DefaultVpc(...args),
-    "awsx:ecr:Repository": (...args) => new Repository(...args),
-    "awsx:ecr:Image": (...args) => new Image(...args),
+  "awsx:cloudtrail:Trail": (...args) => new Trail(...args),
+  "awsx:ecs:FargateService": (...args) => new ecs.FargateService(...args),
+  "awsx:ecs:EC2Service": (...args) => new ecs.EC2Service(...args),
+  "awsx:ecs:EC2TaskDefinition": (...args) => new ecs.EC2TaskDefinition(...args),
+  "awsx:ecs:FargateTaskDefinition": (...args) => new ecs.FargateTaskDefinition(...args),
+  "awsx:lb:ApplicationLoadBalancer": (...args) => new lb.ApplicationLoadBalancer(...args),
+  "awsx:lb:NetworkLoadBalancer": (...args) => new lb.NetworkLoadBalancer(...args),
+  "awsx:lb:TargetGroupAttachment": (...args) => new lb.TargetGroupAttachment(...args),
+  "awsx:ec2:Vpc": (...args) => new ec2.Vpc(...args),
+  "awsx:ec2:DefaultVpc": (...args) => new ec2.DefaultVpc(...args),
+  "awsx:ecr:Repository": (...args) => new Repository(...args),
+  "awsx:ecr:Image": (...args) => new Image(...args),
 };
 
 export function construct(
-    name: string,
-    type: string,
-    inputs: pulumi.Inputs,
-    options: pulumi.ComponentResourceOptions,
+  name: string,
+  type: string,
+  inputs: pulumi.Inputs,
+  options: pulumi.ComponentResourceOptions,
 ) {
-    const genericResources: Record<string, schemaTypes.ConstructComponent> =
-        resources;
-    const resource = genericResources[type];
-    if (resource === undefined) {
-        return undefined;
-    }
-    return resource(name, inputs, options);
+  const genericResources: Record<string, schemaTypes.ConstructComponent> = resources;
+  const resource = genericResources[type];
+  if (resource === undefined) {
+    return undefined;
+  }
+  return resource(name, inputs, options);
 }
 
 export const functions: schemaTypes.Functions = {
-    "awsx:ec2:getDefaultVpc": ec2.getDefaultVpc,
+  "awsx:ec2:getDefaultVpc": ec2.getDefaultVpc,
 };
