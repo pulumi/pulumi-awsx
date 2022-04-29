@@ -86,6 +86,8 @@ export class Vpc extends schema.Vpc<VpcData> {
             availabilityZones,
             args.subnetSpecs,
         );
+        validateSubnets(subnetSpecs, getOverlappingSubnets);
+
         validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
 
         const vpc = new aws.ec2.Vpc(
@@ -389,4 +391,35 @@ export function compareSubnetSpecs(
 
     // Isolated is the only remaining case, and they always come last.
     return 1;
+}
+
+export interface OverlappingSubnet {
+    cidrBlock: string;
+    subnetName: string;
+}
+
+export function getOverlappingSubnets(specs: OverlappingSubnet[]): OverlappingSubnet[] {
+    const ipAddress = require("ip-address");
+
+    const overlaps = (spec1: OverlappingSubnet, spec2: OverlappingSubnet) => {
+        const ip1 = new ipAddress.Address4(spec1.cidrBlock);
+        const ip2 = new ipAddress.Address4(spec2.cidrBlock);
+
+        return ip1.isInSubnet(ip2) || ip2.isInSubnet(ip1);
+    };
+
+    return specs.filter(x => specs.filter(y => x !== y && overlaps(x, y)).length > 0);
+}
+
+export function validateSubnets(specs: SubnetSpec[], getOverlappingSubnets: (specs: OverlappingSubnet[]) => OverlappingSubnet[]) {
+    const overlappingSubnets = getOverlappingSubnets(specs);
+
+    if (overlappingSubnets.length > 0) {
+        let msg = "The following subnets overlap with at least one other subnet. Make the CIDR for the VPC larger, reduce the size of the subnets per AZ, or use less Availability Zones:\n\n";
+        for (let i = 0; i < overlappingSubnets.length; i++) {
+            msg += `${i + 1}. ${overlappingSubnets[i].subnetName}: ${overlappingSubnets[i].cidrBlock}\n`;
+        }
+
+        throw new Error(msg);
+    }
 }
