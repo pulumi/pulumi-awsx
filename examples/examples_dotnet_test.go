@@ -32,6 +32,16 @@ func TestAccTrailDotnet(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestAccEcsDotnet(t *testing.T) {
+	test := getDotnetBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ecs", "dotnet"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func getDotnetBaseOptions(t *testing.T) integration.ProgramTestOptions {
 	region := getEnvRegion(t)
 	base := getBaseOptions(t)
