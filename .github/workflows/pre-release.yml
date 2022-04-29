@@ -10,6 +10,7 @@ env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
   PULUMI_LOCAL_NUGET: ${{ github.workspace }}/nuget
+  IS_PRERELEASE: true
 jobs:
   lint:
     name: lint

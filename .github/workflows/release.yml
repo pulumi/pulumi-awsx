@@ -410,3 +410,4 @@ name: release
   push:
     tags:
       - v*.*.*
+      - '!v*.*.*-**'
