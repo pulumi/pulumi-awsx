@@ -106,6 +106,7 @@ lint-classic:
 lint:
 	cd awsx && \
 		yarn install && \
+		yarn format && \
 		yarn lint
 
 test_provider:: ensure_provider
