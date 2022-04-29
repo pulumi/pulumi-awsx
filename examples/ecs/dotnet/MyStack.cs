@@ -13,7 +13,7 @@ class MyStack : Stack
         var service = new Awsx.Ecs.FargateService("my-service", new Awsx.Ecs.FargateServiceArgs
         {
             Cluster = cluster.Arn,
-            TaskDefinition = new Awsx.Ecs.Inputs.FargateServiceTaskDefinitionArgs
+            TaskDefinitionArgs = new Awsx.Ecs.Inputs.FargateServiceTaskDefinitionArgs
             {
                 Container = new Awsx.Ecs.Inputs.TaskDefinitionContainerDefinitionArgs
                 {
