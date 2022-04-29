@@ -11,6 +11,8 @@ WORKING_DIR     := $(shell pwd)
 
 build:: provider build_nodejs build_python build_go build_dotnet
 
+sdks:: schema build_nodejs build_python build_go build_dotnet
+
 schema::
 	cd schemagen/cmd/$(CODEGEN) && go run . schema $(WORKING_DIR)/$(PACK)
 
