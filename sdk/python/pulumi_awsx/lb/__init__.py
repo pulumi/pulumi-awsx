@@ -7,4 +7,5 @@ import typing
 # Export this package's modules as members:
 from .application_load_balancer import *
 from .network_load_balancer import *
+from .target_group_attachment import *
 from ._inputs import *

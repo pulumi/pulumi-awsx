@@ -395,7 +395,8 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
-        Create a ApplicationLoadBalancer resource with the given unique name, props, and options.
+        Provides an Application Load Balancer resource with listeners, default target group and default security group.
+
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] access_logs: An Access Logs block. Access Logs documented below.
@@ -432,7 +433,8 @@ class ApplicationLoadBalancer(pulumi.ComponentResource):
                  args: Optional[ApplicationLoadBalancerArgs] = None,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
-        Create a ApplicationLoadBalancer resource with the given unique name, props, and options.
+        Provides an Application Load Balancer resource with listeners, default target group and default security group.
+
         :param str resource_name: The name of the resource.
         :param ApplicationLoadBalancerArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.

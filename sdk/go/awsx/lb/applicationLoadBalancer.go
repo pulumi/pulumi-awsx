@@ -13,6 +13,7 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// Provides an Application Load Balancer resource with listeners, default target group and default security group.
 type ApplicationLoadBalancer struct {
 	pulumi.ResourceState
 

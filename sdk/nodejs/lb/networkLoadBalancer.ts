@@ -7,6 +7,9 @@ import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
 
+/**
+ * Provides a Network Load Balancer resource with listeners and default target group.
+ */
 export class NetworkLoadBalancer extends pulumi.ComponentResource {
     /** @internal */
     public static readonly __pulumiType = 'awsx:lb:NetworkLoadBalancer';

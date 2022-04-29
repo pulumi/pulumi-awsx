@@ -9,6 +9,9 @@ using Pulumi.Serialization;
 
 namespace Pulumi.Awsx.Lb
 {
+    /// <summary>
+    /// Provides a Network Load Balancer resource with listeners and default target group.
+    /// </summary>
     [AwsxResourceType("awsx:lb:NetworkLoadBalancer")]
     public partial class NetworkLoadBalancer : Pulumi.ComponentResource
     {

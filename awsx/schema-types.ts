@@ -17,6 +17,7 @@ export type ResourceConstructor = {
     readonly "awsx:ecs:FargateTaskDefinition": ConstructComponent<FargateTaskDefinition>;
     readonly "awsx:lb:ApplicationLoadBalancer": ConstructComponent<ApplicationLoadBalancer>;
     readonly "awsx:lb:NetworkLoadBalancer": ConstructComponent<NetworkLoadBalancer>;
+    readonly "awsx:lb:TargetGroupAttachment": ConstructComponent<TargetGroupAttachment>;
 };
 export type Functions = {
     "awsx:ec2:getDefaultVpc": (inputs: getDefaultVpcInputs) => Promise<getDefaultVpcOutputs>;
@@ -315,6 +316,21 @@ export interface NetworkLoadBalancerArgs {
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
     readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export abstract class TargetGroupAttachment<TData = any> extends pulumi.ComponentResource<TData> {
+    public lambdaPermission?: aws.lambda.Permission | pulumi.Output<aws.lambda.Permission>;
+    public targetGroupAttachment!: aws.lb.TargetGroupAttachment | pulumi.Output<aws.lb.TargetGroupAttachment>;
+    constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
+        super("awsx:lb:TargetGroupAttachment", name, opts.urn ? { lambdaPermission: undefined, targetGroupAttachment: undefined } : { name, args, opts }, opts);
+    }
+}
+export interface TargetGroupAttachmentArgs {
+    readonly instance?: pulumi.Input<aws.ec2.Instance>;
+    readonly instanceId?: pulumi.Input<string>;
+    readonly lambda?: pulumi.Input<aws.lambda.Function>;
+    readonly lambdaArn?: pulumi.Input<string>;
+    readonly targetGroup?: aws.lb.TargetGroup;
+    readonly targetGroupArn?: pulumi.Input<string>;
 }
 export interface BucketInputs {
     readonly accelerationStatus?: pulumi.Input<string>;

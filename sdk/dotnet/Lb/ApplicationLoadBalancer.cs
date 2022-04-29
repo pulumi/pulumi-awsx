@@ -9,6 +9,9 @@ using Pulumi.Serialization;
 
 namespace Pulumi.Awsx.Lb
 {
+    /// <summary>
+    /// Provides an Application Load Balancer resource with listeners, default target group and default security group.
+    /// </summary>
     [AwsxResourceType("awsx:lb:ApplicationLoadBalancer")]
     public partial class ApplicationLoadBalancer : Pulumi.ComponentResource
     {

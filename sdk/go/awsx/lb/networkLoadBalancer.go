@@ -12,6 +12,7 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// Provides a Network Load Balancer resource with listeners and default target group.
 type NetworkLoadBalancer struct {
 	pulumi.ResourceState
 

@@ -23,6 +23,7 @@ func generateLb(awsSpec schema.PackageSpec) schema.PackageSpec {
 		Resources: map[string]schema.ResourceSpec{
 			"awsx:lb:ApplicationLoadBalancer": loadBalancer(awsSpec, false),
 			"awsx:lb:NetworkLoadBalancer":     loadBalancer(awsSpec, true),
+			"awsx:lb:TargetGroupAttachment":   targetGroupAttachment(awsSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx:lb:Listener":    lbListener(awsSpec),
@@ -151,6 +152,80 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 			Description: description,
 			Properties:  outputs,
 			Required:    []string{"loadBalancer", "defaultTargetGroup"},
+		},
+	}
+}
+
+func targetGroupAttachment(awsSpec schema.PackageSpec) schema.ResourceSpec {
+	return schema.ResourceSpec{
+		IsComponent: true,
+		InputProperties: map[string]schema.PropertySpec{
+			"targetGroup": {
+				Description: "Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.",
+				TypeSpec: schema.TypeSpec{
+					Ref:   packageRef(awsSpec, "/resources/aws:lb%2ftargetGroup:TargetGroup"),
+					Plain: true,
+				},
+			},
+			"targetGroupArn": {
+				Description: "ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.",
+				TypeSpec: schema.TypeSpec{
+					Type: "string",
+				},
+			},
+			"instance": {
+				Description: "EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
+				TypeSpec: schema.TypeSpec{
+					Ref: packageRef(awsSpec, "/resources/aws:ec2%2finstance:Instance"),
+				},
+			},
+			"instanceId": {
+				Description: "ID of an EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
+				TypeSpec: schema.TypeSpec{
+					Type: "string",
+				},
+			},
+			"lambda": {
+				Description: "Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
+				TypeSpec: schema.TypeSpec{
+					Ref: packageRef(awsSpec, "/resources/aws:lambda%2ffunction:Function"),
+				},
+				Language: map[string]schema.RawMessage{
+					"python": rawMessage(map[string]string{
+						"name": "function",
+					}),
+				},
+			},
+			"lambdaArn": {
+				Description: "ARN of a Lambda Function to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.",
+				TypeSpec: schema.TypeSpec{
+					Type: "string",
+				},
+			},
+		},
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: "Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.",
+			Properties: map[string]schema.PropertySpec{
+				"targetGroupAttachment": {
+					Description: "Underlying Target Group Attachment resource",
+					TypeSpec: schema.TypeSpec{
+						Ref: packageRef(awsSpec, "/resources/aws:lb%2ftargetGroupAttachment:TargetGroupAttachment"),
+					},
+					Language: map[string]schema.RawMessage{
+						"csharp": rawMessage(map[string]string{
+							"name": "Attachment",
+						}),
+					},
+				},
+				"lambdaPermission": {
+					Description: "Auto-created Lambda permission, if targeting a Lambda function",
+					TypeSpec: schema.TypeSpec{
+						Ref: packageRef(awsSpec, "/resources/aws:lambda%2fpermission:Permission"),
+					},
+				},
+			},
+			Required: []string{"targetGroupAttachment"},
 		},
 	}
 }

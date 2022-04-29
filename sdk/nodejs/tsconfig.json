@@ -121,6 +121,7 @@
         "lb/applicationLoadBalancer.ts",
         "lb/index.ts",
         "lb/networkLoadBalancer.ts",
+        "lb/targetGroupAttachment.ts",
         "provider.ts",
         "types/enums/ec2/index.ts",
         "types/enums/ecr/index.ts",
