@@ -136,12 +136,19 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 		delete(outputs, "defaultSecurityGroup")
 	}
 
+	var description string
+	if isNetworkLoadBalancer {
+		description = "Provides a Network Load Balancer resource with listeners and default target group."
+	} else {
+		description = "Provides an Application Load Balancer resource with listeners, default target group and default security group."
+	}
+
 	return schema.ResourceSpec{
 		IsComponent:     true,
 		InputProperties: inputProperties,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
-			Description: "",
+			Description: description,
 			Properties:  outputs,
 			Required:    []string{"loadBalancer", "defaultTargetGroup"},
 		},
