@@ -17,9 +17,12 @@ type Vpc struct {
 	// The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
 	Eips ec2.EipArrayOutput `pulumi:"eips"`
 	// The Internet Gateway for the VPC.
-	InternetGateway ec2.InternetGatewayOutput `pulumi:"internetGateway"`
+	InternetGateway   ec2.InternetGatewayOutput `pulumi:"internetGateway"`
+	IsolatedSubnetIds pulumi.StringArrayOutput  `pulumi:"isolatedSubnetIds"`
 	// The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
-	NatGateways ec2.NatGatewayArrayOutput `pulumi:"natGateways"`
+	NatGateways      ec2.NatGatewayArrayOutput `pulumi:"natGateways"`
+	PrivateSubnetIds pulumi.StringArrayOutput  `pulumi:"privateSubnetIds"`
+	PublicSubnetIds  pulumi.StringArrayOutput  `pulumi:"publicSubnetIds"`
 	// The Route Table Associations for the VPC.
 	RouteTableAssociations ec2.RouteTableAssociationArrayOutput `pulumi:"routeTableAssociations"`
 	// The Route Tables for the VPC.
@@ -29,7 +32,8 @@ type Vpc struct {
 	// The VPC's subnets.
 	Subnets ec2.SubnetArrayOutput `pulumi:"subnets"`
 	// The VPC.
-	Vpc ec2.VpcOutput `pulumi:"vpc"`
+	Vpc   ec2.VpcOutput          `pulumi:"vpc"`
+	VpcId pulumi.StringPtrOutput `pulumi:"vpcId"`
 }
 
 // NewVpc registers a new resource with the given unique name, arguments, and options.
@@ -50,7 +54,7 @@ func NewVpc(ctx *pulumi.Context,
 type vpcArgs struct {
 	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
 	AssignGeneratedIpv6CidrBlock *bool `pulumi:"assignGeneratedIpv6CidrBlock"`
-	// A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+	// A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
 	AvailabilityZoneNames []string `pulumi:"availabilityZoneNames"`
 	// The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
 	CidrBlock *string `pulumi:"cidrBlock"`
@@ -81,8 +85,10 @@ type vpcArgs struct {
 	Ipv6NetmaskLength *int `pulumi:"ipv6NetmaskLength"`
 	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
 	NatGateways *NatGatewayConfiguration `pulumi:"natGateways"`
-	// A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
-	SubnetsPerAz []SubnetConfiguration `pulumi:"subnetsPerAz"`
+	// A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
+	NumberOfAvailabilityZones *int `pulumi:"numberOfAvailabilityZones"`
+	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+	SubnetSpecs []SubnetSpec `pulumi:"subnetSpecs"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 }
@@ -91,7 +97,7 @@ type vpcArgs struct {
 type VpcArgs struct {
 	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
 	AssignGeneratedIpv6CidrBlock pulumi.BoolPtrInput
-	// A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+	// A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
 	AvailabilityZoneNames []string
 	// The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
 	CidrBlock *string
@@ -122,8 +128,10 @@ type VpcArgs struct {
 	Ipv6NetmaskLength pulumi.IntPtrInput
 	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
 	NatGateways *NatGatewayConfigurationArgs
-	// A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
-	SubnetsPerAz []SubnetConfigurationArgs
+	// A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
+	NumberOfAvailabilityZones *int
+	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+	SubnetSpecs []SubnetSpecArgs
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 }

@@ -31,12 +31,13 @@ class VpcArgs:
                  ipv6_ipam_pool_id: Optional[pulumi.Input[str]] = None,
                  ipv6_netmask_length: Optional[pulumi.Input[int]] = None,
                  nat_gateways: Optional['NatGatewayConfigurationArgs'] = None,
-                 subnets_per_az: Optional[Sequence['SubnetConfigurationArgs']] = None,
+                 number_of_availability_zones: Optional[int] = None,
+                 subnet_specs: Optional[Sequence['SubnetSpecArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Vpc resource.
         :param pulumi.Input[bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
-        :param Sequence[str] availability_zone_names: A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        :param Sequence[str] availability_zone_names: A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         :param pulumi.Input[bool] enable_classiclink: A boolean flag to enable/disable ClassicLink
                for the VPC. Only valid in regions and accounts that support EC2 Classic.
@@ -53,7 +54,8 @@ class VpcArgs:
         :param pulumi.Input[str] ipv6_ipam_pool_id: IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
         :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
         :param 'NatGatewayConfigurationArgs' nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
-        :param Sequence['SubnetConfigurationArgs'] subnets_per_az: A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+        :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        :param Sequence['SubnetSpecArgs'] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         if assign_generated_ipv6_cidr_block is not None:
@@ -86,8 +88,10 @@ class VpcArgs:
             pulumi.set(__self__, "ipv6_netmask_length", ipv6_netmask_length)
         if nat_gateways is not None:
             pulumi.set(__self__, "nat_gateways", nat_gateways)
-        if subnets_per_az is not None:
-            pulumi.set(__self__, "subnets_per_az", subnets_per_az)
+        if number_of_availability_zones is not None:
+            pulumi.set(__self__, "number_of_availability_zones", number_of_availability_zones)
+        if subnet_specs is not None:
+            pulumi.set(__self__, "subnet_specs", subnet_specs)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
 
@@ -107,7 +111,7 @@ class VpcArgs:
     @pulumi.getter(name="availabilityZoneNames")
     def availability_zone_names(self) -> Optional[Sequence[str]]:
         """
-        A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         """
         return pulumi.get(self, "availability_zone_names")
 
@@ -275,16 +279,28 @@ class VpcArgs:
         pulumi.set(self, "nat_gateways", value)
 
     @property
-    @pulumi.getter(name="subnetsPerAz")
-    def subnets_per_az(self) -> Optional[Sequence['SubnetConfigurationArgs']]:
+    @pulumi.getter(name="numberOfAvailabilityZones")
+    def number_of_availability_zones(self) -> Optional[int]:
         """
-        A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+        A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         """
-        return pulumi.get(self, "subnets_per_az")
+        return pulumi.get(self, "number_of_availability_zones")
 
-    @subnets_per_az.setter
-    def subnets_per_az(self, value: Optional[Sequence['SubnetConfigurationArgs']]):
-        pulumi.set(self, "subnets_per_az", value)
+    @number_of_availability_zones.setter
+    def number_of_availability_zones(self, value: Optional[int]):
+        pulumi.set(self, "number_of_availability_zones", value)
+
+    @property
+    @pulumi.getter(name="subnetSpecs")
+    def subnet_specs(self) -> Optional[Sequence['SubnetSpecArgs']]:
+        """
+        A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+        """
+        return pulumi.get(self, "subnet_specs")
+
+    @subnet_specs.setter
+    def subnet_specs(self, value: Optional[Sequence['SubnetSpecArgs']]):
+        pulumi.set(self, "subnet_specs", value)
 
     @property
     @pulumi.getter
@@ -319,7 +335,8 @@ class Vpc(pulumi.ComponentResource):
                  ipv6_ipam_pool_id: Optional[pulumi.Input[str]] = None,
                  ipv6_netmask_length: Optional[pulumi.Input[int]] = None,
                  nat_gateways: Optional[pulumi.InputType['NatGatewayConfigurationArgs']] = None,
-                 subnets_per_az: Optional[Sequence[pulumi.InputType['SubnetConfigurationArgs']]] = None,
+                 number_of_availability_zones: Optional[int] = None,
+                 subnet_specs: Optional[Sequence[pulumi.InputType['SubnetSpecArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
@@ -327,7 +344,7 @@ class Vpc(pulumi.ComponentResource):
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
-        :param Sequence[str] availability_zone_names: A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        :param Sequence[str] availability_zone_names: A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         :param pulumi.Input[bool] enable_classiclink: A boolean flag to enable/disable ClassicLink
                for the VPC. Only valid in regions and accounts that support EC2 Classic.
@@ -344,7 +361,8 @@ class Vpc(pulumi.ComponentResource):
         :param pulumi.Input[str] ipv6_ipam_pool_id: IPAM Pool ID for a IPv6 pool. Conflicts with `assign_generated_ipv6_cidr_block`.
         :param pulumi.Input[int] ipv6_netmask_length: Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
         :param pulumi.InputType['NatGatewayConfigurationArgs'] nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
-        :param Sequence[pulumi.InputType['SubnetConfigurationArgs']] subnets_per_az: A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+        :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
+        :param Sequence[pulumi.InputType['SubnetSpecArgs']] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         ...
@@ -385,7 +403,8 @@ class Vpc(pulumi.ComponentResource):
                  ipv6_ipam_pool_id: Optional[pulumi.Input[str]] = None,
                  ipv6_netmask_length: Optional[pulumi.Input[int]] = None,
                  nat_gateways: Optional[pulumi.InputType['NatGatewayConfigurationArgs']] = None,
-                 subnets_per_az: Optional[Sequence[pulumi.InputType['SubnetConfigurationArgs']]] = None,
+                 number_of_availability_zones: Optional[int] = None,
+                 subnet_specs: Optional[Sequence[pulumi.InputType['SubnetSpecArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         if opts is None:
@@ -416,15 +435,20 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["ipv6_ipam_pool_id"] = ipv6_ipam_pool_id
             __props__.__dict__["ipv6_netmask_length"] = ipv6_netmask_length
             __props__.__dict__["nat_gateways"] = nat_gateways
-            __props__.__dict__["subnets_per_az"] = subnets_per_az
+            __props__.__dict__["number_of_availability_zones"] = number_of_availability_zones
+            __props__.__dict__["subnet_specs"] = subnet_specs
             __props__.__dict__["tags"] = tags
             __props__.__dict__["eips"] = None
             __props__.__dict__["internet_gateway"] = None
+            __props__.__dict__["isolated_subnet_ids"] = None
+            __props__.__dict__["private_subnet_ids"] = None
+            __props__.__dict__["public_subnet_ids"] = None
             __props__.__dict__["route_table_associations"] = None
             __props__.__dict__["route_tables"] = None
             __props__.__dict__["routes"] = None
             __props__.__dict__["subnets"] = None
             __props__.__dict__["vpc"] = None
+            __props__.__dict__["vpc_id"] = None
         super(Vpc, __self__).__init__(
             'awsx:ec2:Vpc',
             resource_name,
@@ -449,12 +473,27 @@ class Vpc(pulumi.ComponentResource):
         return pulumi.get(self, "internet_gateway")
 
     @property
+    @pulumi.getter(name="isolatedSubnetIds")
+    def isolated_subnet_ids(self) -> pulumi.Output[Optional[Sequence[str]]]:
+        return pulumi.get(self, "isolated_subnet_ids")
+
+    @property
     @pulumi.getter(name="natGateways")
     def nat_gateways(self) -> pulumi.Output[Optional[Sequence['pulumi_aws.ec2.NatGateway']]]:
         """
         The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
         """
         return pulumi.get(self, "nat_gateways")
+
+    @property
+    @pulumi.getter(name="privateSubnetIds")
+    def private_subnet_ids(self) -> pulumi.Output[Optional[Sequence[str]]]:
+        return pulumi.get(self, "private_subnet_ids")
+
+    @property
+    @pulumi.getter(name="publicSubnetIds")
+    def public_subnet_ids(self) -> pulumi.Output[Optional[Sequence[str]]]:
+        return pulumi.get(self, "public_subnet_ids")
 
     @property
     @pulumi.getter(name="routeTableAssociations")
@@ -495,4 +534,9 @@ class Vpc(pulumi.ComponentResource):
         The VPC.
         """
         return pulumi.get(self, "vpc")
+
+    @property
+    @pulumi.getter(name="vpcId")
+    def vpc_id(self) -> pulumi.Output[Optional[str]]:
+        return pulumi.get(self, "vpc_id")
 

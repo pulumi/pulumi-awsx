@@ -494,7 +494,7 @@
                 }
             ]
         },
-        "awsx:ec2:SubnetConfiguration": {
+        "awsx:ec2:SubnetSpec": {
             "description": "Configuration for a VPC subnet.",
             "properties": {
                 "cidrMask": {
@@ -516,7 +516,6 @@
             "type": "object",
             "required": [
                 "type",
-                "name",
                 "cidrMask"
             ]
         },
@@ -1595,12 +1594,30 @@
                     "$ref": "/aws/v5.3.0/schema.json#/resources/aws:ec2%2finternetGateway:InternetGateway",
                     "description": "The Internet Gateway for the VPC."
                 },
+                "isolatedSubnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "natGateways": {
                     "type": "array",
                     "items": {
                         "$ref": "/aws/v5.3.0/schema.json#/resources/aws:ec2%2fnatGateway:NatGateway"
                     },
                     "description": "The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list."
+                },
+                "privateSubnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publicSubnetIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "routeTableAssociations": {
                     "type": "array",
@@ -1638,6 +1655,9 @@
                             "name": "AwsVpc"
                         }
                     }
+                },
+                "vpcId": {
+                    "type": "string"
                 }
             },
             "inputProperties": {
@@ -1652,7 +1672,7 @@
                         "plain": true
                     },
                     "plain": true,
-                    "description": "A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region."
+                    "description": "A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region."
                 },
                 "cidrBlock": {
                     "type": "string",
@@ -1708,14 +1728,19 @@
                     "plain": true,
                     "description": "Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created."
                 },
-                "subnetsPerAz": {
+                "numberOfAvailabilityZones": {
+                    "type": "integer",
+                    "plain": true,
+                    "description": "A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region."
+                },
+                "subnetSpecs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/types/awsx:ec2:SubnetConfiguration",
+                        "$ref": "#/types/awsx:ec2:SubnetSpec",
                         "plain": true
                     },
                     "plain": true,
-                    "description": "A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC."
+                    "description": "A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC."
                 },
                 "tags": {
                     "type": "object",

@@ -377,7 +377,7 @@ export namespace ec2 {
     /**
      * Configuration for a VPC subnet.
      */
-    export interface SubnetConfigurationArgs {
+    export interface SubnetSpecArgs {
         /**
          * The bitmask for the subnet's CIDR block.
          */
@@ -385,7 +385,7 @@ export namespace ec2 {
         /**
          * The subnet's name. Will be templated upon creation.
          */
-        name: string;
+        name?: string;
         /**
          * The type of subnet.
          */

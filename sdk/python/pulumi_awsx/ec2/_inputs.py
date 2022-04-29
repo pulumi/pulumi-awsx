@@ -11,7 +11,7 @@ from ._enums import *
 
 __all__ = [
     'NatGatewayConfigurationArgs',
-    'SubnetConfigurationArgs',
+    'SubnetSpecArgs',
 ]
 
 @pulumi.input_type
@@ -54,20 +54,21 @@ class NatGatewayConfigurationArgs:
 
 
 @pulumi.input_type
-class SubnetConfigurationArgs:
+class SubnetSpecArgs:
     def __init__(__self__, *,
                  cidr_mask: int,
-                 name: str,
-                 type: 'SubnetType'):
+                 type: 'SubnetType',
+                 name: Optional[str] = None):
         """
         Configuration for a VPC subnet.
         :param int cidr_mask: The bitmask for the subnet's CIDR block.
-        :param str name: The subnet's name. Will be templated upon creation.
         :param 'SubnetType' type: The type of subnet.
+        :param str name: The subnet's name. Will be templated upon creation.
         """
         pulumi.set(__self__, "cidr_mask", cidr_mask)
-        pulumi.set(__self__, "name", name)
         pulumi.set(__self__, "type", type)
+        if name is not None:
+            pulumi.set(__self__, "name", name)
 
     @property
     @pulumi.getter(name="cidrMask")
@@ -83,18 +84,6 @@ class SubnetConfigurationArgs:
 
     @property
     @pulumi.getter
-    def name(self) -> str:
-        """
-        The subnet's name. Will be templated upon creation.
-        """
-        return pulumi.get(self, "name")
-
-    @name.setter
-    def name(self, value: str):
-        pulumi.set(self, "name", value)
-
-    @property
-    @pulumi.getter
     def type(self) -> 'SubnetType':
         """
         The type of subnet.
@@ -104,5 +93,17 @@ class SubnetConfigurationArgs:
     @type.setter
     def type(self, value: 'SubnetType'):
         pulumi.set(self, "type", value)
+
+    @property
+    @pulumi.getter
+    def name(self) -> Optional[str]:
+        """
+        The subnet's name. Will be templated upon creation.
+        """
+        return pulumi.get(self, "name")
+
+    @name.setter
+    def name(self, value: Optional[str]):
+        pulumi.set(self, "name", value)
 
 

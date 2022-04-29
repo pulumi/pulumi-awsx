@@ -12,11 +12,11 @@ type NatGatewayConfiguration struct {
 }
 
 // Configuration for a VPC subnet.
-type SubnetConfiguration struct {
+type SubnetSpec struct {
 	// The bitmask for the subnet's CIDR block.
 	CidrMask int `pulumi:"cidrMask"`
 	// The subnet's name. Will be templated upon creation.
-	Name string `pulumi:"name"`
+	Name *string `pulumi:"name"`
 	// The type of subnet.
 	Type SubnetType `pulumi:"type"`
 }

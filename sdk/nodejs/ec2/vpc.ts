@@ -30,10 +30,13 @@ export class Vpc extends pulumi.ComponentResource {
      * The Internet Gateway for the VPC.
      */
     public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway | undefined>;
+    public /*out*/ readonly isolatedSubnetIds!: pulumi.Output<string[] | undefined>;
     /**
      * The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
      */
     public readonly natGateways!: pulumi.Output<pulumiAws.ec2.NatGateway[] | undefined>;
+    public /*out*/ readonly privateSubnetIds!: pulumi.Output<string[] | undefined>;
+    public /*out*/ readonly publicSubnetIds!: pulumi.Output<string[] | undefined>;
     /**
      * The Route Table Associations for the VPC.
      */
@@ -54,6 +57,7 @@ export class Vpc extends pulumi.ComponentResource {
      * The VPC.
      */
     public /*out*/ readonly vpc!: pulumi.Output<pulumiAws.ec2.Vpc | undefined>;
+    public /*out*/ readonly vpcId!: pulumi.Output<string | undefined>;
 
     /**
      * Create a Vpc resource with the given unique name, arguments, and options.
@@ -81,24 +85,33 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["ipv6IpamPoolId"] = args ? args.ipv6IpamPoolId : undefined;
             resourceInputs["ipv6NetmaskLength"] = args ? args.ipv6NetmaskLength : undefined;
             resourceInputs["natGateways"] = args ? args.natGateways : undefined;
-            resourceInputs["subnetsPerAz"] = args ? args.subnetsPerAz : undefined;
+            resourceInputs["numberOfAvailabilityZones"] = args ? args.numberOfAvailabilityZones : undefined;
+            resourceInputs["subnetSpecs"] = args ? args.subnetSpecs : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["eips"] = undefined /*out*/;
             resourceInputs["internetGateway"] = undefined /*out*/;
+            resourceInputs["isolatedSubnetIds"] = undefined /*out*/;
+            resourceInputs["privateSubnetIds"] = undefined /*out*/;
+            resourceInputs["publicSubnetIds"] = undefined /*out*/;
             resourceInputs["routeTableAssociations"] = undefined /*out*/;
             resourceInputs["routeTables"] = undefined /*out*/;
             resourceInputs["routes"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
+            resourceInputs["vpcId"] = undefined /*out*/;
         } else {
             resourceInputs["eips"] = undefined /*out*/;
             resourceInputs["internetGateway"] = undefined /*out*/;
+            resourceInputs["isolatedSubnetIds"] = undefined /*out*/;
             resourceInputs["natGateways"] = undefined /*out*/;
+            resourceInputs["privateSubnetIds"] = undefined /*out*/;
+            resourceInputs["publicSubnetIds"] = undefined /*out*/;
             resourceInputs["routeTableAssociations"] = undefined /*out*/;
             resourceInputs["routeTables"] = undefined /*out*/;
             resourceInputs["routes"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
+            resourceInputs["vpcId"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
         super(Vpc.__pulumiType, name, resourceInputs, opts, true /*remote*/);
@@ -114,7 +127,7 @@ export interface VpcArgs {
      */
     assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
     /**
-     * A list of availability zones to which the subnets defined in subnetsPerAz will be deployed. Optional, defaults to the first 3 AZs in the current region.
+     * A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
      */
     availabilityZoneNames?: string[];
     /**
@@ -173,9 +186,13 @@ export interface VpcArgs {
      */
     natGateways?: inputs.ec2.NatGatewayConfigurationArgs;
     /**
-     * A list of subnets that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+     * A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
      */
-    subnetsPerAz?: inputs.ec2.SubnetConfigurationArgs[];
+    numberOfAvailabilityZones?: number;
+    /**
+     * A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+     */
+    subnetSpecs?: inputs.ec2.SubnetSpecArgs[];
     /**
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */
