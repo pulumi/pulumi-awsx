@@ -299,7 +299,7 @@ export function validateEips(
             }
             break;
         case "Single":
-            if (eips && eips.length !== 1) {
+            if (eips && eips.length > 1) {
                 throw new Error(
                     `Exactly one Elastic IP may be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`,
                 );
@@ -428,9 +428,8 @@ export function validateSubnets(
         let msg =
             "The following subnets overlap with at least one other subnet. Make the CIDR for the VPC larger, reduce the size of the subnets per AZ, or use less Availability Zones:\n\n";
         for (let i = 0; i < overlappingSubnets.length; i++) {
-            msg += `${i + 1}. ${overlappingSubnets[i].subnetName}: ${
-                overlappingSubnets[i].cidrBlock
-            }\n`;
+            msg += `${i + 1}. ${overlappingSubnets[i].subnetName}: ${overlappingSubnets[i].cidrBlock
+                }\n`;
         }
 
         throw new Error(msg);

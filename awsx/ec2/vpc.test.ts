@@ -25,6 +25,10 @@ import {
 } from "./vpc";
 
 describe("validateEips", () => {
+    it("should not throw an exception if NAT Gateway strategy is Single and no EIPs are supplied", () => {
+        expect(() => validateEips("Single", [])).not.toThrowError();
+    });
+
     it("should throw an exception if NAT Gateway strategy is None and EIPs are supplied", () => {
         expect(() => validateEips("None", ["abc123"])).toThrowError(
             "cannot be specified",
