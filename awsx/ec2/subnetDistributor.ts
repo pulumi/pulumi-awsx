@@ -44,105 +44,109 @@ export function getSubnetSpecs(
     const ipv4 = new ipAddress.Address4(azBases[0]);
     const baseSubnetMask = ipv4.subnetMask;
 
-    const privateSubnets: SubnetSpec[] = [];
-    const publicSubnets: SubnetSpec[] = [];
-    const isolatedSubnets: SubnetSpec[] = [];
+    const privateSubnetsIn = subnetInputs.filter((x) => x.type === "Private");
+    const publicSubnetsIn = subnetInputs.filter((x) => x.type === "Public");
+    const isolatedSubnetsIn = subnetInputs.filter((x) => x.type === "Isolated");
+
+    let subnetsOut: SubnetSpec[] = [];
 
     for (let i = 0; i < azNames.length; i++) {
-        subnetInputs
-            .filter((x) => x.type === "Private")
-            .forEach((privateSubnet) => {
-                const newBits = privateSubnet.cidrMask - baseSubnetMask;
-                const privateSubnetCidrBlock = cidrSubnetV4(
-                    azBases[i],
-                    newBits,
-                    0,
-                );
-                privateSubnets.push({
-                    azName: azNames[i],
-                    cidrBlock: privateSubnetCidrBlock,
-                    type: "Private",
-                    subnetName: `${vpcName}-${
-                        privateSubnet.name ?? "private"
-                    }-${i + 1}`,
-                });
+        const privateSubnetsOut: SubnetSpec[] = [];
+        const publicSubnetsOut: SubnetSpec[] = [];
+        const isolatedSubnetsOut: SubnetSpec[] = [];
+
+        for (let j = 0; j < privateSubnetsIn.length; j++) {
+            const newBits = privateSubnetsIn[j].cidrMask - baseSubnetMask;
+
+            // The "j" input to cidrSubnetV4 below covers the case where we have
+            // multiple subnets of each type per AZ. In this case, we need the
+            // nth subnet of size newBits in the block for the AZ. The other
+            // subnet types below have similar logic.
+            const privateSubnetCidrBlock = cidrSubnetV4(
+                azBases[i],
+                newBits,
+                j,
+            );
+            privateSubnetsOut.push({
+                azName: azNames[i],
+                cidrBlock: privateSubnetCidrBlock,
+                type: "Private",
+                subnetName: `${vpcName}-${privateSubnetsIn[j].name ?? "private"}-${i + 1}`,
             });
+        }
 
-        subnetInputs
-            .filter((x) => x.type === "Public")
-            .forEach((publicSubnet) => {
-                const baseCidr =
-                    privateSubnets.length > 0
-                        ? privateSubnets[i].cidrBlock
-                        : azBases[i];
+        for (let j = 0; j < publicSubnetsIn.length; j++) {
+            // If we declared any private subnets in this AZ, we want our public
+            // subnet to start after the last private subnet. If not, we can
+            // start with the CIDR block for the AZ:
+            const baseCidr =
+                privateSubnetsOut.length > 0
+                    ? privateSubnetsOut[privateSubnetsOut.length - 1].cidrBlock
+                    : azBases[i];
 
-                const baseIp = new ipAddress.Address4(baseCidr);
+            const baseIp = new ipAddress.Address4(baseCidr);
 
-                const splitBase =
-                    privateSubnets.length > 0
-                        ? cidrSubnetV4(baseCidr, 0, 1)
-                        : azBases[i];
-                const newBits = publicSubnet.cidrMask - baseIp.subnetMask;
+            const splitBase =
+                privateSubnetsOut.length > 0
+                    ? cidrSubnetV4(baseCidr, 0, 1)
+                    : azBases[i];
+            const newBits = publicSubnetsIn[j].cidrMask - baseIp.subnetMask;
 
-                const publicSubnetCidrBlock = cidrSubnetV4(
-                    splitBase,
-                    newBits,
-                    0,
-                );
-                publicSubnets.push({
-                    azName: azNames[i],
-                    cidrBlock: publicSubnetCidrBlock,
-                    type: "Public",
-                    subnetName: `${vpcName}-${publicSubnet.name ?? "public"}-${
-                        i + 1
-                    }`,
-                });
+            const publicSubnetCidrBlock = cidrSubnetV4(
+                splitBase,
+                newBits,
+                j,
+            );
+            publicSubnetsOut.push({
+                azName: azNames[i],
+                cidrBlock: publicSubnetCidrBlock,
+                type: "Public",
+                subnetName: `${vpcName}-${publicSubnetsIn[j].name ?? "public"}-${i + 1}`,
             });
+        }
 
-        subnetInputs
-            .filter((x) => x.type === "Isolated")
-            .forEach((isolatedSubnet) => {
-                let baseCidr: string;
-                if (publicSubnets.length > 0) {
-                    baseCidr = publicSubnets[i].cidrBlock;
-                } else if (privateSubnets.length > 0) {
-                    baseCidr = privateSubnets[i].cidrBlock;
-                } else {
-                    baseCidr = azBases[i];
-                }
+        for (let j = 0; j < isolatedSubnetsIn.length; j++) {
+            // Similar to above, if we declared any public subnets in this AZ,
+            // we want our isolated subnet to start after the last public
+            // subnet. If no public subnets, then after the last private subnet.
+            // If no private subnets either, use the base CIDR block for the AZ:
+            let baseCidr: string;
+            if (publicSubnetsOut.length > 0) {
+                baseCidr = publicSubnetsOut[publicSubnetsOut.length - 1].cidrBlock;
+            } else if (privateSubnetsOut.length > 0) {
+                baseCidr = privateSubnetsOut[privateSubnetsOut.length - 1].cidrBlock;
+            } else {
+                baseCidr = azBases[i];
+            }
 
-                const baseIp = new ipAddress.Address4(baseCidr);
+            const baseIp = new ipAddress.Address4(baseCidr);
 
-                let splitBase: string;
-                if (publicSubnets.length > 0 || privateSubnets.length > 0) {
-                    splitBase = cidrSubnetV4(baseCidr, 0, 1);
-                } else {
-                    splitBase = azBases[i];
-                }
+            let splitBase: string;
+            if (publicSubnetsOut.length > 0 || privateSubnetsOut.length > 0) {
+                splitBase = cidrSubnetV4(baseCidr, 0, 1);
+            } else {
+                splitBase = azBases[i];
+            }
 
-                const newBits = isolatedSubnet.cidrMask - baseIp.subnetMask;
+            const newBits = isolatedSubnetsIn[j].cidrMask - baseIp.subnetMask;
 
-                const isolatedSubnetCidrBlock = cidrSubnetV4(
-                    splitBase,
-                    newBits,
-                    0,
-                );
-                isolatedSubnets.push({
-                    azName: azNames[i],
-                    cidrBlock: isolatedSubnetCidrBlock,
-                    type: "Isolated",
-                    subnetName: `${vpcName}-${
-                        isolatedSubnet.name ?? "isolated"
-                    }-${i + 1}`,
-                });
+            const isolatedSubnetCidrBlock = cidrSubnetV4(
+                splitBase,
+                newBits,
+                j,
+            );
+            isolatedSubnetsOut.push({
+                azName: azNames[i],
+                cidrBlock: isolatedSubnetCidrBlock,
+                type: "Isolated",
+                subnetName: `${vpcName}-${isolatedSubnetsIn[j].name ?? "isolated"}-${i + 1}`,
             });
+        }
+
+        subnetsOut = subnetsOut.concat(privateSubnetsOut, publicSubnetsOut, isolatedSubnetsOut);
     }
 
-    return Array.prototype.concat(
-        privateSubnets,
-        publicSubnets,
-        isolatedSubnets,
-    );
+    return subnetsOut;
 }
 
 function generateDefaultSubnets(
@@ -192,7 +196,7 @@ function cidrSubnetV4(
     if (newSubnetMask > 32) {
         throw new Error(
             `Requested ${newBits} new bits, but ` +
-                `only ${32 - ipv4.subnetMask} are available.`,
+            `only ${32 - ipv4.subnetMask} are available.`,
         );
     }
 
