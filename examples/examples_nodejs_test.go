@@ -53,6 +53,16 @@ func TestLbSimple(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestLbWithSubnets(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ts-lb-with-subnets"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func TestLbAttachEc2(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{

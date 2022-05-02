@@ -87,6 +87,51 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
           name,
           defaultSecurityGroup?.args ?? {
             // TO-DO: we default to open SG rules at this point - we should review this!
+            vpcId: this.vpcId,
+            ingress: [
+              {
+                fromPort: 0,
+                toPort: 0,
+                protocol: "-1",
+                cidrBlocks: ["0.0.0.0/0"],
+                ipv6CidrBlocks: ["::/0"],
+              },
+            ],
+            egress: [
+              {
+                fromPort: 0,
+                toPort: 65535,
+                protocol: "tcp",
+                cidrBlocks: ["0.0.0.0/0"],
+                ipv6CidrBlocks: ["::/0"],
+              },
+            ],
+          },
+          { parent: this },
+        );
+        this.defaultSecurityGroup = securityGroup;
+        lbArgs.securityGroups = [securityGroup.id];
+      }
+    }
+
+    if (listener && listeners) {
+      throw new Error("Only one of [listener] and [listeners] can be specified");
+    }
+
+    if (!lbArgs.securityGroups && !defaultSecurityGroup?.skip) {
+      if (defaultSecurityGroup?.args && defaultSecurityGroup.securityGroupId) {
+        throw new Error(
+          "Only one of [defaultSecurityGroup] [args] or [securityGroupId] can be specified",
+        );
+      }
+      const securityGroupId = defaultSecurityGroup?.securityGroupId;
+      if (securityGroupId) {
+        lbArgs.securityGroups = [securityGroupId];
+      } else {
+        const securityGroup = new aws.ec2.SecurityGroup(
+          name,
+          defaultSecurityGroup?.args ?? {
+            // TO-DO: we default to open SG rules at this point - we should review this!
             ingress: [
               {
                 fromPort: 0,
