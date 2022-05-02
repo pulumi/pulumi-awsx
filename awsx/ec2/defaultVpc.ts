@@ -18,16 +18,16 @@ import * as schema from "../schema-types";
 import { getDefaultVpc } from "./getDefaultVpc";
 
 export class DefaultVpc extends schema.DefaultVpc {
-    constructor(
-        name: string,
-        args: schema.DefaultVpcArgs,
-        opts: pulumi.ComponentResourceOptions = {},
-    ) {
-        super(name, args, opts);
+  constructor(
+    name: string,
+    args: schema.DefaultVpcArgs,
+    opts: pulumi.ComponentResourceOptions = {},
+  ) {
+    super(name, args, opts);
 
-        const defaultVpc = pulumi.output(getDefaultVpc());
-        this.vpcId = defaultVpc.vpcId;
-        this.publicSubnetIds = defaultVpc.publicSubnetIds;
-        this.privateSubnetIds = defaultVpc.privateSubnetIds;
-    }
+    const defaultVpc = pulumi.output(getDefaultVpc());
+    this.vpcId = defaultVpc.vpcId;
+    this.publicSubnetIds = defaultVpc.publicSubnetIds;
+    this.privateSubnetIds = defaultVpc.privateSubnetIds;
+  }
 }

@@ -17,36 +17,34 @@ import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 
 export async function getDefaultVpc(): Promise<schema.getDefaultVpcOutputs> {
-    const vpc = await aws.ec2.getVpc({ default: true });
+  const vpc = await aws.ec2.getVpc({ default: true });
 
-    if (vpc === undefined) {
-        throw new Error(
-            "unable to find default VPC for this region and account",
-        );
-    }
+  if (vpc === undefined) {
+    throw new Error("unable to find default VPC for this region and account");
+  }
 
-    const subnetIds = aws.ec2.getSubnetsOutput({
-        filters: [{ name: "vpc-id", values: [vpc.id] }],
-    }).ids;
+  const subnetIds = aws.ec2.getSubnetsOutput({
+    filters: [{ name: "vpc-id", values: [vpc.id] }],
+  }).ids;
 
-    const subnets = subnetIds.apply((subnetIds) =>
-        pulumi.all(subnetIds.map((id) => aws.ec2.getSubnetOutput({ id }))),
-    );
+  const subnets = subnetIds.apply((subnetIds) =>
+    pulumi.all(subnetIds.map((id) => aws.ec2.getSubnetOutput({ id }))),
+  );
 
-    const { publicSubnetIds, privateSubnetIds } = subnets.apply((ss) => {
-        const publicSubnets = ss.filter((s) => s.mapPublicIpOnLaunch);
-        const privateSubnets = ss.filter((s) => !s.mapPublicIpOnLaunch);
-        const publicSubnetIds = publicSubnets.map((s) => s.id);
-        const privateSubnetIds = privateSubnets.map((s) => s.id);
-        return {
-            publicSubnetIds,
-            privateSubnetIds,
-        };
-    });
-
+  const { publicSubnetIds, privateSubnetIds } = subnets.apply((ss) => {
+    const publicSubnets = ss.filter((s) => s.mapPublicIpOnLaunch);
+    const privateSubnets = ss.filter((s) => !s.mapPublicIpOnLaunch);
+    const publicSubnetIds = publicSubnets.map((s) => s.id);
+    const privateSubnetIds = privateSubnets.map((s) => s.id);
     return {
-        vpcId: pulumi.output(vpc.id),
-        publicSubnetIds,
-        privateSubnetIds,
+      publicSubnetIds,
+      privateSubnetIds,
     };
+  });
+
+  return {
+    vpcId: pulumi.output(vpc.id),
+    publicSubnetIds,
+    privateSubnetIds,
+  };
 }

@@ -24,112 +24,91 @@ import { FargateTaskDefinition } from "./fargateTaskDefinition";
  * Creates Task definition if `taskDefinitionArgs` is specified.
  */
 export class FargateService extends schema.FargateService {
-    constructor(
-        name: string,
-        args: schema.FargateServiceArgs,
-        opts: pulumi.ComponentResourceOptions = {},
-    ) {
-        super(
-            name,
-            {},
-            {
-                ...opts,
-                aliases: [
-                    { type: "awsx:x:ecs:FargateService" },
-                    ...(opts?.aliases ?? []),
-                ],
-            },
-        );
+  constructor(
+    name: string,
+    args: schema.FargateServiceArgs,
+    opts: pulumi.ComponentResourceOptions = {},
+  ) {
+    super(
+      name,
+      {},
+      {
+        ...opts,
+        aliases: [{ type: "awsx:x:ecs:FargateService" }, ...(opts?.aliases ?? [])],
+      },
+    );
 
-        if (
-            args.taskDefinition !== undefined &&
-            args.taskDefinitionArgs !== undefined
-        ) {
-            throw new Error(
-                "Only one of `taskDefinition` or `taskDefinitionArgs` can be provided.",
-            );
-        }
-        let taskDefinitionIdentifier = args.taskDefinition;
-        let taskDefinition: FargateTaskDefinition | undefined;
-        if (args.taskDefinitionArgs) {
-            taskDefinition = new FargateTaskDefinition(
-                name,
-                args.taskDefinitionArgs,
-                {
-                    parent: this,
-                },
-            );
-            this.taskDefinition = taskDefinition.taskDefinition;
-            taskDefinitionIdentifier = taskDefinition.taskDefinition.arn;
-        }
-        if (taskDefinitionIdentifier === undefined) {
-            throw new Error(
-                "Either `taskDefinition` or `taskDefinitionArgs` must be provided.",
-            );
-        }
-
-        this.service = new aws.ecs.Service(
-            name,
-            {
-                desiredCount: 1,
-                ...args,
-                networkConfiguration:
-                    args.networkConfiguration ??
-                    getDefaultNetworkConfiguration(name, this),
-                cluster: aws.ecs.Cluster.isInstance(args.cluster)
-                    ? args.cluster.arn
-                    : args.cluster,
-                launchType: "FARGATE",
-                loadBalancers:
-                    args.loadBalancers ?? taskDefinition?.loadBalancers,
-                waitForSteadyState: !utils.ifUndefined(
-                    args.continueBeforeSteadyState,
-                    false,
-                ),
-                taskDefinition: taskDefinitionIdentifier,
-            },
-            { parent: this },
-        );
-
-        this.registerOutputs();
+    if (args.taskDefinition !== undefined && args.taskDefinitionArgs !== undefined) {
+      throw new Error("Only one of `taskDefinition` or `taskDefinitionArgs` can be provided.");
     }
+    let taskDefinitionIdentifier = args.taskDefinition;
+    let taskDefinition: FargateTaskDefinition | undefined;
+    if (args.taskDefinitionArgs) {
+      taskDefinition = new FargateTaskDefinition(name, args.taskDefinitionArgs, {
+        parent: this,
+      });
+      this.taskDefinition = taskDefinition.taskDefinition;
+      taskDefinitionIdentifier = taskDefinition.taskDefinition.arn;
+    }
+    if (taskDefinitionIdentifier === undefined) {
+      throw new Error("Either `taskDefinition` or `taskDefinitionArgs` must be provided.");
+    }
+
+    this.service = new aws.ecs.Service(
+      name,
+      {
+        desiredCount: 1,
+        ...args,
+        networkConfiguration:
+          args.networkConfiguration ?? getDefaultNetworkConfiguration(name, this),
+        cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
+        launchType: "FARGATE",
+        loadBalancers: args.loadBalancers ?? taskDefinition?.loadBalancers,
+        waitForSteadyState: !utils.ifUndefined(args.continueBeforeSteadyState, false),
+        taskDefinition: taskDefinitionIdentifier,
+      },
+      { parent: this },
+    );
+
+    this.registerOutputs();
+  }
 }
 
 function getDefaultNetworkConfiguration(
-    name: string,
-    parent: pulumi.Resource,
+  name: string,
+  parent: pulumi.Resource,
 ): aws.types.input.ecs.ServiceNetworkConfiguration {
-    const defaultVpc = pulumi.output(getDefaultVpc());
-    const sg = new aws.ec2.SecurityGroup(
-        `${name}-sg`,
+  const defaultVpc = pulumi.output(getDefaultVpc());
+  const sg = new aws.ec2.SecurityGroup(
+    `${name}-sg`,
+    {
+      vpcId: defaultVpc.vpcId,
+      ingress: [
         {
-            vpcId: defaultVpc.vpcId,
-            ingress: [
-                {
-                    fromPort: 0,
-                    toPort: 0,
-                    protocol: "-1",
-                    cidrBlocks: ["0.0.0.0/0"],
-                    ipv6CidrBlocks: ["::/0"],
-                },
-            ],
-            egress: [
-                {
-                    fromPort: 0,
-                    toPort: 65535,
-                    protocol: "tcp",
-                    cidrBlocks: ["0.0.0.0/0"],
-                    ipv6CidrBlocks: ["::/0"],
-                },
-            ],
+          fromPort: 0,
+          toPort: 0,
+          protocol: "-1",
+          cidrBlocks: ["0.0.0.0/0"],
+          ipv6CidrBlocks: ["::/0"],
         },
+      ],
+      egress: [
         {
-            parent,
+          fromPort: 0,
+          toPort: 65535,
+          protocol: "tcp",
+          cidrBlocks: ["0.0.0.0/0"],
+          ipv6CidrBlocks: ["::/0"],
         },
-    );
-    return {
-        subnets: defaultVpc.publicSubnetIds,
-        assignPublicIp: true,
-        securityGroups: [sg.id],
-    };
+      ],
+    },
+    {
+      parent,
+    },
+  );
+  return {
+    subnets: defaultVpc.publicSubnetIds,
+    assignPublicIp: true,
+    securityGroups: [sg.id],
+  };
 }
