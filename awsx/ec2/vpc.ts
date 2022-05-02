@@ -29,6 +29,7 @@ interface VpcData {
     publicSubnetIds: pulumi.Output<string>[];
     privateSubnetIds: pulumi.Output<string>[];
     isolatedSubnetIds: pulumi.Output<string>[];
+    vpcId: pulumi.Output<string>;
 }
 
 export class Vpc extends schema.Vpc<VpcData> {
@@ -54,7 +55,7 @@ export class Vpc extends schema.Vpc<VpcData> {
         this.publicSubnetIds = data.publicSubnetIds;
         this.isolatedSubnetIds = data.isolatedSubnetIds;
 
-        this.vpcId = data.vpc.id;
+        this.vpcId = data.vpcId;
     }
 
     protected async initialize(props: {
@@ -102,6 +103,7 @@ export class Vpc extends schema.Vpc<VpcData> {
             },
             { parent: this },
         );
+        const vpcId = vpc.id;
 
         // We unconditionally create the IGW (even if it's not needed because we
         // only have isolated subnets) because AWS does not charge for it, and
@@ -260,6 +262,7 @@ export class Vpc extends schema.Vpc<VpcData> {
             privateSubnetIds,
             publicSubnetIds,
             isolatedSubnetIds,
+            vpcId,
         };
     }
 
@@ -398,7 +401,9 @@ export interface OverlappingSubnet {
     subnetName: string;
 }
 
-export function getOverlappingSubnets(specs: OverlappingSubnet[]): OverlappingSubnet[] {
+export function getOverlappingSubnets(
+    specs: OverlappingSubnet[],
+): OverlappingSubnet[] {
     const ipAddress = require("ip-address");
 
     const overlaps = (spec1: OverlappingSubnet, spec2: OverlappingSubnet) => {
@@ -408,16 +413,24 @@ export function getOverlappingSubnets(specs: OverlappingSubnet[]): OverlappingSu
         return ip1.isInSubnet(ip2) || ip2.isInSubnet(ip1);
     };
 
-    return specs.filter(x => specs.filter(y => x !== y && overlaps(x, y)).length > 0);
+    return specs.filter(
+        (x) => specs.filter((y) => x !== y && overlaps(x, y)).length > 0,
+    );
 }
 
-export function validateSubnets(specs: SubnetSpec[], getOverlappingSubnets: (specs: OverlappingSubnet[]) => OverlappingSubnet[]) {
+export function validateSubnets(
+    specs: SubnetSpec[],
+    getOverlappingSubnets: (specs: OverlappingSubnet[]) => OverlappingSubnet[],
+) {
     const overlappingSubnets = getOverlappingSubnets(specs);
 
     if (overlappingSubnets.length > 0) {
-        let msg = "The following subnets overlap with at least one other subnet. Make the CIDR for the VPC larger, reduce the size of the subnets per AZ, or use less Availability Zones:\n\n";
+        let msg =
+            "The following subnets overlap with at least one other subnet. Make the CIDR for the VPC larger, reduce the size of the subnets per AZ, or use less Availability Zones:\n\n";
         for (let i = 0; i < overlappingSubnets.length; i++) {
-            msg += `${i + 1}. ${overlappingSubnets[i].subnetName}: ${overlappingSubnets[i].cidrBlock}\n`;
+            msg += `${i + 1}. ${overlappingSubnets[i].subnetName}: ${
+                overlappingSubnets[i].cidrBlock
+            }\n`;
         }
 
         throw new Error(msg);
