@@ -64,7 +64,7 @@ type RepositoryArgs struct {
 	// The tag mutability setting for the repository. Must be one of: `MUTABLE` or `IMMUTABLE`. Defaults to `MUTABLE`.
 	ImageTagMutability pulumi.StringPtrInput
 	// A lifecycle policy consists of one or more rules that determine which images in a repository should be expired. If not provided, this will default to untagged images expiring after 1 day.
-	LifecyclePolicy *LifecyclePolicy
+	LifecyclePolicy *LifecyclePolicyArgs
 	// Name of the repository.
 	Name pulumi.StringPtrInput
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -156,6 +156,21 @@ func (o RepositoryOutput) ToRepositoryOutput() RepositoryOutput {
 
 func (o RepositoryOutput) ToRepositoryOutputWithContext(ctx context.Context) RepositoryOutput {
 	return o
+}
+
+// Underlying repository lifecycle policy
+func (o RepositoryOutput) LifecyclePolicy() ecr.LifecyclePolicyOutput {
+	return o.ApplyT(func(v *Repository) ecr.LifecyclePolicyOutput { return v.LifecyclePolicy }).(ecr.LifecyclePolicyOutput)
+}
+
+// Underlying Repository resource
+func (o RepositoryOutput) Repository() ecr.RepositoryOutput {
+	return o.ApplyT(func(v *Repository) ecr.RepositoryOutput { return v.Repository }).(ecr.RepositoryOutput)
+}
+
+// The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
+func (o RepositoryOutput) Url() pulumi.StringOutput {
+	return o.ApplyT(func(v *Repository) pulumi.StringOutput { return v.Url }).(pulumi.StringOutput)
 }
 
 type RepositoryArrayOutput struct{ *pulumi.OutputState }

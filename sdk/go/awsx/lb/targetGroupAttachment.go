@@ -156,6 +156,16 @@ func (o TargetGroupAttachmentOutput) ToTargetGroupAttachmentOutputWithContext(ct
 	return o
 }
 
+// Auto-created Lambda permission, if targeting a Lambda function
+func (o TargetGroupAttachmentOutput) LambdaPermission() lambda.PermissionOutput {
+	return o.ApplyT(func(v *TargetGroupAttachment) lambda.PermissionOutput { return v.LambdaPermission }).(lambda.PermissionOutput)
+}
+
+// Underlying Target Group Attachment resource
+func (o TargetGroupAttachmentOutput) TargetGroupAttachment() lb.TargetGroupAttachmentOutput {
+	return o.ApplyT(func(v *TargetGroupAttachment) lb.TargetGroupAttachmentOutput { return v.TargetGroupAttachment }).(lb.TargetGroupAttachmentOutput)
+}
+
 type TargetGroupAttachmentArrayOutput struct{ *pulumi.OutputState }
 
 func (TargetGroupAttachmentArrayOutput) ElementType() reflect.Type {

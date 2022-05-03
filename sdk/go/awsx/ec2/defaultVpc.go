@@ -129,6 +129,19 @@ func (o DefaultVpcOutput) ToDefaultVpcOutputWithContext(ctx context.Context) Def
 	return o
 }
 
+func (o DefaultVpcOutput) PrivateSubnetIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *DefaultVpc) pulumi.StringArrayOutput { return v.PrivateSubnetIds }).(pulumi.StringArrayOutput)
+}
+
+func (o DefaultVpcOutput) PublicSubnetIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *DefaultVpc) pulumi.StringArrayOutput { return v.PublicSubnetIds }).(pulumi.StringArrayOutput)
+}
+
+// The VPC ID for the default VPC
+func (o DefaultVpcOutput) VpcId() pulumi.StringOutput {
+	return o.ApplyT(func(v *DefaultVpc) pulumi.StringOutput { return v.VpcId }).(pulumi.StringOutput)
+}
+
 type DefaultVpcArrayOutput struct{ *pulumi.OutputState }
 
 func (DefaultVpcArrayOutput) ElementType() reflect.Type {

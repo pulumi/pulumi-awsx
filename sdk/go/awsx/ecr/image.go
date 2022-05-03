@@ -163,6 +163,11 @@ func (o ImageOutput) ToImageOutputWithContext(ctx context.Context) ImageOutput {
 	return o
 }
 
+// Unique identifier of the pushed image
+func (o ImageOutput) ImageUri() pulumi.StringOutput {
+	return o.ApplyT(func(v *Image) pulumi.StringOutput { return v.ImageUri }).(pulumi.StringOutput)
+}
+
 type ImageArrayOutput struct{ *pulumi.OutputState }
 
 func (ImageArrayOutput) ElementType() reflect.Type {

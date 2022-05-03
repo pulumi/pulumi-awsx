@@ -3,6 +3,13 @@
 
 package ec2
 
+import (
+	"context"
+	"reflect"
+
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+)
+
 // A strategy for creating NAT Gateways for private subnets within a VPC.
 type NatGatewayStrategy string
 
@@ -14,6 +21,163 @@ const (
 	// Create a NAT Gateway in each availability zone. This is the recommended configuration for production infrastructure.
 	NatGatewayStrategyOnePerAz = NatGatewayStrategy("OnePerAz")
 )
+
+func (NatGatewayStrategy) ElementType() reflect.Type {
+	return reflect.TypeOf((*NatGatewayStrategy)(nil)).Elem()
+}
+
+func (e NatGatewayStrategy) ToNatGatewayStrategyOutput() NatGatewayStrategyOutput {
+	return pulumi.ToOutput(e).(NatGatewayStrategyOutput)
+}
+
+func (e NatGatewayStrategy) ToNatGatewayStrategyOutputWithContext(ctx context.Context) NatGatewayStrategyOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(NatGatewayStrategyOutput)
+}
+
+func (e NatGatewayStrategy) ToNatGatewayStrategyPtrOutput() NatGatewayStrategyPtrOutput {
+	return e.ToNatGatewayStrategyPtrOutputWithContext(context.Background())
+}
+
+func (e NatGatewayStrategy) ToNatGatewayStrategyPtrOutputWithContext(ctx context.Context) NatGatewayStrategyPtrOutput {
+	return NatGatewayStrategy(e).ToNatGatewayStrategyOutputWithContext(ctx).ToNatGatewayStrategyPtrOutputWithContext(ctx)
+}
+
+func (e NatGatewayStrategy) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e NatGatewayStrategy) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e NatGatewayStrategy) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e NatGatewayStrategy) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type NatGatewayStrategyOutput struct{ *pulumi.OutputState }
+
+func (NatGatewayStrategyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*NatGatewayStrategy)(nil)).Elem()
+}
+
+func (o NatGatewayStrategyOutput) ToNatGatewayStrategyOutput() NatGatewayStrategyOutput {
+	return o
+}
+
+func (o NatGatewayStrategyOutput) ToNatGatewayStrategyOutputWithContext(ctx context.Context) NatGatewayStrategyOutput {
+	return o
+}
+
+func (o NatGatewayStrategyOutput) ToNatGatewayStrategyPtrOutput() NatGatewayStrategyPtrOutput {
+	return o.ToNatGatewayStrategyPtrOutputWithContext(context.Background())
+}
+
+func (o NatGatewayStrategyOutput) ToNatGatewayStrategyPtrOutputWithContext(ctx context.Context) NatGatewayStrategyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v NatGatewayStrategy) *NatGatewayStrategy {
+		return &v
+	}).(NatGatewayStrategyPtrOutput)
+}
+
+func (o NatGatewayStrategyOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o NatGatewayStrategyOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e NatGatewayStrategy) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o NatGatewayStrategyOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o NatGatewayStrategyOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e NatGatewayStrategy) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type NatGatewayStrategyPtrOutput struct{ *pulumi.OutputState }
+
+func (NatGatewayStrategyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**NatGatewayStrategy)(nil)).Elem()
+}
+
+func (o NatGatewayStrategyPtrOutput) ToNatGatewayStrategyPtrOutput() NatGatewayStrategyPtrOutput {
+	return o
+}
+
+func (o NatGatewayStrategyPtrOutput) ToNatGatewayStrategyPtrOutputWithContext(ctx context.Context) NatGatewayStrategyPtrOutput {
+	return o
+}
+
+func (o NatGatewayStrategyPtrOutput) Elem() NatGatewayStrategyOutput {
+	return o.ApplyT(func(v *NatGatewayStrategy) NatGatewayStrategy {
+		if v != nil {
+			return *v
+		}
+		var ret NatGatewayStrategy
+		return ret
+	}).(NatGatewayStrategyOutput)
+}
+
+func (o NatGatewayStrategyPtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o NatGatewayStrategyPtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *NatGatewayStrategy) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// NatGatewayStrategyInput is an input type that accepts NatGatewayStrategyArgs and NatGatewayStrategyOutput values.
+// You can construct a concrete instance of `NatGatewayStrategyInput` via:
+//
+//          NatGatewayStrategyArgs{...}
+type NatGatewayStrategyInput interface {
+	pulumi.Input
+
+	ToNatGatewayStrategyOutput() NatGatewayStrategyOutput
+	ToNatGatewayStrategyOutputWithContext(context.Context) NatGatewayStrategyOutput
+}
+
+var natGatewayStrategyPtrType = reflect.TypeOf((**NatGatewayStrategy)(nil)).Elem()
+
+type NatGatewayStrategyPtrInput interface {
+	pulumi.Input
+
+	ToNatGatewayStrategyPtrOutput() NatGatewayStrategyPtrOutput
+	ToNatGatewayStrategyPtrOutputWithContext(context.Context) NatGatewayStrategyPtrOutput
+}
+
+type natGatewayStrategyPtr string
+
+func NatGatewayStrategyPtr(v string) NatGatewayStrategyPtrInput {
+	return (*natGatewayStrategyPtr)(&v)
+}
+
+func (*natGatewayStrategyPtr) ElementType() reflect.Type {
+	return natGatewayStrategyPtrType
+}
+
+func (in *natGatewayStrategyPtr) ToNatGatewayStrategyPtrOutput() NatGatewayStrategyPtrOutput {
+	return pulumi.ToOutput(in).(NatGatewayStrategyPtrOutput)
+}
+
+func (in *natGatewayStrategyPtr) ToNatGatewayStrategyPtrOutputWithContext(ctx context.Context) NatGatewayStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(NatGatewayStrategyPtrOutput)
+}
 
 // A type of subnet within a VPC.
 type SubnetType string
@@ -27,5 +191,170 @@ const (
 	SubnetTypeIsolated = SubnetType("Isolated")
 )
 
+func (SubnetType) ElementType() reflect.Type {
+	return reflect.TypeOf((*SubnetType)(nil)).Elem()
+}
+
+func (e SubnetType) ToSubnetTypeOutput() SubnetTypeOutput {
+	return pulumi.ToOutput(e).(SubnetTypeOutput)
+}
+
+func (e SubnetType) ToSubnetTypeOutputWithContext(ctx context.Context) SubnetTypeOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(SubnetTypeOutput)
+}
+
+func (e SubnetType) ToSubnetTypePtrOutput() SubnetTypePtrOutput {
+	return e.ToSubnetTypePtrOutputWithContext(context.Background())
+}
+
+func (e SubnetType) ToSubnetTypePtrOutputWithContext(ctx context.Context) SubnetTypePtrOutput {
+	return SubnetType(e).ToSubnetTypeOutputWithContext(ctx).ToSubnetTypePtrOutputWithContext(ctx)
+}
+
+func (e SubnetType) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e SubnetType) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e SubnetType) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e SubnetType) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type SubnetTypeOutput struct{ *pulumi.OutputState }
+
+func (SubnetTypeOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*SubnetType)(nil)).Elem()
+}
+
+func (o SubnetTypeOutput) ToSubnetTypeOutput() SubnetTypeOutput {
+	return o
+}
+
+func (o SubnetTypeOutput) ToSubnetTypeOutputWithContext(ctx context.Context) SubnetTypeOutput {
+	return o
+}
+
+func (o SubnetTypeOutput) ToSubnetTypePtrOutput() SubnetTypePtrOutput {
+	return o.ToSubnetTypePtrOutputWithContext(context.Background())
+}
+
+func (o SubnetTypeOutput) ToSubnetTypePtrOutputWithContext(ctx context.Context) SubnetTypePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v SubnetType) *SubnetType {
+		return &v
+	}).(SubnetTypePtrOutput)
+}
+
+func (o SubnetTypeOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o SubnetTypeOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e SubnetType) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o SubnetTypeOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o SubnetTypeOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e SubnetType) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type SubnetTypePtrOutput struct{ *pulumi.OutputState }
+
+func (SubnetTypePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**SubnetType)(nil)).Elem()
+}
+
+func (o SubnetTypePtrOutput) ToSubnetTypePtrOutput() SubnetTypePtrOutput {
+	return o
+}
+
+func (o SubnetTypePtrOutput) ToSubnetTypePtrOutputWithContext(ctx context.Context) SubnetTypePtrOutput {
+	return o
+}
+
+func (o SubnetTypePtrOutput) Elem() SubnetTypeOutput {
+	return o.ApplyT(func(v *SubnetType) SubnetType {
+		if v != nil {
+			return *v
+		}
+		var ret SubnetType
+		return ret
+	}).(SubnetTypeOutput)
+}
+
+func (o SubnetTypePtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o SubnetTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *SubnetType) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// SubnetTypeInput is an input type that accepts SubnetTypeArgs and SubnetTypeOutput values.
+// You can construct a concrete instance of `SubnetTypeInput` via:
+//
+//          SubnetTypeArgs{...}
+type SubnetTypeInput interface {
+	pulumi.Input
+
+	ToSubnetTypeOutput() SubnetTypeOutput
+	ToSubnetTypeOutputWithContext(context.Context) SubnetTypeOutput
+}
+
+var subnetTypePtrType = reflect.TypeOf((**SubnetType)(nil)).Elem()
+
+type SubnetTypePtrInput interface {
+	pulumi.Input
+
+	ToSubnetTypePtrOutput() SubnetTypePtrOutput
+	ToSubnetTypePtrOutputWithContext(context.Context) SubnetTypePtrOutput
+}
+
+type subnetTypePtr string
+
+func SubnetTypePtr(v string) SubnetTypePtrInput {
+	return (*subnetTypePtr)(&v)
+}
+
+func (*subnetTypePtr) ElementType() reflect.Type {
+	return subnetTypePtrType
+}
+
+func (in *subnetTypePtr) ToSubnetTypePtrOutput() SubnetTypePtrOutput {
+	return pulumi.ToOutput(in).(SubnetTypePtrOutput)
+}
+
+func (in *subnetTypePtr) ToSubnetTypePtrOutputWithContext(ctx context.Context) SubnetTypePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(SubnetTypePtrOutput)
+}
+
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*NatGatewayStrategyInput)(nil)).Elem(), NatGatewayStrategy("None"))
+	pulumi.RegisterInputType(reflect.TypeOf((*NatGatewayStrategyPtrInput)(nil)).Elem(), NatGatewayStrategy("None"))
+	pulumi.RegisterInputType(reflect.TypeOf((*SubnetTypeInput)(nil)).Elem(), SubnetType("Public"))
+	pulumi.RegisterInputType(reflect.TypeOf((*SubnetTypePtrInput)(nil)).Elem(), SubnetType("Public"))
+	pulumi.RegisterOutputType(NatGatewayStrategyOutput{})
+	pulumi.RegisterOutputType(NatGatewayStrategyPtrOutput{})
+	pulumi.RegisterOutputType(SubnetTypeOutput{})
+	pulumi.RegisterOutputType(SubnetTypePtrOutput{})
 }

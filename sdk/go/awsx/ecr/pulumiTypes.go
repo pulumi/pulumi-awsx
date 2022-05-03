@@ -36,6 +36,157 @@ type LifecyclePolicy struct {
 	Skip *bool `pulumi:"skip"`
 }
 
+// LifecyclePolicyInput is an input type that accepts LifecyclePolicyArgs and LifecyclePolicyOutput values.
+// You can construct a concrete instance of `LifecyclePolicyInput` via:
+//
+//          LifecyclePolicyArgs{...}
+type LifecyclePolicyInput interface {
+	pulumi.Input
+
+	ToLifecyclePolicyOutput() LifecyclePolicyOutput
+	ToLifecyclePolicyOutputWithContext(context.Context) LifecyclePolicyOutput
+}
+
+// Simplified lifecycle policy model consisting of one or more rules that determine which images in a repository should be expired. See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for more details.
+type LifecyclePolicyArgs struct {
+	// Specifies the rules to determine how images should be retired from this repository. Rules are ordered from lowest priority to highest.  If there is a rule with a `selection` value of `any`, then it will have the highest priority.
+	Rules LifecyclePolicyRuleArrayInput `pulumi:"rules"`
+	// Skips creation of the policy if set to `true`.
+	Skip *bool `pulumi:"skip"`
+}
+
+func (LifecyclePolicyArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*LifecyclePolicy)(nil)).Elem()
+}
+
+func (i LifecyclePolicyArgs) ToLifecyclePolicyOutput() LifecyclePolicyOutput {
+	return i.ToLifecyclePolicyOutputWithContext(context.Background())
+}
+
+func (i LifecyclePolicyArgs) ToLifecyclePolicyOutputWithContext(ctx context.Context) LifecyclePolicyOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LifecyclePolicyOutput)
+}
+
+func (i LifecyclePolicyArgs) ToLifecyclePolicyPtrOutput() LifecyclePolicyPtrOutput {
+	return i.ToLifecyclePolicyPtrOutputWithContext(context.Background())
+}
+
+func (i LifecyclePolicyArgs) ToLifecyclePolicyPtrOutputWithContext(ctx context.Context) LifecyclePolicyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LifecyclePolicyOutput).ToLifecyclePolicyPtrOutputWithContext(ctx)
+}
+
+// LifecyclePolicyPtrInput is an input type that accepts LifecyclePolicyArgs, LifecyclePolicyPtr and LifecyclePolicyPtrOutput values.
+// You can construct a concrete instance of `LifecyclePolicyPtrInput` via:
+//
+//          LifecyclePolicyArgs{...}
+//
+//  or:
+//
+//          nil
+type LifecyclePolicyPtrInput interface {
+	pulumi.Input
+
+	ToLifecyclePolicyPtrOutput() LifecyclePolicyPtrOutput
+	ToLifecyclePolicyPtrOutputWithContext(context.Context) LifecyclePolicyPtrOutput
+}
+
+type lifecyclePolicyPtrType LifecyclePolicyArgs
+
+func LifecyclePolicyPtr(v *LifecyclePolicyArgs) LifecyclePolicyPtrInput {
+	return (*lifecyclePolicyPtrType)(v)
+}
+
+func (*lifecyclePolicyPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**LifecyclePolicy)(nil)).Elem()
+}
+
+func (i *lifecyclePolicyPtrType) ToLifecyclePolicyPtrOutput() LifecyclePolicyPtrOutput {
+	return i.ToLifecyclePolicyPtrOutputWithContext(context.Background())
+}
+
+func (i *lifecyclePolicyPtrType) ToLifecyclePolicyPtrOutputWithContext(ctx context.Context) LifecyclePolicyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LifecyclePolicyPtrOutput)
+}
+
+// Simplified lifecycle policy model consisting of one or more rules that determine which images in a repository should be expired. See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for more details.
+type LifecyclePolicyOutput struct{ *pulumi.OutputState }
+
+func (LifecyclePolicyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*LifecyclePolicy)(nil)).Elem()
+}
+
+func (o LifecyclePolicyOutput) ToLifecyclePolicyOutput() LifecyclePolicyOutput {
+	return o
+}
+
+func (o LifecyclePolicyOutput) ToLifecyclePolicyOutputWithContext(ctx context.Context) LifecyclePolicyOutput {
+	return o
+}
+
+func (o LifecyclePolicyOutput) ToLifecyclePolicyPtrOutput() LifecyclePolicyPtrOutput {
+	return o.ToLifecyclePolicyPtrOutputWithContext(context.Background())
+}
+
+func (o LifecyclePolicyOutput) ToLifecyclePolicyPtrOutputWithContext(ctx context.Context) LifecyclePolicyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v LifecyclePolicy) *LifecyclePolicy {
+		return &v
+	}).(LifecyclePolicyPtrOutput)
+}
+
+// Specifies the rules to determine how images should be retired from this repository. Rules are ordered from lowest priority to highest.  If there is a rule with a `selection` value of `any`, then it will have the highest priority.
+func (o LifecyclePolicyOutput) Rules() LifecyclePolicyRuleArrayOutput {
+	return o.ApplyT(func(v LifecyclePolicy) []LifecyclePolicyRule { return v.Rules }).(LifecyclePolicyRuleArrayOutput)
+}
+
+// Skips creation of the policy if set to `true`.
+func (o LifecyclePolicyOutput) Skip() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v LifecyclePolicy) *bool { return v.Skip }).(pulumi.BoolPtrOutput)
+}
+
+type LifecyclePolicyPtrOutput struct{ *pulumi.OutputState }
+
+func (LifecyclePolicyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**LifecyclePolicy)(nil)).Elem()
+}
+
+func (o LifecyclePolicyPtrOutput) ToLifecyclePolicyPtrOutput() LifecyclePolicyPtrOutput {
+	return o
+}
+
+func (o LifecyclePolicyPtrOutput) ToLifecyclePolicyPtrOutputWithContext(ctx context.Context) LifecyclePolicyPtrOutput {
+	return o
+}
+
+func (o LifecyclePolicyPtrOutput) Elem() LifecyclePolicyOutput {
+	return o.ApplyT(func(v *LifecyclePolicy) LifecyclePolicy {
+		if v != nil {
+			return *v
+		}
+		var ret LifecyclePolicy
+		return ret
+	}).(LifecyclePolicyOutput)
+}
+
+// Specifies the rules to determine how images should be retired from this repository. Rules are ordered from lowest priority to highest.  If there is a rule with a `selection` value of `any`, then it will have the highest priority.
+func (o LifecyclePolicyPtrOutput) Rules() LifecyclePolicyRuleArrayOutput {
+	return o.ApplyT(func(v *LifecyclePolicy) []LifecyclePolicyRule {
+		if v == nil {
+			return nil
+		}
+		return v.Rules
+	}).(LifecyclePolicyRuleArrayOutput)
+}
+
+// Skips creation of the policy if set to `true`.
+func (o LifecyclePolicyPtrOutput) Skip() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *LifecyclePolicy) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.Skip
+	}).(pulumi.BoolPtrOutput)
+}
+
 // A lifecycle policy rule that determine which images in a repository should be expired.
 type LifecyclePolicyRule struct {
 	// Describes the purpose of a rule within a lifecycle policy.
@@ -173,8 +324,12 @@ func (o LifecyclePolicyRuleArrayOutput) Index(i pulumi.IntInput) LifecyclePolicy
 }
 
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*LifecyclePolicyInput)(nil)).Elem(), LifecyclePolicyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LifecyclePolicyPtrInput)(nil)).Elem(), LifecyclePolicyArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*LifecyclePolicyRuleInput)(nil)).Elem(), LifecyclePolicyRuleArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*LifecyclePolicyRuleArrayInput)(nil)).Elem(), LifecyclePolicyRuleArray{})
+	pulumi.RegisterOutputType(LifecyclePolicyOutput{})
+	pulumi.RegisterOutputType(LifecyclePolicyPtrOutput{})
 	pulumi.RegisterOutputType(LifecyclePolicyRuleOutput{})
 	pulumi.RegisterOutputType(LifecyclePolicyRuleArrayOutput{})
 }

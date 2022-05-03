@@ -3,12 +3,170 @@
 
 package ec2
 
+import (
+	"context"
+	"reflect"
+
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+)
+
 // Configuration for NAT Gateways.
 type NatGatewayConfiguration struct {
 	// A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
 	ElasticIpAllocationIds []string `pulumi:"elasticIpAllocationIds"`
 	// The strategy for deploying NAT Gateways.
 	Strategy NatGatewayStrategy `pulumi:"strategy"`
+}
+
+// NatGatewayConfigurationInput is an input type that accepts NatGatewayConfigurationArgs and NatGatewayConfigurationOutput values.
+// You can construct a concrete instance of `NatGatewayConfigurationInput` via:
+//
+//          NatGatewayConfigurationArgs{...}
+type NatGatewayConfigurationInput interface {
+	pulumi.Input
+
+	ToNatGatewayConfigurationOutput() NatGatewayConfigurationOutput
+	ToNatGatewayConfigurationOutputWithContext(context.Context) NatGatewayConfigurationOutput
+}
+
+// Configuration for NAT Gateways.
+type NatGatewayConfigurationArgs struct {
+	// A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
+	ElasticIpAllocationIds []pulumi.StringInput `pulumi:"elasticIpAllocationIds"`
+	// The strategy for deploying NAT Gateways.
+	Strategy NatGatewayStrategy `pulumi:"strategy"`
+}
+
+func (NatGatewayConfigurationArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*NatGatewayConfiguration)(nil)).Elem()
+}
+
+func (i NatGatewayConfigurationArgs) ToNatGatewayConfigurationOutput() NatGatewayConfigurationOutput {
+	return i.ToNatGatewayConfigurationOutputWithContext(context.Background())
+}
+
+func (i NatGatewayConfigurationArgs) ToNatGatewayConfigurationOutputWithContext(ctx context.Context) NatGatewayConfigurationOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(NatGatewayConfigurationOutput)
+}
+
+func (i NatGatewayConfigurationArgs) ToNatGatewayConfigurationPtrOutput() NatGatewayConfigurationPtrOutput {
+	return i.ToNatGatewayConfigurationPtrOutputWithContext(context.Background())
+}
+
+func (i NatGatewayConfigurationArgs) ToNatGatewayConfigurationPtrOutputWithContext(ctx context.Context) NatGatewayConfigurationPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(NatGatewayConfigurationOutput).ToNatGatewayConfigurationPtrOutputWithContext(ctx)
+}
+
+// NatGatewayConfigurationPtrInput is an input type that accepts NatGatewayConfigurationArgs, NatGatewayConfigurationPtr and NatGatewayConfigurationPtrOutput values.
+// You can construct a concrete instance of `NatGatewayConfigurationPtrInput` via:
+//
+//          NatGatewayConfigurationArgs{...}
+//
+//  or:
+//
+//          nil
+type NatGatewayConfigurationPtrInput interface {
+	pulumi.Input
+
+	ToNatGatewayConfigurationPtrOutput() NatGatewayConfigurationPtrOutput
+	ToNatGatewayConfigurationPtrOutputWithContext(context.Context) NatGatewayConfigurationPtrOutput
+}
+
+type natGatewayConfigurationPtrType NatGatewayConfigurationArgs
+
+func NatGatewayConfigurationPtr(v *NatGatewayConfigurationArgs) NatGatewayConfigurationPtrInput {
+	return (*natGatewayConfigurationPtrType)(v)
+}
+
+func (*natGatewayConfigurationPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**NatGatewayConfiguration)(nil)).Elem()
+}
+
+func (i *natGatewayConfigurationPtrType) ToNatGatewayConfigurationPtrOutput() NatGatewayConfigurationPtrOutput {
+	return i.ToNatGatewayConfigurationPtrOutputWithContext(context.Background())
+}
+
+func (i *natGatewayConfigurationPtrType) ToNatGatewayConfigurationPtrOutputWithContext(ctx context.Context) NatGatewayConfigurationPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(NatGatewayConfigurationPtrOutput)
+}
+
+// Configuration for NAT Gateways.
+type NatGatewayConfigurationOutput struct{ *pulumi.OutputState }
+
+func (NatGatewayConfigurationOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*NatGatewayConfiguration)(nil)).Elem()
+}
+
+func (o NatGatewayConfigurationOutput) ToNatGatewayConfigurationOutput() NatGatewayConfigurationOutput {
+	return o
+}
+
+func (o NatGatewayConfigurationOutput) ToNatGatewayConfigurationOutputWithContext(ctx context.Context) NatGatewayConfigurationOutput {
+	return o
+}
+
+func (o NatGatewayConfigurationOutput) ToNatGatewayConfigurationPtrOutput() NatGatewayConfigurationPtrOutput {
+	return o.ToNatGatewayConfigurationPtrOutputWithContext(context.Background())
+}
+
+func (o NatGatewayConfigurationOutput) ToNatGatewayConfigurationPtrOutputWithContext(ctx context.Context) NatGatewayConfigurationPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v NatGatewayConfiguration) *NatGatewayConfiguration {
+		return &v
+	}).(NatGatewayConfigurationPtrOutput)
+}
+
+// A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
+func (o NatGatewayConfigurationOutput) ElasticIpAllocationIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v NatGatewayConfiguration) []string { return v.ElasticIpAllocationIds }).(pulumi.StringArrayOutput)
+}
+
+// The strategy for deploying NAT Gateways.
+func (o NatGatewayConfigurationOutput) Strategy() NatGatewayStrategyOutput {
+	return o.ApplyT(func(v NatGatewayConfiguration) NatGatewayStrategy { return v.Strategy }).(NatGatewayStrategyOutput)
+}
+
+type NatGatewayConfigurationPtrOutput struct{ *pulumi.OutputState }
+
+func (NatGatewayConfigurationPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**NatGatewayConfiguration)(nil)).Elem()
+}
+
+func (o NatGatewayConfigurationPtrOutput) ToNatGatewayConfigurationPtrOutput() NatGatewayConfigurationPtrOutput {
+	return o
+}
+
+func (o NatGatewayConfigurationPtrOutput) ToNatGatewayConfigurationPtrOutputWithContext(ctx context.Context) NatGatewayConfigurationPtrOutput {
+	return o
+}
+
+func (o NatGatewayConfigurationPtrOutput) Elem() NatGatewayConfigurationOutput {
+	return o.ApplyT(func(v *NatGatewayConfiguration) NatGatewayConfiguration {
+		if v != nil {
+			return *v
+		}
+		var ret NatGatewayConfiguration
+		return ret
+	}).(NatGatewayConfigurationOutput)
+}
+
+// A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
+func (o NatGatewayConfigurationPtrOutput) ElasticIpAllocationIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *NatGatewayConfiguration) []string {
+		if v == nil {
+			return nil
+		}
+		return v.ElasticIpAllocationIds
+	}).(pulumi.StringArrayOutput)
+}
+
+// The strategy for deploying NAT Gateways.
+func (o NatGatewayConfigurationPtrOutput) Strategy() NatGatewayStrategyPtrOutput {
+	return o.ApplyT(func(v *NatGatewayConfiguration) *NatGatewayStrategy {
+		if v == nil {
+			return nil
+		}
+		return &v.Strategy
+	}).(NatGatewayStrategyPtrOutput)
 }
 
 // Configuration for a VPC subnet.
@@ -21,5 +179,121 @@ type SubnetSpec struct {
 	Type SubnetType `pulumi:"type"`
 }
 
+// SubnetSpecInput is an input type that accepts SubnetSpecArgs and SubnetSpecOutput values.
+// You can construct a concrete instance of `SubnetSpecInput` via:
+//
+//          SubnetSpecArgs{...}
+type SubnetSpecInput interface {
+	pulumi.Input
+
+	ToSubnetSpecOutput() SubnetSpecOutput
+	ToSubnetSpecOutputWithContext(context.Context) SubnetSpecOutput
+}
+
+// Configuration for a VPC subnet.
+type SubnetSpecArgs struct {
+	// The bitmask for the subnet's CIDR block.
+	CidrMask int `pulumi:"cidrMask"`
+	// The subnet's name. Will be templated upon creation.
+	Name *string `pulumi:"name"`
+	// The type of subnet.
+	Type SubnetType `pulumi:"type"`
+}
+
+func (SubnetSpecArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*SubnetSpec)(nil)).Elem()
+}
+
+func (i SubnetSpecArgs) ToSubnetSpecOutput() SubnetSpecOutput {
+	return i.ToSubnetSpecOutputWithContext(context.Background())
+}
+
+func (i SubnetSpecArgs) ToSubnetSpecOutputWithContext(ctx context.Context) SubnetSpecOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(SubnetSpecOutput)
+}
+
+// SubnetSpecArrayInput is an input type that accepts SubnetSpecArray and SubnetSpecArrayOutput values.
+// You can construct a concrete instance of `SubnetSpecArrayInput` via:
+//
+//          SubnetSpecArray{ SubnetSpecArgs{...} }
+type SubnetSpecArrayInput interface {
+	pulumi.Input
+
+	ToSubnetSpecArrayOutput() SubnetSpecArrayOutput
+	ToSubnetSpecArrayOutputWithContext(context.Context) SubnetSpecArrayOutput
+}
+
+type SubnetSpecArray []SubnetSpecInput
+
+func (SubnetSpecArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]SubnetSpec)(nil)).Elem()
+}
+
+func (i SubnetSpecArray) ToSubnetSpecArrayOutput() SubnetSpecArrayOutput {
+	return i.ToSubnetSpecArrayOutputWithContext(context.Background())
+}
+
+func (i SubnetSpecArray) ToSubnetSpecArrayOutputWithContext(ctx context.Context) SubnetSpecArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(SubnetSpecArrayOutput)
+}
+
+// Configuration for a VPC subnet.
+type SubnetSpecOutput struct{ *pulumi.OutputState }
+
+func (SubnetSpecOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*SubnetSpec)(nil)).Elem()
+}
+
+func (o SubnetSpecOutput) ToSubnetSpecOutput() SubnetSpecOutput {
+	return o
+}
+
+func (o SubnetSpecOutput) ToSubnetSpecOutputWithContext(ctx context.Context) SubnetSpecOutput {
+	return o
+}
+
+// The bitmask for the subnet's CIDR block.
+func (o SubnetSpecOutput) CidrMask() pulumi.IntOutput {
+	return o.ApplyT(func(v SubnetSpec) int { return v.CidrMask }).(pulumi.IntOutput)
+}
+
+// The subnet's name. Will be templated upon creation.
+func (o SubnetSpecOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v SubnetSpec) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// The type of subnet.
+func (o SubnetSpecOutput) Type() SubnetTypeOutput {
+	return o.ApplyT(func(v SubnetSpec) SubnetType { return v.Type }).(SubnetTypeOutput)
+}
+
+type SubnetSpecArrayOutput struct{ *pulumi.OutputState }
+
+func (SubnetSpecArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]SubnetSpec)(nil)).Elem()
+}
+
+func (o SubnetSpecArrayOutput) ToSubnetSpecArrayOutput() SubnetSpecArrayOutput {
+	return o
+}
+
+func (o SubnetSpecArrayOutput) ToSubnetSpecArrayOutputWithContext(ctx context.Context) SubnetSpecArrayOutput {
+	return o
+}
+
+func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) SubnetSpec {
+		return vs[0].([]SubnetSpec)[vs[1].(int)]
+	}).(SubnetSpecOutput)
+}
+
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*NatGatewayConfigurationInput)(nil)).Elem(), NatGatewayConfigurationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*NatGatewayConfigurationPtrInput)(nil)).Elem(), NatGatewayConfigurationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*SubnetSpecInput)(nil)).Elem(), SubnetSpecArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*SubnetSpecArrayInput)(nil)).Elem(), SubnetSpecArray{})
+	pulumi.RegisterOutputType(NatGatewayConfigurationOutput{})
+	pulumi.RegisterOutputType(NatGatewayConfigurationPtrOutput{})
+	pulumi.RegisterOutputType(SubnetSpecOutput{})
+	pulumi.RegisterOutputType(SubnetSpecArrayOutput{})
 }

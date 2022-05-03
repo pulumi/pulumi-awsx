@@ -78,7 +78,7 @@ type TrailArgs struct {
 	// Specifies an advanced event selector for enabling data event logging. Fields documented below. Conflicts with `event_selector`.
 	AdvancedEventSelectors cloudtrail.TrailAdvancedEventSelectorArrayInput
 	// Log group to which CloudTrail logs will be delivered.
-	CloudWatchLogsGroup *awsx.OptionalLogGroup
+	CloudWatchLogsGroup *awsx.OptionalLogGroupArgs
 	// Whether log file integrity validation is enabled. Defaults to `false`.
 	EnableLogFileValidation pulumi.BoolPtrInput
 	// Enables logging for the trail. Defaults to `true`. Setting this to `false` will pause logging.
@@ -98,7 +98,7 @@ type TrailArgs struct {
 	// Specifies the name of the advanced event selector.
 	Name pulumi.StringPtrInput
 	// S3 bucket designated for publishing log files.
-	S3Bucket *awsx.RequiredBucket
+	S3Bucket *awsx.RequiredBucketArgs
 	// S3 key prefix that follows the name of the bucket you have designated for log file delivery.
 	S3KeyPrefix pulumi.StringPtrInput
 	// Name of the Amazon SNS topic defined for notification of log file delivery.
@@ -192,6 +192,21 @@ func (o TrailOutput) ToTrailOutput() TrailOutput {
 
 func (o TrailOutput) ToTrailOutputWithContext(ctx context.Context) TrailOutput {
 	return o
+}
+
+// The managed S3 Bucket where the Trail will place its logs.
+func (o TrailOutput) Bucket() s3.BucketOutput {
+	return o.ApplyT(func(v *Trail) s3.BucketOutput { return v.Bucket }).(s3.BucketOutput)
+}
+
+// The managed Cloudwatch Log Group.
+func (o TrailOutput) LogGroup() cloudwatch.LogGroupOutput {
+	return o.ApplyT(func(v *Trail) cloudwatch.LogGroupOutput { return v.LogGroup }).(cloudwatch.LogGroupOutput)
+}
+
+// The CloudTrail Trail.
+func (o TrailOutput) Trail() cloudtrail.TrailOutput {
+	return o.ApplyT(func(v *Trail) cloudtrail.TrailOutput { return v.Trail }).(cloudtrail.TrailOutput)
 }
 
 type TrailArrayOutput struct{ *pulumi.OutputState }

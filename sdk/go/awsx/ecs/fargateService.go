@@ -133,7 +133,7 @@ type FargateServiceArgs struct {
 	// Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
 	TaskDefinition pulumi.StringPtrInput
 	// The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
-	TaskDefinitionArgs *FargateServiceTaskDefinition
+	TaskDefinitionArgs *FargateServiceTaskDefinitionArgs
 }
 
 func (FargateServiceArgs) ElementType() reflect.Type {
@@ -221,6 +221,16 @@ func (o FargateServiceOutput) ToFargateServiceOutput() FargateServiceOutput {
 
 func (o FargateServiceOutput) ToFargateServiceOutputWithContext(ctx context.Context) FargateServiceOutput {
 	return o
+}
+
+// Underlying ECS Service resource
+func (o FargateServiceOutput) Service() ecs.ServiceOutput {
+	return o.ApplyT(func(v *FargateService) ecs.ServiceOutput { return v.Service }).(ecs.ServiceOutput)
+}
+
+// Underlying Fargate component resource if created from args
+func (o FargateServiceOutput) TaskDefinition() ecs.TaskDefinitionOutput {
+	return o.ApplyT(func(v *FargateService) ecs.TaskDefinitionOutput { return v.TaskDefinition }).(ecs.TaskDefinitionOutput)
 }
 
 type FargateServiceArrayOutput struct{ *pulumi.OutputState }
