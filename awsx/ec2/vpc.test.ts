@@ -244,16 +244,6 @@ describe("getOverlappingSubnets", () => {
             ]),
         ).toEqual([subnet2a, subnet1, subnet1a, subnet2]);
     });
-
-    // This is technically an integration test, but it's probably better to just call getSubnetSpecs than it is to restate the default subnet specs as a literal:
-    it("should return no overlapping subnets for the default subnet specs for this component", () => {
-        const defaultSpecs = getSubnetSpecs("dummy", "10.0.0.0/16", [
-            "us-east-1a",
-            "us-east-1b",
-            "us-east-1c",
-        ]);
-        expect(getOverlappingSubnets(defaultSpecs)).toEqual([]);
-    });
 });
 
 describe("validateSubnets", () => {
