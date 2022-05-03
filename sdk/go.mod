@@ -6,8 +6,14 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/pulumi/pulumi-aws/sdk/v5 v5.3.0
-	github.com/pulumi/pulumi/sdk/v3 v3.30.0
+	github.com/pulumi/pulumi/sdk/v3 v3.31.1-0.20220503073946-62a228d9b3f0
 )
+
+// replace (
+//  aws 770b61635bb79e3c4b4a0d78105cf85d13f4d38b
+// pulumi 62a228d9b3f0ff44c6d08aa0c1a5eaeb9c274f36
+
+// )
 
 require (
 	github.com/cheggaaa/pb v1.0.18 // indirect

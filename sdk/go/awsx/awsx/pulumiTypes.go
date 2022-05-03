@@ -4,9 +4,13 @@
 package awsx
 
 import (
+	"context"
+	"reflect"
+
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/s3"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 // The set of arguments for constructing a Bucket resource.
@@ -58,6 +62,489 @@ type Bucket struct {
 	WebsiteEndpoint *string `pulumi:"websiteEndpoint"`
 }
 
+// BucketInput is an input type that accepts BucketArgs and BucketOutput values.
+// You can construct a concrete instance of `BucketInput` via:
+//
+//          BucketArgs{...}
+type BucketInput interface {
+	pulumi.Input
+
+	ToBucketOutput() BucketOutput
+	ToBucketOutputWithContext(context.Context) BucketOutput
+}
+
+// The set of arguments for constructing a Bucket resource.
+type BucketArgs struct {
+	// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
+	AccelerationStatus pulumi.StringPtrInput `pulumi:"accelerationStatus"`
+	// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
+	Acl pulumi.StringPtrInput `pulumi:"acl"`
+	// The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+	Arn pulumi.StringPtrInput `pulumi:"arn"`
+	// The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+	Bucket pulumi.StringPtrInput `pulumi:"bucket"`
+	// Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+	BucketPrefix pulumi.StringPtrInput `pulumi:"bucketPrefix"`
+	// A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
+	CorsRules s3.BucketCorsRuleArrayInput `pulumi:"corsRules"`
+	// A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
+	ForceDestroy pulumi.BoolPtrInput `pulumi:"forceDestroy"`
+	// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
+	Grants s3.BucketGrantArrayInput `pulumi:"grants"`
+	// The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+	HostedZoneId pulumi.StringPtrInput `pulumi:"hostedZoneId"`
+	// A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
+	LifecycleRules s3.BucketLifecycleRuleArrayInput `pulumi:"lifecycleRules"`
+	// A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
+	Loggings s3.BucketLoggingArrayInput `pulumi:"loggings"`
+	// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+	ObjectLockConfiguration s3.BucketObjectLockConfigurationPtrInput `pulumi:"objectLockConfiguration"`
+	// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
+	Policy pulumi.StringPtrInput `pulumi:"policy"`
+	// A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
+	ReplicationConfiguration s3.BucketReplicationConfigurationPtrInput `pulumi:"replicationConfiguration"`
+	// Specifies who should bear the cost of Amazon S3 data transfer.
+	// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+	// the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+	// developer guide for more information.
+	RequestPayer pulumi.StringPtrInput `pulumi:"requestPayer"`
+	// A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
+	ServerSideEncryptionConfiguration s3.BucketServerSideEncryptionConfigurationPtrInput `pulumi:"serverSideEncryptionConfiguration"`
+	// A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	Tags pulumi.StringMapInput `pulumi:"tags"`
+	// A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
+	Versioning s3.BucketVersioningPtrInput `pulumi:"versioning"`
+	// A website object (documented below).
+	Website s3.BucketWebsitePtrInput `pulumi:"website"`
+	// The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
+	WebsiteDomain pulumi.StringPtrInput `pulumi:"websiteDomain"`
+	// The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
+	WebsiteEndpoint pulumi.StringPtrInput `pulumi:"websiteEndpoint"`
+}
+
+func (BucketArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*Bucket)(nil)).Elem()
+}
+
+func (i BucketArgs) ToBucketOutput() BucketOutput {
+	return i.ToBucketOutputWithContext(context.Background())
+}
+
+func (i BucketArgs) ToBucketOutputWithContext(ctx context.Context) BucketOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(BucketOutput)
+}
+
+func (i BucketArgs) ToBucketPtrOutput() BucketPtrOutput {
+	return i.ToBucketPtrOutputWithContext(context.Background())
+}
+
+func (i BucketArgs) ToBucketPtrOutputWithContext(ctx context.Context) BucketPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(BucketOutput).ToBucketPtrOutputWithContext(ctx)
+}
+
+// BucketPtrInput is an input type that accepts BucketArgs, BucketPtr and BucketPtrOutput values.
+// You can construct a concrete instance of `BucketPtrInput` via:
+//
+//          BucketArgs{...}
+//
+//  or:
+//
+//          nil
+type BucketPtrInput interface {
+	pulumi.Input
+
+	ToBucketPtrOutput() BucketPtrOutput
+	ToBucketPtrOutputWithContext(context.Context) BucketPtrOutput
+}
+
+type bucketPtrType BucketArgs
+
+func BucketPtr(v *BucketArgs) BucketPtrInput {
+	return (*bucketPtrType)(v)
+}
+
+func (*bucketPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**Bucket)(nil)).Elem()
+}
+
+func (i *bucketPtrType) ToBucketPtrOutput() BucketPtrOutput {
+	return i.ToBucketPtrOutputWithContext(context.Background())
+}
+
+func (i *bucketPtrType) ToBucketPtrOutputWithContext(ctx context.Context) BucketPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(BucketPtrOutput)
+}
+
+// The set of arguments for constructing a Bucket resource.
+type BucketOutput struct{ *pulumi.OutputState }
+
+func (BucketOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*Bucket)(nil)).Elem()
+}
+
+func (o BucketOutput) ToBucketOutput() BucketOutput {
+	return o
+}
+
+func (o BucketOutput) ToBucketOutputWithContext(ctx context.Context) BucketOutput {
+	return o
+}
+
+func (o BucketOutput) ToBucketPtrOutput() BucketPtrOutput {
+	return o.ToBucketPtrOutputWithContext(context.Background())
+}
+
+func (o BucketOutput) ToBucketPtrOutputWithContext(ctx context.Context) BucketPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v Bucket) *Bucket {
+		return &v
+	}).(BucketPtrOutput)
+}
+
+// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
+func (o BucketOutput) AccelerationStatus() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.AccelerationStatus }).(pulumi.StringPtrOutput)
+}
+
+// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
+func (o BucketOutput) Acl() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.Acl }).(pulumi.StringPtrOutput)
+}
+
+// The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+func (o BucketOutput) Arn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.Arn }).(pulumi.StringPtrOutput)
+}
+
+// The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+func (o BucketOutput) Bucket() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.Bucket }).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+func (o BucketOutput) BucketPrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.BucketPrefix }).(pulumi.StringPtrOutput)
+}
+
+// A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
+func (o BucketOutput) CorsRules() s3.BucketCorsRuleArrayOutput {
+	return o.ApplyT(func(v Bucket) []s3.BucketCorsRule { return v.CorsRules }).(s3.BucketCorsRuleArrayOutput)
+}
+
+// A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
+func (o BucketOutput) ForceDestroy() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v Bucket) *bool { return v.ForceDestroy }).(pulumi.BoolPtrOutput)
+}
+
+// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
+func (o BucketOutput) Grants() s3.BucketGrantArrayOutput {
+	return o.ApplyT(func(v Bucket) []s3.BucketGrant { return v.Grants }).(s3.BucketGrantArrayOutput)
+}
+
+// The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+func (o BucketOutput) HostedZoneId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.HostedZoneId }).(pulumi.StringPtrOutput)
+}
+
+// A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
+func (o BucketOutput) LifecycleRules() s3.BucketLifecycleRuleArrayOutput {
+	return o.ApplyT(func(v Bucket) []s3.BucketLifecycleRule { return v.LifecycleRules }).(s3.BucketLifecycleRuleArrayOutput)
+}
+
+// A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
+func (o BucketOutput) Loggings() s3.BucketLoggingArrayOutput {
+	return o.ApplyT(func(v Bucket) []s3.BucketLogging { return v.Loggings }).(s3.BucketLoggingArrayOutput)
+}
+
+// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+func (o BucketOutput) ObjectLockConfiguration() s3.BucketObjectLockConfigurationPtrOutput {
+	return o.ApplyT(func(v Bucket) *s3.BucketObjectLockConfiguration { return v.ObjectLockConfiguration }).(s3.BucketObjectLockConfigurationPtrOutput)
+}
+
+// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
+func (o BucketOutput) Policy() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.Policy }).(pulumi.StringPtrOutput)
+}
+
+// A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
+func (o BucketOutput) ReplicationConfiguration() s3.BucketReplicationConfigurationPtrOutput {
+	return o.ApplyT(func(v Bucket) *s3.BucketReplicationConfiguration { return v.ReplicationConfiguration }).(s3.BucketReplicationConfigurationPtrOutput)
+}
+
+// Specifies who should bear the cost of Amazon S3 data transfer.
+// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+// the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+// developer guide for more information.
+func (o BucketOutput) RequestPayer() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.RequestPayer }).(pulumi.StringPtrOutput)
+}
+
+// A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
+func (o BucketOutput) ServerSideEncryptionConfiguration() s3.BucketServerSideEncryptionConfigurationPtrOutput {
+	return o.ApplyT(func(v Bucket) *s3.BucketServerSideEncryptionConfiguration { return v.ServerSideEncryptionConfiguration }).(s3.BucketServerSideEncryptionConfigurationPtrOutput)
+}
+
+// A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o BucketOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v Bucket) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+// A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
+func (o BucketOutput) Versioning() s3.BucketVersioningPtrOutput {
+	return o.ApplyT(func(v Bucket) *s3.BucketVersioning { return v.Versioning }).(s3.BucketVersioningPtrOutput)
+}
+
+// A website object (documented below).
+func (o BucketOutput) Website() s3.BucketWebsitePtrOutput {
+	return o.ApplyT(func(v Bucket) *s3.BucketWebsite { return v.Website }).(s3.BucketWebsitePtrOutput)
+}
+
+// The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
+func (o BucketOutput) WebsiteDomain() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.WebsiteDomain }).(pulumi.StringPtrOutput)
+}
+
+// The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
+func (o BucketOutput) WebsiteEndpoint() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Bucket) *string { return v.WebsiteEndpoint }).(pulumi.StringPtrOutput)
+}
+
+type BucketPtrOutput struct{ *pulumi.OutputState }
+
+func (BucketPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**Bucket)(nil)).Elem()
+}
+
+func (o BucketPtrOutput) ToBucketPtrOutput() BucketPtrOutput {
+	return o
+}
+
+func (o BucketPtrOutput) ToBucketPtrOutputWithContext(ctx context.Context) BucketPtrOutput {
+	return o
+}
+
+func (o BucketPtrOutput) Elem() BucketOutput {
+	return o.ApplyT(func(v *Bucket) Bucket {
+		if v != nil {
+			return *v
+		}
+		var ret Bucket
+		return ret
+	}).(BucketOutput)
+}
+
+// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
+func (o BucketPtrOutput) AccelerationStatus() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.AccelerationStatus
+	}).(pulumi.StringPtrOutput)
+}
+
+// The [canned ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl) to apply. Valid values are `private`, `public-read`, `public-read-write`, `aws-exec-read`, `authenticated-read`, and `log-delivery-write`. Defaults to `private`.  Conflicts with `grant`.
+func (o BucketPtrOutput) Acl() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Acl
+	}).(pulumi.StringPtrOutput)
+}
+
+// The ARN of the bucket. Will be of format `arn:aws:s3:::bucketname`.
+func (o BucketPtrOutput) Arn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Arn
+	}).(pulumi.StringPtrOutput)
+}
+
+// The name of the bucket. If omitted, this provider will assign a random, unique name. Must be lowercase and less than or equal to 63 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+func (o BucketPtrOutput) Bucket() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Bucket
+	}).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).
+func (o BucketPtrOutput) BucketPrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.BucketPrefix
+	}).(pulumi.StringPtrOutput)
+}
+
+// A rule of [Cross-Origin Resource Sharing](https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) (documented below).
+func (o BucketPtrOutput) CorsRules() s3.BucketCorsRuleArrayOutput {
+	return o.ApplyT(func(v *Bucket) []s3.BucketCorsRule {
+		if v == nil {
+			return nil
+		}
+		return v.CorsRules
+	}).(s3.BucketCorsRuleArrayOutput)
+}
+
+// A boolean that indicates all objects (including any [locked objects](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-overview.html)) should be deleted from the bucket so that the bucket can be destroyed without error. These objects are *not* recoverable.
+func (o BucketPtrOutput) ForceDestroy() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *Bucket) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.ForceDestroy
+	}).(pulumi.BoolPtrOutput)
+}
+
+// An [ACL policy grant](https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#sample-acl) (documented below). Conflicts with `acl`.
+func (o BucketPtrOutput) Grants() s3.BucketGrantArrayOutput {
+	return o.ApplyT(func(v *Bucket) []s3.BucketGrant {
+		if v == nil {
+			return nil
+		}
+		return v.Grants
+	}).(s3.BucketGrantArrayOutput)
+}
+
+// The [Route 53 Hosted Zone ID](https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints) for this bucket's region.
+func (o BucketPtrOutput) HostedZoneId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.HostedZoneId
+	}).(pulumi.StringPtrOutput)
+}
+
+// A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
+func (o BucketPtrOutput) LifecycleRules() s3.BucketLifecycleRuleArrayOutput {
+	return o.ApplyT(func(v *Bucket) []s3.BucketLifecycleRule {
+		if v == nil {
+			return nil
+		}
+		return v.LifecycleRules
+	}).(s3.BucketLifecycleRuleArrayOutput)
+}
+
+// A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
+func (o BucketPtrOutput) Loggings() s3.BucketLoggingArrayOutput {
+	return o.ApplyT(func(v *Bucket) []s3.BucketLogging {
+		if v == nil {
+			return nil
+		}
+		return v.Loggings
+	}).(s3.BucketLoggingArrayOutput)
+}
+
+// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+func (o BucketPtrOutput) ObjectLockConfiguration() s3.BucketObjectLockConfigurationPtrOutput {
+	return o.ApplyT(func(v *Bucket) *s3.BucketObjectLockConfiguration {
+		if v == nil {
+			return nil
+		}
+		return v.ObjectLockConfiguration
+	}).(s3.BucketObjectLockConfigurationPtrOutput)
+}
+
+// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
+func (o BucketPtrOutput) Policy() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Policy
+	}).(pulumi.StringPtrOutput)
+}
+
+// A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
+func (o BucketPtrOutput) ReplicationConfiguration() s3.BucketReplicationConfigurationPtrOutput {
+	return o.ApplyT(func(v *Bucket) *s3.BucketReplicationConfiguration {
+		if v == nil {
+			return nil
+		}
+		return v.ReplicationConfiguration
+	}).(s3.BucketReplicationConfigurationPtrOutput)
+}
+
+// Specifies who should bear the cost of Amazon S3 data transfer.
+// Can be either `BucketOwner` or `Requester`. By default, the owner of the S3 bucket would incur
+// the costs of any data transfer. See [Requester Pays Buckets](http://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html)
+// developer guide for more information.
+func (o BucketPtrOutput) RequestPayer() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.RequestPayer
+	}).(pulumi.StringPtrOutput)
+}
+
+// A configuration of [server-side encryption configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-encryption.html) (documented below)
+func (o BucketPtrOutput) ServerSideEncryptionConfiguration() s3.BucketServerSideEncryptionConfigurationPtrOutput {
+	return o.ApplyT(func(v *Bucket) *s3.BucketServerSideEncryptionConfiguration {
+		if v == nil {
+			return nil
+		}
+		return v.ServerSideEncryptionConfiguration
+	}).(s3.BucketServerSideEncryptionConfigurationPtrOutput)
+}
+
+// A map of tags to assign to the bucket. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o BucketPtrOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *Bucket) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.Tags
+	}).(pulumi.StringMapOutput)
+}
+
+// A state of [versioning](https://docs.aws.amazon.com/AmazonS3/latest/dev/Versioning.html) (documented below)
+func (o BucketPtrOutput) Versioning() s3.BucketVersioningPtrOutput {
+	return o.ApplyT(func(v *Bucket) *s3.BucketVersioning {
+		if v == nil {
+			return nil
+		}
+		return v.Versioning
+	}).(s3.BucketVersioningPtrOutput)
+}
+
+// A website object (documented below).
+func (o BucketPtrOutput) Website() s3.BucketWebsitePtrOutput {
+	return o.ApplyT(func(v *Bucket) *s3.BucketWebsite {
+		if v == nil {
+			return nil
+		}
+		return v.Website
+	}).(s3.BucketWebsitePtrOutput)
+}
+
+// The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
+func (o BucketPtrOutput) WebsiteDomain() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.WebsiteDomain
+	}).(pulumi.StringPtrOutput)
+}
+
+// The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
+func (o BucketPtrOutput) WebsiteEndpoint() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Bucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.WebsiteEndpoint
+	}).(pulumi.StringPtrOutput)
+}
+
 // Bucket with default setup unless explicitly skipped.
 type DefaultBucket struct {
 	// Arguments to use instead of the default values during creation.
@@ -78,6 +565,174 @@ type DefaultLogGroup struct {
 	Skip *bool `pulumi:"skip"`
 }
 
+// DefaultLogGroupInput is an input type that accepts DefaultLogGroupArgs and DefaultLogGroupOutput values.
+// You can construct a concrete instance of `DefaultLogGroupInput` via:
+//
+//          DefaultLogGroupArgs{...}
+type DefaultLogGroupInput interface {
+	pulumi.Input
+
+	ToDefaultLogGroupOutput() DefaultLogGroupOutput
+	ToDefaultLogGroupOutputWithContext(context.Context) DefaultLogGroupOutput
+}
+
+// Log group with default setup unless explicitly skipped.
+type DefaultLogGroupArgs struct {
+	// Arguments to use instead of the default values during creation.
+	Args *LogGroupArgs `pulumi:"args"`
+	// Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+	Existing *ExistingLogGroupArgs `pulumi:"existing"`
+	// Skip creation of the log group.
+	Skip *bool `pulumi:"skip"`
+}
+
+func (DefaultLogGroupArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*DefaultLogGroup)(nil)).Elem()
+}
+
+func (i DefaultLogGroupArgs) ToDefaultLogGroupOutput() DefaultLogGroupOutput {
+	return i.ToDefaultLogGroupOutputWithContext(context.Background())
+}
+
+func (i DefaultLogGroupArgs) ToDefaultLogGroupOutputWithContext(ctx context.Context) DefaultLogGroupOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DefaultLogGroupOutput)
+}
+
+func (i DefaultLogGroupArgs) ToDefaultLogGroupPtrOutput() DefaultLogGroupPtrOutput {
+	return i.ToDefaultLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (i DefaultLogGroupArgs) ToDefaultLogGroupPtrOutputWithContext(ctx context.Context) DefaultLogGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DefaultLogGroupOutput).ToDefaultLogGroupPtrOutputWithContext(ctx)
+}
+
+// DefaultLogGroupPtrInput is an input type that accepts DefaultLogGroupArgs, DefaultLogGroupPtr and DefaultLogGroupPtrOutput values.
+// You can construct a concrete instance of `DefaultLogGroupPtrInput` via:
+//
+//          DefaultLogGroupArgs{...}
+//
+//  or:
+//
+//          nil
+type DefaultLogGroupPtrInput interface {
+	pulumi.Input
+
+	ToDefaultLogGroupPtrOutput() DefaultLogGroupPtrOutput
+	ToDefaultLogGroupPtrOutputWithContext(context.Context) DefaultLogGroupPtrOutput
+}
+
+type defaultLogGroupPtrType DefaultLogGroupArgs
+
+func DefaultLogGroupPtr(v *DefaultLogGroupArgs) DefaultLogGroupPtrInput {
+	return (*defaultLogGroupPtrType)(v)
+}
+
+func (*defaultLogGroupPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**DefaultLogGroup)(nil)).Elem()
+}
+
+func (i *defaultLogGroupPtrType) ToDefaultLogGroupPtrOutput() DefaultLogGroupPtrOutput {
+	return i.ToDefaultLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (i *defaultLogGroupPtrType) ToDefaultLogGroupPtrOutputWithContext(ctx context.Context) DefaultLogGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DefaultLogGroupPtrOutput)
+}
+
+// Log group with default setup unless explicitly skipped.
+type DefaultLogGroupOutput struct{ *pulumi.OutputState }
+
+func (DefaultLogGroupOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*DefaultLogGroup)(nil)).Elem()
+}
+
+func (o DefaultLogGroupOutput) ToDefaultLogGroupOutput() DefaultLogGroupOutput {
+	return o
+}
+
+func (o DefaultLogGroupOutput) ToDefaultLogGroupOutputWithContext(ctx context.Context) DefaultLogGroupOutput {
+	return o
+}
+
+func (o DefaultLogGroupOutput) ToDefaultLogGroupPtrOutput() DefaultLogGroupPtrOutput {
+	return o.ToDefaultLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (o DefaultLogGroupOutput) ToDefaultLogGroupPtrOutputWithContext(ctx context.Context) DefaultLogGroupPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v DefaultLogGroup) *DefaultLogGroup {
+		return &v
+	}).(DefaultLogGroupPtrOutput)
+}
+
+// Arguments to use instead of the default values during creation.
+func (o DefaultLogGroupOutput) Args() LogGroupPtrOutput {
+	return o.ApplyT(func(v DefaultLogGroup) *LogGroup { return v.Args }).(LogGroupPtrOutput)
+}
+
+// Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+func (o DefaultLogGroupOutput) Existing() ExistingLogGroupPtrOutput {
+	return o.ApplyT(func(v DefaultLogGroup) *ExistingLogGroup { return v.Existing }).(ExistingLogGroupPtrOutput)
+}
+
+// Skip creation of the log group.
+func (o DefaultLogGroupOutput) Skip() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v DefaultLogGroup) *bool { return v.Skip }).(pulumi.BoolPtrOutput)
+}
+
+type DefaultLogGroupPtrOutput struct{ *pulumi.OutputState }
+
+func (DefaultLogGroupPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**DefaultLogGroup)(nil)).Elem()
+}
+
+func (o DefaultLogGroupPtrOutput) ToDefaultLogGroupPtrOutput() DefaultLogGroupPtrOutput {
+	return o
+}
+
+func (o DefaultLogGroupPtrOutput) ToDefaultLogGroupPtrOutputWithContext(ctx context.Context) DefaultLogGroupPtrOutput {
+	return o
+}
+
+func (o DefaultLogGroupPtrOutput) Elem() DefaultLogGroupOutput {
+	return o.ApplyT(func(v *DefaultLogGroup) DefaultLogGroup {
+		if v != nil {
+			return *v
+		}
+		var ret DefaultLogGroup
+		return ret
+	}).(DefaultLogGroupOutput)
+}
+
+// Arguments to use instead of the default values during creation.
+func (o DefaultLogGroupPtrOutput) Args() LogGroupPtrOutput {
+	return o.ApplyT(func(v *DefaultLogGroup) *LogGroup {
+		if v == nil {
+			return nil
+		}
+		return v.Args
+	}).(LogGroupPtrOutput)
+}
+
+// Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+func (o DefaultLogGroupPtrOutput) Existing() ExistingLogGroupPtrOutput {
+	return o.ApplyT(func(v *DefaultLogGroup) *ExistingLogGroup {
+		if v == nil {
+			return nil
+		}
+		return v.Existing
+	}).(ExistingLogGroupPtrOutput)
+}
+
+// Skip creation of the log group.
+func (o DefaultLogGroupPtrOutput) Skip() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *DefaultLogGroup) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.Skip
+	}).(pulumi.BoolPtrOutput)
+}
+
 // Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
 type DefaultRoleWithPolicy struct {
 	// Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
@@ -86,6 +741,174 @@ type DefaultRoleWithPolicy struct {
 	RoleArn *string `pulumi:"roleArn"`
 	// Skips creation of the role if set to `true`.
 	Skip *bool `pulumi:"skip"`
+}
+
+// DefaultRoleWithPolicyInput is an input type that accepts DefaultRoleWithPolicyArgs and DefaultRoleWithPolicyOutput values.
+// You can construct a concrete instance of `DefaultRoleWithPolicyInput` via:
+//
+//          DefaultRoleWithPolicyArgs{...}
+type DefaultRoleWithPolicyInput interface {
+	pulumi.Input
+
+	ToDefaultRoleWithPolicyOutput() DefaultRoleWithPolicyOutput
+	ToDefaultRoleWithPolicyOutputWithContext(context.Context) DefaultRoleWithPolicyOutput
+}
+
+// Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
+type DefaultRoleWithPolicyArgs struct {
+	// Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
+	Args *RoleWithPolicyArgs `pulumi:"args"`
+	// ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
+	RoleArn pulumi.StringPtrInput `pulumi:"roleArn"`
+	// Skips creation of the role if set to `true`.
+	Skip *bool `pulumi:"skip"`
+}
+
+func (DefaultRoleWithPolicyArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*DefaultRoleWithPolicy)(nil)).Elem()
+}
+
+func (i DefaultRoleWithPolicyArgs) ToDefaultRoleWithPolicyOutput() DefaultRoleWithPolicyOutput {
+	return i.ToDefaultRoleWithPolicyOutputWithContext(context.Background())
+}
+
+func (i DefaultRoleWithPolicyArgs) ToDefaultRoleWithPolicyOutputWithContext(ctx context.Context) DefaultRoleWithPolicyOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DefaultRoleWithPolicyOutput)
+}
+
+func (i DefaultRoleWithPolicyArgs) ToDefaultRoleWithPolicyPtrOutput() DefaultRoleWithPolicyPtrOutput {
+	return i.ToDefaultRoleWithPolicyPtrOutputWithContext(context.Background())
+}
+
+func (i DefaultRoleWithPolicyArgs) ToDefaultRoleWithPolicyPtrOutputWithContext(ctx context.Context) DefaultRoleWithPolicyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DefaultRoleWithPolicyOutput).ToDefaultRoleWithPolicyPtrOutputWithContext(ctx)
+}
+
+// DefaultRoleWithPolicyPtrInput is an input type that accepts DefaultRoleWithPolicyArgs, DefaultRoleWithPolicyPtr and DefaultRoleWithPolicyPtrOutput values.
+// You can construct a concrete instance of `DefaultRoleWithPolicyPtrInput` via:
+//
+//          DefaultRoleWithPolicyArgs{...}
+//
+//  or:
+//
+//          nil
+type DefaultRoleWithPolicyPtrInput interface {
+	pulumi.Input
+
+	ToDefaultRoleWithPolicyPtrOutput() DefaultRoleWithPolicyPtrOutput
+	ToDefaultRoleWithPolicyPtrOutputWithContext(context.Context) DefaultRoleWithPolicyPtrOutput
+}
+
+type defaultRoleWithPolicyPtrType DefaultRoleWithPolicyArgs
+
+func DefaultRoleWithPolicyPtr(v *DefaultRoleWithPolicyArgs) DefaultRoleWithPolicyPtrInput {
+	return (*defaultRoleWithPolicyPtrType)(v)
+}
+
+func (*defaultRoleWithPolicyPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**DefaultRoleWithPolicy)(nil)).Elem()
+}
+
+func (i *defaultRoleWithPolicyPtrType) ToDefaultRoleWithPolicyPtrOutput() DefaultRoleWithPolicyPtrOutput {
+	return i.ToDefaultRoleWithPolicyPtrOutputWithContext(context.Background())
+}
+
+func (i *defaultRoleWithPolicyPtrType) ToDefaultRoleWithPolicyPtrOutputWithContext(ctx context.Context) DefaultRoleWithPolicyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DefaultRoleWithPolicyPtrOutput)
+}
+
+// Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
+type DefaultRoleWithPolicyOutput struct{ *pulumi.OutputState }
+
+func (DefaultRoleWithPolicyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*DefaultRoleWithPolicy)(nil)).Elem()
+}
+
+func (o DefaultRoleWithPolicyOutput) ToDefaultRoleWithPolicyOutput() DefaultRoleWithPolicyOutput {
+	return o
+}
+
+func (o DefaultRoleWithPolicyOutput) ToDefaultRoleWithPolicyOutputWithContext(ctx context.Context) DefaultRoleWithPolicyOutput {
+	return o
+}
+
+func (o DefaultRoleWithPolicyOutput) ToDefaultRoleWithPolicyPtrOutput() DefaultRoleWithPolicyPtrOutput {
+	return o.ToDefaultRoleWithPolicyPtrOutputWithContext(context.Background())
+}
+
+func (o DefaultRoleWithPolicyOutput) ToDefaultRoleWithPolicyPtrOutputWithContext(ctx context.Context) DefaultRoleWithPolicyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v DefaultRoleWithPolicy) *DefaultRoleWithPolicy {
+		return &v
+	}).(DefaultRoleWithPolicyPtrOutput)
+}
+
+// Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
+func (o DefaultRoleWithPolicyOutput) Args() RoleWithPolicyPtrOutput {
+	return o.ApplyT(func(v DefaultRoleWithPolicy) *RoleWithPolicy { return v.Args }).(RoleWithPolicyPtrOutput)
+}
+
+// ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
+func (o DefaultRoleWithPolicyOutput) RoleArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v DefaultRoleWithPolicy) *string { return v.RoleArn }).(pulumi.StringPtrOutput)
+}
+
+// Skips creation of the role if set to `true`.
+func (o DefaultRoleWithPolicyOutput) Skip() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v DefaultRoleWithPolicy) *bool { return v.Skip }).(pulumi.BoolPtrOutput)
+}
+
+type DefaultRoleWithPolicyPtrOutput struct{ *pulumi.OutputState }
+
+func (DefaultRoleWithPolicyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**DefaultRoleWithPolicy)(nil)).Elem()
+}
+
+func (o DefaultRoleWithPolicyPtrOutput) ToDefaultRoleWithPolicyPtrOutput() DefaultRoleWithPolicyPtrOutput {
+	return o
+}
+
+func (o DefaultRoleWithPolicyPtrOutput) ToDefaultRoleWithPolicyPtrOutputWithContext(ctx context.Context) DefaultRoleWithPolicyPtrOutput {
+	return o
+}
+
+func (o DefaultRoleWithPolicyPtrOutput) Elem() DefaultRoleWithPolicyOutput {
+	return o.ApplyT(func(v *DefaultRoleWithPolicy) DefaultRoleWithPolicy {
+		if v != nil {
+			return *v
+		}
+		var ret DefaultRoleWithPolicy
+		return ret
+	}).(DefaultRoleWithPolicyOutput)
+}
+
+// Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
+func (o DefaultRoleWithPolicyPtrOutput) Args() RoleWithPolicyPtrOutput {
+	return o.ApplyT(func(v *DefaultRoleWithPolicy) *RoleWithPolicy {
+		if v == nil {
+			return nil
+		}
+		return v.Args
+	}).(RoleWithPolicyPtrOutput)
+}
+
+// ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
+func (o DefaultRoleWithPolicyPtrOutput) RoleArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *DefaultRoleWithPolicy) *string {
+		if v == nil {
+			return nil
+		}
+		return v.RoleArn
+	}).(pulumi.StringPtrOutput)
+}
+
+// Skips creation of the role if set to `true`.
+func (o DefaultRoleWithPolicyPtrOutput) Skip() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *DefaultRoleWithPolicy) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.Skip
+	}).(pulumi.BoolPtrOutput)
 }
 
 // Security Group with default setup unless explicitly skipped or an existing security group id provided.
@@ -109,12 +932,341 @@ func (val *DefaultSecurityGroup) Defaults() *DefaultSecurityGroup {
 	return &tmp
 }
 
+// DefaultSecurityGroupInput is an input type that accepts DefaultSecurityGroupArgs and DefaultSecurityGroupOutput values.
+// You can construct a concrete instance of `DefaultSecurityGroupInput` via:
+//
+//          DefaultSecurityGroupArgs{...}
+type DefaultSecurityGroupInput interface {
+	pulumi.Input
+
+	ToDefaultSecurityGroupOutput() DefaultSecurityGroupOutput
+	ToDefaultSecurityGroupOutputWithContext(context.Context) DefaultSecurityGroupOutput
+}
+
+// Security Group with default setup unless explicitly skipped or an existing security group id provided.
+type DefaultSecurityGroupArgs struct {
+	// Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
+	Args *SecurityGroupArgs `pulumi:"args"`
+	// Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
+	SecurityGroupId pulumi.StringPtrInput `pulumi:"securityGroupId"`
+	// Skips creation of the security group if set to `true`.
+	Skip *bool `pulumi:"skip"`
+}
+
+// Defaults sets the appropriate defaults for DefaultSecurityGroupArgs
+func (val *DefaultSecurityGroupArgs) Defaults() *DefaultSecurityGroupArgs {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	tmp.Args = tmp.Args.Defaults()
+
+	return &tmp
+}
+func (DefaultSecurityGroupArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*DefaultSecurityGroup)(nil)).Elem()
+}
+
+func (i DefaultSecurityGroupArgs) ToDefaultSecurityGroupOutput() DefaultSecurityGroupOutput {
+	return i.ToDefaultSecurityGroupOutputWithContext(context.Background())
+}
+
+func (i DefaultSecurityGroupArgs) ToDefaultSecurityGroupOutputWithContext(ctx context.Context) DefaultSecurityGroupOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DefaultSecurityGroupOutput)
+}
+
+func (i DefaultSecurityGroupArgs) ToDefaultSecurityGroupPtrOutput() DefaultSecurityGroupPtrOutput {
+	return i.ToDefaultSecurityGroupPtrOutputWithContext(context.Background())
+}
+
+func (i DefaultSecurityGroupArgs) ToDefaultSecurityGroupPtrOutputWithContext(ctx context.Context) DefaultSecurityGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DefaultSecurityGroupOutput).ToDefaultSecurityGroupPtrOutputWithContext(ctx)
+}
+
+// DefaultSecurityGroupPtrInput is an input type that accepts DefaultSecurityGroupArgs, DefaultSecurityGroupPtr and DefaultSecurityGroupPtrOutput values.
+// You can construct a concrete instance of `DefaultSecurityGroupPtrInput` via:
+//
+//          DefaultSecurityGroupArgs{...}
+//
+//  or:
+//
+//          nil
+type DefaultSecurityGroupPtrInput interface {
+	pulumi.Input
+
+	ToDefaultSecurityGroupPtrOutput() DefaultSecurityGroupPtrOutput
+	ToDefaultSecurityGroupPtrOutputWithContext(context.Context) DefaultSecurityGroupPtrOutput
+}
+
+type defaultSecurityGroupPtrType DefaultSecurityGroupArgs
+
+func DefaultSecurityGroupPtr(v *DefaultSecurityGroupArgs) DefaultSecurityGroupPtrInput {
+	return (*defaultSecurityGroupPtrType)(v)
+}
+
+func (*defaultSecurityGroupPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**DefaultSecurityGroup)(nil)).Elem()
+}
+
+func (i *defaultSecurityGroupPtrType) ToDefaultSecurityGroupPtrOutput() DefaultSecurityGroupPtrOutput {
+	return i.ToDefaultSecurityGroupPtrOutputWithContext(context.Background())
+}
+
+func (i *defaultSecurityGroupPtrType) ToDefaultSecurityGroupPtrOutputWithContext(ctx context.Context) DefaultSecurityGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DefaultSecurityGroupPtrOutput)
+}
+
+// Security Group with default setup unless explicitly skipped or an existing security group id provided.
+type DefaultSecurityGroupOutput struct{ *pulumi.OutputState }
+
+func (DefaultSecurityGroupOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*DefaultSecurityGroup)(nil)).Elem()
+}
+
+func (o DefaultSecurityGroupOutput) ToDefaultSecurityGroupOutput() DefaultSecurityGroupOutput {
+	return o
+}
+
+func (o DefaultSecurityGroupOutput) ToDefaultSecurityGroupOutputWithContext(ctx context.Context) DefaultSecurityGroupOutput {
+	return o
+}
+
+func (o DefaultSecurityGroupOutput) ToDefaultSecurityGroupPtrOutput() DefaultSecurityGroupPtrOutput {
+	return o.ToDefaultSecurityGroupPtrOutputWithContext(context.Background())
+}
+
+func (o DefaultSecurityGroupOutput) ToDefaultSecurityGroupPtrOutputWithContext(ctx context.Context) DefaultSecurityGroupPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v DefaultSecurityGroup) *DefaultSecurityGroup {
+		return &v
+	}).(DefaultSecurityGroupPtrOutput)
+}
+
+// Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
+func (o DefaultSecurityGroupOutput) Args() SecurityGroupPtrOutput {
+	return o.ApplyT(func(v DefaultSecurityGroup) *SecurityGroup { return v.Args }).(SecurityGroupPtrOutput)
+}
+
+// Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
+func (o DefaultSecurityGroupOutput) SecurityGroupId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v DefaultSecurityGroup) *string { return v.SecurityGroupId }).(pulumi.StringPtrOutput)
+}
+
+// Skips creation of the security group if set to `true`.
+func (o DefaultSecurityGroupOutput) Skip() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v DefaultSecurityGroup) *bool { return v.Skip }).(pulumi.BoolPtrOutput)
+}
+
+type DefaultSecurityGroupPtrOutput struct{ *pulumi.OutputState }
+
+func (DefaultSecurityGroupPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**DefaultSecurityGroup)(nil)).Elem()
+}
+
+func (o DefaultSecurityGroupPtrOutput) ToDefaultSecurityGroupPtrOutput() DefaultSecurityGroupPtrOutput {
+	return o
+}
+
+func (o DefaultSecurityGroupPtrOutput) ToDefaultSecurityGroupPtrOutputWithContext(ctx context.Context) DefaultSecurityGroupPtrOutput {
+	return o
+}
+
+func (o DefaultSecurityGroupPtrOutput) Elem() DefaultSecurityGroupOutput {
+	return o.ApplyT(func(v *DefaultSecurityGroup) DefaultSecurityGroup {
+		if v != nil {
+			return *v
+		}
+		var ret DefaultSecurityGroup
+		return ret
+	}).(DefaultSecurityGroupOutput)
+}
+
+// Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
+func (o DefaultSecurityGroupPtrOutput) Args() SecurityGroupPtrOutput {
+	return o.ApplyT(func(v *DefaultSecurityGroup) *SecurityGroup {
+		if v == nil {
+			return nil
+		}
+		return v.Args
+	}).(SecurityGroupPtrOutput)
+}
+
+// Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
+func (o DefaultSecurityGroupPtrOutput) SecurityGroupId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *DefaultSecurityGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.SecurityGroupId
+	}).(pulumi.StringPtrOutput)
+}
+
+// Skips creation of the security group if set to `true`.
+func (o DefaultSecurityGroupPtrOutput) Skip() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *DefaultSecurityGroup) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.Skip
+	}).(pulumi.BoolPtrOutput)
+}
+
 // Reference to an existing bucket.
 type ExistingBucket struct {
 	// Arn of the bucket. Only one of [arn] or [name] can be specified.
 	Arn *string `pulumi:"arn"`
 	// Name of the bucket. Only one of [arn] or [name] can be specified.
 	Name *string `pulumi:"name"`
+}
+
+// ExistingBucketInput is an input type that accepts ExistingBucketArgs and ExistingBucketOutput values.
+// You can construct a concrete instance of `ExistingBucketInput` via:
+//
+//          ExistingBucketArgs{...}
+type ExistingBucketInput interface {
+	pulumi.Input
+
+	ToExistingBucketOutput() ExistingBucketOutput
+	ToExistingBucketOutputWithContext(context.Context) ExistingBucketOutput
+}
+
+// Reference to an existing bucket.
+type ExistingBucketArgs struct {
+	// Arn of the bucket. Only one of [arn] or [name] can be specified.
+	Arn pulumi.StringPtrInput `pulumi:"arn"`
+	// Name of the bucket. Only one of [arn] or [name] can be specified.
+	Name pulumi.StringPtrInput `pulumi:"name"`
+}
+
+func (ExistingBucketArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ExistingBucket)(nil)).Elem()
+}
+
+func (i ExistingBucketArgs) ToExistingBucketOutput() ExistingBucketOutput {
+	return i.ToExistingBucketOutputWithContext(context.Background())
+}
+
+func (i ExistingBucketArgs) ToExistingBucketOutputWithContext(ctx context.Context) ExistingBucketOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ExistingBucketOutput)
+}
+
+func (i ExistingBucketArgs) ToExistingBucketPtrOutput() ExistingBucketPtrOutput {
+	return i.ToExistingBucketPtrOutputWithContext(context.Background())
+}
+
+func (i ExistingBucketArgs) ToExistingBucketPtrOutputWithContext(ctx context.Context) ExistingBucketPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ExistingBucketOutput).ToExistingBucketPtrOutputWithContext(ctx)
+}
+
+// ExistingBucketPtrInput is an input type that accepts ExistingBucketArgs, ExistingBucketPtr and ExistingBucketPtrOutput values.
+// You can construct a concrete instance of `ExistingBucketPtrInput` via:
+//
+//          ExistingBucketArgs{...}
+//
+//  or:
+//
+//          nil
+type ExistingBucketPtrInput interface {
+	pulumi.Input
+
+	ToExistingBucketPtrOutput() ExistingBucketPtrOutput
+	ToExistingBucketPtrOutputWithContext(context.Context) ExistingBucketPtrOutput
+}
+
+type existingBucketPtrType ExistingBucketArgs
+
+func ExistingBucketPtr(v *ExistingBucketArgs) ExistingBucketPtrInput {
+	return (*existingBucketPtrType)(v)
+}
+
+func (*existingBucketPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**ExistingBucket)(nil)).Elem()
+}
+
+func (i *existingBucketPtrType) ToExistingBucketPtrOutput() ExistingBucketPtrOutput {
+	return i.ToExistingBucketPtrOutputWithContext(context.Background())
+}
+
+func (i *existingBucketPtrType) ToExistingBucketPtrOutputWithContext(ctx context.Context) ExistingBucketPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ExistingBucketPtrOutput)
+}
+
+// Reference to an existing bucket.
+type ExistingBucketOutput struct{ *pulumi.OutputState }
+
+func (ExistingBucketOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ExistingBucket)(nil)).Elem()
+}
+
+func (o ExistingBucketOutput) ToExistingBucketOutput() ExistingBucketOutput {
+	return o
+}
+
+func (o ExistingBucketOutput) ToExistingBucketOutputWithContext(ctx context.Context) ExistingBucketOutput {
+	return o
+}
+
+func (o ExistingBucketOutput) ToExistingBucketPtrOutput() ExistingBucketPtrOutput {
+	return o.ToExistingBucketPtrOutputWithContext(context.Background())
+}
+
+func (o ExistingBucketOutput) ToExistingBucketPtrOutputWithContext(ctx context.Context) ExistingBucketPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v ExistingBucket) *ExistingBucket {
+		return &v
+	}).(ExistingBucketPtrOutput)
+}
+
+// Arn of the bucket. Only one of [arn] or [name] can be specified.
+func (o ExistingBucketOutput) Arn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ExistingBucket) *string { return v.Arn }).(pulumi.StringPtrOutput)
+}
+
+// Name of the bucket. Only one of [arn] or [name] can be specified.
+func (o ExistingBucketOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ExistingBucket) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+type ExistingBucketPtrOutput struct{ *pulumi.OutputState }
+
+func (ExistingBucketPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**ExistingBucket)(nil)).Elem()
+}
+
+func (o ExistingBucketPtrOutput) ToExistingBucketPtrOutput() ExistingBucketPtrOutput {
+	return o
+}
+
+func (o ExistingBucketPtrOutput) ToExistingBucketPtrOutputWithContext(ctx context.Context) ExistingBucketPtrOutput {
+	return o
+}
+
+func (o ExistingBucketPtrOutput) Elem() ExistingBucketOutput {
+	return o.ApplyT(func(v *ExistingBucket) ExistingBucket {
+		if v != nil {
+			return *v
+		}
+		var ret ExistingBucket
+		return ret
+	}).(ExistingBucketOutput)
+}
+
+// Arn of the bucket. Only one of [arn] or [name] can be specified.
+func (o ExistingBucketPtrOutput) Arn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *ExistingBucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Arn
+	}).(pulumi.StringPtrOutput)
+}
+
+// Name of the bucket. Only one of [arn] or [name] can be specified.
+func (o ExistingBucketPtrOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *ExistingBucket) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Name
+	}).(pulumi.StringPtrOutput)
 }
 
 // Reference to an existing log group.
@@ -125,6 +1277,174 @@ type ExistingLogGroup struct {
 	Name *string `pulumi:"name"`
 	// Region of the log group. If not specified, the provider region will be used.
 	Region *string `pulumi:"region"`
+}
+
+// ExistingLogGroupInput is an input type that accepts ExistingLogGroupArgs and ExistingLogGroupOutput values.
+// You can construct a concrete instance of `ExistingLogGroupInput` via:
+//
+//          ExistingLogGroupArgs{...}
+type ExistingLogGroupInput interface {
+	pulumi.Input
+
+	ToExistingLogGroupOutput() ExistingLogGroupOutput
+	ToExistingLogGroupOutputWithContext(context.Context) ExistingLogGroupOutput
+}
+
+// Reference to an existing log group.
+type ExistingLogGroupArgs struct {
+	// Arn of the log group. Only one of [arn] or [name] can be specified.
+	Arn pulumi.StringPtrInput `pulumi:"arn"`
+	// Name of the log group. Only one of [arn] or [name] can be specified.
+	Name pulumi.StringPtrInput `pulumi:"name"`
+	// Region of the log group. If not specified, the provider region will be used.
+	Region pulumi.StringPtrInput `pulumi:"region"`
+}
+
+func (ExistingLogGroupArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*ExistingLogGroup)(nil)).Elem()
+}
+
+func (i ExistingLogGroupArgs) ToExistingLogGroupOutput() ExistingLogGroupOutput {
+	return i.ToExistingLogGroupOutputWithContext(context.Background())
+}
+
+func (i ExistingLogGroupArgs) ToExistingLogGroupOutputWithContext(ctx context.Context) ExistingLogGroupOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ExistingLogGroupOutput)
+}
+
+func (i ExistingLogGroupArgs) ToExistingLogGroupPtrOutput() ExistingLogGroupPtrOutput {
+	return i.ToExistingLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (i ExistingLogGroupArgs) ToExistingLogGroupPtrOutputWithContext(ctx context.Context) ExistingLogGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ExistingLogGroupOutput).ToExistingLogGroupPtrOutputWithContext(ctx)
+}
+
+// ExistingLogGroupPtrInput is an input type that accepts ExistingLogGroupArgs, ExistingLogGroupPtr and ExistingLogGroupPtrOutput values.
+// You can construct a concrete instance of `ExistingLogGroupPtrInput` via:
+//
+//          ExistingLogGroupArgs{...}
+//
+//  or:
+//
+//          nil
+type ExistingLogGroupPtrInput interface {
+	pulumi.Input
+
+	ToExistingLogGroupPtrOutput() ExistingLogGroupPtrOutput
+	ToExistingLogGroupPtrOutputWithContext(context.Context) ExistingLogGroupPtrOutput
+}
+
+type existingLogGroupPtrType ExistingLogGroupArgs
+
+func ExistingLogGroupPtr(v *ExistingLogGroupArgs) ExistingLogGroupPtrInput {
+	return (*existingLogGroupPtrType)(v)
+}
+
+func (*existingLogGroupPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**ExistingLogGroup)(nil)).Elem()
+}
+
+func (i *existingLogGroupPtrType) ToExistingLogGroupPtrOutput() ExistingLogGroupPtrOutput {
+	return i.ToExistingLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (i *existingLogGroupPtrType) ToExistingLogGroupPtrOutputWithContext(ctx context.Context) ExistingLogGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ExistingLogGroupPtrOutput)
+}
+
+// Reference to an existing log group.
+type ExistingLogGroupOutput struct{ *pulumi.OutputState }
+
+func (ExistingLogGroupOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*ExistingLogGroup)(nil)).Elem()
+}
+
+func (o ExistingLogGroupOutput) ToExistingLogGroupOutput() ExistingLogGroupOutput {
+	return o
+}
+
+func (o ExistingLogGroupOutput) ToExistingLogGroupOutputWithContext(ctx context.Context) ExistingLogGroupOutput {
+	return o
+}
+
+func (o ExistingLogGroupOutput) ToExistingLogGroupPtrOutput() ExistingLogGroupPtrOutput {
+	return o.ToExistingLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (o ExistingLogGroupOutput) ToExistingLogGroupPtrOutputWithContext(ctx context.Context) ExistingLogGroupPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v ExistingLogGroup) *ExistingLogGroup {
+		return &v
+	}).(ExistingLogGroupPtrOutput)
+}
+
+// Arn of the log group. Only one of [arn] or [name] can be specified.
+func (o ExistingLogGroupOutput) Arn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ExistingLogGroup) *string { return v.Arn }).(pulumi.StringPtrOutput)
+}
+
+// Name of the log group. Only one of [arn] or [name] can be specified.
+func (o ExistingLogGroupOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ExistingLogGroup) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// Region of the log group. If not specified, the provider region will be used.
+func (o ExistingLogGroupOutput) Region() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v ExistingLogGroup) *string { return v.Region }).(pulumi.StringPtrOutput)
+}
+
+type ExistingLogGroupPtrOutput struct{ *pulumi.OutputState }
+
+func (ExistingLogGroupPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**ExistingLogGroup)(nil)).Elem()
+}
+
+func (o ExistingLogGroupPtrOutput) ToExistingLogGroupPtrOutput() ExistingLogGroupPtrOutput {
+	return o
+}
+
+func (o ExistingLogGroupPtrOutput) ToExistingLogGroupPtrOutputWithContext(ctx context.Context) ExistingLogGroupPtrOutput {
+	return o
+}
+
+func (o ExistingLogGroupPtrOutput) Elem() ExistingLogGroupOutput {
+	return o.ApplyT(func(v *ExistingLogGroup) ExistingLogGroup {
+		if v != nil {
+			return *v
+		}
+		var ret ExistingLogGroup
+		return ret
+	}).(ExistingLogGroupOutput)
+}
+
+// Arn of the log group. Only one of [arn] or [name] can be specified.
+func (o ExistingLogGroupPtrOutput) Arn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *ExistingLogGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Arn
+	}).(pulumi.StringPtrOutput)
+}
+
+// Name of the log group. Only one of [arn] or [name] can be specified.
+func (o ExistingLogGroupPtrOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *ExistingLogGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Name
+	}).(pulumi.StringPtrOutput)
+}
+
+// Region of the log group. If not specified, the provider region will be used.
+func (o ExistingLogGroupPtrOutput) Region() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *ExistingLogGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Region
+	}).(pulumi.StringPtrOutput)
 }
 
 // The set of arguments for constructing a LogGroup resource.
@@ -145,6 +1465,220 @@ type LogGroup struct {
 	Tags map[string]string `pulumi:"tags"`
 }
 
+// LogGroupInput is an input type that accepts LogGroupArgs and LogGroupOutput values.
+// You can construct a concrete instance of `LogGroupInput` via:
+//
+//          LogGroupArgs{...}
+type LogGroupInput interface {
+	pulumi.Input
+
+	ToLogGroupOutput() LogGroupOutput
+	ToLogGroupOutputWithContext(context.Context) LogGroupOutput
+}
+
+// The set of arguments for constructing a LogGroup resource.
+type LogGroupArgs struct {
+	// The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
+	// AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
+	// permissions for the CMK whenever the encrypted data is requested.
+	KmsKeyId pulumi.StringPtrInput `pulumi:"kmsKeyId"`
+	// The name of the log group. If omitted, this provider will assign a random, unique name.
+	Name pulumi.StringPtrInput `pulumi:"name"`
+	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
+	// Specifies the number of days
+	// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.
+	// If you select 0, the events in the log group are always retained and never expire.
+	RetentionInDays pulumi.IntPtrInput `pulumi:"retentionInDays"`
+	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	Tags pulumi.StringMapInput `pulumi:"tags"`
+}
+
+func (LogGroupArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*LogGroup)(nil)).Elem()
+}
+
+func (i LogGroupArgs) ToLogGroupOutput() LogGroupOutput {
+	return i.ToLogGroupOutputWithContext(context.Background())
+}
+
+func (i LogGroupArgs) ToLogGroupOutputWithContext(ctx context.Context) LogGroupOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LogGroupOutput)
+}
+
+func (i LogGroupArgs) ToLogGroupPtrOutput() LogGroupPtrOutput {
+	return i.ToLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (i LogGroupArgs) ToLogGroupPtrOutputWithContext(ctx context.Context) LogGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LogGroupOutput).ToLogGroupPtrOutputWithContext(ctx)
+}
+
+// LogGroupPtrInput is an input type that accepts LogGroupArgs, LogGroupPtr and LogGroupPtrOutput values.
+// You can construct a concrete instance of `LogGroupPtrInput` via:
+//
+//          LogGroupArgs{...}
+//
+//  or:
+//
+//          nil
+type LogGroupPtrInput interface {
+	pulumi.Input
+
+	ToLogGroupPtrOutput() LogGroupPtrOutput
+	ToLogGroupPtrOutputWithContext(context.Context) LogGroupPtrOutput
+}
+
+type logGroupPtrType LogGroupArgs
+
+func LogGroupPtr(v *LogGroupArgs) LogGroupPtrInput {
+	return (*logGroupPtrType)(v)
+}
+
+func (*logGroupPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**LogGroup)(nil)).Elem()
+}
+
+func (i *logGroupPtrType) ToLogGroupPtrOutput() LogGroupPtrOutput {
+	return i.ToLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (i *logGroupPtrType) ToLogGroupPtrOutputWithContext(ctx context.Context) LogGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(LogGroupPtrOutput)
+}
+
+// The set of arguments for constructing a LogGroup resource.
+type LogGroupOutput struct{ *pulumi.OutputState }
+
+func (LogGroupOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*LogGroup)(nil)).Elem()
+}
+
+func (o LogGroupOutput) ToLogGroupOutput() LogGroupOutput {
+	return o
+}
+
+func (o LogGroupOutput) ToLogGroupOutputWithContext(ctx context.Context) LogGroupOutput {
+	return o
+}
+
+func (o LogGroupOutput) ToLogGroupPtrOutput() LogGroupPtrOutput {
+	return o.ToLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (o LogGroupOutput) ToLogGroupPtrOutputWithContext(ctx context.Context) LogGroupPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v LogGroup) *LogGroup {
+		return &v
+	}).(LogGroupPtrOutput)
+}
+
+// The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
+// AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
+// permissions for the CMK whenever the encrypted data is requested.
+func (o LogGroupOutput) KmsKeyId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v LogGroup) *string { return v.KmsKeyId }).(pulumi.StringPtrOutput)
+}
+
+// The name of the log group. If omitted, this provider will assign a random, unique name.
+func (o LogGroupOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v LogGroup) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+func (o LogGroupOutput) NamePrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v LogGroup) *string { return v.NamePrefix }).(pulumi.StringPtrOutput)
+}
+
+// Specifies the number of days
+// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.
+// If you select 0, the events in the log group are always retained and never expire.
+func (o LogGroupOutput) RetentionInDays() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v LogGroup) *int { return v.RetentionInDays }).(pulumi.IntPtrOutput)
+}
+
+// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o LogGroupOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v LogGroup) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+type LogGroupPtrOutput struct{ *pulumi.OutputState }
+
+func (LogGroupPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**LogGroup)(nil)).Elem()
+}
+
+func (o LogGroupPtrOutput) ToLogGroupPtrOutput() LogGroupPtrOutput {
+	return o
+}
+
+func (o LogGroupPtrOutput) ToLogGroupPtrOutputWithContext(ctx context.Context) LogGroupPtrOutput {
+	return o
+}
+
+func (o LogGroupPtrOutput) Elem() LogGroupOutput {
+	return o.ApplyT(func(v *LogGroup) LogGroup {
+		if v != nil {
+			return *v
+		}
+		var ret LogGroup
+		return ret
+	}).(LogGroupOutput)
+}
+
+// The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
+// AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
+// permissions for the CMK whenever the encrypted data is requested.
+func (o LogGroupPtrOutput) KmsKeyId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *LogGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.KmsKeyId
+	}).(pulumi.StringPtrOutput)
+}
+
+// The name of the log group. If omitted, this provider will assign a random, unique name.
+func (o LogGroupPtrOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *LogGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Name
+	}).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+func (o LogGroupPtrOutput) NamePrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *LogGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.NamePrefix
+	}).(pulumi.StringPtrOutput)
+}
+
+// Specifies the number of days
+// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.
+// If you select 0, the events in the log group are always retained and never expire.
+func (o LogGroupPtrOutput) RetentionInDays() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *LogGroup) *int {
+		if v == nil {
+			return nil
+		}
+		return v.RetentionInDays
+	}).(pulumi.IntPtrOutput)
+}
+
+// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o LogGroupPtrOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *LogGroup) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.Tags
+	}).(pulumi.StringMapOutput)
+}
+
 // Log group which is only created if enabled.
 type OptionalLogGroup struct {
 	// Arguments to use instead of the default values during creation.
@@ -155,12 +1689,331 @@ type OptionalLogGroup struct {
 	Existing *ExistingLogGroup `pulumi:"existing"`
 }
 
+// OptionalLogGroupInput is an input type that accepts OptionalLogGroupArgs and OptionalLogGroupOutput values.
+// You can construct a concrete instance of `OptionalLogGroupInput` via:
+//
+//          OptionalLogGroupArgs{...}
+type OptionalLogGroupInput interface {
+	pulumi.Input
+
+	ToOptionalLogGroupOutput() OptionalLogGroupOutput
+	ToOptionalLogGroupOutputWithContext(context.Context) OptionalLogGroupOutput
+}
+
+// Log group which is only created if enabled.
+type OptionalLogGroupArgs struct {
+	// Arguments to use instead of the default values during creation.
+	Args *LogGroupArgs `pulumi:"args"`
+	// Enable creation of the log group.
+	Enable *bool `pulumi:"enable"`
+	// Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+	Existing *ExistingLogGroupArgs `pulumi:"existing"`
+}
+
+func (OptionalLogGroupArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*OptionalLogGroup)(nil)).Elem()
+}
+
+func (i OptionalLogGroupArgs) ToOptionalLogGroupOutput() OptionalLogGroupOutput {
+	return i.ToOptionalLogGroupOutputWithContext(context.Background())
+}
+
+func (i OptionalLogGroupArgs) ToOptionalLogGroupOutputWithContext(ctx context.Context) OptionalLogGroupOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(OptionalLogGroupOutput)
+}
+
+func (i OptionalLogGroupArgs) ToOptionalLogGroupPtrOutput() OptionalLogGroupPtrOutput {
+	return i.ToOptionalLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (i OptionalLogGroupArgs) ToOptionalLogGroupPtrOutputWithContext(ctx context.Context) OptionalLogGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(OptionalLogGroupOutput).ToOptionalLogGroupPtrOutputWithContext(ctx)
+}
+
+// OptionalLogGroupPtrInput is an input type that accepts OptionalLogGroupArgs, OptionalLogGroupPtr and OptionalLogGroupPtrOutput values.
+// You can construct a concrete instance of `OptionalLogGroupPtrInput` via:
+//
+//          OptionalLogGroupArgs{...}
+//
+//  or:
+//
+//          nil
+type OptionalLogGroupPtrInput interface {
+	pulumi.Input
+
+	ToOptionalLogGroupPtrOutput() OptionalLogGroupPtrOutput
+	ToOptionalLogGroupPtrOutputWithContext(context.Context) OptionalLogGroupPtrOutput
+}
+
+type optionalLogGroupPtrType OptionalLogGroupArgs
+
+func OptionalLogGroupPtr(v *OptionalLogGroupArgs) OptionalLogGroupPtrInput {
+	return (*optionalLogGroupPtrType)(v)
+}
+
+func (*optionalLogGroupPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**OptionalLogGroup)(nil)).Elem()
+}
+
+func (i *optionalLogGroupPtrType) ToOptionalLogGroupPtrOutput() OptionalLogGroupPtrOutput {
+	return i.ToOptionalLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (i *optionalLogGroupPtrType) ToOptionalLogGroupPtrOutputWithContext(ctx context.Context) OptionalLogGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(OptionalLogGroupPtrOutput)
+}
+
+// Log group which is only created if enabled.
+type OptionalLogGroupOutput struct{ *pulumi.OutputState }
+
+func (OptionalLogGroupOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*OptionalLogGroup)(nil)).Elem()
+}
+
+func (o OptionalLogGroupOutput) ToOptionalLogGroupOutput() OptionalLogGroupOutput {
+	return o
+}
+
+func (o OptionalLogGroupOutput) ToOptionalLogGroupOutputWithContext(ctx context.Context) OptionalLogGroupOutput {
+	return o
+}
+
+func (o OptionalLogGroupOutput) ToOptionalLogGroupPtrOutput() OptionalLogGroupPtrOutput {
+	return o.ToOptionalLogGroupPtrOutputWithContext(context.Background())
+}
+
+func (o OptionalLogGroupOutput) ToOptionalLogGroupPtrOutputWithContext(ctx context.Context) OptionalLogGroupPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v OptionalLogGroup) *OptionalLogGroup {
+		return &v
+	}).(OptionalLogGroupPtrOutput)
+}
+
+// Arguments to use instead of the default values during creation.
+func (o OptionalLogGroupOutput) Args() LogGroupPtrOutput {
+	return o.ApplyT(func(v OptionalLogGroup) *LogGroup { return v.Args }).(LogGroupPtrOutput)
+}
+
+// Enable creation of the log group.
+func (o OptionalLogGroupOutput) Enable() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v OptionalLogGroup) *bool { return v.Enable }).(pulumi.BoolPtrOutput)
+}
+
+// Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+func (o OptionalLogGroupOutput) Existing() ExistingLogGroupPtrOutput {
+	return o.ApplyT(func(v OptionalLogGroup) *ExistingLogGroup { return v.Existing }).(ExistingLogGroupPtrOutput)
+}
+
+type OptionalLogGroupPtrOutput struct{ *pulumi.OutputState }
+
+func (OptionalLogGroupPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**OptionalLogGroup)(nil)).Elem()
+}
+
+func (o OptionalLogGroupPtrOutput) ToOptionalLogGroupPtrOutput() OptionalLogGroupPtrOutput {
+	return o
+}
+
+func (o OptionalLogGroupPtrOutput) ToOptionalLogGroupPtrOutputWithContext(ctx context.Context) OptionalLogGroupPtrOutput {
+	return o
+}
+
+func (o OptionalLogGroupPtrOutput) Elem() OptionalLogGroupOutput {
+	return o.ApplyT(func(v *OptionalLogGroup) OptionalLogGroup {
+		if v != nil {
+			return *v
+		}
+		var ret OptionalLogGroup
+		return ret
+	}).(OptionalLogGroupOutput)
+}
+
+// Arguments to use instead of the default values during creation.
+func (o OptionalLogGroupPtrOutput) Args() LogGroupPtrOutput {
+	return o.ApplyT(func(v *OptionalLogGroup) *LogGroup {
+		if v == nil {
+			return nil
+		}
+		return v.Args
+	}).(LogGroupPtrOutput)
+}
+
+// Enable creation of the log group.
+func (o OptionalLogGroupPtrOutput) Enable() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *OptionalLogGroup) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.Enable
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
+func (o OptionalLogGroupPtrOutput) Existing() ExistingLogGroupPtrOutput {
+	return o.ApplyT(func(v *OptionalLogGroup) *ExistingLogGroup {
+		if v == nil {
+			return nil
+		}
+		return v.Existing
+	}).(ExistingLogGroupPtrOutput)
+}
+
 // Bucket with default setup.
 type RequiredBucket struct {
 	// Arguments to use instead of the default values during creation.
 	Args *Bucket `pulumi:"args"`
 	// Identity of an existing bucket to use. Cannot be used in combination with `args`.
 	Existing *ExistingBucket `pulumi:"existing"`
+}
+
+// RequiredBucketInput is an input type that accepts RequiredBucketArgs and RequiredBucketOutput values.
+// You can construct a concrete instance of `RequiredBucketInput` via:
+//
+//          RequiredBucketArgs{...}
+type RequiredBucketInput interface {
+	pulumi.Input
+
+	ToRequiredBucketOutput() RequiredBucketOutput
+	ToRequiredBucketOutputWithContext(context.Context) RequiredBucketOutput
+}
+
+// Bucket with default setup.
+type RequiredBucketArgs struct {
+	// Arguments to use instead of the default values during creation.
+	Args *BucketArgs `pulumi:"args"`
+	// Identity of an existing bucket to use. Cannot be used in combination with `args`.
+	Existing *ExistingBucketArgs `pulumi:"existing"`
+}
+
+func (RequiredBucketArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*RequiredBucket)(nil)).Elem()
+}
+
+func (i RequiredBucketArgs) ToRequiredBucketOutput() RequiredBucketOutput {
+	return i.ToRequiredBucketOutputWithContext(context.Background())
+}
+
+func (i RequiredBucketArgs) ToRequiredBucketOutputWithContext(ctx context.Context) RequiredBucketOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RequiredBucketOutput)
+}
+
+func (i RequiredBucketArgs) ToRequiredBucketPtrOutput() RequiredBucketPtrOutput {
+	return i.ToRequiredBucketPtrOutputWithContext(context.Background())
+}
+
+func (i RequiredBucketArgs) ToRequiredBucketPtrOutputWithContext(ctx context.Context) RequiredBucketPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RequiredBucketOutput).ToRequiredBucketPtrOutputWithContext(ctx)
+}
+
+// RequiredBucketPtrInput is an input type that accepts RequiredBucketArgs, RequiredBucketPtr and RequiredBucketPtrOutput values.
+// You can construct a concrete instance of `RequiredBucketPtrInput` via:
+//
+//          RequiredBucketArgs{...}
+//
+//  or:
+//
+//          nil
+type RequiredBucketPtrInput interface {
+	pulumi.Input
+
+	ToRequiredBucketPtrOutput() RequiredBucketPtrOutput
+	ToRequiredBucketPtrOutputWithContext(context.Context) RequiredBucketPtrOutput
+}
+
+type requiredBucketPtrType RequiredBucketArgs
+
+func RequiredBucketPtr(v *RequiredBucketArgs) RequiredBucketPtrInput {
+	return (*requiredBucketPtrType)(v)
+}
+
+func (*requiredBucketPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**RequiredBucket)(nil)).Elem()
+}
+
+func (i *requiredBucketPtrType) ToRequiredBucketPtrOutput() RequiredBucketPtrOutput {
+	return i.ToRequiredBucketPtrOutputWithContext(context.Background())
+}
+
+func (i *requiredBucketPtrType) ToRequiredBucketPtrOutputWithContext(ctx context.Context) RequiredBucketPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RequiredBucketPtrOutput)
+}
+
+// Bucket with default setup.
+type RequiredBucketOutput struct{ *pulumi.OutputState }
+
+func (RequiredBucketOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*RequiredBucket)(nil)).Elem()
+}
+
+func (o RequiredBucketOutput) ToRequiredBucketOutput() RequiredBucketOutput {
+	return o
+}
+
+func (o RequiredBucketOutput) ToRequiredBucketOutputWithContext(ctx context.Context) RequiredBucketOutput {
+	return o
+}
+
+func (o RequiredBucketOutput) ToRequiredBucketPtrOutput() RequiredBucketPtrOutput {
+	return o.ToRequiredBucketPtrOutputWithContext(context.Background())
+}
+
+func (o RequiredBucketOutput) ToRequiredBucketPtrOutputWithContext(ctx context.Context) RequiredBucketPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v RequiredBucket) *RequiredBucket {
+		return &v
+	}).(RequiredBucketPtrOutput)
+}
+
+// Arguments to use instead of the default values during creation.
+func (o RequiredBucketOutput) Args() BucketPtrOutput {
+	return o.ApplyT(func(v RequiredBucket) *Bucket { return v.Args }).(BucketPtrOutput)
+}
+
+// Identity of an existing bucket to use. Cannot be used in combination with `args`.
+func (o RequiredBucketOutput) Existing() ExistingBucketPtrOutput {
+	return o.ApplyT(func(v RequiredBucket) *ExistingBucket { return v.Existing }).(ExistingBucketPtrOutput)
+}
+
+type RequiredBucketPtrOutput struct{ *pulumi.OutputState }
+
+func (RequiredBucketPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**RequiredBucket)(nil)).Elem()
+}
+
+func (o RequiredBucketPtrOutput) ToRequiredBucketPtrOutput() RequiredBucketPtrOutput {
+	return o
+}
+
+func (o RequiredBucketPtrOutput) ToRequiredBucketPtrOutputWithContext(ctx context.Context) RequiredBucketPtrOutput {
+	return o
+}
+
+func (o RequiredBucketPtrOutput) Elem() RequiredBucketOutput {
+	return o.ApplyT(func(v *RequiredBucket) RequiredBucket {
+		if v != nil {
+			return *v
+		}
+		var ret RequiredBucket
+		return ret
+	}).(RequiredBucketOutput)
+}
+
+// Arguments to use instead of the default values during creation.
+func (o RequiredBucketPtrOutput) Args() BucketPtrOutput {
+	return o.ApplyT(func(v *RequiredBucket) *Bucket {
+		if v == nil {
+			return nil
+		}
+		return v.Args
+	}).(BucketPtrOutput)
+}
+
+// Identity of an existing bucket to use. Cannot be used in combination with `args`.
+func (o RequiredBucketPtrOutput) Existing() ExistingBucketPtrOutput {
+	return o.ApplyT(func(v *RequiredBucket) *ExistingBucket {
+		if v == nil {
+			return nil
+		}
+		return v.Existing
+	}).(ExistingBucketPtrOutput)
 }
 
 // Log group with default setup.
@@ -197,6 +2050,310 @@ type RoleWithPolicy struct {
 	Tags map[string]string `pulumi:"tags"`
 }
 
+// RoleWithPolicyInput is an input type that accepts RoleWithPolicyArgs and RoleWithPolicyOutput values.
+// You can construct a concrete instance of `RoleWithPolicyInput` via:
+//
+//          RoleWithPolicyArgs{...}
+type RoleWithPolicyInput interface {
+	pulumi.Input
+
+	ToRoleWithPolicyOutput() RoleWithPolicyOutput
+	ToRoleWithPolicyOutputWithContext(context.Context) RoleWithPolicyOutput
+}
+
+// The set of arguments for constructing a Role resource and Policy attachments.
+type RoleWithPolicyArgs struct {
+	// Description of the role.
+	Description pulumi.StringPtrInput `pulumi:"description"`
+	// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+	ForceDetachPolicies pulumi.BoolPtrInput `pulumi:"forceDetachPolicies"`
+	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+	InlinePolicies iam.RoleInlinePolicyArrayInput `pulumi:"inlinePolicies"`
+	// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
+	ManagedPolicyArns pulumi.StringArrayInput `pulumi:"managedPolicyArns"`
+	// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
+	MaxSessionDuration pulumi.IntPtrInput `pulumi:"maxSessionDuration"`
+	// Name of the role policy.
+	Name pulumi.StringPtrInput `pulumi:"name"`
+	// Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
+	// Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+	Path pulumi.StringPtrInput `pulumi:"path"`
+	// ARN of the policy that is used to set the permissions boundary for the role.
+	PermissionsBoundary pulumi.StringPtrInput `pulumi:"permissionsBoundary"`
+	// ARNs of the policies to attach to the created role.
+	PolicyArns []string `pulumi:"policyArns"`
+	// Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	Tags pulumi.StringMapInput `pulumi:"tags"`
+}
+
+func (RoleWithPolicyArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*RoleWithPolicy)(nil)).Elem()
+}
+
+func (i RoleWithPolicyArgs) ToRoleWithPolicyOutput() RoleWithPolicyOutput {
+	return i.ToRoleWithPolicyOutputWithContext(context.Background())
+}
+
+func (i RoleWithPolicyArgs) ToRoleWithPolicyOutputWithContext(ctx context.Context) RoleWithPolicyOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RoleWithPolicyOutput)
+}
+
+func (i RoleWithPolicyArgs) ToRoleWithPolicyPtrOutput() RoleWithPolicyPtrOutput {
+	return i.ToRoleWithPolicyPtrOutputWithContext(context.Background())
+}
+
+func (i RoleWithPolicyArgs) ToRoleWithPolicyPtrOutputWithContext(ctx context.Context) RoleWithPolicyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RoleWithPolicyOutput).ToRoleWithPolicyPtrOutputWithContext(ctx)
+}
+
+// RoleWithPolicyPtrInput is an input type that accepts RoleWithPolicyArgs, RoleWithPolicyPtr and RoleWithPolicyPtrOutput values.
+// You can construct a concrete instance of `RoleWithPolicyPtrInput` via:
+//
+//          RoleWithPolicyArgs{...}
+//
+//  or:
+//
+//          nil
+type RoleWithPolicyPtrInput interface {
+	pulumi.Input
+
+	ToRoleWithPolicyPtrOutput() RoleWithPolicyPtrOutput
+	ToRoleWithPolicyPtrOutputWithContext(context.Context) RoleWithPolicyPtrOutput
+}
+
+type roleWithPolicyPtrType RoleWithPolicyArgs
+
+func RoleWithPolicyPtr(v *RoleWithPolicyArgs) RoleWithPolicyPtrInput {
+	return (*roleWithPolicyPtrType)(v)
+}
+
+func (*roleWithPolicyPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**RoleWithPolicy)(nil)).Elem()
+}
+
+func (i *roleWithPolicyPtrType) ToRoleWithPolicyPtrOutput() RoleWithPolicyPtrOutput {
+	return i.ToRoleWithPolicyPtrOutputWithContext(context.Background())
+}
+
+func (i *roleWithPolicyPtrType) ToRoleWithPolicyPtrOutputWithContext(ctx context.Context) RoleWithPolicyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(RoleWithPolicyPtrOutput)
+}
+
+// The set of arguments for constructing a Role resource and Policy attachments.
+type RoleWithPolicyOutput struct{ *pulumi.OutputState }
+
+func (RoleWithPolicyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*RoleWithPolicy)(nil)).Elem()
+}
+
+func (o RoleWithPolicyOutput) ToRoleWithPolicyOutput() RoleWithPolicyOutput {
+	return o
+}
+
+func (o RoleWithPolicyOutput) ToRoleWithPolicyOutputWithContext(ctx context.Context) RoleWithPolicyOutput {
+	return o
+}
+
+func (o RoleWithPolicyOutput) ToRoleWithPolicyPtrOutput() RoleWithPolicyPtrOutput {
+	return o.ToRoleWithPolicyPtrOutputWithContext(context.Background())
+}
+
+func (o RoleWithPolicyOutput) ToRoleWithPolicyPtrOutputWithContext(ctx context.Context) RoleWithPolicyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v RoleWithPolicy) *RoleWithPolicy {
+		return &v
+	}).(RoleWithPolicyPtrOutput)
+}
+
+// Description of the role.
+func (o RoleWithPolicyOutput) Description() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v RoleWithPolicy) *string { return v.Description }).(pulumi.StringPtrOutput)
+}
+
+// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+func (o RoleWithPolicyOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v RoleWithPolicy) *bool { return v.ForceDetachPolicies }).(pulumi.BoolPtrOutput)
+}
+
+// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+func (o RoleWithPolicyOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
+	return o.ApplyT(func(v RoleWithPolicy) []iam.RoleInlinePolicy { return v.InlinePolicies }).(iam.RoleInlinePolicyArrayOutput)
+}
+
+// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
+func (o RoleWithPolicyOutput) ManagedPolicyArns() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v RoleWithPolicy) []string { return v.ManagedPolicyArns }).(pulumi.StringArrayOutput)
+}
+
+// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
+func (o RoleWithPolicyOutput) MaxSessionDuration() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v RoleWithPolicy) *int { return v.MaxSessionDuration }).(pulumi.IntPtrOutput)
+}
+
+// Name of the role policy.
+func (o RoleWithPolicyOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v RoleWithPolicy) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+func (o RoleWithPolicyOutput) NamePrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v RoleWithPolicy) *string { return v.NamePrefix }).(pulumi.StringPtrOutput)
+}
+
+// Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+func (o RoleWithPolicyOutput) Path() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v RoleWithPolicy) *string { return v.Path }).(pulumi.StringPtrOutput)
+}
+
+// ARN of the policy that is used to set the permissions boundary for the role.
+func (o RoleWithPolicyOutput) PermissionsBoundary() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v RoleWithPolicy) *string { return v.PermissionsBoundary }).(pulumi.StringPtrOutput)
+}
+
+// ARNs of the policies to attach to the created role.
+func (o RoleWithPolicyOutput) PolicyArns() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v RoleWithPolicy) []string { return v.PolicyArns }).(pulumi.StringArrayOutput)
+}
+
+// Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o RoleWithPolicyOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v RoleWithPolicy) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+type RoleWithPolicyPtrOutput struct{ *pulumi.OutputState }
+
+func (RoleWithPolicyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**RoleWithPolicy)(nil)).Elem()
+}
+
+func (o RoleWithPolicyPtrOutput) ToRoleWithPolicyPtrOutput() RoleWithPolicyPtrOutput {
+	return o
+}
+
+func (o RoleWithPolicyPtrOutput) ToRoleWithPolicyPtrOutputWithContext(ctx context.Context) RoleWithPolicyPtrOutput {
+	return o
+}
+
+func (o RoleWithPolicyPtrOutput) Elem() RoleWithPolicyOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) RoleWithPolicy {
+		if v != nil {
+			return *v
+		}
+		var ret RoleWithPolicy
+		return ret
+	}).(RoleWithPolicyOutput)
+}
+
+// Description of the role.
+func (o RoleWithPolicyPtrOutput) Description() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Description
+	}).(pulumi.StringPtrOutput)
+}
+
+// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
+func (o RoleWithPolicyPtrOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.ForceDetachPolicies
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+func (o RoleWithPolicyPtrOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) []iam.RoleInlinePolicy {
+		if v == nil {
+			return nil
+		}
+		return v.InlinePolicies
+	}).(iam.RoleInlinePolicyArrayOutput)
+}
+
+// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
+func (o RoleWithPolicyPtrOutput) ManagedPolicyArns() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) []string {
+		if v == nil {
+			return nil
+		}
+		return v.ManagedPolicyArns
+	}).(pulumi.StringArrayOutput)
+}
+
+// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
+func (o RoleWithPolicyPtrOutput) MaxSessionDuration() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) *int {
+		if v == nil {
+			return nil
+		}
+		return v.MaxSessionDuration
+	}).(pulumi.IntPtrOutput)
+}
+
+// Name of the role policy.
+func (o RoleWithPolicyPtrOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Name
+	}).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
+func (o RoleWithPolicyPtrOutput) NamePrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) *string {
+		if v == nil {
+			return nil
+		}
+		return v.NamePrefix
+	}).(pulumi.StringPtrOutput)
+}
+
+// Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+func (o RoleWithPolicyPtrOutput) Path() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Path
+	}).(pulumi.StringPtrOutput)
+}
+
+// ARN of the policy that is used to set the permissions boundary for the role.
+func (o RoleWithPolicyPtrOutput) PermissionsBoundary() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) *string {
+		if v == nil {
+			return nil
+		}
+		return v.PermissionsBoundary
+	}).(pulumi.StringPtrOutput)
+}
+
+// ARNs of the policies to attach to the created role.
+func (o RoleWithPolicyPtrOutput) PolicyArns() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) []string {
+		if v == nil {
+			return nil
+		}
+		return v.PolicyArns
+	}).(pulumi.StringArrayOutput)
+}
+
+// Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o RoleWithPolicyPtrOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *RoleWithPolicy) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.Tags
+	}).(pulumi.StringMapOutput)
+}
+
 // The set of arguments for constructing a Security Group resource.
 type SecurityGroup struct {
 	// Description of this egress rule.
@@ -229,5 +2386,314 @@ func (val *SecurityGroup) Defaults() *SecurityGroup {
 	}
 	return &tmp
 }
+
+// SecurityGroupInput is an input type that accepts SecurityGroupArgs and SecurityGroupOutput values.
+// You can construct a concrete instance of `SecurityGroupInput` via:
+//
+//          SecurityGroupArgs{...}
+type SecurityGroupInput interface {
+	pulumi.Input
+
+	ToSecurityGroupOutput() SecurityGroupOutput
+	ToSecurityGroupOutputWithContext(context.Context) SecurityGroupOutput
+}
+
+// The set of arguments for constructing a Security Group resource.
+type SecurityGroupArgs struct {
+	// Description of this egress rule.
+	Description pulumi.StringPtrInput `pulumi:"description"`
+	// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+	Egress ec2.SecurityGroupEgressArrayInput `pulumi:"egress"`
+	// Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+	Ingress ec2.SecurityGroupIngressArrayInput `pulumi:"ingress"`
+	// Name of the security group. If omitted, this provider will assign a random, unique name.
+	Name pulumi.StringPtrInput `pulumi:"name"`
+	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
+	// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+	RevokeRulesOnDelete pulumi.BoolPtrInput `pulumi:"revokeRulesOnDelete"`
+	// Map of tags to assign to the resource.
+	Tags pulumi.StringMapInput `pulumi:"tags"`
+	// VPC ID.
+	VpcId pulumi.StringPtrInput `pulumi:"vpcId"`
+}
+
+// Defaults sets the appropriate defaults for SecurityGroupArgs
+func (val *SecurityGroupArgs) Defaults() *SecurityGroupArgs {
+	if val == nil {
+		return nil
+	}
+	tmp := *val
+	if isZero(tmp.Description) {
+		tmp.Description = pulumi.StringPtr("Managed by Pulumi")
+	}
+	return &tmp
+}
+func (SecurityGroupArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*SecurityGroup)(nil)).Elem()
+}
+
+func (i SecurityGroupArgs) ToSecurityGroupOutput() SecurityGroupOutput {
+	return i.ToSecurityGroupOutputWithContext(context.Background())
+}
+
+func (i SecurityGroupArgs) ToSecurityGroupOutputWithContext(ctx context.Context) SecurityGroupOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(SecurityGroupOutput)
+}
+
+func (i SecurityGroupArgs) ToSecurityGroupPtrOutput() SecurityGroupPtrOutput {
+	return i.ToSecurityGroupPtrOutputWithContext(context.Background())
+}
+
+func (i SecurityGroupArgs) ToSecurityGroupPtrOutputWithContext(ctx context.Context) SecurityGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(SecurityGroupOutput).ToSecurityGroupPtrOutputWithContext(ctx)
+}
+
+// SecurityGroupPtrInput is an input type that accepts SecurityGroupArgs, SecurityGroupPtr and SecurityGroupPtrOutput values.
+// You can construct a concrete instance of `SecurityGroupPtrInput` via:
+//
+//          SecurityGroupArgs{...}
+//
+//  or:
+//
+//          nil
+type SecurityGroupPtrInput interface {
+	pulumi.Input
+
+	ToSecurityGroupPtrOutput() SecurityGroupPtrOutput
+	ToSecurityGroupPtrOutputWithContext(context.Context) SecurityGroupPtrOutput
+}
+
+type securityGroupPtrType SecurityGroupArgs
+
+func SecurityGroupPtr(v *SecurityGroupArgs) SecurityGroupPtrInput {
+	return (*securityGroupPtrType)(v)
+}
+
+func (*securityGroupPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**SecurityGroup)(nil)).Elem()
+}
+
+func (i *securityGroupPtrType) ToSecurityGroupPtrOutput() SecurityGroupPtrOutput {
+	return i.ToSecurityGroupPtrOutputWithContext(context.Background())
+}
+
+func (i *securityGroupPtrType) ToSecurityGroupPtrOutputWithContext(ctx context.Context) SecurityGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(SecurityGroupPtrOutput)
+}
+
+// The set of arguments for constructing a Security Group resource.
+type SecurityGroupOutput struct{ *pulumi.OutputState }
+
+func (SecurityGroupOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*SecurityGroup)(nil)).Elem()
+}
+
+func (o SecurityGroupOutput) ToSecurityGroupOutput() SecurityGroupOutput {
+	return o
+}
+
+func (o SecurityGroupOutput) ToSecurityGroupOutputWithContext(ctx context.Context) SecurityGroupOutput {
+	return o
+}
+
+func (o SecurityGroupOutput) ToSecurityGroupPtrOutput() SecurityGroupPtrOutput {
+	return o.ToSecurityGroupPtrOutputWithContext(context.Background())
+}
+
+func (o SecurityGroupOutput) ToSecurityGroupPtrOutputWithContext(ctx context.Context) SecurityGroupPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v SecurityGroup) *SecurityGroup {
+		return &v
+	}).(SecurityGroupPtrOutput)
+}
+
+// Description of this egress rule.
+func (o SecurityGroupOutput) Description() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v SecurityGroup) *string { return v.Description }).(pulumi.StringPtrOutput)
+}
+
+// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+func (o SecurityGroupOutput) Egress() ec2.SecurityGroupEgressArrayOutput {
+	return o.ApplyT(func(v SecurityGroup) []ec2.SecurityGroupEgress { return v.Egress }).(ec2.SecurityGroupEgressArrayOutput)
+}
+
+// Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+func (o SecurityGroupOutput) Ingress() ec2.SecurityGroupIngressArrayOutput {
+	return o.ApplyT(func(v SecurityGroup) []ec2.SecurityGroupIngress { return v.Ingress }).(ec2.SecurityGroupIngressArrayOutput)
+}
+
+// Name of the security group. If omitted, this provider will assign a random, unique name.
+func (o SecurityGroupOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v SecurityGroup) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+func (o SecurityGroupOutput) NamePrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v SecurityGroup) *string { return v.NamePrefix }).(pulumi.StringPtrOutput)
+}
+
+// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+func (o SecurityGroupOutput) RevokeRulesOnDelete() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v SecurityGroup) *bool { return v.RevokeRulesOnDelete }).(pulumi.BoolPtrOutput)
+}
+
+// Map of tags to assign to the resource.
+func (o SecurityGroupOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v SecurityGroup) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+// VPC ID.
+func (o SecurityGroupOutput) VpcId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v SecurityGroup) *string { return v.VpcId }).(pulumi.StringPtrOutput)
+}
+
+type SecurityGroupPtrOutput struct{ *pulumi.OutputState }
+
+func (SecurityGroupPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**SecurityGroup)(nil)).Elem()
+}
+
+func (o SecurityGroupPtrOutput) ToSecurityGroupPtrOutput() SecurityGroupPtrOutput {
+	return o
+}
+
+func (o SecurityGroupPtrOutput) ToSecurityGroupPtrOutputWithContext(ctx context.Context) SecurityGroupPtrOutput {
+	return o
+}
+
+func (o SecurityGroupPtrOutput) Elem() SecurityGroupOutput {
+	return o.ApplyT(func(v *SecurityGroup) SecurityGroup {
+		if v != nil {
+			return *v
+		}
+		var ret SecurityGroup
+		return ret
+	}).(SecurityGroupOutput)
+}
+
+// Description of this egress rule.
+func (o SecurityGroupPtrOutput) Description() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *SecurityGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Description
+	}).(pulumi.StringPtrOutput)
+}
+
+// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+func (o SecurityGroupPtrOutput) Egress() ec2.SecurityGroupEgressArrayOutput {
+	return o.ApplyT(func(v *SecurityGroup) []ec2.SecurityGroupEgress {
+		if v == nil {
+			return nil
+		}
+		return v.Egress
+	}).(ec2.SecurityGroupEgressArrayOutput)
+}
+
+// Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+func (o SecurityGroupPtrOutput) Ingress() ec2.SecurityGroupIngressArrayOutput {
+	return o.ApplyT(func(v *SecurityGroup) []ec2.SecurityGroupIngress {
+		if v == nil {
+			return nil
+		}
+		return v.Ingress
+	}).(ec2.SecurityGroupIngressArrayOutput)
+}
+
+// Name of the security group. If omitted, this provider will assign a random, unique name.
+func (o SecurityGroupPtrOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *SecurityGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Name
+	}).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+func (o SecurityGroupPtrOutput) NamePrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *SecurityGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.NamePrefix
+	}).(pulumi.StringPtrOutput)
+}
+
+// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+func (o SecurityGroupPtrOutput) RevokeRulesOnDelete() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *SecurityGroup) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.RevokeRulesOnDelete
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Map of tags to assign to the resource.
+func (o SecurityGroupPtrOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *SecurityGroup) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.Tags
+	}).(pulumi.StringMapOutput)
+}
+
+// VPC ID.
+func (o SecurityGroupPtrOutput) VpcId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *SecurityGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.VpcId
+	}).(pulumi.StringPtrOutput)
+}
+
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*BucketInput)(nil)).Elem(), BucketArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*BucketPtrInput)(nil)).Elem(), BucketArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DefaultLogGroupInput)(nil)).Elem(), DefaultLogGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DefaultLogGroupPtrInput)(nil)).Elem(), DefaultLogGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DefaultRoleWithPolicyInput)(nil)).Elem(), DefaultRoleWithPolicyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DefaultRoleWithPolicyPtrInput)(nil)).Elem(), DefaultRoleWithPolicyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DefaultSecurityGroupInput)(nil)).Elem(), DefaultSecurityGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DefaultSecurityGroupPtrInput)(nil)).Elem(), DefaultSecurityGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ExistingBucketInput)(nil)).Elem(), ExistingBucketArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ExistingBucketPtrInput)(nil)).Elem(), ExistingBucketArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ExistingLogGroupInput)(nil)).Elem(), ExistingLogGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ExistingLogGroupPtrInput)(nil)).Elem(), ExistingLogGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LogGroupInput)(nil)).Elem(), LogGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*LogGroupPtrInput)(nil)).Elem(), LogGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*OptionalLogGroupInput)(nil)).Elem(), OptionalLogGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*OptionalLogGroupPtrInput)(nil)).Elem(), OptionalLogGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RequiredBucketInput)(nil)).Elem(), RequiredBucketArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RequiredBucketPtrInput)(nil)).Elem(), RequiredBucketArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RoleWithPolicyInput)(nil)).Elem(), RoleWithPolicyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*RoleWithPolicyPtrInput)(nil)).Elem(), RoleWithPolicyArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*SecurityGroupInput)(nil)).Elem(), SecurityGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*SecurityGroupPtrInput)(nil)).Elem(), SecurityGroupArgs{})
+	pulumi.RegisterOutputType(BucketOutput{})
+	pulumi.RegisterOutputType(BucketPtrOutput{})
+	pulumi.RegisterOutputType(DefaultLogGroupOutput{})
+	pulumi.RegisterOutputType(DefaultLogGroupPtrOutput{})
+	pulumi.RegisterOutputType(DefaultRoleWithPolicyOutput{})
+	pulumi.RegisterOutputType(DefaultRoleWithPolicyPtrOutput{})
+	pulumi.RegisterOutputType(DefaultSecurityGroupOutput{})
+	pulumi.RegisterOutputType(DefaultSecurityGroupPtrOutput{})
+	pulumi.RegisterOutputType(ExistingBucketOutput{})
+	pulumi.RegisterOutputType(ExistingBucketPtrOutput{})
+	pulumi.RegisterOutputType(ExistingLogGroupOutput{})
+	pulumi.RegisterOutputType(ExistingLogGroupPtrOutput{})
+	pulumi.RegisterOutputType(LogGroupOutput{})
+	pulumi.RegisterOutputType(LogGroupPtrOutput{})
+	pulumi.RegisterOutputType(OptionalLogGroupOutput{})
+	pulumi.RegisterOutputType(OptionalLogGroupPtrOutput{})
+	pulumi.RegisterOutputType(RequiredBucketOutput{})
+	pulumi.RegisterOutputType(RequiredBucketPtrOutput{})
+	pulumi.RegisterOutputType(RoleWithPolicyOutput{})
+	pulumi.RegisterOutputType(RoleWithPolicyPtrOutput{})
+	pulumi.RegisterOutputType(SecurityGroupOutput{})
+	pulumi.RegisterOutputType(SecurityGroupPtrOutput{})
 }

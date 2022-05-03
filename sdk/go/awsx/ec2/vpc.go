@@ -127,11 +127,11 @@ type VpcArgs struct {
 	// Netmask length to request from IPAM Pool. Conflicts with `ipv6_cidr_block`. This can be omitted if IPAM pool as a `allocation_default_netmask_length` set. Valid values: `56`.
 	Ipv6NetmaskLength pulumi.IntPtrInput
 	// Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
-	NatGateways *NatGatewayConfiguration
+	NatGateways *NatGatewayConfigurationArgs
 	// A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
 	NumberOfAvailabilityZones *int
 	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
-	SubnetSpecs []SubnetSpec
+	SubnetSpecs []SubnetSpecArgs
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 }
@@ -221,6 +221,62 @@ func (o VpcOutput) ToVpcOutput() VpcOutput {
 
 func (o VpcOutput) ToVpcOutputWithContext(ctx context.Context) VpcOutput {
 	return o
+}
+
+// The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+func (o VpcOutput) Eips() ec2.EipArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.EipArrayOutput { return v.Eips }).(ec2.EipArrayOutput)
+}
+
+// The Internet Gateway for the VPC.
+func (o VpcOutput) InternetGateway() ec2.InternetGatewayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.InternetGatewayOutput { return v.InternetGateway }).(ec2.InternetGatewayOutput)
+}
+
+func (o VpcOutput) IsolatedSubnetIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.IsolatedSubnetIds }).(pulumi.StringArrayOutput)
+}
+
+// The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
+func (o VpcOutput) NatGateways() ec2.NatGatewayArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.NatGatewayArrayOutput { return v.NatGateways }).(ec2.NatGatewayArrayOutput)
+}
+
+func (o VpcOutput) PrivateSubnetIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.PrivateSubnetIds }).(pulumi.StringArrayOutput)
+}
+
+func (o VpcOutput) PublicSubnetIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.PublicSubnetIds }).(pulumi.StringArrayOutput)
+}
+
+// The Route Table Associations for the VPC.
+func (o VpcOutput) RouteTableAssociations() ec2.RouteTableAssociationArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.RouteTableAssociationArrayOutput { return v.RouteTableAssociations }).(ec2.RouteTableAssociationArrayOutput)
+}
+
+// The Route Tables for the VPC.
+func (o VpcOutput) RouteTables() ec2.RouteTableArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.RouteTableArrayOutput { return v.RouteTables }).(ec2.RouteTableArrayOutput)
+}
+
+// The Routes for the VPC.
+func (o VpcOutput) Routes() ec2.RouteArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.RouteArrayOutput { return v.Routes }).(ec2.RouteArrayOutput)
+}
+
+// The VPC's subnets.
+func (o VpcOutput) Subnets() ec2.SubnetArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.SubnetArrayOutput { return v.Subnets }).(ec2.SubnetArrayOutput)
+}
+
+// The VPC.
+func (o VpcOutput) Vpc() ec2.VpcOutput {
+	return o.ApplyT(func(v *Vpc) ec2.VpcOutput { return v.Vpc }).(ec2.VpcOutput)
+}
+
+func (o VpcOutput) VpcId() pulumi.StringOutput {
+	return o.ApplyT(func(v *Vpc) pulumi.StringOutput { return v.VpcId }).(pulumi.StringOutput)
 }
 
 type VpcArrayOutput struct{ *pulumi.OutputState }

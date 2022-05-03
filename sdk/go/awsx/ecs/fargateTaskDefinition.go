@@ -100,19 +100,19 @@ type FargateTaskDefinitionArgs struct {
 	// multiple containers, especially when creating a TaskDefinition to call [run] on.
 	//
 	// Either [container] or [containers] must be provided.
-	Container *TaskDefinitionContainerDefinition
+	Container *TaskDefinitionContainerDefinitionArgs
 	// All the containers to make a TaskDefinition from.  Useful when creating a Service that will
 	// contain many containers within.
 	//
 	// Either [container] or [containers] must be provided.
-	Containers map[string]TaskDefinitionContainerDefinition
+	Containers map[string]TaskDefinitionContainerDefinitionArgs
 	// The number of cpu units used by the task. If not provided, a default will be computed based on the cumulative needs specified by [containerDefinitions]
 	Cpu pulumi.StringPtrInput
 	// The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.
 	EphemeralStorage ecs.TaskDefinitionEphemeralStoragePtrInput
 	// The execution role that the Amazon ECS container agent and the Docker daemon can assume.
 	// Will be created automatically if not defined.
-	ExecutionRole *awsx.DefaultRoleWithPolicy
+	ExecutionRole *awsx.DefaultRoleWithPolicyArgs
 	// An optional unique name for your task definition. If not specified, then a default will be created.
 	Family pulumi.StringPtrInput
 	// Configuration block(s) with Inference Accelerators settings. Detailed below.
@@ -120,7 +120,7 @@ type FargateTaskDefinitionArgs struct {
 	// IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.
 	IpcMode pulumi.StringPtrInput
 	// A set of volume blocks that containers in your task may use.
-	LogGroup *awsx.DefaultLogGroup
+	LogGroup *awsx.DefaultLogGroupArgs
 	// The amount (in MiB) of memory used by the task.  If not provided, a default will be computed
 	// based on the cumulative needs specified by [containerDefinitions]
 	Memory pulumi.StringPtrInput
@@ -137,7 +137,7 @@ type FargateTaskDefinitionArgs struct {
 	Tags pulumi.StringMapInput
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
-	TaskRole *awsx.DefaultRoleWithPolicy
+	TaskRole *awsx.DefaultRoleWithPolicyArgs
 	// Configuration block for volumes that containers in your task may use. Detailed below.
 	Volumes ecs.TaskDefinitionVolumeArrayInput
 }
@@ -227,6 +227,31 @@ func (o FargateTaskDefinitionOutput) ToFargateTaskDefinitionOutput() FargateTask
 
 func (o FargateTaskDefinitionOutput) ToFargateTaskDefinitionOutputWithContext(ctx context.Context) FargateTaskDefinitionOutput {
 	return o
+}
+
+// Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.
+func (o FargateTaskDefinitionOutput) ExecutionRole() iam.RoleOutput {
+	return o.ApplyT(func(v *FargateTaskDefinition) iam.RoleOutput { return v.ExecutionRole }).(iam.RoleOutput)
+}
+
+// Computed load balancers from target groups specified of container port mappings.
+func (o FargateTaskDefinitionOutput) LoadBalancers() ecs.ServiceLoadBalancerArrayOutput {
+	return o.ApplyT(func(v *FargateTaskDefinition) ecs.ServiceLoadBalancerArrayOutput { return v.LoadBalancers }).(ecs.ServiceLoadBalancerArrayOutput)
+}
+
+// Auto-created Log Group resource for use by containers.
+func (o FargateTaskDefinitionOutput) LogGroup() cloudwatch.LogGroupOutput {
+	return o.ApplyT(func(v *FargateTaskDefinition) cloudwatch.LogGroupOutput { return v.LogGroup }).(cloudwatch.LogGroupOutput)
+}
+
+// Underlying ECS Task Definition resource
+func (o FargateTaskDefinitionOutput) TaskDefinition() ecs.TaskDefinitionOutput {
+	return o.ApplyT(func(v *FargateTaskDefinition) ecs.TaskDefinitionOutput { return v.TaskDefinition }).(ecs.TaskDefinitionOutput)
+}
+
+// Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services.
+func (o FargateTaskDefinitionOutput) TaskRole() iam.RoleOutput {
+	return o.ApplyT(func(v *FargateTaskDefinition) iam.RoleOutput { return v.TaskRole }).(iam.RoleOutput)
 }
 
 type FargateTaskDefinitionArrayOutput struct{ *pulumi.OutputState }

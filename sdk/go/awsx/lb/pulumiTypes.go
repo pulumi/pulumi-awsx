@@ -4,7 +4,11 @@
 package lb
 
 import (
+	"context"
+	"reflect"
+
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
 // Provides a Load Balancer Listener resource.
@@ -338,6 +342,913 @@ type Listener struct {
 	Tags map[string]string `pulumi:"tags"`
 }
 
+// ListenerInput is an input type that accepts ListenerArgs and ListenerOutput values.
+// You can construct a concrete instance of `ListenerInput` via:
+//
+//          ListenerArgs{...}
+type ListenerInput interface {
+	pulumi.Input
+
+	ToListenerOutput() ListenerOutput
+	ToListenerOutputWithContext(context.Context) ListenerOutput
+}
+
+// Provides a Load Balancer Listener resource.
+//
+// > **Note:** `aws.alb.Listener` is known as `aws.lb.Listener`. The functionality is identical.
+//
+// ## Example Usage
+// ### Forward Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("HTTPS"),
+// 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+//
+// To a NLB:
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewListener(ctx, "frontEnd", &lb.ListenerArgs{
+// 			LoadBalancerArn: pulumi.Any(aws_lb.Front_end.Arn),
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("TLS"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: pulumi.Any(aws_lb_target_group.Front_end.Arn),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Redirect Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("redirect"),
+// 					Redirect: &lb.ListenerDefaultActionRedirectArgs{
+// 						Port:       pulumi.String("443"),
+// 						Protocol:   pulumi.String("HTTPS"),
+// 						StatusCode: pulumi.String("HTTP_301"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Fixed-response Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("fixed-response"),
+// 					FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
+// 						ContentType: pulumi.String("text/plain"),
+// 						MessageBody: pulumi.String("Fixed response content"),
+// 						StatusCode:  pulumi.String("200"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Authenticate-cognito Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		pool, err := cognito.NewUserPool(ctx, "pool", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		client, err := cognito.NewUserPoolClient(ctx, "client", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		domain, err := cognito.NewUserPoolDomain(ctx, "domain", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-cognito"),
+// 					AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
+// 						UserPoolArn:      pool.Arn,
+// 						UserPoolClientId: client.ID(),
+// 						UserPoolDomain:   domain.Domain,
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Authenticate-OIDC Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-oidc"),
+// 					AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
+// 						AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
+// 						ClientId:              pulumi.String("client_id"),
+// 						ClientSecret:          pulumi.String("client_secret"),
+// 						Issuer:                pulumi.String("https://example.com"),
+// 						TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
+// 						UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Gateway Load Balancer Listener
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		exampleLoadBalancer, err := lb.NewLoadBalancer(ctx, "exampleLoadBalancer", &lb.LoadBalancerArgs{
+// 			LoadBalancerType: pulumi.String("gateway"),
+// 			SubnetMappings: lb.LoadBalancerSubnetMappingArray{
+// 				&lb.LoadBalancerSubnetMappingArgs{
+// 					SubnetId: pulumi.Any(aws_subnet.Example.Id),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(6081),
+// 			Protocol: pulumi.String("GENEVE"),
+// 			VpcId:    pulumi.Any(aws_vpc.Example.Id),
+// 			HealthCheck: &lb.TargetGroupHealthCheckArgs{
+// 				Port:     pulumi.String("80"),
+// 				Protocol: pulumi.String("HTTP"),
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "exampleListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: exampleLoadBalancer.ID(),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					TargetGroupArn: exampleTargetGroup.ID(),
+// 					Type:           pulumi.String("forward"),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+//
+// ## Import
+//
+// Listeners can be imported using their ARN, e.g.,
+//
+// ```sh
+//  $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
+// ```
+type ListenerArgs struct {
+	// Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
+	AlpnPolicy pulumi.StringPtrInput `pulumi:"alpnPolicy"`
+	// ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the `aws.lb.ListenerCertificate` resource.
+	CertificateArn pulumi.StringPtrInput `pulumi:"certificateArn"`
+	// Configuration block for default actions. Detailed below.
+	DefaultActions lb.ListenerDefaultActionArrayInput `pulumi:"defaultActions"`
+	// Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+	Port pulumi.IntPtrInput `pulumi:"port"`
+	// Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+	Protocol pulumi.StringPtrInput `pulumi:"protocol"`
+	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+	SslPolicy pulumi.StringPtrInput `pulumi:"sslPolicy"`
+	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	Tags pulumi.StringMapInput `pulumi:"tags"`
+}
+
+func (ListenerArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*Listener)(nil)).Elem()
+}
+
+func (i ListenerArgs) ToListenerOutput() ListenerOutput {
+	return i.ToListenerOutputWithContext(context.Background())
+}
+
+func (i ListenerArgs) ToListenerOutputWithContext(ctx context.Context) ListenerOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ListenerOutput)
+}
+
+func (i ListenerArgs) ToListenerPtrOutput() ListenerPtrOutput {
+	return i.ToListenerPtrOutputWithContext(context.Background())
+}
+
+func (i ListenerArgs) ToListenerPtrOutputWithContext(ctx context.Context) ListenerPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ListenerOutput).ToListenerPtrOutputWithContext(ctx)
+}
+
+// ListenerPtrInput is an input type that accepts ListenerArgs, ListenerPtr and ListenerPtrOutput values.
+// You can construct a concrete instance of `ListenerPtrInput` via:
+//
+//          ListenerArgs{...}
+//
+//  or:
+//
+//          nil
+type ListenerPtrInput interface {
+	pulumi.Input
+
+	ToListenerPtrOutput() ListenerPtrOutput
+	ToListenerPtrOutputWithContext(context.Context) ListenerPtrOutput
+}
+
+type listenerPtrType ListenerArgs
+
+func ListenerPtr(v *ListenerArgs) ListenerPtrInput {
+	return (*listenerPtrType)(v)
+}
+
+func (*listenerPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**Listener)(nil)).Elem()
+}
+
+func (i *listenerPtrType) ToListenerPtrOutput() ListenerPtrOutput {
+	return i.ToListenerPtrOutputWithContext(context.Background())
+}
+
+func (i *listenerPtrType) ToListenerPtrOutputWithContext(ctx context.Context) ListenerPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ListenerPtrOutput)
+}
+
+// ListenerArrayInput is an input type that accepts ListenerArray and ListenerArrayOutput values.
+// You can construct a concrete instance of `ListenerArrayInput` via:
+//
+//          ListenerArray{ ListenerArgs{...} }
+type ListenerArrayInput interface {
+	pulumi.Input
+
+	ToListenerArrayOutput() ListenerArrayOutput
+	ToListenerArrayOutputWithContext(context.Context) ListenerArrayOutput
+}
+
+type ListenerArray []ListenerInput
+
+func (ListenerArray) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]Listener)(nil)).Elem()
+}
+
+func (i ListenerArray) ToListenerArrayOutput() ListenerArrayOutput {
+	return i.ToListenerArrayOutputWithContext(context.Background())
+}
+
+func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) ListenerArrayOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(ListenerArrayOutput)
+}
+
+// Provides a Load Balancer Listener resource.
+//
+// > **Note:** `aws.alb.Listener` is known as `aws.lb.Listener`. The functionality is identical.
+//
+// ## Example Usage
+// ### Forward Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("HTTPS"),
+// 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+//
+// To a NLB:
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewListener(ctx, "frontEnd", &lb.ListenerArgs{
+// 			LoadBalancerArn: pulumi.Any(aws_lb.Front_end.Arn),
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("TLS"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: pulumi.Any(aws_lb_target_group.Front_end.Arn),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Redirect Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("redirect"),
+// 					Redirect: &lb.ListenerDefaultActionRedirectArgs{
+// 						Port:       pulumi.String("443"),
+// 						Protocol:   pulumi.String("HTTPS"),
+// 						StatusCode: pulumi.String("HTTP_301"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Fixed-response Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("fixed-response"),
+// 					FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
+// 						ContentType: pulumi.String("text/plain"),
+// 						MessageBody: pulumi.String("Fixed response content"),
+// 						StatusCode:  pulumi.String("200"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Authenticate-cognito Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		pool, err := cognito.NewUserPool(ctx, "pool", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		client, err := cognito.NewUserPoolClient(ctx, "client", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		domain, err := cognito.NewUserPoolDomain(ctx, "domain", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-cognito"),
+// 					AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
+// 						UserPoolArn:      pool.Arn,
+// 						UserPoolClientId: client.ID(),
+// 						UserPoolDomain:   domain.Domain,
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Authenticate-OIDC Action
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-oidc"),
+// 					AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
+// 						AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
+// 						ClientId:              pulumi.String("client_id"),
+// 						ClientSecret:          pulumi.String("client_secret"),
+// 						Issuer:                pulumi.String("https://example.com"),
+// 						TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
+// 						UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Gateway Load Balancer Listener
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		exampleLoadBalancer, err := lb.NewLoadBalancer(ctx, "exampleLoadBalancer", &lb.LoadBalancerArgs{
+// 			LoadBalancerType: pulumi.String("gateway"),
+// 			SubnetMappings: lb.LoadBalancerSubnetMappingArray{
+// 				&lb.LoadBalancerSubnetMappingArgs{
+// 					SubnetId: pulumi.Any(aws_subnet.Example.Id),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(6081),
+// 			Protocol: pulumi.String("GENEVE"),
+// 			VpcId:    pulumi.Any(aws_vpc.Example.Id),
+// 			HealthCheck: &lb.TargetGroupHealthCheckArgs{
+// 				Port:     pulumi.String("80"),
+// 				Protocol: pulumi.String("HTTP"),
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "exampleListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: exampleLoadBalancer.ID(),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					TargetGroupArn: exampleTargetGroup.ID(),
+// 					Type:           pulumi.String("forward"),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+//
+// ## Import
+//
+// Listeners can be imported using their ARN, e.g.,
+//
+// ```sh
+//  $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
+// ```
+type ListenerOutput struct{ *pulumi.OutputState }
+
+func (ListenerOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*Listener)(nil)).Elem()
+}
+
+func (o ListenerOutput) ToListenerOutput() ListenerOutput {
+	return o
+}
+
+func (o ListenerOutput) ToListenerOutputWithContext(ctx context.Context) ListenerOutput {
+	return o
+}
+
+func (o ListenerOutput) ToListenerPtrOutput() ListenerPtrOutput {
+	return o.ToListenerPtrOutputWithContext(context.Background())
+}
+
+func (o ListenerOutput) ToListenerPtrOutputWithContext(ctx context.Context) ListenerPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v Listener) *Listener {
+		return &v
+	}).(ListenerPtrOutput)
+}
+
+// Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
+func (o ListenerOutput) AlpnPolicy() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Listener) *string { return v.AlpnPolicy }).(pulumi.StringPtrOutput)
+}
+
+// ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the `aws.lb.ListenerCertificate` resource.
+func (o ListenerOutput) CertificateArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Listener) *string { return v.CertificateArn }).(pulumi.StringPtrOutput)
+}
+
+// Configuration block for default actions. Detailed below.
+func (o ListenerOutput) DefaultActions() lb.ListenerDefaultActionArrayOutput {
+	return o.ApplyT(func(v Listener) []lb.ListenerDefaultAction { return v.DefaultActions }).(lb.ListenerDefaultActionArrayOutput)
+}
+
+// Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+func (o ListenerOutput) Port() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v Listener) *int { return v.Port }).(pulumi.IntPtrOutput)
+}
+
+// Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+func (o ListenerOutput) Protocol() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Listener) *string { return v.Protocol }).(pulumi.StringPtrOutput)
+}
+
+// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+func (o ListenerOutput) SslPolicy() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v Listener) *string { return v.SslPolicy }).(pulumi.StringPtrOutput)
+}
+
+// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o ListenerOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v Listener) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+type ListenerPtrOutput struct{ *pulumi.OutputState }
+
+func (ListenerPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**Listener)(nil)).Elem()
+}
+
+func (o ListenerPtrOutput) ToListenerPtrOutput() ListenerPtrOutput {
+	return o
+}
+
+func (o ListenerPtrOutput) ToListenerPtrOutputWithContext(ctx context.Context) ListenerPtrOutput {
+	return o
+}
+
+func (o ListenerPtrOutput) Elem() ListenerOutput {
+	return o.ApplyT(func(v *Listener) Listener {
+		if v != nil {
+			return *v
+		}
+		var ret Listener
+		return ret
+	}).(ListenerOutput)
+}
+
+// Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
+func (o ListenerPtrOutput) AlpnPolicy() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Listener) *string {
+		if v == nil {
+			return nil
+		}
+		return v.AlpnPolicy
+	}).(pulumi.StringPtrOutput)
+}
+
+// ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the `aws.lb.ListenerCertificate` resource.
+func (o ListenerPtrOutput) CertificateArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Listener) *string {
+		if v == nil {
+			return nil
+		}
+		return v.CertificateArn
+	}).(pulumi.StringPtrOutput)
+}
+
+// Configuration block for default actions. Detailed below.
+func (o ListenerPtrOutput) DefaultActions() lb.ListenerDefaultActionArrayOutput {
+	return o.ApplyT(func(v *Listener) []lb.ListenerDefaultAction {
+		if v == nil {
+			return nil
+		}
+		return v.DefaultActions
+	}).(lb.ListenerDefaultActionArrayOutput)
+}
+
+// Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+func (o ListenerPtrOutput) Port() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *Listener) *int {
+		if v == nil {
+			return nil
+		}
+		return v.Port
+	}).(pulumi.IntPtrOutput)
+}
+
+// Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+func (o ListenerPtrOutput) Protocol() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Listener) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Protocol
+	}).(pulumi.StringPtrOutput)
+}
+
+// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
+func (o ListenerPtrOutput) SslPolicy() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *Listener) *string {
+		if v == nil {
+			return nil
+		}
+		return v.SslPolicy
+	}).(pulumi.StringPtrOutput)
+}
+
+// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o ListenerPtrOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *Listener) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.Tags
+	}).(pulumi.StringMapOutput)
+}
+
+type ListenerArrayOutput struct{ *pulumi.OutputState }
+
+func (ListenerArrayOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*[]Listener)(nil)).Elem()
+}
+
+func (o ListenerArrayOutput) ToListenerArrayOutput() ListenerArrayOutput {
+	return o
+}
+
+func (o ListenerArrayOutput) ToListenerArrayOutputWithContext(ctx context.Context) ListenerArrayOutput {
+	return o
+}
+
+func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
+	return pulumi.All(o, i).ApplyT(func(vs []interface{}) Listener {
+		return vs[0].([]Listener)[vs[1].(int)]
+	}).(ListenerOutput)
+}
+
 // Provides a Target Group resource for use with Load Balancer resources.
 //
 // > **Note:** `aws.alb.TargetGroup` is known as `aws.lb.TargetGroup`. The functionality is identical.
@@ -494,5 +1405,657 @@ type TargetGroup struct {
 	VpcId *string `pulumi:"vpcId"`
 }
 
+// TargetGroupInput is an input type that accepts TargetGroupArgs and TargetGroupOutput values.
+// You can construct a concrete instance of `TargetGroupInput` via:
+//
+//          TargetGroupArgs{...}
+type TargetGroupInput interface {
+	pulumi.Input
+
+	ToTargetGroupOutput() TargetGroupOutput
+	ToTargetGroupOutputWithContext(context.Context) TargetGroupOutput
+}
+
+// Provides a Target Group resource for use with Load Balancer resources.
+//
+// > **Note:** `aws.alb.TargetGroup` is known as `aws.lb.TargetGroup`. The functionality is identical.
+//
+// ## Example Usage
+// ### Instance Target Group
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(80),
+// 			Protocol: pulumi.String("HTTP"),
+// 			VpcId:    main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### IP Target Group
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroupArgs{
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("HTTP"),
+// 			TargetType: pulumi.String("ip"),
+// 			VpcId:      main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Lambda Target Group
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("lambda"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### ALB Target Group
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("alb"),
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("TCP"),
+// 			VpcId:      pulumi.Any(aws_vpc.Main.Id),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+//
+// ## Import
+//
+// Target Groups can be imported using their ARN, e.g.,
+//
+// ```sh
+//  $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
+// ```
+type TargetGroupArgs struct {
+	// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.
+	ConnectionTermination pulumi.BoolPtrInput `pulumi:"connectionTermination"`
+	// Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. The default value is 300 seconds.
+	DeregistrationDelay pulumi.IntPtrInput `pulumi:"deregistrationDelay"`
+	// Health Check configuration block. Detailed below.
+	HealthCheck lb.TargetGroupHealthCheckPtrInput `pulumi:"healthCheck"`
+	// Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
+	LambdaMultiValueHeadersEnabled pulumi.BoolPtrInput `pulumi:"lambdaMultiValueHeadersEnabled"`
+	// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
+	LoadBalancingAlgorithmType pulumi.StringPtrInput `pulumi:"loadBalancingAlgorithmType"`
+	// Name of the target group. If omitted, this provider will assign a random, unique name.
+	Name pulumi.StringPtrInput `pulumi:"name"`
+	// Creates a unique name beginning with the specified prefix. Conflicts with `name`. Cannot be longer than 6 characters.
+	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
+	// Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+	Port pulumi.IntPtrInput `pulumi:"port"`
+	// Whether client IP preservation is enabled. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation) for more information.
+	PreserveClientIp pulumi.StringPtrInput `pulumi:"preserveClientIp"`
+	// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+	Protocol pulumi.StringPtrInput `pulumi:"protocol"`
+	// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+	ProtocolVersion pulumi.StringPtrInput `pulumi:"protocolVersion"`
+	// Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
+	ProxyProtocolV2 pulumi.BoolPtrInput `pulumi:"proxyProtocolV2"`
+	// Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
+	SlowStart pulumi.IntPtrInput `pulumi:"slowStart"`
+	// Stickiness configuration block. Detailed below.
+	Stickiness lb.TargetGroupStickinessPtrInput `pulumi:"stickiness"`
+	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	Tags pulumi.StringMapInput `pulumi:"tags"`
+	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+	TargetType pulumi.StringPtrInput `pulumi:"targetType"`
+	// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
+	VpcId pulumi.StringPtrInput `pulumi:"vpcId"`
+}
+
+func (TargetGroupArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*TargetGroup)(nil)).Elem()
+}
+
+func (i TargetGroupArgs) ToTargetGroupOutput() TargetGroupOutput {
+	return i.ToTargetGroupOutputWithContext(context.Background())
+}
+
+func (i TargetGroupArgs) ToTargetGroupOutputWithContext(ctx context.Context) TargetGroupOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(TargetGroupOutput)
+}
+
+func (i TargetGroupArgs) ToTargetGroupPtrOutput() TargetGroupPtrOutput {
+	return i.ToTargetGroupPtrOutputWithContext(context.Background())
+}
+
+func (i TargetGroupArgs) ToTargetGroupPtrOutputWithContext(ctx context.Context) TargetGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(TargetGroupOutput).ToTargetGroupPtrOutputWithContext(ctx)
+}
+
+// TargetGroupPtrInput is an input type that accepts TargetGroupArgs, TargetGroupPtr and TargetGroupPtrOutput values.
+// You can construct a concrete instance of `TargetGroupPtrInput` via:
+//
+//          TargetGroupArgs{...}
+//
+//  or:
+//
+//          nil
+type TargetGroupPtrInput interface {
+	pulumi.Input
+
+	ToTargetGroupPtrOutput() TargetGroupPtrOutput
+	ToTargetGroupPtrOutputWithContext(context.Context) TargetGroupPtrOutput
+}
+
+type targetGroupPtrType TargetGroupArgs
+
+func TargetGroupPtr(v *TargetGroupArgs) TargetGroupPtrInput {
+	return (*targetGroupPtrType)(v)
+}
+
+func (*targetGroupPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**TargetGroup)(nil)).Elem()
+}
+
+func (i *targetGroupPtrType) ToTargetGroupPtrOutput() TargetGroupPtrOutput {
+	return i.ToTargetGroupPtrOutputWithContext(context.Background())
+}
+
+func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Context) TargetGroupPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(TargetGroupPtrOutput)
+}
+
+// Provides a Target Group resource for use with Load Balancer resources.
+//
+// > **Note:** `aws.alb.TargetGroup` is known as `aws.lb.TargetGroup`. The functionality is identical.
+//
+// ## Example Usage
+// ### Instance Target Group
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(80),
+// 			Protocol: pulumi.String("HTTP"),
+// 			VpcId:    main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### IP Target Group
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroupArgs{
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("HTTP"),
+// 			TargetType: pulumi.String("ip"),
+// 			VpcId:      main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### Lambda Target Group
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("lambda"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+// ### ALB Target Group
+// ```go
+// package main
+//
+// import (
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+// )
+//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("alb"),
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("TCP"),
+// 			VpcId:      pulumi.Any(aws_vpc.Main.Id),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
+// ```
+//
+// ## Import
+//
+// Target Groups can be imported using their ARN, e.g.,
+//
+// ```sh
+//  $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
+// ```
+type TargetGroupOutput struct{ *pulumi.OutputState }
+
+func (TargetGroupOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*TargetGroup)(nil)).Elem()
+}
+
+func (o TargetGroupOutput) ToTargetGroupOutput() TargetGroupOutput {
+	return o
+}
+
+func (o TargetGroupOutput) ToTargetGroupOutputWithContext(ctx context.Context) TargetGroupOutput {
+	return o
+}
+
+func (o TargetGroupOutput) ToTargetGroupPtrOutput() TargetGroupPtrOutput {
+	return o.ToTargetGroupPtrOutputWithContext(context.Background())
+}
+
+func (o TargetGroupOutput) ToTargetGroupPtrOutputWithContext(ctx context.Context) TargetGroupPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v TargetGroup) *TargetGroup {
+		return &v
+	}).(TargetGroupPtrOutput)
+}
+
+// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.
+func (o TargetGroupOutput) ConnectionTermination() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *bool { return v.ConnectionTermination }).(pulumi.BoolPtrOutput)
+}
+
+// Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. The default value is 300 seconds.
+func (o TargetGroupOutput) DeregistrationDelay() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *int { return v.DeregistrationDelay }).(pulumi.IntPtrOutput)
+}
+
+// Health Check configuration block. Detailed below.
+func (o TargetGroupOutput) HealthCheck() lb.TargetGroupHealthCheckPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *lb.TargetGroupHealthCheck { return v.HealthCheck }).(lb.TargetGroupHealthCheckPtrOutput)
+}
+
+// Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
+func (o TargetGroupOutput) LambdaMultiValueHeadersEnabled() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *bool { return v.LambdaMultiValueHeadersEnabled }).(pulumi.BoolPtrOutput)
+}
+
+// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
+func (o TargetGroupOutput) LoadBalancingAlgorithmType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.LoadBalancingAlgorithmType }).(pulumi.StringPtrOutput)
+}
+
+// Name of the target group. If omitted, this provider will assign a random, unique name.
+func (o TargetGroupOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique name beginning with the specified prefix. Conflicts with `name`. Cannot be longer than 6 characters.
+func (o TargetGroupOutput) NamePrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.NamePrefix }).(pulumi.StringPtrOutput)
+}
+
+// Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+func (o TargetGroupOutput) Port() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *int { return v.Port }).(pulumi.IntPtrOutput)
+}
+
+// Whether client IP preservation is enabled. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation) for more information.
+func (o TargetGroupOutput) PreserveClientIp() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.PreserveClientIp }).(pulumi.StringPtrOutput)
+}
+
+// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+func (o TargetGroupOutput) Protocol() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.Protocol }).(pulumi.StringPtrOutput)
+}
+
+// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+func (o TargetGroupOutput) ProtocolVersion() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.ProtocolVersion }).(pulumi.StringPtrOutput)
+}
+
+// Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
+func (o TargetGroupOutput) ProxyProtocolV2() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *bool { return v.ProxyProtocolV2 }).(pulumi.BoolPtrOutput)
+}
+
+// Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
+func (o TargetGroupOutput) SlowStart() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *int { return v.SlowStart }).(pulumi.IntPtrOutput)
+}
+
+// Stickiness configuration block. Detailed below.
+func (o TargetGroupOutput) Stickiness() lb.TargetGroupStickinessPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *lb.TargetGroupStickiness { return v.Stickiness }).(lb.TargetGroupStickinessPtrOutput)
+}
+
+// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o TargetGroupOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v TargetGroup) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+func (o TargetGroupOutput) TargetType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.TargetType }).(pulumi.StringPtrOutput)
+}
+
+// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
+func (o TargetGroupOutput) VpcId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.VpcId }).(pulumi.StringPtrOutput)
+}
+
+type TargetGroupPtrOutput struct{ *pulumi.OutputState }
+
+func (TargetGroupPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**TargetGroup)(nil)).Elem()
+}
+
+func (o TargetGroupPtrOutput) ToTargetGroupPtrOutput() TargetGroupPtrOutput {
+	return o
+}
+
+func (o TargetGroupPtrOutput) ToTargetGroupPtrOutputWithContext(ctx context.Context) TargetGroupPtrOutput {
+	return o
+}
+
+func (o TargetGroupPtrOutput) Elem() TargetGroupOutput {
+	return o.ApplyT(func(v *TargetGroup) TargetGroup {
+		if v != nil {
+			return *v
+		}
+		var ret TargetGroup
+		return ret
+	}).(TargetGroupOutput)
+}
+
+// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.
+func (o TargetGroupPtrOutput) ConnectionTermination() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.ConnectionTermination
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. The default value is 300 seconds.
+func (o TargetGroupPtrOutput) DeregistrationDelay() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *int {
+		if v == nil {
+			return nil
+		}
+		return v.DeregistrationDelay
+	}).(pulumi.IntPtrOutput)
+}
+
+// Health Check configuration block. Detailed below.
+func (o TargetGroupPtrOutput) HealthCheck() lb.TargetGroupHealthCheckPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *lb.TargetGroupHealthCheck {
+		if v == nil {
+			return nil
+		}
+		return v.HealthCheck
+	}).(lb.TargetGroupHealthCheckPtrOutput)
+}
+
+// Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
+func (o TargetGroupPtrOutput) LambdaMultiValueHeadersEnabled() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.LambdaMultiValueHeadersEnabled
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
+func (o TargetGroupPtrOutput) LoadBalancingAlgorithmType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.LoadBalancingAlgorithmType
+	}).(pulumi.StringPtrOutput)
+}
+
+// Name of the target group. If omitted, this provider will assign a random, unique name.
+func (o TargetGroupPtrOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Name
+	}).(pulumi.StringPtrOutput)
+}
+
+// Creates a unique name beginning with the specified prefix. Conflicts with `name`. Cannot be longer than 6 characters.
+func (o TargetGroupPtrOutput) NamePrefix() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.NamePrefix
+	}).(pulumi.StringPtrOutput)
+}
+
+// Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+func (o TargetGroupPtrOutput) Port() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *int {
+		if v == nil {
+			return nil
+		}
+		return v.Port
+	}).(pulumi.IntPtrOutput)
+}
+
+// Whether client IP preservation is enabled. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation) for more information.
+func (o TargetGroupPtrOutput) PreserveClientIp() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.PreserveClientIp
+	}).(pulumi.StringPtrOutput)
+}
+
+// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+func (o TargetGroupPtrOutput) Protocol() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Protocol
+	}).(pulumi.StringPtrOutput)
+}
+
+// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+func (o TargetGroupPtrOutput) ProtocolVersion() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.ProtocolVersion
+	}).(pulumi.StringPtrOutput)
+}
+
+// Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
+func (o TargetGroupPtrOutput) ProxyProtocolV2() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.ProxyProtocolV2
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
+func (o TargetGroupPtrOutput) SlowStart() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *int {
+		if v == nil {
+			return nil
+		}
+		return v.SlowStart
+	}).(pulumi.IntPtrOutput)
+}
+
+// Stickiness configuration block. Detailed below.
+func (o TargetGroupPtrOutput) Stickiness() lb.TargetGroupStickinessPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *lb.TargetGroupStickiness {
+		if v == nil {
+			return nil
+		}
+		return v.Stickiness
+	}).(lb.TargetGroupStickinessPtrOutput)
+}
+
+// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o TargetGroupPtrOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *TargetGroup) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.Tags
+	}).(pulumi.StringMapOutput)
+}
+
+// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+func (o TargetGroupPtrOutput) TargetType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.TargetType
+	}).(pulumi.StringPtrOutput)
+}
+
+// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
+func (o TargetGroupPtrOutput) VpcId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.VpcId
+	}).(pulumi.StringPtrOutput)
+}
+
 func init() {
+	pulumi.RegisterInputType(reflect.TypeOf((*ListenerInput)(nil)).Elem(), ListenerArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ListenerPtrInput)(nil)).Elem(), ListenerArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*ListenerArrayInput)(nil)).Elem(), ListenerArray{})
+	pulumi.RegisterInputType(reflect.TypeOf((*TargetGroupInput)(nil)).Elem(), TargetGroupArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*TargetGroupPtrInput)(nil)).Elem(), TargetGroupArgs{})
+	pulumi.RegisterOutputType(ListenerOutput{})
+	pulumi.RegisterOutputType(ListenerPtrOutput{})
+	pulumi.RegisterOutputType(ListenerArrayOutput{})
+	pulumi.RegisterOutputType(TargetGroupOutput{})
+	pulumi.RegisterOutputType(TargetGroupPtrOutput{})
 }
