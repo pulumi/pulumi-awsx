@@ -4,8 +4,8 @@ go 1.17
 
 require (
 	github.com/pkg/errors v0.9.1
-	github.com/pulumi/pulumi/pkg/v3 v3.31.1-0.20220503073946-62a228d9b3f0
-	github.com/pulumi/pulumi/sdk/v3 v3.31.1-0.20220503073946-62a228d9b3f0
+	github.com/pulumi/pulumi/pkg/v3 v3.31.1
+	github.com/pulumi/pulumi/sdk/v3 v3.31.1
 )
 
 require (
