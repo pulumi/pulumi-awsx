@@ -92,6 +92,46 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 	})
     /// }
     /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import java.util.*;
+    /// import java.io.*;
+    /// import java.nio.*;
+    /// import com.pulumi.*;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var main = new Vpc("main", VpcArgs.builder()        
+    ///             .cidrBlock("10.0.0.0/16")
+    ///             .build());
+    /// 
+    ///         var test = new TargetGroup("test", TargetGroupArgs.builder()        
+    ///             .port(80)
+    ///             .protocol("HTTP")
+    ///             .vpcId(main.getId())
+    ///             .build());
+    /// 
+    ///         }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   test:
+    ///     type: aws:lb:TargetGroup
+    ///     properties:
+    ///       port: 80
+    ///       protocol: HTTP
+    ///       vpcId: ${main.id}
+    ///   main:
+    ///     type: aws:ec2:Vpc
+    ///     properties:
+    ///       cidrBlock: 10.0.0.0/16
+    /// ```
     /// {{% /example %}}
     /// {{% example %}}
     /// ### IP Target Group
@@ -172,6 +212,48 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 	})
     /// }
     /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import java.util.*;
+    /// import java.io.*;
+    /// import java.nio.*;
+    /// import com.pulumi.*;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var main = new Vpc("main", VpcArgs.builder()        
+    ///             .cidrBlock("10.0.0.0/16")
+    ///             .build());
+    /// 
+    ///         var ip_example = new TargetGroup("ip-example", TargetGroupArgs.builder()        
+    ///             .port(80)
+    ///             .protocol("HTTP")
+    ///             .targetType("ip")
+    ///             .vpcId(main.getId())
+    ///             .build());
+    /// 
+    ///         }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   ip-example:
+    ///     type: aws:lb:TargetGroup
+    ///     properties:
+    ///       port: 80
+    ///       protocol: HTTP
+    ///       targetType: ip
+    ///       vpcId: ${main.id}
+    ///   main:
+    ///     type: aws:ec2:Vpc
+    ///     properties:
+    ///       cidrBlock: 10.0.0.0/16
+    /// ```
     /// {{% /example %}}
     /// {{% example %}}
     /// ### Lambda Target Group
@@ -225,6 +307,34 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 		return nil
     /// 	})
     /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import java.util.*;
+    /// import java.io.*;
+    /// import java.nio.*;
+    /// import com.pulumi.*;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()        
+    ///             .targetType("lambda")
+    ///             .build());
+    /// 
+    ///         }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   lambda-example:
+    ///     type: aws:lb:TargetGroup
+    ///     properties:
+    ///       targetType: lambda
     /// ```
     /// {{% /example %}}
     /// {{% example %}}
@@ -292,6 +402,40 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 		return nil
     /// 	})
     /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import java.util.*;
+    /// import java.io.*;
+    /// import java.nio.*;
+    /// import com.pulumi.*;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()        
+    ///             .targetType("alb")
+    ///             .port(80)
+    ///             .protocol("TCP")
+    ///             .vpcId(aws_vpc.getMain().getId())
+    ///             .build());
+    /// 
+    ///         }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   lambda-example:
+    ///     type: aws:lb:TargetGroup
+    ///     properties:
+    ///       targetType: alb
+    ///       port: 80
+    ///       protocol: TCP
+    ///       vpcId: ${aws_vpc.main.id}
     /// ```
     /// {{% /example %}}
     /// {{% /examples %}}
