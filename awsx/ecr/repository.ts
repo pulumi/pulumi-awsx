@@ -17,121 +17,117 @@ import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 
 export class Repository extends schema.Repository {
-    constructor(
-        name: string,
-        args: schema.RepositoryArgs,
-        opts: pulumi.ComponentResourceOptions,
-    ) {
-        super(name, {}, opts);
-        if (opts.urn) {
-            return; // Rehydrating, skip construction
-        }
-        const lowerCaseName = name.toLowerCase();
-        const { lifecyclePolicy, ...repoArgs } = args;
-
-        this.repository = new aws.ecr.Repository(lowerCaseName, repoArgs, {
-            parent: this,
-        });
-
-        this.url = this.repository.repositoryUrl;
-
-        if (!lifecyclePolicy?.skip) {
-            this.lifecyclePolicy = new aws.ecr.LifecyclePolicy(lowerCaseName, {
-                repository: this.repository.name,
-                policy: buildLifecyclePolicy(lifecyclePolicy),
-            });
-        }
-
-        this.registerOutputs({
-            repository: this.repository,
-            lifecyclePolicy: this.lifecyclePolicy,
-        });
+  constructor(name: string, args: schema.RepositoryArgs, opts: pulumi.ComponentResourceOptions) {
+    super(name, {}, opts);
+    if (opts.urn) {
+      return; // Rehydrating, skip construction
     }
+    const lowerCaseName = name.toLowerCase();
+    const { lifecyclePolicy, ...repoArgs } = args;
+
+    this.repository = new aws.ecr.Repository(lowerCaseName, repoArgs, {
+      parent: this,
+    });
+
+    this.url = this.repository.repositoryUrl;
+
+    if (!lifecyclePolicy?.skip) {
+      this.lifecyclePolicy = new aws.ecr.LifecyclePolicy(lowerCaseName, {
+        repository: this.repository.name,
+        policy: buildLifecyclePolicy(lifecyclePolicy),
+      });
+    }
+
+    this.registerOutputs({
+      repository: this.repository,
+      lifecyclePolicy: this.lifecyclePolicy,
+    });
+  }
 }
 
 function buildLifecyclePolicy(
-    lifecyclePolicy: schema.lifecyclePolicyInputs | undefined,
+  lifecyclePolicy: schema.lifecyclePolicyInputs | undefined,
 ): pulumi.Input<aws.ecr.LifecyclePolicyDocument> {
-    const rules = lifecyclePolicy?.rules;
-    if (!rules) {
-        return convertRules([
-            {
-                description: "remove untagged images",
-                tagStatus: "untagged",
-                maximumNumberOfImages: 1,
-            },
-        ]);
-    }
-    return pulumi.output(rules).apply((rules) => convertRules(rules));
+  const rules = lifecyclePolicy?.rules;
+  if (!rules) {
+    return convertRules([
+      {
+        description: "remove untagged images",
+        tagStatus: "untagged",
+        maximumNumberOfImages: 1,
+      },
+    ]);
+  }
+  return pulumi.output(rules).apply((rules) => convertRules(rules));
 }
 
 function convertRules(
-    rules: pulumi.Unwrap<schema.lifecyclePolicyRuleInputs>[],
+  rules: pulumi.Unwrap<schema.lifecyclePolicyRuleInputs>[],
 ): aws.ecr.LifecyclePolicyDocument {
-    const result: aws.ecr.LifecyclePolicyDocument = { rules: [] };
+  const result: aws.ecr.LifecyclePolicyDocument = { rules: [] };
 
-    const nonAnyRules = rules.filter((r) => r.tagStatus !== "any");
-    const anyRules = rules.filter((r) => r.tagStatus === "any");
+  const nonAnyRules = rules.filter((r) => r.tagStatus !== "any");
+  const anyRules = rules.filter((r) => r.tagStatus === "any");
 
-    if (anyRules.length >= 2) {
-        throw new Error(`At most one [selection: "any"] rule can be provided.`);
-    }
+  if (anyRules.length >= 2) {
+    throw new Error(`At most one [selection: "any"] rule can be provided.`);
+  }
 
-    // Place the 'any' rule last so it has higest priority.
-    const orderedRules = [...nonAnyRules, ...anyRules];
+  // Place the 'any' rule last so it has higest priority.
+  const orderedRules = [...nonAnyRules, ...anyRules];
 
-    let rulePriority = 1;
-    for (const rule of orderedRules) {
-        result.rules.push(convertRule(rule, rulePriority));
-        rulePriority++;
-    }
+  let rulePriority = 1;
+  for (const rule of orderedRules) {
+    result.rules.push(convertRule(rule, rulePriority));
+    rulePriority++;
+  }
 
-    return result;
+  return result;
 }
 
 function convertRule(
-    rule: pulumi.Unwrap<schema.lifecyclePolicyRuleInputs>,
-    rulePriority: number,
+  rule: pulumi.Unwrap<schema.lifecyclePolicyRuleInputs>,
+  rulePriority: number,
 ): aws.ecr.PolicyRule {
-    return {
-        rulePriority,
-        description: rule.description,
-        selection: { ...convertTag(), ...convertCount() },
-        action: { type: "expire" },
-    };
+  return {
+    rulePriority,
+    description: rule.description,
+    selection: { ...convertTag(), ...convertCount() },
+    action: { type: "expire" },
+  };
 
-    function convertCount() {
-        if (rule.maximumNumberOfImages !== undefined) {
-            return {
-                countType: "imageCountMoreThan",
-                countNumber: rule.maximumNumberOfImages,
-                countUnit: undefined,
-            } as const;
-        } else if (rule.maximumAgeLimit !== undefined) {
-            return {
-                countType: "sinceImagePushed",
-                countNumber: rule.maximumAgeLimit,
-                countUnit: "days",
-            } as const;
-        } else {
-            throw new Error(
-                "Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided with a rule.",
-            );
-        }
+  function convertCount() {
+    if (rule.maximumNumberOfImages !== undefined) {
+      return {
+        countType: "imageCountMoreThan",
+        countNumber: rule.maximumNumberOfImages,
+        countUnit: undefined,
+      } as const;
+    } else if (rule.maximumAgeLimit !== undefined) {
+      return {
+        countType: "sinceImagePushed",
+        countNumber: rule.maximumAgeLimit,
+        countUnit: "days",
+      } as const;
+    } else {
+      throw new Error(
+        "Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided with a rule.",
+      );
     }
+  }
 
-    function convertTag() {
-        if (rule.tagStatus === "any" || rule.tagStatus === "untagged") {
-            return { tagStatus: rule.tagStatus };
-        } else {
-            if (!rule.tagPrefixList || rule.tagPrefixList.length === 0) {
-                throw new Error("tagPrefixList cannot be empty.");
-            }
+  function convertTag() {
+    if (rule.tagStatus === "any" || rule.tagStatus === "untagged") {
+      return { tagStatus: rule.tagStatus };
+    } else {
+      if (!rule.tagPrefixList || rule.tagPrefixList.length === 0) {
+        throw new Error("tagPrefixList cannot be empty.");
+      }
 
-            return {
-                tagStatus: "tagged",
-                tagPrefixList: rule.tagPrefixList,
-            } as const;
-        }
+      return {
+        tagStatus: "tagged",
+        tagPrefixList: rule.tagPrefixList,
+      } as const;
     }
+  }
 }

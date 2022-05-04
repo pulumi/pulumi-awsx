@@ -39,7 +39,12 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs("dummy", "10.0.0.0/16", ["us-east-1a", "us-east-1b", "us-east-1c"], inputs);
+    const subnetSpecs = getSubnetSpecs(
+      "dummy",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b", "us-east-1c"],
+      inputs,
+    );
 
     expect(getOverlappingSubnets(subnetSpecs)).toEqual([]);
   });
@@ -56,7 +61,12 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs("dummy", "10.0.0.0/16", ["us-east-1a", "us-east-1b", "us-east-1c"], inputs);
+    const subnetSpecs = getSubnetSpecs(
+      "dummy",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b", "us-east-1c"],
+      inputs,
+    );
 
     expect(getOverlappingSubnets(subnetSpecs)).toEqual([]);
   });
@@ -73,7 +83,12 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs("dummy", "10.0.0.0/16", ["us-east-1a", "us-east-1b", "us-east-1c"], inputs);
+    const subnetSpecs = getSubnetSpecs(
+      "dummy",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b", "us-east-1c"],
+      inputs,
+    );
 
     expect(getOverlappingSubnets(subnetSpecs)).toEqual([]);
   });
@@ -94,7 +109,12 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs("dummy", "10.0.0.0/16", ["us-east-1a", "us-east-1b", "us-east-1c"], inputs);
+    const subnetSpecs = getSubnetSpecs(
+      "dummy",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b", "us-east-1c"],
+      inputs,
+    );
 
     expect(getOverlappingSubnets(subnetSpecs)).toEqual([]);
   });
@@ -115,7 +135,12 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs("dummy", "10.0.0.0/16", ["us-east-1a", "us-east-1b", "us-east-1c"], inputs);
+    const subnetSpecs = getSubnetSpecs(
+      "dummy",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b", "us-east-1c"],
+      inputs,
+    );
 
     expect(getOverlappingSubnets(subnetSpecs)).toEqual([]);
   });
@@ -148,7 +173,12 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs("dummy", "10.0.0.0/16", ["us-east-1a", "us-east-1b", "us-east-1c"], inputs);
+    const subnetSpecs = getSubnetSpecs(
+      "dummy",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b", "us-east-1c"],
+      inputs,
+    );
 
     expect(getOverlappingSubnets(subnetSpecs)).toEqual([]);
   });

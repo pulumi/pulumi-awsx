@@ -23,69 +23,49 @@ import { EC2TaskDefinition } from "./ec2TaskDefinition";
  * Creates Task definition if `taskDefinitionArgs` is specified.
  */
 export class EC2Service extends schema.EC2Service {
-    constructor(
-        name: string,
-        args: schema.EC2ServiceArgs,
-        opts: pulumi.ComponentResourceOptions = {},
-    ) {
-        super(
-            name,
-            {},
-            {
-                ...opts,
-                aliases: [
-                    { type: "awsx:x:ecs:EC2Service" },
-                    ...(opts?.aliases ?? []),
-                ],
-            },
-        );
+  constructor(
+    name: string,
+    args: schema.EC2ServiceArgs,
+    opts: pulumi.ComponentResourceOptions = {},
+  ) {
+    super(
+      name,
+      {},
+      {
+        ...opts,
+        aliases: [{ type: "awsx:x:ecs:EC2Service" }, ...(opts?.aliases ?? [])],
+      },
+    );
 
-        if (
-            args.taskDefinition !== undefined &&
-            args.taskDefinitionArgs !== undefined
-        ) {
-            throw new Error(
-                "Only one of `taskDefinition` or `taskDefinitionArgs` can be provided.",
-            );
-        }
-        let taskDefinitionIdentifier = args.taskDefinition;
-        let taskDefinition: EC2TaskDefinition | undefined;
-        if (args.taskDefinitionArgs) {
-            taskDefinition = new EC2TaskDefinition(
-                name,
-                args.taskDefinitionArgs,
-                {
-                    parent: this,
-                },
-            );
-            this.taskDefinition = taskDefinition.taskDefinition;
-            taskDefinitionIdentifier = taskDefinition.taskDefinition.arn;
-        }
-        if (taskDefinitionIdentifier === undefined) {
-            throw new Error(
-                "Either `taskDefinition` or `taskDefinitionArgs` must be provided.",
-            );
-        }
-
-        this.service = new aws.ecs.Service(
-            name,
-            {
-                ...args,
-                cluster: aws.ecs.Cluster.isInstance(args.cluster)
-                    ? args.cluster.arn
-                    : args.cluster,
-                launchType: "EC2",
-                loadBalancers:
-                    args.loadBalancers ?? taskDefinition?.loadBalancers,
-                waitForSteadyState: !utils.ifUndefined(
-                    args.continueBeforeSteadyState,
-                    false,
-                ),
-                taskDefinition: taskDefinitionIdentifier,
-            },
-            { parent: this },
-        );
-
-        this.registerOutputs();
+    if (args.taskDefinition !== undefined && args.taskDefinitionArgs !== undefined) {
+      throw new Error("Only one of `taskDefinition` or `taskDefinitionArgs` can be provided.");
     }
+    let taskDefinitionIdentifier = args.taskDefinition;
+    let taskDefinition: EC2TaskDefinition | undefined;
+    if (args.taskDefinitionArgs) {
+      taskDefinition = new EC2TaskDefinition(name, args.taskDefinitionArgs, {
+        parent: this,
+      });
+      this.taskDefinition = taskDefinition.taskDefinition;
+      taskDefinitionIdentifier = taskDefinition.taskDefinition.arn;
+    }
+    if (taskDefinitionIdentifier === undefined) {
+      throw new Error("Either `taskDefinition` or `taskDefinitionArgs` must be provided.");
+    }
+
+    this.service = new aws.ecs.Service(
+      name,
+      {
+        ...args,
+        cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
+        launchType: "EC2",
+        loadBalancers: args.loadBalancers ?? taskDefinition?.loadBalancers,
+        waitForSteadyState: !utils.ifUndefined(args.continueBeforeSteadyState, false),
+        taskDefinition: taskDefinitionIdentifier,
+      },
+      { parent: this },
+    );
+
+    this.registerOutputs();
+  }
 }
