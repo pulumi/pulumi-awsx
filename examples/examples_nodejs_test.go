@@ -104,7 +104,7 @@ func TestEcrSimple(t *testing.T) {
 }
 
 func TestDefaultVpc(t *testing.T) {
-	t.Skip("https://github.com/pulumi/pulumi-awsx/issues/784")
+	t.Skip("https://github.com/pulumi/pulumi-awsx/issues/788")
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
