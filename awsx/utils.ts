@@ -14,7 +14,6 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-
 import * as crypto from "crypto";
 
 type Diff<T extends string | number | symbol, U extends string | number | symbol> = ({
@@ -185,4 +184,28 @@ export function parseArn(arn: string): Arn {
     };
   }
   return { ...simpleProps, resourceId: resourceIdOrType };
+}
+
+// https://github.com/pulumi/pulumi-docker/blob/master/sdk/nodejs/utils.ts#L15-L30
+/**
+ * @internal
+ */
+export function getImageNameAndTag(baseImageName: string): {
+  imageName: string;
+  tag: string | undefined;
+} {
+  // From https://docs.docker.com/engine/reference/commandline/tag
+  //
+  // "A tag name must be valid ASCII and may contain lowercase and uppercase letters, digits,
+  // underscores, periods and dashes. A tag name may not start with a period or a dash and may
+  // contain a maximum of 128 characters."
+  //
+  // So it is safe for us to just look for the colon, and consume whatever follows as the tag
+  // for the image.
+
+  const lastColon = baseImageName.lastIndexOf(":");
+  const imageName = lastColon < 0 ? baseImageName : baseImageName.substr(0, lastColon);
+  const tag = lastColon < 0 ? undefined : baseImageName.substr(lastColon + 1);
+
+  return { imageName, tag };
 }
