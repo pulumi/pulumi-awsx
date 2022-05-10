@@ -104,6 +104,9 @@ export class Vpc extends schema.Vpc<VpcData> {
       `${name}`,
       {
         vpcId: vpc.id,
+        tags: {
+          Name: name,
+        },
       },
       { parent: vpc, dependsOn: [vpc] },
     );
