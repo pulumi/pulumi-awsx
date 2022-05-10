@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO: Appropriately credit James Nugent
+// Code adapted from https://github.com/jen20/pulumi-aws-vpc/blob/master/nodejs/src/subnetDistributor.ts
+// and adapted with approval from James Nugent under MPL v2.0 license
 
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 
@@ -44,9 +45,9 @@ export function getSubnetSpecs(
   const ipv4 = new ipAddress.Address4(azBases[0]);
   const baseSubnetMask = ipv4.subnetMask;
 
-  const privateSubnetsIn = subnetInputs.filter((x) => x.type === "Private");
-  const publicSubnetsIn = subnetInputs.filter((x) => x.type === "Public");
-  const isolatedSubnetsIn = subnetInputs.filter((x) => x.type === "Isolated");
+  const privateSubnetsIn = subnetInputs.filter((x) => x.type.toLowerCase() === "private");
+  const publicSubnetsIn = subnetInputs.filter((x) => x.type.toLowerCase() === "public");
+  const isolatedSubnetsIn = subnetInputs.filter((x) => x.type.toLowerCase() === "isolated");
 
   let subnetsOut: SubnetSpec[] = [];
 

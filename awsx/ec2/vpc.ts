@@ -128,7 +128,7 @@ export class Vpc extends schema.Vpc<VpcData> {
             {
               vpcId: vpc.id,
               availabilityZone: spec.azName,
-              mapPublicIpOnLaunch: spec.type === "Public",
+              mapPublicIpOnLaunch: spec.type.toLowerCase() === "public",
               cidrBlock: spec.cidrBlock,
               tags: {
                 Name: spec.subnetName,
@@ -137,9 +137,9 @@ export class Vpc extends schema.Vpc<VpcData> {
             { parent: vpc, dependsOn: [vpc] },
           );
           subnets.push(subnet);
-          if (spec.type === "Public") {
+          if (spec.type.toLowerCase() === "public") {
             publicSubnetIds.push(subnet.id);
-          } else if (spec.type === "Private") {
+          } else if (spec.type.toLowerCase() === "private") {
             privateSubnetIds.push(subnet.id);
           } else {
             isolatedSubnetIds.push(subnet.id);
@@ -168,7 +168,7 @@ export class Vpc extends schema.Vpc<VpcData> {
           routeTableAssociations.push(routeTableAssoc);
 
           if (
-            spec.type === "Public" &&
+            spec.type.toLowerCase() === "public" &&
             shouldCreateNatGateway(natGatewayStrategy, natGateways.length, i)
           ) {
             const createEip = allocationIds.length === 0;
@@ -196,7 +196,7 @@ export class Vpc extends schema.Vpc<VpcData> {
             natGateways.push(natGateway);
           }
 
-          if (spec.type === "Public") {
+          if (spec.type.toLowerCase() === "public") {
             // Public subnets communicate directly with the internet via the Internet Gateway.
             const route = new aws.ec2.Route(
               spec.subnetName,
@@ -208,13 +208,13 @@ export class Vpc extends schema.Vpc<VpcData> {
               { parent: routeTable, dependsOn: [routeTable] },
             );
             routes.push(route);
-          } else if (spec.type === "Private") {
+          } else if (spec.type.toLowerCase() === "private") {
             // Private subnets communicate indirectly with the internet via a NAT Gateway.
 
             // Because we've already validated the strategy and have ensured that public subnets are created
             // first via the sort above, we know the necessary NAT Gateway already exists.
             const natGatewayId =
-              natGatewayStrategy === "Single" ? natGateways[0].id : natGateways[i].id;
+              natGatewayStrategy.toLowerCase() === "single" ? natGateways[0].id : natGateways[i].id;
 
             const route = new aws.ec2.Route(
               spec.subnetName,
@@ -272,22 +272,22 @@ export function validateEips(
   // specified, 1/3 of the traffic coming from the VPC will be seemingly randomly rejected, which is a difficult
   // and frustrating problem to debug. Therefore, we feel it's better to be strict about the acceptable inputs to
   // avoid potentially confusing problems in production.
-  switch (natGatewayStrategy) {
-    case "None":
+  switch (natGatewayStrategy.toLowerCase()) {
+    case "none":
       if (eips?.length ?? 0 !== 0) {
         throw new Error(
           `Elastic IP allocation IDs cannot be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`,
         );
       }
       break;
-    case "Single":
+    case "single":
       if (eips && eips.length > 1) {
         throw new Error(
           `Exactly one Elastic IP may be specified when NAT Gateway strategy is '${natGatewayStrategy}'.`,
         );
       }
       break;
-    case "OnePerAz":
+    case "oneperaz":
       if (eips && eips.length > 0 && eips.length !== availabilityZones.length) {
         throw new Error(
           `The number of Elastic IPs, if specified, must match the number of availability zones for the VPC (${availabilityZones.length}) when NAT Gateway strategy is '${natGatewayStrategy}'`,
@@ -304,17 +304,20 @@ export function validateNatGatewayStrategy(
   subnets: SubnetSpec[],
 ) {
   // This logic assumes that the same subnets exist in every AZ:
-  switch (natGatewayStrategy) {
-    case "OnePerAz":
-    case "Single":
-      if (subnets.some((x) => x.type === "Public") && subnets.some((x) => x.type === "Private")) {
+  switch (natGatewayStrategy.toLowerCase()) {
+    case "oneperaz":
+    case "single":
+      if (
+        subnets.some((x) => x.type.toLowerCase() === "public") &&
+        subnets.some((x) => x.type.toLowerCase() === "private")
+      ) {
         return;
       }
       throw new Error(
         "If NAT Gateway strategy is 'OnePerAz' or 'Single', both private and public subnets must be declared. The private subnet creates the need for a NAT Gateway, and the public subnet is required to host the NAT Gateway resource.",
       );
-    case "None":
-      if (subnets.some((x) => x.type === "Private")) {
+    case "none":
+      if (subnets.some((x) => x.type.toLowerCase() === "private")) {
         throw new Error("If private subnets are specified, NAT Gateway strategy cannot be 'None'.");
       }
       break;
@@ -328,12 +331,12 @@ export function shouldCreateNatGateway(
   numGateways: number,
   azIndex: number,
 ) {
-  switch (strategy) {
-    case "None":
+  switch (strategy.toLowerCase()) {
+    case "none":
       return false;
-    case "Single":
+    case "single":
       return numGateways < 1;
-    case "OnePerAz":
+    case "oneperaz":
       return numGateways < azIndex + 1;
     default:
       throw new Error(`Unknown NatGatewayStrategy "${strategy}"`);
@@ -346,15 +349,15 @@ export function compareSubnetSpecs(spec1: SubnetSpec, spec2: SubnetSpec): number
   }
 
   // Public always comes first
-  if (spec1.type === "Public") {
+  if (spec1.type.toLowerCase() === "public") {
     return -1;
   }
 
-  if (spec1.type === "Private" && spec2.type === "Public") {
+  if (spec1.type.toLowerCase() === "private" && spec2.type.toLowerCase() === "public") {
     return 1;
   }
 
-  if (spec1.type === "Private" && spec2.type === "Isolated") {
+  if (spec1.type.toLowerCase() === "private" && spec2.type.toLowerCase() === "isolated") {
     return -1;
   }
 

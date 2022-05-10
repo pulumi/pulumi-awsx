@@ -25,6 +25,7 @@ provider:: schema ensure_provider
 	rm -rf awsx/bin
 	cd awsx && \
 		yarn tsc && \
+		yarn test && \
 		cp package.json schema.json yarn.lock ${PROVIDER} ${PROVIDER}.cmd PulumiPlugin.yaml ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
 
