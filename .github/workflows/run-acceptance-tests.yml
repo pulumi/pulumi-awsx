@@ -6,6 +6,7 @@ env:
   PROVIDER: awsx
   PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
   PULUMI_API: https://api.pulumi-staging.io
+  PULUMI_GO_DEP_ROOT: ${{ github.workspace }}/..
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   PR_COMMIT_SHA: ${{ github.event.client_payload.pull_request.head.sha }}
   PULUMI_LOCAL_NUGET: ${{ github.workspace }}/nuget
