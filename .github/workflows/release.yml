@@ -13,7 +13,7 @@ env:
   PULUMI_LOCAL_NUGET: ${{ github.workspace }}/nuget
 jobs:
   lint:
-    name: lint
+    name: Lint and Unit Tests
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
@@ -40,6 +40,8 @@ jobs:
         run: make lint
       - name: Lint classic AWSX Code
         run: make lint-classic
+      - name: Run provider unit tests
+        run: make test_provider
   prerequisites:
     runs-on: ubuntu-latest
     steps:
@@ -78,7 +80,8 @@ jobs:
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Tar provider binaries
-        run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace
+        run:
+          tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace
           }}/${{ env.PROVIDER }}/bin/ .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -147,7 +150,8 @@ jobs:
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Compress SDK folder
-        run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
+        run:
+          tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
           .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -204,10 +208,12 @@ jobs:
           name: ${{ env.PROVIDER }}-provider.tar.gz
           path: ${{ github.workspace }}/bin
       - name: Untar provider binaries
-        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
+        run:
+          tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
           }}/bin
       - name: Restore binary perms
-        run: find ${{ github.workspace }}/bin -name "pulumi-*-${{ env.PROVIDER }}" -print
+        run:
+          find ${{ github.workspace }}/bin -name "pulumi-*-${{ env.PROVIDER }}" -print
           -exec chmod +x {} \;
       - name: Create Provider Binaries
         run: make dist
@@ -354,10 +360,12 @@ jobs:
           name: ${{ env.PROVIDER }}-provider.tar.gz
           path: ${{ github.workspace }}/bin
       - name: Untar provider binaries
-        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
+        run:
+          tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
           }}/bin
       - name: Restore binary perms
-        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
+        run:
+          find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
           -exec chmod +x {} \;
       - name: Update path
         run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
@@ -411,4 +419,4 @@ name: release
   push:
     tags:
       - v*.*.*
-      - '!v*.*.*-**'
+      - "!v*.*.*-**"
