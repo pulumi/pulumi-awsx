@@ -26,7 +26,7 @@ func TestAccTrail(t *testing.T) {
 	test := getGoBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "go-trail"),
+			Dir:           filepath.Join(getCwd(t), "cloudtrail", "go"),
 		})
 
 	integration.ProgramTest(t, &test)
