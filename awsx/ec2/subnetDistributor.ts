@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Code adapted from https://github.com/jen20/pulumi-aws-vpc/blob/master/nodejs/src/subnetDistributor.ts
-// and adapted with approval from James Nugent under MPL v2.0 license
+// and used in accordance with MPL v2.0 license
 
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 
