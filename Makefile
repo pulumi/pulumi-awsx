@@ -41,7 +41,7 @@ pre_dist:: provider
 dist:: pre_dist
 	mkdir -p dist
 	cd bin && \
-		npx --yes -- pkg index.js --compress GZip --target node17-macos-x64,node17-macos-arm64,node17-linux-x64,node17-win-x64 --output ../dist/out
+		npx --yes -- pkg . --compress GZip --target node17-macos-x64,node17-macos-arm64,node17-linux-x64,node17-win-x64 --output ../dist/out
 	cd dist && \
 		mv -f out-linux-x64 pulumi-resource-${PACK}-v${VERSION}-linux-amd64 && \
 		mv -f out-macos-x64 pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 && \
@@ -50,7 +50,7 @@ dist:: pre_dist
 
 install_provider:: pre_dist
 	cd bin && \
-		npx --yes -- pkg index.js --compress GZip --target node17 --output $(GOBIN)/pulumi-resource-${PACK}
+		npx --yes -- pkg . --compress GZip --target node17 --output $(GOBIN)/pulumi-resource-${PACK}
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
 build_nodejs::
