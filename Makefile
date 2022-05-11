@@ -9,8 +9,9 @@ CODEGEN         := pulumi-gen-${PACK}
 
 WORKING_DIR     := $(shell pwd)
 
-GOPATH ?= "$(HOME)/go"
-GOBIN  ?= "$(GOPATH)/bin"
+GOPATH 		 ?= "$(HOME)/go"
+GOBIN  		 ?= "$(GOPATH)/bin"
+LanguageTags ?= "all"
 
 build:: provider build_nodejs build_python build_go build_dotnet
 
@@ -31,8 +32,6 @@ provider:: schema ensure_provider
 		yarn test && \
 		cp package.json schema.json yarn.lock ${PROVIDER} ${PROVIDER}.cmd ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
-
-pre_dist:: provider
 	rm -rf bin
 	cp -r awsx/bin bin
 	cd bin && \
@@ -136,8 +135,8 @@ test_dotnet:: install_provider
 test_go:: install_provider
 	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-specific_test:: install_provider
-	cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . --run=TestAcc$(TestName) 2>&1 | tee /tmp/gotest.log | gotestfmt
+specific_test:: 
+	cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h . --run=TestAcc$(TestName) 2>&1 | tee /tmp/gotest.log
 
 generate_schema:: schema
 
