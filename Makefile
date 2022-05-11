@@ -37,7 +37,7 @@ provider:: schema ensure_provider
 	cd bin && \
 		yarn install --production
 
-dist:: pre_dist
+dist:: provider
 	mkdir -p dist
 	cd bin && \
 		npx --yes -- pkg . --compress GZip --target node17-macos-x64,node17-macos-arm64,node17-linux-x64,node17-win-x64 --output ../dist/out
@@ -47,7 +47,7 @@ dist:: pre_dist
 		mv -f out-macos-arm64 pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 && \
 		mv -f out-win-x64.exe pulumi-resource-${PACK}-v${VERSION}-windows-amd64.exe
 
-install_provider:: pre_dist
+install_provider:: provider
 	cd bin && \
 		npx --yes -- pkg . --compress GZip --target node17 --output $(GOBIN)/pulumi-resource-${PACK}
 
