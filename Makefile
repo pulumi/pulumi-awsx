@@ -44,7 +44,7 @@ dist:: provider
 
 install_provider:: provider
 	cd awsx && \
-		yarn pkg bin/index.js --compress GZip --target node17-macos-arm64 --output $(GOBIN)/pulumi-resource-${PACK}
+		yarn pkg bin/index.js --compress GZip --target node17 --output $(GOBIN)/pulumi-resource-${PACK}
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
 build_nodejs::
