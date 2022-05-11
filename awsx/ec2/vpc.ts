@@ -20,6 +20,7 @@ import { getSubnetSpecs, SubnetSpec } from "./subnetDistributor";
 interface VpcData {
   vpc: aws.ec2.Vpc;
   subnets: aws.ec2.Subnet[];
+  vpcEndpoints: aws.ec2.VpcEndpoint[];
   routeTables: aws.ec2.RouteTable[];
   routes: aws.ec2.Route[];
   routeTableAssociations: aws.ec2.RouteTableAssociation[];
@@ -50,6 +51,8 @@ export class Vpc extends schema.Vpc<VpcData> {
     this.privateSubnetIds = data.privateSubnetIds;
     this.publicSubnetIds = data.publicSubnetIds;
     this.isolatedSubnetIds = data.isolatedSubnetIds;
+
+    this.vpcEndpoints = data.vpcEndpoints;
 
     this.vpcId = data.vpcId;
   }
@@ -111,6 +114,7 @@ export class Vpc extends schema.Vpc<VpcData> {
       { parent: vpc, dependsOn: [vpc] },
     );
 
+    const vpcEndpoints: aws.ec2.VpcEndpoint[] = [];
     const subnets: aws.ec2.Subnet[] = [];
     const routeTables: aws.ec2.RouteTable[] = [];
     const routeTableAssociations: aws.ec2.RouteTableAssociation[] = [];
@@ -120,6 +124,28 @@ export class Vpc extends schema.Vpc<VpcData> {
     const publicSubnetIds: pulumi.Output<string>[] = [];
     const privateSubnetIds: pulumi.Output<string>[] = [];
     const isolatedSubnetIds: pulumi.Output<string>[] = [];
+
+    args.vpcEndpointSpecs?.forEach((spec) => {
+      const vpcEndpoint = new aws.ec2.VpcEndpoint(
+        spec.serviceName,
+        {
+          autoAccept: spec.autoAccept,
+          policy: spec.policy,
+          privateDnsEnabled: spec.privateDnsEnabled,
+          routeTableIds: spec.routeTableIds,
+          securityGroupIds: spec.securityGroupIds,
+          subnetIds: spec.subnetIds,
+          tags: spec.tags,
+          vpcEndpointType: spec.vpcEndpointType,
+          vpcId: vpc.id,
+          serviceName: spec.serviceName,
+        },
+        {
+          parent: vpc,
+          dependsOn: [vpc],
+        },
+      );
+    });
 
     for (let i = 0; i < availabilityZones.length; i++) {
       subnetSpecs
@@ -237,6 +263,7 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     return {
       vpc,
+      vpcEndpoints,
       subnets,
       igw,
       routeTables,

@@ -90,7 +90,7 @@ istanbul_tests::
 	cd awsx-classic/tests && \
 		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
 
-install_nodejs_sdk:: build_nodejs
+install_nodejs_sdk:: #build_nodejs
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
 install_dotnet_sdk:: build_dotnet

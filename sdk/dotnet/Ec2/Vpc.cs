@@ -69,6 +69,12 @@ namespace Pulumi.Awsx.Ec2
         [Output("vpc")]
         public Output<Pulumi.Aws.Ec2.Vpc> AwsVpc { get; private set; } = null!;
 
+        /// <summary>
+        /// The VPC Endpoints that are enabled
+        /// </summary>
+        [Output("vpcEndpoints")]
+        public Output<ImmutableArray<Pulumi.Aws.Ec2.VpcEndpoint>> VpcEndpoints { get; private set; } = null!;
+
         [Output("vpcId")]
         public Output<string> VpcId { get; private set; } = null!;
 
@@ -227,6 +233,18 @@ namespace Pulumi.Awsx.Ec2
         {
             get => _tags ?? (_tags = new InputMap<string>());
             set => _tags = value;
+        }
+
+        [Input("vpcEndpointSpecs")]
+        private List<Inputs.VpcEndpointSpecArgs>? _vpcEndpointSpecs;
+
+        /// <summary>
+        /// A list of VPC Endpoints specs to be deployed as part of the VPC
+        /// </summary>
+        public List<Inputs.VpcEndpointSpecArgs> VpcEndpointSpecs
+        {
+            get => _vpcEndpointSpecs ?? (_vpcEndpointSpecs = new List<Inputs.VpcEndpointSpecArgs>());
+            set => _vpcEndpointSpecs = value;
         }
 
         public VpcArgs()

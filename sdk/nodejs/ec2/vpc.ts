@@ -57,6 +57,10 @@ export class Vpc extends pulumi.ComponentResource {
      * The VPC.
      */
     public /*out*/ readonly vpc!: pulumi.Output<pulumiAws.ec2.Vpc>;
+    /**
+     * The VPC Endpoints that are enabled
+     */
+    public /*out*/ readonly vpcEndpoints!: pulumi.Output<pulumiAws.ec2.VpcEndpoint[]>;
     public /*out*/ readonly vpcId!: pulumi.Output<string>;
 
     /**
@@ -88,6 +92,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["numberOfAvailabilityZones"] = args ? args.numberOfAvailabilityZones : undefined;
             resourceInputs["subnetSpecs"] = args ? args.subnetSpecs : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
+            resourceInputs["vpcEndpointSpecs"] = args ? args.vpcEndpointSpecs : undefined;
             resourceInputs["eips"] = undefined /*out*/;
             resourceInputs["internetGateway"] = undefined /*out*/;
             resourceInputs["isolatedSubnetIds"] = undefined /*out*/;
@@ -98,6 +103,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["routes"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
+            resourceInputs["vpcEndpoints"] = undefined /*out*/;
             resourceInputs["vpcId"] = undefined /*out*/;
         } else {
             resourceInputs["eips"] = undefined /*out*/;
@@ -111,6 +117,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["routes"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
+            resourceInputs["vpcEndpoints"] = undefined /*out*/;
             resourceInputs["vpcId"] = undefined /*out*/;
         }
         opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
@@ -197,4 +204,8 @@ export interface VpcArgs {
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */
     tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * A list of VPC Endpoints specs to be deployed as part of the VPC
+     */
+    vpcEndpointSpecs?: inputs.ec2.VpcEndpointSpecArgs[];
 }

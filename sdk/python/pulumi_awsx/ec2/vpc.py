@@ -33,7 +33,8 @@ class VpcArgs:
                  nat_gateways: Optional['NatGatewayConfigurationArgs'] = None,
                  number_of_availability_zones: Optional[int] = None,
                  subnet_specs: Optional[Sequence['SubnetSpecArgs']] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 vpc_endpoint_specs: Optional[Sequence['VpcEndpointSpecArgs']] = None):
         """
         The set of arguments for constructing a Vpc resource.
         :param pulumi.Input[bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
@@ -57,6 +58,7 @@ class VpcArgs:
         :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param Sequence['SubnetSpecArgs'] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param Sequence['VpcEndpointSpecArgs'] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
         """
         if assign_generated_ipv6_cidr_block is not None:
             pulumi.set(__self__, "assign_generated_ipv6_cidr_block", assign_generated_ipv6_cidr_block)
@@ -94,6 +96,8 @@ class VpcArgs:
             pulumi.set(__self__, "subnet_specs", subnet_specs)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
+        if vpc_endpoint_specs is not None:
+            pulumi.set(__self__, "vpc_endpoint_specs", vpc_endpoint_specs)
 
     @property
     @pulumi.getter(name="assignGeneratedIpv6CidrBlock")
@@ -314,6 +318,18 @@ class VpcArgs:
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
 
+    @property
+    @pulumi.getter(name="vpcEndpointSpecs")
+    def vpc_endpoint_specs(self) -> Optional[Sequence['VpcEndpointSpecArgs']]:
+        """
+        A list of VPC Endpoints specs to be deployed as part of the VPC
+        """
+        return pulumi.get(self, "vpc_endpoint_specs")
+
+    @vpc_endpoint_specs.setter
+    def vpc_endpoint_specs(self, value: Optional[Sequence['VpcEndpointSpecArgs']]):
+        pulumi.set(self, "vpc_endpoint_specs", value)
+
 
 class Vpc(pulumi.ComponentResource):
     @overload
@@ -338,6 +354,7 @@ class Vpc(pulumi.ComponentResource):
                  number_of_availability_zones: Optional[int] = None,
                  subnet_specs: Optional[Sequence[pulumi.InputType['SubnetSpecArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 vpc_endpoint_specs: Optional[Sequence[pulumi.InputType['VpcEndpointSpecArgs']]] = None,
                  __props__=None):
         """
         Create a Vpc resource with the given unique name, props, and options.
@@ -364,6 +381,7 @@ class Vpc(pulumi.ComponentResource):
         :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param Sequence[pulumi.InputType['SubnetSpecArgs']] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param Sequence[pulumi.InputType['VpcEndpointSpecArgs']] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
         """
         ...
     @overload
@@ -406,6 +424,7 @@ class Vpc(pulumi.ComponentResource):
                  number_of_availability_zones: Optional[int] = None,
                  subnet_specs: Optional[Sequence[pulumi.InputType['SubnetSpecArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 vpc_endpoint_specs: Optional[Sequence[pulumi.InputType['VpcEndpointSpecArgs']]] = None,
                  __props__=None):
         if opts is None:
             opts = pulumi.ResourceOptions()
@@ -438,6 +457,7 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["number_of_availability_zones"] = number_of_availability_zones
             __props__.__dict__["subnet_specs"] = subnet_specs
             __props__.__dict__["tags"] = tags
+            __props__.__dict__["vpc_endpoint_specs"] = vpc_endpoint_specs
             __props__.__dict__["eips"] = None
             __props__.__dict__["internet_gateway"] = None
             __props__.__dict__["isolated_subnet_ids"] = None
@@ -448,6 +468,7 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["routes"] = None
             __props__.__dict__["subnets"] = None
             __props__.__dict__["vpc"] = None
+            __props__.__dict__["vpc_endpoints"] = None
             __props__.__dict__["vpc_id"] = None
         super(Vpc, __self__).__init__(
             'awsx:ec2:Vpc',
@@ -534,6 +555,14 @@ class Vpc(pulumi.ComponentResource):
         The VPC.
         """
         return pulumi.get(self, "vpc")
+
+    @property
+    @pulumi.getter(name="vpcEndpoints")
+    def vpc_endpoints(self) -> pulumi.Output[Sequence['pulumi_aws.ec2.VpcEndpoint']]:
+        """
+        The VPC Endpoints that are enabled
+        """
+        return pulumi.get(self, "vpc_endpoints")
 
     @property
     @pulumi.getter(name="vpcId")

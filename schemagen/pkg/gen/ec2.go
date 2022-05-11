@@ -33,6 +33,7 @@ func generateEc2(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:ec2:NatGatewayConfiguration": natGatewayConfigurationType(),
 			"awsx:ec2:SubnetType":              subnetType(),
 			"awsx:ec2:SubnetSpec":              subnetSpecType(),
+			"awsx:ec2:VpcEndpointSpec":         vpcEndpointSpec(awsSpec),
 		},
 		Functions: map[string]schema.FunctionSpec{
 			"awsx:ec2:getDefaultVpc": defaultVpcArgs(),
@@ -117,6 +118,10 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Description: fmt.Sprintf("A list of subnet specs that should be deployed to each AZ specified in %s. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.", availabilityZoneNames),
 			TypeSpec:    plainArrayOfPlainComplexType("SubnetSpec"),
 		},
+		"vpcEndpointSpecs": {
+			Description: "A list of VPC Endpoints specs to be deployed as part of the VPC",
+			TypeSpec:    plainArrayOfPlainComplexType("VpcEndpointSpec"),
+		},
 	}
 	for k, v := range awsVpcResource.InputProperties {
 		// We redefine some of the aws.Vpc properties above as plain types because they have default values in the
@@ -141,6 +146,10 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 									"name": "AwsVpc"
 								}`),
 					},
+				},
+				"vpcEndpoints": {
+					Description: "The VPC Endpoints that are enabled",
+					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "vpcEndpoint"),
 				},
 				"subnets": {
 					Description: "The VPC's subnets.",
@@ -202,7 +211,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			},
 			Required: []string{
 				"vpc", "subnets", "routeTables", "routeTableAssociations", "routes", "internetGateway", "natGateways",
-				"eips", "publicSubnetIds", "privateSubnetIds", "isolatedSubnetIds", "vpcId",
+				"eips", "publicSubnetIds", "privateSubnetIds", "isolatedSubnetIds", "vpcId", "vpcEndpoints",
 			},
 		},
 		InputProperties: inputProperties,
@@ -236,6 +245,48 @@ func awsType(packageSpec schema.PackageSpec, awsNamespace, resourceNameCamelCase
 	)
 	return schema.TypeSpec{
 		Ref: packageRef(packageSpec, awsRefInput),
+	}
+}
+
+func vpcEndpointSpec(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+	spec := awsSpec.Resources["aws:ec2/vpcEndpoint:VpcEndpoint"]
+	properties := renameAwsPropertiesRefs(awsSpec, spec.InputProperties)
+	delete(properties, "vpcId")
+
+	properties["serviceName"] = schema.PropertySpec{
+		Description: "The service name. For AWS services the service name is usually in the form " +
+			"`com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the " +
+			"service name is in the form `aws.sagemaker.<region>.notebook`).",
+		TypeSpec: schema.TypeSpec{
+			Type:  "string",
+			Plain: true,
+		},
+	}
+
+	properties["autoAccept"] = schema.PropertySpec{
+		Description: "Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).",
+		TypeSpec: schema.TypeSpec{
+			Type:  "boolean",
+			Plain: true,
+		},
+	}
+
+	properties["privateDnsEnabled"] = schema.PropertySpec{
+		Description: "Whether or not to associate a private hosted zone with the specified VPC. Applicable " +
+			"for endpoints of type Interface. Defaults to `false`.",
+		TypeSpec: schema.TypeSpec{
+			Type:  "boolean",
+			Plain: true,
+		},
+	}
+
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: spec.Description,
+			Properties:  properties,
+			Required:    []string{"serviceName"},
+		},
 	}
 }
 
