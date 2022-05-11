@@ -32,17 +32,23 @@ provider:: schema ensure_provider
 		cp package.json schema.json yarn.lock ${PROVIDER} ${PROVIDER}.cmd ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
 
-dist:: provider
+pre_dist:: provider
+	rm -rf bin
+	cp -r awsx/bin bin
+	cd bin && \
+		yarn install --production
+
+dist:: pre_dist
 	mkdir -p dist
-	cd awsx && \
-		yarn pkg bin/index.js --compress GZip --target node17-macos-x64,node17-macos-arm64,node17-linux-x64,node17-win-x64 --output ../dist/out
+	cd bin && \
+		npx --yes pkg index.js --compress GZip --target node17-macos-x64,node17-macos-arm64,node17-linux-x64,node17-win-x64 --output ../dist/out
 	cd dist && \
 		mv -f out-linux-x64 pulumi-resource-${PACK}-v${VERSION}-linux-amd64 && \
 		mv -f out-macos-x64 pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 && \
 		mv -f out-macos-arm64 pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 && \
 		mv -f out-win-x64.exe pulumi-resource-${PACK}-v${VERSION}-windows-amd64.exe
 
-install_provider:: provider
+install_provider:: pre_dist
 	cd awsx && \
 		yarn pkg bin/index.js --compress GZip --target node17 --output $(GOBIN)/pulumi-resource-${PACK}
 
