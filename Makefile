@@ -42,7 +42,7 @@ dist:: provider
 		mv -f out-macos-arm64 pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 && \
 		mv -f out-win-x64.exe pulumi-resource-${PACK}-v${VERSION}-windows-amd64.exe
 
-install_provider::
+install_provider:: provider
 	cd awsx && \
 		yarn pkg bin/index.js --compress GZip --target node17-macos-arm64 --output $(GOBIN)/pulumi-resource-${PACK}
 
