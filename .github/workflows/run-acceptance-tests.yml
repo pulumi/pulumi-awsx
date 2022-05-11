@@ -95,7 +95,7 @@ jobs:
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Tar provider binaries
         run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace
-          }}/${{ env.PROVIDER }}/dist/ .
+          }}/dist/ .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
