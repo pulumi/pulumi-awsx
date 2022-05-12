@@ -90,12 +90,12 @@ jobs:
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
       - name: Build provider
-        run: make provider
+        run: make dist
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Tar provider binaries
         run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace
-          }}/${{ env.PROVIDER }}/bin/ .
+          }}/dist/ .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -237,16 +237,15 @@ jobs:
           name: ${{ env.PROVIDER }}-provider.tar.gz
           path: ${{ github.workspace }}/bin
       - name: Untar provider binaries
-        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
-          }}/bin
+        run: |-
+          mkdir -p ${{ github.workspace }}/dist
+          tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
+          }}/dist
       - name: Restore binary perms
         run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
           -exec chmod +x {} \;
       - name: Update path
-        run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-      - name: Install Provider Deps
-        run: yarn install
-        working-directory: ${{ github.workspace}}/bin
+        run: echo "${{ github.workspace }}/dist" >> $GITHUB_PATH
       - name: Download SDK
         uses: actions/download-artifact@v2
         with:

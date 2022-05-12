@@ -9,6 +9,10 @@ CODEGEN         := pulumi-gen-${PACK}
 
 WORKING_DIR     := $(shell pwd)
 
+GOPATH 		 ?= "$(HOME)/go"
+GOBIN  		 ?= "$(GOPATH)/bin"
+LanguageTags ?= "all"
+
 build:: provider build_nodejs build_python build_go build_dotnet
 
 build_sdks: schema build_nodejs build_python build_go build_dotnet
@@ -27,23 +31,29 @@ provider:: schema ensure_provider
 		yarn tsc && \
 		yarn test && \
 		cp package.json schema.json yarn.lock ${PROVIDER} ${PROVIDER}.cmd ./bin/ && \
-		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json && \
-		cd ./bin && yarn install --production
+		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
+	rm -rf bin
+	cp -r awsx/bin bin
+	cd bin && \
+		yarn install --production
 
-dist::
-	mkdir dist
-	tar --gzip --exclude yarn.lock --exclude pulumi-resource-${PACK}.cmd -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz -C bin/ .
-	# the contents of the linux-arm64, darwin6-arm64 and darwin-amd64 packages are the same
-	cp dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64.tar.gz
-	cp dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64.tar.gz
-	tar --gzip --exclude yarn.lock --exclude pulumi-resource-${PACK} -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz -C bin/ .
+dist:: provider
+	mkdir -p dist
+	cd bin && \
+		npx --yes -- pkg . --compress GZip --target node17 --output ../dist/pulumi-resource-${PACK}
 
+install_provider:: dist
+	cp dist/pulumi-resource-${PACK} $(GOBIN)/pulumi-resource-${PACK}
 
-install_provider:: provider
-	mkdir -p bin && rm -rf bin/*
-	cp -a ${PACK}/bin/. bin
-	cd bin && yarn install
-	chmod +x bin/${PROVIDER}
+dist_all:: provider
+	mkdir -p dist
+	cd bin && \
+		npx --yes -- pkg . --compress GZip --target node17-macos-x64,node17-macos-arm64,node17-linux-x64,node17-win-x64 --output ../dist/out
+	cd dist && \
+		mv -f out-linux-x64 pulumi-resource-${PACK}-v${VERSION}-linux-amd64 && \
+		mv -f out-macos-x64 pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 && \
+		mv -f out-macos-arm64 pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 && \
+		mv -f out-win-x64.exe pulumi-resource-${PACK}-v${VERSION}-windows-amd64.exe
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
 build_nodejs::
@@ -129,8 +139,8 @@ test_dotnet:: install_provider
 test_go:: install_provider
 	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-specific_test:: install_provider
-	cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . --run=TestAcc$(TestName) 2>&1 | tee /tmp/gotest.log | gotestfmt
+specific_test:: 
+	cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h . --run=TestAcc$(TestName) 2>&1 | tee /tmp/gotest.log
 
 generate_schema:: schema
 
