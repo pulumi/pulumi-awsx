@@ -2842,12 +2842,16 @@
             "liftSingleValueMethodReturns": true,
             "packageReferences": {
                 "Pulumi": "3.*",
-                "Pulumi.Aws": "5.*"
+                "Pulumi.Aws": "5.*",
+                "Pulumi.Docker": "3.*"
             }
         },
         "go": {
             "generateResourceContainerTypes": true,
             "importBasePath": "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
+            "internalDependencies": [
+                "github.com/pulumi/pulumi-docker/sdk/v3/go/docker"
+            ],
             "liftSingleValueMethodReturns": true
         },
         "nodejs": {
@@ -2869,7 +2873,8 @@
             "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
             "requires": {
                 "pulumi": "\u003e=3.0.0,\u003c4.0.0",
-                "pulumi-aws": "\u003e=5.3.0,\u003c6.0.0"
+                "pulumi-aws": "\u003e=5.3.0,\u003c6.0.0",
+                "pulumi-docker": "\u003e=3.0.0,\u003c4.0.0"
             },
             "usesIOClasses": true
         }
