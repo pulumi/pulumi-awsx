@@ -32,8 +32,10 @@ type Vpc struct {
 	// The VPC's subnets.
 	Subnets ec2.SubnetArrayOutput `pulumi:"subnets"`
 	// The VPC.
-	Vpc   ec2.VpcOutput       `pulumi:"vpc"`
-	VpcId pulumi.StringOutput `pulumi:"vpcId"`
+	Vpc ec2.VpcOutput `pulumi:"vpc"`
+	// The VPC Endpoints that are enabled
+	VpcEndpoints ec2.VpcEndpointArrayOutput `pulumi:"vpcEndpoints"`
+	VpcId        pulumi.StringOutput        `pulumi:"vpcId"`
 }
 
 // NewVpc registers a new resource with the given unique name, arguments, and options.
@@ -91,6 +93,8 @@ type vpcArgs struct {
 	SubnetSpecs []SubnetSpec `pulumi:"subnetSpecs"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
+	// A list of VPC Endpoints specs to be deployed as part of the VPC
+	VpcEndpointSpecs []VpcEndpointSpec `pulumi:"vpcEndpointSpecs"`
 }
 
 // The set of arguments for constructing a Vpc resource.
@@ -134,6 +138,8 @@ type VpcArgs struct {
 	SubnetSpecs []SubnetSpecArgs
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
+	// A list of VPC Endpoints specs to be deployed as part of the VPC
+	VpcEndpointSpecs []VpcEndpointSpecArgs
 }
 
 func (VpcArgs) ElementType() reflect.Type {
@@ -273,6 +279,11 @@ func (o VpcOutput) Subnets() ec2.SubnetArrayOutput {
 // The VPC.
 func (o VpcOutput) Vpc() ec2.VpcOutput {
 	return o.ApplyT(func(v *Vpc) ec2.VpcOutput { return v.Vpc }).(ec2.VpcOutput)
+}
+
+// The VPC Endpoints that are enabled
+func (o VpcOutput) VpcEndpoints() ec2.VpcEndpointArrayOutput {
+	return o.ApplyT(func(v *Vpc) ec2.VpcEndpointArrayOutput { return v.VpcEndpoints }).(ec2.VpcEndpointArrayOutput)
 }
 
 func (o VpcOutput) VpcId() pulumi.StringOutput {

@@ -71,9 +71,10 @@ export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
     public routes!: aws.ec2.Route[] | pulumi.Output<aws.ec2.Route[]>;
     public subnets!: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;
     public vpc!: aws.ec2.Vpc | pulumi.Output<aws.ec2.Vpc>;
+    public vpcEndpoints!: aws.ec2.VpcEndpoint[] | pulumi.Output<aws.ec2.VpcEndpoint[]>;
     public vpcId!: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, isolatedSubnetIds: undefined, natGateways: undefined, privateSubnetIds: undefined, publicSubnetIds: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined, vpcId: undefined } : { name, args, opts }, opts);
+        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, isolatedSubnetIds: undefined, natGateways: undefined, privateSubnetIds: undefined, publicSubnetIds: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined, vpcEndpoints: undefined, vpcId: undefined } : { name, args, opts }, opts);
     }
 }
 export interface VpcArgs {
@@ -95,6 +96,7 @@ export interface VpcArgs {
     readonly numberOfAvailabilityZones?: number;
     readonly subnetSpecs?: SubnetSpecInputs[];
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly vpcEndpointSpecs?: VpcEndpointSpecInputs[];
 }
 export abstract class Image<TData = any> extends pulumi.ComponentResource<TData> {
     public imageUri!: string | pulumi.Output<string>;
@@ -556,6 +558,28 @@ export interface SubnetSpecOutputs {
 }
 export type SubnetTypeInputs = "Public" | "Private" | "Isolated";
 export type SubnetTypeOutputs = "Public" | "Private" | "Isolated";
+export interface VpcEndpointSpecInputs {
+    readonly autoAccept?: boolean;
+    readonly policy?: pulumi.Input<string>;
+    readonly privateDnsEnabled?: boolean;
+    readonly routeTableIds?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly securityGroupIds?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly serviceName: string;
+    readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly vpcEndpointType?: pulumi.Input<string>;
+}
+export interface VpcEndpointSpecOutputs {
+    readonly autoAccept?: boolean;
+    readonly policy?: pulumi.Output<string>;
+    readonly privateDnsEnabled?: boolean;
+    readonly routeTableIds?: pulumi.Output<string[]>;
+    readonly securityGroupIds?: pulumi.Output<string[]>;
+    readonly serviceName: string;
+    readonly subnetIds?: pulumi.Output<string[]>;
+    readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly vpcEndpointType?: pulumi.Output<string>;
+}
 export interface DockerBuildInputs {
     readonly args?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;

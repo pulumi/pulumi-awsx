@@ -124,6 +124,16 @@ func TestVpcDefaultArgs(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestVpcWithServiceEndpoint(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-with-service-endpoint"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func TestVpcSpecificSubnetSpecArgs(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
