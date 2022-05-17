@@ -63,7 +63,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
         .output(restArgs.subnetMappings!)
         .apply((s) => aws.ec2.getSubnet({ id: s[0].subnetId })).vpcId;
     } else {
-      const defaultVpc = pulumi.output(getDefaultVpc());
+      const defaultVpc = pulumi.output(getDefaultVpc({ parent: this }));
       this.vpcId = defaultVpc.vpcId;
       lbArgs.subnets = defaultVpc.publicSubnetIds;
     }

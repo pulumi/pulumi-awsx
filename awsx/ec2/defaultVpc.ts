@@ -25,7 +25,7 @@ export class DefaultVpc extends schema.DefaultVpc {
   ) {
     super(name, args, opts);
 
-    const defaultVpc = pulumi.output(getDefaultVpc());
+    const defaultVpc = pulumi.output(getDefaultVpc({ parent: this }));
     this.vpcId = defaultVpc.vpcId;
     this.publicSubnetIds = defaultVpc.publicSubnetIds;
     this.privateSubnetIds = defaultVpc.privateSubnetIds;

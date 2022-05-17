@@ -51,5 +51,5 @@ export function construct(
 }
 
 export const functions: schemaTypes.Functions = {
-  "awsx:ec2:getDefaultVpc": ec2.getDefaultVpc,
+  "awsx:ec2:getDefaultVpc": () => ec2.getDefaultVpc({}),
 };
