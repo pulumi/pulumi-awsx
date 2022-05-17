@@ -16,8 +16,10 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 
-export async function getDefaultVpc(): Promise<schema.getDefaultVpcOutputs> {
-  const vpc = await aws.ec2.getVpc({ default: true });
+export async function getDefaultVpc(
+  opts: pulumi.InvokeOptions,
+): Promise<schema.getDefaultVpcOutputs> {
+  const vpc = await aws.ec2.getVpc({ default: true }, opts);
 
   if (vpc === undefined) {
     throw new Error("unable to find default VPC for this region and account");

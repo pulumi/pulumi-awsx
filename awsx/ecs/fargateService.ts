@@ -78,7 +78,7 @@ function getDefaultNetworkConfiguration(
   name: string,
   parent: pulumi.Resource,
 ): aws.types.input.ecs.ServiceNetworkConfiguration {
-  const defaultVpc = pulumi.output(getDefaultVpc());
+  const defaultVpc = pulumi.output(getDefaultVpc({ parent }));
   const sg = new aws.ec2.SecurityGroup(
     `${name}-sg`,
     {
