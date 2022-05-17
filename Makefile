@@ -9,8 +9,8 @@ CODEGEN         := pulumi-gen-${PACK}
 
 WORKING_DIR     := $(shell pwd)
 
-GOPATH 		 ?= "$(HOME)/go"
-GOBIN  		 ?= "$(GOPATH)/bin"
+GOPATH 		 ?= ${HOME}/go
+GOBIN  		 ?= ${GOPATH}/bin
 LanguageTags ?= "all"
 
 build:: provider build_nodejs build_python build_go build_dotnet
@@ -40,10 +40,11 @@ provider:: schema ensure_provider
 dist:: provider
 	mkdir -p dist
 	cd bin && \
-		npx --yes -- pkg . --compress GZip --target node17 --output ../dist/pulumi-resource-${PACK}
+		npx --yes -- pkg . --compress GZip --target node17 --output ../dist/${PROVIDER}
 
 install_provider:: dist
-	cp dist/pulumi-resource-${PACK} $(GOBIN)/pulumi-resource-${PACK}
+	rm -f ${GOBIN}/${PROVIDER}
+	cp dist/${PROVIDER} ${GOBIN}/${PROVIDER}
 
 dist_all:: provider
 	mkdir -p dist
