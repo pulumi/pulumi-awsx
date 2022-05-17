@@ -211,7 +211,7 @@ jobs:
         run: find ${{ github.workspace }}/bin -name "pulumi-*-${{ env.PROVIDER }}" -print
           -exec chmod +x {} \;
       - name: Create Provider Binaries
-        run: make dist
+        run: make dist_all
       - name: Upload Provider Binaries
         run: aws s3 cp dist s3://get.pulumi.com/releases/plugins/ --recursive
       - name: Create GH Release
@@ -219,7 +219,7 @@ jobs:
         with:
           prerelease: true
           files: |
-            dist/*.tar.gz
+            dist/pulumi-resource-*
         env:
           GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
   publish_sdk:
