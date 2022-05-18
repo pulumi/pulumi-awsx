@@ -527,8 +527,8 @@ function resourceConstructorType() {
   );
 }
 
-export function generateProviderTypes(args: { schama: string; out: string }) {
-  const schemaPath = path.resolve(args.schama);
+export function generateProviderTypes(args: { schema: string; out: string }) {
+  const schemaPath = path.resolve(args.schema);
   const schemaText = fs.readFileSync(schemaPath, { encoding: "utf-8" });
   const schema: pulumiSchema.PulumiPackageMetaschema = JSON.parse(schemaText);
 
@@ -575,6 +575,6 @@ export function generateProviderTypes(args: { schama: string; out: string }) {
 }
 
 generateProviderTypes({
-  schama: "schema.json",
+  schema: "schema.json",
   out: "schema-types.ts",
 });
