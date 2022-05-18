@@ -219,7 +219,7 @@ jobs:
         with:
           prerelease: true
           files: |
-            dist/pulumi-resource-*
+            dist/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
   publish_sdk:
