@@ -47,15 +47,22 @@ install_provider:: dist
 	cp dist/${PROVIDER} ${GOBIN}/${PROVIDER}
 
 dist_all:: provider
-	mkdir -p dist
-	cd bin && \
-		npx --yes -- pkg . --compress GZip --target node16-macos-x64,node16-macos-arm64,node16-linux-x64,node16-linux-arm64,node16-win-x64 --output ../dist/out
-	cd dist && \
-		mv -f out-linux-x64 pulumi-resource-${PACK}-v${VERSION}-linux-amd64 && \
-		mv -f out-linux-arm64 pulumi-resource-${PACK}-v${VERSION}-linux-arm64 && \
-		mv -f out-macos-x64 pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 && \
-		mv -f out-macos-arm64 pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 && \
-		mv -f out-win-x64.exe pulumi-resource-${PACK}-v${VERSION}-windows-amd64.exe
+	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64 
+	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64 
+	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 
+	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 
+	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64
+	yarn --cwd awsx run pkg ../bin --compress GZip --target node16-macos-x64,node16-macos-arm64,node16-linux-x64,node16-linux-arm64,node16-win-x64 --output ../dist/out
+	cp -f dist/out-linux-x64 dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64/${PROVIDER}
+	cp -f dist/out-linux-arm64 dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64/${PROVIDER}
+	cp -f dist/out-macos-x64 dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64/${PROVIDER}
+	cp -f dist/out-macos-arm64 dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64/${PROVIDER}
+	cp -f dist/out-win-x64.exe dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64/${PROVIDER}.exe
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64/ .
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64/ .
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64/ .
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64/ .
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64/ .
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
 build_nodejs::
