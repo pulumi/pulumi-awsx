@@ -98,7 +98,7 @@ jobs:
         goversion:
           - 1.17.x
         nodeversion:
-          - 14.x
+          - 16.x
   build_sdk:
     name: build_sdk
     runs-on: ubuntu-latest
@@ -170,7 +170,7 @@ jobs:
           - dotnet
           - go
         nodeversion:
-          - 14.x
+          - 16.x
         pythonversion:
           - "3.7"
   publish:
@@ -292,7 +292,7 @@ jobs:
         dotnetversion:
           - 3.1
         nodeversion:
-          - 14.x
+          - 16.x
         pythonversion:
           - "3.7"
   tag_sdk:
@@ -414,7 +414,7 @@ jobs:
         pythonversion:
           - 3.8
         nodeversion:
-          - 14.x
+          - 16.x
         language:
           - nodejs
           - python

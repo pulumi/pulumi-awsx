@@ -40,7 +40,7 @@ provider:: schema ensure_provider
 dist:: provider
 	mkdir -p dist
 	cd bin && \
-		npx --yes -- pkg . --compress GZip --target node17 --output ../dist/${PROVIDER}
+		npx --yes -- pkg . --compress GZip --target node16 --output ../dist/${PROVIDER}
 
 install_provider:: dist
 	rm -f ${GOBIN}/${PROVIDER}
@@ -49,7 +49,7 @@ install_provider:: dist
 dist_all:: provider
 	mkdir -p dist
 	cd bin && \
-		npx --yes -- pkg . --compress GZip --target node17-macos-x64,node17-macos-arm64,node17-linux-x64,node17-win-x64 --output ../dist/out
+		npx --yes -- pkg . --compress GZip --target node16-macos-x64,node16-macos-arm64,node16-linux-x64,node16-win-x64 --output ../dist/out
 	cd dist && \
 		mv -f out-linux-x64 pulumi-resource-${PACK}-v${VERSION}-linux-amd64 && \
 		mv -f out-macos-x64 pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 && \
