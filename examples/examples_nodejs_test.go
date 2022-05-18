@@ -107,8 +107,9 @@ func TestDefaultVpc(t *testing.T) {
 	t.Skip("https://github.com/pulumi/pulumi-awsx/issues/788")
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "ts-vpc-getDefaultVpc"),
+			RunUpdateTest:    false,
+			Dir:              filepath.Join(getCwd(t), "ts-vpc-getDefaultVpc"),
+			RetryFailedSteps: true, // Internet Gateway occasionally fails to delete on first attempt.
 		})
 
 	integration.ProgramTest(t, &test)
@@ -117,8 +118,9 @@ func TestDefaultVpc(t *testing.T) {
 func TestVpcDefaultArgs(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "vpc", "nodejs", "default-args"),
+			RunUpdateTest:    false,
+			Dir:              filepath.Join(getCwd(t), "vpc", "nodejs", "default-args"),
+			RetryFailedSteps: true, // Internet Gateway occasionally fails to delete on first attempt.
 		})
 
 	integration.ProgramTest(t, &test)
@@ -127,8 +129,9 @@ func TestVpcDefaultArgs(t *testing.T) {
 func TestVpcWithServiceEndpoint(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-with-service-endpoint"),
+			RunUpdateTest:    false,
+			Dir:              filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-with-service-endpoint"),
+			RetryFailedSteps: true, // Internet Gateway occasionally fails to delete on first attempt.
 		})
 
 	integration.ProgramTest(t, &test)
@@ -137,8 +140,9 @@ func TestVpcWithServiceEndpoint(t *testing.T) {
 func TestVpcSpecificSubnetSpecArgs(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "vpc", "nodejs", "specific-vpc-layout"),
+			RunUpdateTest:    false,
+			Dir:              filepath.Join(getCwd(t), "vpc", "nodejs", "specific-vpc-layout"),
+			RetryFailedSteps: true, // Internet Gateway occasionally fails to delete on first attempt.
 		})
 
 	integration.ProgramTest(t, &test)
@@ -147,8 +151,9 @@ func TestVpcSpecificSubnetSpecArgs(t *testing.T) {
 func TestVpcMultipleSimilarSubnetSpecArgs(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
-			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-multiple-similar-subnet-types"),
+			RunUpdateTest:    false,
+			Dir:              filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-multiple-similar-subnet-types"),
+			RetryFailedSteps: true, // Internet Gateway occasionally fails to delete on first attempt.
 		})
 
 	integration.ProgramTest(t, &test)
