@@ -56,6 +56,8 @@ jobs:
         run: make lint
       - name: Lint classic AWSX Code
         run: make lint-classic
+      - name: Check worktree clean
+        run: ./ci-scripts/ci/check-worktree-is-clean
   prerequisites:
     runs-on: ubuntu-latest
     steps:
