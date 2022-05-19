@@ -34,7 +34,6 @@ ensure_provider::
 provider:: schema ensure_provider
 	cd awsx && \
 		yarn tsc && \
-		yarn test && \
 		cp package.json schema.json ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
 
@@ -155,4 +154,5 @@ generate_schema:: schema
 
 dev:: lint lint-classic build_nodejs istanbul_tests
 
-test:: test_nodejs test_provider
+test:: test_provider
+	cd examples && go test -tags=all -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
