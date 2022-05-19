@@ -3,7 +3,7 @@
   "version": "${VERSION}",
   "description": "Pulumi Amazon Web Services (AWS) infrastructure components.",
   "license": "Apache-2.0",
-  "bin": "index.js",
+  "bin": "bin/index.js",
   "keywords": [
     "pulumi",
     "aws",
@@ -16,7 +16,8 @@
     "gen-types": "ts-node scripts/generate-provider-types.ts",
     "format": "prettier --write .",
     "lint": "tslint -c tslint.json -p tsconfig.json",
-    "test": "jest"
+    "test": "jest",
+    "tsc": "tsc --incremental"
   },
   "dependencies": {
     "@pulumi/aws": "5.4.0",
@@ -47,6 +48,9 @@
     "typescript": "^4.6.2"
   },
   "jest": {
+    "modulePathIgnorePatterns": [
+      "/bin/"
+    ],
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/bin/"

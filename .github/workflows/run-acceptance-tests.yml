@@ -35,6 +35,11 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
@@ -56,6 +61,8 @@ jobs:
         run: make lint
       - name: Lint classic AWSX Code
         run: make lint-classic
+      - name: Check worktree clean
+        run: ./ci-scripts/ci/check-worktree-is-clean
   prerequisites:
     runs-on: ubuntu-latest
     steps:
@@ -90,7 +97,7 @@ jobs:
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
       - name: Build provider
-        run: make dist
+        run: make test_provider install_provider dist
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Tar provider binaries

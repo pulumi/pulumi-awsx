@@ -13,6 +13,11 @@ GOPATH 		 ?= ${HOME}/go
 GOBIN  		 ?= ${GOPATH}/bin
 LanguageTags ?= "all"
 
+PKG_ARGS := --no-bytecode --public-packages "*" --public
+
+clean::
+	rm -rf dist obj awsx/bin
+
 build:: provider build_nodejs build_python build_go build_dotnet
 
 build_sdks: schema build_nodejs build_python build_go build_dotnet
@@ -26,43 +31,34 @@ ensure_provider::
 		yarn gen-types
 
 provider:: schema ensure_provider
-	rm -rf awsx/bin
 	cd awsx && \
 		yarn tsc && \
-		yarn test && \
-		cp package.json schema.json yarn.lock ${PROVIDER} ${PROVIDER}.cmd ./bin/ && \
+		cp package.json schema.json ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
-	rm -rf bin
-	cp -r awsx/bin bin
-	cd bin && \
-		yarn install --production
 
-dist:: provider
-	mkdir -p dist
-	cd bin && \
-		npx --yes -- pkg . --compress GZip --target node16 --output ../dist/${PROVIDER}
-
-install_provider:: dist
+install_provider:: provider
+	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output ../dist/${PROVIDER}
 	rm -f ${GOBIN}/${PROVIDER}
 	cp dist/${PROVIDER} ${GOBIN}/${PROVIDER}
 
-dist_all:: provider
-	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64 
-	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64 
-	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 
-	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 
-	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64
-	yarn --cwd awsx run pkg ../bin --compress GZip --target node16-macos-x64,node16-macos-arm64,node16-linux-x64,node16-linux-arm64,node16-win-x64 --output ../dist/out
-	cp -f dist/out-linux-x64 dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64/${PROVIDER}
-	cp -f dist/out-linux-arm64 dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64/${PROVIDER}
-	cp -f dist/out-macos-x64 dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64/${PROVIDER}
-	cp -f dist/out-macos-arm64 dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64/${PROVIDER}
-	cp -f dist/out-win-x64.exe dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64/${PROVIDER}.exe
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64/ .
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64/ .
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64/ .
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64/ .
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz README.md LICENSE -C dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64/ .
+dist:: provider
+	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16-macos-x64,node16-macos-arm64,node16-linux-x64,node16-linux-arm64,node16-win-x64 --output ../obj/out
+	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-linux-amd64 
+	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-linux-arm64 
+	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 
+	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 
+	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-windows-amd64
+	cp -f obj/out-linux-x64 obj/pulumi-resource-${PACK}-v${VERSION}-linux-amd64/${PROVIDER}
+	cp -f obj/out-linux-arm64 obj/pulumi-resource-${PACK}-v${VERSION}-linux-arm64/${PROVIDER}
+	cp -f obj/out-macos-x64 obj/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64/${PROVIDER}
+	cp -f obj/out-macos-arm64 obj/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64/${PROVIDER}
+	cp -f obj/out-win-x64.exe obj/pulumi-resource-${PACK}-v${VERSION}-windows-amd64/${PROVIDER}.exe
+	mkdir -p dist
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-linux-amd64/ .
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-linux-arm64/ .
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64/ .
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64/ .
+	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-windows-amd64/ .
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
 build_nodejs::
@@ -155,4 +151,5 @@ generate_schema:: schema
 
 dev:: lint lint-classic build_nodejs istanbul_tests
 
-test:: test_nodejs test_provider
+test:: test_provider
+	cd examples && go test -tags=all -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
