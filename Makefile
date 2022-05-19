@@ -1,4 +1,4 @@
-PROJECT_NAME := Pulumi Infrastructure Components for AWS
+PROJECT_NAME 	:= Pulumi Infrastructure Components for AWS
 
 VERSION         := $(shell pulumictl get version)
 TESTPARALLELISM := 10
@@ -6,59 +6,70 @@ TESTPARALLELISM := 10
 PACK            := awsx
 PROVIDER        := pulumi-resource-${PACK}
 CODEGEN         := pulumi-gen-${PACK}
+GZIP_PREFIX		:= pulumi-resource-${PACK}-v${VERSION}
+BIN				:= ${PROVIDER}
+
+AWSX_SRC 		:= $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
+CODEGEN_SRC 	:= $(wildcard schemagen/go.*) $(wildcard schemagen/pkg/*/*.go) $(wildcard schemagen/pkg/cmd/${CODEGEN}/*.go)
 
 WORKING_DIR     := $(shell pwd)
 
-GOPATH 		 ?= ${HOME}/go
-GOBIN  		 ?= ${GOPATH}/bin
-LanguageTags ?= "all"
+GOPATH 		 	?= ${HOME}/go
+GOBIN  		 	?= ${GOPATH}/bin
+LanguageTags 	?= "all"
 
-PKG_ARGS := --no-bytecode --public-packages "*" --public
-
-clean::
-	rm -rf dist obj awsx/bin
+PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
 
 build:: provider build_nodejs build_python build_go build_dotnet
 
 build_sdks: schema build_nodejs build_python build_go build_dotnet
 
-schema::
+obj/${CODEGEN}: ${CODEGEN_SRC}
+	cd schemagen && go build -o $(WORKING_DIR)/obj/${CODEGEN} $(VERSION_FLAGS) $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
+
+awsx/schema.json: obj/${CODEGEN}
 	cd schemagen/cmd/$(CODEGEN) && go run . schema $(WORKING_DIR)/$(PACK)
 
-ensure_provider::
-	cd awsx && \
-		yarn install && \
-		yarn gen-types
+awsx/node_modules: awsx/package.json awsx/yarn.lock
+	yarn install --cwd awsx
+	@touch awsx/node_modules
 
-provider:: schema ensure_provider
-	cd awsx && \
+awsx/schema-types.ts: awsx/node_modules awsx/schema.json
+	cd awsx && yarn gen-types
+
+awsx/bin: awsx/node_modules ${AWSX_SRC}
+	@cd awsx && \
 		yarn tsc && \
 		cp package.json schema.json ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
 
-install_provider:: provider
-	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output ../dist/${PROVIDER}
-	rm -f ${GOBIN}/${PROVIDER}
-	cp dist/${PROVIDER} ${GOBIN}/${PROVIDER}
+obj/${PROVIDER}: awsx/bin
+	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output ../obj/${PROVIDER}
 
-dist:: provider
-	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16-macos-x64,node16-macos-arm64,node16-linux-x64,node16-linux-arm64,node16-win-x64 --output ../obj/out
-	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-linux-amd64 
-	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-linux-arm64 
-	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 
-	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 
-	mkdir -p obj/pulumi-resource-${PACK}-v${VERSION}-windows-amd64
-	cp -f obj/out-linux-x64 obj/pulumi-resource-${PACK}-v${VERSION}-linux-amd64/${PROVIDER}
-	cp -f obj/out-linux-arm64 obj/pulumi-resource-${PACK}-v${VERSION}-linux-arm64/${PROVIDER}
-	cp -f obj/out-macos-x64 obj/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64/${PROVIDER}
-	cp -f obj/out-macos-arm64 obj/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64/${PROVIDER}
-	cp -f obj/out-win-x64.exe obj/pulumi-resource-${PACK}-v${VERSION}-windows-amd64/${PROVIDER}.exe
-	mkdir -p dist
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-linux-amd64/ .
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-linux-arm64/ .
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64/ .
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64/ .
-	tar --gzip -cf ./dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64.tar.gz README.md LICENSE -C obj/pulumi-resource-${PACK}-v${VERSION}-windows-amd64/ .
+install_provider: obj/${PROVIDER}
+	rm -f ${GOBIN}/${PROVIDER}
+	cp obj/${PROVIDER} ${GOBIN}/${PROVIDER}
+
+obj/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linux-x64
+obj/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linux-arm64
+obj/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
+obj/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
+obj/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
+obj/provider/%:: awsx/bin awsx/node_modules
+	test ${TARGET}
+	cd awsx && \
+		yarn run pkg . ${PKG_ARGS} --target ${TARGET} --output ${WORKING_DIR}/$@
+
+dist/${GZIP_PREFIX}-linux-amd64.tar.gz:: obj/provider/linux-amd64/${PROVIDER}
+dist/${GZIP_PREFIX}-linux-arm64.tar.gz:: obj/provider/linux-arm64/${PROVIDER}
+dist/${GZIP_PREFIX}-darwin-amd64.tar.gz:: obj/provider/darwin-amd64/${PROVIDER}
+dist/${GZIP_PREFIX}-darwin-arm64.tar.gz:: obj/provider/darwin-arm64/${PROVIDER}
+dist/${GZIP_PREFIX}-windows-amd64.tar.gz:: obj/provider/windows-amd64/${PROVIDER}.exe
+
+dist/${GZIP_PREFIX}-%.tar.gz:: 
+	@mkdir -p dist
+	@# $< is the last dependency (the binary path from above)
+	tar --gzip -cf $@ README.md LICENSE -C $$(dirname $<) .
 
 build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
 build_nodejs::
@@ -123,16 +134,14 @@ lint-classic:
 		yarn install && \
 		yarn lint
 
-lint:
+lint:: awsx/node_modules
 	cd awsx && \
-		yarn install && \
-		yarn format && \
-		yarn lint
+		yarn format && yarn lint
 
-test_provider:: ensure_provider
+test_provider:: awsx/node_modules
 	cd awsx && yarn test
 
-test_nodejs:: install_nodejs_sdk
+test_nodejs:: install_provider install_nodejs_sdk
 	cd examples && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_python:: install_provider
@@ -147,9 +156,21 @@ test_go:: install_provider
 specific_test:: 
 	cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h . --run=TestAcc$(TestName) 2>&1 | tee /tmp/gotest.log
 
-generate_schema:: schema
+schemagen:: obj/${CODEGEN}
+provider: awsx/bin lint test_provider
+schema: awsx/schema.json
+dist:: dist/${GZIP_PREFIX}-linux-amd64.tar.gz
+dist:: dist/${GZIP_PREFIX}-linux-arm64.tar.gz
+dist:: dist/${GZIP_PREFIX}-darwin-amd64.tar.gz
+dist:: dist/${GZIP_PREFIX}-darwin-arm64.tar.gz
+dist:: dist/${GZIP_PREFIX}-windows-amd64.tar.gz
+
+clean:
+	rm -rf dist obj awsx/bin awsx/node_modules
 
 dev:: lint lint-classic build_nodejs istanbul_tests
 
 test:: test_provider
 	cd examples && go test -tags=all -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+.PHONY: clean provider install_provider pkg dist
