@@ -37,9 +37,9 @@ provider:: schema ensure_provider
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
 
 install_provider:: provider
-	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output ../obj/${PROVIDER}
+	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output ../dist/${PROVIDER}
 	rm -f ${GOBIN}/${PROVIDER}
-	cp obj/${PROVIDER} ${GOBIN}/${PROVIDER}
+	cp dist/${PROVIDER} ${GOBIN}/${PROVIDER}
 
 dist:: provider
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16-macos-x64,node16-macos-arm64,node16-linux-x64,node16-linux-arm64,node16-win-x64 --output ../obj/out
