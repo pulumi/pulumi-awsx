@@ -16,7 +16,8 @@
     "gen-types": "ts-node scripts/generate-provider-types.ts",
     "format": "prettier --write .",
     "lint": "tslint -c tslint.json -p tsconfig.json",
-    "test": "jest"
+    "test": "jest",
+    "tsc": "tsc --incremental"
   },
   "dependencies": {
     "@pulumi/aws": "5.4.0",
