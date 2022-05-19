@@ -13,6 +13,12 @@ GOPATH 		 ?= ${HOME}/go
 GOBIN  		 ?= ${GOPATH}/bin
 LanguageTags ?= "all"
 
+PKG_ARGS := --no-bytecode --public-packages "*" --public
+
+clean::
+	rm -rf awsx/bin
+	rm -rf dist
+
 build:: provider build_nodejs build_python build_go build_dotnet
 
 build_sdks: schema build_nodejs build_python build_go build_dotnet
@@ -26,20 +32,15 @@ ensure_provider::
 		yarn gen-types
 
 provider:: schema ensure_provider
-	rm -rf awsx/bin
 	cd awsx && \
 		yarn tsc && \
 		yarn test && \
-		cp package.json schema.json yarn.lock ${PROVIDER} ${PROVIDER}.cmd ./bin/ && \
+		cp package.json schema.json ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
-	rm -rf bin
-	cp -r awsx/bin bin
-	cd bin && \
-		yarn install --production
 
 dist:: provider
 	mkdir -p dist
-	cd awsx && yarn run pkg ../bin --compress GZip --target node16 --output ../dist/${PROVIDER} --no-bytecode --public-packages "*" --public
+	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output ../dist/${PROVIDER}
 
 install_provider:: dist
 	rm -f ${GOBIN}/${PROVIDER}
@@ -51,7 +52,7 @@ dist_all:: provider
 	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64 
 	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-darwin-arm64 
 	mkdir -p dist/pulumi-resource-${PACK}-v${VERSION}-windows-amd64
-	cd awsx && yarn run pkg ../bin --compress GZip --target node16-macos-x64,node16-macos-arm64,node16-linux-x64,node16-linux-arm64,node16-win-x64 --output ../dist/out --no-bytecode --public-packages "*" --public
+	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16-macos-x64,node16-macos-arm64,node16-linux-x64,node16-linux-arm64,node16-win-x64 --output ../dist/out
 	cp -f dist/out-linux-x64 dist/pulumi-resource-${PACK}-v${VERSION}-linux-amd64/${PROVIDER}
 	cp -f dist/out-linux-arm64 dist/pulumi-resource-${PACK}-v${VERSION}-linux-arm64/${PROVIDER}
 	cp -f dist/out-macos-x64 dist/pulumi-resource-${PACK}-v${VERSION}-darwin-amd64/${PROVIDER}
