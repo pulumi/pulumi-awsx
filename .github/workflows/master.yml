@@ -41,7 +41,7 @@ jobs:
         run: make lint
       - name: Lint classic AWSX Code
         run: make lint_classic
-  build_provider:
+  build-provider:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
