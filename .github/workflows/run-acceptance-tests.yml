@@ -97,13 +97,22 @@ jobs:
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
       - name: Build provider
-        run: make test_provider dist
+        run: make test_provider provider dist
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
-      - name: Tar provider binaries
-        run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace
-          }}/dist/ .
-      - name: Upload artifacts
+      - name: Upload bin
+        uses: actions/upload-artifact@v3
+        with:
+          name: bin
+          path: bin
+      - name: Upload dist
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - name: Tar provider bin
+        run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace }}/${{ env.PROVIDER }}/bin/ .
+      - name: Upload provider bin
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PROVIDER }}-provider.tar.gz
@@ -211,48 +220,40 @@ jobs:
           repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.goversion }}
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
           node-version: ${{matrix.nodeversion}}
           registry-url: https://registry.npmjs.org
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{matrix.dotnetversion}}
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{matrix.pythonversion}}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
       - name: Install Python deps
         run: |-
           pip3 install virtualenv==20.0.23
           pip3 install pipenv
-      - name: Download provider binary
-        uses: actions/download-artifact@v2
+      - name: Download bin
+        uses: actions/download-artifact@v3
         with:
-          name: ${{ env.PROVIDER }}-provider.tar.gz
-          path: ${{ github.workspace }}/bin
-      - name: Untar provider binaries
-        run: |-
-          mkdir -p ${{ github.workspace }}/dist
-          tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
-          }}/dist
-      - name: Restore binary perms
-        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
-          -exec chmod +x {} \;
-      - name: Update path
-        run: echo "${{ github.workspace }}/dist" >> $GITHUB_PATH
+          name: bin
+          path: bin
+      - name: Restore bin perms
+        run: chmod +x bin/*
       - name: Download SDK
         uses: actions/download-artifact@v2
         with:
@@ -260,8 +261,6 @@ jobs:
           path: ${{ github.workspace}}/sdk
       - name: Uncompress SDK folder
         run: tar -zxf ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz -C ${{github.workspace}}/sdk/${{ matrix.language }}
-      - name: Install dependencies
-        run: make install_${{ matrix.language }}_sdk
       - if: matrix.language == 'dotnet'
         run: dotnet nuget add source ${{ github.workspace }}/nuget
       - name: Install gotestfmt
@@ -278,7 +277,8 @@ jobs:
           role-session-name: ${{ env.PROVIDER }}@githubActions
           role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
       - name: Run tests
-        run: make test_${{ matrix.language }}
+        # Tell make to not rebuild the provider bin
+        run: make test_${{ matrix.language }} -o bin/${{ env.PROVIDER }}
     strategy:
       fail-fast: false
       matrix:
