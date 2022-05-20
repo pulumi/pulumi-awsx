@@ -40,7 +40,7 @@ jobs:
       - name: Lint AWSX Code
         run: make lint
       - name: Lint classic AWSX Code
-        run: make lint-classic
+        run: make lint_classic
   prerequisites:
     runs-on: ubuntu-latest
     steps:
@@ -225,9 +225,6 @@ jobs:
           path: bin
       - name: Restore bin perms
         run: chmod +x bin/*
-      - name: Install Provider Deps
-        run: yarn install
-        working-directory: ${{ github.workspace}}/bin
       - name: Download SDK
         uses: actions/download-artifact@v2
         with:

@@ -39,7 +39,7 @@ jobs:
       - name: Lint AWSX Code
         run: make lint
       - name: Lint classic AWSX Code
-        run: make lint-classic
+        run: make lint_classic
   prerequisites:
     runs-on: ubuntu-latest
     steps:
