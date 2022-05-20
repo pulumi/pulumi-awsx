@@ -1,7 +1,9 @@
 .pulumi
-**/bin/
-**/obj/
-**/node_modules/
+bin
+obj
+node_modules
+
+awsx/coverage
 vendor/
 **/Pulumi.*.yaml
 **/yarn-error.log
@@ -18,4 +20,3 @@ ci-scripts/
 **/venv
 
 !/awsx/yarn.lock
-awsx/coverage

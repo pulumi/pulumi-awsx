@@ -143,6 +143,15 @@ jobs:
         run: |
           echo "$HOME/.yarn/bin" >> $GITHUB_PATH
           echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
+      - name: Download bin
+        uses: actions/download-artifact@v3
+        with:
+          name: bin
+          path: bin
+      - name: Restore bin and avoid rebuilding
+        run: |
+          chmod +x bin/*
+          make provider --touch
       - name: Build SDK
         run: make build_${{ matrix.language }}
       - name: Check worktree clean
@@ -219,8 +228,10 @@ jobs:
         with:
           name: bin
           path: bin
-      - name: Restore bin perms
-        run: chmod +x bin/*
+      - name: Restore bin and avoid rebuilding
+        run: |
+          chmod +x bin/*
+          make provider --touch
       - name: Download SDK
         uses: actions/download-artifact@v2
         with:
@@ -245,7 +256,7 @@ jobs:
           role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
       - name: Run tests
         # Tell make to not rebuild the provider bin
-        run: make test_${{ matrix.language }} -o bin/${{ env.PROVIDER }}
+        run: make test_${{ matrix.language }}
     strategy:
       fail-fast: false
       matrix:
