@@ -174,6 +174,104 @@ jobs:
           - 16.x
         pythonversion:
           - "3.7"
+  acceptance-test:
+    needs: build_sdk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        with:
+          repo: pulumi/pulumictl
+      - name: Install Pulumi CLI
+        uses: pulumi/action-install-pulumi-cli@v1.0.1
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: ${{ matrix.goversion }}
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{matrix.nodeversion}}
+          registry-url: https://registry.npmjs.org
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{matrix.pythonversion}}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
+      - name: Install Python deps
+        run: |-
+          pip3 install virtualenv==20.0.23
+          pip3 install pipenv
+      - name: Download provider binary
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ env.PROVIDER }}-provider.tar.gz
+          path: ${{ github.workspace }}/bin
+      - name: Untar provider binaries
+        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
+          }}/bin
+      - name: Restore binary perms
+        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
+          -exec chmod +x {} \;
+      - name: Update path
+        run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
+      - name: Install Provider Deps
+        run: yarn install
+        working-directory: ${{ github.workspace}}/bin
+      - name: Download SDK
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ matrix.language }}-sdk.tar.gz
+          path: ${{ github.workspace}}/sdk
+      - name: Uncompress SDK folder
+        run: tar -zxf ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz -C ${{github.workspace}}/sdk/${{ matrix.language }}
+      - name: Install dependencies
+        run: make install_${{ matrix.language }}_sdk
+      - if: matrix.language == 'dotnet'
+        run: dotnet nuget add source ${{ github.workspace }}/nuget
+      - name: Install gotestfmt
+        uses: jaxxstorm/action-install-gh-release@v1.2.0
+        with:
+          repo: haveyoudebuggedit/gotestfmt
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-region: ${{ env.AWS_REGION }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-duration-seconds: 3600
+          role-session-name: ${{ env.PROVIDER }}@githubActions
+          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
+      - name: Run tests
+        run: make test_${{ matrix.language }}
+    strategy:
+      fail-fast: false
+      matrix:
+        goversion:
+          - 1.17.x
+        dotnetversion:
+          - 3.1
+        pythonversion:
+          - 3.8
+        nodeversion:
+          - 16.x
+        language:
+          - nodejs
+          - python
+          - dotnet
+          - go
   publish:
     name: publish
     needs: acceptance-test
@@ -289,104 +387,6 @@ jobs:
           - 16.x
         pythonversion:
           - "3.7"
-  acceptance-test:
-    needs: build_sdk
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
-        with:
-          repo: pulumi/pulumictl
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{matrix.nodeversion}}
-          registry-url: https://registry.npmjs.org
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{matrix.pythonversion}}
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{matrix.dotnetversion}}
-      - name: Install Python deps
-        run: |-
-          pip3 install virtualenv==20.0.23
-          pip3 install pipenv
-      - name: Download provider binary
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ env.PROVIDER }}-provider.tar.gz
-          path: ${{ github.workspace }}/bin
-      - name: Untar provider binaries
-        run: tar -zxf ${{ github.workspace }}/bin/provider.tar.gz -C ${{ github.workspace
-          }}/bin
-      - name: Restore binary perms
-        run: find ${{ github.workspace }} -name "pulumi-*-${{ env.PROVIDER }}" -print
-          -exec chmod +x {} \;
-      - name: Update path
-        run: echo "${{ github.workspace }}/bin" >> $GITHUB_PATH
-      - name: Install Provider Deps
-        run: yarn install
-        working-directory: ${{ github.workspace}}/bin
-      - name: Download SDK
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ matrix.language }}-sdk.tar.gz
-          path: ${{ github.workspace}}/sdk
-      - name: Uncompress SDK folder
-        run: tar -zxf ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz -C ${{github.workspace}}/sdk/${{ matrix.language }}
-      - name: Install dependencies
-        run: make install_${{ matrix.language }}_sdk
-      - if: matrix.language == 'dotnet'
-        run: dotnet nuget add source ${{ github.workspace }}/nuget
-      - name: Install gotestfmt
-        uses: jaxxstorm/action-install-gh-release@v1.2.0
-        with:
-          repo: haveyoudebuggedit/gotestfmt
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-region: ${{ env.AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          role-duration-seconds: 3600
-          role-session-name: ${{ env.PROVIDER }}@githubActions
-          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
-      - name: Run tests
-        run: make test_${{ matrix.language }}
-    strategy:
-      fail-fast: false
-      matrix:
-        goversion:
-          - 1.17.x
-        dotnetversion:
-          - 3.1
-        pythonversion:
-          - 3.8
-        nodeversion:
-          - 16.x
-        language:
-          - nodejs
-          - python
-          - dotnet
-          - go
 name: master
 "on":
   schedule:
