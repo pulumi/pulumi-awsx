@@ -238,8 +238,6 @@ jobs:
           path: ${{ github.workspace}}/sdk
       - name: Uncompress SDK folder
         run: tar -zxf ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz -C ${{github.workspace}}/sdk/${{ matrix.language }}
-      - if: matrix.language == 'dotnet'
-        run: dotnet nuget add source ${{ github.workspace }}/nuget
       - name: Install gotestfmt
         uses: jaxxstorm/action-install-gh-release@v1.2.0
         with:

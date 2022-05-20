@@ -66,8 +66,8 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 	@# $< is the last dependency (the binary path from above)
 	tar --gzip -cf $@ README.md LICENSE -C $$(dirname $<) .
 
-sdk/nodejs:: VERSION := $(shell pulumictl get version --language javascript)
-sdk/nodejs:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
+sdk/nodejs/bin:: VERSION := $(shell pulumictl get version --language javascript)
+sdk/nodejs/bin:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
 	bin/${CODEGEN} nodejs sdk/nodejs awsx/schema.json $(VERSION)
 	cd sdk/nodejs && \
@@ -77,8 +77,8 @@ sdk/nodejs:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
 		cp ../../README.md ../../LICENSE bin/
 
-sdk/python:: PYPI_VERSION := $(shell pulumictl get version --language python)
-sdk/python:: bin/${CODEGEN} awsx/schema.json
+sdk/python/bin:: PYPI_VERSION := $(shell pulumictl get version --language python)
+sdk/python/bin:: bin/${CODEGEN} awsx/schema.json
 	rm -rf sdk/python
 	bin/${CODEGEN} python sdk/python awsx/schema.json $(VERSION)
 	cd sdk/python/ && \
@@ -99,8 +99,8 @@ sdk/go:: bin/${CODEGEN} awsx/schema.json
 		go mod tidy && \
 		go test -v ./... -check.vv
 
-sdk/dotnet:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
-sdk/dotnet:: bin/${CODEGEN} awsx/schema.json
+sdk/dotnet/bin:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
+sdk/dotnet/bin:: bin/${CODEGEN} awsx/schema.json
 	rm -rf sdk/dotnet
 	bin/${CODEGEN} dotnet sdk/dotnet awsx/schema.json $(VERSION)
 	cd sdk/dotnet/ && \
@@ -109,27 +109,30 @@ sdk/dotnet:: bin/${CODEGEN} awsx/schema.json
 
 # Phony targets
 
-build_nodejs:: sdk/nodejs
-build_python:: sdk/python
+build_nodejs:: sdk/nodejs/bin
+build_python:: sdk/python/bin
 build_go:: sdk/go
-build_dotnet:: sdk/dotnet
+build_dotnet:: sdk/dotnet/bin
 
 install_provider: bin/${PROVIDER}
 	rm -f ${GOBIN}/${PROVIDER}
 	cp bin/${PROVIDER} ${GOBIN}/${PROVIDER}
 
-install_nodejs_sdk:: sdk/nodejs
+install_nodejs_sdk:: sdk/nodejs/bin
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
-install_python_sdk:: sdk/python
+install_python_sdk:: sdk/python/bin
 	#Intentionall empty for CI / CD templating
 
 install_go_sdk:: sdk/go
 	#Intentionally empty for CI / CD templating
 
-install_dotnet_sdk:: sdk/dotnet
+install_dotnet_sdk:: sdk/dotnet/bin
 	mkdir -p $(WORKING_DIR)/nuget
-	find . -name '*.nupkg' -print -exec cp -p {} ${WORKING_DIR}/nuget \;
+	find sdk/dotnet/bin -name '*.nupkg' -print -exec cp -p {} ${WORKING_DIR}/nuget \;
+	@if ! dotnet nuget list source | grep ${WORKING_DIR}; then \
+		dotnet nuget add source ${WORKING_DIR}/nuget --name ${WORKING_DIR} \
+	; fi\
 
 lint_classic:
 	cd awsx-classic && \
@@ -163,7 +166,7 @@ test_dotnet:: bin/${PROVIDER}
 	cd examples && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_go:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_go:: bin/${PROVIDER}
+test_go:: bin/${PROVIDER} install_dotnet_sdk
 	@export PATH
 	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
@@ -194,4 +197,4 @@ build:: provider test_provider build_sdks
 
 dev:: lint test_provider build_nodejs
 
-.PHONY: clean provider install_% dist
+.PHONY: clean provider install_% dist sdk/go

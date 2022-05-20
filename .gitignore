@@ -2,7 +2,7 @@
 bin
 obj
 node_modules
-
+nuget
 awsx/coverage
 vendor/
 **/Pulumi.*.yaml
