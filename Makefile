@@ -10,6 +10,7 @@ GZIP_PREFIX		:= pulumi-resource-${PACK}-v${VERSION}
 BIN				:= ${PROVIDER}
 
 AWSX_SRC 		:= $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
+AWSX_CLASSIC_SRC:= $(wildcard awsx-classic/*.*) $(wildcard awsx-classic/*/*.ts)
 CODEGEN_SRC 	:= $(wildcard schemagen/go.*) $(wildcard schemagen/pkg/*/*.go) $(wildcard schemagen/pkg/cmd/${CODEGEN}/*.go)
 
 WORKING_DIR     := $(shell pwd)
@@ -20,9 +21,7 @@ LanguageTags 	?= "all"
 
 PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
 
-build:: provider build_nodejs build_python build_go build_dotnet
-
-build_sdks: schema build_nodejs build_python build_go build_dotnet
+all:: lint lint_classic provider build_sdks test_provider
 
 obj/${CODEGEN}: ${CODEGEN_SRC}
 	cd schemagen && go build -o $(WORKING_DIR)/obj/${CODEGEN} $(VERSION_FLAGS) $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
@@ -46,10 +45,6 @@ awsx/bin: awsx/node_modules ${AWSX_SRC}
 obj/${PROVIDER}: awsx/bin
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output ../obj/${PROVIDER}
 
-install_provider: obj/${PROVIDER}
-	rm -f ${GOBIN}/${PROVIDER}
-	cp obj/${PROVIDER} ${GOBIN}/${PROVIDER}
-
 obj/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linux-x64
 obj/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linux-arm64
 obj/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
@@ -71,10 +66,10 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 	@# $< is the last dependency (the binary path from above)
 	tar --gzip -cf $@ README.md LICENSE -C $$(dirname $<) .
 
-build_nodejs:: VERSION := $(shell pulumictl get version --language javascript)
-build_nodejs::
+sdk/nodejs:: VERSION := $(shell pulumictl get version --language javascript)
+sdk/nodejs:: obj/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
-	cd schemagen/cmd/$(CODEGEN) && go run . nodejs ../../../sdk/nodejs $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
+	obj/${CODEGEN} nodejs sdk/nodejs awsx/schema.json $(VERSION)
 	cd sdk/nodejs && \
 		yarn install && \
 		yarn run tsc --version && \
@@ -82,10 +77,10 @@ build_nodejs::
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
 		cp ../../README.md ../../LICENSE bin/
 
-build_python:: PYPI_VERSION := $(shell pulumictl get version --language python)
-build_python:: schema
+sdk/python:: PYPI_VERSION := $(shell pulumictl get version --language python)
+sdk/python:: obj/${CODEGEN} awsx/schema.json
 	rm -rf sdk/python
-	cd schemagen/cmd/$(CODEGEN) && go run . python ../../../sdk/python $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
+	obj/${CODEGEN} python sdk/python awsx/schema.json $(VERSION)
 	cd sdk/python/ && \
 		cp ../../README.md . && \
 		python3 setup.py clean --all 2>/dev/null && \
@@ -94,42 +89,49 @@ build_python:: schema
 		rm ./bin/setup.py.bak && \
 		cd ./bin && python3 setup.py build sdist
 
-build_go:: VERSION := $(shell pulumictl get version --language generic)
-build_go:: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
-build_go:: schema
+sdk/go:: VERSION := $(shell pulumictl get version --language generic)
+sdk/go:: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
+sdk/go:: obj/${CODEGEN} awsx/schema.json
 	rm -rf sdk/go
-	cd schemagen/cmd/$(CODEGEN) && go run . go ../../../sdk/go $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
+	obj/${CODEGEN} go sdk/go awsx/schema.json $(VERSION)
 	cd sdk && \
 		go get github.com/pulumi/pulumi-aws/sdk/v5@v$(AWS_VERSION) && \
 		go mod tidy && \
 		go test -v ./... -check.vv
 
-build_dotnet:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
-build_dotnet:: schema
+sdk/dotnet:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
+sdk/dotnet:: obj/${CODEGEN} awsx/schema.json
 	rm -rf sdk/dotnet
-	cd schemagen/cmd/$(CODEGEN) && go run . dotnet ../../../sdk/dotnet $(WORKING_DIR)/$(PACK)/schema.json $(VERSION)
+	obj/${CODEGEN} dotnet sdk/dotnet awsx/schema.json $(VERSION)
 	cd sdk/dotnet/ && \
 		echo "${DOTNET_VERSION}" >version.txt && \
 		dotnet build /p:Version=${DOTNET_VERSION}
 
-istanbul_tests::
-	cd awsx-classic/tests && \
-		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
+# Phony targets
 
-install_nodejs_sdk:: build_nodejs
+build_nodejs:: sdk/nodejs
+build_python:: sdk/python
+build_go:: sdk/go
+build_dotnet:: sdk/dotnet
+
+install_provider: obj/${PROVIDER}
+	rm -f ${GOBIN}/${PROVIDER}
+	cp obj/${PROVIDER} ${GOBIN}/${PROVIDER}
+
+install_nodejs_sdk:: sdk/nodejs
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
-install_dotnet_sdk:: build_dotnet
+install_python_sdk:: sdk/python
+	#Intentionall empty for CI / CD templating
+
+install_go_sdk:: sdk/go
+	#Intentionally empty for CI / CD templating
+
+install_dotnet_sdk:: sdk/dotnet
 	mkdir -p $(WORKING_DIR)/nuget
 	find . -name '*.nupkg' -print -exec cp -p {} ${WORKING_DIR}/nuget \;
 
-install_go_sdk::
-	#Intentionally empty for CI / CD templating
-
-install_python_sdk::
-	#Intentionall empty for CI / CD templating
-
-lint-classic:
+lint_classic:
 	cd awsx-classic && \
 		yarn install && \
 		yarn lint
@@ -140,6 +142,10 @@ lint:: awsx/node_modules
 
 test_provider:: awsx/node_modules
 	cd awsx && yarn test
+
+istanbul_tests::
+	cd awsx-classic/tests && \
+		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
 
 test_nodejs:: install_provider install_nodejs_sdk
 	cd examples && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
@@ -153,12 +159,16 @@ test_dotnet:: install_provider
 test_go:: install_provider
 	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-specific_test:: 
-	cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h . --run=TestAcc$(TestName) 2>&1 | tee /tmp/gotest.log
+test::
+	@if [ -z "${Test}" ]; then \
+		cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt; \
+	else \
+		cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h . --run=${Test} 2>&1 | tee /tmp/gotest.log; \
+	fi
 
 schemagen:: obj/${CODEGEN}
-provider: awsx/bin lint test_provider
 schema: awsx/schema.json
+provider: awsx/bin
 dist:: dist/${GZIP_PREFIX}-linux-amd64.tar.gz
 dist:: dist/${GZIP_PREFIX}-linux-arm64.tar.gz
 dist:: dist/${GZIP_PREFIX}-darwin-amd64.tar.gz
@@ -168,9 +178,10 @@ dist:: dist/${GZIP_PREFIX}-windows-amd64.tar.gz
 clean:
 	rm -rf dist obj awsx/bin awsx/node_modules
 
-dev:: lint lint-classic build_nodejs istanbul_tests
+build_sdks: build_nodejs build_python build_go build_dotnet
 
-test:: test_provider
-	cd examples && go test -tags=all -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+build:: provider test_provider build_sdks
 
-.PHONY: clean provider install_provider pkg dist
+dev:: lint test_provider build_nodejs
+
+.PHONY: clean provider install_% dist
