@@ -160,15 +160,15 @@ test_python:: bin/${PROVIDER}
 	@export PATH
 	cd examples && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-test_dotnet:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_dotnet:: bin/${PROVIDER}
-	@export PATH
-	cd examples && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
-
 test_go:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_go:: bin/${PROVIDER} install_dotnet_sdk
+test_go:: bin/${PROVIDER}
 	@export PATH
 	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+
+test_dotnet:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test_dotnet:: bin/${PROVIDER} install_dotnet_sdk
+	@export PATH
+	cd examples && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test:: PATH := $(WORKING_DIR)/bin:$(PATH)
 test::
