@@ -128,6 +128,11 @@ export class Metric {
     public readonly yAxis: pulumi.Output<"left" | "right">;
 
     /**
+    * The id of this metric. This id can be used as part of a math expression.
+    */
+    public readonly id: pulumi.Output<string | undefined>;
+
+    /**
      * @param resource Optional resource this is a metric for.  This is only used for parenting
      * purposes.  i.e. if an [Alarm] is created from this [Metric], then [resource] will be used as
      * the parent of the alarm by default.
@@ -151,6 +156,7 @@ export class Metric {
         this.label = pulumi.output(args.label);
         this.visible = utils.ifUndefined(args.visible, true);
         this.yAxis = utils.ifUndefined(args.yAxis, "left");
+        this.id = pulumi.output(args.id);
     }
 
     public with(change: MetricChange | undefined) {
@@ -168,6 +174,7 @@ export class Metric {
         result = hasOwnProperty(change, "label") ? result.withLabel(change.label) : result;
         result = hasOwnProperty(change, "visible") ? result.withVisible(change.visible) : result;
         result = hasOwnProperty(change, "yAxis") ? result.withYAxis(change.yAxis) : result;
+        result = hasOwnProperty(change, "id") ? result.withId(change.id) : result;
         return result;
     }
 
@@ -197,6 +204,7 @@ export class Metric {
             label: this.label,
             visible: this.visible,
             yAxis: this.yAxis,
+            id: this.id
         };
     }
 
@@ -235,6 +243,10 @@ export class Metric {
 
     public withYAxis(yAxis: pulumi.Input<"left" | "right"> | undefined) {
         return new Metric({ ...this.spread(), yAxis }, this.resource);
+    }
+
+    public withId(id: pulumi.Input<string> | undefined) {
+        return new Metric({ ...this.spread(), id }, this.resource);
     }
 
     public withStatistic(statistic: pulumi.Input<MetricStatistic> | undefined) {
@@ -316,6 +328,7 @@ export class Metric {
                 period: uw.period,
                 visible: uw.visible,
                 yAxis: uw.yAxis,
+                id: uw.id
             };
 
             result.push(renderingProps);
@@ -486,6 +499,11 @@ export interface MetricChange {
      * Only used if this metric is displayed in a [Dashboard] with a [MetricWidget].
      */
     yAxis?: pulumi.Input<"left" | "right">;
+
+    /**
+    * The id of this metric. This id can be used as part of a math expression.
+    */
+    id?: pulumi.Input<string>;
 }
 
 export type AlarmComparisonOperator =
@@ -636,6 +654,11 @@ export interface MetricArgs {
      * Only used if this metric is displayed in a [Dashboard] with a [MetricWidget].
      */
     yAxis?: pulumi.Input<"left" | "right" | undefined>;
+
+    /**
+    * The id of this metric. This id can be used as part of a math expression.
+    */
+    id?: pulumi.Input<string | undefined>;
 }
 
 export type MetricStatistic = "SampleCount" | "Average" | "Sum" | "Minimum" | "Maximum";
