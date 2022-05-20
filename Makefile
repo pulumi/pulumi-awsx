@@ -144,22 +144,33 @@ test_provider:: awsx/node_modules
 	cd awsx && yarn test
 
 istanbul_tests::
+	@export PATH
 	cd awsx-classic/tests && \
 		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
 
-test_nodejs:: install_provider install_nodejs_sdk
+test_nodejs:: PATH := $(WORKING_DIR)/obj:$(PATH)
+test_nodejs:: obj/${PROVIDER} install_nodejs_sdk
+	@export PATH
 	cd examples && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-test_python:: install_provider
+test_python:: PATH := $(WORKING_DIR)/obj:$(PATH)
+test_python:: obj/${PROVIDER}
+	@export PATH
 	cd examples && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-test_dotnet:: install_provider
+test_dotnet:: PATH := $(WORKING_DIR)/obj:$(PATH)
+test_dotnet:: obj/${PROVIDER}
+	@export PATH
 	cd examples && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
-test_go:: install_provider
+test_go:: PATH := $(WORKING_DIR)/obj:$(PATH)
+test_go:: obj/${PROVIDER}
+	@export PATH
 	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
+test:: PATH := $(WORKING_DIR)/obj:$(PATH)
 test::
+	@export PATH
 	@if [ -z "${Test}" ]; then \
 		cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt; \
 	else \
