@@ -61,6 +61,13 @@ jobs:
         run: make lint
       - name: Lint classic AWSX Code
         run: make lint_classic
+      - name: Build dist packages
+        run: make dist
+      - name: Upload dist
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
   prerequisites:
@@ -97,7 +104,7 @@ jobs:
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
       - name: Build provider
-        run: make test_provider provider dist
+        run: make test_provider provider
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Upload bin
@@ -105,11 +112,6 @@ jobs:
         with:
           name: bin
           path: bin
-      - name: Upload dist
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist
       - name: Tar provider bin
         run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace }}/${{ env.PROVIDER }}/bin/ .
       - name: Upload provider bin
