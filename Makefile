@@ -179,7 +179,7 @@ test::
 
 schemagen:: obj/${CODEGEN}
 schema: awsx/schema.json
-provider: awsx/bin
+provider: obj/${PROVIDER}
 dist:: dist/${GZIP_PREFIX}-linux-amd64.tar.gz
 dist:: dist/${GZIP_PREFIX}-linux-arm64.tar.gz
 dist:: dist/${GZIP_PREFIX}-darwin-amd64.tar.gz
