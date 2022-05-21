@@ -445,14 +445,12 @@ class ExplicitLocationTopology extends VpcTopology {
     }
 }
 
-/** @internal */
 export interface VpcTopologyDescription {
     subnets: SubnetDescription[];
     natGateways: NatGatewayDescription[];
     natRoutes: NatRouteDescription[];
 }
 
-/** @internal */
 export interface SubnetDescription {
     type: VpcSubnetType;
     subnetName: string;
@@ -461,7 +459,6 @@ export interface SubnetDescription {
 }
 
 
-/** @internal */
 export interface NatGatewayDescription {
     name: string;
 
@@ -469,7 +466,6 @@ export interface NatGatewayDescription {
     publicSubnet: string;
 }
 
-/** @internal */
 export interface NatRouteDescription {
     name: string;
 
