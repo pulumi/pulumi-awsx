@@ -14,7 +14,7 @@
 
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
-import * as awssdk from "aws-sdk";
+import type * as awssdk from "aws-sdk";
 import * as ec2 from "../ec2";
 import * as lb from "../lb";
 import * as role from "../role";
