@@ -21,7 +21,7 @@ import * as fspath from "path";
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 
-import * as awslambda from "aws-lambda";
+import type * as awslambda from "aws-lambda";
 
 import { getRegion, ifUndefined, sha1hash } from "../utils";
 
