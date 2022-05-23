@@ -3,6 +3,7 @@ CHANGELOG
 
 ## HEAD (Unreleased)
 * Add multi-lang component support scaffolding.
+* Add support for docker tag for ECR in `awsx` package
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0

@@ -22,12 +22,13 @@ export class Image extends schema.Image {
   constructor(name: string, args: schema.ImageArgs, opts: pulumi.ComponentResourceOptions = {}) {
     super(name, args, opts);
     const { repositoryUrl, ...dockerArgs } = args;
-    this.imageUri = pulumi.output(args).apply((args) => computeImageFromAsset(args, this));
+    this.imageUri = pulumi.output(args).apply((args) => computeImageFromAsset(name, args, this));
   }
 }
 
 /** @internal */
 export function computeImageFromAsset(
+  name: string,
   args: pulumi.Unwrap<schema.ImageArgs>,
   parent: pulumi.Resource,
 ) {
@@ -37,7 +38,9 @@ export function computeImageFromAsset(
 
   pulumi.log.debug(`Building container image at '${JSON.stringify(dockerInputs)}'`, parent);
 
-  const imageName = getImageName(dockerInputs);
+  const { imageName: imageNameWithoutTag, tag: imageNameTag } = utils.getImageNameAndTag(name);
+  const hashImageName = getImageName(dockerInputs, imageNameTag);
+  const baseImageName = imageNameTag ? `${imageNameWithoutTag}:${imageNameTag}` : hashImageName;
 
   // If we haven't, build and push the local build context to the ECR repository.  Then return
   // the unique image name we pushed to.  The name will change if the image changes ensuring
@@ -56,7 +59,7 @@ export function computeImageFromAsset(
   pulumi.log.info("dockerBuild: " + JSON.stringify(dockerBuild));
 
   const uniqueImageName = docker.buildAndPushImage(
-    imageName,
+    baseImageName,
     dockerBuild,
     repositoryUrl,
     parent,
@@ -89,13 +92,13 @@ export function computeImageFromAsset(
   );
 
   uniqueImageName.apply((d: any) =>
-    pulumi.log.debug(`    build complete: ${imageName} (${d})`, parent),
+    pulumi.log.debug(`    build complete: ${hashImageName} (${d})`, parent),
   );
 
   return uniqueImageName;
 }
 
-function getImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>) {
+function getImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>, imageNameTag?: string) {
   const { path, dockerfile, args } = inputs ?? {};
   // Produce a hash of the build context and use that for the image name.
   let buildSig: string;
@@ -108,6 +111,9 @@ function getImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>) {
     for (const arg of Object.keys(args)) {
       buildSig += `;arg[${arg}]=${args[arg]}`;
     }
+  }
+  if (imageNameTag) {
+    buildSig += `;tag=${imageNameTag}`;
   }
 
   buildSig += pulumi.getStack();
