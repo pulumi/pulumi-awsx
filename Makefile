@@ -78,7 +78,7 @@ sdk/nodejs/bin:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 		cp ../../README.md ../../LICENSE bin/
 
 sdk/python/bin:: PYPI_VERSION := $(shell pulumictl get version --language python)
-sdk/python/bin:: bin/${CODEGEN} awsx/schema.json
+sdk/python/bin:: bin/${CODEGEN} awsx/schema.json README.md
 	rm -rf sdk/python
 	bin/${CODEGEN} python sdk/python awsx/schema.json $(VERSION)
 	cd sdk/python/ && \

@@ -4,7 +4,7 @@
 [![Python version](https://badge.fury.io/py/pulumi-awsx.svg)](https://pypi.org/project/pulumi-awsx)
 [![NuGet version](https://badge.fury.io/nu/pulumi.awsx.svg)](https://badge.fury.io/nu/pulumi.awsx)
 [![PkgGoDev](https://pkg.go.dev/badge/github.com/pulumi/pulumi-awsx/sdk/go)](https://pkg.go.dev/github.com/pulumi/pulumi-awsx/sdk/go)
-[![License](https://img.shields.io/npm/l/%40pulumi%2Fpulumi.svg)](https://github.com/pulumi/pulumi-awsx/blob/master/LICENSE)
+[![License](https://img.shields.io/npm/l/%40pulumi%2Fawsx.svg)](https://github.com/pulumi/pulumi-awsx/blob/master/LICENSE)
 
 ## Pulumi AWS Infrastructure Components
 
@@ -38,37 +38,35 @@ The library also exposes the classic AWSx (the previous TypeScript) implementati
 
 ### Installing
 
-## Installing
-
 This package is available in many languages in the standard packaging formats.
 
 ### Node.js (Java/TypeScript)
 
 To use from JavaScript or TypeScript in Node.js, install using either `npm`:
 
-    $ npm install @pulumi/awsx
+    npm install @pulumi/awsx
 
 or `yarn`:
 
-    $ yarn add @pulumi/awsx
+    yarn add @pulumi/awsx
 
 ### Python
 
 To use from Python, install using `pip`:
 
-    $ pip install pulumi_awsx
+    pip install pulumi_awsx
 
 ### Go
 
 To use from Go, use `go get` to grab the latest version of the library
 
-    $ go get github.com/pulumi/pulumi-awsx/sdk
+    go get github.com/pulumi/pulumi-awsx/sdk
 
 ### .NET
 
 To use from .NET, install using `dotnet add package`:
 
-    $ dotnet add package Pulumi.Awsx
+    dotnet add package Pulumi.Awsx
 
 ### Configuration
 
