@@ -20,6 +20,11 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
@@ -41,6 +46,8 @@ jobs:
         run: make lint
       - name: Lint classic AWSX Code
         run: make lint_classic
+      - name: Check worktree clean
+        run: ./ci-scripts/ci/check-worktree-is-clean
   build-provider:
     runs-on: ubuntu-latest
     steps:
@@ -75,13 +82,17 @@ jobs:
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v1.0.1
       - name: Build provider
-        run: make provider
+        run: make test_provider provider
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
-      - name: Tar provider binaries
-        run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace
-          }}/${{ env.PROVIDER }}/bin/ .
-      - name: Upload artifacts
+      - name: Upload bin
+        uses: actions/upload-artifact@v3
+        with:
+          name: bin
+          path: bin
+      - name: Tar provider bin
+        run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace }}/${{ env.PROVIDER }}/bin/ .
+      - name: Upload provider bin
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PROVIDER }}-provider.tar.gz
@@ -316,6 +327,20 @@ jobs:
           - 16.x
         pythonversion:
           - "3.7"
+  tag_sdk:
+    name: tag_sdk
+    needs: publish_sdk
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - name: Install pulumictl
+        uses: jaxxstorm/action-install-gh-release@v1.2.0
+        with:
+          repo: pulumi/pulumictl
+      - name: Add SDK version tag
+        run: git tag sdk/v$(pulumictl get version --language generic) && git push origin
+          sdk/v$(pulumictl get version --language generic)
 name: prerelease
 on:
   push:

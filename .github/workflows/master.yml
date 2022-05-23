@@ -20,6 +20,11 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
+      - name: Checkout Scripts Repo
+        uses: actions/checkout@v2
+        with:
+          path: ci-scripts
+          repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
@@ -29,7 +34,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: ${{matrix.nodeversion}}
+          node-version: 16.x
           registry-url: https://registry.npmjs.org
       - name: Install Yarn
         run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
@@ -41,6 +46,8 @@ jobs:
         run: make lint
       - name: Lint classic AWSX Code
         run: make lint_classic
+      - name: Check worktree clean
+        run: ./ci-scripts/ci/check-worktree-is-clean
   build-provider:
     runs-on: ubuntu-latest
     steps:
@@ -78,18 +85,18 @@ jobs:
         run: make test_provider provider
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
-      - name: Tar provider binaries
+      - name: Upload bin
+        uses: actions/upload-artifact@v3
+        with:
+          name: bin
+          path: bin
+      - name: Tar provider bin
         run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace }}/${{ env.PROVIDER }}/bin/ .
       - name: Upload provider bin
         uses: actions/upload-artifact@v2
         with:
           name: ${{ env.PROVIDER }}-provider.tar.gz
           path: ${{ github.workspace }}/provider.tar.gz
-      - name: Upload bin
-        uses: actions/upload-artifact@v3
-        with:
-          name: bin
-          path: bin
       - if: failure() && github.event_name == 'push'
         name: Notify Slack
         uses: 8398a7/action-slack@v3
@@ -144,7 +151,7 @@ jobs:
         run: |-
           pip3 install virtualenv==20.0.23
           pip3 install pipenv
-      - name: Download provider obj
+      - name: Download bin
         uses: actions/download-artifact@v3
         with:
           name: bin
