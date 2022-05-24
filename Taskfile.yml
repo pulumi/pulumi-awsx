@@ -1,0 +1,17 @@
+version: 3
+
+vars:
+  CWD:
+    sh: pwd
+  VERSION:
+    sh: pulumictl get version
+
+tasks:
+  schemagen:
+    cmds:
+      - go build -o {{ .CWD }}/bin/pulumi-gen-awsx {{ .CWD }}/schemagen/cmd/pulumi-gen-awsx
+    dir: schemagen
+    sources:
+      - schemagen/**/*
+    generates:
+      - bin/pulumi-gen-awsx
