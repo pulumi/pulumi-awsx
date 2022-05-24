@@ -75,7 +75,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"devDependencies": map[string]string{
 					"@types/node": "^17.0.21",
 					"@types/mime": "^2.0.0",
-					"typescript":  "^4.6.2",
+					"typescript":  "~4.6.2",
 				},
 			}),
 			"python": rawMessage(map[string]interface{}{
