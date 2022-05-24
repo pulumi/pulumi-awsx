@@ -223,6 +223,9 @@ jobs:
           role-external-id: upload-pulumi-release
           role-session-name: ${{ env.PROVIDER}}@githubActions
           role-to-assume: ${{ secrets.AWS_UPLOAD_ROLE_ARN }}
+      - uses: MOZGIII/install-ldid-action@v1
+        with:
+          tag: v2.1.5-procursus2
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
