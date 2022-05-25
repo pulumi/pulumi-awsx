@@ -11,6 +11,8 @@ tasks:
     cmds:
       - go build -o ../bin/pulumi-gen-awsx ./cmd/pulumi-gen-awsx
     dir: schemagen
+    generates:
+      - ../bin/pulumi-gen-awsx
     sources:
       - "**/*"
     
@@ -19,5 +21,17 @@ tasks:
       - bin/pulumi-gen-awsx schema awsx
     deps:
       - schemagen
+    generates:
+      - awsx/schema.json
     sources:
       - bin/pulumi-gen-awsx
+
+  provider-deps:
+    cmds:
+      - yarn install
+    dir: awsx
+    generates:
+      - node_modules/**/*
+    sources:
+      - package.json
+      - yarn.lock
