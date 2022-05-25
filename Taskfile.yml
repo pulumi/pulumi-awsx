@@ -48,3 +48,18 @@ tasks:
     sources:
       - schema.json
       - scripts/generate-provider-types.ts
+
+  provider:build:
+    cmds:
+      - yarn tsc
+      - cp package.json schema.json ./bin/
+      - sed -i.bak -e "s/\${VERSION}/{{ .VERSION }}/g" ./bin/package.json
+    deps:
+      - provider:install
+      - provider:gen
+    dir: awsx
+    generates:
+      - bin/**/*
+    sources:
+      - "**/*.ts"
+      - "*.*"
