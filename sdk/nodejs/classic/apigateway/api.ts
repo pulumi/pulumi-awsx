@@ -825,7 +825,7 @@ function addSwaggerOperation(swagger: SwaggerSpec, path: string, method: string,
 
 function checkRoute<TRoute>(parent: pulumi.Resource, route: TRoute, propName: keyof TRoute) {
     if (route[propName] === undefined) {
-        throw new pulumi.ResourceError(`Route missing required [${propName}] property`, parent);
+        throw new pulumi.ResourceError(`Route missing required [${String(propName)}] property`, parent);
     }
 }
 
@@ -926,7 +926,7 @@ function addAuthorizersToSwagger(
     authorizers = Array.isArray(authorizers) ? authorizers : [authorizers];
 
     for (const auth of authorizers) {
-        const suffix = Object.keys(swagger.securityDefinitions).length;
+        const suffix: number = Object.keys(swagger.securityDefinitions).length;
         const authName = auth.authorizerName || `${swagger.info.title}-authorizer-${suffix}`;
         auth.authorizerName = authName;
 
