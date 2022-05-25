@@ -26,7 +26,7 @@ tasks:
     sources:
       - bin/pulumi-gen-awsx
 
-  provider-deps:
+  provider:install:
     cmds:
       - yarn install
     dir: awsx
@@ -35,3 +35,16 @@ tasks:
     sources:
       - package.json
       - yarn.lock
+
+  provider:gen:
+    cmds:
+      - yarn gen-types
+    deps:
+      - provider:install
+      - schema
+    dir: awsx
+    generates:
+      - schema-types.ts
+    sources:
+      - schema.json
+      - scripts/generate-provider-types.ts
