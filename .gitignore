@@ -1,4 +1,5 @@
 .pulumi
+.task
 bin
 obj
 node_modules

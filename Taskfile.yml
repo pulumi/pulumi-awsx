@@ -9,9 +9,15 @@ vars:
 tasks:
   schemagen:
     cmds:
-      - go build -o {{ .CWD }}/bin/pulumi-gen-awsx {{ .CWD }}/schemagen/cmd/pulumi-gen-awsx
+      - go build -o ../bin/pulumi-gen-awsx ./cmd/pulumi-gen-awsx
     dir: schemagen
     sources:
-      - schemagen/**/*
-    generates:
+      - "**/*"
+    
+  schema:
+    cmds:
+      - bin/pulumi-gen-awsx schema awsx
+    deps:
+      - schemagen
+    sources:
       - bin/pulumi-gen-awsx
