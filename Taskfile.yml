@@ -9,6 +9,7 @@ vars:
 
 tasks:
   schemagen:
+    run: once
     cmds:
       - go build -o ../bin/pulumi-gen-awsx ./cmd/pulumi-gen-awsx
     dir: schemagen
@@ -18,6 +19,7 @@ tasks:
       - "**/*"
     
   schema:
+    run: once
     cmds:
       - bin/pulumi-gen-awsx schema awsx
     deps:
@@ -28,6 +30,7 @@ tasks:
       - bin/pulumi-gen-awsx
 
   provider:install:
+    run: once
     cmds:
       - yarn install
     dir: awsx
@@ -38,6 +41,7 @@ tasks:
       - yarn.lock
 
   provider:gen:
+    run: once
     cmds:
       - yarn gen-types
     deps:
@@ -51,6 +55,7 @@ tasks:
       - scripts/generate-provider-types.ts
 
   provider:transpile:
+    run: once
     cmds:
       - yarn tsc
       - cp package.json schema.json ./bin/
@@ -66,13 +71,56 @@ tasks:
       - "*.*"
 
   provider:build:
+    run: when_changed
+    vars:
+      TARGET: '{{ default "node16" .TARGET }}'
+      OUTPUT: '{{ default "../bin/pulumi-resource-awsx" .OUTPUT }}'
     cmds:
-      - yarn run pkg . {{ .PKG_ARGS }} --target node16 --output ../bin/pulumi-resource-awsx
+      - yarn run pkg . {{ .PKG_ARGS }} --target {{ .TARGET }} --output {{ .OUTPUT }}
     deps:
       - provider:transpile
     dir: awsx
     generates:
-      - ../bin/pulumi-resource-awsx
+      - "{{ .OUTPUT }}"
     sources:
       - bin/**/*
       - "*"
+
+  provider:build-linux-amd64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-linux-x64
+          OUTPUT: ../obj/provider/linux-amd64/pulumi-resource-awsx
+  provider:build-linux-arm64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-linux-arm64
+          OUTPUT: ../obj/provider/linux-arm64/pulumi-resource-awsx
+  provider:build-darwin-amd64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-macos-x64
+          OUTPUT: ../obj/provider/darwin-amd64/pulumi-resource-awsx
+  provider:build-darwin-arm64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-macos-arm64
+          OUTPUT: ../obj/provider/darwin-arm64/pulumi-resource-awsx
+  provider:build-windows-amd64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-win-x64
+          OUTPUT: ../obj/provider/windows-amd64/pulumi-resource-awsx.exe
+
+  provider:build-all:
+    deps:
+      - task: provider:build-linux-amd64
+      - task: provider:build-linux-arm64
+      - task: provider:build-darwin-amd64
+      - task: provider:build-darwin-arm64
+      - task: provider:build-windows-amd64
