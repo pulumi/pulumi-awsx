@@ -5,6 +5,7 @@ vars:
     sh: pwd
   VERSION:
     sh: pulumictl get version
+  PKG_ARGS: --no-bytecode --public-packages "*" --public
 
 tasks:
   schemagen:
@@ -49,7 +50,7 @@ tasks:
       - schema.json
       - scripts/generate-provider-types.ts
 
-  provider:build:
+  provider:transpile:
     cmds:
       - yarn tsc
       - cp package.json schema.json ./bin/
@@ -63,3 +64,15 @@ tasks:
     sources:
       - "**/*.ts"
       - "*.*"
+
+  provider:build:
+    cmds:
+      - yarn run pkg . {{ .PKG_ARGS }} --target node16 --output ../bin/pulumi-resource-awsx
+    deps:
+      - provider:transpile
+    dir: awsx
+    generates:
+      - ../bin/pulumi-resource-awsx
+    sources:
+      - bin/**/*
+      - "*"
