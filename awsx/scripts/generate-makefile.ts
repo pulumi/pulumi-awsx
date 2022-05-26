@@ -29,6 +29,7 @@ type Target = {
   name: string;
   dependencies?: (string | Target)[];
   commands?: string[];
+  phony?: boolean;
 };
 
 type Makefile = {
@@ -49,22 +50,42 @@ function getAssignmentToken(type: AssignmentType): string {
 
 const indent = "\t";
 
-function render(makefile: Makefile): string {
-  const variableLines = Object.entries(makefile.variables ?? {}).map(([name, assignment]) => {
-    if (typeof assignment === "string") {
-      return `${name} := ${assignment}`;
-    }
-    const assignmentToken = getAssignmentToken(assignment.type ?? "simple");
-    return `${name} ${assignmentToken} ${assignment.value}`;
-  });
+const renderTarget = (target: Target): string => {
+  const dependencies = target.dependencies ?? [];
+  const dependencyNames = dependencies.map((d) => (typeof d === "string" ? d : d.name));
+  const declaration = `${target.name}:: ${dependencyNames.join(" ")}`;
+  const commands = target.commands?.map((cmd) => indent + cmd) ?? [];
+  return [declaration, ...commands].join("\n");
+};
 
-  const targets = (makefile.targets ?? []).map((target) => {
-    const dependencies = target.dependencies ?? [];
-    const dependencyNames = dependencies.map((d) => (typeof d === "string" ? d : d.name));
-    const declaration = `${target.name}:: ${dependencyNames.join(" ")}`;
-    const commands = target.commands?.map((cmd) => indent + cmd) ?? [];
-    return [declaration, ...commands].join("\n");
-  });
+const renderVariable = ([name, assignment]: [string, Assignment]): string => {
+  if (typeof assignment === "string") {
+    return `${name} := ${assignment}`;
+  }
+  const assignmentToken = getAssignmentToken(assignment.type ?? "simple");
+  return `${name} ${assignmentToken} ${assignment.value}`;
+};
+
+function phonyTarget(targets: Target[]): Target | undefined {
+  const phonyTargets = targets.filter((t) => t.phony);
+  if (phonyTargets.length === 0) {
+    return undefined;
+  }
+  return {
+    name: ".PHONY",
+    dependencies: phonyTargets,
+  };
+}
+
+function render(makefile: Makefile): string {
+  const variableLines = Object.entries(makefile.variables ?? {}).map(renderVariable);
+
+  const inputTargets = makefile.targets ?? [];
+  const phony = phonyTarget(inputTargets);
+  if (phony !== undefined) {
+    inputTargets.push(phony);
+  }
+  const targets = inputTargets.map(renderTarget);
 
   return [variableLines.join("\n"), targets.join("\n\n")].join("\n\n");
 }
@@ -207,9 +228,26 @@ function typescriptProvider(
         commands: [cwd(providerDir, pkgCmd(t))],
       })),
       ...providerDists,
+      // Phonies
+      {
+        name: "schemagen",
+        dependencies: [genBin],
+        phony: true,
+      },
+      {
+        name: "schema",
+        dependencies: [schema],
+        phony: true,
+      },
       {
         name: "dist",
         dependencies: providerDists,
+        phony: true,
+      },
+      {
+        name: "clean",
+        commands: [`rm -rf bin obj ${providerDir}/bin ${providerDir}/node_modules`],
+        phony: true,
       },
     ],
   };
