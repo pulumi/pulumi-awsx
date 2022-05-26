@@ -45,7 +45,7 @@ setup(name='pulumi_awsx',
       cmdclass={
           'install': InstallPluginCommand,
       },
-      keywords='pulumi aws awsx',
+      keywords='pulumi aws awsx kind/component category/cloud',
       url='https://pulumi.com',
       project_urls={
           'Repository': 'https://github.com/pulumi/pulumi-awsx'
