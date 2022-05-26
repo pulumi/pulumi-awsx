@@ -1,3 +1,4 @@
+MAKEFLAGS 		:= --jobs=$(shell nproc) --warn-undefined-variables
 PROJECT_NAME 	:= Pulumi Infrastructure Components for AWS
 
 VERSION         := $(shell pulumictl get version)
@@ -30,7 +31,7 @@ awsx/schema.json: bin/${CODEGEN}
 	cd schemagen/cmd/$(CODEGEN) && go run . schema $(WORKING_DIR)/$(PACK)
 
 awsx/node_modules: awsx/package.json awsx/yarn.lock
-	yarn install --cwd awsx
+	yarn install --cwd awsx --no-progress
 	@touch awsx/node_modules
 
 awsx/schema-types.ts: awsx/node_modules awsx/schema.json
@@ -71,7 +72,7 @@ sdk/nodejs/bin:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
 	bin/${CODEGEN} nodejs sdk/nodejs awsx/schema.json $(VERSION)
 	cd sdk/nodejs && \
-		yarn install && \
+		yarn install --no-progress && \
 		yarn run tsc --version && \
 		yarn run tsc && \
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
@@ -136,7 +137,7 @@ install_dotnet_sdk:: sdk/dotnet/bin
 
 lint_classic:
 	cd awsx-classic && \
-		yarn install && \
+		yarn install --no-progress && \
 		yarn lint
 
 lint:: awsx/node_modules

@@ -5,9 +5,13 @@ vars:
     sh: pwd
   VERSION:
     sh: pulumictl get version
-  PKG_ARGS: --no-bytecode --public-packages "*" --public
 
 tasks:
+  clean:
+    run: once
+    cmds:
+      - rm -rf bin dist obj awsx/bin awsx/node_modules
+
   schemagen:
     run: once
     cmds:
@@ -32,7 +36,7 @@ tasks:
   provider:install:
     run: once
     cmds:
-      - yarn install
+      - yarn install --no-progress
     dir: awsx
     generates:
       - node_modules/**/*
@@ -76,7 +80,7 @@ tasks:
       TARGET: '{{ default "node16" .TARGET }}'
       OUTPUT: '{{ default "../bin/pulumi-resource-awsx" .OUTPUT }}'
     cmds:
-      - yarn run pkg . {{ .PKG_ARGS }} --target {{ .TARGET }} --output {{ .OUTPUT }}
+      - yarn run pkg . --no-bytecode --public-packages "*" --public --target {{ .TARGET }} --output {{ .OUTPUT }}
     deps:
       - provider:transpile
     dir: awsx
@@ -124,3 +128,36 @@ tasks:
       - task: provider:build-darwin-amd64
       - task: provider:build-darwin-arm64
       - task: provider:build-windows-amd64
+
+  provider:dist-dir:
+    dir: dist
+
+  provider:pack:
+    vars:
+      TAR: pulumi-resource-awsx-v{{ .VERSION }}-{{ .PLAT }}.tar.gz
+      BIN_DIR: obj/provider/{{ .PLAT }}
+    cmds:
+      - tar --gzip -cf dist/{{ .TAR }} README.md LICENSE -C {{ .BIN_DIR }} .
+    deps:
+      - provider:build-{{ .PLAT }}
+      - provider:dist-dir
+    generates:
+      - dist/{{ .TAR }}
+
+  dist:
+    deps:
+      - task: provider:pack
+        vars:
+          PLAT: linux-amd64
+      - task: provider:pack
+        vars:
+          PLAT: linux-arm64
+      - task: provider:pack
+        vars:
+          PLAT: darwin-amd64
+      - task: provider:pack
+        vars:
+          PLAT: darwin-arm64
+      - task: provider:pack
+        vars:
+          PLAT: windows-amd64
