@@ -100,7 +100,7 @@ export function typescriptProvider(
     commands: [
       cwd(providerDir, `yarn tsc`),
       `cp ${providerDir}/package.json ${providerDir}/schema.json ${providerDir}/bin/`,
-      `sed -i.bak -e "s/$\${VERSION}/$(VERSION)/g" ${providerDir}/bin/package.json`,
+      `sed -i.bak -e "s/\\$\${VERSION}/$(VERSION)/g" ${providerDir}/bin/package.json`,
     ],
   };
   const providerBin = {
@@ -111,13 +111,13 @@ export function typescriptProvider(
   const pkgOutputBinary = (mapping: PkgMapping) => `${providerBinaryName}${mapping.ext ?? ""}`;
   const pkgOutput = (mapping: PkgMapping) => `${pkgOutputDir(mapping)}/${pkgOutputBinary(mapping)}`;
   const pkgCmd = (mapping: PkgMapping) =>
-    `yarn run pkg . --no-bytecode --public-packages "*" --public ${
+    `yarn run pkg . --no-bytecode --public-packages "*" --public --target ${
       mapping.target
     } --output $(CWD)/${pkgOutput(mapping)}`;
   const providerGzipOutput = (mapping: PkgMapping) =>
     `dist/${providerBinaryName}-v$(VERSION)-${mapping.plat}.tar.gz`;
   const providerGzipCommand = (mapping: PkgMapping) =>
-    `tar -gzip -cf ${providerGzipOutput(mapping)} README.md LICENCE -C ${pkgOutputDir(mapping)} .`;
+    `tar --gzip -cf ${providerGzipOutput(mapping)} README.md LICENSE -C ${pkgOutputDir(mapping)} .`;
   const providerDists = pkgMappings.map((mapping) => ({
     name: providerGzipOutput(mapping),
     dependencies: [pkgOutput(mapping)],
