@@ -112,6 +112,20 @@ function yarnInstall({ dir }: { dir: string }): Target {
   };
 }
 
+type PkgMapping = {
+  plat: string;
+  target: string;
+  ext?: string;
+};
+
+const pkgMappings: PkgMapping[] = [
+  { plat: "linux-amd64", target: "node16-linux-x64" },
+  { plat: "linux-arm64", target: "node16-linux-arm64" },
+  { plat: "darwin-amd64", target: "node16-macos-x64" },
+  { plat: "darwin-arm64", target: "node16-macos-arm64" },
+  { plat: "windows-amd64", target: "node16-win-x64", ext: ".exe" },
+];
+
 function typescriptProvider(
   providerName: string,
   config?: {
@@ -137,6 +151,7 @@ function typescriptProvider(
       type: "conditional",
     },
     CWD: "$(shell pwd)",
+    VERSION: "$(shell pulumictl get version)",
     GO_SRC: `$(wildcard ${goDir}/go.*) $(wildcard ${goDir}/pkg/*/*.go) $(wildcard ${goDir}/cmd/${genBinaryName}/*.go)`,
     PROVIDER_SRC: `$(wildcard ${providerDir}/*.*) $(wildcard ${providerDir}/*/*.ts)`,
   } as const;
@@ -158,12 +173,45 @@ function typescriptProvider(
     ],
   };
   const providerBin = {
-        name: `bin/${providerBinaryName}`,
-        dependencies: [providerJs, providerNodeModules],
+    name: `bin/${providerBinaryName}`,
+    dependencies: [providerJs, providerNodeModules],
   };
+  const pkgOutputDir = (mapping: PkgMapping) => `obj/provider/${mapping.plat}`;
+  const pkgOutputBinary = (mapping: PkgMapping) => `${providerBinaryName}${mapping.ext ?? ""}`;
+  const pkgOutput = (mapping: PkgMapping) => `${pkgOutputDir(mapping)}/${pkgOutputBinary(mapping)}`;
+  const pkgCmd = (mapping: PkgMapping) =>
+    `yarn run pkg . --no-bytecode --public-packages "*" --public ${
+      mapping.target
+    } --output $(CWD)/${pkgOutput(mapping)}`;
+  const providerGzipOutput = (mapping: PkgMapping) =>
+    `dist/${providerBinaryName}-v$(VERSION)-${mapping.plat}.tar.gz`;
+  const providerGzipCommand = (mapping: PkgMapping) =>
+    `tar -gzip -cf ${providerGzipOutput(mapping)} README.md LICENCE -C ${pkgOutputDir(mapping)} .`;
+  const providerDists = pkgMappings.map((mapping) => ({
+    name: providerGzipOutput(mapping),
+    dependencies: [pkgOutput(mapping)],
+    commands: ["@mkdir -p dist", providerGzipCommand(mapping)],
+  }));
   return {
     variables,
-    targets: [genBin, schema, providerNodeModules, schemaTypes, providerJs, providerBin],
+    targets: [
+      genBin,
+      schema,
+      providerNodeModules,
+      schemaTypes,
+      providerJs,
+      providerBin,
+      ...pkgMappings.map((t) => ({
+        name: pkgOutput(t),
+        dependencies: [providerJs, providerNodeModules],
+        commands: [cwd(providerDir, pkgCmd(t))],
+      })),
+      ...providerDists,
+      {
+        name: "dist",
+        dependencies: providerDists,
+      },
+    ],
   };
 }
 
