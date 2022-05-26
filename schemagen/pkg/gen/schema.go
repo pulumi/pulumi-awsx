@@ -42,7 +42,8 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 		Name:        "awsx",
 		Description: "Pulumi Amazon Web Services (AWS) AWSX Components.",
 		License:     "Apache-2.0",
-		Keywords:    []string{"pulumi", "aws", "awsx"},
+		Publisher:   "Pulumi",
+		Keywords:    []string{"pulumi", "aws", "awsx", "kind/component", "category/cloud"},
 		Homepage:    "https://pulumi.com",
 		Repository:  "https://github.com/pulumi/pulumi-awsx",
 

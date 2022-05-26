@@ -4,11 +4,14 @@
     "keywords": [
         "pulumi",
         "aws",
-        "awsx"
+        "awsx",
+        "kind/component",
+        "category/cloud"
     ],
     "homepage": "https://pulumi.com",
     "license": "Apache-2.0",
     "repository": "https://github.com/pulumi/pulumi-awsx",
+    "publisher": "Pulumi",
     "config": {},
     "types": {
         "awsx:awsx:Bucket": {
