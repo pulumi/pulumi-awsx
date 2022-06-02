@@ -53,8 +53,8 @@ bin/${PROVIDER}: awsx/bin awsx/node_modules
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output $(WORKING_DIR)/bin/${PROVIDER}
 endif
 
-bin/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linux-x64
-bin/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linux-arm64
+bin/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linuxstatic-x64
+bin/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linuxstatic-arm64
 bin/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
 bin/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
 bin/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
