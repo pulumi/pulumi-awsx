@@ -1,3 +1,4 @@
+MAKEFLAGS 		:= --jobs=$(shell nproc) --warn-undefined-variables
 PROJECT_NAME 	:= Pulumi Infrastructure Components for AWS
 
 VERSION         := $(shell pulumictl get version)
@@ -18,19 +19,20 @@ WORKING_DIR     := $(shell pwd)
 GOPATH 		 	?= ${HOME}/go
 GOBIN  		 	?= ${GOPATH}/bin
 LanguageTags 	?= "all"
+LOCAL_PLAT		?= ""
 
 PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
 
 all:: lint lint_classic provider build_sdks test_provider
 
 bin/${CODEGEN}: ${CODEGEN_SRC}
-	cd schemagen && go build -o $(WORKING_DIR)/bin/${CODEGEN} $(VERSION_FLAGS) $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
+	cd schemagen && go build -o $(WORKING_DIR)/bin/${CODEGEN} $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
 
 awsx/schema.json: bin/${CODEGEN}
 	cd schemagen/cmd/$(CODEGEN) && go run . schema $(WORKING_DIR)/$(PACK)
 
 awsx/node_modules: awsx/package.json awsx/yarn.lock
-	yarn install --cwd awsx
+	yarn install --cwd awsx --no-progress
 	@touch awsx/node_modules
 
 awsx/schema-types.ts: awsx/node_modules awsx/schema.json
@@ -42,24 +44,30 @@ awsx/bin: awsx/node_modules ${AWSX_SRC}
 		cp package.json schema.json ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
 
+# Re-use the local platform if provided (e.g. `make provider LOCAL_PLAT=linux-amd64`)
+ifneq ($(LOCAL_PLAT),"")
+bin/${PROVIDER}:: bin/provider/$(LOCAL_PLAT)/${PROVIDER}
+	cp bin/provider/$(LOCAL_PLAT)/${PROVIDER} bin/${PROVIDER}
+else 
 bin/${PROVIDER}: awsx/bin awsx/node_modules
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output $(WORKING_DIR)/bin/${PROVIDER}
+endif
 
-obj/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linux-x64
-obj/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linux-arm64
-obj/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
-obj/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
-obj/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
-obj/provider/%:: awsx/bin awsx/node_modules
+bin/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linuxstatic-x64
+bin/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linuxstatic-arm64
+bin/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
+bin/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
+bin/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
+bin/provider/%:: awsx/bin awsx/node_modules
 	test ${TARGET}
 	cd awsx && \
 		yarn run pkg . ${PKG_ARGS} --target ${TARGET} --output ${WORKING_DIR}/$@
 
-dist/${GZIP_PREFIX}-linux-amd64.tar.gz:: obj/provider/linux-amd64/${PROVIDER}
-dist/${GZIP_PREFIX}-linux-arm64.tar.gz:: obj/provider/linux-arm64/${PROVIDER}
-dist/${GZIP_PREFIX}-darwin-amd64.tar.gz:: obj/provider/darwin-amd64/${PROVIDER}
-dist/${GZIP_PREFIX}-darwin-arm64.tar.gz:: obj/provider/darwin-arm64/${PROVIDER}
-dist/${GZIP_PREFIX}-windows-amd64.tar.gz:: obj/provider/windows-amd64/${PROVIDER}.exe
+dist/${GZIP_PREFIX}-linux-amd64.tar.gz:: bin/provider/linux-amd64/${PROVIDER}
+dist/${GZIP_PREFIX}-linux-arm64.tar.gz:: bin/provider/linux-arm64/${PROVIDER}
+dist/${GZIP_PREFIX}-darwin-amd64.tar.gz:: bin/provider/darwin-amd64/${PROVIDER}
+dist/${GZIP_PREFIX}-darwin-arm64.tar.gz:: bin/provider/darwin-arm64/${PROVIDER}
+dist/${GZIP_PREFIX}-windows-amd64.tar.gz:: bin/provider/windows-amd64/${PROVIDER}.exe
 
 dist/${GZIP_PREFIX}-%.tar.gz:: 
 	@mkdir -p dist
@@ -71,7 +79,7 @@ sdk/nodejs/bin:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
 	bin/${CODEGEN} nodejs sdk/nodejs awsx/schema.json $(VERSION)
 	cd sdk/nodejs && \
-		yarn install && \
+		yarn install --no-progress && \
 		yarn run tsc --version && \
 		yarn run tsc && \
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
@@ -136,7 +144,7 @@ install_dotnet_sdk:: sdk/dotnet/bin
 
 lint_classic:
 	cd awsx-classic && \
-		yarn install && \
+		yarn install --no-progress && \
 		yarn lint
 
 lint:: awsx/node_modules
@@ -189,7 +197,7 @@ dist:: dist/${GZIP_PREFIX}-darwin-arm64.tar.gz
 dist:: dist/${GZIP_PREFIX}-windows-amd64.tar.gz
 
 clean:
-	rm -rf bin dist obj awsx/bin awsx/node_modules
+	rm -rf bin dist awsx/bin awsx/node_modules
 
 build_sdks: build_nodejs build_python build_go build_dotnet
 
