@@ -1,6 +1,7 @@
 env:
   AWS_REGION: us-west-2
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  LOCAL_PLAT: linux-amd64
   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   NUGET_PUBLISH_KEY: ${{ secrets.NUGET_PUBLISH_KEY }}

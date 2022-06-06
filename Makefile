@@ -1,3 +1,4 @@
+MAKEFLAGS 		:= --jobs=$(shell nproc) --warn-undefined-variables
 PROJECT_NAME 	:= Pulumi Infrastructure Components for AWS
 
 VERSION         := $(shell pulumictl get version)
@@ -18,19 +19,20 @@ WORKING_DIR     := $(shell pwd)
 GOPATH 		 	?= ${HOME}/go
 GOBIN  		 	?= ${GOPATH}/bin
 LanguageTags 	?= "all"
+LOCAL_PLAT		?= ""
 
 PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
 
 all:: lint lint_classic provider build_sdks test_provider
 
 bin/${CODEGEN}: ${CODEGEN_SRC}
-	cd schemagen && go build -o $(WORKING_DIR)/bin/${CODEGEN} $(VERSION_FLAGS) $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
+	cd schemagen && go build -o $(WORKING_DIR)/bin/${CODEGEN} $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
 
 awsx/schema.json: bin/${CODEGEN}
 	cd schemagen/cmd/$(CODEGEN) && go run . schema $(WORKING_DIR)/$(PACK)
 
 awsx/node_modules: awsx/package.json awsx/yarn.lock
-	yarn install --cwd awsx
+	yarn install --cwd awsx --no-progress
 	@touch awsx/node_modules
 
 awsx/schema-types.ts: awsx/node_modules awsx/schema.json
@@ -42,8 +44,14 @@ awsx/bin: awsx/node_modules ${AWSX_SRC}
 		cp package.json schema.json ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
 
+# Re-use the local platform if provided (e.g. `make provider LOCAL_PLAT=linux-amd64`)
+ifneq ($(LOCAL_PLAT),"")
+bin/${PROVIDER}:: obj/provider/$(LOCAL_PLAT)/${PROVIDER}
+	cp obj/provider/$(LOCAL_PLAT)/${PROVIDER} bin/${PROVIDER}
+else 
 bin/${PROVIDER}: awsx/bin awsx/node_modules
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output $(WORKING_DIR)/bin/${PROVIDER}
+endif
 
 obj/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linux-x64
 obj/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linux-arm64
@@ -71,7 +79,7 @@ sdk/nodejs/bin:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
 	bin/${CODEGEN} nodejs sdk/nodejs awsx/schema.json $(VERSION)
 	cd sdk/nodejs && \
-		yarn install && \
+		yarn install --no-progress && \
 		yarn run tsc --version && \
 		yarn run tsc && \
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
@@ -136,7 +144,7 @@ install_dotnet_sdk:: sdk/dotnet/bin
 
 lint_classic:
 	cd awsx-classic && \
-		yarn install && \
+		yarn install --no-progress && \
 		yarn lint
 
 lint:: awsx/node_modules
