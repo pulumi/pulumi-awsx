@@ -46,28 +46,28 @@ awsx/bin: awsx/node_modules ${AWSX_SRC}
 
 # Re-use the local platform if provided (e.g. `make provider LOCAL_PLAT=linux-amd64`)
 ifneq ($(LOCAL_PLAT),"")
-bin/${PROVIDER}:: obj/provider/$(LOCAL_PLAT)/${PROVIDER}
-	cp obj/provider/$(LOCAL_PLAT)/${PROVIDER} bin/${PROVIDER}
+bin/${PROVIDER}:: bin/provider/$(LOCAL_PLAT)/${PROVIDER}
+	cp bin/provider/$(LOCAL_PLAT)/${PROVIDER} bin/${PROVIDER}
 else 
 bin/${PROVIDER}: awsx/bin awsx/node_modules
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output $(WORKING_DIR)/bin/${PROVIDER}
 endif
 
-obj/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linux-x64
-obj/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linux-arm64
-obj/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
-obj/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
-obj/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
-obj/provider/%:: awsx/bin awsx/node_modules
+bin/provider/linux-amd64/${PROVIDER}:: TARGET := node16-linux-x64
+bin/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linux-arm64
+bin/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
+bin/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
+bin/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
+bin/provider/%:: awsx/bin awsx/node_modules
 	test ${TARGET}
 	cd awsx && \
 		yarn run pkg . ${PKG_ARGS} --target ${TARGET} --output ${WORKING_DIR}/$@
 
-dist/${GZIP_PREFIX}-linux-amd64.tar.gz:: obj/provider/linux-amd64/${PROVIDER}
-dist/${GZIP_PREFIX}-linux-arm64.tar.gz:: obj/provider/linux-arm64/${PROVIDER}
-dist/${GZIP_PREFIX}-darwin-amd64.tar.gz:: obj/provider/darwin-amd64/${PROVIDER}
-dist/${GZIP_PREFIX}-darwin-arm64.tar.gz:: obj/provider/darwin-arm64/${PROVIDER}
-dist/${GZIP_PREFIX}-windows-amd64.tar.gz:: obj/provider/windows-amd64/${PROVIDER}.exe
+dist/${GZIP_PREFIX}-linux-amd64.tar.gz:: bin/provider/linux-amd64/${PROVIDER}
+dist/${GZIP_PREFIX}-linux-arm64.tar.gz:: bin/provider/linux-arm64/${PROVIDER}
+dist/${GZIP_PREFIX}-darwin-amd64.tar.gz:: bin/provider/darwin-amd64/${PROVIDER}
+dist/${GZIP_PREFIX}-darwin-arm64.tar.gz:: bin/provider/darwin-arm64/${PROVIDER}
+dist/${GZIP_PREFIX}-windows-amd64.tar.gz:: bin/provider/windows-amd64/${PROVIDER}.exe
 
 dist/${GZIP_PREFIX}-%.tar.gz:: 
 	@mkdir -p dist
@@ -197,7 +197,7 @@ dist:: dist/${GZIP_PREFIX}-darwin-arm64.tar.gz
 dist:: dist/${GZIP_PREFIX}-windows-amd64.tar.gz
 
 clean:
-	rm -rf bin dist obj awsx/bin awsx/node_modules
+	rm -rf bin dist awsx/bin awsx/node_modules
 
 build_sdks: build_nodejs build_python build_go build_dotnet
 
