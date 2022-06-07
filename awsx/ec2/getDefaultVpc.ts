@@ -25,12 +25,15 @@ export async function getDefaultVpc(
     throw new Error("unable to find default VPC for this region and account");
   }
 
-  const subnetIds = aws.ec2.getSubnetsOutput({
-    filters: [{ name: "vpc-id", values: [vpc.id] }],
-  }).ids;
+  const subnetIds = aws.ec2.getSubnetsOutput(
+    {
+      filters: [{ name: "vpc-id", values: [vpc.id] }],
+    },
+    opts,
+  ).ids;
 
   const subnets = subnetIds.apply((subnetIds) =>
-    pulumi.all(subnetIds.map((id) => aws.ec2.getSubnetOutput({ id }))),
+    pulumi.all(subnetIds.map((id) => aws.ec2.getSubnetOutput({ id }, opts))),
   );
 
   const { publicSubnetIds, privateSubnetIds } = subnets.apply((ss) => {
