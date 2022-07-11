@@ -10,6 +10,9 @@ CODEGEN         := pulumi-gen-${PACK}
 GZIP_PREFIX		:= pulumi-resource-${PACK}-v${VERSION}
 BIN				:= ${PROVIDER}
 
+JAVA_GEN 		 := pulumi-java-gen
+JAVA_GEN_VERSION := v0.4.1
+
 AWSX_SRC 		:= $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
 AWSX_CLASSIC_SRC:= $(wildcard awsx-classic/*.*) $(wildcard awsx-classic/*/*.ts)
 CODEGEN_SRC 	:= $(wildcard schemagen/go.*) $(wildcard schemagen/pkg/*/*.go) $(wildcard schemagen/pkg/cmd/${CODEGEN}/*.go)
@@ -85,6 +88,16 @@ sdk/nodejs/bin:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
 		cp ../../README.md ../../LICENSE bin/
 
+sdk/java/build:: VERSION := $(shell pulumictl get version --language javascript)
+sdk/java/build:: bin/pulumi-java-gen awsx/schema.json ${AWSX_CLASSIC_SRC}
+	rm -rf sdk/java
+	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema awsx/schema.json --out sdk/java
+	cd sdk/java && \
+		gradle --console=plain build
+
+bin/pulumi-java-gen::
+	$(shell pulumictl download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java)
+
 sdk/python/bin:: PYPI_VERSION := $(shell pulumictl get version --language python)
 sdk/python/bin:: bin/${CODEGEN} awsx/schema.json README.md
 	rm -rf sdk/python
@@ -121,6 +134,7 @@ build_nodejs:: sdk/nodejs/bin
 build_python:: sdk/python/bin
 build_go:: sdk/go
 build_dotnet:: sdk/dotnet/bin
+build_java:: sdk/java/build
 
 install_provider: bin/${PROVIDER}
 	rm -f ${GOBIN}/${PROVIDER}
@@ -168,6 +182,11 @@ test_python:: bin/${PROVIDER}
 	@export PATH
 	cd examples && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
+test_java:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test_java:: bin/${PROVIDER}
+	@export PATH
+	cd examples && go test -tags=java -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+
 test_go:: PATH := $(WORKING_DIR)/bin:$(PATH)
 test_go:: bin/${PROVIDER}
 	@export PATH
@@ -199,7 +218,7 @@ dist:: dist/${GZIP_PREFIX}-windows-amd64.tar.gz
 clean:
 	rm -rf bin dist awsx/bin awsx/node_modules
 
-build_sdks: build_nodejs build_python build_go build_dotnet
+build_sdks: build_nodejs build_python build_go build_dotnet build_java
 
 build:: provider test_provider build_sdks
 
