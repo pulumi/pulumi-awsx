@@ -6,12 +6,18 @@ env:
   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
   NUGET_PUBLISH_KEY: ${{ secrets.NUGET_PUBLISH_KEY }}
   PROVIDER: awsx
+  PUBLISH_REPO_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+  PUBLISH_REPO_URL: https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/
+  PUBLISH_REPO_USERNAME: ${{ secrets.OSSRH_USERNAME }}
   PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
   PULUMI_API: https://api.pulumi-staging.io
   PULUMI_GO_DEP_ROOT: ${{ github.workspace }}/..
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   PYPI_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
   PULUMI_LOCAL_NUGET: ${{ github.workspace }}/nuget
+  SIGNING_KEY: ${{ secrets.JAVA_SIGNING_KEY }}
+  SIGNING_KEY_ID: ${{ secrets.JAVA_SIGNING_KEY_ID }}
+  SIGNING_PASSWORD: ${{ secrets.JAVA_SIGNING_PASSWORD }}
   IS_PRERELEASE: true
 jobs:
   lint:
@@ -148,6 +154,12 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{matrix.dotnetversion}}
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          cache: gradle
+          distribution: temurin
+          java-version: ${{matrix.javaversion}}
       - name: Install Python deps
         run: |-
           pip3 install virtualenv==20.0.23
@@ -200,11 +212,14 @@ jobs:
           - 3.8
         nodeversion:
           - 16.x
+        javaversion:
+          - 11
         language:
           - nodejs
           - python
           - dotnet
           - go
+          - java
   publish:
     name: publish
     needs: acceptance-test
@@ -294,6 +309,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{matrix.pythonversion}}
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          cache: gradle
+          distribution: temurin
+          java-version: ${{matrix.javaversion}}
       - name: Download python SDK
         uses: actions/download-artifact@v2
         with:
@@ -320,6 +341,22 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         name: Publish SDK
         run: ./scripts/publish_packages.sh
+      - name: Download java SDK
+        uses: actions/download-artifact@v2
+        with:
+          name: java-sdk.tar.gz
+          path: ${{ github.workspace}}/sdk/
+      - name: Uncompress java SDK
+        run: tar -zxf ${{github.workspace}}/sdk/java.tar.gz -C ${{github.workspace}}/sdk/java
+      - name: Set PACKAGE_VERSION to Env
+        run: echo "PACKAGE_VERSION=v$(pulumictl get version --language generic)" >>
+          $GITHUB_ENV
+      - name: Publish Java SDK
+        uses: gradle/gradle-build-action@9b814496b50909128c6a52622b416c5ffa04db49
+        with:
+          arguments: publish
+          build-root-directory: ./sdk/java
+          gradle-version: 7.4.1
     strategy:
       fail-fast: false
       matrix:
@@ -331,6 +368,8 @@ jobs:
           - 16.x
         pythonversion:
           - "3.7"
+        javaversion:
+          - 11
   tag_sdk:
     name: tag_sdk
     needs: publish_sdk

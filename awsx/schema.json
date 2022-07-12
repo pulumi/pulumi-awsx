@@ -2857,6 +2857,11 @@
             ],
             "liftSingleValueMethodReturns": true
         },
+        "java": {
+            "packages": {
+                "com.pulumi:aws": "5.4.0"
+            }
+        },
         "nodejs": {
             "dependencies": {
                 "@pulumi/aws": "^5.3.0",
