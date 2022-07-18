@@ -7,7 +7,6 @@ env:
   NUGET_PUBLISH_KEY: ${{ secrets.NUGET_PUBLISH_KEY }}
   PROVIDER: awsx
   PUBLISH_REPO_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
-  PUBLISH_REPO_URL: https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/
   PUBLISH_REPO_USERNAME: ${{ secrets.OSSRH_USERNAME }}
   PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
   PULUMI_API: https://api.pulumi-staging.io
@@ -349,12 +348,12 @@ jobs:
       - name: Uncompress java SDK
         run: tar -zxf ${{github.workspace}}/sdk/java.tar.gz -C ${{github.workspace}}/sdk/java
       - name: Set PACKAGE_VERSION to Env
-        run: echo "PACKAGE_VERSION=v$(pulumictl get version --language generic)" >>
+        run: echo "PACKAGE_VERSION=$(pulumictl get version --language generic)" >>
           $GITHUB_ENV
       - name: Publish Java SDK
         uses: gradle/gradle-build-action@9b814496b50909128c6a52622b416c5ffa04db49
         with:
-          arguments: publish
+          arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository
           build-root-directory: ./sdk/java
           gradle-version: 7.4.1
     strategy:
