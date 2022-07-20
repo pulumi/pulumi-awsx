@@ -11,7 +11,7 @@ GZIP_PREFIX		:= pulumi-resource-${PACK}-v${VERSION}
 BIN				:= ${PROVIDER}
 
 JAVA_GEN 		 := pulumi-java-gen
-JAVA_GEN_VERSION := v0.4.1
+JAVA_GEN_VERSION := v0.5.0
 
 AWSX_SRC 		:= $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
 AWSX_CLASSIC_SRC:= $(wildcard awsx-classic/*.*) $(wildcard awsx-classic/*/*.ts)
@@ -91,7 +91,7 @@ sdk/nodejs/bin:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 sdk/java/build:: VERSION := $(shell pulumictl get version --language javascript)
 sdk/java/build:: bin/pulumi-java-gen awsx/schema.json ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/java
-	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema awsx/schema.json --out sdk/java
+	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema awsx/schema.json --out sdk/java --build gradle-nexus
 	cd sdk/java && \
 		gradle --console=plain build
 
