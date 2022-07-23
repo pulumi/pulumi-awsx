@@ -461,7 +461,9 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["eips"] = None
             __props__.__dict__["internet_gateway"] = None
             __props__.__dict__["isolated_subnet_ids"] = None
+            __props__.__dict__["private_route_table_ids"] = None
             __props__.__dict__["private_subnet_ids"] = None
+            __props__.__dict__["public_route_table_ids"] = None
             __props__.__dict__["public_subnet_ids"] = None
             __props__.__dict__["route_table_associations"] = None
             __props__.__dict__["route_tables"] = None
@@ -507,9 +509,19 @@ class Vpc(pulumi.ComponentResource):
         return pulumi.get(self, "nat_gateways")
 
     @property
+    @pulumi.getter(name="privateRouteTableIds")
+    def private_route_table_ids(self) -> pulumi.Output[Sequence[str]]:
+        return pulumi.get(self, "private_route_table_ids")
+
+    @property
     @pulumi.getter(name="privateSubnetIds")
     def private_subnet_ids(self) -> pulumi.Output[Sequence[str]]:
         return pulumi.get(self, "private_subnet_ids")
+
+    @property
+    @pulumi.getter(name="publicRouteTableIds")
+    def public_route_table_ids(self) -> pulumi.Output[Sequence[str]]:
+        return pulumi.get(self, "public_route_table_ids")
 
     @property
     @pulumi.getter(name="publicSubnetIds")

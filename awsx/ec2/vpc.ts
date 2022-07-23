@@ -22,6 +22,9 @@ interface VpcData {
   subnets: aws.ec2.Subnet[];
   vpcEndpoints: aws.ec2.VpcEndpoint[];
   routeTables: aws.ec2.RouteTable[];
+  privateRouteTableIds: pulumi.Output<string>[];
+  publicRouteTableIds: pulumi.Output<string>[];
+  isolatedRouteTableIds: pulumi.Output<string>[];
   routes: aws.ec2.Route[];
   routeTableAssociations: aws.ec2.RouteTableAssociation[];
   igw: aws.ec2.InternetGateway;
@@ -44,6 +47,9 @@ export class Vpc extends schema.Vpc<VpcData> {
     this.routeTables = data.routeTables;
     this.routes = data.routes;
     this.routeTableAssociations = data.routeTableAssociations;
+    this.privateRouteTableIds = data.privateRouteTableIds;
+    this.publicRouteTableIds = data.publicRouteTableIds;
+    this.isolatedSubnetIds = data.isolatedSubnetIds;
     this.internetGateway = data.igw;
     this.natGateways = data.natGateways;
     this.eips = data.eips;
@@ -118,6 +124,9 @@ export class Vpc extends schema.Vpc<VpcData> {
     const subnets: aws.ec2.Subnet[] = [];
     const routeTables: aws.ec2.RouteTable[] = [];
     const routeTableAssociations: aws.ec2.RouteTableAssociation[] = [];
+    const privateRouteTableIds: pulumi.Output<string>[] = [];
+    const publicRouteTableIds: pulumi.Output<string>[] = [];
+    const isolatedRouteTableIds: pulumi.Output<string>[] = [];
     const routes: aws.ec2.Route[] = [];
     const natGateways: aws.ec2.NatGateway[] = [];
     const eips: aws.ec2.Eip[] = [];
@@ -186,6 +195,25 @@ export class Vpc extends schema.Vpc<VpcData> {
           );
           routeTables.push(routeTable);
 
+          // populate routeTableIds
+          switch (spec.type.toLowerCase()) {
+            case "public": {
+              publicRouteTableIds.push(routeTable.id)
+              break;
+            }
+            case "private": {
+              privateRouteTableIds.push(routeTable.id)
+              break;
+            }
+            case "isolated": {
+              isolatedRouteTableIds.push(routeTable.id)
+              break;
+            }
+            default: {
+              break
+            }
+          }
+
           const routeTableAssoc = new aws.ec2.RouteTableAssociation(
             spec.subnetName,
             {
@@ -242,19 +270,23 @@ export class Vpc extends schema.Vpc<VpcData> {
 
             // Because we've already validated the strategy and have ensured that public subnets are created
             // first via the sort above, we know the necessary NAT Gateway already exists.
-            const natGatewayId =
-              natGatewayStrategy.toLowerCase() === "single" ? natGateways[0].id : natGateways[i].id;
+            if (natGatewayStrategy.toLowerCase() !== "none") {
+              const natGatewayId =
+                natGatewayStrategy.toLowerCase() === "single"
+                  ? natGateways[0].id
+                  : natGateways[i].id;
 
-            const route = new aws.ec2.Route(
-              spec.subnetName,
-              {
-                routeTableId: routeTable.id,
-                natGatewayId,
-                destinationCidrBlock: "0.0.0.0/0",
-              },
-              { parent: routeTable, dependsOn: [routeTable] },
-            );
-            routes.push(route);
+              const route = new aws.ec2.Route(
+                spec.subnetName,
+                {
+                  routeTableId: routeTable.id,
+                  natGatewayId,
+                  destinationCidrBlock: "0.0.0.0/0",
+                },
+                { parent: routeTable, dependsOn: [routeTable] },
+              );
+              routes.push(route);
+            }
           }
 
           // Isolated subnets do not have any route to the internet and therefore need no route created.
@@ -268,6 +300,9 @@ export class Vpc extends schema.Vpc<VpcData> {
       igw,
       routeTables,
       routeTableAssociations,
+      privateRouteTableIds,
+      publicRouteTableIds,
+      isolatedRouteTableIds,
       routes,
       natGateways,
       eips,
@@ -348,7 +383,10 @@ export function validateNatGatewayStrategy(
       );
     case "none":
       if (subnets.some((x) => x.type.toLowerCase() === "private")) {
-        throw new Error("If private subnets are specified, NAT Gateway strategy cannot be 'None'.");
+        pulumi.log.warn(
+          "You are creating private subnets without any NAT Gateways. These subnets will not have access to the internet",
+        );
+        // throw new Error("If private subnets are specified, NAT Gateway strategy cannot be 'None'.");
       }
       break;
     default:

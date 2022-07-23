@@ -1696,6 +1696,18 @@
                     },
                     "description": "The Route Tables for the VPC."
                 },
+                "privateRouteTableIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "publicRouteTableIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "routes": {
                     "type": "array",
                     "items": {
@@ -1735,6 +1747,8 @@
                 "subnets",
                 "routeTables",
                 "routeTableAssociations",
+                "privateRouteTableIds",
+                "publicRouteTableIds",
                 "routes",
                 "internetGateway",
                 "natGateways",

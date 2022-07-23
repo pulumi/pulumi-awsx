@@ -33,8 +33,14 @@ namespace Pulumi.Awsx.Ec2
         [Output("natGateways")]
         public Output<ImmutableArray<Pulumi.Aws.Ec2.NatGateway>> NatGateways { get; private set; } = null!;
 
+        [Output("privateRouteTableIds")]
+        public Output<ImmutableArray<string>> PrivateRouteTableIds { get; private set; } = null!;
+
         [Output("privateSubnetIds")]
         public Output<ImmutableArray<string>> PrivateSubnetIds { get; private set; } = null!;
+
+        [Output("publicRouteTableIds")]
+        public Output<ImmutableArray<string>> PublicRouteTableIds { get; private set; } = null!;
 
         [Output("publicSubnetIds")]
         public Output<ImmutableArray<string>> PublicSubnetIds { get; private set; } = null!;

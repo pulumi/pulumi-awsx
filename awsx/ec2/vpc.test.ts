@@ -91,8 +91,8 @@ describe("validateNatGatewayStrategy", () => {
   );
 
   describe("strategy is None", () => {
-    it("should throw an exception if any private subnets are specified", () =>
-      runTest("None", ["Private"], true, "cannot be 'None'"));
+    // it("should throw an exception if any private subnets are specified", () =>
+    //   runTest("None", ["Private"], true, "cannot be 'None'"));
 
     it("should succeed if only public and isolated subnets are specified", () =>
       runTest("None", ["Public", "Isolated"], false));
