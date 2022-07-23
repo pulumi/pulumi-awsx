@@ -198,19 +198,19 @@ export class Vpc extends schema.Vpc<VpcData> {
           // populate routeTableIds
           switch (spec.type.toLowerCase()) {
             case "public": {
-              publicRouteTableIds.push(routeTable.id)
+              publicRouteTableIds.push(routeTable.id);
               break;
             }
             case "private": {
-              privateRouteTableIds.push(routeTable.id)
+              privateRouteTableIds.push(routeTable.id);
               break;
             }
             case "isolated": {
-              isolatedRouteTableIds.push(routeTable.id)
+              isolatedRouteTableIds.push(routeTable.id);
               break;
             }
             default: {
-              break
+              break;
             }
           }
 
