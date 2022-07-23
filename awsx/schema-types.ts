@@ -67,6 +67,9 @@ export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
     public privateSubnetIds!: string[] | pulumi.Output<string[]>;
     public publicSubnetIds!: string[] | pulumi.Output<string[]>;
     public routeTableAssociations!: aws.ec2.RouteTableAssociation[] | pulumi.Output<aws.ec2.RouteTableAssociation[]>;
+    public publicRouteTableIds!: string[] | pulumi.Output<string[]>;
+    public privateRouteTableIds!: string[] | pulumi.Output<string[]>;
+    public isolatedRouteTableIds!: string[] | pulumi.Output<string[]>;
     public routeTables!: aws.ec2.RouteTable[] | pulumi.Output<aws.ec2.RouteTable[]>;
     public routes!: aws.ec2.Route[] | pulumi.Output<aws.ec2.Route[]>;
     public subnets!: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;
@@ -74,7 +77,7 @@ export abstract class Vpc<TData = any> extends pulumi.ComponentResource<TData> {
     public vpcEndpoints!: aws.ec2.VpcEndpoint[] | pulumi.Output<aws.ec2.VpcEndpoint[]>;
     public vpcId!: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, isolatedSubnetIds: undefined, natGateways: undefined, privateSubnetIds: undefined, publicSubnetIds: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined, vpcEndpoints: undefined, vpcId: undefined } : { name, args, opts }, opts);
+        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, isolatedSubnetIds: undefined, natGateways: undefined, privateSubnetIds: undefined, publicSubnetIds: undefined, routeTableAssociations: undefined, publicRouteTableIds: undefined, privateRouteTableIds: undefined, isolatedRouteTableIds: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined, vpcEndpoints: undefined, vpcId: undefined } : { name, args, opts }, opts);
     }
 }
 export interface VpcArgs {

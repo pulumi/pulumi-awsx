@@ -24,6 +24,9 @@ interface VpcData {
   routeTables: aws.ec2.RouteTable[];
   routes: aws.ec2.Route[];
   routeTableAssociations: aws.ec2.RouteTableAssociation[];
+  privateRouteTableIds: pulumi.Output<string>[];
+  publicRouteTableIds: pulumi.Output<string>[];
+  isolatedRouteTableIds: pulumi.Output<string>[];
   igw: aws.ec2.InternetGateway;
   natGateways: aws.ec2.NatGateway[];
   eips: aws.ec2.Eip[];
@@ -44,6 +47,9 @@ export class Vpc extends schema.Vpc<VpcData> {
     this.routeTables = data.routeTables;
     this.routes = data.routes;
     this.routeTableAssociations = data.routeTableAssociations;
+    this.privateRouteTableIds = data.privateRouteTableIds;
+    this.publicRouteTableIds = data.publicRouteTableIds;
+    this.isolatedSubnetIds = data.isolatedSubnetIds;
     this.internetGateway = data.igw;
     this.natGateways = data.natGateways;
     this.eips = data.eips;
@@ -118,6 +124,9 @@ export class Vpc extends schema.Vpc<VpcData> {
     const subnets: aws.ec2.Subnet[] = [];
     const routeTables: aws.ec2.RouteTable[] = [];
     const routeTableAssociations: aws.ec2.RouteTableAssociation[] = [];
+    const privateRouteTableIds: pulumi.Output<string>[] = [];
+    const publicRouteTableIds: pulumi.Output<string>[] = [];
+    const isolatedRouteTableIds: pulumi.Output<string>[] = [];
     const routes: aws.ec2.Route[] = [];
     const natGateways: aws.ec2.NatGateway[] = [];
     const eips: aws.ec2.Eip[] = [];
@@ -185,6 +194,25 @@ export class Vpc extends schema.Vpc<VpcData> {
             { parent: subnet, dependsOn: [subnet] },
           );
           routeTables.push(routeTable);
+
+          // populate routeTableIds
+          switch (spec.type.toLowerCase()) {
+            case "public": {
+              publicRouteTableIds.push(routeTable.id)
+              break;
+            }
+            case "private": {
+              privateRouteTableIds.push(routeTable.id)
+              break;
+            }
+            case "isolated": {
+              isolatedRouteTableIds.push(routeTable.id)
+              break;
+            }
+            default: {
+              break
+            }
+          }
 
           const routeTableAssoc = new aws.ec2.RouteTableAssociation(
             spec.subnetName,
@@ -268,6 +296,9 @@ export class Vpc extends schema.Vpc<VpcData> {
       igw,
       routeTables,
       routeTableAssociations,
+      privateRouteTableIds,
+      publicRouteTableIds,
+      isolatedRouteTableIds,
       routes,
       natGateways,
       eips,

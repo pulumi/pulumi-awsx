@@ -1689,6 +1689,24 @@
                     },
                     "description": "The Route Table Associations for the VPC."
                 },
+                "publicRouteTableIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "privateRouteTableIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "isolatedRouteTableIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "routeTables": {
                     "type": "array",
                     "items": {
@@ -1736,6 +1754,9 @@
                 "routeTables",
                 "routeTableAssociations",
                 "routes",
+                "privateRouteTableIds",
+                "publicRouteTableIds",
+                "isolatedRouteTableIds",
                 "internetGateway",
                 "natGateways",
                 "eips",

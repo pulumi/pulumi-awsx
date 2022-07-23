@@ -51,6 +51,12 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
     public Output<InternetGateway> internetGateway() {
         return this.internetGateway;
     }
+    @Export(name="isolatedRouteTableIds", type=List.class, parameters={String.class})
+    private Output<List<String>> isolatedRouteTableIds;
+
+    public Output<List<String>> isolatedRouteTableIds() {
+        return this.isolatedRouteTableIds;
+    }
     @Export(name="isolatedSubnetIds", type=List.class, parameters={String.class})
     private Output<List<String>> isolatedSubnetIds;
 
@@ -71,11 +77,23 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
     public Output<List<NatGateway>> natGateways() {
         return this.natGateways;
     }
+    @Export(name="privateRouteTableIds", type=List.class, parameters={String.class})
+    private Output<List<String>> privateRouteTableIds;
+
+    public Output<List<String>> privateRouteTableIds() {
+        return this.privateRouteTableIds;
+    }
     @Export(name="privateSubnetIds", type=List.class, parameters={String.class})
     private Output<List<String>> privateSubnetIds;
 
     public Output<List<String>> privateSubnetIds() {
         return this.privateSubnetIds;
+    }
+    @Export(name="publicRouteTableIds", type=List.class, parameters={String.class})
+    private Output<List<String>> publicRouteTableIds;
+
+    public Output<List<String>> publicRouteTableIds() {
+        return this.publicRouteTableIds;
     }
     @Export(name="publicSubnetIds", type=List.class, parameters={String.class})
     private Output<List<String>> publicSubnetIds;
