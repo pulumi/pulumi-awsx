@@ -363,6 +363,53 @@ export abstract class MetricWidget extends SimpleWidget {
     }
 }
 
+export interface LogWidgetArgs extends SimpleWidgetArgs {
+    /**
+     * Used to show a graph of a single query in a timeseries or singlevalue
+     */
+    query: pulumi.Input<string>;
+
+    /** The title to be displayed for the graph or number. */
+    title?: pulumi.Input<string>;
+
+    /**
+     * The region of the metric.  Defaults to the region of the stack if not specified.
+     */
+    region?: pulumi.Input<aws.Region>;
+}
+
+/**
+ * Simple widget that displays a cloudwatch log query onn the dashboard grid.
+ */
+export class LogWidget extends SimpleWidget {
+    private readonly logArgs: LogWidgetArgs;
+
+    constructor(args: LogWidgetArgs) {
+        super(args);
+
+        this.logArgs = args;
+    }
+
+    public height() {
+        return this.logArgs.height !== undefined ? this.logArgs.height : 2;
+    }
+
+    protected computeType(): wjson.LogWidgetJson["type"] {
+        return "log";
+    }
+    protected computeView = (): wjson.MetricWidgetPropertiesJson["view"] => "timeSeries";
+    protected computedStacked = () => false;
+
+    protected computeProperties(region: pulumi.Output<aws.Region>): wjson.LogWidgetJson["properties"] {
+        return {
+        query: this.logArgs.query,
+        title: this.logArgs.title,
+        region: utils.ifUndefined(this.logArgs.region, region),
+        view: this.computeView(),
+        stacked: this.computedStacked(),
+        };
+    }
+}
 
 /** @internal */
 export function statisticString(obj: { extendedStatistic: pulumi.Input<number | undefined>, statistic: pulumi.Input<MetricStatistic> }) {
