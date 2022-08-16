@@ -24,15 +24,15 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
      * The bitmask for the subnet&#39;s CIDR block.
      * 
      */
-    @Import(name="cidrMask", required=true)
-    private Integer cidrMask;
+    @Import(name="cidrMask")
+    private @Nullable Integer cidrMask;
 
     /**
      * @return The bitmask for the subnet&#39;s CIDR block.
      * 
      */
-    public Integer cidrMask() {
-        return this.cidrMask;
+    public Optional<Integer> cidrMask() {
+        return Optional.ofNullable(this.cidrMask);
     }
 
     /**
@@ -97,7 +97,7 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
          * @return builder
          * 
          */
-        public Builder cidrMask(Integer cidrMask) {
+        public Builder cidrMask(@Nullable Integer cidrMask) {
             $.cidrMask = cidrMask;
             return this;
         }
@@ -125,7 +125,6 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         public SubnetSpecArgs build() {
-            $.cidrMask = Objects.requireNonNull($.cidrMask, "expected parameter 'cidrMask' to be non-null");
             $.type = Objects.requireNonNull($.type, "expected parameter 'type' to be non-null");
             return $;
         }

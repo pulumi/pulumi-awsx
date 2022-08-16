@@ -57,7 +57,8 @@ export function getSubnetSpecs(
     const isolatedSubnetsOut: SubnetSpec[] = [];
 
     for (let j = 0; j < privateSubnetsIn.length; j++) {
-      const newBits = privateSubnetsIn[j].cidrMask - baseSubnetMask;
+      const privateCidrMask: number = privateSubnetsIn[j].cidrMask ?? 19;
+      const newBits = privateCidrMask - baseSubnetMask;
 
       // The "j" input to cidrSubnetV4 below covers the case where we have
       // multiple subnets of each type per AZ. In this case, we need the
@@ -84,7 +85,8 @@ export function getSubnetSpecs(
       const baseIp = new ipAddress.Address4(baseCidr);
 
       const splitBase = privateSubnetsOut.length > 0 ? cidrSubnetV4(baseCidr, 0, 1) : azBases[i];
-      const newBits = publicSubnetsIn[j].cidrMask - baseIp.subnetMask;
+      const publicCidrMask: number = publicSubnetsIn[j].cidrMask ?? 20;
+      const newBits = publicCidrMask - baseIp.subnetMask;
 
       const publicSubnetCidrBlock = cidrSubnetV4(splitBase, newBits, j);
       publicSubnetsOut.push({
@@ -118,7 +120,8 @@ export function getSubnetSpecs(
         splitBase = azBases[i];
       }
 
-      const newBits = isolatedSubnetsIn[j].cidrMask - baseIp.subnetMask;
+      const isolatedCidrMask: number = isolatedSubnetsIn[j].cidrMask ?? 24;
+      const newBits = isolatedCidrMask - baseIp.subnetMask;
 
       const isolatedSubnetCidrBlock = cidrSubnetV4(splitBase, newBits, j);
       isolatedSubnetsOut.push({

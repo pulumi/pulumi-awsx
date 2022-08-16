@@ -547,12 +547,12 @@ export interface NatGatewayConfigurationOutputs {
 export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
 export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
 export interface SubnetSpecInputs {
-    readonly cidrMask: number;
+    readonly cidrMask?: number;
     readonly name?: string;
     readonly type: SubnetTypeInputs;
 }
 export interface SubnetSpecOutputs {
-    readonly cidrMask: number;
+    readonly cidrMask?: number;
     readonly name?: string;
     readonly type: SubnetTypeOutputs;
 }

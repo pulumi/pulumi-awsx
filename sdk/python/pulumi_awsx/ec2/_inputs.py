@@ -57,31 +57,20 @@ class NatGatewayConfigurationArgs:
 @pulumi.input_type
 class SubnetSpecArgs:
     def __init__(__self__, *,
-                 cidr_mask: int,
                  type: 'SubnetType',
+                 cidr_mask: Optional[int] = None,
                  name: Optional[str] = None):
         """
         Configuration for a VPC subnet.
-        :param int cidr_mask: The bitmask for the subnet's CIDR block.
         :param 'SubnetType' type: The type of subnet.
+        :param int cidr_mask: The bitmask for the subnet's CIDR block.
         :param str name: The subnet's name. Will be templated upon creation.
         """
-        pulumi.set(__self__, "cidr_mask", cidr_mask)
         pulumi.set(__self__, "type", type)
+        if cidr_mask is not None:
+            pulumi.set(__self__, "cidr_mask", cidr_mask)
         if name is not None:
             pulumi.set(__self__, "name", name)
-
-    @property
-    @pulumi.getter(name="cidrMask")
-    def cidr_mask(self) -> int:
-        """
-        The bitmask for the subnet's CIDR block.
-        """
-        return pulumi.get(self, "cidr_mask")
-
-    @cidr_mask.setter
-    def cidr_mask(self, value: int):
-        pulumi.set(self, "cidr_mask", value)
 
     @property
     @pulumi.getter
@@ -94,6 +83,18 @@ class SubnetSpecArgs:
     @type.setter
     def type(self, value: 'SubnetType'):
         pulumi.set(self, "type", value)
+
+    @property
+    @pulumi.getter(name="cidrMask")
+    def cidr_mask(self) -> Optional[int]:
+        """
+        The bitmask for the subnet's CIDR block.
+        """
+        return pulumi.get(self, "cidr_mask")
+
+    @cidr_mask.setter
+    def cidr_mask(self, value: Optional[int]):
+        pulumi.set(self, "cidr_mask", value)
 
     @property
     @pulumi.getter

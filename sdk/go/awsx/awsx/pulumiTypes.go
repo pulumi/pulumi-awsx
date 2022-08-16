@@ -65,7 +65,7 @@ type Bucket struct {
 // BucketInput is an input type that accepts BucketArgs and BucketOutput values.
 // You can construct a concrete instance of `BucketInput` via:
 //
-//          BucketArgs{...}
+//	BucketArgs{...}
 type BucketInput interface {
 	pulumi.Input
 
@@ -145,11 +145,11 @@ func (i BucketArgs) ToBucketPtrOutputWithContext(ctx context.Context) BucketPtrO
 // BucketPtrInput is an input type that accepts BucketArgs, BucketPtr and BucketPtrOutput values.
 // You can construct a concrete instance of `BucketPtrInput` via:
 //
-//          BucketArgs{...}
+//	        BucketArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type BucketPtrInput interface {
 	pulumi.Input
 
@@ -568,7 +568,7 @@ type DefaultLogGroup struct {
 // DefaultLogGroupInput is an input type that accepts DefaultLogGroupArgs and DefaultLogGroupOutput values.
 // You can construct a concrete instance of `DefaultLogGroupInput` via:
 //
-//          DefaultLogGroupArgs{...}
+//	DefaultLogGroupArgs{...}
 type DefaultLogGroupInput interface {
 	pulumi.Input
 
@@ -609,11 +609,11 @@ func (i DefaultLogGroupArgs) ToDefaultLogGroupPtrOutputWithContext(ctx context.C
 // DefaultLogGroupPtrInput is an input type that accepts DefaultLogGroupArgs, DefaultLogGroupPtr and DefaultLogGroupPtrOutput values.
 // You can construct a concrete instance of `DefaultLogGroupPtrInput` via:
 //
-//          DefaultLogGroupArgs{...}
+//	        DefaultLogGroupArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type DefaultLogGroupPtrInput interface {
 	pulumi.Input
 
@@ -746,7 +746,7 @@ type DefaultRoleWithPolicy struct {
 // DefaultRoleWithPolicyInput is an input type that accepts DefaultRoleWithPolicyArgs and DefaultRoleWithPolicyOutput values.
 // You can construct a concrete instance of `DefaultRoleWithPolicyInput` via:
 //
-//          DefaultRoleWithPolicyArgs{...}
+//	DefaultRoleWithPolicyArgs{...}
 type DefaultRoleWithPolicyInput interface {
 	pulumi.Input
 
@@ -787,11 +787,11 @@ func (i DefaultRoleWithPolicyArgs) ToDefaultRoleWithPolicyPtrOutputWithContext(c
 // DefaultRoleWithPolicyPtrInput is an input type that accepts DefaultRoleWithPolicyArgs, DefaultRoleWithPolicyPtr and DefaultRoleWithPolicyPtrOutput values.
 // You can construct a concrete instance of `DefaultRoleWithPolicyPtrInput` via:
 //
-//          DefaultRoleWithPolicyArgs{...}
+//	        DefaultRoleWithPolicyArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type DefaultRoleWithPolicyPtrInput interface {
 	pulumi.Input
 
@@ -935,7 +935,7 @@ func (val *DefaultSecurityGroup) Defaults() *DefaultSecurityGroup {
 // DefaultSecurityGroupInput is an input type that accepts DefaultSecurityGroupArgs and DefaultSecurityGroupOutput values.
 // You can construct a concrete instance of `DefaultSecurityGroupInput` via:
 //
-//          DefaultSecurityGroupArgs{...}
+//	DefaultSecurityGroupArgs{...}
 type DefaultSecurityGroupInput interface {
 	pulumi.Input
 
@@ -986,11 +986,11 @@ func (i DefaultSecurityGroupArgs) ToDefaultSecurityGroupPtrOutputWithContext(ctx
 // DefaultSecurityGroupPtrInput is an input type that accepts DefaultSecurityGroupArgs, DefaultSecurityGroupPtr and DefaultSecurityGroupPtrOutput values.
 // You can construct a concrete instance of `DefaultSecurityGroupPtrInput` via:
 //
-//          DefaultSecurityGroupArgs{...}
+//	        DefaultSecurityGroupArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type DefaultSecurityGroupPtrInput interface {
 	pulumi.Input
 
@@ -1121,7 +1121,7 @@ type ExistingBucket struct {
 // ExistingBucketInput is an input type that accepts ExistingBucketArgs and ExistingBucketOutput values.
 // You can construct a concrete instance of `ExistingBucketInput` via:
 //
-//          ExistingBucketArgs{...}
+//	ExistingBucketArgs{...}
 type ExistingBucketInput interface {
 	pulumi.Input
 
@@ -1160,11 +1160,11 @@ func (i ExistingBucketArgs) ToExistingBucketPtrOutputWithContext(ctx context.Con
 // ExistingBucketPtrInput is an input type that accepts ExistingBucketArgs, ExistingBucketPtr and ExistingBucketPtrOutput values.
 // You can construct a concrete instance of `ExistingBucketPtrInput` via:
 //
-//          ExistingBucketArgs{...}
+//	        ExistingBucketArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type ExistingBucketPtrInput interface {
 	pulumi.Input
 
@@ -1282,7 +1282,7 @@ type ExistingLogGroup struct {
 // ExistingLogGroupInput is an input type that accepts ExistingLogGroupArgs and ExistingLogGroupOutput values.
 // You can construct a concrete instance of `ExistingLogGroupInput` via:
 //
-//          ExistingLogGroupArgs{...}
+//	ExistingLogGroupArgs{...}
 type ExistingLogGroupInput interface {
 	pulumi.Input
 
@@ -1323,11 +1323,11 @@ func (i ExistingLogGroupArgs) ToExistingLogGroupPtrOutputWithContext(ctx context
 // ExistingLogGroupPtrInput is an input type that accepts ExistingLogGroupArgs, ExistingLogGroupPtr and ExistingLogGroupPtrOutput values.
 // You can construct a concrete instance of `ExistingLogGroupPtrInput` via:
 //
-//          ExistingLogGroupArgs{...}
+//	        ExistingLogGroupArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type ExistingLogGroupPtrInput interface {
 	pulumi.Input
 
@@ -1468,7 +1468,7 @@ type LogGroup struct {
 // LogGroupInput is an input type that accepts LogGroupArgs and LogGroupOutput values.
 // You can construct a concrete instance of `LogGroupInput` via:
 //
-//          LogGroupArgs{...}
+//	LogGroupArgs{...}
 type LogGroupInput interface {
 	pulumi.Input
 
@@ -1517,11 +1517,11 @@ func (i LogGroupArgs) ToLogGroupPtrOutputWithContext(ctx context.Context) LogGro
 // LogGroupPtrInput is an input type that accepts LogGroupArgs, LogGroupPtr and LogGroupPtrOutput values.
 // You can construct a concrete instance of `LogGroupPtrInput` via:
 //
-//          LogGroupArgs{...}
+//	        LogGroupArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type LogGroupPtrInput interface {
 	pulumi.Input
 
@@ -1692,7 +1692,7 @@ type OptionalLogGroup struct {
 // OptionalLogGroupInput is an input type that accepts OptionalLogGroupArgs and OptionalLogGroupOutput values.
 // You can construct a concrete instance of `OptionalLogGroupInput` via:
 //
-//          OptionalLogGroupArgs{...}
+//	OptionalLogGroupArgs{...}
 type OptionalLogGroupInput interface {
 	pulumi.Input
 
@@ -1733,11 +1733,11 @@ func (i OptionalLogGroupArgs) ToOptionalLogGroupPtrOutputWithContext(ctx context
 // OptionalLogGroupPtrInput is an input type that accepts OptionalLogGroupArgs, OptionalLogGroupPtr and OptionalLogGroupPtrOutput values.
 // You can construct a concrete instance of `OptionalLogGroupPtrInput` via:
 //
-//          OptionalLogGroupArgs{...}
+//	        OptionalLogGroupArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type OptionalLogGroupPtrInput interface {
 	pulumi.Input
 
@@ -1868,7 +1868,7 @@ type RequiredBucket struct {
 // RequiredBucketInput is an input type that accepts RequiredBucketArgs and RequiredBucketOutput values.
 // You can construct a concrete instance of `RequiredBucketInput` via:
 //
-//          RequiredBucketArgs{...}
+//	RequiredBucketArgs{...}
 type RequiredBucketInput interface {
 	pulumi.Input
 
@@ -1907,11 +1907,11 @@ func (i RequiredBucketArgs) ToRequiredBucketPtrOutputWithContext(ctx context.Con
 // RequiredBucketPtrInput is an input type that accepts RequiredBucketArgs, RequiredBucketPtr and RequiredBucketPtrOutput values.
 // You can construct a concrete instance of `RequiredBucketPtrInput` via:
 //
-//          RequiredBucketArgs{...}
+//	        RequiredBucketArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type RequiredBucketPtrInput interface {
 	pulumi.Input
 
@@ -2053,7 +2053,7 @@ type RoleWithPolicy struct {
 // RoleWithPolicyInput is an input type that accepts RoleWithPolicyArgs and RoleWithPolicyOutput values.
 // You can construct a concrete instance of `RoleWithPolicyInput` via:
 //
-//          RoleWithPolicyArgs{...}
+//	RoleWithPolicyArgs{...}
 type RoleWithPolicyInput interface {
 	pulumi.Input
 
@@ -2110,11 +2110,11 @@ func (i RoleWithPolicyArgs) ToRoleWithPolicyPtrOutputWithContext(ctx context.Con
 // RoleWithPolicyPtrInput is an input type that accepts RoleWithPolicyArgs, RoleWithPolicyPtr and RoleWithPolicyPtrOutput values.
 // You can construct a concrete instance of `RoleWithPolicyPtrInput` via:
 //
-//          RoleWithPolicyArgs{...}
+//	        RoleWithPolicyArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type RoleWithPolicyPtrInput interface {
 	pulumi.Input
 
@@ -2390,7 +2390,7 @@ func (val *SecurityGroup) Defaults() *SecurityGroup {
 // SecurityGroupInput is an input type that accepts SecurityGroupArgs and SecurityGroupOutput values.
 // You can construct a concrete instance of `SecurityGroupInput` via:
 //
-//          SecurityGroupArgs{...}
+//	SecurityGroupArgs{...}
 type SecurityGroupInput interface {
 	pulumi.Input
 
@@ -2452,11 +2452,11 @@ func (i SecurityGroupArgs) ToSecurityGroupPtrOutputWithContext(ctx context.Conte
 // SecurityGroupPtrInput is an input type that accepts SecurityGroupArgs, SecurityGroupPtr and SecurityGroupPtrOutput values.
 // You can construct a concrete instance of `SecurityGroupPtrInput` via:
 //
-//          SecurityGroupArgs{...}
+//	        SecurityGroupArgs{...}
 //
-//  or:
+//	or:
 //
-//          nil
+//	        nil
 type SecurityGroupPtrInput interface {
 	pulumi.Input
 

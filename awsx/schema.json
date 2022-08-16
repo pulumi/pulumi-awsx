@@ -518,8 +518,7 @@
             },
             "type": "object",
             "required": [
-                "type",
-                "cidrMask"
+                "type"
             ]
         },
         "awsx:ec2:SubnetType": {

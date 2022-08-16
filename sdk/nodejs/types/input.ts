@@ -381,7 +381,7 @@ export namespace ec2 {
         /**
          * The bitmask for the subnet's CIDR block.
          */
-        cidrMask: number;
+        cidrMask?: number;
         /**
          * The subnet's name. Will be templated upon creation.
          */
@@ -1332,7 +1332,6 @@ export namespace ecs {
         readOnly?: pulumi.Input<boolean>;
         sourceContainer?: pulumi.Input<string>;
     }
-
 }
 
 export namespace lb {
