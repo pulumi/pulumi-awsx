@@ -114,7 +114,7 @@ jobs:
       fail-fast: false
       matrix:
         goversion:
-          - 1.17.x
+          - 1.19.x
         nodeversion:
           - 16.x
   acceptance-test:
@@ -204,7 +204,7 @@ jobs:
       fail-fast: false
       matrix:
         goversion:
-          - 1.17.x
+          - 1.19.x
         dotnetversion:
           - 3.1
         pythonversion:
@@ -352,7 +352,7 @@ jobs:
       fail-fast: false
       matrix:
         goversion:
-          - 1.17.x
+          - 1.19.x
         dotnetversion:
           - 3.1
         nodeversion:

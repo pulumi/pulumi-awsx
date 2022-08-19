@@ -49,6 +49,31 @@ describe("subnet creation integration tests", () => {
     expect(getOverlappingSubnets(subnetSpecs)).toEqual([]);
   });
 
+  it("should return default cidrMasksFor Subnet Types", () => {
+    const inputs: SubnetSpecInputs[] = [
+      {
+        type: "Public",
+      },
+      {
+        type: "Private",
+      },
+      {
+        type: "Isolated",
+      },
+    ];
+
+    const subnetSpecs = getSubnetSpecs(
+      "dummy",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b", "us-east-1c"],
+      inputs,
+    );
+
+    console.log(JSON.stringify(subnetSpecs));
+
+    expect(getOverlappingSubnets(subnetSpecs)).toEqual([]);
+  });
+
   it("should return no overlapping subnets 2 private subnets per AZ", () => {
     const inputs: SubnetSpecInputs[] = [
       {

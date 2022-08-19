@@ -316,7 +316,6 @@ func subnetSpecType() schema.ComplexTypeSpec {
 			},
 			Required: []string{
 				"type",
-				"cidrMask",
 			},
 		},
 	}

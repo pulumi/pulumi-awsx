@@ -144,7 +144,7 @@ func (o NatGatewayStrategyPtrOutput) ToStringPtrOutputWithContext(ctx context.Co
 // NatGatewayStrategyInput is an input type that accepts NatGatewayStrategyArgs and NatGatewayStrategyOutput values.
 // You can construct a concrete instance of `NatGatewayStrategyInput` via:
 //
-//          NatGatewayStrategyArgs{...}
+//	NatGatewayStrategyArgs{...}
 type NatGatewayStrategyInput interface {
 	pulumi.Input
 
@@ -313,7 +313,7 @@ func (o SubnetTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) p
 // SubnetTypeInput is an input type that accepts SubnetTypeArgs and SubnetTypeOutput values.
 // You can construct a concrete instance of `SubnetTypeInput` via:
 //
-//          SubnetTypeArgs{...}
+//	SubnetTypeArgs{...}
 type SubnetTypeInput interface {
 	pulumi.Input
 

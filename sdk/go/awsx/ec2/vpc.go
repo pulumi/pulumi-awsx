@@ -168,7 +168,7 @@ func (i *Vpc) ToVpcOutputWithContext(ctx context.Context) VpcOutput {
 // VpcArrayInput is an input type that accepts VpcArray and VpcArrayOutput values.
 // You can construct a concrete instance of `VpcArrayInput` via:
 //
-//          VpcArray{ VpcArgs{...} }
+//	VpcArray{ VpcArgs{...} }
 type VpcArrayInput interface {
 	pulumi.Input
 
@@ -193,7 +193,7 @@ func (i VpcArray) ToVpcArrayOutputWithContext(ctx context.Context) VpcArrayOutpu
 // VpcMapInput is an input type that accepts VpcMap and VpcMapOutput values.
 // You can construct a concrete instance of `VpcMapInput` via:
 //
-//          VpcMap{ "key": VpcArgs{...} }
+//	VpcMap{ "key": VpcArgs{...} }
 type VpcMapInput interface {
 	pulumi.Input
 

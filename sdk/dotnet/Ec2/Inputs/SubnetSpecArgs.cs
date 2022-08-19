@@ -18,8 +18,8 @@ namespace Pulumi.Awsx.Ec2.Inputs
         /// <summary>
         /// The bitmask for the subnet's CIDR block.
         /// </summary>
-        [Input("cidrMask", required: true)]
-        public int CidrMask { get; set; }
+        [Input("cidrMask")]
+        public int? CidrMask { get; set; }
 
         /// <summary>
         /// The subnet's name. Will be templated upon creation.
