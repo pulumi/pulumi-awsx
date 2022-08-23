@@ -400,3 +400,4 @@ name: release
     tags:
       - v*.*.*
       - '!v*.*.*-**'
+      - '!v0.x.x'
