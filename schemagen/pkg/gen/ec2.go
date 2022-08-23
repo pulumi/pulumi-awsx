@@ -313,6 +313,13 @@ func subnetSpecType() schema.ComplexTypeSpec {
 					Description: "The bitmask for the subnet's CIDR block.",
 					TypeSpec:    plainInt(),
 				},
+				"tags": {
+					TypeSpec: schema.TypeSpec{
+						Type:                 "object",
+						AdditionalProperties: &schema.TypeSpec{Type: "string"},
+					},
+					Description: "A map of tags to assign to the resource.",
+				},
 			},
 			Required: []string{
 				"type",

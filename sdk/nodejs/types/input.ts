@@ -387,6 +387,10 @@ export namespace ec2 {
          */
         name?: string;
         /**
+         * A map of tags to assign to the resource.
+         */
+        tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
          * The type of subnet.
          */
         type: enums.ec2.SubnetType;

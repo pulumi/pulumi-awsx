@@ -59,18 +59,22 @@ class SubnetSpecArgs:
     def __init__(__self__, *,
                  type: 'SubnetType',
                  cidr_mask: Optional[int] = None,
-                 name: Optional[str] = None):
+                 name: Optional[str] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         Configuration for a VPC subnet.
         :param 'SubnetType' type: The type of subnet.
         :param int cidr_mask: The bitmask for the subnet's CIDR block.
         :param str name: The subnet's name. Will be templated upon creation.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource.
         """
         pulumi.set(__self__, "type", type)
         if cidr_mask is not None:
             pulumi.set(__self__, "cidr_mask", cidr_mask)
         if name is not None:
             pulumi.set(__self__, "name", name)
+        if tags is not None:
+            pulumi.set(__self__, "tags", tags)
 
     @property
     @pulumi.getter
@@ -107,6 +111,18 @@ class SubnetSpecArgs:
     @name.setter
     def name(self, value: Optional[str]):
         pulumi.set(self, "name", value)
+
+    @property
+    @pulumi.getter
+    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        A map of tags to assign to the resource.
+        """
+        return pulumi.get(self, "tags")
+
+    @tags.setter
+    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "tags", value)
 
 
 @pulumi.input_type

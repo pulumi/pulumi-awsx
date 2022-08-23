@@ -175,6 +175,8 @@ type SubnetSpec struct {
 	CidrMask *int `pulumi:"cidrMask"`
 	// The subnet's name. Will be templated upon creation.
 	Name *string `pulumi:"name"`
+	// A map of tags to assign to the resource.
+	Tags map[string]string `pulumi:"tags"`
 	// The type of subnet.
 	Type SubnetType `pulumi:"type"`
 }
@@ -196,6 +198,8 @@ type SubnetSpecArgs struct {
 	CidrMask *int `pulumi:"cidrMask"`
 	// The subnet's name. Will be templated upon creation.
 	Name *string `pulumi:"name"`
+	// A map of tags to assign to the resource.
+	Tags pulumi.StringMapInput `pulumi:"tags"`
 	// The type of subnet.
 	Type SubnetType `pulumi:"type"`
 }
@@ -260,6 +264,11 @@ func (o SubnetSpecOutput) CidrMask() pulumi.IntPtrOutput {
 // The subnet's name. Will be templated upon creation.
 func (o SubnetSpecOutput) Name() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v SubnetSpec) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// A map of tags to assign to the resource.
+func (o SubnetSpecOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v SubnetSpec) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
 
 // The type of subnet.

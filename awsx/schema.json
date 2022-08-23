@@ -510,6 +510,13 @@
                     "plain": true,
                     "description": "The subnet's name. Will be templated upon creation."
                 },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "A map of tags to assign to the resource."
+                },
                 "type": {
                     "$ref": "#/types/awsx:ec2:SubnetType",
                     "plain": true,
