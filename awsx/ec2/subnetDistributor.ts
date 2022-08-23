@@ -15,6 +15,7 @@
 // Code adapted from https://github.com/jen20/pulumi-aws-vpc/blob/master/nodejs/src/subnetDistributor.ts
 // and used in accordance with MPL v2.0 license
 
+import * as pulumi from "@pulumi/pulumi";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 
 export interface SubnetSpec {
@@ -22,6 +23,9 @@ export interface SubnetSpec {
   type: SubnetTypeInputs;
   azName: string;
   subnetName: string;
+  tags?: pulumi.Input<{
+    [key: string]: pulumi.Input<string>;
+  }>;
 }
 
 export function getSubnetSpecs(
@@ -70,6 +74,7 @@ export function getSubnetSpecs(
         cidrBlock: privateSubnetCidrBlock,
         type: "Private",
         subnetName: `${vpcName}-${privateSubnetsIn[j].name ?? "private"}-${i + 1}`,
+        tags: privateSubnetsIn[j].tags,
       });
     }
 
@@ -94,6 +99,7 @@ export function getSubnetSpecs(
         cidrBlock: publicSubnetCidrBlock,
         type: "Public",
         subnetName: `${vpcName}-${publicSubnetsIn[j].name ?? "public"}-${i + 1}`,
+        tags: publicSubnetsIn[j].tags,
       });
     }
 
@@ -129,6 +135,7 @@ export function getSubnetSpecs(
         cidrBlock: isolatedSubnetCidrBlock,
         type: "Isolated",
         subnetName: `${vpcName}-${isolatedSubnetsIn[j].name ?? "isolated"}-${i + 1}`,
+        tags: isolatedSubnetsIn[j].tags,
       });
     }
 

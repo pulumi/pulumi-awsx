@@ -69,8 +69,6 @@ describe("subnet creation integration tests", () => {
       inputs,
     );
 
-    console.log(JSON.stringify(subnetSpecs));
-
     expect(getOverlappingSubnets(subnetSpecs)).toEqual([]);
   });
 

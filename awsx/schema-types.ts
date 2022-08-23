@@ -549,11 +549,13 @@ export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
 export interface SubnetSpecInputs {
     readonly cidrMask?: number;
     readonly name?: string;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly type: SubnetTypeInputs;
 }
 export interface SubnetSpecOutputs {
     readonly cidrMask?: number;
     readonly name?: string;
+    readonly tags?: pulumi.Output<Record<string, string>>;
     readonly type: SubnetTypeOutputs;
 }
 export type SubnetTypeInputs = "Public" | "Private" | "Isolated";

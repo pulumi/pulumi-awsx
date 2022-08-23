@@ -71,6 +71,10 @@ describe("getSubnetSpecs", () => {
           cidrMask: 19,
           type: type,
           name: "foo",
+          tags: {
+            Name: "test",
+            Owner: "user1",
+          },
         },
       ];
 
@@ -80,18 +84,30 @@ describe("getSubnetSpecs", () => {
           cidrBlock: "10.0.0.0/19",
           azName: "us-east-1a",
           subnetName: "vpcname-foo-1",
+          tags: {
+            Name: "test",
+            Owner: "user1",
+          },
         },
         {
           type: type,
           cidrBlock: "10.0.64.0/19",
           azName: "us-east-1b",
           subnetName: "vpcname-foo-2",
+          tags: {
+            Name: "test",
+            Owner: "user1",
+          },
         },
         {
           type: type,
           cidrBlock: "10.0.128.0/19",
           azName: "us-east-1c",
           subnetName: "vpcname-foo-3",
+          tags: {
+            Name: "test",
+            Owner: "user1",
+          },
         },
       ];
 
