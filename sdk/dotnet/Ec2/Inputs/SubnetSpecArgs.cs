@@ -27,6 +27,18 @@ namespace Pulumi.Awsx.Ec2.Inputs
         [Input("name")]
         public string? Name { get; set; }
 
+        [Input("tags")]
+        private InputMap<string>? _tags;
+
+        /// <summary>
+        /// A map of tags to assign to the resource.
+        /// </summary>
+        public InputMap<string> Tags
+        {
+            get => _tags ?? (_tags = new InputMap<string>());
+            set => _tags = value;
+        }
+
         /// <summary>
         /// The type of subnet.
         /// </summary>
