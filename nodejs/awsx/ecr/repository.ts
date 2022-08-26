@@ -37,7 +37,8 @@ export class Repository extends pulumi.ComponentResource {
 
         const lowerCaseName = name.toLowerCase();
 
-        this.repository = args.repository || new aws.ecr.Repository(lowerCaseName, args, { parent: this });
+        this.repository = args.repository || new aws.ecr.Repository(lowerCaseName,
+            {forceDelete: args.forceDelete ?? true, tags: args.tags}, { parent: this });
         this.lifecyclePolicy = new LifecyclePolicy(lowerCaseName, this.repository, args.lifeCyclePolicyArgs, { parent: this });
 
         this.registerOutputs();
@@ -86,4 +87,10 @@ export interface RepositoryArgs {
      * created using `LifecyclePolicy.getDefaultLifecyclePolicyArgs`.
      */
     lifeCyclePolicyArgs?: LifecyclePolicyArgs;
+
+    /**
+     * If `true`, will delete the repository even if it contains images.
+     * Defaults to `true`.
+     */
+    forceDelete?: pulumi.Input<boolean>;
 }
