@@ -45,7 +45,7 @@ export = async () => {
     for (let i = 0; i < subnets.length; i++) {
         const getAmiResult = await aws.ec2.getAmi({
             filters: [
-                { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*" ] },
+                { name: "name", values: [ "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*" ] },
                 { name: "virtualization-type", values: [ "hvm" ] },
             ],
             mostRecent: true,

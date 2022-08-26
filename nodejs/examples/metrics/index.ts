@@ -97,7 +97,7 @@ const bucketAlarm = bucketMetric.createAlarm("alarm" + alarmIndex++, { threshold
 
 const ubuntu = pulumi.output(aws.ec2.getAmi({
     filters: [
-        { name: "name", values: ["ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-*"] },
+        { name: "name", values: ["ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"] },
         { name: "virtualization-type", values: ["hvm"] },
     ],
     mostRecent: true,
