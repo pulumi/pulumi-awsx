@@ -6,4 +6,4 @@ vendor/
 **/yarn-error.log
 **/.idea
 *.pyc
-yarn.lock
+nodejs/awsx/examples/**/**/yarn.lock
