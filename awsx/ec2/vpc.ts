@@ -347,9 +347,6 @@ export function validateNatGatewayStrategy(
         "If NAT Gateway strategy is 'OnePerAz' or 'Single', both private and public subnets must be declared. The private subnet creates the need for a NAT Gateway, and the public subnet is required to host the NAT Gateway resource.",
       );
     case "none":
-      if (subnets.some((x) => x.type.toLowerCase() === "private")) {
-        throw new Error("If private subnets are specified, NAT Gateway strategy cannot be 'None'.");
-      }
       break;
     default:
       throw new Error(`Unknown NAT Gateway strategy '${natGatewayStrategy}'`);
