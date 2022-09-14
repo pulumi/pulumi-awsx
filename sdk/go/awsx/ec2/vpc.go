@@ -17,12 +17,15 @@ type Vpc struct {
 	// The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
 	Eips ec2.EipArrayOutput `pulumi:"eips"`
 	// The Internet Gateway for the VPC.
-	InternetGateway   ec2.InternetGatewayOutput `pulumi:"internetGateway"`
-	IsolatedSubnetIds pulumi.StringArrayOutput  `pulumi:"isolatedSubnetIds"`
+	InternetGateway       ec2.InternetGatewayOutput `pulumi:"internetGateway"`
+	IsolatedRouteTableIds pulumi.StringArrayOutput  `pulumi:"isolatedRouteTableIds"`
+	IsolatedSubnetIds     pulumi.StringArrayOutput  `pulumi:"isolatedSubnetIds"`
 	// The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
-	NatGateways      ec2.NatGatewayArrayOutput `pulumi:"natGateways"`
-	PrivateSubnetIds pulumi.StringArrayOutput  `pulumi:"privateSubnetIds"`
-	PublicSubnetIds  pulumi.StringArrayOutput  `pulumi:"publicSubnetIds"`
+	NatGateways          ec2.NatGatewayArrayOutput `pulumi:"natGateways"`
+	PrivateRouteTableIds pulumi.StringArrayOutput  `pulumi:"privateRouteTableIds"`
+	PrivateSubnetIds     pulumi.StringArrayOutput  `pulumi:"privateSubnetIds"`
+	PublicRouteTableIds  pulumi.StringArrayOutput  `pulumi:"publicRouteTableIds"`
+	PublicSubnetIds      pulumi.StringArrayOutput  `pulumi:"publicSubnetIds"`
 	// The Route Table Associations for the VPC.
 	RouteTableAssociations ec2.RouteTableAssociationArrayOutput `pulumi:"routeTableAssociations"`
 	// The Route Tables for the VPC.
@@ -239,6 +242,10 @@ func (o VpcOutput) InternetGateway() ec2.InternetGatewayOutput {
 	return o.ApplyT(func(v *Vpc) ec2.InternetGatewayOutput { return v.InternetGateway }).(ec2.InternetGatewayOutput)
 }
 
+func (o VpcOutput) IsolatedRouteTableIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.IsolatedRouteTableIds }).(pulumi.StringArrayOutput)
+}
+
 func (o VpcOutput) IsolatedSubnetIds() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.IsolatedSubnetIds }).(pulumi.StringArrayOutput)
 }
@@ -248,8 +255,16 @@ func (o VpcOutput) NatGateways() ec2.NatGatewayArrayOutput {
 	return o.ApplyT(func(v *Vpc) ec2.NatGatewayArrayOutput { return v.NatGateways }).(ec2.NatGatewayArrayOutput)
 }
 
+func (o VpcOutput) PrivateRouteTableIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.PrivateRouteTableIds }).(pulumi.StringArrayOutput)
+}
+
 func (o VpcOutput) PrivateSubnetIds() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.PrivateSubnetIds }).(pulumi.StringArrayOutput)
+}
+
+func (o VpcOutput) PublicRouteTableIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *Vpc) pulumi.StringArrayOutput { return v.PublicRouteTableIds }).(pulumi.StringArrayOutput)
 }
 
 func (o VpcOutput) PublicSubnetIds() pulumi.StringArrayOutput {

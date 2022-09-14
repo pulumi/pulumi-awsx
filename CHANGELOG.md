@@ -4,6 +4,8 @@ CHANGELOG
 ## HEAD (Unreleased)
 * Add multi-lang component support scaffolding.
 * Fix type errors in TypeScript checking awsx-classic properties.
+* Expose all route table ids as outputs
+  [#885](https://github.com/pulumi/pulumi-awsx/pull/885)
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0
