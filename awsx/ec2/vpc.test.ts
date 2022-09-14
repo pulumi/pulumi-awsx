@@ -91,8 +91,12 @@ describe("validateNatGatewayStrategy", () => {
   );
 
   describe("strategy is None", () => {
-    it("should throw an exception if any private subnets are specified", () =>
-      runTest("None", ["Private"], true, "cannot be 'None'"));
+    // We cannot throw an exception in this case because egress for the private
+    // subnets may be accomplished by methods other than a NAT gateway. Examples
+    // include: NAT instances and centralized egress via TGW in a hub-and-spoke
+    // architecture.
+    it("should not throw an exception if any private subnets are specified", () =>
+      runTest("None", ["Private"], false));
 
     it("should succeed if only public and isolated subnets are specified", () =>
       runTest("None", ["Public", "Isolated"], false));
