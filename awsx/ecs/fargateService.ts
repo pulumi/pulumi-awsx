@@ -64,7 +64,9 @@ export class FargateService extends schema.FargateService {
         cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
         launchType: "FARGATE",
         loadBalancers: args.loadBalancers ?? taskDefinition?.loadBalancers,
-        waitForSteadyState: utils.ifUndefined(args.continueBeforeSteadyState, false).apply(x => !x),
+        waitForSteadyState: utils
+          .ifUndefined(args.continueBeforeSteadyState, false)
+          .apply((x) => !x),
         taskDefinition: taskDefinitionIdentifier,
       },
       { parent: this },
