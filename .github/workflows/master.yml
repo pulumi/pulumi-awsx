@@ -193,6 +193,7 @@ name: master
   push:
     branches:
       - master
+      - release-v0.40*
     paths-ignore:
       - CHANGELOG.md
     tags-ignore:
