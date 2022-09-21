@@ -88,7 +88,7 @@ jobs:
           - 18.x
   publish_sdk:
     name: publish_sdk
-    needs: test
+    needs: build_sdk
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -140,65 +140,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
         name: Dispatch event
         run: pulumictl create docs-build pulumi-${{ env.PROVIDER }} ${GITHUB_REF#refs/tags/}
-  test:
-    name: test
-    needs: build_sdk
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ matrix.goversion }}
-      - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
-        with:
-          repo: pulumi/pulumictl
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{matrix.nodeversion}}
-          registry-url: https://registry.npmjs.org
-      - name: Download SDK
-        uses: actions/download-artifact@v2
-        with:
-          name: ${{ matrix.language }}-sdk.tar.gz
-          path: ${{ github.workspace}}/${{ matrix.language }}/
-      - name: Uncompress SDK folder
-        run: tar -zxf ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{
-          github.workspace}}/${{ matrix.language}}/awsx
-      - name: Install dependencies
-        run: make install_${{ matrix.language}}_sdk
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-region: ${{ env.AWS_REGION }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          role-duration-seconds: 3600
-          role-session-name: ${{ env.PROVIDER }}@githubActions
-          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
-      - name: Run tests
-        run: make test_${{ matrix.language}}
-    strategy:
-      fail-fast: true
-      matrix:
-        goversion:
-          - 1.16.x
-        language:
-          - nodejs
-        nodeversion:
-          - 18.x
 name: release
 "on":
   push:
