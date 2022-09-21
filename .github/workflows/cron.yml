@@ -177,7 +177,8 @@ jobs:
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Compress SDK folder
-        run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
+        run:
+          tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
           .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -219,7 +220,7 @@ jobs:
           - dotnet
           - go
           - java
-name: master
+name: cron
 "on":
   schedule:
-    - cron: '0 7 * * *'
+    - cron: "0 7 * * *"
