@@ -60,7 +60,9 @@ export class EC2Service extends schema.EC2Service {
         cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
         launchType: "EC2",
         loadBalancers: args.loadBalancers ?? taskDefinition?.loadBalancers,
-        waitForSteadyState: !utils.ifUndefined(args.continueBeforeSteadyState, false),
+        waitForSteadyState: utils
+          .ifUndefined(args.continueBeforeSteadyState, false)
+          .apply((x) => !x),
         taskDefinition: taskDefinitionIdentifier,
       },
       { parent: this },

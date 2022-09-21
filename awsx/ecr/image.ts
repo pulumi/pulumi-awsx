@@ -53,8 +53,6 @@ export function computeImageFromAsset(
     target: dockerInputs.target,
   };
 
-  pulumi.log.info("dockerBuild: " + JSON.stringify(dockerBuild));
-
   const uniqueImageName = docker.buildAndPushImage(
     imageName,
     dockerBuild,
