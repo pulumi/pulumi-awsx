@@ -4,6 +4,16 @@ CHANGELOG
 ## HEAD (Unreleased)
 (None)
 
+## 0.40.1 (2022-09-21)
+*  awsx.ecr.Repository: Delete Images from ECR Repository by default
+   An upstream release of pulumi-aws has introduced a new flag called
+   `forceDelete` to the ecr repository. Before that change was made,
+   images were deleted from a repository when deleting it. This has
+   changed that default behaviour and has such broken functionality for
+   AWSx users of the v0.40.x series
+   We now expose a new parameter on RepositoryArgs but we default it
+   to `true`
+
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0
 
