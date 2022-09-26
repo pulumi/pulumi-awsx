@@ -60,6 +60,8 @@ export function getSubnetSpecs(
     const publicSubnetsOut: SubnetSpec[] = [];
     const isolatedSubnetsOut: SubnetSpec[] = [];
 
+    const azSuffix = azNames[i].slice(-2);
+
     for (let j = 0; j < privateSubnetsIn.length; j++) {
       const privateCidrMask: number = privateSubnetsIn[j].cidrMask ?? 19;
       const newBits = privateCidrMask - baseSubnetMask;
@@ -73,7 +75,7 @@ export function getSubnetSpecs(
         azName: azNames[i],
         cidrBlock: privateSubnetCidrBlock,
         type: "Private",
-        subnetName: `${vpcName}-${privateSubnetsIn[j].name ?? "private"}-${i + 1}`,
+        subnetName: `${vpcName}-${privateSubnetsIn[j].name ?? "private"}-${azSuffix}`,
         tags: privateSubnetsIn[j].tags,
       });
     }
@@ -98,7 +100,7 @@ export function getSubnetSpecs(
         azName: azNames[i],
         cidrBlock: publicSubnetCidrBlock,
         type: "Public",
-        subnetName: `${vpcName}-${publicSubnetsIn[j].name ?? "public"}-${i + 1}`,
+        subnetName: `${vpcName}-${publicSubnetsIn[j].name ?? "public"}-${azSuffix}`,
         tags: publicSubnetsIn[j].tags,
       });
     }
@@ -134,7 +136,7 @@ export function getSubnetSpecs(
         azName: azNames[i],
         cidrBlock: isolatedSubnetCidrBlock,
         type: "Isolated",
-        subnetName: `${vpcName}-${isolatedSubnetsIn[j].name ?? "isolated"}-${i + 1}`,
+        subnetName: `${vpcName}-${isolatedSubnetsIn[j].name ?? "isolated"}-${azSuffix}`,
         tags: isolatedSubnetsIn[j].tags,
       });
     }
@@ -158,7 +160,7 @@ function generateDefaultSubnets(
       azName: azNames[i],
       cidrBlock: cidrSubnetV4(azBases[i], 1, 0),
       type: "Private",
-      subnetName: `${vpcName}-private-${i + 1}`,
+      subnetName: `${vpcName}-private-${azNames[i].slice(-2)}`,
     });
   }
 
@@ -171,7 +173,7 @@ function generateDefaultSubnets(
       azName: azNames[i],
       cidrBlock: cidrSubnetV4(splitBase, 1, 0),
       type: "Public",
-      subnetName: `${vpcName}-public-${i + 1}`,
+      subnetName: `${vpcName}-public-${azNames[i].slice(-2)}`,
     });
   }
 
