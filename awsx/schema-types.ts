@@ -97,6 +97,7 @@ export interface VpcArgs {
     readonly subnetSpecs?: SubnetSpecInputs[];
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly vpcEndpointSpecs?: VpcEndpointSpecInputs[];
+    readonly publicSubnetTags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class Image<TData = any> extends pulumi.ComponentResource<TData> {
     public imageUri!: string | pulumi.Output<string>;

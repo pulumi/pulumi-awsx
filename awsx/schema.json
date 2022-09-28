@@ -1848,6 +1848,12 @@
                     },
                     "plain": true,
                     "description": "A list of VPC Endpoints specs to be deployed as part of the VPC"
+                },
+                "publicSubnetTags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             },
             "isComponent": true

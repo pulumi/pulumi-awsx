@@ -161,6 +161,7 @@ export class Vpc extends schema.Vpc<VpcData> {
               cidrBlock: spec.cidrBlock,
               tags: {
                 Name: spec.subnetName,
+                ...(spec.type.toLowerCase() === "public" ? args.publicSubnetTags : {}),
               },
             },
             { parent: vpc, dependsOn: [vpc] },
