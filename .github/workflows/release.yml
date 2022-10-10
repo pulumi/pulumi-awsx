@@ -184,9 +184,10 @@ jobs:
           name: ${{ matrix.language  }}-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz
       - name: Install gotestfmt
-        uses: jaxxstorm/action-install-gh-release@v1.2.0
+        uses: GoTestTools/gotestfmt-action@v2
         with:
-          repo: haveyoudebuggedit/gotestfmt
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: v2.4.0
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
