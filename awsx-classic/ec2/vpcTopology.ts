@@ -21,7 +21,6 @@ import { Cidr32Block, getIPv4Address } from "./cidr";
 
 import * as utils from "../utils";
 
-/** @internal */
 export interface AvailabilityZoneDescription {
     name: string;
     id: string;
