@@ -44,6 +44,8 @@ function fargateConfigsByPriceAscending() {
     ...cpuMemoryConfigs({ vcpu: 1, memGBs: range(2, 8) }),
     ...cpuMemoryConfigs({ vcpu: 2, memGBs: range(4, 16) }),
     ...cpuMemoryConfigs({ vcpu: 4, memGBs: range(8, 30) }),
+    ...cpuMemoryConfigs({ vcpu: 8, memGBs: range(16, 60) }),
+    ...cpuMemoryConfigs({ vcpu: 16, memGBs: range(32, 120) }),
   ];
   allConfigs.sort((c1, c2) => c1.cost - c2.cost);
   return allConfigs;
