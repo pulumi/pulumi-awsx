@@ -108,6 +108,7 @@ export class Vpc extends schema.Vpc<VpcData> {
       {
         vpcId: vpc.id,
         tags: {
+          ...args.tags,
           Name: name,
         },
       },
@@ -160,7 +161,9 @@ export class Vpc extends schema.Vpc<VpcData> {
               mapPublicIpOnLaunch: spec.type.toLowerCase() === "public",
               cidrBlock: spec.cidrBlock,
               tags: {
+                ...args.tags,
                 Name: spec.subnetName,
+                SubnetType: spec.type,
               },
             },
             { parent: vpc, dependsOn: [vpc] },
@@ -180,6 +183,8 @@ export class Vpc extends schema.Vpc<VpcData> {
               vpcId: vpc.id,
               tags: {
                 Name: spec.subnetName,
+                ...args.tags,
+                SubnetType: spec.type,
               },
             },
             { parent: subnet, dependsOn: [subnet] },
@@ -218,6 +223,7 @@ export class Vpc extends schema.Vpc<VpcData> {
                 allocationId: createEip ? eips[i].allocationId : allocationIds[i],
                 tags: {
                   Name: `${name}-${i + 1}`,
+                  ...args.tags,
                 },
               },
               { parent: subnet, dependsOn: [subnet] },
