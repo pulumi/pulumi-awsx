@@ -109,8 +109,8 @@ function getDefaultNetworkConfiguration(
     },
   );
   return {
-    subnets: defaultVpc.publicSubnetIds,
-    assignPublicIp: true,
+    subnets: defaultVpc.privateSubnetIds,
+    assignPublicIp: false,
     securityGroups: [sg.id],
   };
 }
