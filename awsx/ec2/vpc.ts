@@ -238,23 +238,27 @@ export class Vpc extends schema.Vpc<VpcData> {
             );
             routes.push(route);
           } else if (spec.type.toLowerCase() === "private") {
-            // Private subnets communicate indirectly with the internet via a NAT Gateway.
+            if (natGatewayStrategy.toLowerCase() !== "none") {
+              // Private subnets communicate indirectly with the internet via a NAT Gateway.
 
-            // Because we've already validated the strategy and have ensured that public subnets are created
-            // first via the sort above, we know the necessary NAT Gateway already exists.
-            const natGatewayId =
-              natGatewayStrategy.toLowerCase() === "single" ? natGateways[0].id : natGateways[i].id;
+              // Because we've already validated the strategy and have ensured that public subnets are created
+              // first via the sort above, we know the necessary NAT Gateway already exists.
+              const natGatewayId =
+                natGatewayStrategy.toLowerCase() === "single"
+                  ? natGateways[0].id
+                  : natGateways[i].id;
 
-            const route = new aws.ec2.Route(
-              spec.subnetName,
-              {
-                routeTableId: routeTable.id,
-                natGatewayId,
-                destinationCidrBlock: "0.0.0.0/0",
-              },
-              { parent: routeTable, dependsOn: [routeTable] },
-            );
-            routes.push(route);
+              const route = new aws.ec2.Route(
+                spec.subnetName,
+                {
+                  routeTableId: routeTable.id,
+                  natGatewayId,
+                  destinationCidrBlock: "0.0.0.0/0",
+                },
+                { parent: routeTable, dependsOn: [routeTable] },
+              );
+              routes.push(route);
+            }
           }
 
           // Isolated subnets do not have any route to the internet and therefore need no route created.
