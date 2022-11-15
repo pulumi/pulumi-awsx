@@ -222,8 +222,8 @@ export class Vpc extends schema.Vpc<VpcData> {
                 subnetId: subnet.id,
                 allocationId: createEip ? eips[i].allocationId : allocationIds[i],
                 tags: {
-                  Name: `${name}-${i + 1}`,
                   ...args.tags,
+                  Name: `${name}-${i + 1}`,
                 },
               },
               { parent: subnet, dependsOn: [subnet] },
