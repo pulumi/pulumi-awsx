@@ -5,6 +5,7 @@ CHANGELOG
 * Add multi-lang component support scaffolding.
 * Fix type errors in TypeScript checking awsx-classic properties.
 * Ensure that FargateService and EC2Service default `continueBeforeSteadyState` to false.
+* Make networkMode property usable for `ecs.Ec2TaskDefinition`.
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0
