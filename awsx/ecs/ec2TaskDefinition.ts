@@ -122,9 +122,9 @@ function buildTaskDefinitionArgs(
   const family = utils.ifUndefined(args.family, defaultFamily);
 
   return {
+    networkMode: "awsvpc",
     ...mutableArgs,
     requiresCompatibilities: ["EC2"],
-    networkMode: "awsvpc",
     taskRoleArn: taskRoleArn,
     executionRoleArn: executionRoleArn,
     family,

@@ -241,15 +241,15 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
      * Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
      * 
      */
-    @Import(name="networkConfiguration", required=true)
-    private Output<ServiceNetworkConfigurationArgs> networkConfiguration;
+    @Import(name="networkConfiguration")
+    private @Nullable Output<ServiceNetworkConfigurationArgs> networkConfiguration;
 
     /**
      * @return Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
      * 
      */
-    public Output<ServiceNetworkConfigurationArgs> networkConfiguration() {
-        return this.networkConfiguration;
+    public Optional<Output<ServiceNetworkConfigurationArgs>> networkConfiguration() {
+        return Optional.ofNullable(this.networkConfiguration);
     }
 
     /**
@@ -744,7 +744,7 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
          * @return builder
          * 
          */
-        public Builder networkConfiguration(Output<ServiceNetworkConfigurationArgs> networkConfiguration) {
+        public Builder networkConfiguration(@Nullable Output<ServiceNetworkConfigurationArgs> networkConfiguration) {
             $.networkConfiguration = networkConfiguration;
             return this;
         }
@@ -959,7 +959,6 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         public EC2ServiceArgs build() {
-            $.networkConfiguration = Objects.requireNonNull($.networkConfiguration, "expected parameter 'networkConfiguration' to be non-null");
             return $;
         }
     }

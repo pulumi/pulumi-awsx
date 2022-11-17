@@ -16,7 +16,6 @@ __all__ = ['EC2ServiceArgs', 'EC2Service']
 @pulumi.input_type
 class EC2ServiceArgs:
     def __init__(__self__, *,
-                 network_configuration: pulumi.Input['pulumi_aws.ecs.ServiceNetworkConfigurationArgs'],
                  cluster: Optional[pulumi.Input[str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] = None,
@@ -31,6 +30,7 @@ class EC2ServiceArgs:
                  iam_role: Optional[pulumi.Input[str]] = None,
                  load_balancers: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceLoadBalancerArgs']]]] = None,
                  name: Optional[pulumi.Input[str]] = None,
+                 network_configuration: Optional[pulumi.Input['pulumi_aws.ecs.ServiceNetworkConfigurationArgs']] = None,
                  ordered_placement_strategies: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceOrderedPlacementStrategyArgs']]]] = None,
                  placement_constraints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServicePlacementConstraintArgs']]]] = None,
                  platform_version: Optional[pulumi.Input[str]] = None,
@@ -42,7 +42,6 @@ class EC2ServiceArgs:
                  task_definition_args: Optional['EC2ServiceTaskDefinitionArgs'] = None):
         """
         The set of arguments for constructing a EC2Service resource.
-        :param pulumi.Input['pulumi_aws.ecs.ServiceNetworkConfigurationArgs'] network_configuration: Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
         :param pulumi.Input[str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs'] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
@@ -57,6 +56,7 @@ class EC2ServiceArgs:
         :param pulumi.Input[str] iam_role: ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceLoadBalancerArgs']]] load_balancers: Configuration block for load balancers. See below.
         :param pulumi.Input[str] name: Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+        :param pulumi.Input['pulumi_aws.ecs.ServiceNetworkConfigurationArgs'] network_configuration: Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceOrderedPlacementStrategyArgs']]] ordered_placement_strategies: Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServicePlacementConstraintArgs']]] placement_constraints: Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
         :param pulumi.Input[str] platform_version: Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
@@ -67,7 +67,6 @@ class EC2ServiceArgs:
         :param pulumi.Input[str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param 'EC2ServiceTaskDefinitionArgs' task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         """
-        pulumi.set(__self__, "network_configuration", network_configuration)
         if cluster is not None:
             pulumi.set(__self__, "cluster", cluster)
         if continue_before_steady_state is not None:
@@ -96,6 +95,8 @@ class EC2ServiceArgs:
             pulumi.set(__self__, "load_balancers", load_balancers)
         if name is not None:
             pulumi.set(__self__, "name", name)
+        if network_configuration is not None:
+            pulumi.set(__self__, "network_configuration", network_configuration)
         if ordered_placement_strategies is not None:
             pulumi.set(__self__, "ordered_placement_strategies", ordered_placement_strategies)
         if placement_constraints is not None:
@@ -114,18 +115,6 @@ class EC2ServiceArgs:
             pulumi.set(__self__, "task_definition", task_definition)
         if task_definition_args is not None:
             pulumi.set(__self__, "task_definition_args", task_definition_args)
-
-    @property
-    @pulumi.getter(name="networkConfiguration")
-    def network_configuration(self) -> pulumi.Input['pulumi_aws.ecs.ServiceNetworkConfigurationArgs']:
-        """
-        Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
-        """
-        return pulumi.get(self, "network_configuration")
-
-    @network_configuration.setter
-    def network_configuration(self, value: pulumi.Input['pulumi_aws.ecs.ServiceNetworkConfigurationArgs']):
-        pulumi.set(self, "network_configuration", value)
 
     @property
     @pulumi.getter
@@ -294,6 +283,18 @@ class EC2ServiceArgs:
     @name.setter
     def name(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "name", value)
+
+    @property
+    @pulumi.getter(name="networkConfiguration")
+    def network_configuration(self) -> Optional[pulumi.Input['pulumi_aws.ecs.ServiceNetworkConfigurationArgs']]:
+        """
+        Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
+        """
+        return pulumi.get(self, "network_configuration")
+
+    @network_configuration.setter
+    def network_configuration(self, value: Optional[pulumi.Input['pulumi_aws.ecs.ServiceNetworkConfigurationArgs']]):
+        pulumi.set(self, "network_configuration", value)
 
     @property
     @pulumi.getter(name="orderedPlacementStrategies")
@@ -469,7 +470,7 @@ class EC2Service(pulumi.ComponentResource):
     @overload
     def __init__(__self__,
                  resource_name: str,
-                 args: EC2ServiceArgs,
+                 args: Optional[EC2ServiceArgs] = None,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
         Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
@@ -542,8 +543,6 @@ class EC2Service(pulumi.ComponentResource):
             __props__.__dict__["iam_role"] = iam_role
             __props__.__dict__["load_balancers"] = load_balancers
             __props__.__dict__["name"] = name
-            if network_configuration is None and not opts.urn:
-                raise TypeError("Missing required property 'network_configuration'")
             __props__.__dict__["network_configuration"] = network_configuration
             __props__.__dict__["ordered_placement_strategies"] = ordered_placement_strategies
             __props__.__dict__["placement_constraints"] = placement_constraints

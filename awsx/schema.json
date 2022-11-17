@@ -2102,9 +2102,7 @@
                     "description": "The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided."
                 }
             },
-            "requiredInputs": [
-                "networkConfiguration"
-            ],
+            "requiredInputs": [],
             "isComponent": true
         },
         "awsx:ecs:EC2TaskDefinition": {

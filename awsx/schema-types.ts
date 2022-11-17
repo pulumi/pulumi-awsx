@@ -152,7 +152,7 @@ export interface EC2ServiceArgs {
     readonly iamRole?: pulumi.Input<string>;
     readonly loadBalancers?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceLoadBalancer>[]>;
     readonly name?: pulumi.Input<string>;
-    readonly networkConfiguration: pulumi.Input<aws.types.input.ecs.ServiceNetworkConfiguration>;
+    readonly networkConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceNetworkConfiguration>;
     readonly orderedPlacementStrategies?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceOrderedPlacementStrategy>[]>;
     readonly placementConstraints?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServicePlacementConstraint>[]>;
     readonly platformVersion?: pulumi.Input<string>;
