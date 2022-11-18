@@ -56,6 +56,7 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["accessLogs"] = args ? args.accessLogs : undefined;
             resourceInputs["customerOwnedIpv4Pool"] = args ? args.customerOwnedIpv4Pool : undefined;
             resourceInputs["defaultTargetGroup"] = args ? args.defaultTargetGroup : undefined;
+            resourceInputs["defaultTargetGroupPort"] = args ? args.defaultTargetGroupPort : undefined;
             resourceInputs["desyncMitigationMode"] = args ? args.desyncMitigationMode : undefined;
             resourceInputs["dropInvalidHeaderFields"] = args ? args.dropInvalidHeaderFields : undefined;
             resourceInputs["enableCrossZoneLoadBalancing"] = args ? args.enableCrossZoneLoadBalancing : undefined;
@@ -101,6 +102,10 @@ export interface NetworkLoadBalancerArgs {
      * Options creating a default target group.
      */
     defaultTargetGroup?: inputs.lb.TargetGroupArgs;
+    /**
+     * Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
+     */
+    defaultTargetGroupPort?: pulumi.Input<number>;
     /**
      * Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
      */

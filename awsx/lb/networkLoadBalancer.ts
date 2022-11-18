@@ -40,6 +40,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
       subnetIds,
       subnets,
       defaultTargetGroup,
+      defaultTargetGroupPort,
       listener,
       listeners,
       /* tslint:disable */ //rest args will always be last so don't have trailing commas
@@ -89,7 +90,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
       {
         vpcId: this.vpcId,
         protocol: "TCP",
-        port: 80,
+        port: defaultTargetGroupPort ?? 80,
         ...defaultTargetGroup,
       },
       { parent: this },

@@ -2538,6 +2538,10 @@
                     "plain": true,
                     "description": "Options creating a default target group."
                 },
+                "defaultTargetGroupPort": {
+                    "type": "integer",
+                    "description": "Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.\n"
+                },
                 "desyncMitigationMode": {
                     "type": "string",
                     "description": "Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.\n"
@@ -2671,6 +2675,10 @@
                     "$ref": "#/types/awsx:lb:TargetGroup",
                     "plain": true,
                     "description": "Options creating a default target group."
+                },
+                "defaultTargetGroupPort": {
+                    "type": "integer",
+                    "description": "Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.\n"
                 },
                 "desyncMitigationMode": {
                     "type": "string",

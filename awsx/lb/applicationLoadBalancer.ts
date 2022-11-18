@@ -40,6 +40,7 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
       subnetIds,
       subnets,
       defaultTargetGroup,
+      defaultTargetGroupPort,
       defaultSecurityGroup,
       listener,
       listeners,
@@ -242,11 +243,12 @@ function getDefaultProtocol(
       return undefined;
     }
   }
-  return getListenerProtocol(listener);
+  return getListenerProtocol(listener, args.defaultTargetGroupPort);
 }
 
 function getListenerProtocol(
   listener: schema.ListenerInputs | undefined,
+  defaultPort?: pulumi.Input<number>,
 ): { port: pulumi.Input<number>; protocol: pulumi.Input<string> } | undefined {
   if (listener) {
     const { port, protocol } = listener;
@@ -266,7 +268,7 @@ function getListenerProtocol(
       };
     }
   }
-  return { port: 80, protocol: "HTTP" };
+  return { port: defaultPort ?? 80, protocol: "HTTP" };
 }
 
 function portToProtocol(port: number) {
