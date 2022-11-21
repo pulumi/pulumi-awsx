@@ -43,33 +43,43 @@ This package is available in many languages in the standard packaging formats.
 
 To use from JavaScript or TypeScript in Node.js, install using either `npm`:
 
-    npm install @pulumi/awsx
+```bash
+npm install @pulumi/awsx
+```
 
 or `yarn`:
 
-    yarn add @pulumi/awsx
+```bash
+yarn add @pulumi/awsx
+```
 
 ### Python
 
 To use from Python, install using `pip`:
 
-    pip install pulumi_awsx
+```bash
+pip install pulumi_awsx
+```
 
 ### Go
 
 To use from Go, use `go get` to grab the latest version of the library
 
-    go get github.com/pulumi/pulumi-awsx/sdk
+```bash
+go get github.com/pulumi/pulumi-awsx/sdk
+```
 
 ### .NET
 
 To use from .NET, install using `dotnet add package`:
 
-    dotnet add package Pulumi.Awsx
+```bash
+dotnet add package Pulumi.Awsx
+```
 
 ### Configuration
 
-The configuration options available for this provider  mirror those of the [Pulumi AWS Classic Provider](https://github.com/pulumi/pulumi-aws#configuration)
+The configuration options available for this provider mirror those of the [Pulumi AWS Classic Provider](https://github.com/pulumi/pulumi-aws#configuration)
 
 ## Reference
 
