@@ -7,7 +7,6 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pkg/errors"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ecs"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -27,12 +26,9 @@ type EC2Service struct {
 func NewEC2Service(ctx *pulumi.Context,
 	name string, args *EC2ServiceArgs, opts ...pulumi.ResourceOption) (*EC2Service, error) {
 	if args == nil {
-		return nil, errors.New("missing one or more required arguments")
+		args = &EC2ServiceArgs{}
 	}
 
-	if args.NetworkConfiguration == nil {
-		return nil, errors.New("invalid value for required argument 'NetworkConfiguration'")
-	}
 	var resource EC2Service
 	err := ctx.RegisterRemoteComponentResource("awsx:ecs:EC2Service", name, args, &resource, opts...)
 	if err != nil {
@@ -71,7 +67,7 @@ type ec2serviceArgs struct {
 	// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
 	Name *string `pulumi:"name"`
 	// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
-	NetworkConfiguration ecs.ServiceNetworkConfiguration `pulumi:"networkConfiguration"`
+	NetworkConfiguration *ecs.ServiceNetworkConfiguration `pulumi:"networkConfiguration"`
 	// Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
 	OrderedPlacementStrategies []ecs.ServiceOrderedPlacementStrategy `pulumi:"orderedPlacementStrategies"`
 	// Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
@@ -123,7 +119,7 @@ type EC2ServiceArgs struct {
 	// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
 	Name pulumi.StringPtrInput
 	// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
-	NetworkConfiguration ecs.ServiceNetworkConfigurationInput
+	NetworkConfiguration ecs.ServiceNetworkConfigurationPtrInput
 	// Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
 	OrderedPlacementStrategies ecs.ServiceOrderedPlacementStrategyArrayInput
 	// Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
