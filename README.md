@@ -25,15 +25,11 @@ The AWS Infrastructure package exposes many high level abstractions.  Including:
 
 * [`lb`](https://github.com/pulumi/pulumi-awsx/tree/master/awsx/lb).  A module for simply setting up [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/). This module provides convenient ways to set up either `Network` or `Application` load balancers, along with the appropriate ELB Target Groups and Listeners in order to have a high availability, automatically-scaled service.  These ELB components also work well with the other awsx components.  For example, an `lb.defaultTarget` can be passed in directly as the `portMapping` target of an `ecs.FargateService`.
 
-The library also exposes the classic AWSx (the previous TypeScript) implementation. You can find these modules in the `classic` namespace. These modules include:
+### Migration from 0.x to 1.0
 
-* `apigateway`
-* `autoscaling`
-* `ecs`
-* `ec2`
-* `cloudwatch`
-* `lb`
-* `cloudtrail`
+Before version 1, this package only supported components in Typescript. All the existing components from the 0.x releases are now available in under the `classic` namespace.
+
+When upgrading change your references from `@pulumi/awsx` to `@pulumi/awsx/classic`.
 
 ### Installing
 
