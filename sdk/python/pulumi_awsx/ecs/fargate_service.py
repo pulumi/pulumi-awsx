@@ -16,6 +16,7 @@ __all__ = ['FargateServiceArgs', 'FargateService']
 @pulumi.input_type
 class FargateServiceArgs:
     def __init__(__self__, *,
+                 assign_public_ip: Optional[pulumi.Input[bool]] = None,
                  cluster: Optional[pulumi.Input[str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] = None,
@@ -41,6 +42,7 @@ class FargateServiceArgs:
                  task_definition_args: Optional['FargateServiceTaskDefinitionArgs'] = None):
         """
         The set of arguments for constructing a FargateService resource.
+        :param pulumi.Input[bool] assign_public_ip: Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
         :param pulumi.Input[str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs'] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
@@ -65,6 +67,8 @@ class FargateServiceArgs:
         :param pulumi.Input[str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param 'FargateServiceTaskDefinitionArgs' task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         """
+        if assign_public_ip is not None:
+            pulumi.set(__self__, "assign_public_ip", assign_public_ip)
         if cluster is not None:
             pulumi.set(__self__, "cluster", cluster)
         if continue_before_steady_state is not None:
@@ -111,6 +115,18 @@ class FargateServiceArgs:
             pulumi.set(__self__, "task_definition", task_definition)
         if task_definition_args is not None:
             pulumi.set(__self__, "task_definition_args", task_definition_args)
+
+    @property
+    @pulumi.getter(name="assignPublicIp")
+    def assign_public_ip(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+        """
+        return pulumi.get(self, "assign_public_ip")
+
+    @assign_public_ip.setter
+    def assign_public_ip(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "assign_public_ip", value)
 
     @property
     @pulumi.getter
@@ -394,6 +410,7 @@ class FargateService(pulumi.ComponentResource):
     def __init__(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 assign_public_ip: Optional[pulumi.Input[bool]] = None,
                  cluster: Optional[pulumi.Input[str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']]] = None,
@@ -424,6 +441,7 @@ class FargateService(pulumi.ComponentResource):
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
+        :param pulumi.Input[bool] assign_public_ip: Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
         :param pulumi.Input[str] cluster: ARN of an ECS cluster.
         :param pulumi.Input[bool] continue_before_steady_state: If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']] deployment_circuit_breaker: Configuration block for deployment circuit breaker. See below.
@@ -473,6 +491,7 @@ class FargateService(pulumi.ComponentResource):
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
+                 assign_public_ip: Optional[pulumi.Input[bool]] = None,
                  cluster: Optional[pulumi.Input[str]] = None,
                  continue_before_steady_state: Optional[pulumi.Input[bool]] = None,
                  deployment_circuit_breaker: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentCircuitBreakerArgs']]] = None,
@@ -510,6 +529,7 @@ class FargateService(pulumi.ComponentResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = FargateServiceArgs.__new__(FargateServiceArgs)
 
+            __props__.__dict__["assign_public_ip"] = assign_public_ip
             __props__.__dict__["cluster"] = cluster
             __props__.__dict__["continue_before_steady_state"] = continue_before_steady_state
             __props__.__dict__["deployment_circuit_breaker"] = deployment_circuit_breaker

@@ -79,7 +79,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 					"mime":              "^2.0.0",
 				},
 				"devDependencies": map[string]string{
-					"@types/node": "^17.0.21",
+					"@types/node": "^18",
 					"@types/mime": "^2.0.0",
 					"typescript":  "^4.6.2",
 				},

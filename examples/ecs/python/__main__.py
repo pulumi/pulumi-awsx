@@ -10,6 +10,7 @@ lb = awsx.lb.ApplicationLoadBalancer("nginx-lb")
 
 service = awsx.ecs.FargateService("my-service",
     cluster=cluster.arn,
+    assign_public_ip=True,
     task_definition_args=awsx.ecs.FargateServiceTaskDefinitionArgs(
         container=awsx.ecs.TaskDefinitionContainerDefinitionArgs(
             image="nginx:latest",
