@@ -42,13 +42,10 @@ export class EC2Service extends pulumi.ComponentResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param opts A bag of options that control this resource's behavior.
      */
-    constructor(name: string, args: EC2ServiceArgs, opts?: pulumi.ComponentResourceOptions) {
+    constructor(name: string, args?: EC2ServiceArgs, opts?: pulumi.ComponentResourceOptions) {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
-            if ((!args || args.networkConfiguration === undefined) && !opts.urn) {
-                throw new Error("Missing required property 'networkConfiguration'");
-            }
             resourceInputs["cluster"] = args ? args.cluster : undefined;
             resourceInputs["continueBeforeSteadyState"] = args ? args.continueBeforeSteadyState : undefined;
             resourceInputs["deploymentCircuitBreaker"] = args ? args.deploymentCircuitBreaker : undefined;
@@ -146,7 +143,7 @@ export interface EC2ServiceArgs {
     /**
      * Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
      */
-    networkConfiguration: pulumi.Input<pulumiAws.types.input.ecs.ServiceNetworkConfiguration>;
+    networkConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceNetworkConfiguration>;
     /**
      * Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
      */

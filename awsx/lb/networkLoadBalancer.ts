@@ -40,6 +40,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
       subnetIds,
       subnets,
       defaultTargetGroup,
+      defaultTargetGroupPort,
       listener,
       listeners,
       /* tslint:disable */ //rest args will always be last so don't have trailing commas
@@ -84,12 +85,18 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
       parent: this,
     });
 
+    if (defaultTargetGroup !== undefined && defaultTargetGroupPort !== undefined) {
+      throw new Error(
+        "Only one of `defaultTargetGroup` or `defaultTargetGroupPort` can be provided.",
+      );
+    }
+
     this.defaultTargetGroup = new aws.lb.TargetGroup(
       name,
       {
         vpcId: this.vpcId,
         protocol: "TCP",
-        port: 80,
+        port: defaultTargetGroupPort ?? 80,
         ...defaultTargetGroup,
       },
       { parent: this },

@@ -104,7 +104,7 @@ func ec2Service(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Required: []string{"service"},
 		},
 		InputProperties: inputProperties,
-		RequiredInputs:  []string{"networkConfiguration"},
+		RequiredInputs:  []string{},
 	}
 }
 
@@ -136,6 +136,12 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		TypeSpec: schema.TypeSpec{
 			Ref:   "#/types/awsx:ecs:FargateServiceTaskDefinition",
 			Plain: true,
+		},
+	}
+	inputProperties["assignPublicIp"] = schema.PropertySpec{
+		Description: "Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.",
+		TypeSpec: schema.TypeSpec{
+			Type: "boolean",
 		},
 	}
 

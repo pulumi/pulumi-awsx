@@ -47,11 +47,7 @@ function computeContainerDefinition(
           return pulumi
             .output(mappingInput.targetGroup?.port)
             .apply((tgPort): schema.TaskDefinitionPortMappingInputs => {
-              return {
-                containerPort: mappingInput.containerPort ?? tgPort ?? mappingInput.hostPort,
-                hostPort: tgPort ?? mappingInput.hostPort,
-                protocol: mappingInput.protocol,
-              };
+              return getMappingInputs(mappingInput, tgPort);
             });
         }),
       )
@@ -77,6 +73,17 @@ function computeContainerDefinition(
       }
       return containerDefinition;
     });
+}
+
+export function getMappingInputs(
+  mappingInput: { containerPort?: number; hostPort?: number; protocol?: string },
+  tgPort: number | undefined,
+): schema.TaskDefinitionPortMappingInputs {
+  return {
+    containerPort: mappingInput.containerPort ?? mappingInput.hostPort ?? tgPort,
+    hostPort: mappingInput.hostPort ?? tgPort ?? mappingInput.containerPort,
+    protocol: mappingInput.protocol,
+  };
 }
 
 /** @internal */

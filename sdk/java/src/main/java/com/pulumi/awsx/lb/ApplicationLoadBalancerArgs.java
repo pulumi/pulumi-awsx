@@ -86,6 +86,21 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
     }
 
     /**
+     * Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
+     * 
+     */
+    @Import(name="defaultTargetGroupPort")
+    private @Nullable Output<Integer> defaultTargetGroupPort;
+
+    /**
+     * @return Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
+     * 
+     */
+    public Optional<Output<Integer>> defaultTargetGroupPort() {
+        return Optional.ofNullable(this.defaultTargetGroupPort);
+    }
+
+    /**
      * Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
      * 
      */
@@ -357,6 +372,7 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         this.customerOwnedIpv4Pool = $.customerOwnedIpv4Pool;
         this.defaultSecurityGroup = $.defaultSecurityGroup;
         this.defaultTargetGroup = $.defaultTargetGroup;
+        this.defaultTargetGroupPort = $.defaultTargetGroupPort;
         this.desyncMitigationMode = $.desyncMitigationMode;
         this.dropInvalidHeaderFields = $.dropInvalidHeaderFields;
         this.enableDeletionProtection = $.enableDeletionProtection;
@@ -456,6 +472,27 @@ public final class ApplicationLoadBalancerArgs extends com.pulumi.resources.Reso
         public Builder defaultTargetGroup(@Nullable TargetGroupArgs defaultTargetGroup) {
             $.defaultTargetGroup = defaultTargetGroup;
             return this;
+        }
+
+        /**
+         * @param defaultTargetGroupPort Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder defaultTargetGroupPort(@Nullable Output<Integer> defaultTargetGroupPort) {
+            $.defaultTargetGroupPort = defaultTargetGroupPort;
+            return this;
+        }
+
+        /**
+         * @param defaultTargetGroupPort Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder defaultTargetGroupPort(Integer defaultTargetGroupPort) {
+            return defaultTargetGroupPort(Output.of(defaultTargetGroupPort));
         }
 
         /**

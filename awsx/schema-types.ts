@@ -152,7 +152,7 @@ export interface EC2ServiceArgs {
     readonly iamRole?: pulumi.Input<string>;
     readonly loadBalancers?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceLoadBalancer>[]>;
     readonly name?: pulumi.Input<string>;
-    readonly networkConfiguration: pulumi.Input<aws.types.input.ecs.ServiceNetworkConfiguration>;
+    readonly networkConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceNetworkConfiguration>;
     readonly orderedPlacementStrategies?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServiceOrderedPlacementStrategy>[]>;
     readonly placementConstraints?: pulumi.Input<pulumi.Input<aws.types.input.ecs.ServicePlacementConstraint>[]>;
     readonly platformVersion?: pulumi.Input<string>;
@@ -202,6 +202,7 @@ export abstract class FargateService<TData = any> extends pulumi.ComponentResour
     }
 }
 export interface FargateServiceArgs {
+    readonly assignPublicIp?: pulumi.Input<boolean>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
@@ -271,6 +272,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
     readonly defaultSecurityGroup?: DefaultSecurityGroupInputs;
     readonly defaultTargetGroup?: TargetGroupInputs;
+    readonly defaultTargetGroupPort?: pulumi.Input<number>;
     readonly desyncMitigationMode?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
@@ -302,6 +304,7 @@ export interface NetworkLoadBalancerArgs {
     readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
     readonly defaultTargetGroup?: TargetGroupInputs;
+    readonly defaultTargetGroupPort?: pulumi.Input<number>;
     readonly desyncMitigationMode?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;

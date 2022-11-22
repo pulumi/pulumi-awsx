@@ -41,6 +41,9 @@ export class FargateService extends schema.FargateService {
     if (args.taskDefinition !== undefined && args.taskDefinitionArgs !== undefined) {
       throw new Error("Only one of `taskDefinition` or `taskDefinitionArgs` can be provided.");
     }
+    if (args.networkConfiguration !== undefined && args.assignPublicIp !== undefined) {
+      throw new Error("Only one of `networkConfiguration` or `assignPublicIp` can be provided.");
+    }
     let taskDefinitionIdentifier = args.taskDefinition;
     let taskDefinition: FargateTaskDefinition | undefined;
     if (args.taskDefinitionArgs) {
@@ -60,7 +63,8 @@ export class FargateService extends schema.FargateService {
         desiredCount: 1,
         ...args,
         networkConfiguration:
-          args.networkConfiguration ?? getDefaultNetworkConfiguration(name, this),
+          args.networkConfiguration ??
+          getDefaultNetworkConfiguration(name, this, args.assignPublicIp),
         cluster: aws.ecs.Cluster.isInstance(args.cluster) ? args.cluster.arn : args.cluster,
         launchType: "FARGATE",
         loadBalancers: args.loadBalancers ?? taskDefinition?.loadBalancers,
@@ -79,6 +83,7 @@ export class FargateService extends schema.FargateService {
 function getDefaultNetworkConfiguration(
   name: string,
   parent: pulumi.Resource,
+  assignPublicIp?: pulumi.Input<boolean>,
 ): aws.types.input.ecs.ServiceNetworkConfiguration {
   const defaultVpc = pulumi.output(getDefaultVpc({ parent }));
   const sg = new aws.ec2.SecurityGroup(
@@ -108,9 +113,21 @@ function getDefaultNetworkConfiguration(
       parent,
     },
   );
+  assignPublicIp = assignPublicIp ?? false;
   return {
-    subnets: defaultVpc.publicSubnetIds,
-    assignPublicIp: true,
+    subnets: pulumi
+      .all([assignPublicIp, defaultVpc.publicSubnetIds, defaultVpc.privateSubnetIds])
+      .apply(([assignPublicIp, publicSubnetIds, privateSubnetIds]) => {
+        if (!assignPublicIp && privateSubnetIds.length === 0) {
+          throw new Error(
+            "The default VPC does not have any private subnets. " +
+              "Set `assignPublicIp` to `true`, provide `networkConfiguration`, or add " +
+              "private subnets to the default VPC.",
+          );
+        }
+        return assignPublicIp ? publicSubnetIds : privateSubnetIds;
+      }),
+    assignPublicIp: assignPublicIp,
     securityGroups: [sg.id],
   };
 }

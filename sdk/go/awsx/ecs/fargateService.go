@@ -38,6 +38,8 @@ func NewFargateService(ctx *pulumi.Context,
 }
 
 type fargateServiceArgs struct {
+	// Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+	AssignPublicIp *bool `pulumi:"assignPublicIp"`
 	// ARN of an ECS cluster.
 	Cluster *string `pulumi:"cluster"`
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
@@ -88,6 +90,8 @@ type fargateServiceArgs struct {
 
 // The set of arguments for constructing a FargateService resource.
 type FargateServiceArgs struct {
+	// Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+	AssignPublicIp pulumi.BoolPtrInput
 	// ARN of an ECS cluster.
 	Cluster pulumi.StringPtrInput
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.

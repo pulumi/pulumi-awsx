@@ -77,6 +77,12 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 			Plain: true,
 		},
 	}
+	inputProperties["defaultTargetGroupPort"] = schema.PropertySpec{
+		Description: "Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.\n",
+		TypeSpec: schema.TypeSpec{
+			Type: "integer",
+		},
+	}
 	inputProperties["listener"] = schema.PropertySpec{
 		Description: "A listener to create. Only one of [listener] and [listeners] can be specified.",
 		TypeSpec: schema.TypeSpec{
