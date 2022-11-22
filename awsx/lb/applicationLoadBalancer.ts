@@ -167,6 +167,12 @@ export class ApplicationLoadBalancer extends schema.ApplicationLoadBalancer {
       parent: this,
     });
 
+    if (defaultTargetGroup !== undefined && defaultTargetGroupPort !== undefined) {
+      throw new Error(
+        "Only one of `defaultTargetGroup` or `defaultTargetGroupPort` can be provided.",
+      );
+    }
+
     const defaultProtocol = getDefaultProtocol(args);
 
     this.defaultTargetGroup = new aws.lb.TargetGroup(

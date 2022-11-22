@@ -85,6 +85,12 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
       parent: this,
     });
 
+    if (defaultTargetGroup !== undefined && defaultTargetGroupPort !== undefined) {
+      throw new Error(
+        "Only one of `defaultTargetGroup` or `defaultTargetGroupPort` can be provided.",
+      );
+    }
+
     this.defaultTargetGroup = new aws.lb.TargetGroup(
       name,
       {
