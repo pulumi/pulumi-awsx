@@ -7,6 +7,10 @@ CHANGELOG
 * Ensure that FargateService and EC2Service default `continueBeforeSteadyState` to false.
 * Make networkMode property usable for `ecs.Ec2TaskDefinition`.
 * Add optional `assignPublicIp` input property to FargateService and default it to non-public [#936](https://github.com/pulumi/pulumi-awsx/pull/936).
+* Add a new `DefaultTargetGroupPort` input property to `lb.ApplicationLoadBalancer` and `lb.NetworkLoadBalancer` to
+  provide a top-level way to set the default target group's port.
+* Change the behavior of `ecs.FargateTaskDefinition` and `ecs.EC2TaskDefinition` to always respect the passed-in
+  `hostPort`, regardless of the target group's port.
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0

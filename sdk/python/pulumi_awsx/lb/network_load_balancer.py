@@ -18,6 +18,7 @@ class NetworkLoadBalancerArgs:
                  access_logs: Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  default_target_group: Optional['TargetGroupArgs'] = None,
+                 default_target_group_port: Optional[pulumi.Input[int]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
                  enable_cross_zone_load_balancing: Optional[pulumi.Input[bool]] = None,
@@ -39,6 +40,7 @@ class NetworkLoadBalancerArgs:
         :param pulumi.Input['pulumi_aws.lb.LoadBalancerAccessLogsArgs'] access_logs: An Access Logs block. Access Logs documented below.
         :param pulumi.Input[str] customer_owned_ipv4_pool: The ID of the customer owned ipv4 pool to use for this load balancer.
         :param 'TargetGroupArgs' default_target_group: Options creating a default target group.
+        :param pulumi.Input[int] default_target_group_port: Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
         :param pulumi.Input[str] desync_mitigation_mode: Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         :param pulumi.Input[bool] drop_invalid_header_fields: Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[bool] enable_cross_zone_load_balancing: If true, cross-zone load balancing of the load balancer will be enabled.
@@ -68,6 +70,8 @@ class NetworkLoadBalancerArgs:
             pulumi.set(__self__, "customer_owned_ipv4_pool", customer_owned_ipv4_pool)
         if default_target_group is not None:
             pulumi.set(__self__, "default_target_group", default_target_group)
+        if default_target_group_port is not None:
+            pulumi.set(__self__, "default_target_group_port", default_target_group_port)
         if desync_mitigation_mode is not None:
             pulumi.set(__self__, "desync_mitigation_mode", desync_mitigation_mode)
         if drop_invalid_header_fields is not None:
@@ -136,6 +140,18 @@ class NetworkLoadBalancerArgs:
     @default_target_group.setter
     def default_target_group(self, value: Optional['TargetGroupArgs']):
         pulumi.set(self, "default_target_group", value)
+
+    @property
+    @pulumi.getter(name="defaultTargetGroupPort")
+    def default_target_group_port(self) -> Optional[pulumi.Input[int]]:
+        """
+        Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
+        """
+        return pulumi.get(self, "default_target_group_port")
+
+    @default_target_group_port.setter
+    def default_target_group_port(self, value: Optional[pulumi.Input[int]]):
+        pulumi.set(self, "default_target_group_port", value)
 
     @property
     @pulumi.getter(name="desyncMitigationMode")
@@ -344,6 +360,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  access_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  default_target_group: Optional[pulumi.InputType['TargetGroupArgs']] = None,
+                 default_target_group_port: Optional[pulumi.Input[int]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
                  enable_cross_zone_load_balancing: Optional[pulumi.Input[bool]] = None,
@@ -369,6 +386,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']] access_logs: An Access Logs block. Access Logs documented below.
         :param pulumi.Input[str] customer_owned_ipv4_pool: The ID of the customer owned ipv4 pool to use for this load balancer.
         :param pulumi.InputType['TargetGroupArgs'] default_target_group: Options creating a default target group.
+        :param pulumi.Input[int] default_target_group_port: Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
         :param pulumi.Input[str] desync_mitigation_mode: Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         :param pulumi.Input[bool] drop_invalid_header_fields: Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[bool] enable_cross_zone_load_balancing: If true, cross-zone load balancing of the load balancer will be enabled.
@@ -419,6 +437,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  access_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerAccessLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
                  default_target_group: Optional[pulumi.InputType['TargetGroupArgs']] = None,
+                 default_target_group_port: Optional[pulumi.Input[int]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
                  drop_invalid_header_fields: Optional[pulumi.Input[bool]] = None,
                  enable_cross_zone_load_balancing: Optional[pulumi.Input[bool]] = None,
@@ -452,6 +471,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["access_logs"] = access_logs
             __props__.__dict__["customer_owned_ipv4_pool"] = customer_owned_ipv4_pool
             __props__.__dict__["default_target_group"] = default_target_group
+            __props__.__dict__["default_target_group_port"] = default_target_group_port
             __props__.__dict__["desync_mitigation_mode"] = desync_mitigation_mode
             __props__.__dict__["drop_invalid_header_fields"] = drop_invalid_header_fields
             __props__.__dict__["enable_cross_zone_load_balancing"] = enable_cross_zone_load_balancing

@@ -98,6 +98,12 @@ namespace Pulumi.Awsx.Lb
         public Inputs.TargetGroupArgs? DefaultTargetGroup { get; set; }
 
         /// <summary>
+        /// Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
+        /// </summary>
+        [Input("defaultTargetGroupPort")]
+        public Input<int>? DefaultTargetGroupPort { get; set; }
+
+        /// <summary>
         /// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         /// </summary>
         [Input("desyncMitigationMode")]

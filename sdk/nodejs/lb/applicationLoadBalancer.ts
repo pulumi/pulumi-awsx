@@ -61,6 +61,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["customerOwnedIpv4Pool"] = args ? args.customerOwnedIpv4Pool : undefined;
             resourceInputs["defaultSecurityGroup"] = args ? (args.defaultSecurityGroup ? inputs.awsx.defaultSecurityGroupArgsProvideDefaults(args.defaultSecurityGroup) : undefined) : undefined;
             resourceInputs["defaultTargetGroup"] = args ? args.defaultTargetGroup : undefined;
+            resourceInputs["defaultTargetGroupPort"] = args ? args.defaultTargetGroupPort : undefined;
             resourceInputs["desyncMitigationMode"] = args ? args.desyncMitigationMode : undefined;
             resourceInputs["dropInvalidHeaderFields"] = args ? args.dropInvalidHeaderFields : undefined;
             resourceInputs["enableDeletionProtection"] = args ? args.enableDeletionProtection : undefined;
@@ -112,6 +113,10 @@ export interface ApplicationLoadBalancerArgs {
      * Options creating a default target group.
      */
     defaultTargetGroup?: inputs.lb.TargetGroupArgs;
+    /**
+     * Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
+     */
+    defaultTargetGroupPort?: pulumi.Input<number>;
     /**
      * Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
      */

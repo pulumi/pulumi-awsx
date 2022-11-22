@@ -272,6 +272,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
     readonly defaultSecurityGroup?: DefaultSecurityGroupInputs;
     readonly defaultTargetGroup?: TargetGroupInputs;
+    readonly defaultTargetGroupPort?: pulumi.Input<number>;
     readonly desyncMitigationMode?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
@@ -303,6 +304,7 @@ export interface NetworkLoadBalancerArgs {
     readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
     readonly defaultTargetGroup?: TargetGroupInputs;
+    readonly defaultTargetGroupPort?: pulumi.Input<number>;
     readonly desyncMitigationMode?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
