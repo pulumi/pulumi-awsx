@@ -27,6 +27,21 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
     public static final FargateServiceArgs Empty = new FargateServiceArgs();
 
     /**
+     * Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+     * 
+     */
+    @Import(name="assignPublicIp")
+    private @Nullable Output<Boolean> assignPublicIp;
+
+    /**
+     * @return Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+     * 
+     */
+    public Optional<Output<Boolean>> assignPublicIp() {
+        return Optional.ofNullable(this.assignPublicIp);
+    }
+
+    /**
      * ARN of an ECS cluster.
      * 
      */
@@ -374,6 +389,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
     private FargateServiceArgs() {}
 
     private FargateServiceArgs(FargateServiceArgs $) {
+        this.assignPublicIp = $.assignPublicIp;
         this.cluster = $.cluster;
         this.continueBeforeSteadyState = $.continueBeforeSteadyState;
         this.deploymentCircuitBreaker = $.deploymentCircuitBreaker;
@@ -415,6 +431,27 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
 
         public Builder(FargateServiceArgs defaults) {
             $ = new FargateServiceArgs(Objects.requireNonNull(defaults));
+        }
+
+        /**
+         * @param assignPublicIp Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder assignPublicIp(@Nullable Output<Boolean> assignPublicIp) {
+            $.assignPublicIp = assignPublicIp;
+            return this;
+        }
+
+        /**
+         * @param assignPublicIp Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder assignPublicIp(Boolean assignPublicIp) {
+            return assignPublicIp(Output.of(assignPublicIp));
         }
 
         /**

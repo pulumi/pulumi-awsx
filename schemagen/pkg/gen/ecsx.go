@@ -138,6 +138,12 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Plain: true,
 		},
 	}
+	inputProperties["assignPublicIp"] = schema.PropertySpec{
+		Description: "Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.",
+		TypeSpec: schema.TypeSpec{
+			Type: "boolean",
+		},
+	}
 
 	return schema.ResourceSpec{
 		IsComponent: true,

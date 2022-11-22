@@ -202,6 +202,7 @@ export abstract class FargateService<TData = any> extends pulumi.ComponentResour
     }
 }
 export interface FargateServiceArgs {
+    readonly assignPublicIp?: pulumi.Input<boolean>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;

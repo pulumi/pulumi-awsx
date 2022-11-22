@@ -12,6 +12,7 @@ const lb = new awsx.lb.ApplicationLoadBalancer("nginx-lb", {
 
 const service = new awsx.ecs.FargateService("my-service", {
     cluster: cluster.arn,
+    assignPublicIp: true,
     taskDefinitionArgs: {
         container: {
             image: "nginx:latest",

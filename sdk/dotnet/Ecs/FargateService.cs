@@ -57,6 +57,12 @@ namespace Pulumi.Awsx.Ecs
     public sealed class FargateServiceArgs : Pulumi.ResourceArgs
     {
         /// <summary>
+        /// Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+        /// </summary>
+        [Input("assignPublicIp")]
+        public Input<bool>? AssignPublicIp { get; set; }
+
+        /// <summary>
         /// ARN of an ECS cluster.
         /// </summary>
         [Input("cluster")]

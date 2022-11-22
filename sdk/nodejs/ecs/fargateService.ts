@@ -46,6 +46,7 @@ export class FargateService extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
+            resourceInputs["assignPublicIp"] = args ? args.assignPublicIp : undefined;
             resourceInputs["cluster"] = args ? args.cluster : undefined;
             resourceInputs["continueBeforeSteadyState"] = args ? args.continueBeforeSteadyState : undefined;
             resourceInputs["deploymentCircuitBreaker"] = args ? args.deploymentCircuitBreaker : undefined;
@@ -83,6 +84,10 @@ export class FargateService extends pulumi.ComponentResource {
  * The set of arguments for constructing a FargateService resource.
  */
 export interface FargateServiceArgs {
+    /**
+     * Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
+     */
+    assignPublicIp?: pulumi.Input<boolean>;
     /**
      * ARN of an ECS cluster.
      */

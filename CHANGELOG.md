@@ -6,7 +6,7 @@ CHANGELOG
 * Fix type errors in TypeScript checking awsx-classic properties.
 * Ensure that FargateService and EC2Service default `continueBeforeSteadyState` to false.
 * Make networkMode property usable for `ecs.Ec2TaskDefinition`.
-* Default FargateService to non-public [#936](https://github.com/pulumi/pulumi-awsx/pull/936).
+* Add optional `assignPublicIp` input property to FargateService and default it to non-public [#936](https://github.com/pulumi/pulumi-awsx/pull/936).
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0
