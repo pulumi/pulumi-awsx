@@ -80,7 +80,7 @@ export function getMappingInputs(
   tgPort: number | undefined,
 ): schema.TaskDefinitionPortMappingInputs {
   return {
-    containerPort: mappingInput.containerPort ?? tgPort ?? mappingInput.hostPort,
+    containerPort: mappingInput.containerPort ?? mappingInput.hostPort ?? tgPort,
     hostPort: mappingInput.hostPort ?? tgPort ?? mappingInput.containerPort,
     protocol: mappingInput.protocol,
   };
