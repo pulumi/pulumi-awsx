@@ -49,7 +49,7 @@ function computeContainerDefinition(
             .apply((tgPort): schema.TaskDefinitionPortMappingInputs => {
               return {
                 containerPort: mappingInput.containerPort ?? tgPort ?? mappingInput.hostPort,
-                hostPort: mappingInput.hostPort ?? tgPort,
+                hostPort: mappingInput.hostPort ?? tgPort ?? mappingInput.containerPort,
                 protocol: mappingInput.protocol,
               };
             });
