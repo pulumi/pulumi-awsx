@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-## HEAD (Unreleased)
+## 1.0.0 (2022-11-23)
 * Add multi-lang component support scaffolding.
 * Fix type errors in TypeScript checking awsx-classic properties.
 * Ensure that FargateService and EC2Service default `continueBeforeSteadyState` to false.
