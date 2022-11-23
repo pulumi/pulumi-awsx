@@ -11,6 +11,7 @@ CHANGELOG
   provide a top-level way to set the default target group's port.
 * Change the behavior of `ecs.FargateTaskDefinition` and `ecs.EC2TaskDefinition` to always respect the passed-in
   `hostPort`, regardless of the target group's port.
+* Python: Bump the min required version of `pulumi` PyPi package to 3.47.2.
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0
