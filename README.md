@@ -27,9 +27,12 @@ The AWS Infrastructure package exposes many high level abstractions.  Including:
 
 ### Migration from 0.x to 1.0
 
-Before version 1, this package only supported components in Typescript. All the existing components from the 0.x releases are now available in under the `classic` namespace.
+Before version 1, this package only supported components in TypeScript. All the existing components from the 0.x releases are now available in the `classic` namespace. The `classic` namespace will remain until the next major version release but will only receive updates for critical security fixes.
 
-When upgrading change your references from `@pulumi/awsx` to `@pulumi/awsx/classic`.
+1. Change references from `@pulumi/awsx` to `@pulumi/awsx/classic` to maintain existing behaviour.
+2. Refactor to replace the classic components with the new top-level components.
+
+**Note:** The new top-level components (outside the `classic` namespace) may require additional code changes and resource re-creation.
 
 ### Installing
 
@@ -54,7 +57,7 @@ yarn add @pulumi/awsx
 To use from Python, install using `pip`:
 
 ```bash
-pip install pulumi_awsx
+pip install pulumi-awsx
 ```
 
 ### Go
