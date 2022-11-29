@@ -10,10 +10,9 @@
 
 Pulumi's framework for Amazon Web Services (AWS) infrastructure.
 
-This package is meant for use with the Pulumi CLI.  Please visit [pulumi.io](https://pulumi.io) for
-installation instructions.
+To use this package, [install the Pulumi CLI](https://www.pulumi.com/docs/get-started/install/). For a streamlined Pulumi walkthrough, including language runtime installation and AWS configuration, see the [Crosswalk for AWS documentation](https://www.pulumi.com/docs/guides/crosswalk/aws/).
 
-The AWS Infrastructure package is intended to provide [component](https://pulumi.io/reference/programming-model.html#components) wrappers around many core AWS 'raw' resources to make them easier and more convenient to use.  In general, the `@pulumi/awsx` package mirrors the module structure of `@pulumi/aws` (i.e. `@pulumi/awsx/ecs` or `@pulumi/awsx/ec2`).  These [components](https://pulumi.io/reference/programming-model.html#components) are designed to take care of much of the redundancy and boilerplate necessary when using the raw AWS resources, while still striving to expose all underlying functionality if needed.
+The AWS Infrastructure package is intended to provide [component](https://www.pulumi.com/docs/intro/concepts/resources/components/) wrappers around many core AWS 'raw' resources to make them easier and more convenient to use.  In general, the `@pulumi/awsx` package mirrors the module structure of `@pulumi/aws` (i.e. `@pulumi/awsx/ecs` or `@pulumi/awsx/ec2`).  These [components](https://www.pulumi.com/docs/intro/concepts/resources/components/) are designed to take care of much of the redundancy and boilerplate necessary when using the raw AWS resources, while still striving to expose all underlying functionality if needed.
 
 The AWS Infrastructure package undergoes constant improvements and additions.  While we will strive to maintain backward compatability here, we will occasionally make breaks here as appropriate if it helps improve the overall quality of this package.
 
@@ -26,15 +25,14 @@ The AWS Infrastructure package exposes many high level abstractions.  Including:
 
 * [`lb`](https://github.com/pulumi/pulumi-awsx/tree/master/awsx/lb).  A module for simply setting up [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/). This module provides convenient ways to set up either `Network` or `Application` load balancers, along with the appropriate ELB Target Groups and Listeners in order to have a high availability, automatically-scaled service.  These ELB components also work well with the other awsx components.  For example, an `lb.defaultTarget` can be passed in directly as the `portMapping` target of an `ecs.FargateService`.
 
-The library also exposes the classic AWSx (the previous TypeScript) implementation. You can find these modules in the `classic` namespace. These modules include:
+### Migration from 0.x to 1.0
 
-* `apigateway`
-* `autoscaling`
-* `ecs`
-* `ec2`
-* `cloudwatch`
-* `lb`
-* `cloudtrail`
+Before version 1, this package only supported components in TypeScript. All the existing components from the 0.x releases are now available in the `classic` namespace. The `classic` namespace will remain until the next major version release but will only receive updates for critical security fixes.
+
+1. Change references from `@pulumi/awsx` to `@pulumi/awsx/classic` to maintain existing behaviour.
+2. Refactor to replace the classic components with the new top-level components.
+
+**Note:** The new top-level components (outside the `classic` namespace) may require additional code changes and resource re-creation.
 
 ### Installing
 
@@ -44,33 +42,43 @@ This package is available in many languages in the standard packaging formats.
 
 To use from JavaScript or TypeScript in Node.js, install using either `npm`:
 
-    npm install @pulumi/awsx
+```bash
+npm install @pulumi/awsx
+```
 
 or `yarn`:
 
-    yarn add @pulumi/awsx
+```bash
+yarn add @pulumi/awsx
+```
 
 ### Python
 
 To use from Python, install using `pip`:
 
-    pip install pulumi_awsx
+```bash
+pip install pulumi-awsx
+```
 
 ### Go
 
 To use from Go, use `go get` to grab the latest version of the library
 
-    go get github.com/pulumi/pulumi-awsx/sdk
+```bash
+go get github.com/pulumi/pulumi-awsx/sdk
+```
 
 ### .NET
 
 To use from .NET, install using `dotnet add package`:
 
-    dotnet add package Pulumi.Awsx
+```bash
+dotnet add package Pulumi.Awsx
+```
 
 ### Configuration
 
-The configuration options available for this provider  mirror those of the [Pulumi AWS Classic Provider](https://github.com/pulumi/pulumi-aws#configuration)
+The configuration options available for this provider mirror those of the [Pulumi AWS Classic Provider](https://github.com/pulumi/pulumi-aws#configuration)
 
 ## Reference
 

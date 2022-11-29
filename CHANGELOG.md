@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-## HEAD (Unreleased)
+## 1.0.0 (2022-11-23)
 * Add multi-lang component support scaffolding.
 * Fix type errors in TypeScript checking awsx-classic properties.
 * Ensure that FargateService and EC2Service default `continueBeforeSteadyState` to false.
@@ -11,6 +11,7 @@ CHANGELOG
   provide a top-level way to set the default target group's port.
 * Change the behavior of `ecs.FargateTaskDefinition` and `ecs.EC2TaskDefinition` to always respect the passed-in
   `hostPort`, regardless of the target group's port.
+* Python: Bump the min required version of `pulumi` PyPi package to 3.47.2.
 * CI: command-dispatch - slash-command-dispatch update to v3
 
 ## 0.40.0 (2022-03-24)

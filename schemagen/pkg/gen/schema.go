@@ -86,7 +86,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
-					"pulumi":        ">=3.0.0,<4.0.0",
+					"pulumi":        ">=3.47.2,<4.0.0",
 					"pulumi-aws":    ">=5.3.0,<6.0.0",
 					"pulumi-docker": ">=3.0.0,<4.0.0",
 				},
