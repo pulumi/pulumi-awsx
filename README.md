@@ -25,16 +25,13 @@ The AWS Infrastructure package exposes many high level abstractions.  Including:
 
 * [`lb`](https://github.com/pulumi/pulumi-awsx/tree/master/awsx/lb).  A module for simply setting up [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/). This module provides convenient ways to set up either `Network` or `Application` load balancers, along with the appropriate ELB Target Groups and Listeners in order to have a high availability, automatically-scaled service.  These ELB components also work well with the other awsx components.  For example, an `lb.defaultTarget` can be passed in directly as the `portMapping` target of an `ecs.FargateService`.
 
-### Migration from 0.x to 1.0
+<div>
+    <a href="https://www.pulumi.com/docs/guides/crosswalk/aws/" title="Get Started">
+       <img src="https://www.pulumi.com/images/get-started.svg?" width="120">
+    </a>
+</div>
 
-Before version 1, this package only supported components in TypeScript. All the existing components from the 0.x releases are now available in the `classic` namespace. The `classic` namespace will remain until the next major version release but will only receive updates for critical security fixes.
-
-1. Change references from `@pulumi/awsx` to `@pulumi/awsx/classic` to maintain existing behaviour.
-2. Refactor to replace the classic components with the new top-level components.
-
-**Note:** The new top-level components (outside the `classic` namespace) may require additional code changes and resource re-creation.
-
-### Installing
+## Installing
 
 This package is available in many languages in the standard packaging formats.
 
@@ -76,11 +73,22 @@ To use from .NET, install using `dotnet add package`:
 dotnet add package Pulumi.Awsx
 ```
 
-### Configuration
+## Configuration
 
 The configuration options available for this provider mirror those of the [Pulumi AWS Classic Provider](https://github.com/pulumi/pulumi-aws#configuration)
 
-## Reference
+## Migration from 0.x to 1.0
 
-For further information, visit [AWS in the Pulumi Registry](https://www.pulumi.com/registry/packages/awsx/)
-or for detailed API reference documentation, visit [AWS API Docs in the Pulumi Registry](https://www.pulumi.com/registry/packages/awsx/api-docs/).
+Before version 1, this package only supported components in TypeScript. All the existing components from the 0.x releases are now available in the `classic` namespace. The `classic` namespace will remain until the next major version release but will only receive updates for critical security fixes.
+
+1. Change references from `@pulumi/awsx` to `@pulumi/awsx/classic` to maintain existing behaviour.
+2. Refactor to replace the classic components with the new top-level components.
+
+**Note:** The new top-level components (outside the `classic` namespace) may require additional code changes and resource re-creation.
+
+## References
+
+* [Tutorial](https://www.pulumi.com/blog/crosswalk-for-aws-1-0/)
+* [API Reference Documentation](https://www.pulumi.com/registry/packages/awsx/api-docs/)
+* [Examples](./examples)
+* [Crosswalk for AWS Guide](https://www.pulumi.com/docs/guides/crosswalk/aws/)
