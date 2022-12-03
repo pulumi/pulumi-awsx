@@ -168,7 +168,7 @@ func (i *FargateTaskDefinition) ToFargateTaskDefinitionOutputWithContext(ctx con
 // FargateTaskDefinitionArrayInput is an input type that accepts FargateTaskDefinitionArray and FargateTaskDefinitionArrayOutput values.
 // You can construct a concrete instance of `FargateTaskDefinitionArrayInput` via:
 //
-//	FargateTaskDefinitionArray{ FargateTaskDefinitionArgs{...} }
+//          FargateTaskDefinitionArray{ FargateTaskDefinitionArgs{...} }
 type FargateTaskDefinitionArrayInput interface {
 	pulumi.Input
 
@@ -193,7 +193,7 @@ func (i FargateTaskDefinitionArray) ToFargateTaskDefinitionArrayOutputWithContex
 // FargateTaskDefinitionMapInput is an input type that accepts FargateTaskDefinitionMap and FargateTaskDefinitionMapOutput values.
 // You can construct a concrete instance of `FargateTaskDefinitionMapInput` via:
 //
-//	FargateTaskDefinitionMap{ "key": FargateTaskDefinitionArgs{...} }
+//          FargateTaskDefinitionMap{ "key": FargateTaskDefinitionArgs{...} }
 type FargateTaskDefinitionMapInput interface {
 	pulumi.Input
 

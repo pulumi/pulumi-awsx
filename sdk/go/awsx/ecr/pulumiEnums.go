@@ -143,7 +143,7 @@ func (o LifecycleTagStatusPtrOutput) ToStringPtrOutputWithContext(ctx context.Co
 // LifecycleTagStatusInput is an input type that accepts LifecycleTagStatusArgs and LifecycleTagStatusOutput values.
 // You can construct a concrete instance of `LifecycleTagStatusInput` via:
 //
-//	LifecycleTagStatusArgs{...}
+//          LifecycleTagStatusArgs{...}
 type LifecycleTagStatusInput interface {
 	pulumi.Input
 

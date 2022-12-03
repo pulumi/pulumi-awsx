@@ -133,7 +133,7 @@ func (i *Trail) ToTrailOutputWithContext(ctx context.Context) TrailOutput {
 // TrailArrayInput is an input type that accepts TrailArray and TrailArrayOutput values.
 // You can construct a concrete instance of `TrailArrayInput` via:
 //
-//	TrailArray{ TrailArgs{...} }
+//          TrailArray{ TrailArgs{...} }
 type TrailArrayInput interface {
 	pulumi.Input
 
@@ -158,7 +158,7 @@ func (i TrailArray) ToTrailArrayOutputWithContext(ctx context.Context) TrailArra
 // TrailMapInput is an input type that accepts TrailMap and TrailMapOutput values.
 // You can construct a concrete instance of `TrailMapInput` via:
 //
-//	TrailMap{ "key": TrailArgs{...} }
+//          TrailMap{ "key": TrailArgs{...} }
 type TrailMapInput interface {
 	pulumi.Input
 

@@ -21,42 +21,39 @@ import (
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("HTTPS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: frontEndTargetGroup.Arn,
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("HTTPS"),
+// 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 //
 // To a NLB:
@@ -64,279 +61,261 @@ import (
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewListener(ctx, "frontEnd", &lb.ListenerArgs{
-//				LoadBalancerArn: pulumi.Any(aws_lb.Front_end.Arn),
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("TLS"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
-//				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: pulumi.Any(aws_lb_target_group.Front_end.Arn),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewListener(ctx, "frontEnd", &lb.ListenerArgs{
+// 			LoadBalancerArn: pulumi.Any(aws_lb.Front_end.Arn),
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("TLS"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: pulumi.Any(aws_lb_target_group.Front_end.Arn),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Redirect Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("redirect"),
-//						Redirect: &lb.ListenerDefaultActionRedirectArgs{
-//							Port:       pulumi.String("443"),
-//							Protocol:   pulumi.String("HTTPS"),
-//							StatusCode: pulumi.String("HTTP_301"),
-//						},
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("redirect"),
+// 					Redirect: &lb.ListenerDefaultActionRedirectArgs{
+// 						Port:       pulumi.String("443"),
+// 						Protocol:   pulumi.String("HTTPS"),
+// 						StatusCode: pulumi.String("HTTP_301"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Fixed-response Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("fixed-response"),
-//						FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
-//							ContentType: pulumi.String("text/plain"),
-//							MessageBody: pulumi.String("Fixed response content"),
-//							StatusCode:  pulumi.String("200"),
-//						},
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("fixed-response"),
+// 					FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
+// 						ContentType: pulumi.String("text/plain"),
+// 						MessageBody: pulumi.String("Fixed response content"),
+// 						StatusCode:  pulumi.String("200"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Authenticate-cognito Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
-//			if err != nil {
-//				return err
-//			}
-//			pool, err := cognito.NewUserPool(ctx, "pool", nil)
-//			if err != nil {
-//				return err
-//			}
-//			client, err := cognito.NewUserPoolClient(ctx, "client", nil)
-//			if err != nil {
-//				return err
-//			}
-//			domain, err := cognito.NewUserPoolDomain(ctx, "domain", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-cognito"),
-//						AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
-//							UserPoolArn:      pool.Arn,
-//							UserPoolClientId: client.ID(),
-//							UserPoolDomain:   domain.Domain,
-//						},
-//					},
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: frontEndTargetGroup.Arn,
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		pool, err := cognito.NewUserPool(ctx, "pool", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		client, err := cognito.NewUserPoolClient(ctx, "client", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		domain, err := cognito.NewUserPoolDomain(ctx, "domain", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-cognito"),
+// 					AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
+// 						UserPoolArn:      pool.Arn,
+// 						UserPoolClientId: client.ID(),
+// 						UserPoolDomain:   domain.Domain,
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Authenticate-OIDC Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-oidc"),
-//						AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
-//							AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
-//							ClientId:              pulumi.String("client_id"),
-//							ClientSecret:          pulumi.String("client_secret"),
-//							Issuer:                pulumi.String("https://example.com"),
-//							TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
-//							UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
-//						},
-//					},
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: frontEndTargetGroup.Arn,
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-oidc"),
+// 					AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
+// 						AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
+// 						ClientId:              pulumi.String("client_id"),
+// 						ClientSecret:          pulumi.String("client_secret"),
+// 						Issuer:                pulumi.String("https://example.com"),
+// 						TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
+// 						UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Gateway Load Balancer Listener
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			exampleLoadBalancer, err := lb.NewLoadBalancer(ctx, "exampleLoadBalancer", &lb.LoadBalancerArgs{
-//				LoadBalancerType: pulumi.String("gateway"),
-//				SubnetMappings: lb.LoadBalancerSubnetMappingArray{
-//					&lb.LoadBalancerSubnetMappingArgs{
-//						SubnetId: pulumi.Any(aws_subnet.Example.Id),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroupArgs{
-//				Port:     pulumi.Int(6081),
-//				Protocol: pulumi.String("GENEVE"),
-//				VpcId:    pulumi.Any(aws_vpc.Example.Id),
-//				HealthCheck: &lb.TargetGroupHealthCheckArgs{
-//					Port:     pulumi.String("80"),
-//					Protocol: pulumi.String("HTTP"),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "exampleListener", &lb.ListenerArgs{
-//				LoadBalancerArn: exampleLoadBalancer.ID(),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						TargetGroupArn: exampleTargetGroup.ID(),
-//						Type:           pulumi.String("forward"),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		exampleLoadBalancer, err := lb.NewLoadBalancer(ctx, "exampleLoadBalancer", &lb.LoadBalancerArgs{
+// 			LoadBalancerType: pulumi.String("gateway"),
+// 			SubnetMappings: lb.LoadBalancerSubnetMappingArray{
+// 				&lb.LoadBalancerSubnetMappingArgs{
+// 					SubnetId: pulumi.Any(aws_subnet.Example.Id),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(6081),
+// 			Protocol: pulumi.String("GENEVE"),
+// 			VpcId:    pulumi.Any(aws_vpc.Example.Id),
+// 			HealthCheck: &lb.TargetGroupHealthCheckArgs{
+// 				Port:     pulumi.String("80"),
+// 				Protocol: pulumi.String("HTTP"),
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "exampleListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: exampleLoadBalancer.ID(),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					TargetGroupArn: exampleTargetGroup.ID(),
+// 					Type:           pulumi.String("forward"),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 //
 // ## Import
@@ -344,9 +323,7 @@ import (
 // Listeners can be imported using their ARN, e.g.,
 //
 // ```sh
-//
-//	$ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
-//
+//  $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
 // ```
 type Listener struct {
 	// Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
@@ -368,7 +345,7 @@ type Listener struct {
 // ListenerInput is an input type that accepts ListenerArgs and ListenerOutput values.
 // You can construct a concrete instance of `ListenerInput` via:
 //
-//	ListenerArgs{...}
+//          ListenerArgs{...}
 type ListenerInput interface {
 	pulumi.Input
 
@@ -386,42 +363,39 @@ type ListenerInput interface {
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("HTTPS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: frontEndTargetGroup.Arn,
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("HTTPS"),
+// 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 //
 // To a NLB:
@@ -429,279 +403,261 @@ type ListenerInput interface {
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewListener(ctx, "frontEnd", &lb.ListenerArgs{
-//				LoadBalancerArn: pulumi.Any(aws_lb.Front_end.Arn),
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("TLS"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
-//				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: pulumi.Any(aws_lb_target_group.Front_end.Arn),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewListener(ctx, "frontEnd", &lb.ListenerArgs{
+// 			LoadBalancerArn: pulumi.Any(aws_lb.Front_end.Arn),
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("TLS"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: pulumi.Any(aws_lb_target_group.Front_end.Arn),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Redirect Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("redirect"),
-//						Redirect: &lb.ListenerDefaultActionRedirectArgs{
-//							Port:       pulumi.String("443"),
-//							Protocol:   pulumi.String("HTTPS"),
-//							StatusCode: pulumi.String("HTTP_301"),
-//						},
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("redirect"),
+// 					Redirect: &lb.ListenerDefaultActionRedirectArgs{
+// 						Port:       pulumi.String("443"),
+// 						Protocol:   pulumi.String("HTTPS"),
+// 						StatusCode: pulumi.String("HTTP_301"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Fixed-response Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("fixed-response"),
-//						FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
-//							ContentType: pulumi.String("text/plain"),
-//							MessageBody: pulumi.String("Fixed response content"),
-//							StatusCode:  pulumi.String("200"),
-//						},
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("fixed-response"),
+// 					FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
+// 						ContentType: pulumi.String("text/plain"),
+// 						MessageBody: pulumi.String("Fixed response content"),
+// 						StatusCode:  pulumi.String("200"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Authenticate-cognito Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
-//			if err != nil {
-//				return err
-//			}
-//			pool, err := cognito.NewUserPool(ctx, "pool", nil)
-//			if err != nil {
-//				return err
-//			}
-//			client, err := cognito.NewUserPoolClient(ctx, "client", nil)
-//			if err != nil {
-//				return err
-//			}
-//			domain, err := cognito.NewUserPoolDomain(ctx, "domain", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-cognito"),
-//						AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
-//							UserPoolArn:      pool.Arn,
-//							UserPoolClientId: client.ID(),
-//							UserPoolDomain:   domain.Domain,
-//						},
-//					},
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: frontEndTargetGroup.Arn,
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		pool, err := cognito.NewUserPool(ctx, "pool", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		client, err := cognito.NewUserPoolClient(ctx, "client", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		domain, err := cognito.NewUserPoolDomain(ctx, "domain", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-cognito"),
+// 					AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
+// 						UserPoolArn:      pool.Arn,
+// 						UserPoolClientId: client.ID(),
+// 						UserPoolDomain:   domain.Domain,
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Authenticate-OIDC Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-oidc"),
-//						AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
-//							AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
-//							ClientId:              pulumi.String("client_id"),
-//							ClientSecret:          pulumi.String("client_secret"),
-//							Issuer:                pulumi.String("https://example.com"),
-//							TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
-//							UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
-//						},
-//					},
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: frontEndTargetGroup.Arn,
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-oidc"),
+// 					AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
+// 						AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
+// 						ClientId:              pulumi.String("client_id"),
+// 						ClientSecret:          pulumi.String("client_secret"),
+// 						Issuer:                pulumi.String("https://example.com"),
+// 						TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
+// 						UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Gateway Load Balancer Listener
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			exampleLoadBalancer, err := lb.NewLoadBalancer(ctx, "exampleLoadBalancer", &lb.LoadBalancerArgs{
-//				LoadBalancerType: pulumi.String("gateway"),
-//				SubnetMappings: lb.LoadBalancerSubnetMappingArray{
-//					&lb.LoadBalancerSubnetMappingArgs{
-//						SubnetId: pulumi.Any(aws_subnet.Example.Id),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroupArgs{
-//				Port:     pulumi.Int(6081),
-//				Protocol: pulumi.String("GENEVE"),
-//				VpcId:    pulumi.Any(aws_vpc.Example.Id),
-//				HealthCheck: &lb.TargetGroupHealthCheckArgs{
-//					Port:     pulumi.String("80"),
-//					Protocol: pulumi.String("HTTP"),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "exampleListener", &lb.ListenerArgs{
-//				LoadBalancerArn: exampleLoadBalancer.ID(),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						TargetGroupArn: exampleTargetGroup.ID(),
-//						Type:           pulumi.String("forward"),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		exampleLoadBalancer, err := lb.NewLoadBalancer(ctx, "exampleLoadBalancer", &lb.LoadBalancerArgs{
+// 			LoadBalancerType: pulumi.String("gateway"),
+// 			SubnetMappings: lb.LoadBalancerSubnetMappingArray{
+// 				&lb.LoadBalancerSubnetMappingArgs{
+// 					SubnetId: pulumi.Any(aws_subnet.Example.Id),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(6081),
+// 			Protocol: pulumi.String("GENEVE"),
+// 			VpcId:    pulumi.Any(aws_vpc.Example.Id),
+// 			HealthCheck: &lb.TargetGroupHealthCheckArgs{
+// 				Port:     pulumi.String("80"),
+// 				Protocol: pulumi.String("HTTP"),
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "exampleListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: exampleLoadBalancer.ID(),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					TargetGroupArn: exampleTargetGroup.ID(),
+// 					Type:           pulumi.String("forward"),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 //
 // ## Import
@@ -709,9 +665,7 @@ type ListenerInput interface {
 // Listeners can be imported using their ARN, e.g.,
 //
 // ```sh
-//
-//	$ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
-//
+//  $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
 // ```
 type ListenerArgs struct {
 	// Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
@@ -753,11 +707,11 @@ func (i ListenerArgs) ToListenerPtrOutputWithContext(ctx context.Context) Listen
 // ListenerPtrInput is an input type that accepts ListenerArgs, ListenerPtr and ListenerPtrOutput values.
 // You can construct a concrete instance of `ListenerPtrInput` via:
 //
-//	        ListenerArgs{...}
+//          ListenerArgs{...}
 //
-//	or:
+//  or:
 //
-//	        nil
+//          nil
 type ListenerPtrInput interface {
 	pulumi.Input
 
@@ -786,7 +740,7 @@ func (i *listenerPtrType) ToListenerPtrOutputWithContext(ctx context.Context) Li
 // ListenerArrayInput is an input type that accepts ListenerArray and ListenerArrayOutput values.
 // You can construct a concrete instance of `ListenerArrayInput` via:
 //
-//	ListenerArray{ ListenerArgs{...} }
+//          ListenerArray{ ListenerArgs{...} }
 type ListenerArrayInput interface {
 	pulumi.Input
 
@@ -818,42 +772,39 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("HTTPS"),
-//				SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: frontEndTargetGroup.Arn,
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("HTTPS"),
+// 			SslPolicy:       pulumi.String("ELBSecurityPolicy-2016-08"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 //
 // To a NLB:
@@ -861,279 +812,261 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewListener(ctx, "frontEnd", &lb.ListenerArgs{
-//				LoadBalancerArn: pulumi.Any(aws_lb.Front_end.Arn),
-//				Port:            pulumi.Int(443),
-//				Protocol:        pulumi.String("TLS"),
-//				CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
-//				AlpnPolicy:      pulumi.String("HTTP2Preferred"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: pulumi.Any(aws_lb_target_group.Front_end.Arn),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewListener(ctx, "frontEnd", &lb.ListenerArgs{
+// 			LoadBalancerArn: pulumi.Any(aws_lb.Front_end.Arn),
+// 			Port:            pulumi.Int(443),
+// 			Protocol:        pulumi.String("TLS"),
+// 			CertificateArn:  pulumi.String("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"),
+// 			AlpnPolicy:      pulumi.String("HTTP2Preferred"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: pulumi.Any(aws_lb_target_group.Front_end.Arn),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Redirect Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("redirect"),
-//						Redirect: &lb.ListenerDefaultActionRedirectArgs{
-//							Port:       pulumi.String("443"),
-//							Protocol:   pulumi.String("HTTPS"),
-//							StatusCode: pulumi.String("HTTP_301"),
-//						},
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("redirect"),
+// 					Redirect: &lb.ListenerDefaultActionRedirectArgs{
+// 						Port:       pulumi.String("443"),
+// 						Protocol:   pulumi.String("HTTPS"),
+// 						StatusCode: pulumi.String("HTTP_301"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Fixed-response Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("fixed-response"),
-//						FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
-//							ContentType: pulumi.String("text/plain"),
-//							MessageBody: pulumi.String("Fixed response content"),
-//							StatusCode:  pulumi.String("200"),
-//						},
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("fixed-response"),
+// 					FixedResponse: &lb.ListenerDefaultActionFixedResponseArgs{
+// 						ContentType: pulumi.String("text/plain"),
+// 						MessageBody: pulumi.String("Fixed response content"),
+// 						StatusCode:  pulumi.String("200"),
+// 					},
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Authenticate-cognito Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
-//			if err != nil {
-//				return err
-//			}
-//			pool, err := cognito.NewUserPool(ctx, "pool", nil)
-//			if err != nil {
-//				return err
-//			}
-//			client, err := cognito.NewUserPoolClient(ctx, "client", nil)
-//			if err != nil {
-//				return err
-//			}
-//			domain, err := cognito.NewUserPoolDomain(ctx, "domain", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-cognito"),
-//						AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
-//							UserPoolArn:      pool.Arn,
-//							UserPoolClientId: client.ID(),
-//							UserPoolDomain:   domain.Domain,
-//						},
-//					},
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: frontEndTargetGroup.Arn,
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		pool, err := cognito.NewUserPool(ctx, "pool", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		client, err := cognito.NewUserPoolClient(ctx, "client", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		domain, err := cognito.NewUserPoolDomain(ctx, "domain", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-cognito"),
+// 					AuthenticateCognito: &lb.ListenerDefaultActionAuthenticateCognitoArgs{
+// 						UserPoolArn:      pool.Arn,
+// 						UserPoolClientId: client.ID(),
+// 						UserPoolDomain:   domain.Domain,
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Authenticate-OIDC Action
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
-//			if err != nil {
-//				return err
-//			}
-//			frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
-//				LoadBalancerArn: frontEndLoadBalancer.Arn,
-//				Port:            pulumi.Int(80),
-//				Protocol:        pulumi.String("HTTP"),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						Type: pulumi.String("authenticate-oidc"),
-//						AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
-//							AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
-//							ClientId:              pulumi.String("client_id"),
-//							ClientSecret:          pulumi.String("client_secret"),
-//							Issuer:                pulumi.String("https://example.com"),
-//							TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
-//							UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
-//						},
-//					},
-//					&lb.ListenerDefaultActionArgs{
-//						Type:           pulumi.String("forward"),
-//						TargetGroupArn: frontEndTargetGroup.Arn,
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		frontEndLoadBalancer, err := lb.NewLoadBalancer(ctx, "frontEndLoadBalancer", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		frontEndTargetGroup, err := lb.NewTargetGroup(ctx, "frontEndTargetGroup", nil)
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "frontEndListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: frontEndLoadBalancer.Arn,
+// 			Port:            pulumi.Int(80),
+// 			Protocol:        pulumi.String("HTTP"),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type: pulumi.String("authenticate-oidc"),
+// 					AuthenticateOidc: &lb.ListenerDefaultActionAuthenticateOidcArgs{
+// 						AuthorizationEndpoint: pulumi.String("https://example.com/authorization_endpoint"),
+// 						ClientId:              pulumi.String("client_id"),
+// 						ClientSecret:          pulumi.String("client_secret"),
+// 						Issuer:                pulumi.String("https://example.com"),
+// 						TokenEndpoint:         pulumi.String("https://example.com/token_endpoint"),
+// 						UserInfoEndpoint:      pulumi.String("https://example.com/user_info_endpoint"),
+// 					},
+// 				},
+// 				&lb.ListenerDefaultActionArgs{
+// 					Type:           pulumi.String("forward"),
+// 					TargetGroupArn: frontEndTargetGroup.Arn,
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Gateway Load Balancer Listener
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			exampleLoadBalancer, err := lb.NewLoadBalancer(ctx, "exampleLoadBalancer", &lb.LoadBalancerArgs{
-//				LoadBalancerType: pulumi.String("gateway"),
-//				SubnetMappings: lb.LoadBalancerSubnetMappingArray{
-//					&lb.LoadBalancerSubnetMappingArgs{
-//						SubnetId: pulumi.Any(aws_subnet.Example.Id),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroupArgs{
-//				Port:     pulumi.Int(6081),
-//				Protocol: pulumi.String("GENEVE"),
-//				VpcId:    pulumi.Any(aws_vpc.Example.Id),
-//				HealthCheck: &lb.TargetGroupHealthCheckArgs{
-//					Port:     pulumi.String("80"),
-//					Protocol: pulumi.String("HTTP"),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewListener(ctx, "exampleListener", &lb.ListenerArgs{
-//				LoadBalancerArn: exampleLoadBalancer.ID(),
-//				DefaultActions: lb.ListenerDefaultActionArray{
-//					&lb.ListenerDefaultActionArgs{
-//						TargetGroupArn: exampleTargetGroup.ID(),
-//						Type:           pulumi.String("forward"),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		exampleLoadBalancer, err := lb.NewLoadBalancer(ctx, "exampleLoadBalancer", &lb.LoadBalancerArgs{
+// 			LoadBalancerType: pulumi.String("gateway"),
+// 			SubnetMappings: lb.LoadBalancerSubnetMappingArray{
+// 				&lb.LoadBalancerSubnetMappingArgs{
+// 					SubnetId: pulumi.Any(aws_subnet.Example.Id),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		exampleTargetGroup, err := lb.NewTargetGroup(ctx, "exampleTargetGroup", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(6081),
+// 			Protocol: pulumi.String("GENEVE"),
+// 			VpcId:    pulumi.Any(aws_vpc.Example.Id),
+// 			HealthCheck: &lb.TargetGroupHealthCheckArgs{
+// 				Port:     pulumi.String("80"),
+// 				Protocol: pulumi.String("HTTP"),
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewListener(ctx, "exampleListener", &lb.ListenerArgs{
+// 			LoadBalancerArn: exampleLoadBalancer.ID(),
+// 			DefaultActions: lb.ListenerDefaultActionArray{
+// 				&lb.ListenerDefaultActionArgs{
+// 					TargetGroupArn: exampleTargetGroup.ID(),
+// 					Type:           pulumi.String("forward"),
+// 				},
+// 			},
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 //
 // ## Import
@@ -1141,9 +1074,7 @@ func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) Lis
 // Listeners can be imported using their ARN, e.g.,
 //
 // ```sh
-//
-//	$ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
-//
+//  $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
 // ```
 type ListenerOutput struct{ *pulumi.OutputState }
 
@@ -1328,118 +1259,106 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
-//				CidrBlock: pulumi.String("10.0.0.0/16"),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroupArgs{
-//				Port:     pulumi.Int(80),
-//				Protocol: pulumi.String("HTTP"),
-//				VpcId:    main.ID(),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(80),
+// 			Protocol: pulumi.String("HTTP"),
+// 			VpcId:    main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### IP Target Group
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
-//				CidrBlock: pulumi.String("10.0.0.0/16"),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroupArgs{
-//				Port:       pulumi.Int(80),
-//				Protocol:   pulumi.String("HTTP"),
-//				TargetType: pulumi.String("ip"),
-//				VpcId:      main.ID(),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroupArgs{
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("HTTP"),
+// 			TargetType: pulumi.String("ip"),
+// 			VpcId:      main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Lambda Target Group
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
-//				TargetType: pulumi.String("lambda"),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("lambda"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### ALB Target Group
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
-//				TargetType: pulumi.String("alb"),
-//				Port:       pulumi.Int(80),
-//				Protocol:   pulumi.String("TCP"),
-//				VpcId:      pulumi.Any(aws_vpc.Main.Id),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("alb"),
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("TCP"),
+// 			VpcId:      pulumi.Any(aws_vpc.Main.Id),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 //
 // ## Import
@@ -1447,9 +1366,7 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 // Target Groups can be imported using their ARN, e.g.,
 //
 // ```sh
-//
-//	$ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
-//
+//  $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
 // ```
 type TargetGroup struct {
 	// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.
@@ -1491,7 +1408,7 @@ type TargetGroup struct {
 // TargetGroupInput is an input type that accepts TargetGroupArgs and TargetGroupOutput values.
 // You can construct a concrete instance of `TargetGroupInput` via:
 //
-//	TargetGroupArgs{...}
+//          TargetGroupArgs{...}
 type TargetGroupInput interface {
 	pulumi.Input
 
@@ -1509,118 +1426,106 @@ type TargetGroupInput interface {
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
-//				CidrBlock: pulumi.String("10.0.0.0/16"),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroupArgs{
-//				Port:     pulumi.Int(80),
-//				Protocol: pulumi.String("HTTP"),
-//				VpcId:    main.ID(),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(80),
+// 			Protocol: pulumi.String("HTTP"),
+// 			VpcId:    main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### IP Target Group
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
-//				CidrBlock: pulumi.String("10.0.0.0/16"),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroupArgs{
-//				Port:       pulumi.Int(80),
-//				Protocol:   pulumi.String("HTTP"),
-//				TargetType: pulumi.String("ip"),
-//				VpcId:      main.ID(),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroupArgs{
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("HTTP"),
+// 			TargetType: pulumi.String("ip"),
+// 			VpcId:      main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Lambda Target Group
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
-//				TargetType: pulumi.String("lambda"),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("lambda"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### ALB Target Group
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
-//				TargetType: pulumi.String("alb"),
-//				Port:       pulumi.Int(80),
-//				Protocol:   pulumi.String("TCP"),
-//				VpcId:      pulumi.Any(aws_vpc.Main.Id),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("alb"),
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("TCP"),
+// 			VpcId:      pulumi.Any(aws_vpc.Main.Id),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 //
 // ## Import
@@ -1628,9 +1533,7 @@ type TargetGroupInput interface {
 // Target Groups can be imported using their ARN, e.g.,
 //
 // ```sh
-//
-//	$ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
-//
+//  $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
 // ```
 type TargetGroupArgs struct {
 	// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.
@@ -1692,11 +1595,11 @@ func (i TargetGroupArgs) ToTargetGroupPtrOutputWithContext(ctx context.Context) 
 // TargetGroupPtrInput is an input type that accepts TargetGroupArgs, TargetGroupPtr and TargetGroupPtrOutput values.
 // You can construct a concrete instance of `TargetGroupPtrInput` via:
 //
-//	        TargetGroupArgs{...}
+//          TargetGroupArgs{...}
 //
-//	or:
+//  or:
 //
-//	        nil
+//          nil
 type TargetGroupPtrInput interface {
 	pulumi.Input
 
@@ -1732,118 +1635,106 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
-//				CidrBlock: pulumi.String("10.0.0.0/16"),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroupArgs{
-//				Port:     pulumi.Int(80),
-//				Protocol: pulumi.String("HTTP"),
-//				VpcId:    main.ID(),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "test", &lb.TargetGroupArgs{
+// 			Port:     pulumi.Int(80),
+// 			Protocol: pulumi.String("HTTP"),
+// 			VpcId:    main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### IP Target Group
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
-//				CidrBlock: pulumi.String("10.0.0.0/16"),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroupArgs{
-//				Port:       pulumi.Int(80),
-//				Protocol:   pulumi.String("HTTP"),
-//				TargetType: pulumi.String("ip"),
-//				VpcId:      main.ID(),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		main, err := ec2.NewVpc(ctx, "main", &ec2.VpcArgs{
+// 			CidrBlock: pulumi.String("10.0.0.0/16"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &lb.TargetGroupArgs{
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("HTTP"),
+// 			TargetType: pulumi.String("ip"),
+// 			VpcId:      main.ID(),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### Lambda Target Group
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
-//				TargetType: pulumi.String("lambda"),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("lambda"),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 // ### ALB Target Group
 // ```go
 // package main
 //
 // import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
+// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 // )
 //
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
-//				TargetType: pulumi.String("alb"),
-//				Port:       pulumi.Int(80),
-//				Protocol:   pulumi.String("TCP"),
-//				VpcId:      pulumi.Any(aws_vpc.Main.Id),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
+// func main() {
+// 	pulumi.Run(func(ctx *pulumi.Context) error {
+// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+// 			TargetType: pulumi.String("alb"),
+// 			Port:       pulumi.Int(80),
+// 			Protocol:   pulumi.String("TCP"),
+// 			VpcId:      pulumi.Any(aws_vpc.Main.Id),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// 	})
+// }
 // ```
 //
 // ## Import
@@ -1851,9 +1742,7 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 // Target Groups can be imported using their ARN, e.g.,
 //
 // ```sh
-//
-//	$ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
-//
+//  $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
 // ```
 type TargetGroupOutput struct{ *pulumi.OutputState }
 

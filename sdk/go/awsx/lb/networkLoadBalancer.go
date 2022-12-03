@@ -166,7 +166,7 @@ func (i *NetworkLoadBalancer) ToNetworkLoadBalancerOutputWithContext(ctx context
 // NetworkLoadBalancerArrayInput is an input type that accepts NetworkLoadBalancerArray and NetworkLoadBalancerArrayOutput values.
 // You can construct a concrete instance of `NetworkLoadBalancerArrayInput` via:
 //
-//	NetworkLoadBalancerArray{ NetworkLoadBalancerArgs{...} }
+//          NetworkLoadBalancerArray{ NetworkLoadBalancerArgs{...} }
 type NetworkLoadBalancerArrayInput interface {
 	pulumi.Input
 
@@ -191,7 +191,7 @@ func (i NetworkLoadBalancerArray) ToNetworkLoadBalancerArrayOutputWithContext(ct
 // NetworkLoadBalancerMapInput is an input type that accepts NetworkLoadBalancerMap and NetworkLoadBalancerMapOutput values.
 // You can construct a concrete instance of `NetworkLoadBalancerMapInput` via:
 //
-//	NetworkLoadBalancerMap{ "key": NetworkLoadBalancerArgs{...} }
+//          NetworkLoadBalancerMap{ "key": NetworkLoadBalancerArgs{...} }
 type NetworkLoadBalancerMapInput interface {
 	pulumi.Input
 

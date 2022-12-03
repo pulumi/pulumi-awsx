@@ -68,7 +68,7 @@ func (i *DefaultVpc) ToDefaultVpcOutputWithContext(ctx context.Context) DefaultV
 // DefaultVpcArrayInput is an input type that accepts DefaultVpcArray and DefaultVpcArrayOutput values.
 // You can construct a concrete instance of `DefaultVpcArrayInput` via:
 //
-//	DefaultVpcArray{ DefaultVpcArgs{...} }
+//          DefaultVpcArray{ DefaultVpcArgs{...} }
 type DefaultVpcArrayInput interface {
 	pulumi.Input
 
@@ -93,7 +93,7 @@ func (i DefaultVpcArray) ToDefaultVpcArrayOutputWithContext(ctx context.Context)
 // DefaultVpcMapInput is an input type that accepts DefaultVpcMap and DefaultVpcMapOutput values.
 // You can construct a concrete instance of `DefaultVpcMapInput` via:
 //
-//	DefaultVpcMap{ "key": DefaultVpcArgs{...} }
+//          DefaultVpcMap{ "key": DefaultVpcArgs{...} }
 type DefaultVpcMapInput interface {
 	pulumi.Input
 

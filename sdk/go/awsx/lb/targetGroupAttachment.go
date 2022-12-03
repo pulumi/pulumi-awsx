@@ -95,7 +95,7 @@ func (i *TargetGroupAttachment) ToTargetGroupAttachmentOutputWithContext(ctx con
 // TargetGroupAttachmentArrayInput is an input type that accepts TargetGroupAttachmentArray and TargetGroupAttachmentArrayOutput values.
 // You can construct a concrete instance of `TargetGroupAttachmentArrayInput` via:
 //
-//	TargetGroupAttachmentArray{ TargetGroupAttachmentArgs{...} }
+//          TargetGroupAttachmentArray{ TargetGroupAttachmentArgs{...} }
 type TargetGroupAttachmentArrayInput interface {
 	pulumi.Input
 
@@ -120,7 +120,7 @@ func (i TargetGroupAttachmentArray) ToTargetGroupAttachmentArrayOutputWithContex
 // TargetGroupAttachmentMapInput is an input type that accepts TargetGroupAttachmentMap and TargetGroupAttachmentMapOutput values.
 // You can construct a concrete instance of `TargetGroupAttachmentMapInput` via:
 //
-//	TargetGroupAttachmentMap{ "key": TargetGroupAttachmentArgs{...} }
+//          TargetGroupAttachmentMap{ "key": TargetGroupAttachmentArgs{...} }
 type TargetGroupAttachmentMapInput interface {
 	pulumi.Input
 
