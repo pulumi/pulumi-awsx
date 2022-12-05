@@ -149,6 +149,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{matrix.pythonversion}}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
@@ -173,7 +177,8 @@ jobs:
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Compress SDK folder
-        run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
+        run:
+          tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
           .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -202,6 +207,8 @@ jobs:
       matrix:
         goversion:
           - 1.19.x
+        dotnetversion:
+          - 3.1
         pythonversion:
           - 3.8
         nodeversion:

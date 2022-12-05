@@ -149,6 +149,10 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{matrix.pythonversion}}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
@@ -202,6 +206,8 @@ jobs:
       matrix:
         goversion:
           - 1.19.x
+        dotnetversion:
+          - 3.1
         pythonversion:
           - 3.8
         nodeversion:
@@ -289,6 +295,10 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.goversion }}
+      - name: Setup DotNet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{matrix.dotnetversion}}
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
@@ -352,6 +362,8 @@ jobs:
       matrix:
         goversion:
           - 1.19.x
+        dotnetversion:
+          - 3.1
         nodeversion:
           - 16.x
         pythonversion:
