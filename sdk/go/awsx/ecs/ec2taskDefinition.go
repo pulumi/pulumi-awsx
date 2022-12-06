@@ -172,7 +172,7 @@ func (i *EC2TaskDefinition) ToEC2TaskDefinitionOutputWithContext(ctx context.Con
 // EC2TaskDefinitionArrayInput is an input type that accepts EC2TaskDefinitionArray and EC2TaskDefinitionArrayOutput values.
 // You can construct a concrete instance of `EC2TaskDefinitionArrayInput` via:
 //
-//          EC2TaskDefinitionArray{ EC2TaskDefinitionArgs{...} }
+//	EC2TaskDefinitionArray{ EC2TaskDefinitionArgs{...} }
 type EC2TaskDefinitionArrayInput interface {
 	pulumi.Input
 
@@ -197,7 +197,7 @@ func (i EC2TaskDefinitionArray) ToEC2TaskDefinitionArrayOutputWithContext(ctx co
 // EC2TaskDefinitionMapInput is an input type that accepts EC2TaskDefinitionMap and EC2TaskDefinitionMapOutput values.
 // You can construct a concrete instance of `EC2TaskDefinitionMapInput` via:
 //
-//          EC2TaskDefinitionMap{ "key": EC2TaskDefinitionArgs{...} }
+//	EC2TaskDefinitionMap{ "key": EC2TaskDefinitionArgs{...} }
 type EC2TaskDefinitionMapInput interface {
 	pulumi.Input
 

@@ -1336,7 +1336,6 @@ export namespace ecs {
         readOnly?: pulumi.Input<boolean>;
         sourceContainer?: pulumi.Input<string>;
     }
-
 }
 
 export namespace lb {

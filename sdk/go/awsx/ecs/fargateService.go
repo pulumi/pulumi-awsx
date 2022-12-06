@@ -166,7 +166,7 @@ func (i *FargateService) ToFargateServiceOutputWithContext(ctx context.Context) 
 // FargateServiceArrayInput is an input type that accepts FargateServiceArray and FargateServiceArrayOutput values.
 // You can construct a concrete instance of `FargateServiceArrayInput` via:
 //
-//          FargateServiceArray{ FargateServiceArgs{...} }
+//	FargateServiceArray{ FargateServiceArgs{...} }
 type FargateServiceArrayInput interface {
 	pulumi.Input
 
@@ -191,7 +191,7 @@ func (i FargateServiceArray) ToFargateServiceArrayOutputWithContext(ctx context.
 // FargateServiceMapInput is an input type that accepts FargateServiceMap and FargateServiceMapOutput values.
 // You can construct a concrete instance of `FargateServiceMapInput` via:
 //
-//          FargateServiceMap{ "key": FargateServiceArgs{...} }
+//	FargateServiceMap{ "key": FargateServiceArgs{...} }
 type FargateServiceMapInput interface {
 	pulumi.Input
 

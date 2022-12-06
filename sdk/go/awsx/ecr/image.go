@@ -102,7 +102,7 @@ func (i *Image) ToImageOutputWithContext(ctx context.Context) ImageOutput {
 // ImageArrayInput is an input type that accepts ImageArray and ImageArrayOutput values.
 // You can construct a concrete instance of `ImageArrayInput` via:
 //
-//          ImageArray{ ImageArgs{...} }
+//	ImageArray{ ImageArgs{...} }
 type ImageArrayInput interface {
 	pulumi.Input
 
@@ -127,7 +127,7 @@ func (i ImageArray) ToImageArrayOutputWithContext(ctx context.Context) ImageArra
 // ImageMapInput is an input type that accepts ImageMap and ImageMapOutput values.
 // You can construct a concrete instance of `ImageMapInput` via:
 //
-//          ImageMap{ "key": ImageArgs{...} }
+//	ImageMap{ "key": ImageArgs{...} }
 type ImageMapInput interface {
 	pulumi.Input
 

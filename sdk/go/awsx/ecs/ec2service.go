@@ -166,7 +166,7 @@ func (i *EC2Service) ToEC2ServiceOutputWithContext(ctx context.Context) EC2Servi
 // EC2ServiceArrayInput is an input type that accepts EC2ServiceArray and EC2ServiceArrayOutput values.
 // You can construct a concrete instance of `EC2ServiceArrayInput` via:
 //
-//          EC2ServiceArray{ EC2ServiceArgs{...} }
+//	EC2ServiceArray{ EC2ServiceArgs{...} }
 type EC2ServiceArrayInput interface {
 	pulumi.Input
 
@@ -191,7 +191,7 @@ func (i EC2ServiceArray) ToEC2ServiceArrayOutputWithContext(ctx context.Context)
 // EC2ServiceMapInput is an input type that accepts EC2ServiceMap and EC2ServiceMapOutput values.
 // You can construct a concrete instance of `EC2ServiceMapInput` via:
 //
-//          EC2ServiceMap{ "key": EC2ServiceArgs{...} }
+//	EC2ServiceMap{ "key": EC2ServiceArgs{...} }
 type EC2ServiceMapInput interface {
 	pulumi.Input
 
