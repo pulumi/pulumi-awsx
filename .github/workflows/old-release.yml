@@ -25,7 +25,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: ${{matrix.nodeversion}}
+          node-version: ${{env.NODEVERSION}}
           registry-url: https://registry.npmjs.org
       - name: Install Yarn
         run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
@@ -51,7 +51,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.goversion }}
+          go-version: ${{ env.GOVERSION }}
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
@@ -61,14 +61,15 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: ${{matrix.nodeversion}}
+          node-version: ${{env.NODEVERSION}}
           registry-url: https://registry.npmjs.org
       - name: Build SDK
         run: make --makefile=Makefile.old build_${{ matrix.language }}
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Compress SDK folder
-        run: tar -zcf ${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{ matrix.language }}/awsx
+        run:
+          tar -zcf ${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{ matrix.language }}/awsx
           .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -77,15 +78,6 @@ jobs:
           path: ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz
       - name: Run SDK tests
         run: make --makefile=Makefile.old istanbul_tests
-    strategy:
-      fail-fast: true
-      matrix:
-        goversion:
-          - 1.16.x
-        language:
-          - nodejs
-        nodeversion:
-          - 13.x
   publish_sdk:
     name: publish_sdk
     needs: test
@@ -103,7 +95,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.goversion }}
+          go-version: ${{ env.GOVERSION }}
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
@@ -157,7 +149,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.goversion }}
+          go-version: ${{ env.GOVERSION }}
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
@@ -167,7 +159,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: ${{matrix.nodeversion}}
+          node-version: ${{env.NODEVERSION}}
           registry-url: https://registry.npmjs.org
       - name: Download SDK
         uses: actions/download-artifact@v2
@@ -175,7 +167,8 @@ jobs:
           name: ${{ matrix.language }}-sdk.tar.gz
           path: ${{ github.workspace}}/${{ matrix.language }}/
       - name: Uncompress SDK folder
-        run: tar -zxf ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{
+        run:
+          tar -zxf ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{
           github.workspace}}/${{ matrix.language}}/awsx
       - name: Install dependencies
         run: make --makefile=Makefile.old install_${{ matrix.language}}_sdk
@@ -190,15 +183,6 @@ jobs:
           role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
       - name: Run tests
         run: make --makefile=Makefile.old test_${{ matrix.language}}
-    strategy:
-      fail-fast: true
-      matrix:
-        goversion:
-          - 1.16.x
-        language:
-          - nodejs
-        nodeversion:
-          - 13.x
 name: release
 "on":
   push:
