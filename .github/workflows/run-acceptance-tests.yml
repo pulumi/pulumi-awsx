@@ -232,6 +232,8 @@ jobs:
       matrix:
         goversion:
           - 1.19.x
+        dotnetversion:
+          - 6.0
         pythonversion:
           - 3.8
         nodeversion:

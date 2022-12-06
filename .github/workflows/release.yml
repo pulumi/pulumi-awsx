@@ -206,7 +206,7 @@ jobs:
         goversion:
           - 1.19.x
         dotnetversion:
-          - 3.1
+          - 6.0
         pythonversion:
           - 3.8
         nodeversion:
@@ -361,7 +361,7 @@ jobs:
         goversion:
           - 1.19.x
         dotnetversion:
-          - 3.1
+          - 6.0
         nodeversion:
           - 16.x
         pythonversion:
@@ -400,5 +400,5 @@ name: release
   push:
     tags:
       - v*.*.*
-      - '!v*.*.*-**'
-      - '!v0.x.x'
+      - "!v*.*.*-**"
+      - "!v0.x.x"

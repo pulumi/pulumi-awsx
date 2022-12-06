@@ -207,7 +207,7 @@ jobs:
         goversion:
           - 1.19.x
         dotnetversion:
-          - 3.1
+          - 6.0
         pythonversion:
           - 3.8
         nodeversion:
@@ -363,7 +363,7 @@ jobs:
         goversion:
           - 1.19.x
         dotnetversion:
-          - 3.1
+          - 6.0
         nodeversion:
           - 16.x
         pythonversion:

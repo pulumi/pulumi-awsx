@@ -177,8 +177,7 @@ jobs:
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Compress SDK folder
-        run:
-          tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
+        run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
           .
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -208,7 +207,7 @@ jobs:
         goversion:
           - 1.19.x
         dotnetversion:
-          - 3.1
+          - 6.0
         pythonversion:
           - 3.8
         nodeversion:
