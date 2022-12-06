@@ -40,6 +40,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 
 	packageSpec := schema.PackageSpec{
 		Name:        "awsx",
+		DisplayName: "AWSx (Pulumi Crosswalk for AWS)",
 		Description: "Pulumi Amazon Web Services (AWS) AWSX Components.",
 		License:     "Apache-2.0",
 		Publisher:   "Pulumi",

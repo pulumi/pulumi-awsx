@@ -1,5 +1,6 @@
 {
     "name": "awsx",
+    "displayName": "AWSx (Pulumi Crosswalk for AWS)",
     "description": "Pulumi Amazon Web Services (AWS) AWSX Components.",
     "keywords": [
         "pulumi",
