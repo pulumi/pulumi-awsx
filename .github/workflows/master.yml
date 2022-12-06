@@ -18,6 +18,11 @@ env:
   SIGNING_KEY_ID: ${{ secrets.JAVA_SIGNING_KEY_ID }}
   SIGNING_PASSWORD: ${{ secrets.JAVA_SIGNING_PASSWORD }}
   VERSION_PREFIX: 1.0.0
+  GOVERSION: "1.19.x"
+  DOTNETVERSION: "6.0"
+  PYTHONVERSION: "3.8"
+  NODEVERSION: "16.x"
+  JAVAVERSION: "11"
 jobs:
   lint:
     name: lint
@@ -69,11 +74,11 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.goversion }}
+          go-version: ${{ env.GOVERSION }}
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: ${{matrix.nodeversion}}
+          node-version: ${{env.NODEVERSION}}
           registry-url: https://registry.npmjs.org
       - name: Install Yarn
         run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
@@ -110,13 +115,6 @@ jobs:
           author_name: Failure in building provider
           fields: repo,commit,author,action
           status: ${{ job.status }}
-    strategy:
-      fail-fast: false
-      matrix:
-        goversion:
-          - 1.19.x
-        nodeversion:
-          - 16.x
   acceptance-test:
     needs: build-provider
     runs-on: ubuntu-latest
@@ -139,26 +137,26 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.goversion }}
+          go-version: ${{ env.GOVERSION }}
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
-          node-version: ${{matrix.nodeversion}}
+          node-version: ${{env.NODEVERSION}}
           registry-url: https://registry.npmjs.org
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{matrix.pythonversion}}
+          python-version: ${{env.PYTHONVERSION}}
       - name: Setup DotNet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{matrix.dotnetversion}}
+          dotnet-version: ${{env.DOTNETVERSION}}
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           cache: gradle
           distribution: temurin
-          java-version: ${{matrix.javaversion}}
+          java-version: ${{env.JAVAVERSION}}
       - name: Install Python deps
         run: |-
           pip3 install virtualenv==20.0.23
@@ -204,16 +202,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        goversion:
-          - 1.19.x
-        dotnetversion:
-          - 6.0
-        pythonversion:
-          - 3.8
-        nodeversion:
-          - 16.x
-        javaversion:
-          - 11
         language:
           - nodejs
           - python
@@ -286,27 +274,27 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
-          go-version: ${{ matrix.goversion }}
+          go-version: ${{ env.GOVERSION }}
       - name: Setup DotNet
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{matrix.dotnetversion}}
+          dotnet-version: ${{env.DOTNETVERSION}}
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
           always-auth: true
           registry-url: https://registry.npmjs.org
-          node-version: ${{matrix.nodeversion}}
+          node-version: ${{env.NODEVERSION}}
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: ${{matrix.pythonversion}}
+          python-version: ${{env.PYTHONVERSION}}
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           cache: gradle
           distribution: temurin
-          java-version: ${{matrix.javaversion}}
+          java-version: ${{env.JAVAVERSION}}
       - name: Download python SDK
         uses: actions/download-artifact@v2
         with:
@@ -349,19 +337,6 @@ jobs:
           arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository
           build-root-directory: ./sdk/java
           gradle-version: 7.4.1
-    strategy:
-      fail-fast: false
-      matrix:
-        goversion:
-          - 1.19.x
-        dotnetversion:
-          - 6.0
-        nodeversion:
-          - 16.x
-        pythonversion:
-          - "3.7"
-        javaversion:
-          - 11
 name: master
 "on":
   push:
