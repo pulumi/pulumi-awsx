@@ -12,7 +12,6 @@ CHANGELOG
 * Change the behavior of `ecs.FargateTaskDefinition` and `ecs.EC2TaskDefinition` to always respect the passed-in
   `hostPort`, regardless of the target group's port.
 * Python: Bump the min required version of `pulumi` PyPi package to 3.47.2.
-* CI: command-dispatch - slash-command-dispatch update to v3
 
 ## 0.40.0 (2022-03-24)
 * Compatibility with pulumi-aws v5.0.0
