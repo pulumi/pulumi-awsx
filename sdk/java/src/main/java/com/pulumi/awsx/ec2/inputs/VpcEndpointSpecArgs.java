@@ -3,6 +3,7 @@
 
 package com.pulumi.awsx.ec2.inputs;
 
+import com.pulumi.aws.ec2.inputs.VpcEndpointDnsOptionsArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.Boolean;
@@ -20,10 +21,17 @@ import javax.annotation.Nullable;
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -32,21 +40,28 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var s3 = new VpcEndpoint(&#34;s3&#34;, VpcEndpointArgs.builder()        
- *             .vpcId(aws_vpc.getMain().getId())
+ *             .vpcId(aws_vpc.main().id())
  *             .serviceName(&#34;com.amazonaws.us-west-2.s3&#34;)
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * ### Basic w/ Tags
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -55,22 +70,29 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var s3 = new VpcEndpoint(&#34;s3&#34;, VpcEndpointArgs.builder()        
- *             .vpcId(aws_vpc.getMain().getId())
+ *             .vpcId(aws_vpc.main().id())
  *             .serviceName(&#34;com.amazonaws.us-west-2.s3&#34;)
  *             .tags(Map.of(&#34;Environment&#34;, &#34;test&#34;))
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * ### Interface Endpoint Type
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -79,24 +101,34 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var ec2 = new VpcEndpoint(&#34;ec2&#34;, VpcEndpointArgs.builder()        
- *             .vpcId(aws_vpc.getMain().getId())
+ *             .vpcId(aws_vpc.main().id())
  *             .serviceName(&#34;com.amazonaws.us-west-2.ec2&#34;)
  *             .vpcEndpointType(&#34;Interface&#34;)
- *             .securityGroupIds(aws_security_group.getSg1().getId())
+ *             .securityGroupIds(aws_security_group.sg1().id())
  *             .privateDnsEnabled(true)
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * ### Gateway Load Balancer Endpoint Type
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.AwsFunctions;
+ * import com.pulumi.aws.ec2.VpcEndpointService;
+ * import com.pulumi.aws.ec2.VpcEndpointServiceArgs;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -104,22 +136,22 @@ import javax.annotation.Nullable;
  *     }
  * 
  *     public static void stack(Context ctx) {
- *         final var current = Output.of(AwsFunctions.getCallerIdentity());
+ *         final var current = AwsFunctions.getCallerIdentity();
  * 
  *         var exampleVpcEndpointService = new VpcEndpointService(&#34;exampleVpcEndpointService&#34;, VpcEndpointServiceArgs.builder()        
  *             .acceptanceRequired(false)
- *             .allowedPrincipals(current.apply(getCallerIdentityResult -&gt; getCallerIdentityResult.getArn()))
- *             .gatewayLoadBalancerArns(aws_lb.getExample().getArn())
+ *             .allowedPrincipals(current.applyValue(getCallerIdentityResult -&gt; getCallerIdentityResult.arn()))
+ *             .gatewayLoadBalancerArns(aws_lb.example().arn())
  *             .build());
  * 
  *         var exampleVpcEndpoint = new VpcEndpoint(&#34;exampleVpcEndpoint&#34;, VpcEndpointArgs.builder()        
- *             .serviceName(exampleVpcEndpointService.getServiceName())
- *             .subnetIds(aws_subnet.getExample().getId())
- *             .vpcEndpointType(exampleVpcEndpointService.getServiceType())
- *             .vpcId(aws_vpc.getExample().getId())
+ *             .serviceName(exampleVpcEndpointService.serviceName())
+ *             .subnetIds(aws_subnet.example().id())
+ *             .vpcEndpointType(exampleVpcEndpointService.serviceType())
+ *             .vpcId(aws_vpc.example().id())
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * 
@@ -149,6 +181,36 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
      */
     public Optional<Boolean> autoAccept() {
         return Optional.ofNullable(this.autoAccept);
+    }
+
+    /**
+     * The DNS options for the endpoint. See dns_options below.
+     * 
+     */
+    @Import(name="dnsOptions")
+    private @Nullable Output<VpcEndpointDnsOptionsArgs> dnsOptions;
+
+    /**
+     * @return The DNS options for the endpoint. See dns_options below.
+     * 
+     */
+    public Optional<Output<VpcEndpointDnsOptionsArgs>> dnsOptions() {
+        return Optional.ofNullable(this.dnsOptions);
+    }
+
+    /**
+     * The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+     * 
+     */
+    @Import(name="ipAddressType")
+    private @Nullable Output<String> ipAddressType;
+
+    /**
+     * @return The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+     * 
+     */
+    public Optional<Output<String>> ipAddressType() {
+        return Optional.ofNullable(this.ipAddressType);
     }
 
     /**
@@ -277,6 +339,8 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
 
     private VpcEndpointSpecArgs(VpcEndpointSpecArgs $) {
         this.autoAccept = $.autoAccept;
+        this.dnsOptions = $.dnsOptions;
+        this.ipAddressType = $.ipAddressType;
         this.policy = $.policy;
         this.privateDnsEnabled = $.privateDnsEnabled;
         this.routeTableIds = $.routeTableIds;
@@ -314,6 +378,48 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         public Builder autoAccept(@Nullable Boolean autoAccept) {
             $.autoAccept = autoAccept;
             return this;
+        }
+
+        /**
+         * @param dnsOptions The DNS options for the endpoint. See dns_options below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder dnsOptions(@Nullable Output<VpcEndpointDnsOptionsArgs> dnsOptions) {
+            $.dnsOptions = dnsOptions;
+            return this;
+        }
+
+        /**
+         * @param dnsOptions The DNS options for the endpoint. See dns_options below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder dnsOptions(VpcEndpointDnsOptionsArgs dnsOptions) {
+            return dnsOptions(Output.of(dnsOptions));
+        }
+
+        /**
+         * @param ipAddressType The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder ipAddressType(@Nullable Output<String> ipAddressType) {
+            $.ipAddressType = ipAddressType;
+            return this;
+        }
+
+        /**
+         * @param ipAddressType The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder ipAddressType(String ipAddressType) {
+            return ipAddressType(Output.of(ipAddressType));
         }
 
         /**

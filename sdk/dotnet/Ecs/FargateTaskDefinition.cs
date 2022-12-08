@@ -185,6 +185,9 @@ namespace Pulumi.Awsx.Ecs
         [Input("runtimePlatform")]
         public Input<Pulumi.Aws.Ecs.Inputs.TaskDefinitionRuntimePlatformArgs>? RuntimePlatform { get; set; }
 
+        /// <summary>
+        /// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+        /// </summary>
         [Input("skipDestroy")]
         public Input<bool>? SkipDestroy { get; set; }
 
@@ -192,7 +195,7 @@ namespace Pulumi.Awsx.Ecs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Key-value map of resource tags.
+        /// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {

@@ -86,8 +86,9 @@ type ec2taskDefinitionArgs struct {
 	ProxyConfiguration *ecs.TaskDefinitionProxyConfiguration `pulumi:"proxyConfiguration"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform *ecs.TaskDefinitionRuntimePlatform `pulumi:"runtimePlatform"`
-	SkipDestroy     *bool                              `pulumi:"skipDestroy"`
-	// Key-value map of resource tags.
+	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+	SkipDestroy *bool `pulumi:"skipDestroy"`
+	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
@@ -136,8 +137,9 @@ type EC2TaskDefinitionArgs struct {
 	ProxyConfiguration ecs.TaskDefinitionProxyConfigurationPtrInput
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform ecs.TaskDefinitionRuntimePlatformPtrInput
-	SkipDestroy     pulumi.BoolPtrInput
-	// Key-value map of resource tags.
+	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+	SkipDestroy pulumi.BoolPtrInput
+	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
