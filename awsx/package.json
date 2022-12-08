@@ -20,8 +20,8 @@
     "tsc": "tsc --incremental"
   },
   "dependencies": {
-    "@pulumi/aws": "5.4.0",
-    "@pulumi/docker": "3.2.0",
+    "@pulumi/aws": "^5.4.0",
+    "@pulumi/docker": "^3.6.1",
     "@pulumi/pulumi": "^3.34.0",
     "@types/aws-lambda": "^8.10.23",
     "ip-address": "^8.1.0",

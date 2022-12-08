@@ -1313,10 +1313,10 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.8.0.tgz#fe2aa90e6df050a11cd57f5c0f47b0641fd2cad3"
   integrity sha512-TYh1MRcm4JnvpqtqOwT9WYaBYY4KERHdToxs/suDTLviGRsQkIjS5yYROTYTSJQUnYLOn/TuOh5GoMwfLSU+Ew==
 
-"@pulumi/aws@5.4.0":
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-5.4.0.tgz#8ba2b5ae13b0623b85c8c5e48dde510b8a8cbf43"
-  integrity sha512-98LnB+0CHM5xViIWD9Cs6P+lzLHvHVDw9EYVOOlNMA84pjid12f4vGBkxh3witritYVp5wpIEAaAKL3+3tUs4Q==
+"@pulumi/aws@^5.4.0":
+  version "5.23.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-5.23.0.tgz#97993123bf32b3807d03348b64887b1deee977cb"
+  integrity sha512-FlH3wwdsjPz/hd3Cm0Bnwndy1XdMlxBpwXzU0Zs3xnWXlFBJ4dYBRbdUfEYB3P9+c2cD6xBDlAeyDrH3mgpkjA==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     aws-sdk "^2.0.0"
@@ -1325,10 +1325,10 @@
     read-package-tree "^5.2.1"
     resolve "^1.7.1"
 
-"@pulumi/docker@3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-3.2.0.tgz#bbfeccb6dbf4a522e844f4de889c822cf0743ee1"
-  integrity sha512-Mm8xz1vMhuxOOtyCU/V2Py7QW+M6zMxPBBtTjKzvWBYxLe8cygh12+EjCDFK6E9X+x3mV+ZrEkon+JY93kQWhw==
+"@pulumi/docker@^3.6.1":
+  version "3.6.1"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-3.6.1.tgz#a216c9bd2bbd35dd7091db2827a3a434adff021c"
+  integrity sha512-BZME50QkT556v+LvmTXPT8ssB2xxNkp9+msB5xYFEnUnWcdGAx5yUysQw70RJCb+U0GbkJSbxtlgMJgOQf/now==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     semver "^5.4.0"
