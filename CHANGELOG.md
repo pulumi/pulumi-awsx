@@ -1,9 +1,9 @@
 CHANGELOG
 =========
 
-## Unreleased
+## 1.0.1 (2022-12-08)
 
-* Upgrade internal provider dependencies to fix firewall prompts
+* Upgrade internal provider dependencies to fix firewall prompts [#962](https://github.com/pulumi/pulumi-awsx/issues/962)
 
 ## 1.0.0 (2022-11-23)
 
