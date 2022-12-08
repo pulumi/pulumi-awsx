@@ -13,8 +13,8 @@
         "lint": "tslint -c tslint.json -p tsconfig.json"
     },
     "dependencies": {
-        "@pulumi/aws": "^5.4.0",
-        "@pulumi/docker": "^3.6.1",
+        "@pulumi/aws": "5.23.0",
+        "@pulumi/docker": "3.6.1",
         "@pulumi/pulumi": "^3.34.0",
         "aws-lambda": "^1.0.7",
         "mime": "^3.0.0"
