@@ -72,7 +72,11 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
      * for the VPC. Only valid in regions and accounts that support EC2 Classic.
      * See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
      * 
+     * @deprecated
+     * With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
+     * 
      */
+    @Deprecated /* With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version. */
     @Import(name="enableClassiclink")
     private @Nullable Output<Boolean> enableClassiclink;
 
@@ -81,7 +85,11 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
      * for the VPC. Only valid in regions and accounts that support EC2 Classic.
      * See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
      * 
+     * @deprecated
+     * With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
+     * 
      */
+    @Deprecated /* With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version. */
     public Optional<Output<Boolean>> enableClassiclink() {
         return Optional.ofNullable(this.enableClassiclink);
     }
@@ -90,7 +98,11 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
      * A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
      * Only valid in regions and accounts that support EC2 Classic.
      * 
+     * @deprecated
+     * With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
+     * 
      */
+    @Deprecated /* With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version. */
     @Import(name="enableClassiclinkDnsSupport")
     private @Nullable Output<Boolean> enableClassiclinkDnsSupport;
 
@@ -98,7 +110,11 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
      * @return A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
      * Only valid in regions and accounts that support EC2 Classic.
      * 
+     * @deprecated
+     * With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
+     * 
      */
+    @Deprecated /* With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version. */
     public Optional<Output<Boolean>> enableClassiclinkDnsSupport() {
         return Optional.ofNullable(this.enableClassiclinkDnsSupport);
     }
@@ -119,18 +135,33 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * A boolean flag to enable/disable DNS support in the VPC. Defaults true.
+     * A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
      * 
      */
     @Import(name="enableDnsSupport")
     private @Nullable Output<Boolean> enableDnsSupport;
 
     /**
-     * @return A boolean flag to enable/disable DNS support in the VPC. Defaults true.
+     * @return A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
      * 
      */
     public Optional<Output<Boolean>> enableDnsSupport() {
         return Optional.ofNullable(this.enableDnsSupport);
+    }
+
+    /**
+     * Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+     * 
+     */
+    @Import(name="enableNetworkAddressUsageMetrics")
+    private @Nullable Output<Boolean> enableNetworkAddressUsageMetrics;
+
+    /**
+     * @return Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+     * 
+     */
+    public Optional<Output<Boolean>> enableNetworkAddressUsageMetrics() {
+        return Optional.ofNullable(this.enableNetworkAddressUsageMetrics);
     }
 
     /**
@@ -323,6 +354,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         this.enableClassiclinkDnsSupport = $.enableClassiclinkDnsSupport;
         this.enableDnsHostnames = $.enableDnsHostnames;
         this.enableDnsSupport = $.enableDnsSupport;
+        this.enableNetworkAddressUsageMetrics = $.enableNetworkAddressUsageMetrics;
         this.instanceTenancy = $.instanceTenancy;
         this.ipv4IpamPoolId = $.ipv4IpamPoolId;
         this.ipv4NetmaskLength = $.ipv4NetmaskLength;
@@ -415,7 +447,11 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          * 
          * @return builder
          * 
+         * @deprecated
+         * With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
+         * 
          */
+        @Deprecated /* With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version. */
         public Builder enableClassiclink(@Nullable Output<Boolean> enableClassiclink) {
             $.enableClassiclink = enableClassiclink;
             return this;
@@ -428,7 +464,11 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          * 
          * @return builder
          * 
+         * @deprecated
+         * With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
+         * 
          */
+        @Deprecated /* With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version. */
         public Builder enableClassiclink(Boolean enableClassiclink) {
             return enableClassiclink(Output.of(enableClassiclink));
         }
@@ -439,7 +479,11 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          * 
          * @return builder
          * 
+         * @deprecated
+         * With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
+         * 
          */
+        @Deprecated /* With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version. */
         public Builder enableClassiclinkDnsSupport(@Nullable Output<Boolean> enableClassiclinkDnsSupport) {
             $.enableClassiclinkDnsSupport = enableClassiclinkDnsSupport;
             return this;
@@ -451,7 +495,11 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          * 
          * @return builder
          * 
+         * @deprecated
+         * With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
+         * 
          */
+        @Deprecated /* With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version. */
         public Builder enableClassiclinkDnsSupport(Boolean enableClassiclinkDnsSupport) {
             return enableClassiclinkDnsSupport(Output.of(enableClassiclinkDnsSupport));
         }
@@ -478,7 +526,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults true.
+         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
          * 
          * @return builder
          * 
@@ -489,13 +537,34 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults true.
+         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
          * 
          * @return builder
          * 
          */
         public Builder enableDnsSupport(Boolean enableDnsSupport) {
             return enableDnsSupport(Output.of(enableDnsSupport));
+        }
+
+        /**
+         * @param enableNetworkAddressUsageMetrics Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableNetworkAddressUsageMetrics(@Nullable Output<Boolean> enableNetworkAddressUsageMetrics) {
+            $.enableNetworkAddressUsageMetrics = enableNetworkAddressUsageMetrics;
+            return this;
+        }
+
+        /**
+         * @param enableNetworkAddressUsageMetrics Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableNetworkAddressUsageMetrics(Boolean enableNetworkAddressUsageMetrics) {
+            return enableNetworkAddressUsageMetrics(Output.of(enableNetworkAddressUsageMetrics));
         }
 
         /**

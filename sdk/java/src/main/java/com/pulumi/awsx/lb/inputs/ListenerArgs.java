@@ -25,10 +25,20 @@ import javax.annotation.Nullable;
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lb.LoadBalancer;
+ * import com.pulumi.aws.lb.TargetGroup;
+ * import com.pulumi.aws.lb.Listener;
+ * import com.pulumi.aws.lb.ListenerArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -41,18 +51,18 @@ import javax.annotation.Nullable;
  *         var frontEndTargetGroup = new TargetGroup(&#34;frontEndTargetGroup&#34;);
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
- *             .loadBalancerArn(frontEndLoadBalancer.getArn())
+ *             .loadBalancerArn(frontEndLoadBalancer.arn())
  *             .port(&#34;443&#34;)
  *             .protocol(&#34;HTTPS&#34;)
  *             .sslPolicy(&#34;ELBSecurityPolicy-2016-08&#34;)
  *             .certificateArn(&#34;arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4&#34;)
- *             .defaultActions(ListenerDefaultAction.builder()
+ *             .defaultActions(ListenerDefaultActionArgs.builder()
  *                 .type(&#34;forward&#34;)
- *                 .targetGroupArn(frontEndTargetGroup.getArn())
+ *                 .targetGroupArn(frontEndTargetGroup.arn())
  *                 .build())
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * 
@@ -60,10 +70,18 @@ import javax.annotation.Nullable;
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lb.Listener;
+ * import com.pulumi.aws.lb.ListenerArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -72,28 +90,38 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var frontEnd = new Listener(&#34;frontEnd&#34;, ListenerArgs.builder()        
- *             .loadBalancerArn(aws_lb.getFront_end().getArn())
+ *             .loadBalancerArn(aws_lb.front_end().arn())
  *             .port(&#34;443&#34;)
  *             .protocol(&#34;TLS&#34;)
  *             .certificateArn(&#34;arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4&#34;)
  *             .alpnPolicy(&#34;HTTP2Preferred&#34;)
- *             .defaultActions(ListenerDefaultAction.builder()
+ *             .defaultActions(ListenerDefaultActionArgs.builder()
  *                 .type(&#34;forward&#34;)
- *                 .targetGroupArn(aws_lb_target_group.getFront_end().getArn())
+ *                 .targetGroupArn(aws_lb_target_group.front_end().arn())
  *                 .build())
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * ### Redirect Action
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lb.LoadBalancer;
+ * import com.pulumi.aws.lb.Listener;
+ * import com.pulumi.aws.lb.ListenerArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionRedirectArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -104,12 +132,12 @@ import javax.annotation.Nullable;
  *         var frontEndLoadBalancer = new LoadBalancer(&#34;frontEndLoadBalancer&#34;);
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
- *             .loadBalancerArn(frontEndLoadBalancer.getArn())
+ *             .loadBalancerArn(frontEndLoadBalancer.arn())
  *             .port(&#34;80&#34;)
  *             .protocol(&#34;HTTP&#34;)
- *             .defaultActions(ListenerDefaultAction.builder()
+ *             .defaultActions(ListenerDefaultActionArgs.builder()
  *                 .type(&#34;redirect&#34;)
- *                 .redirect(ListenerDefaultActionRedirect.builder()
+ *                 .redirect(ListenerDefaultActionRedirectArgs.builder()
  *                     .port(&#34;443&#34;)
  *                     .protocol(&#34;HTTPS&#34;)
  *                     .statusCode(&#34;HTTP_301&#34;)
@@ -117,17 +145,27 @@ import javax.annotation.Nullable;
  *                 .build())
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * ### Fixed-response Action
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lb.LoadBalancer;
+ * import com.pulumi.aws.lb.Listener;
+ * import com.pulumi.aws.lb.ListenerArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionFixedResponseArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -138,12 +176,12 @@ import javax.annotation.Nullable;
  *         var frontEndLoadBalancer = new LoadBalancer(&#34;frontEndLoadBalancer&#34;);
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
- *             .loadBalancerArn(frontEndLoadBalancer.getArn())
+ *             .loadBalancerArn(frontEndLoadBalancer.arn())
  *             .port(&#34;80&#34;)
  *             .protocol(&#34;HTTP&#34;)
- *             .defaultActions(ListenerDefaultAction.builder()
+ *             .defaultActions(ListenerDefaultActionArgs.builder()
  *                 .type(&#34;fixed-response&#34;)
- *                 .fixedResponse(ListenerDefaultActionFixedResponse.builder()
+ *                 .fixedResponse(ListenerDefaultActionFixedResponseArgs.builder()
  *                     .contentType(&#34;text/plain&#34;)
  *                     .messageBody(&#34;Fixed response content&#34;)
  *                     .statusCode(&#34;200&#34;)
@@ -151,17 +189,31 @@ import javax.annotation.Nullable;
  *                 .build())
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * ### Authenticate-cognito Action
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lb.LoadBalancer;
+ * import com.pulumi.aws.lb.TargetGroup;
+ * import com.pulumi.aws.cognito.UserPool;
+ * import com.pulumi.aws.cognito.UserPoolClient;
+ * import com.pulumi.aws.cognito.UserPoolDomain;
+ * import com.pulumi.aws.lb.Listener;
+ * import com.pulumi.aws.lb.ListenerArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateCognitoArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -180,35 +232,46 @@ import javax.annotation.Nullable;
  *         var domain = new UserPoolDomain(&#34;domain&#34;);
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
- *             .loadBalancerArn(frontEndLoadBalancer.getArn())
+ *             .loadBalancerArn(frontEndLoadBalancer.arn())
  *             .port(&#34;80&#34;)
  *             .protocol(&#34;HTTP&#34;)
  *             .defaultActions(            
- *                 ListenerDefaultAction.builder()
+ *                 ListenerDefaultActionArgs.builder()
  *                     .type(&#34;authenticate-cognito&#34;)
- *                     .authenticateCognito(ListenerDefaultActionAuthenticateCognito.builder()
- *                         .userPoolArn(pool.getArn())
- *                         .userPoolClientId(client.getId())
- *                         .userPoolDomain(domain.getDomain())
+ *                     .authenticateCognito(ListenerDefaultActionAuthenticateCognitoArgs.builder()
+ *                         .userPoolArn(pool.arn())
+ *                         .userPoolClientId(client.id())
+ *                         .userPoolDomain(domain.domain())
  *                         .build())
  *                     .build(),
- *                 ListenerDefaultAction.builder()
+ *                 ListenerDefaultActionArgs.builder()
  *                     .type(&#34;forward&#34;)
- *                     .targetGroupArn(frontEndTargetGroup.getArn())
+ *                     .targetGroupArn(frontEndTargetGroup.arn())
  *                     .build())
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * ### Authenticate-OIDC Action
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lb.LoadBalancer;
+ * import com.pulumi.aws.lb.TargetGroup;
+ * import com.pulumi.aws.lb.Listener;
+ * import com.pulumi.aws.lb.ListenerArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateOidcArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -221,13 +284,13 @@ import javax.annotation.Nullable;
  *         var frontEndTargetGroup = new TargetGroup(&#34;frontEndTargetGroup&#34;);
  * 
  *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
- *             .loadBalancerArn(frontEndLoadBalancer.getArn())
+ *             .loadBalancerArn(frontEndLoadBalancer.arn())
  *             .port(&#34;80&#34;)
  *             .protocol(&#34;HTTP&#34;)
  *             .defaultActions(            
- *                 ListenerDefaultAction.builder()
+ *                 ListenerDefaultActionArgs.builder()
  *                     .type(&#34;authenticate-oidc&#34;)
- *                     .authenticateOidc(ListenerDefaultActionAuthenticateOidc.builder()
+ *                     .authenticateOidc(ListenerDefaultActionAuthenticateOidcArgs.builder()
  *                         .authorizationEndpoint(&#34;https://example.com/authorization_endpoint&#34;)
  *                         .clientId(&#34;client_id&#34;)
  *                         .clientSecret(&#34;client_secret&#34;)
@@ -236,23 +299,37 @@ import javax.annotation.Nullable;
  *                         .userInfoEndpoint(&#34;https://example.com/user_info_endpoint&#34;)
  *                         .build())
  *                     .build(),
- *                 ListenerDefaultAction.builder()
+ *                 ListenerDefaultActionArgs.builder()
  *                     .type(&#34;forward&#34;)
- *                     .targetGroupArn(frontEndTargetGroup.getArn())
+ *                     .targetGroupArn(frontEndTargetGroup.arn())
  *                     .build())
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * ### Gateway Load Balancer Listener
  * ```java
  * package generated_program;
  * 
- * import java.util.*;
- * import java.io.*;
- * import java.nio.*;
- * import com.pulumi.*;
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lb.LoadBalancer;
+ * import com.pulumi.aws.lb.LoadBalancerArgs;
+ * import com.pulumi.aws.lb.inputs.LoadBalancerSubnetMappingArgs;
+ * import com.pulumi.aws.lb.TargetGroup;
+ * import com.pulumi.aws.lb.TargetGroupArgs;
+ * import com.pulumi.aws.lb.inputs.TargetGroupHealthCheckArgs;
+ * import com.pulumi.aws.lb.Listener;
+ * import com.pulumi.aws.lb.ListenerArgs;
+ * import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
  * 
  * public class App {
  *     public static void main(String[] args) {
@@ -262,30 +339,30 @@ import javax.annotation.Nullable;
  *     public static void stack(Context ctx) {
  *         var exampleLoadBalancer = new LoadBalancer(&#34;exampleLoadBalancer&#34;, LoadBalancerArgs.builder()        
  *             .loadBalancerType(&#34;gateway&#34;)
- *             .subnetMappings(LoadBalancerSubnetMapping.builder()
- *                 .subnetId(aws_subnet.getExample().getId())
+ *             .subnetMappings(LoadBalancerSubnetMappingArgs.builder()
+ *                 .subnetId(aws_subnet.example().id())
  *                 .build())
  *             .build());
  * 
  *         var exampleTargetGroup = new TargetGroup(&#34;exampleTargetGroup&#34;, TargetGroupArgs.builder()        
  *             .port(6081)
  *             .protocol(&#34;GENEVE&#34;)
- *             .vpcId(aws_vpc.getExample().getId())
- *             .healthCheck(TargetGroupHealthCheck.builder()
+ *             .vpcId(aws_vpc.example().id())
+ *             .healthCheck(TargetGroupHealthCheckArgs.builder()
  *                 .port(80)
  *                 .protocol(&#34;HTTP&#34;)
  *                 .build())
  *             .build());
  * 
  *         var exampleListener = new Listener(&#34;exampleListener&#34;, ListenerArgs.builder()        
- *             .loadBalancerArn(exampleLoadBalancer.getId())
- *             .defaultActions(ListenerDefaultAction.builder()
- *                 .targetGroupArn(exampleTargetGroup.getId())
+ *             .loadBalancerArn(exampleLoadBalancer.id())
+ *             .defaultActions(ListenerDefaultActionArgs.builder()
+ *                 .targetGroupArn(exampleTargetGroup.id())
  *                 .type(&#34;forward&#34;)
  *                 .build())
  *             .build());
  * 
- *         }
+ *     }
  * }
  * ```
  * 

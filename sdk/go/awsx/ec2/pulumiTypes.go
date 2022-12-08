@@ -7,6 +7,7 @@ import (
 	"context"
 	"reflect"
 
+	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -296,6 +297,16 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 	}).(SubnetSpecOutput)
 }
 
+// Provides a VPC Endpoint resource.
+//
+// > **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
+// Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
+// Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
+// and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
+// a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
+// Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
+// Doing so will cause a conflict of associations and will overwrite the association.
+//
 // ## Example Usage
 // ### Basic
 // ```go
@@ -380,52 +391,6 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //	}
 //
 // ```
-// ### Gateway Load Balancer Endpoint Type
-// ```go
-// package main
-//
-// import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
-// )
-//
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			current, err := aws.GetCallerIdentity(ctx, nil, nil)
-//			if err != nil {
-//				return err
-//			}
-//			exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
-//				AcceptanceRequired: pulumi.Bool(false),
-//				AllowedPrincipals: pulumi.StringArray{
-//					pulumi.String(current.Arn),
-//				},
-//				GatewayLoadBalancerArns: pulumi.StringArray{
-//					pulumi.Any(aws_lb.Example.Arn),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
-//				ServiceName: exampleVpcEndpointService.ServiceName,
-//				SubnetIds: pulumi.StringArray{
-//					pulumi.Any(aws_subnet.Example.Id),
-//				},
-//				VpcEndpointType: exampleVpcEndpointService.ServiceType,
-//				VpcId:           pulumi.Any(aws_vpc.Example.Id),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
-// ```
 //
 // ## Import
 //
@@ -439,6 +404,10 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 type VpcEndpointSpec struct {
 	// Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
 	AutoAccept *bool `pulumi:"autoAccept"`
+	// The DNS options for the endpoint. See dns_options below.
+	DnsOptions *ec2.VpcEndpointDnsOptions `pulumi:"dnsOptions"`
+	// The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+	IpAddressType *string `pulumi:"ipAddressType"`
 	// A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.
 	Policy *string `pulumi:"policy"`
 	// Whether or not to associate a private hosted zone with the specified VPC. Applicable for endpoints of type Interface. Defaults to `false`.
@@ -469,6 +438,16 @@ type VpcEndpointSpecInput interface {
 	ToVpcEndpointSpecOutputWithContext(context.Context) VpcEndpointSpecOutput
 }
 
+// Provides a VPC Endpoint resource.
+//
+// > **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
+// Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
+// Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
+// and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
+// a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
+// Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
+// Doing so will cause a conflict of associations and will overwrite the association.
+//
 // ## Example Usage
 // ### Basic
 // ```go
@@ -553,52 +532,6 @@ type VpcEndpointSpecInput interface {
 //	}
 //
 // ```
-// ### Gateway Load Balancer Endpoint Type
-// ```go
-// package main
-//
-// import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
-// )
-//
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			current, err := aws.GetCallerIdentity(ctx, nil, nil)
-//			if err != nil {
-//				return err
-//			}
-//			exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
-//				AcceptanceRequired: pulumi.Bool(false),
-//				AllowedPrincipals: pulumi.StringArray{
-//					pulumi.String(current.Arn),
-//				},
-//				GatewayLoadBalancerArns: pulumi.StringArray{
-//					pulumi.Any(aws_lb.Example.Arn),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
-//				ServiceName: exampleVpcEndpointService.ServiceName,
-//				SubnetIds: pulumi.StringArray{
-//					pulumi.Any(aws_subnet.Example.Id),
-//				},
-//				VpcEndpointType: exampleVpcEndpointService.ServiceType,
-//				VpcId:           pulumi.Any(aws_vpc.Example.Id),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
-// ```
 //
 // ## Import
 //
@@ -612,6 +545,10 @@ type VpcEndpointSpecInput interface {
 type VpcEndpointSpecArgs struct {
 	// Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
 	AutoAccept *bool `pulumi:"autoAccept"`
+	// The DNS options for the endpoint. See dns_options below.
+	DnsOptions ec2.VpcEndpointDnsOptionsPtrInput `pulumi:"dnsOptions"`
+	// The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+	IpAddressType pulumi.StringPtrInput `pulumi:"ipAddressType"`
 	// A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.
 	Policy pulumi.StringPtrInput `pulumi:"policy"`
 	// Whether or not to associate a private hosted zone with the specified VPC. Applicable for endpoints of type Interface. Defaults to `false`.
@@ -668,6 +605,16 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 	return pulumi.ToOutputWithContext(ctx, i).(VpcEndpointSpecArrayOutput)
 }
 
+// Provides a VPC Endpoint resource.
+//
+// > **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
+// Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
+// Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
+// and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
+// a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
+// Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
+// Doing so will cause a conflict of associations and will overwrite the association.
+//
 // ## Example Usage
 // ### Basic
 // ```go
@@ -752,52 +699,6 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //	}
 //
 // ```
-// ### Gateway Load Balancer Endpoint Type
-// ```go
-// package main
-//
-// import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
-// )
-//
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			current, err := aws.GetCallerIdentity(ctx, nil, nil)
-//			if err != nil {
-//				return err
-//			}
-//			exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
-//				AcceptanceRequired: pulumi.Bool(false),
-//				AllowedPrincipals: pulumi.StringArray{
-//					pulumi.String(current.Arn),
-//				},
-//				GatewayLoadBalancerArns: pulumi.StringArray{
-//					pulumi.Any(aws_lb.Example.Arn),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
-//				ServiceName: exampleVpcEndpointService.ServiceName,
-//				SubnetIds: pulumi.StringArray{
-//					pulumi.Any(aws_subnet.Example.Id),
-//				},
-//				VpcEndpointType: exampleVpcEndpointService.ServiceType,
-//				VpcId:           pulumi.Any(aws_vpc.Example.Id),
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
-// ```
 //
 // ## Import
 //
@@ -825,6 +726,16 @@ func (o VpcEndpointSpecOutput) ToVpcEndpointSpecOutputWithContext(ctx context.Co
 // Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
 func (o VpcEndpointSpecOutput) AutoAccept() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) *bool { return v.AutoAccept }).(pulumi.BoolPtrOutput)
+}
+
+// The DNS options for the endpoint. See dns_options below.
+func (o VpcEndpointSpecOutput) DnsOptions() ec2.VpcEndpointDnsOptionsPtrOutput {
+	return o.ApplyT(func(v VpcEndpointSpec) *ec2.VpcEndpointDnsOptions { return v.DnsOptions }).(ec2.VpcEndpointDnsOptionsPtrOutput)
+}
+
+// The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+func (o VpcEndpointSpecOutput) IpAddressType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v VpcEndpointSpec) *string { return v.IpAddressType }).(pulumi.StringPtrOutput)
 }
 
 // A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.

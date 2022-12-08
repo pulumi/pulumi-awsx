@@ -137,7 +137,7 @@ namespace Pulumi.Awsx.Cloudtrail
         public Input<string>? KmsKeyId { get; set; }
 
         /// <summary>
-        /// Specifies the name of the advanced event selector.
+        /// Name of the advanced event selector.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }
@@ -164,7 +164,7 @@ namespace Pulumi.Awsx.Cloudtrail
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
+        /// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {

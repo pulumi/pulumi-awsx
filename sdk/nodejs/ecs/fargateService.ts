@@ -66,10 +66,12 @@ export class FargateService extends pulumi.ComponentResource {
             resourceInputs["platformVersion"] = args ? args.platformVersion : undefined;
             resourceInputs["propagateTags"] = args ? args.propagateTags : undefined;
             resourceInputs["schedulingStrategy"] = args ? args.schedulingStrategy : undefined;
+            resourceInputs["serviceConnectConfiguration"] = args ? args.serviceConnectConfiguration : undefined;
             resourceInputs["serviceRegistries"] = args ? args.serviceRegistries : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["taskDefinition"] = args ? args.taskDefinition : undefined;
             resourceInputs["taskDefinitionArgs"] = args ? args.taskDefinitionArgs : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["service"] = undefined /*out*/;
         } else {
             resourceInputs["service"] = undefined /*out*/;
@@ -165,6 +167,10 @@ export interface FargateServiceArgs {
      */
     schedulingStrategy?: pulumi.Input<string>;
     /**
+     * The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+     */
+    serviceConnectConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceServiceConnectConfiguration>;
+    /**
      * Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
      */
     serviceRegistries?: pulumi.Input<pulumiAws.types.input.ecs.ServiceServiceRegistries>;
@@ -180,4 +186,8 @@ export interface FargateServiceArgs {
      * The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
      */
     taskDefinitionArgs?: inputs.ecs.FargateServiceTaskDefinitionArgs;
+    /**
+     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+     */
+    triggers?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
 }

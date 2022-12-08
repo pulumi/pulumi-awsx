@@ -58,7 +58,8 @@ class FargateTaskDefinitionArgs:
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs'] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
         :param pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs'] runtime_platform: Configuration block for runtime_platform that containers in your task may use.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags.
+        :param pulumi.Input[bool] skip_destroy: Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param '_awsx.DefaultRoleWithPolicyArgs' task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
                Will be created automatically if not defined.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.
@@ -279,6 +280,9 @@ class FargateTaskDefinitionArgs:
     @property
     @pulumi.getter(name="skipDestroy")
     def skip_destroy(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+        """
         return pulumi.get(self, "skip_destroy")
 
     @skip_destroy.setter
@@ -289,7 +293,7 @@ class FargateTaskDefinitionArgs:
     @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
         """
-        Key-value map of resource tags.
+        Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
         return pulumi.get(self, "tags")
 
@@ -376,7 +380,8 @@ class FargateTaskDefinition(pulumi.ComponentResource):
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] placement_constraints: Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] proxy_configuration: Configuration block for the App Mesh proxy. Detailed below.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']] runtime_platform: Configuration block for runtime_platform that containers in your task may use.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags.
+        :param pulumi.Input[bool] skip_destroy: Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.InputType['_awsx.DefaultRoleWithPolicyArgs'] task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
                Will be created automatically if not defined.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.

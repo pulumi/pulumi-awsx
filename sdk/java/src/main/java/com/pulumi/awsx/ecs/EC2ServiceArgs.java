@@ -9,6 +9,7 @@ import com.pulumi.aws.ecs.inputs.ServiceLoadBalancerArgs;
 import com.pulumi.aws.ecs.inputs.ServiceNetworkConfigurationArgs;
 import com.pulumi.aws.ecs.inputs.ServiceOrderedPlacementStrategyArgs;
 import com.pulumi.aws.ecs.inputs.ServicePlacementConstraintArgs;
+import com.pulumi.aws.ecs.inputs.ServiceServiceConnectConfigurationArgs;
 import com.pulumi.aws.ecs.inputs.ServiceServiceRegistriesArgs;
 import com.pulumi.awsx.ecs.inputs.EC2ServiceTaskDefinitionArgs;
 import com.pulumi.core.Output;
@@ -328,6 +329,21 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+     * 
+     */
+    @Import(name="serviceConnectConfiguration")
+    private @Nullable Output<ServiceServiceConnectConfigurationArgs> serviceConnectConfiguration;
+
+    /**
+     * @return The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+     * 
+     */
+    public Optional<Output<ServiceServiceConnectConfigurationArgs>> serviceConnectConfiguration() {
+        return Optional.ofNullable(this.serviceConnectConfiguration);
+    }
+
+    /**
      * Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
      * 
      */
@@ -387,6 +403,21 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         return Optional.ofNullable(this.taskDefinitionArgs);
     }
 
+    /**
+     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+     * 
+     */
+    @Import(name="triggers")
+    private @Nullable Output<Map<String,String>> triggers;
+
+    /**
+     * @return Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+     * 
+     */
+    public Optional<Output<Map<String,String>>> triggers() {
+        return Optional.ofNullable(this.triggers);
+    }
+
     private EC2ServiceArgs() {}
 
     private EC2ServiceArgs(EC2ServiceArgs $) {
@@ -410,10 +441,12 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         this.platformVersion = $.platformVersion;
         this.propagateTags = $.propagateTags;
         this.schedulingStrategy = $.schedulingStrategy;
+        this.serviceConnectConfiguration = $.serviceConnectConfiguration;
         this.serviceRegistries = $.serviceRegistries;
         this.tags = $.tags;
         this.taskDefinition = $.taskDefinition;
         this.taskDefinitionArgs = $.taskDefinitionArgs;
+        this.triggers = $.triggers;
     }
 
     public static Builder builder() {
@@ -885,6 +918,27 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
+         * @param serviceConnectConfiguration The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder serviceConnectConfiguration(@Nullable Output<ServiceServiceConnectConfigurationArgs> serviceConnectConfiguration) {
+            $.serviceConnectConfiguration = serviceConnectConfiguration;
+            return this;
+        }
+
+        /**
+         * @param serviceConnectConfiguration The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder serviceConnectConfiguration(ServiceServiceConnectConfigurationArgs serviceConnectConfiguration) {
+            return serviceConnectConfiguration(Output.of(serviceConnectConfiguration));
+        }
+
+        /**
          * @param serviceRegistries Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
          * 
          * @return builder
@@ -956,6 +1010,27 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         public Builder taskDefinitionArgs(@Nullable EC2ServiceTaskDefinitionArgs taskDefinitionArgs) {
             $.taskDefinitionArgs = taskDefinitionArgs;
             return this;
+        }
+
+        /**
+         * @param triggers Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder triggers(@Nullable Output<Map<String,String>> triggers) {
+            $.triggers = triggers;
+            return this;
+        }
+
+        /**
+         * @param triggers Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder triggers(Map<String,String> triggers) {
+            return triggers(Output.of(triggers));
         }
 
         public EC2ServiceArgs build() {

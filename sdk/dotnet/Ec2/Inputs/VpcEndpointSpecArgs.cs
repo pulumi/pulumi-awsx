@@ -11,6 +11,16 @@ namespace Pulumi.Awsx.Ec2.Inputs
 {
 
     /// <summary>
+    /// Provides a VPC Endpoint resource.
+    /// 
+    /// &gt; **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
+    /// Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
+    /// Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
+    /// and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
+    /// a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
+    /// Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
+    /// Doing so will cause a conflict of associations and will overwrite the association.
+    /// 
     /// {{% examples %}}
     /// ## Example Usage
     /// {{% example %}}
@@ -34,21 +44,19 @@ namespace Pulumi.Awsx.Ec2.Inputs
     ///     service_name="com.amazonaws.us-west-2.s3")
     /// ```
     /// ```csharp
+    /// using System.Collections.Generic;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
-    /// class MyStack : Stack
+    /// return await Deployment.RunAsync(() =&gt; 
     /// {
-    ///     public MyStack()
+    ///     var s3 = new Aws.Ec2.VpcEndpoint("s3", new()
     ///     {
-    ///         var s3 = new Aws.Ec2.VpcEndpoint("s3", new Aws.Ec2.VpcEndpointArgs
-    ///         {
-    ///             VpcId = aws_vpc.Main.Id,
-    ///             ServiceName = "com.amazonaws.us-west-2.s3",
-    ///         });
-    ///     }
+    ///         VpcId = aws_vpc.Main.Id,
+    ///         ServiceName = "com.amazonaws.us-west-2.s3",
+    ///     });
     /// 
-    /// }
+    /// });
     /// ```
     /// ```go
     /// package main
@@ -74,10 +82,17 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// ```java
     /// package generated_program;
     /// 
-    /// import java.util.*;
-    /// import java.io.*;
-    /// import java.nio.*;
-    /// import com.pulumi.*;
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.ec2.VpcEndpoint;
+    /// import com.pulumi.aws.ec2.VpcEndpointArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
     /// 
     /// public class App {
     ///     public static void main(String[] args) {
@@ -86,11 +101,11 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// 
     ///     public static void stack(Context ctx) {
     ///         var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()        
-    ///             .vpcId(aws_vpc.getMain().getId())
+    ///             .vpcId(aws_vpc.main().id())
     ///             .serviceName("com.amazonaws.us-west-2.s3")
     ///             .build());
     /// 
-    ///         }
+    ///     }
     /// }
     /// ```
     /// ```yaml
@@ -129,25 +144,23 @@ namespace Pulumi.Awsx.Ec2.Inputs
     ///     })
     /// ```
     /// ```csharp
+    /// using System.Collections.Generic;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
-    /// class MyStack : Stack
+    /// return await Deployment.RunAsync(() =&gt; 
     /// {
-    ///     public MyStack()
+    ///     var s3 = new Aws.Ec2.VpcEndpoint("s3", new()
     ///     {
-    ///         var s3 = new Aws.Ec2.VpcEndpoint("s3", new Aws.Ec2.VpcEndpointArgs
+    ///         VpcId = aws_vpc.Main.Id,
+    ///         ServiceName = "com.amazonaws.us-west-2.s3",
+    ///         Tags = 
     ///         {
-    ///             VpcId = aws_vpc.Main.Id,
-    ///             ServiceName = "com.amazonaws.us-west-2.s3",
-    ///             Tags = 
-    ///             {
-    ///                 { "Environment", "test" },
-    ///             },
-    ///         });
-    ///     }
+    ///             { "Environment", "test" },
+    ///         },
+    ///     });
     /// 
-    /// }
+    /// });
     /// ```
     /// ```go
     /// package main
@@ -176,10 +189,17 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// ```java
     /// package generated_program;
     /// 
-    /// import java.util.*;
-    /// import java.io.*;
-    /// import java.nio.*;
-    /// import com.pulumi.*;
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.ec2.VpcEndpoint;
+    /// import com.pulumi.aws.ec2.VpcEndpointArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
     /// 
     /// public class App {
     ///     public static void main(String[] args) {
@@ -188,12 +208,12 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// 
     ///     public static void stack(Context ctx) {
     ///         var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()        
-    ///             .vpcId(aws_vpc.getMain().getId())
+    ///             .vpcId(aws_vpc.main().id())
     ///             .serviceName("com.amazonaws.us-west-2.s3")
     ///             .tags(Map.of("Environment", "test"))
     ///             .build());
     /// 
-    ///         }
+    ///     }
     /// }
     /// ```
     /// ```yaml
@@ -234,27 +254,25 @@ namespace Pulumi.Awsx.Ec2.Inputs
     ///     private_dns_enabled=True)
     /// ```
     /// ```csharp
+    /// using System.Collections.Generic;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
-    /// class MyStack : Stack
+    /// return await Deployment.RunAsync(() =&gt; 
     /// {
-    ///     public MyStack()
+    ///     var ec2 = new Aws.Ec2.VpcEndpoint("ec2", new()
     ///     {
-    ///         var ec2 = new Aws.Ec2.VpcEndpoint("ec2", new Aws.Ec2.VpcEndpointArgs
+    ///         VpcId = aws_vpc.Main.Id,
+    ///         ServiceName = "com.amazonaws.us-west-2.ec2",
+    ///         VpcEndpointType = "Interface",
+    ///         SecurityGroupIds = new[]
     ///         {
-    ///             VpcId = aws_vpc.Main.Id,
-    ///             ServiceName = "com.amazonaws.us-west-2.ec2",
-    ///             VpcEndpointType = "Interface",
-    ///             SecurityGroupIds = 
-    ///             {
-    ///                 aws_security_group.Sg1.Id,
-    ///             },
-    ///             PrivateDnsEnabled = true,
-    ///         });
-    ///     }
+    ///             aws_security_group.Sg1.Id,
+    ///         },
+    ///         PrivateDnsEnabled = true,
+    ///     });
     /// 
-    /// }
+    /// });
     /// ```
     /// ```go
     /// package main
@@ -285,10 +303,17 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// ```java
     /// package generated_program;
     /// 
-    /// import java.util.*;
-    /// import java.io.*;
-    /// import java.nio.*;
-    /// import com.pulumi.*;
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.ec2.VpcEndpoint;
+    /// import com.pulumi.aws.ec2.VpcEndpointArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
     /// 
     /// public class App {
     ///     public static void main(String[] args) {
@@ -297,14 +322,14 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// 
     ///     public static void stack(Context ctx) {
     ///         var ec2 = new VpcEndpoint("ec2", VpcEndpointArgs.builder()        
-    ///             .vpcId(aws_vpc.getMain().getId())
+    ///             .vpcId(aws_vpc.main().id())
     ///             .serviceName("com.amazonaws.us-west-2.ec2")
     ///             .vpcEndpointType("Interface")
-    ///             .securityGroupIds(aws_security_group.getSg1().getId())
+    ///             .securityGroupIds(aws_security_group.sg1().id())
     ///             .privateDnsEnabled(true)
     ///             .build());
     /// 
-    ///         }
+    ///     }
     /// }
     /// ```
     /// ```yaml
@@ -318,175 +343,6 @@ namespace Pulumi.Awsx.Ec2.Inputs
     ///       securityGroupIds:
     ///         - ${aws_security_group.sg1.id}
     ///       privateDnsEnabled: true
-    /// ```
-    /// {{% /example %}}
-    /// {{% example %}}
-    /// ### Gateway Load Balancer Endpoint Type
-    /// 
-    /// ```typescript
-    /// import * as pulumi from "@pulumi/pulumi";
-    /// import * as aws from "@pulumi/aws";
-    /// 
-    /// const current = aws.getCallerIdentity({});
-    /// const exampleVpcEndpointService = new aws.ec2.VpcEndpointService("exampleVpcEndpointService", {
-    ///     acceptanceRequired: false,
-    ///     allowedPrincipals: [current.then(current =&gt; current.arn)],
-    ///     gatewayLoadBalancerArns: [aws_lb.example.arn],
-    /// });
-    /// const exampleVpcEndpoint = new aws.ec2.VpcEndpoint("exampleVpcEndpoint", {
-    ///     serviceName: exampleVpcEndpointService.serviceName,
-    ///     subnetIds: [aws_subnet.example.id],
-    ///     vpcEndpointType: exampleVpcEndpointService.serviceType,
-    ///     vpcId: aws_vpc.example.id,
-    /// });
-    /// ```
-    /// ```python
-    /// import pulumi
-    /// import pulumi_aws as aws
-    /// 
-    /// current = aws.get_caller_identity()
-    /// example_vpc_endpoint_service = aws.ec2.VpcEndpointService("exampleVpcEndpointService",
-    ///     acceptance_required=False,
-    ///     allowed_principals=[current.arn],
-    ///     gateway_load_balancer_arns=[aws_lb["example"]["arn"]])
-    /// example_vpc_endpoint = aws.ec2.VpcEndpoint("exampleVpcEndpoint",
-    ///     service_name=example_vpc_endpoint_service.service_name,
-    ///     subnet_ids=[aws_subnet["example"]["id"]],
-    ///     vpc_endpoint_type=example_vpc_endpoint_service.service_type,
-    ///     vpc_id=aws_vpc["example"]["id"])
-    /// ```
-    /// ```csharp
-    /// using Pulumi;
-    /// using Aws = Pulumi.Aws;
-    /// 
-    /// class MyStack : Stack
-    /// {
-    ///     public MyStack()
-    ///     {
-    ///         var current = Output.Create(Aws.GetCallerIdentity.InvokeAsync());
-    ///         var exampleVpcEndpointService = new Aws.Ec2.VpcEndpointService("exampleVpcEndpointService", new Aws.Ec2.VpcEndpointServiceArgs
-    ///         {
-    ///             AcceptanceRequired = false,
-    ///             AllowedPrincipals = 
-    ///             {
-    ///                 current.Apply(current =&gt; current.Arn),
-    ///             },
-    ///             GatewayLoadBalancerArns = 
-    ///             {
-    ///                 aws_lb.Example.Arn,
-    ///             },
-    ///         });
-    ///         var exampleVpcEndpoint = new Aws.Ec2.VpcEndpoint("exampleVpcEndpoint", new Aws.Ec2.VpcEndpointArgs
-    ///         {
-    ///             ServiceName = exampleVpcEndpointService.ServiceName,
-    ///             SubnetIds = 
-    ///             {
-    ///                 aws_subnet.Example.Id,
-    ///             },
-    ///             VpcEndpointType = exampleVpcEndpointService.ServiceType,
-    ///             VpcId = aws_vpc.Example.Id,
-    ///         });
-    ///     }
-    /// 
-    /// }
-    /// ```
-    /// ```go
-    /// package main
-    /// 
-    /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-    /// )
-    /// 
-    /// func main() {
-    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
-    /// 		current, err := aws.GetCallerIdentity(ctx, nil, nil)
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &amp;ec2.VpcEndpointServiceArgs{
-    /// 			AcceptanceRequired: pulumi.Bool(false),
-    /// 			AllowedPrincipals: pulumi.StringArray{
-    /// 				pulumi.String(current.Arn),
-    /// 			},
-    /// 			GatewayLoadBalancerArns: pulumi.StringArray{
-    /// 				pulumi.Any(aws_lb.Example.Arn),
-    /// 			},
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &amp;ec2.VpcEndpointArgs{
-    /// 			ServiceName: exampleVpcEndpointService.ServiceName,
-    /// 			SubnetIds: pulumi.StringArray{
-    /// 				pulumi.Any(aws_subnet.Example.Id),
-    /// 			},
-    /// 			VpcEndpointType: exampleVpcEndpointService.ServiceType,
-    /// 			VpcId:           pulumi.Any(aws_vpc.Example.Id),
-    /// 		})
-    /// 		if err != nil {
-    /// 			return err
-    /// 		}
-    /// 		return nil
-    /// 	})
-    /// }
-    /// ```
-    /// ```java
-    /// package generated_program;
-    /// 
-    /// import java.util.*;
-    /// import java.io.*;
-    /// import java.nio.*;
-    /// import com.pulumi.*;
-    /// 
-    /// public class App {
-    ///     public static void main(String[] args) {
-    ///         Pulumi.run(App::stack);
-    ///     }
-    /// 
-    ///     public static void stack(Context ctx) {
-    ///         final var current = Output.of(AwsFunctions.getCallerIdentity());
-    /// 
-    ///         var exampleVpcEndpointService = new VpcEndpointService("exampleVpcEndpointService", VpcEndpointServiceArgs.builder()        
-    ///             .acceptanceRequired(false)
-    ///             .allowedPrincipals(current.apply(getCallerIdentityResult -&gt; getCallerIdentityResult.getArn()))
-    ///             .gatewayLoadBalancerArns(aws_lb.getExample().getArn())
-    ///             .build());
-    /// 
-    ///         var exampleVpcEndpoint = new VpcEndpoint("exampleVpcEndpoint", VpcEndpointArgs.builder()        
-    ///             .serviceName(exampleVpcEndpointService.getServiceName())
-    ///             .subnetIds(aws_subnet.getExample().getId())
-    ///             .vpcEndpointType(exampleVpcEndpointService.getServiceType())
-    ///             .vpcId(aws_vpc.getExample().getId())
-    ///             .build());
-    /// 
-    ///         }
-    /// }
-    /// ```
-    /// ```yaml
-    /// resources:
-    ///   exampleVpcEndpointService:
-    ///     type: aws:ec2:VpcEndpointService
-    ///     properties:
-    ///       acceptanceRequired: false
-    ///       allowedPrincipals:
-    ///         - ${current.arn}
-    ///       gatewayLoadBalancerArns:
-    ///         - ${aws_lb.example.arn}
-    ///   exampleVpcEndpoint:
-    ///     type: aws:ec2:VpcEndpoint
-    ///     properties:
-    ///       serviceName: ${exampleVpcEndpointService.serviceName}
-    ///       subnetIds:
-    ///         - ${aws_subnet.example.id}
-    ///       vpcEndpointType: ${exampleVpcEndpointService.serviceType}
-    ///       vpcId: ${aws_vpc.example.id}
-    /// variables:
-    ///   current:
-    ///     Fn::Invoke:
-    ///       Function: aws:getCallerIdentity
-    ///       Arguments: {}
     /// ```
     /// {{% /example %}}
     /// {{% /examples %}}
@@ -508,6 +364,18 @@ namespace Pulumi.Awsx.Ec2.Inputs
         /// </summary>
         [Input("autoAccept")]
         public bool? AutoAccept { get; set; }
+
+        /// <summary>
+        /// The DNS options for the endpoint. See dns_options below.
+        /// </summary>
+        [Input("dnsOptions")]
+        public Input<Pulumi.Aws.Ec2.Inputs.VpcEndpointDnsOptionsArgs>? DnsOptions { get; set; }
+
+        /// <summary>
+        /// The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+        /// </summary>
+        [Input("ipAddressType")]
+        public Input<string>? IpAddressType { get; set; }
 
         /// <summary>
         /// A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.

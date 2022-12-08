@@ -74,40 +74,36 @@ class ListenerArgs:
             )])
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
-            {
-                var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer", new Aws.LB.LoadBalancerArgs
-                {
-                });
-                // ...
-                var frontEndTargetGroup = new Aws.LB.TargetGroup("frontEndTargetGroup", new Aws.LB.TargetGroupArgs
-                {
-                });
-                // ...
-                var frontEndListener = new Aws.LB.Listener("frontEndListener", new Aws.LB.ListenerArgs
-                {
-                    LoadBalancerArn = frontEndLoadBalancer.Arn,
-                    Port = 443,
-                    Protocol = "HTTPS",
-                    SslPolicy = "ELBSecurityPolicy-2016-08",
-                    CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-                    DefaultActions = 
-                    {
-                        new Aws.LB.Inputs.ListenerDefaultActionArgs
-                        {
-                            Type = "forward",
-                            TargetGroupArn = frontEndTargetGroup.Arn,
-                        },
-                    },
-                });
-            }
+            var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer");
 
-        }
+            // ...
+            var frontEndTargetGroup = new Aws.LB.TargetGroup("frontEndTargetGroup");
+
+            // ...
+            var frontEndListener = new Aws.LB.Listener("frontEndListener", new()
+            {
+                LoadBalancerArn = frontEndLoadBalancer.Arn,
+                Port = 443,
+                Protocol = "HTTPS",
+                SslPolicy = "ELBSecurityPolicy-2016-08",
+                CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
+                DefaultActions = new[]
+                {
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        Type = "forward",
+                        TargetGroupArn = frontEndTargetGroup.Arn,
+                    },
+                },
+            });
+
+        });
         ```
         ```go
         package main
@@ -150,10 +146,20 @@ class ListenerArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.LoadBalancer;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -166,18 +172,18 @@ class ListenerArgs:
                 var frontEndTargetGroup = new TargetGroup("frontEndTargetGroup");
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
-                    .loadBalancerArn(frontEndLoadBalancer.getArn())
+                    .loadBalancerArn(frontEndLoadBalancer.arn())
                     .port("443")
                     .protocol("HTTPS")
                     .sslPolicy("ELBSecurityPolicy-2016-08")
                     .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
-                    .defaultActions(ListenerDefaultAction.builder()
+                    .defaultActions(ListenerDefaultActionArgs.builder()
                         .type("forward")
-                        .targetGroupArn(frontEndTargetGroup.getArn())
+                        .targetGroupArn(frontEndTargetGroup.arn())
                         .build())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -190,7 +196,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 443
+              port: '443'
               protocol: HTTPS
               sslPolicy: ELBSecurityPolicy-2016-08
               certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
@@ -233,32 +239,30 @@ class ListenerArgs:
             )])
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var frontEnd = new Aws.LB.Listener("frontEnd", new()
             {
-                var frontEnd = new Aws.LB.Listener("frontEnd", new Aws.LB.ListenerArgs
+                LoadBalancerArn = aws_lb.Front_end.Arn,
+                Port = 443,
+                Protocol = "TLS",
+                CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
+                AlpnPolicy = "HTTP2Preferred",
+                DefaultActions = new[]
                 {
-                    LoadBalancerArn = aws_lb.Front_end.Arn,
-                    Port = 443,
-                    Protocol = "TLS",
-                    CertificateArn = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4",
-                    AlpnPolicy = "HTTP2Preferred",
-                    DefaultActions = 
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
                     {
-                        new Aws.LB.Inputs.ListenerDefaultActionArgs
-                        {
-                            Type = "forward",
-                            TargetGroupArn = aws_lb_target_group.Front_end.Arn,
-                        },
+                        Type = "forward",
+                        TargetGroupArn = aws_lb_target_group.Front_end.Arn,
                     },
-                });
-            }
+                },
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -293,10 +297,18 @@ class ListenerArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -305,18 +317,18 @@ class ListenerArgs:
 
             public static void stack(Context ctx) {
                 var frontEnd = new Listener("frontEnd", ListenerArgs.builder()        
-                    .loadBalancerArn(aws_lb.getFront_end().getArn())
+                    .loadBalancerArn(aws_lb.front_end().arn())
                     .port("443")
                     .protocol("TLS")
                     .certificateArn("arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4")
                     .alpnPolicy("HTTP2Preferred")
-                    .defaultActions(ListenerDefaultAction.builder()
+                    .defaultActions(ListenerDefaultActionArgs.builder()
                         .type("forward")
-                        .targetGroupArn(aws_lb_target_group.getFront_end().getArn())
+                        .targetGroupArn(aws_lb_target_group.front_end().arn())
                         .build())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -325,7 +337,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${aws_lb.front_end.arn}
-              port: 443
+              port: '443'
               protocol: TLS
               certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
               alpnPolicy: HTTP2Preferred
@@ -377,39 +389,36 @@ class ListenerArgs:
             )])
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer");
+
+            // ...
+            var frontEndListener = new Aws.LB.Listener("frontEndListener", new()
             {
-                var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer", new Aws.LB.LoadBalancerArgs
+                LoadBalancerArn = frontEndLoadBalancer.Arn,
+                Port = 80,
+                Protocol = "HTTP",
+                DefaultActions = new[]
                 {
-                });
-                // ...
-                var frontEndListener = new Aws.LB.Listener("frontEndListener", new Aws.LB.ListenerArgs
-                {
-                    LoadBalancerArn = frontEndLoadBalancer.Arn,
-                    Port = 80,
-                    Protocol = "HTTP",
-                    DefaultActions = 
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
                     {
-                        new Aws.LB.Inputs.ListenerDefaultActionArgs
+                        Type = "redirect",
+                        Redirect = new Aws.LB.Inputs.ListenerDefaultActionRedirectArgs
                         {
-                            Type = "redirect",
-                            Redirect = new Aws.LB.Inputs.ListenerDefaultActionRedirectArgs
-                            {
-                                Port = "443",
-                                Protocol = "HTTPS",
-                                StatusCode = "HTTP_301",
-                            },
+                            Port = "443",
+                            Protocol = "HTTPS",
+                            StatusCode = "HTTP_301",
                         },
                     },
-                });
-            }
+                },
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -450,10 +459,20 @@ class ListenerArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.LoadBalancer;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionRedirectArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -464,12 +483,12 @@ class ListenerArgs:
                 var frontEndLoadBalancer = new LoadBalancer("frontEndLoadBalancer");
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
-                    .loadBalancerArn(frontEndLoadBalancer.getArn())
+                    .loadBalancerArn(frontEndLoadBalancer.arn())
                     .port("80")
                     .protocol("HTTP")
-                    .defaultActions(ListenerDefaultAction.builder()
+                    .defaultActions(ListenerDefaultActionArgs.builder()
                         .type("redirect")
-                        .redirect(ListenerDefaultActionRedirect.builder()
+                        .redirect(ListenerDefaultActionRedirectArgs.builder()
                             .port("443")
                             .protocol("HTTPS")
                             .statusCode("HTTP_301")
@@ -477,7 +496,7 @@ class ListenerArgs:
                         .build())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -488,12 +507,12 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 80
+              port: '80'
               protocol: HTTP
               defaultActions:
                 - type: redirect
                   redirect:
-                    port: 443
+                    port: '443'
                     protocol: HTTPS
                     statusCode: HTTP_301
         ```
@@ -541,39 +560,36 @@ class ListenerArgs:
             )])
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer");
+
+            // ...
+            var frontEndListener = new Aws.LB.Listener("frontEndListener", new()
             {
-                var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer", new Aws.LB.LoadBalancerArgs
+                LoadBalancerArn = frontEndLoadBalancer.Arn,
+                Port = 80,
+                Protocol = "HTTP",
+                DefaultActions = new[]
                 {
-                });
-                // ...
-                var frontEndListener = new Aws.LB.Listener("frontEndListener", new Aws.LB.ListenerArgs
-                {
-                    LoadBalancerArn = frontEndLoadBalancer.Arn,
-                    Port = 80,
-                    Protocol = "HTTP",
-                    DefaultActions = 
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
                     {
-                        new Aws.LB.Inputs.ListenerDefaultActionArgs
+                        Type = "fixed-response",
+                        FixedResponse = new Aws.LB.Inputs.ListenerDefaultActionFixedResponseArgs
                         {
-                            Type = "fixed-response",
-                            FixedResponse = new Aws.LB.Inputs.ListenerDefaultActionFixedResponseArgs
-                            {
-                                ContentType = "text/plain",
-                                MessageBody = "Fixed response content",
-                                StatusCode = "200",
-                            },
+                            ContentType = "text/plain",
+                            MessageBody = "Fixed response content",
+                            StatusCode = "200",
                         },
                     },
-                });
-            }
+                },
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -614,10 +630,20 @@ class ListenerArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.LoadBalancer;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionFixedResponseArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -628,12 +654,12 @@ class ListenerArgs:
                 var frontEndLoadBalancer = new LoadBalancer("frontEndLoadBalancer");
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
-                    .loadBalancerArn(frontEndLoadBalancer.getArn())
+                    .loadBalancerArn(frontEndLoadBalancer.arn())
                     .port("80")
                     .protocol("HTTP")
-                    .defaultActions(ListenerDefaultAction.builder()
+                    .defaultActions(ListenerDefaultActionArgs.builder()
                         .type("fixed-response")
-                        .fixedResponse(ListenerDefaultActionFixedResponse.builder()
+                        .fixedResponse(ListenerDefaultActionFixedResponseArgs.builder()
                             .contentType("text/plain")
                             .messageBody("Fixed response content")
                             .statusCode("200")
@@ -641,7 +667,7 @@ class ListenerArgs:
                         .build())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -652,14 +678,14 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 80
+              port: '80'
               protocol: HTTP
               defaultActions:
                 - type: fixed-response
                   fixedResponse:
                     contentType: text/plain
                     messageBody: Fixed response content
-                    statusCode: 200
+                    statusCode: '200'
         ```
         {{% /example %}}
         {{% example %}}
@@ -733,60 +759,53 @@ class ListenerArgs:
             ])
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer");
+
+            // ...
+            var frontEndTargetGroup = new Aws.LB.TargetGroup("frontEndTargetGroup");
+
+            // ...
+            var pool = new Aws.Cognito.UserPool("pool");
+
+            // ...
+            var client = new Aws.Cognito.UserPoolClient("client");
+
+            // ...
+            var domain = new Aws.Cognito.UserPoolDomain("domain");
+
+            // ...
+            var frontEndListener = new Aws.LB.Listener("frontEndListener", new()
             {
-                var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer", new Aws.LB.LoadBalancerArgs
+                LoadBalancerArn = frontEndLoadBalancer.Arn,
+                Port = 80,
+                Protocol = "HTTP",
+                DefaultActions = new[]
                 {
-                });
-                // ...
-                var frontEndTargetGroup = new Aws.LB.TargetGroup("frontEndTargetGroup", new Aws.LB.TargetGroupArgs
-                {
-                });
-                // ...
-                var pool = new Aws.Cognito.UserPool("pool", new Aws.Cognito.UserPoolArgs
-                {
-                });
-                // ...
-                var client = new Aws.Cognito.UserPoolClient("client", new Aws.Cognito.UserPoolClientArgs
-                {
-                });
-                // ...
-                var domain = new Aws.Cognito.UserPoolDomain("domain", new Aws.Cognito.UserPoolDomainArgs
-                {
-                });
-                // ...
-                var frontEndListener = new Aws.LB.Listener("frontEndListener", new Aws.LB.ListenerArgs
-                {
-                    LoadBalancerArn = frontEndLoadBalancer.Arn,
-                    Port = 80,
-                    Protocol = "HTTP",
-                    DefaultActions = 
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
                     {
-                        new Aws.LB.Inputs.ListenerDefaultActionArgs
+                        Type = "authenticate-cognito",
+                        AuthenticateCognito = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateCognitoArgs
                         {
-                            Type = "authenticate-cognito",
-                            AuthenticateCognito = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateCognitoArgs
-                            {
-                                UserPoolArn = pool.Arn,
-                                UserPoolClientId = client.Id,
-                                UserPoolDomain = domain.Domain,
-                            },
-                        },
-                        new Aws.LB.Inputs.ListenerDefaultActionArgs
-                        {
-                            Type = "forward",
-                            TargetGroupArn = frontEndTargetGroup.Arn,
+                            UserPoolArn = pool.Arn,
+                            UserPoolClientId = client.Id,
+                            UserPoolDomain = domain.Domain,
                         },
                     },
-                });
-            }
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        Type = "forward",
+                        TargetGroupArn = frontEndTargetGroup.Arn,
+                    },
+                },
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -848,10 +867,24 @@ class ListenerArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.LoadBalancer;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.cognito.UserPool;
+        import com.pulumi.aws.cognito.UserPoolClient;
+        import com.pulumi.aws.cognito.UserPoolDomain;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateCognitoArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -870,25 +903,25 @@ class ListenerArgs:
                 var domain = new UserPoolDomain("domain");
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
-                    .loadBalancerArn(frontEndLoadBalancer.getArn())
+                    .loadBalancerArn(frontEndLoadBalancer.arn())
                     .port("80")
                     .protocol("HTTP")
                     .defaultActions(            
-                        ListenerDefaultAction.builder()
+                        ListenerDefaultActionArgs.builder()
                             .type("authenticate-cognito")
-                            .authenticateCognito(ListenerDefaultActionAuthenticateCognito.builder()
-                                .userPoolArn(pool.getArn())
-                                .userPoolClientId(client.getId())
-                                .userPoolDomain(domain.getDomain())
+                            .authenticateCognito(ListenerDefaultActionAuthenticateCognitoArgs.builder()
+                                .userPoolArn(pool.arn())
+                                .userPoolClientId(client.id())
+                                .userPoolDomain(domain.domain())
                                 .build())
                             .build(),
-                        ListenerDefaultAction.builder()
+                        ListenerDefaultActionArgs.builder()
                             .type("forward")
-                            .targetGroupArn(frontEndTargetGroup.getArn())
+                            .targetGroupArn(frontEndTargetGroup.arn())
                             .build())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -907,7 +940,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 80
+              port: '80'
               protocol: HTTP
               defaultActions:
                 - type: authenticate-cognito
@@ -984,51 +1017,47 @@ class ListenerArgs:
             ])
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer");
+
+            // ...
+            var frontEndTargetGroup = new Aws.LB.TargetGroup("frontEndTargetGroup");
+
+            // ...
+            var frontEndListener = new Aws.LB.Listener("frontEndListener", new()
             {
-                var frontEndLoadBalancer = new Aws.LB.LoadBalancer("frontEndLoadBalancer", new Aws.LB.LoadBalancerArgs
+                LoadBalancerArn = frontEndLoadBalancer.Arn,
+                Port = 80,
+                Protocol = "HTTP",
+                DefaultActions = new[]
                 {
-                });
-                // ...
-                var frontEndTargetGroup = new Aws.LB.TargetGroup("frontEndTargetGroup", new Aws.LB.TargetGroupArgs
-                {
-                });
-                // ...
-                var frontEndListener = new Aws.LB.Listener("frontEndListener", new Aws.LB.ListenerArgs
-                {
-                    LoadBalancerArn = frontEndLoadBalancer.Arn,
-                    Port = 80,
-                    Protocol = "HTTP",
-                    DefaultActions = 
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
                     {
-                        new Aws.LB.Inputs.ListenerDefaultActionArgs
+                        Type = "authenticate-oidc",
+                        AuthenticateOidc = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateOidcArgs
                         {
-                            Type = "authenticate-oidc",
-                            AuthenticateOidc = new Aws.LB.Inputs.ListenerDefaultActionAuthenticateOidcArgs
-                            {
-                                AuthorizationEndpoint = "https://example.com/authorization_endpoint",
-                                ClientId = "client_id",
-                                ClientSecret = "client_secret",
-                                Issuer = "https://example.com",
-                                TokenEndpoint = "https://example.com/token_endpoint",
-                                UserInfoEndpoint = "https://example.com/user_info_endpoint",
-                            },
-                        },
-                        new Aws.LB.Inputs.ListenerDefaultActionArgs
-                        {
-                            Type = "forward",
-                            TargetGroupArn = frontEndTargetGroup.Arn,
+                            AuthorizationEndpoint = "https://example.com/authorization_endpoint",
+                            ClientId = "client_id",
+                            ClientSecret = "client_secret",
+                            Issuer = "https://example.com",
+                            TokenEndpoint = "https://example.com/token_endpoint",
+                            UserInfoEndpoint = "https://example.com/user_info_endpoint",
                         },
                     },
-                });
-            }
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        Type = "forward",
+                        TargetGroupArn = frontEndTargetGroup.Arn,
+                    },
+                },
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -1080,10 +1109,21 @@ class ListenerArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.LoadBalancer;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionAuthenticateOidcArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -1096,13 +1136,13 @@ class ListenerArgs:
                 var frontEndTargetGroup = new TargetGroup("frontEndTargetGroup");
 
                 var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
-                    .loadBalancerArn(frontEndLoadBalancer.getArn())
+                    .loadBalancerArn(frontEndLoadBalancer.arn())
                     .port("80")
                     .protocol("HTTP")
                     .defaultActions(            
-                        ListenerDefaultAction.builder()
+                        ListenerDefaultActionArgs.builder()
                             .type("authenticate-oidc")
-                            .authenticateOidc(ListenerDefaultActionAuthenticateOidc.builder()
+                            .authenticateOidc(ListenerDefaultActionAuthenticateOidcArgs.builder()
                                 .authorizationEndpoint("https://example.com/authorization_endpoint")
                                 .clientId("client_id")
                                 .clientSecret("client_secret")
@@ -1111,13 +1151,13 @@ class ListenerArgs:
                                 .userInfoEndpoint("https://example.com/user_info_endpoint")
                                 .build())
                             .build(),
-                        ListenerDefaultAction.builder()
+                        ListenerDefaultActionArgs.builder()
                             .type("forward")
-                            .targetGroupArn(frontEndTargetGroup.getArn())
+                            .targetGroupArn(frontEndTargetGroup.arn())
                             .build())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -1130,7 +1170,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 80
+              port: '80'
               protocol: HTTP
               defaultActions:
                 - type: authenticate-oidc
@@ -1200,50 +1240,50 @@ class ListenerArgs:
             )])
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var exampleLoadBalancer = new Aws.LB.LoadBalancer("exampleLoadBalancer", new()
             {
-                var exampleLoadBalancer = new Aws.LB.LoadBalancer("exampleLoadBalancer", new Aws.LB.LoadBalancerArgs
+                LoadBalancerType = "gateway",
+                SubnetMappings = new[]
                 {
-                    LoadBalancerType = "gateway",
-                    SubnetMappings = 
+                    new Aws.LB.Inputs.LoadBalancerSubnetMappingArgs
                     {
-                        new Aws.LB.Inputs.LoadBalancerSubnetMappingArgs
-                        {
-                            SubnetId = aws_subnet.Example.Id,
-                        },
+                        SubnetId = aws_subnet.Example.Id,
                     },
-                });
-                var exampleTargetGroup = new Aws.LB.TargetGroup("exampleTargetGroup", new Aws.LB.TargetGroupArgs
-                {
-                    Port = 6081,
-                    Protocol = "GENEVE",
-                    VpcId = aws_vpc.Example.Id,
-                    HealthCheck = new Aws.LB.Inputs.TargetGroupHealthCheckArgs
-                    {
-                        Port = "80",
-                        Protocol = "HTTP",
-                    },
-                });
-                var exampleListener = new Aws.LB.Listener("exampleListener", new Aws.LB.ListenerArgs
-                {
-                    LoadBalancerArn = exampleLoadBalancer.Id,
-                    DefaultActions = 
-                    {
-                        new Aws.LB.Inputs.ListenerDefaultActionArgs
-                        {
-                            TargetGroupArn = exampleTargetGroup.Id,
-                            Type = "forward",
-                        },
-                    },
-                });
-            }
+                },
+            });
 
-        }
+            var exampleTargetGroup = new Aws.LB.TargetGroup("exampleTargetGroup", new()
+            {
+                Port = 6081,
+                Protocol = "GENEVE",
+                VpcId = aws_vpc.Example.Id,
+                HealthCheck = new Aws.LB.Inputs.TargetGroupHealthCheckArgs
+                {
+                    Port = "80",
+                    Protocol = "HTTP",
+                },
+            });
+
+            var exampleListener = new Aws.LB.Listener("exampleListener", new()
+            {
+                LoadBalancerArn = exampleLoadBalancer.Id,
+                DefaultActions = new[]
+                {
+                    new Aws.LB.Inputs.ListenerDefaultActionArgs
+                    {
+                        TargetGroupArn = exampleTargetGroup.Id,
+                        Type = "forward",
+                    },
+                },
+            });
+
+        });
         ```
         ```go
         package main
@@ -1297,10 +1337,24 @@ class ListenerArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.LoadBalancer;
+        import com.pulumi.aws.lb.LoadBalancerArgs;
+        import com.pulumi.aws.lb.inputs.LoadBalancerSubnetMappingArgs;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.TargetGroupArgs;
+        import com.pulumi.aws.lb.inputs.TargetGroupHealthCheckArgs;
+        import com.pulumi.aws.lb.Listener;
+        import com.pulumi.aws.lb.ListenerArgs;
+        import com.pulumi.aws.lb.inputs.ListenerDefaultActionArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -1310,30 +1364,30 @@ class ListenerArgs:
             public static void stack(Context ctx) {
                 var exampleLoadBalancer = new LoadBalancer("exampleLoadBalancer", LoadBalancerArgs.builder()        
                     .loadBalancerType("gateway")
-                    .subnetMappings(LoadBalancerSubnetMapping.builder()
-                        .subnetId(aws_subnet.getExample().getId())
+                    .subnetMappings(LoadBalancerSubnetMappingArgs.builder()
+                        .subnetId(aws_subnet.example().id())
                         .build())
                     .build());
 
                 var exampleTargetGroup = new TargetGroup("exampleTargetGroup", TargetGroupArgs.builder()        
                     .port(6081)
                     .protocol("GENEVE")
-                    .vpcId(aws_vpc.getExample().getId())
-                    .healthCheck(TargetGroupHealthCheck.builder()
+                    .vpcId(aws_vpc.example().id())
+                    .healthCheck(TargetGroupHealthCheckArgs.builder()
                         .port(80)
                         .protocol("HTTP")
                         .build())
                     .build());
 
                 var exampleListener = new Listener("exampleListener", ListenerArgs.builder()        
-                    .loadBalancerArn(exampleLoadBalancer.getId())
-                    .defaultActions(ListenerDefaultAction.builder()
-                        .targetGroupArn(exampleTargetGroup.getId())
+                    .loadBalancerArn(exampleLoadBalancer.id())
+                    .defaultActions(ListenerDefaultActionArgs.builder()
+                        .targetGroupArn(exampleTargetGroup.id())
                         .type("forward")
                         .build())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -1487,6 +1541,7 @@ class TargetGroupArgs:
                  connection_termination: Optional[pulumi.Input[bool]] = None,
                  deregistration_delay: Optional[pulumi.Input[int]] = None,
                  health_check: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupHealthCheckArgs']] = None,
+                 ip_address_type: Optional[pulumi.Input[str]] = None,
                  lambda_multi_value_headers_enabled: Optional[pulumi.Input[bool]] = None,
                  load_balancing_algorithm_type: Optional[pulumi.Input[str]] = None,
                  name: Optional[pulumi.Input[str]] = None,
@@ -1499,6 +1554,7 @@ class TargetGroupArgs:
                  slow_start: Optional[pulumi.Input[int]] = None,
                  stickiness: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 target_failovers: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]] = None,
                  target_type: Optional[pulumi.Input[str]] = None,
                  vpc_id: Optional[pulumi.Input[str]] = None):
         """
@@ -1533,26 +1589,25 @@ class TargetGroupArgs:
             vpc_id=main.id)
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var main = new Aws.Ec2.Vpc("main", new()
             {
-                var main = new Aws.Ec2.Vpc("main", new Aws.Ec2.VpcArgs
-                {
-                    CidrBlock = "10.0.0.0/16",
-                });
-                var test = new Aws.LB.TargetGroup("test", new Aws.LB.TargetGroupArgs
-                {
-                    Port = 80,
-                    Protocol = "HTTP",
-                    VpcId = main.Id,
-                });
-            }
+                CidrBlock = "10.0.0.0/16",
+            });
 
-        }
+            var test = new Aws.LB.TargetGroup("test", new()
+            {
+                Port = 80,
+                Protocol = "HTTP",
+                VpcId = main.Id,
+            });
+
+        });
         ```
         ```go
         package main
@@ -1586,10 +1641,19 @@ class TargetGroupArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.ec2.Vpc;
+        import com.pulumi.aws.ec2.VpcArgs;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.TargetGroupArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -1604,10 +1668,10 @@ class TargetGroupArgs:
                 var test = new TargetGroup("test", TargetGroupArgs.builder()        
                     .port(80)
                     .protocol("HTTP")
-                    .vpcId(main.getId())
+                    .vpcId(main.id())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -1651,27 +1715,26 @@ class TargetGroupArgs:
             vpc_id=main.id)
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var main = new Aws.Ec2.Vpc("main", new()
             {
-                var main = new Aws.Ec2.Vpc("main", new Aws.Ec2.VpcArgs
-                {
-                    CidrBlock = "10.0.0.0/16",
-                });
-                var ip_example = new Aws.LB.TargetGroup("ip-example", new Aws.LB.TargetGroupArgs
-                {
-                    Port = 80,
-                    Protocol = "HTTP",
-                    TargetType = "ip",
-                    VpcId = main.Id,
-                });
-            }
+                CidrBlock = "10.0.0.0/16",
+            });
 
-        }
+            var ip_example = new Aws.LB.TargetGroup("ip-example", new()
+            {
+                Port = 80,
+                Protocol = "HTTP",
+                TargetType = "ip",
+                VpcId = main.Id,
+            });
+
+        });
         ```
         ```go
         package main
@@ -1706,10 +1769,19 @@ class TargetGroupArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.ec2.Vpc;
+        import com.pulumi.aws.ec2.VpcArgs;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.TargetGroupArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -1725,10 +1797,10 @@ class TargetGroupArgs:
                     .port(80)
                     .protocol("HTTP")
                     .targetType("ip")
-                    .vpcId(main.getId())
+                    .vpcId(main.id())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -1753,9 +1825,7 @@ class TargetGroupArgs:
         import * as pulumi from "@pulumi/pulumi";
         import * as aws from "@pulumi/aws";
 
-        const lambda_example = new aws.lb.TargetGroup("lambda-example", {
-            targetType: "lambda",
-        });
+        const lambda_example = new aws.lb.TargetGroup("lambda-example", {targetType: "lambda"});
         ```
         ```python
         import pulumi
@@ -1764,20 +1834,18 @@ class TargetGroupArgs:
         lambda_example = aws.lb.TargetGroup("lambda-example", target_type="lambda")
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var lambda_example = new Aws.LB.TargetGroup("lambda-example", new()
             {
-                var lambda_example = new Aws.LB.TargetGroup("lambda-example", new Aws.LB.TargetGroupArgs
-                {
-                    TargetType = "lambda",
-                });
-            }
+                TargetType = "lambda",
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -1802,10 +1870,17 @@ class TargetGroupArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.TargetGroupArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -1817,7 +1892,7 @@ class TargetGroupArgs:
                     .targetType("lambda")
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -1835,7 +1910,7 @@ class TargetGroupArgs:
         import * as pulumi from "@pulumi/pulumi";
         import * as aws from "@pulumi/aws";
 
-        const lambda_example = new aws.lb.TargetGroup("lambda-example", {
+        const alb_example = new aws.lb.TargetGroup("alb-example", {
             targetType: "alb",
             port: 80,
             protocol: "TCP",
@@ -1846,30 +1921,28 @@ class TargetGroupArgs:
         import pulumi
         import pulumi_aws as aws
 
-        lambda_example = aws.lb.TargetGroup("lambda-example",
+        alb_example = aws.lb.TargetGroup("alb-example",
             target_type="alb",
             port=80,
             protocol="TCP",
             vpc_id=aws_vpc["main"]["id"])
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var alb_example = new Aws.LB.TargetGroup("alb-example", new()
             {
-                var lambda_example = new Aws.LB.TargetGroup("lambda-example", new Aws.LB.TargetGroupArgs
-                {
-                    TargetType = "alb",
-                    Port = 80,
-                    Protocol = "TCP",
-                    VpcId = aws_vpc.Main.Id,
-                });
-            }
+                TargetType = "alb",
+                Port = 80,
+                Protocol = "TCP",
+                VpcId = aws_vpc.Main.Id,
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -1881,7 +1954,7 @@ class TargetGroupArgs:
 
         func main() {
         	pulumi.Run(func(ctx *pulumi.Context) error {
-        		_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+        		_, err := lb.NewTargetGroup(ctx, "alb-example", &lb.TargetGroupArgs{
         			TargetType: pulumi.String("alb"),
         			Port:       pulumi.Int(80),
         			Protocol:   pulumi.String("TCP"),
@@ -1897,10 +1970,17 @@ class TargetGroupArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lb.TargetGroup;
+        import com.pulumi.aws.lb.TargetGroupArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -1908,19 +1988,19 @@ class TargetGroupArgs:
             }
 
             public static void stack(Context ctx) {
-                var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()        
+                var alb_example = new TargetGroup("alb-example", TargetGroupArgs.builder()        
                     .targetType("alb")
                     .port(80)
                     .protocol("TCP")
-                    .vpcId(aws_vpc.getMain().getId())
+                    .vpcId(aws_vpc.main().id())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
         resources:
-          lambda-example:
+          alb-example:
             type: aws:lb:TargetGroup
             properties:
               targetType: alb
@@ -1943,6 +2023,7 @@ class TargetGroupArgs:
         :param pulumi.Input[bool] connection_termination: Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.
         :param pulumi.Input[int] deregistration_delay: Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. The default value is 300 seconds.
         :param pulumi.Input['pulumi_aws.lb.TargetGroupHealthCheckArgs'] health_check: Health Check configuration block. Detailed below.
+        :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
         :param pulumi.Input[bool] lambda_multi_value_headers_enabled: Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
         :param pulumi.Input[str] load_balancing_algorithm_type: Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
         :param pulumi.Input[str] name: Name of the target group. If omitted, this provider will assign a random, unique name.
@@ -1950,11 +2031,12 @@ class TargetGroupArgs:
         :param pulumi.Input[int] port: Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
         :param pulumi.Input[str] preserve_client_ip: Whether client IP preservation is enabled. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation) for more information.
         :param pulumi.Input[str] protocol: Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
-        :param pulumi.Input[str] protocol_version: Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+        :param pulumi.Input[str] protocol_version: Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
         :param pulumi.Input[bool] proxy_protocol_v2: Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
         :param pulumi.Input[int] slow_start: Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
         :param pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs'] stickiness: Stickiness configuration block. Detailed below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]] target_failovers: Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
         :param pulumi.Input[str] target_type: Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
         :param pulumi.Input[str] vpc_id: Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         """
@@ -1964,6 +2046,8 @@ class TargetGroupArgs:
             pulumi.set(__self__, "deregistration_delay", deregistration_delay)
         if health_check is not None:
             pulumi.set(__self__, "health_check", health_check)
+        if ip_address_type is not None:
+            pulumi.set(__self__, "ip_address_type", ip_address_type)
         if lambda_multi_value_headers_enabled is not None:
             pulumi.set(__self__, "lambda_multi_value_headers_enabled", lambda_multi_value_headers_enabled)
         if load_balancing_algorithm_type is not None:
@@ -1988,6 +2072,8 @@ class TargetGroupArgs:
             pulumi.set(__self__, "stickiness", stickiness)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
+        if target_failovers is not None:
+            pulumi.set(__self__, "target_failovers", target_failovers)
         if target_type is not None:
             pulumi.set(__self__, "target_type", target_type)
         if vpc_id is not None:
@@ -2028,6 +2114,18 @@ class TargetGroupArgs:
     @health_check.setter
     def health_check(self, value: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupHealthCheckArgs']]):
         pulumi.set(self, "health_check", value)
+
+    @property
+    @pulumi.getter(name="ipAddressType")
+    def ip_address_type(self) -> Optional[pulumi.Input[str]]:
+        """
+        The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
+        """
+        return pulumi.get(self, "ip_address_type")
+
+    @ip_address_type.setter
+    def ip_address_type(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "ip_address_type", value)
 
     @property
     @pulumi.getter(name="lambdaMultiValueHeadersEnabled")
@@ -2117,7 +2215,7 @@ class TargetGroupArgs:
     @pulumi.getter(name="protocolVersion")
     def protocol_version(self) -> Optional[pulumi.Input[str]]:
         """
-        Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+        Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
         """
         return pulumi.get(self, "protocol_version")
 
@@ -2172,6 +2270,18 @@ class TargetGroupArgs:
     @tags.setter
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
+
+    @property
+    @pulumi.getter(name="targetFailovers")
+    def target_failovers(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]]:
+        """
+        Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+        """
+        return pulumi.get(self, "target_failovers")
+
+    @target_failovers.setter
+    def target_failovers(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]]):
+        pulumi.set(self, "target_failovers", value)
 
     @property
     @pulumi.getter(name="targetType")

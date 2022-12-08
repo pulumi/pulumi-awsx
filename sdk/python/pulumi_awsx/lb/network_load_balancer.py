@@ -31,6 +31,7 @@ class NetworkLoadBalancerArgs:
                  listeners: Optional[Sequence['ListenerArgs']] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
+                 preserve_host_header: Optional[pulumi.Input[bool]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]] = None,
                  subnets: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]]] = None,
@@ -57,6 +58,7 @@ class NetworkLoadBalancerArgs:
                must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
                this provider will autogenerate a name beginning with `tf-lb`.
         :param pulumi.Input[str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        :param pulumi.Input[bool] preserve_host_header: Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: A list of subnet IDs to attach to the LB. Subnets
                cannot be updated for Load Balancers of type `network`. Changing this value
                for load balancers of type `network` will force a recreation of the resource.
@@ -96,6 +98,8 @@ class NetworkLoadBalancerArgs:
             pulumi.set(__self__, "name", name)
         if name_prefix is not None:
             pulumi.set(__self__, "name_prefix", name_prefix)
+        if preserve_host_header is not None:
+            pulumi.set(__self__, "preserve_host_header", preserve_host_header)
         if subnet_ids is not None:
             pulumi.set(__self__, "subnet_ids", subnet_ids)
         if subnet_mappings is not None:
@@ -302,6 +306,18 @@ class NetworkLoadBalancerArgs:
         pulumi.set(self, "name_prefix", value)
 
     @property
+    @pulumi.getter(name="preserveHostHeader")
+    def preserve_host_header(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
+        """
+        return pulumi.get(self, "preserve_host_header")
+
+    @preserve_host_header.setter
+    def preserve_host_header(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "preserve_host_header", value)
+
+    @property
     @pulumi.getter(name="subnetIds")
     def subnet_ids(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
         """
@@ -373,6 +389,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  listeners: Optional[Sequence[pulumi.InputType['ListenerArgs']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
+                 preserve_host_header: Optional[pulumi.Input[bool]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]]] = None,
                  subnets: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]]] = None,
@@ -403,6 +420,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
                this provider will autogenerate a name beginning with `tf-lb`.
         :param pulumi.Input[str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
+        :param pulumi.Input[bool] preserve_host_header: Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: A list of subnet IDs to attach to the LB. Subnets
                cannot be updated for Load Balancers of type `network`. Changing this value
                for load balancers of type `network` will force a recreation of the resource.
@@ -450,6 +468,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  listeners: Optional[Sequence[pulumi.InputType['ListenerArgs']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
+                 preserve_host_header: Optional[pulumi.Input[bool]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]]] = None,
                  subnets: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]]] = None,
@@ -484,6 +503,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["listeners"] = listeners
             __props__.__dict__["name"] = name
             __props__.__dict__["name_prefix"] = name_prefix
+            __props__.__dict__["preserve_host_header"] = preserve_host_header
             __props__.__dict__["subnet_ids"] = subnet_ids
             __props__.__dict__["subnet_mappings"] = subnet_mappings
             __props__.__dict__["subnets"] = subnets

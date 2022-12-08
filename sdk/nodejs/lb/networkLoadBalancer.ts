@@ -69,6 +69,7 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["listeners"] = args ? args.listeners : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["namePrefix"] = args ? args.namePrefix : undefined;
+            resourceInputs["preserveHostHeader"] = args ? args.preserveHostHeader : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
             resourceInputs["subnetMappings"] = args ? args.subnetMappings : undefined;
             resourceInputs["subnets"] = args ? args.subnets : undefined;
@@ -158,6 +159,10 @@ export interface NetworkLoadBalancerArgs {
      * Creates a unique name beginning with the specified prefix. Conflicts with `name`.
      */
     namePrefix?: pulumi.Input<string>;
+    /**
+     * Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
+     */
+    preserveHostHeader?: pulumi.Input<boolean>;
     /**
      * A list of subnet IDs to attach to the LB. Subnets
      * cannot be updated for Load Balancers of type `network`. Changing this value

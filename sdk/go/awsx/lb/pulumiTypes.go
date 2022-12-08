@@ -1427,7 +1427,7 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+//			_, err := lb.NewTargetGroup(ctx, "alb-example", &lb.TargetGroupArgs{
 //				TargetType: pulumi.String("alb"),
 //				Port:       pulumi.Int(80),
 //				Protocol:   pulumi.String("TCP"),
@@ -1458,6 +1458,8 @@ type TargetGroup struct {
 	DeregistrationDelay *int `pulumi:"deregistrationDelay"`
 	// Health Check configuration block. Detailed below.
 	HealthCheck *lb.TargetGroupHealthCheck `pulumi:"healthCheck"`
+	// The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
+	IpAddressType *string `pulumi:"ipAddressType"`
 	// Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
 	LambdaMultiValueHeadersEnabled *bool `pulumi:"lambdaMultiValueHeadersEnabled"`
 	// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
@@ -1472,7 +1474,7 @@ type TargetGroup struct {
 	PreserveClientIp *string `pulumi:"preserveClientIp"`
 	// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
 	Protocol *string `pulumi:"protocol"`
-	// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+	// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
 	ProtocolVersion *string `pulumi:"protocolVersion"`
 	// Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
 	ProxyProtocolV2 *bool `pulumi:"proxyProtocolV2"`
@@ -1482,6 +1484,8 @@ type TargetGroup struct {
 	Stickiness *lb.TargetGroupStickiness `pulumi:"stickiness"`
 	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
+	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+	TargetFailovers []lb.TargetGroupTargetFailover `pulumi:"targetFailovers"`
 	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
 	TargetType *string `pulumi:"targetType"`
 	// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
@@ -1608,7 +1612,7 @@ type TargetGroupInput interface {
 //
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+//			_, err := lb.NewTargetGroup(ctx, "alb-example", &lb.TargetGroupArgs{
 //				TargetType: pulumi.String("alb"),
 //				Port:       pulumi.Int(80),
 //				Protocol:   pulumi.String("TCP"),
@@ -1639,6 +1643,8 @@ type TargetGroupArgs struct {
 	DeregistrationDelay pulumi.IntPtrInput `pulumi:"deregistrationDelay"`
 	// Health Check configuration block. Detailed below.
 	HealthCheck lb.TargetGroupHealthCheckPtrInput `pulumi:"healthCheck"`
+	// The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
+	IpAddressType pulumi.StringPtrInput `pulumi:"ipAddressType"`
 	// Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
 	LambdaMultiValueHeadersEnabled pulumi.BoolPtrInput `pulumi:"lambdaMultiValueHeadersEnabled"`
 	// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
@@ -1653,7 +1659,7 @@ type TargetGroupArgs struct {
 	PreserveClientIp pulumi.StringPtrInput `pulumi:"preserveClientIp"`
 	// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
 	Protocol pulumi.StringPtrInput `pulumi:"protocol"`
-	// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+	// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
 	ProtocolVersion pulumi.StringPtrInput `pulumi:"protocolVersion"`
 	// Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
 	ProxyProtocolV2 pulumi.BoolPtrInput `pulumi:"proxyProtocolV2"`
@@ -1663,6 +1669,8 @@ type TargetGroupArgs struct {
 	Stickiness lb.TargetGroupStickinessPtrInput `pulumi:"stickiness"`
 	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
+	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+	TargetFailovers lb.TargetGroupTargetFailoverArrayInput `pulumi:"targetFailovers"`
 	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
 	TargetType pulumi.StringPtrInput `pulumi:"targetType"`
 	// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
@@ -1831,7 +1839,7 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 //
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+//			_, err := lb.NewTargetGroup(ctx, "alb-example", &lb.TargetGroupArgs{
 //				TargetType: pulumi.String("alb"),
 //				Port:       pulumi.Int(80),
 //				Protocol:   pulumi.String("TCP"),
@@ -1894,6 +1902,11 @@ func (o TargetGroupOutput) HealthCheck() lb.TargetGroupHealthCheckPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *lb.TargetGroupHealthCheck { return v.HealthCheck }).(lb.TargetGroupHealthCheckPtrOutput)
 }
 
+// The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
+func (o TargetGroupOutput) IpAddressType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.IpAddressType }).(pulumi.StringPtrOutput)
+}
+
 // Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
 func (o TargetGroupOutput) LambdaMultiValueHeadersEnabled() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *bool { return v.LambdaMultiValueHeadersEnabled }).(pulumi.BoolPtrOutput)
@@ -1929,7 +1942,7 @@ func (o TargetGroupOutput) Protocol() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *string { return v.Protocol }).(pulumi.StringPtrOutput)
 }
 
-// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
 func (o TargetGroupOutput) ProtocolVersion() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *string { return v.ProtocolVersion }).(pulumi.StringPtrOutput)
 }
@@ -1952,6 +1965,11 @@ func (o TargetGroupOutput) Stickiness() lb.TargetGroupStickinessPtrOutput {
 // Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o TargetGroupOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v TargetGroup) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+func (o TargetGroupOutput) TargetFailovers() lb.TargetGroupTargetFailoverArrayOutput {
+	return o.ApplyT(func(v TargetGroup) []lb.TargetGroupTargetFailover { return v.TargetFailovers }).(lb.TargetGroupTargetFailoverArrayOutput)
 }
 
 // Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
@@ -2016,6 +2034,16 @@ func (o TargetGroupPtrOutput) HealthCheck() lb.TargetGroupHealthCheckPtrOutput {
 		}
 		return v.HealthCheck
 	}).(lb.TargetGroupHealthCheckPtrOutput)
+}
+
+// The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
+func (o TargetGroupPtrOutput) IpAddressType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.IpAddressType
+	}).(pulumi.StringPtrOutput)
 }
 
 // Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
@@ -2088,7 +2116,7 @@ func (o TargetGroupPtrOutput) Protocol() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
 func (o TargetGroupPtrOutput) ProtocolVersion() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *TargetGroup) *string {
 		if v == nil {
@@ -2136,6 +2164,16 @@ func (o TargetGroupPtrOutput) Tags() pulumi.StringMapOutput {
 		}
 		return v.Tags
 	}).(pulumi.StringMapOutput)
+}
+
+// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+func (o TargetGroupPtrOutput) TargetFailovers() lb.TargetGroupTargetFailoverArrayOutput {
+	return o.ApplyT(func(v *TargetGroup) []lb.TargetGroupTargetFailover {
+		if v == nil {
+			return nil
+		}
+		return v.TargetFailovers
+	}).(lb.TargetGroupTargetFailoverArrayOutput)
 }
 
 // Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.

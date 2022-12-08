@@ -259,22 +259,30 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         return Optional.ofNullable(this.runtimePlatform);
     }
 
+    /**
+     * Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+     * 
+     */
     @Import(name="skipDestroy")
     private @Nullable Output<Boolean> skipDestroy;
 
+    /**
+     * @return Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+     * 
+     */
     public Optional<Output<Boolean>> skipDestroy() {
         return Optional.ofNullable(this.skipDestroy);
     }
 
     /**
-     * Key-value map of resource tags.
+     * Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     @Import(name="tags")
     private @Nullable Output<Map<String,String>> tags;
 
     /**
-     * @return Key-value map of resource tags.
+     * @return Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
     public Optional<Output<Map<String,String>>> tags() {
@@ -637,17 +645,29 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
             return runtimePlatform(Output.of(runtimePlatform));
         }
 
+        /**
+         * @param skipDestroy Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+         * 
+         * @return builder
+         * 
+         */
         public Builder skipDestroy(@Nullable Output<Boolean> skipDestroy) {
             $.skipDestroy = skipDestroy;
             return this;
         }
 
+        /**
+         * @param skipDestroy Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+         * 
+         * @return builder
+         * 
+         */
         public Builder skipDestroy(Boolean skipDestroy) {
             return skipDestroy(Output.of(skipDestroy));
         }
 
         /**
-         * @param tags Key-value map of resource tags.
+         * @param tags Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
@@ -658,7 +678,7 @@ public final class FargateServiceTaskDefinitionArgs extends com.pulumi.resources
         }
 
         /**
-         * @param tags Key-value map of resource tags.
+         * @param tags Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          * 
          * @return builder
          * 
