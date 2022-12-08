@@ -36,12 +36,10 @@ class EC2ServiceArgs:
                  platform_version: Optional[pulumi.Input[str]] = None,
                  propagate_tags: Optional[pulumi.Input[str]] = None,
                  scheduling_strategy: Optional[pulumi.Input[str]] = None,
-                 service_connect_configuration: Optional[pulumi.Input['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']] = None,
                  service_registries: Optional[pulumi.Input['pulumi_aws.ecs.ServiceServiceRegistriesArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  task_definition: Optional[pulumi.Input[str]] = None,
-                 task_definition_args: Optional['EC2ServiceTaskDefinitionArgs'] = None,
-                 triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
+                 task_definition_args: Optional['EC2ServiceTaskDefinitionArgs'] = None):
         """
         The set of arguments for constructing a EC2Service resource.
         :param pulumi.Input[str] cluster: ARN of an ECS cluster.
@@ -64,12 +62,10 @@ class EC2ServiceArgs:
         :param pulumi.Input[str] platform_version: Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
         :param pulumi.Input[str] propagate_tags: Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
         :param pulumi.Input[str] scheduling_strategy: Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
-        :param pulumi.Input['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs'] service_connect_configuration: The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
         :param pulumi.Input['pulumi_aws.ecs.ServiceServiceRegistriesArgs'] service_registries: Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param 'EC2ServiceTaskDefinitionArgs' task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
         """
         if cluster is not None:
             pulumi.set(__self__, "cluster", cluster)
@@ -111,8 +107,6 @@ class EC2ServiceArgs:
             pulumi.set(__self__, "propagate_tags", propagate_tags)
         if scheduling_strategy is not None:
             pulumi.set(__self__, "scheduling_strategy", scheduling_strategy)
-        if service_connect_configuration is not None:
-            pulumi.set(__self__, "service_connect_configuration", service_connect_configuration)
         if service_registries is not None:
             pulumi.set(__self__, "service_registries", service_registries)
         if tags is not None:
@@ -121,8 +115,6 @@ class EC2ServiceArgs:
             pulumi.set(__self__, "task_definition", task_definition)
         if task_definition_args is not None:
             pulumi.set(__self__, "task_definition_args", task_definition_args)
-        if triggers is not None:
-            pulumi.set(__self__, "triggers", triggers)
 
     @property
     @pulumi.getter
@@ -365,18 +357,6 @@ class EC2ServiceArgs:
         pulumi.set(self, "scheduling_strategy", value)
 
     @property
-    @pulumi.getter(name="serviceConnectConfiguration")
-    def service_connect_configuration(self) -> Optional[pulumi.Input['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']]:
-        """
-        The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
-        """
-        return pulumi.get(self, "service_connect_configuration")
-
-    @service_connect_configuration.setter
-    def service_connect_configuration(self, value: Optional[pulumi.Input['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']]):
-        pulumi.set(self, "service_connect_configuration", value)
-
-    @property
     @pulumi.getter(name="serviceRegistries")
     def service_registries(self) -> Optional[pulumi.Input['pulumi_aws.ecs.ServiceServiceRegistriesArgs']]:
         """
@@ -424,18 +404,6 @@ class EC2ServiceArgs:
     def task_definition_args(self, value: Optional['EC2ServiceTaskDefinitionArgs']):
         pulumi.set(self, "task_definition_args", value)
 
-    @property
-    @pulumi.getter
-    def triggers(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
-        """
-        Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
-        """
-        return pulumi.get(self, "triggers")
-
-    @triggers.setter
-    def triggers(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
-        pulumi.set(self, "triggers", value)
-
 
 class EC2Service(pulumi.ComponentResource):
     @overload
@@ -462,12 +430,10 @@ class EC2Service(pulumi.ComponentResource):
                  platform_version: Optional[pulumi.Input[str]] = None,
                  propagate_tags: Optional[pulumi.Input[str]] = None,
                  scheduling_strategy: Optional[pulumi.Input[str]] = None,
-                 service_connect_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']]] = None,
                  service_registries: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  task_definition: Optional[pulumi.Input[str]] = None,
                  task_definition_args: Optional[pulumi.InputType['EC2ServiceTaskDefinitionArgs']] = None,
-                 triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         """
         Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
@@ -495,12 +461,10 @@ class EC2Service(pulumi.ComponentResource):
         :param pulumi.Input[str] platform_version: Platform version on which to run your service. Only applicable for `launch_type` set to `FARGATE`. Defaults to `LATEST`. More information about Fargate platform versions can be found in the [AWS ECS User Guide](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html).
         :param pulumi.Input[str] propagate_tags: Specifies whether to propagate the tags from the task definition or the service to the tasks. The valid values are `SERVICE` and `TASK_DEFINITION`.
         :param pulumi.Input[str] scheduling_strategy: Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
-        :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']] service_connect_configuration: The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']] service_registries: Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] task_definition: Family and revision (`family:revision`) or full ARN of the task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
         :param pulumi.InputType['EC2ServiceTaskDefinitionArgs'] task_definition_args: The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] triggers: Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
         """
         ...
     @overload
@@ -547,12 +511,10 @@ class EC2Service(pulumi.ComponentResource):
                  platform_version: Optional[pulumi.Input[str]] = None,
                  propagate_tags: Optional[pulumi.Input[str]] = None,
                  scheduling_strategy: Optional[pulumi.Input[str]] = None,
-                 service_connect_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceConnectConfigurationArgs']]] = None,
                  service_registries: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceServiceRegistriesArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  task_definition: Optional[pulumi.Input[str]] = None,
                  task_definition_args: Optional[pulumi.InputType['EC2ServiceTaskDefinitionArgs']] = None,
-                 triggers: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  __props__=None):
         if opts is None:
             opts = pulumi.ResourceOptions()
@@ -587,12 +549,10 @@ class EC2Service(pulumi.ComponentResource):
             __props__.__dict__["platform_version"] = platform_version
             __props__.__dict__["propagate_tags"] = propagate_tags
             __props__.__dict__["scheduling_strategy"] = scheduling_strategy
-            __props__.__dict__["service_connect_configuration"] = service_connect_configuration
             __props__.__dict__["service_registries"] = service_registries
             __props__.__dict__["tags"] = tags
             __props__.__dict__["task_definition"] = task_definition
             __props__.__dict__["task_definition_args"] = task_definition_args
-            __props__.__dict__["triggers"] = triggers
             __props__.__dict__["service"] = None
         super(EC2Service, __self__).__init__(
             'awsx:ecs:EC2Service',

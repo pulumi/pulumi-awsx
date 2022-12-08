@@ -69,7 +69,7 @@ type trailArgs struct {
 	S3KeyPrefix *string `pulumi:"s3KeyPrefix"`
 	// Name of the Amazon SNS topic defined for notification of log file delivery.
 	SnsTopicName *string `pulumi:"snsTopicName"`
-	// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	// Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 }
 
@@ -103,7 +103,7 @@ type TrailArgs struct {
 	S3KeyPrefix pulumi.StringPtrInput
 	// Name of the Amazon SNS topic defined for notification of log file delivery.
 	SnsTopicName pulumi.StringPtrInput
-	// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	// Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 }
 

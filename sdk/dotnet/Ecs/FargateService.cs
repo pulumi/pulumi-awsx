@@ -189,12 +189,6 @@ namespace Pulumi.Awsx.Ecs
         public Input<string>? SchedulingStrategy { get; set; }
 
         /// <summary>
-        /// The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
-        /// </summary>
-        [Input("serviceConnectConfiguration")]
-        public Input<Pulumi.Aws.Ecs.Inputs.ServiceServiceConnectConfigurationArgs>? ServiceConnectConfiguration { get; set; }
-
-        /// <summary>
         /// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
         /// </summary>
         [Input("serviceRegistries")]
@@ -223,18 +217,6 @@ namespace Pulumi.Awsx.Ecs
         /// </summary>
         [Input("taskDefinitionArgs")]
         public Inputs.FargateServiceTaskDefinitionArgs? TaskDefinitionArgs { get; set; }
-
-        [Input("triggers")]
-        private InputMap<string>? _triggers;
-
-        /// <summary>
-        /// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
-        /// </summary>
-        public InputMap<string> Triggers
-        {
-            get => _triggers ?? (_triggers = new InputMap<string>());
-            set => _triggers = value;
-        }
 
         public FargateServiceArgs()
         {

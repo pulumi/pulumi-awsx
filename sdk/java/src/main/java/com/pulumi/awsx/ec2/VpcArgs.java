@@ -135,33 +135,18 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+     * A boolean flag to enable/disable DNS support in the VPC. Defaults true.
      * 
      */
     @Import(name="enableDnsSupport")
     private @Nullable Output<Boolean> enableDnsSupport;
 
     /**
-     * @return A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+     * @return A boolean flag to enable/disable DNS support in the VPC. Defaults true.
      * 
      */
     public Optional<Output<Boolean>> enableDnsSupport() {
         return Optional.ofNullable(this.enableDnsSupport);
-    }
-
-    /**
-     * Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
-     * 
-     */
-    @Import(name="enableNetworkAddressUsageMetrics")
-    private @Nullable Output<Boolean> enableNetworkAddressUsageMetrics;
-
-    /**
-     * @return Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
-     * 
-     */
-    public Optional<Output<Boolean>> enableNetworkAddressUsageMetrics() {
-        return Optional.ofNullable(this.enableNetworkAddressUsageMetrics);
     }
 
     /**
@@ -354,7 +339,6 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         this.enableClassiclinkDnsSupport = $.enableClassiclinkDnsSupport;
         this.enableDnsHostnames = $.enableDnsHostnames;
         this.enableDnsSupport = $.enableDnsSupport;
-        this.enableNetworkAddressUsageMetrics = $.enableNetworkAddressUsageMetrics;
         this.instanceTenancy = $.instanceTenancy;
         this.ipv4IpamPoolId = $.ipv4IpamPoolId;
         this.ipv4NetmaskLength = $.ipv4NetmaskLength;
@@ -526,7 +510,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults true.
          * 
          * @return builder
          * 
@@ -537,34 +521,13 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+         * @param enableDnsSupport A boolean flag to enable/disable DNS support in the VPC. Defaults true.
          * 
          * @return builder
          * 
          */
         public Builder enableDnsSupport(Boolean enableDnsSupport) {
             return enableDnsSupport(Output.of(enableDnsSupport));
-        }
-
-        /**
-         * @param enableNetworkAddressUsageMetrics Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder enableNetworkAddressUsageMetrics(@Nullable Output<Boolean> enableNetworkAddressUsageMetrics) {
-            $.enableNetworkAddressUsageMetrics = enableNetworkAddressUsageMetrics;
-            return this;
-        }
-
-        /**
-         * @param enableNetworkAddressUsageMetrics Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder enableNetworkAddressUsageMetrics(Boolean enableNetworkAddressUsageMetrics) {
-            return enableNetworkAddressUsageMetrics(Output.of(enableNetworkAddressUsageMetrics));
         }
 
         /**

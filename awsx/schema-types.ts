@@ -85,7 +85,6 @@ export interface VpcArgs {
     readonly enableClassiclinkDnsSupport?: pulumi.Input<boolean>;
     readonly enableDnsHostnames?: pulumi.Input<boolean>;
     readonly enableDnsSupport?: pulumi.Input<boolean>;
-    readonly enableNetworkAddressUsageMetrics?: pulumi.Input<boolean>;
     readonly instanceTenancy?: pulumi.Input<string>;
     readonly ipv4IpamPoolId?: pulumi.Input<string>;
     readonly ipv4NetmaskLength?: pulumi.Input<number>;
@@ -160,12 +159,10 @@ export interface EC2ServiceArgs {
     readonly platformVersion?: pulumi.Input<string>;
     readonly propagateTags?: pulumi.Input<string>;
     readonly schedulingStrategy?: pulumi.Input<string>;
-    readonly serviceConnectConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceServiceConnectConfiguration>;
     readonly serviceRegistries?: pulumi.Input<aws.types.input.ecs.ServiceServiceRegistries>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: EC2ServiceTaskDefinitionInputs;
-    readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class EC2TaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
@@ -226,12 +223,10 @@ export interface FargateServiceArgs {
     readonly platformVersion?: pulumi.Input<string>;
     readonly propagateTags?: pulumi.Input<string>;
     readonly schedulingStrategy?: pulumi.Input<string>;
-    readonly serviceConnectConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceServiceConnectConfiguration>;
     readonly serviceRegistries?: pulumi.Input<aws.types.input.ecs.ServiceServiceRegistries>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
-    readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class FargateTaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
@@ -454,7 +449,6 @@ export interface LogGroupInputs {
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
     readonly retentionInDays?: pulumi.Input<number>;
-    readonly skipDestroy?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface LogGroupOutputs {
@@ -462,7 +456,6 @@ export interface LogGroupOutputs {
     readonly name?: pulumi.Output<string>;
     readonly namePrefix?: pulumi.Output<string>;
     readonly retentionInDays?: pulumi.Output<number>;
-    readonly skipDestroy?: pulumi.Output<boolean>;
     readonly tags?: pulumi.Output<Record<string, string>>;
 }
 export interface OptionalLogGroupInputs {
@@ -1020,7 +1013,6 @@ export interface TargetGroupInputs {
     readonly slowStart?: pulumi.Input<number>;
     readonly stickiness?: pulumi.Input<aws.types.input.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-    readonly targetFailovers?: pulumi.Input<pulumi.Input<aws.types.input.lb.TargetGroupTargetFailover>[]>;
     readonly targetType?: pulumi.Input<string>;
     readonly vpcId?: pulumi.Input<string>;
 }
@@ -1041,7 +1033,6 @@ export interface TargetGroupOutputs {
     readonly slowStart?: pulumi.Output<number>;
     readonly stickiness?: pulumi.Output<aws.types.output.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Output<Record<string, string>>;
-    readonly targetFailovers?: pulumi.Output<aws.types.output.lb.TargetGroupTargetFailover[]>;
     readonly targetType?: pulumi.Output<string>;
     readonly vpcId?: pulumi.Output<string>;
 }

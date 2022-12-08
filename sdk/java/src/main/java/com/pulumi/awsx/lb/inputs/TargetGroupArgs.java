@@ -5,13 +5,11 @@ package com.pulumi.awsx.lb.inputs;
 
 import com.pulumi.aws.lb.inputs.TargetGroupHealthCheckArgs;
 import com.pulumi.aws.lb.inputs.TargetGroupStickinessArgs;
-import com.pulumi.aws.lb.inputs.TargetGroupTargetFailoverArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.Boolean;
 import java.lang.Integer;
 import java.lang.String;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -340,14 +338,14 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
+     * Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
      * 
      */
     @Import(name="protocolVersion")
     private @Nullable Output<String> protocolVersion;
 
     /**
-     * @return Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
+     * @return Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
      * 
      */
     public Optional<Output<String>> protocolVersion() {
@@ -415,21 +413,6 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
-     * 
-     */
-    @Import(name="targetFailovers")
-    private @Nullable Output<List<TargetGroupTargetFailoverArgs>> targetFailovers;
-
-    /**
-     * @return Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
-     * 
-     */
-    public Optional<Output<List<TargetGroupTargetFailoverArgs>>> targetFailovers() {
-        return Optional.ofNullable(this.targetFailovers);
-    }
-
-    /**
      * Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
      * 
      */
@@ -478,7 +461,6 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
         this.slowStart = $.slowStart;
         this.stickiness = $.stickiness;
         this.tags = $.tags;
-        this.targetFailovers = $.targetFailovers;
         this.targetType = $.targetType;
         this.vpcId = $.vpcId;
     }
@@ -733,7 +715,7 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param protocolVersion Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
+         * @param protocolVersion Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
          * 
          * @return builder
          * 
@@ -744,7 +726,7 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param protocolVersion Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
+         * @param protocolVersion Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
          * 
          * @return builder
          * 
@@ -835,37 +817,6 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder tags(Map<String,String> tags) {
             return tags(Output.of(tags));
-        }
-
-        /**
-         * @param targetFailovers Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder targetFailovers(@Nullable Output<List<TargetGroupTargetFailoverArgs>> targetFailovers) {
-            $.targetFailovers = targetFailovers;
-            return this;
-        }
-
-        /**
-         * @param targetFailovers Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder targetFailovers(List<TargetGroupTargetFailoverArgs> targetFailovers) {
-            return targetFailovers(Output.of(targetFailovers));
-        }
-
-        /**
-         * @param targetFailovers Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder targetFailovers(TargetGroupTargetFailoverArgs... targetFailovers) {
-            return targetFailovers(List.of(targetFailovers));
         }
 
         /**

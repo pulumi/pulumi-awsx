@@ -196,7 +196,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: '443'
+              port: 443
               protocol: HTTPS
               sslPolicy: ELBSecurityPolicy-2016-08
               certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
@@ -337,7 +337,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${aws_lb.front_end.arn}
-              port: '443'
+              port: 443
               protocol: TLS
               certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
               alpnPolicy: HTTP2Preferred
@@ -507,12 +507,12 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: '80'
+              port: 80
               protocol: HTTP
               defaultActions:
                 - type: redirect
                   redirect:
-                    port: '443'
+                    port: 443
                     protocol: HTTPS
                     statusCode: HTTP_301
         ```
@@ -678,14 +678,14 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: '80'
+              port: 80
               protocol: HTTP
               defaultActions:
                 - type: fixed-response
                   fixedResponse:
                     contentType: text/plain
                     messageBody: Fixed response content
-                    statusCode: '200'
+                    statusCode: 200
         ```
         {{% /example %}}
         {{% example %}}
@@ -940,7 +940,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: '80'
+              port: 80
               protocol: HTTP
               defaultActions:
                 - type: authenticate-cognito
@@ -1170,7 +1170,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: '80'
+              port: 80
               protocol: HTTP
               defaultActions:
                 - type: authenticate-oidc
@@ -1554,7 +1554,6 @@ class TargetGroupArgs:
                  slow_start: Optional[pulumi.Input[int]] = None,
                  stickiness: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 target_failovers: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]] = None,
                  target_type: Optional[pulumi.Input[str]] = None,
                  vpc_id: Optional[pulumi.Input[str]] = None):
         """
@@ -1825,7 +1824,9 @@ class TargetGroupArgs:
         import * as pulumi from "@pulumi/pulumi";
         import * as aws from "@pulumi/aws";
 
-        const lambda_example = new aws.lb.TargetGroup("lambda-example", {targetType: "lambda"});
+        const lambda_example = new aws.lb.TargetGroup("lambda-example", {
+            targetType: "lambda",
+        });
         ```
         ```python
         import pulumi
@@ -2031,12 +2032,11 @@ class TargetGroupArgs:
         :param pulumi.Input[int] port: Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
         :param pulumi.Input[str] preserve_client_ip: Whether client IP preservation is enabled. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation) for more information.
         :param pulumi.Input[str] protocol: Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
-        :param pulumi.Input[str] protocol_version: Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
+        :param pulumi.Input[str] protocol_version: Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
         :param pulumi.Input[bool] proxy_protocol_v2: Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
         :param pulumi.Input[int] slow_start: Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
         :param pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs'] stickiness: Stickiness configuration block. Detailed below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]] target_failovers: Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
         :param pulumi.Input[str] target_type: Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
         :param pulumi.Input[str] vpc_id: Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         """
@@ -2072,8 +2072,6 @@ class TargetGroupArgs:
             pulumi.set(__self__, "stickiness", stickiness)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
-        if target_failovers is not None:
-            pulumi.set(__self__, "target_failovers", target_failovers)
         if target_type is not None:
             pulumi.set(__self__, "target_type", target_type)
         if vpc_id is not None:
@@ -2215,7 +2213,7 @@ class TargetGroupArgs:
     @pulumi.getter(name="protocolVersion")
     def protocol_version(self) -> Optional[pulumi.Input[str]]:
         """
-        Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
+        Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
         """
         return pulumi.get(self, "protocol_version")
 
@@ -2270,18 +2268,6 @@ class TargetGroupArgs:
     @tags.setter
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
-
-    @property
-    @pulumi.getter(name="targetFailovers")
-    def target_failovers(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]]:
-        """
-        Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
-        """
-        return pulumi.get(self, "target_failovers")
-
-    @target_failovers.setter
-    def target_failovers(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]]):
-        pulumi.set(self, "target_failovers", value)
 
     @property
     @pulumi.getter(name="targetType")

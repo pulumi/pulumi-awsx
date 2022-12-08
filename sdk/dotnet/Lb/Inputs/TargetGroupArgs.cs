@@ -278,7 +278,9 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// import * as pulumi from "@pulumi/pulumi";
     /// import * as aws from "@pulumi/aws";
     /// 
-    /// const lambda_example = new aws.lb.TargetGroup("lambda-example", {targetType: "lambda"});
+    /// const lambda_example = new aws.lb.TargetGroup("lambda-example", {
+    ///     targetType: "lambda",
+    /// });
     /// ```
     /// ```python
     /// import pulumi
@@ -543,7 +545,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? Protocol { get; set; }
 
         /// <summary>
-        /// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
+        /// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
         /// </summary>
         [Input("protocolVersion")]
         public Input<string>? ProtocolVersion { get; set; }
@@ -576,18 +578,6 @@ namespace Pulumi.Awsx.Lb.Inputs
         {
             get => _tags ?? (_tags = new InputMap<string>());
             set => _tags = value;
-        }
-
-        [Input("targetFailovers")]
-        private InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs>? _targetFailovers;
-
-        /// <summary>
-        /// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
-        /// </summary>
-        public InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs> TargetFailovers
-        {
-            get => _targetFailovers ?? (_targetFailovers = new InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs>());
-            set => _targetFailovers = value;
         }
 
         /// <summary>

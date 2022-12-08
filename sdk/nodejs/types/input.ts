@@ -216,14 +216,10 @@ export namespace awsx {
         namePrefix?: pulumi.Input<string>;
         /**
          * Specifies the number of days
-         * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
+         * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.
          * If you select 0, the events in the log group are always retained and never expire.
          */
         retentionInDays?: pulumi.Input<number>;
-        /**
-         * Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
-         */
-        skipDestroy?: pulumi.Input<boolean>;
         /**
          * A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
@@ -275,9 +271,12 @@ export namespace awsx {
          */
         forceDetachPolicies?: pulumi.Input<boolean>;
         /**
-         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
          */
         inlinePolicies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.iam.RoleInlinePolicy>[]>;
+        /**
+         * Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
+         */
         managedPolicyArns?: pulumi.Input<pulumi.Input<string>[]>;
         /**
          * Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
@@ -318,11 +317,11 @@ export namespace awsx {
          */
         description?: pulumi.Input<string>;
         /**
-         * Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+         * Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
          */
         egress?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ec2.SecurityGroupEgress>[]>;
         /**
-         * Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+         * Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
          */
         ingress?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ec2.SecurityGroupIngress>[]>;
         /**
@@ -334,7 +333,7 @@ export namespace awsx {
          */
         namePrefix?: pulumi.Input<string>;
         /**
-         * Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+         * Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
          */
         revokeRulesOnDelete?: pulumi.Input<boolean>;
         /**
@@ -399,16 +398,6 @@ export namespace ec2 {
     }
 
     /**
-     * Provides a VPC Endpoint resource.
-     *
-     * > **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
-     * Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
-     * Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
-     * and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
-     * a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
-     * Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
-     * Doing so will cause a conflict of associations and will overwrite the association.
-     *
      * {{% examples %}}
      * ## Example Usage
      * {{% example %}}
@@ -731,6 +720,185 @@ export namespace ec2 {
      *       securityGroupIds:
      *         - ${aws_security_group.sg1.id}
      *       privateDnsEnabled: true
+     * ```
+     * {{% /example %}}
+     * {{% example %}}
+     * ### Gateway Load Balancer Endpoint Type
+     *
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const current = aws.getCallerIdentity({});
+     * const exampleVpcEndpointService = new aws.ec2.VpcEndpointService("exampleVpcEndpointService", {
+     *     acceptanceRequired: false,
+     *     allowedPrincipals: [current.then(current => current.arn)],
+     *     gatewayLoadBalancerArns: [aws_lb.example.arn],
+     * });
+     * const exampleVpcEndpoint = new aws.ec2.VpcEndpoint("exampleVpcEndpoint", {
+     *     serviceName: exampleVpcEndpointService.serviceName,
+     *     subnetIds: [aws_subnet.example.id],
+     *     vpcEndpointType: exampleVpcEndpointService.serviceType,
+     *     vpcId: aws_vpc.example.id,
+     * });
+     * ```
+     * ```python
+     * import pulumi
+     * import pulumi_aws as aws
+     *
+     * current = aws.get_caller_identity()
+     * example_vpc_endpoint_service = aws.ec2.VpcEndpointService("exampleVpcEndpointService",
+     *     acceptance_required=False,
+     *     allowed_principals=[current.arn],
+     *     gateway_load_balancer_arns=[aws_lb["example"]["arn"]])
+     * example_vpc_endpoint = aws.ec2.VpcEndpoint("exampleVpcEndpoint",
+     *     service_name=example_vpc_endpoint_service.service_name,
+     *     subnet_ids=[aws_subnet["example"]["id"]],
+     *     vpc_endpoint_type=example_vpc_endpoint_service.service_type,
+     *     vpc_id=aws_vpc["example"]["id"])
+     * ```
+     * ```csharp
+     * using System.Collections.Generic;
+     * using Pulumi;
+     * using Aws = Pulumi.Aws;
+     *
+     * return await Deployment.RunAsync(() => 
+     * {
+     *     var current = Aws.GetCallerIdentity.Invoke();
+     *
+     *     var exampleVpcEndpointService = new Aws.Ec2.VpcEndpointService("exampleVpcEndpointService", new()
+     *     {
+     *         AcceptanceRequired = false,
+     *         AllowedPrincipals = new[]
+     *         {
+     *             current.Apply(getCallerIdentityResult => getCallerIdentityResult.Arn),
+     *         },
+     *         GatewayLoadBalancerArns = new[]
+     *         {
+     *             aws_lb.Example.Arn,
+     *         },
+     *     });
+     *
+     *     var exampleVpcEndpoint = new Aws.Ec2.VpcEndpoint("exampleVpcEndpoint", new()
+     *     {
+     *         ServiceName = exampleVpcEndpointService.ServiceName,
+     *         SubnetIds = new[]
+     *         {
+     *             aws_subnet.Example.Id,
+     *         },
+     *         VpcEndpointType = exampleVpcEndpointService.ServiceType,
+     *         VpcId = aws_vpc.Example.Id,
+     *     });
+     *
+     * });
+     * ```
+     * ```go
+     * package main
+     *
+     * import (
+     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+     * )
+     *
+     * func main() {
+     * 	pulumi.Run(func(ctx *pulumi.Context) error {
+     * 		current, err := aws.GetCallerIdentity(ctx, nil, nil)
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
+     * 			AcceptanceRequired: pulumi.Bool(false),
+     * 			AllowedPrincipals: pulumi.StringArray{
+     * 				pulumi.String(current.Arn),
+     * 			},
+     * 			GatewayLoadBalancerArns: pulumi.StringArray{
+     * 				pulumi.Any(aws_lb.Example.Arn),
+     * 			},
+     * 		})
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
+     * 			ServiceName: exampleVpcEndpointService.ServiceName,
+     * 			SubnetIds: pulumi.StringArray{
+     * 				pulumi.Any(aws_subnet.Example.Id),
+     * 			},
+     * 			VpcEndpointType: exampleVpcEndpointService.ServiceType,
+     * 			VpcId:           pulumi.Any(aws_vpc.Example.Id),
+     * 		})
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		return nil
+     * 	})
+     * }
+     * ```
+     * ```java
+     * package generated_program;
+     *
+     * import com.pulumi.Context;
+     * import com.pulumi.Pulumi;
+     * import com.pulumi.core.Output;
+     * import com.pulumi.aws.AwsFunctions;
+     * import com.pulumi.aws.ec2.VpcEndpointService;
+     * import com.pulumi.aws.ec2.VpcEndpointServiceArgs;
+     * import com.pulumi.aws.ec2.VpcEndpoint;
+     * import com.pulumi.aws.ec2.VpcEndpointArgs;
+     * import java.util.List;
+     * import java.util.ArrayList;
+     * import java.util.Map;
+     * import java.io.File;
+     * import java.nio.file.Files;
+     * import java.nio.file.Paths;
+     *
+     * public class App {
+     *     public static void main(String[] args) {
+     *         Pulumi.run(App::stack);
+     *     }
+     *
+     *     public static void stack(Context ctx) {
+     *         final var current = AwsFunctions.getCallerIdentity();
+     *
+     *         var exampleVpcEndpointService = new VpcEndpointService("exampleVpcEndpointService", VpcEndpointServiceArgs.builder()        
+     *             .acceptanceRequired(false)
+     *             .allowedPrincipals(current.applyValue(getCallerIdentityResult -> getCallerIdentityResult.arn()))
+     *             .gatewayLoadBalancerArns(aws_lb.example().arn())
+     *             .build());
+     *
+     *         var exampleVpcEndpoint = new VpcEndpoint("exampleVpcEndpoint", VpcEndpointArgs.builder()        
+     *             .serviceName(exampleVpcEndpointService.serviceName())
+     *             .subnetIds(aws_subnet.example().id())
+     *             .vpcEndpointType(exampleVpcEndpointService.serviceType())
+     *             .vpcId(aws_vpc.example().id())
+     *             .build());
+     *
+     *     }
+     * }
+     * ```
+     * ```yaml
+     * resources:
+     *   exampleVpcEndpointService:
+     *     type: aws:ec2:VpcEndpointService
+     *     properties:
+     *       acceptanceRequired: false
+     *       allowedPrincipals:
+     *         - ${current.arn}
+     *       gatewayLoadBalancerArns:
+     *         - ${aws_lb.example.arn}
+     *   exampleVpcEndpoint:
+     *     type: aws:ec2:VpcEndpoint
+     *     properties:
+     *       serviceName: ${exampleVpcEndpointService.serviceName}
+     *       subnetIds:
+     *         - ${aws_subnet.example.id}
+     *       vpcEndpointType: ${exampleVpcEndpointService.serviceType}
+     *       vpcId: ${aws_vpc.example.id}
+     * variables:
+     *   current:
+     *     Fn::Invoke:
+     *       Function: aws:getCallerIdentity
+     *       Arguments: {}
      * ```
      * {{% /example %}}
      * {{% /examples %}}
@@ -1383,7 +1551,7 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: '443'
+     *       port: 443
      *       protocol: HTTPS
      *       sslPolicy: ELBSecurityPolicy-2016-08
      *       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
@@ -1524,7 +1692,7 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${aws_lb.front_end.arn}
-     *       port: '443'
+     *       port: 443
      *       protocol: TLS
      *       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
      *       alpnPolicy: HTTP2Preferred
@@ -1694,12 +1862,12 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: '80'
+     *       port: 80
      *       protocol: HTTP
      *       defaultActions:
      *         - type: redirect
      *           redirect:
-     *             port: '443'
+     *             port: 443
      *             protocol: HTTPS
      *             statusCode: HTTP_301
      * ```
@@ -1865,14 +2033,14 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: '80'
+     *       port: 80
      *       protocol: HTTP
      *       defaultActions:
      *         - type: fixed-response
      *           fixedResponse:
      *             contentType: text/plain
      *             messageBody: Fixed response content
-     *             statusCode: '200'
+     *             statusCode: 200
      * ```
      * {{% /example %}}
      * {{% example %}}
@@ -2127,7 +2295,7 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: '80'
+     *       port: 80
      *       protocol: HTTP
      *       defaultActions:
      *         - type: authenticate-cognito
@@ -2357,7 +2525,7 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: '80'
+     *       port: 80
      *       protocol: HTTP
      *       defaultActions:
      *         - type: authenticate-oidc
@@ -2914,7 +3082,9 @@ export namespace lb {
      * import * as pulumi from "@pulumi/pulumi";
      * import * as aws from "@pulumi/aws";
      *
-     * const lambda_example = new aws.lb.TargetGroup("lambda-example", {targetType: "lambda"});
+     * const lambda_example = new aws.lb.TargetGroup("lambda-example", {
+     *     targetType: "lambda",
+     * });
      * ```
      * ```python
      * import pulumi
@@ -3156,7 +3326,7 @@ export namespace lb {
          */
         protocol?: pulumi.Input<string>;
         /**
-         * Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
+         * Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
          */
         protocolVersion?: pulumi.Input<string>;
         /**
@@ -3175,10 +3345,6 @@ export namespace lb {
          * Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-        /**
-         * Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
-         */
-        targetFailovers?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.TargetGroupTargetFailover>[]>;
         /**
          * Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
          */

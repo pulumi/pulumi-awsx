@@ -182,7 +182,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: '443'
+    ///       port: 443
     ///       protocol: HTTPS
     ///       sslPolicy: ELBSecurityPolicy-2016-08
     ///       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
@@ -323,7 +323,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${aws_lb.front_end.arn}
-    ///       port: '443'
+    ///       port: 443
     ///       protocol: TLS
     ///       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
     ///       alpnPolicy: HTTP2Preferred
@@ -493,12 +493,12 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: '80'
+    ///       port: 80
     ///       protocol: HTTP
     ///       defaultActions:
     ///         - type: redirect
     ///           redirect:
-    ///             port: '443'
+    ///             port: 443
     ///             protocol: HTTPS
     ///             statusCode: HTTP_301
     /// ```
@@ -664,14 +664,14 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: '80'
+    ///       port: 80
     ///       protocol: HTTP
     ///       defaultActions:
     ///         - type: fixed-response
     ///           fixedResponse:
     ///             contentType: text/plain
     ///             messageBody: Fixed response content
-    ///             statusCode: '200'
+    ///             statusCode: 200
     /// ```
     /// {{% /example %}}
     /// {{% example %}}
@@ -926,7 +926,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: '80'
+    ///       port: 80
     ///       protocol: HTTP
     ///       defaultActions:
     ///         - type: authenticate-cognito
@@ -1156,7 +1156,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: '80'
+    ///       port: 80
     ///       protocol: HTTP
     ///       defaultActions:
     ///         - type: authenticate-oidc

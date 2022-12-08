@@ -1458,11 +1458,9 @@ type LogGroup struct {
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix *string `pulumi:"namePrefix"`
 	// Specifies the number of days
-	// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
+	// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.
 	// If you select 0, the events in the log group are always retained and never expire.
 	RetentionInDays *int `pulumi:"retentionInDays"`
-	// Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
-	SkipDestroy *bool `pulumi:"skipDestroy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 }
@@ -1489,11 +1487,9 @@ type LogGroupArgs struct {
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
 	// Specifies the number of days
-	// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
+	// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.
 	// If you select 0, the events in the log group are always retained and never expire.
 	RetentionInDays pulumi.IntPtrInput `pulumi:"retentionInDays"`
-	// Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
-	SkipDestroy pulumi.BoolPtrInput `pulumi:"skipDestroy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 }
@@ -1594,15 +1590,10 @@ func (o LogGroupOutput) NamePrefix() pulumi.StringPtrOutput {
 }
 
 // Specifies the number of days
-// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
+// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.
 // If you select 0, the events in the log group are always retained and never expire.
 func (o LogGroupOutput) RetentionInDays() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v LogGroup) *int { return v.RetentionInDays }).(pulumi.IntPtrOutput)
-}
-
-// Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
-func (o LogGroupOutput) SkipDestroy() pulumi.BoolPtrOutput {
-	return o.ApplyT(func(v LogGroup) *bool { return v.SkipDestroy }).(pulumi.BoolPtrOutput)
 }
 
 // A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -1667,7 +1658,7 @@ func (o LogGroupPtrOutput) NamePrefix() pulumi.StringPtrOutput {
 }
 
 // Specifies the number of days
-// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
+// you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.
 // If you select 0, the events in the log group are always retained and never expire.
 func (o LogGroupPtrOutput) RetentionInDays() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v *LogGroup) *int {
@@ -1676,16 +1667,6 @@ func (o LogGroupPtrOutput) RetentionInDays() pulumi.IntPtrOutput {
 		}
 		return v.RetentionInDays
 	}).(pulumi.IntPtrOutput)
-}
-
-// Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
-func (o LogGroupPtrOutput) SkipDestroy() pulumi.BoolPtrOutput {
-	return o.ApplyT(func(v *LogGroup) *bool {
-		if v == nil {
-			return nil
-		}
-		return v.SkipDestroy
-	}).(pulumi.BoolPtrOutput)
 }
 
 // A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -2049,9 +2030,10 @@ type RoleWithPolicy struct {
 	Description *string `pulumi:"description"`
 	// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
 	ForceDetachPolicies *bool `pulumi:"forceDetachPolicies"`
-	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
-	InlinePolicies    []iam.RoleInlinePolicy `pulumi:"inlinePolicies"`
-	ManagedPolicyArns []string               `pulumi:"managedPolicyArns"`
+	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+	InlinePolicies []iam.RoleInlinePolicy `pulumi:"inlinePolicies"`
+	// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
+	ManagedPolicyArns []string `pulumi:"managedPolicyArns"`
 	// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
 	MaxSessionDuration *int `pulumi:"maxSessionDuration"`
 	// Name of the role policy.
@@ -2085,9 +2067,10 @@ type RoleWithPolicyArgs struct {
 	Description pulumi.StringPtrInput `pulumi:"description"`
 	// Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
 	ForceDetachPolicies pulumi.BoolPtrInput `pulumi:"forceDetachPolicies"`
-	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
-	InlinePolicies    iam.RoleInlinePolicyArrayInput `pulumi:"inlinePolicies"`
-	ManagedPolicyArns pulumi.StringArrayInput        `pulumi:"managedPolicyArns"`
+	// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+	InlinePolicies iam.RoleInlinePolicyArrayInput `pulumi:"inlinePolicies"`
+	// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
+	ManagedPolicyArns pulumi.StringArrayInput `pulumi:"managedPolicyArns"`
 	// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
 	MaxSessionDuration pulumi.IntPtrInput `pulumi:"maxSessionDuration"`
 	// Name of the role policy.
@@ -2192,11 +2175,12 @@ func (o RoleWithPolicyOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v RoleWithPolicy) *bool { return v.ForceDetachPolicies }).(pulumi.BoolPtrOutput)
 }
 
-// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
 func (o RoleWithPolicyOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
 	return o.ApplyT(func(v RoleWithPolicy) []iam.RoleInlinePolicy { return v.InlinePolicies }).(iam.RoleInlinePolicyArrayOutput)
 }
 
+// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
 func (o RoleWithPolicyOutput) ManagedPolicyArns() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v RoleWithPolicy) []string { return v.ManagedPolicyArns }).(pulumi.StringArrayOutput)
 }
@@ -2280,7 +2264,7 @@ func (o RoleWithPolicyPtrOutput) ForceDetachPolicies() pulumi.BoolPtrOutput {
 	}).(pulumi.BoolPtrOutput)
 }
 
-// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
 func (o RoleWithPolicyPtrOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutput {
 	return o.ApplyT(func(v *RoleWithPolicy) []iam.RoleInlinePolicy {
 		if v == nil {
@@ -2290,6 +2274,7 @@ func (o RoleWithPolicyPtrOutput) InlinePolicies() iam.RoleInlinePolicyArrayOutpu
 	}).(iam.RoleInlinePolicyArrayOutput)
 }
 
+// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
 func (o RoleWithPolicyPtrOutput) ManagedPolicyArns() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v *RoleWithPolicy) []string {
 		if v == nil {
@@ -2373,15 +2358,15 @@ func (o RoleWithPolicyPtrOutput) Tags() pulumi.StringMapOutput {
 type SecurityGroup struct {
 	// Description of this egress rule.
 	Description *string `pulumi:"description"`
-	// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+	// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
 	Egress []ec2.SecurityGroupEgress `pulumi:"egress"`
-	// Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+	// Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
 	Ingress []ec2.SecurityGroupIngress `pulumi:"ingress"`
 	// Name of the security group. If omitted, this provider will assign a random, unique name.
 	Name *string `pulumi:"name"`
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix *string `pulumi:"namePrefix"`
-	// Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+	// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
 	RevokeRulesOnDelete *bool `pulumi:"revokeRulesOnDelete"`
 	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
@@ -2418,15 +2403,15 @@ type SecurityGroupInput interface {
 type SecurityGroupArgs struct {
 	// Description of this egress rule.
 	Description pulumi.StringPtrInput `pulumi:"description"`
-	// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+	// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
 	Egress ec2.SecurityGroupEgressArrayInput `pulumi:"egress"`
-	// Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+	// Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
 	Ingress ec2.SecurityGroupIngressArrayInput `pulumi:"ingress"`
 	// Name of the security group. If omitted, this provider will assign a random, unique name.
 	Name pulumi.StringPtrInput `pulumi:"name"`
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
-	// Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+	// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
 	RevokeRulesOnDelete pulumi.BoolPtrInput `pulumi:"revokeRulesOnDelete"`
 	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
@@ -2529,12 +2514,12 @@ func (o SecurityGroupOutput) Description() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v SecurityGroup) *string { return v.Description }).(pulumi.StringPtrOutput)
 }
 
-// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
 func (o SecurityGroupOutput) Egress() ec2.SecurityGroupEgressArrayOutput {
 	return o.ApplyT(func(v SecurityGroup) []ec2.SecurityGroupEgress { return v.Egress }).(ec2.SecurityGroupEgressArrayOutput)
 }
 
-// Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+// Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
 func (o SecurityGroupOutput) Ingress() ec2.SecurityGroupIngressArrayOutput {
 	return o.ApplyT(func(v SecurityGroup) []ec2.SecurityGroupIngress { return v.Ingress }).(ec2.SecurityGroupIngressArrayOutput)
 }
@@ -2549,7 +2534,7 @@ func (o SecurityGroupOutput) NamePrefix() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v SecurityGroup) *string { return v.NamePrefix }).(pulumi.StringPtrOutput)
 }
 
-// Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
 func (o SecurityGroupOutput) RevokeRulesOnDelete() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v SecurityGroup) *bool { return v.RevokeRulesOnDelete }).(pulumi.BoolPtrOutput)
 }
@@ -2599,7 +2584,7 @@ func (o SecurityGroupPtrOutput) Description() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+// Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
 func (o SecurityGroupPtrOutput) Egress() ec2.SecurityGroupEgressArrayOutput {
 	return o.ApplyT(func(v *SecurityGroup) []ec2.SecurityGroupEgress {
 		if v == nil {
@@ -2609,7 +2594,7 @@ func (o SecurityGroupPtrOutput) Egress() ec2.SecurityGroupEgressArrayOutput {
 	}).(ec2.SecurityGroupEgressArrayOutput)
 }
 
-// Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
+// Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
 func (o SecurityGroupPtrOutput) Ingress() ec2.SecurityGroupIngressArrayOutput {
 	return o.ApplyT(func(v *SecurityGroup) []ec2.SecurityGroupIngress {
 		if v == nil {
@@ -2639,7 +2624,7 @@ func (o SecurityGroupPtrOutput) NamePrefix() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
 func (o SecurityGroupPtrOutput) RevokeRulesOnDelete() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v *SecurityGroup) *bool {
 		if v == nil {

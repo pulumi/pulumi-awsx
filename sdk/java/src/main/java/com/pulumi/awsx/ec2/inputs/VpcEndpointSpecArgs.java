@@ -16,16 +16,6 @@ import javax.annotation.Nullable;
 
 
 /**
- * Provides a VPC Endpoint resource.
- * 
- * &gt; **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
- * Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
- * Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
- * and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
- * a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
- * Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
- * Doing so will cause a conflict of associations and will overwrite the association.
- * 
  * ## Example Usage
  * ### Basic
  * ```java
@@ -116,6 +106,49 @@ import javax.annotation.Nullable;
  *             .vpcEndpointType(&#34;Interface&#34;)
  *             .securityGroupIds(aws_security_group.sg1().id())
  *             .privateDnsEnabled(true)
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * ### Gateway Load Balancer Endpoint Type
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.AwsFunctions;
+ * import com.pulumi.aws.ec2.VpcEndpointService;
+ * import com.pulumi.aws.ec2.VpcEndpointServiceArgs;
+ * import com.pulumi.aws.ec2.VpcEndpoint;
+ * import com.pulumi.aws.ec2.VpcEndpointArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         final var current = AwsFunctions.getCallerIdentity();
+ * 
+ *         var exampleVpcEndpointService = new VpcEndpointService(&#34;exampleVpcEndpointService&#34;, VpcEndpointServiceArgs.builder()        
+ *             .acceptanceRequired(false)
+ *             .allowedPrincipals(current.applyValue(getCallerIdentityResult -&gt; getCallerIdentityResult.arn()))
+ *             .gatewayLoadBalancerArns(aws_lb.example().arn())
+ *             .build());
+ * 
+ *         var exampleVpcEndpoint = new VpcEndpoint(&#34;exampleVpcEndpoint&#34;, VpcEndpointArgs.builder()        
+ *             .serviceName(exampleVpcEndpointService.serviceName())
+ *             .subnetIds(aws_subnet.example().id())
+ *             .vpcEndpointType(exampleVpcEndpointService.serviceType())
+ *             .vpcId(aws_vpc.example().id())
  *             .build());
  * 
  *     }
