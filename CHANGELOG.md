@@ -1,7 +1,12 @@
 CHANGELOG
 =========
 
+## 1.0.1 (2022-12-08)
+
+* Upgrade internal provider dependencies to fix firewall prompts [#962](https://github.com/pulumi/pulumi-awsx/issues/962)
+
 ## 1.0.0 (2022-11-23)
+
 * Add multi-lang component support scaffolding.
 * Fix type errors in TypeScript checking awsx-classic properties.
 * Ensure that FargateService and EC2Service default `continueBeforeSteadyState` to false.
@@ -14,9 +19,11 @@ CHANGELOG
 * Python: Bump the min required version of `pulumi` PyPi package to 3.47.2.
 
 ## 0.40.0 (2022-03-24)
+
 * Compatibility with pulumi-aws v5.0.0
 
 ## 0.33.0 (2021-02-02)
+
 * Introduce `requestedAvailabilityZone` on `ec2.vps.VpcArgs` that takes `number | "all" | string[]`, to allow specific zones for creating a VPC.
 * Extend the `volumeSize` of the default root block device in ECS
   autoscaling launch configuration to 32 GB to accomodate the latest
@@ -105,15 +112,15 @@ from allowing `[key: string]: any` to `[key: string]: string`.
 
 ## 0.19.2 (2020-01-31)
 
-- Add support for `FirelensConfiguration` to `ecs.Container`.
+* Add support for `FirelensConfiguration` to `ecs.Container`.
   [#496](https://github.com/pulumi/pulumi-awsx/pull/496)
 
-- Explicitly require `@pulumi/pulumi@>=1.9.1` as it contains an API that awsx depends on.
+* Explicitly require `@pulumi/pulumi@>=1.9.1` as it contains an API that awsx depends on.
   [#492](https://github.com/pulumi/pulumi-awsx/pull/492)
 
 ## 0.19.1 (2020-01-22)
 
-- Account for all scenarios where an API Gateway REST API should be redeployed. For more details
+* Account for all scenarios where an API Gateway REST API should be redeployed. For more details
   see: [#485](https://github.com/pulumi/pulumi-awsx/issues/485).
 
   This will cause all existing `awsx.apigateway.API`s to be redeployed.  However, these resources
@@ -132,6 +139,7 @@ from allowing `[key: string]: any` to `[key: string]: string`.
   that uses these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
 
 ## 0.18.14 (2019-11-21)
+
 * Allow the user to pass `family` to the `ecs.TaskDefinition`
 * Update `Container` interface to support the full set of supported ECS container properties
 
@@ -183,7 +191,7 @@ from allowing `[key: string]: any` to `[key: string]: string`.
 
 ### Provider fixes + Reparenting
 
-- Many awsx components were both not parented properly and also did not correctly pass 'provider'
+* Many awsx components were both not parented properly and also did not correctly pass 'provider'
   information along.  For programs not explicitly passing a 'provider' along, this normally was not
   an issue.  However, programs that did want to use an explicit 'provider' (for example, to set a
   particular region for a resource), would commonly run into issues.  We tried to broadly fix these
@@ -228,64 +236,64 @@ from allowing `[key: string]: any` to `[key: string]: string`.
 
 ### Improvements
 
-- awsx.ecs.Cluster can be created from an existing aws.ecs.Cluster's id.
-- Add OPTIONS as a valid method and add ability to set custom gateway responses for
+* awsx.ecs.Cluster can be created from an existing aws.ecs.Cluster's id.
+* Add OPTIONS as a valid method and add ability to set custom gateway responses for
   [awsx.apigateway.API].
-- Load balancing targets can now be simply added to an ALB, NLB, Listener or TargetGroup using the
+* Load balancing targets can now be simply added to an ALB, NLB, Listener or TargetGroup using the
   new `.attachTarget` methods on the respective classes.
 
 ### Compatibility issues
 
-- An `awsx.ec2.Vpc` with `assignGeneratedIpv6CidrBlock: true` will now set
+* An `awsx.ec2.Vpc` with `assignGeneratedIpv6CidrBlock: true` will now set
   `assignIpv6AddressOnCreation: true` by default for child subnets.  This can be overridden by
   setting that value explicitly to `false` with the subnet's args.
 
-- `awsx.Cluster` and `awsx.Network` are now deprecated and will no longer receive future changes.
+* `awsx.Cluster` and `awsx.Network` are now deprecated and will no longer receive future changes.
   Code that uses these types should migrate to `awsx.ecs.Cluster` and `awsx.ec2.Vpc` respectively.
 
 ## 0.18.5 (2019-06-12)
 
-- VPCs can now be made which scale to use all availability zones in a region if desired.  Use
+* VPCs can now be made which scale to use all availability zones in a region if desired.  Use
   `new awsx.ec2.Vpc("name", { numberOfAvailabilityZones: "all" })` to get this behavior.  If
   `numberOfAvailabilityZones` is not provided, the current behavior of defaulting to 2 availability
   zones remains.
-- Externally available application listeners will now open their security group to both ingress and
+* Externally available application listeners will now open their security group to both ingress and
   egress for their specified port.
-- Tweaked API.getFunction to allow [route] and [method] parameters to be optional.  Also changed
+* Tweaked API.getFunction to allow [route] and [method] parameters to be optional.  Also changed
   function to throw if passed arguments that don't map to an actual function.
-- awsx.cloudwatch.Dashboard now exports a `url` property that gives you an immediate link to the
+* awsx.cloudwatch.Dashboard now exports a `url` property that gives you an immediate link to the
   Dashboard.
 
 ## 0.18.4 (2019-05-14)
 
-- ApiGateway now provides control over the backing s3.Bucket created for `StaticRoute`s.  This is
+* ApiGateway now provides control over the backing s3.Bucket created for `StaticRoute`s.  This is
   useful for SinglePageApp scenarios that want to control relevant Bucket values like
   `errorDocument` or `indexDocument`.
-- A new `ecr` module has been created, simplifying creation of `ecr.Repository`s and
+* A new `ecr` module has been created, simplifying creation of `ecr.Repository`s and
   `ecr.LifecyclePolicy`s.
 
 ## 0.18.3 (2019-04-24)
 
-- Add support for Authorizers, API Keys and Request Validation to Integration Routes in API Gateway
+* Add support for Authorizers, API Keys and Request Validation to Integration Routes in API Gateway
 
 ## 0.18.2 (2019-04-22)
 
-- Adds a new set of APIs for defining and CloudWatch metrics and creating alarms from them. See
+* Adds a new set of APIs for defining and CloudWatch metrics and creating alarms from them. See
   [awsx.cloudwatch.Metric] for more details, and see [awsx.lambda.metrics.duration] as an example of
   a newly exposed easy-to-use metric.
-- Dashboards can easily be created from the above [awsx.cloudwatch.Metric] objects using the new
+* Dashboards can easily be created from the above [awsx.cloudwatch.Metric] objects using the new
   [awsx.cloudwatch.Dashboard] helper.  See
   [here](index.ts-https://github.com/pulumi/pulumi-awsx/blob/master/nodejs/awsx/examples-dashboards)
   for an example.
-- [awsx.autoscaling.AutoScalingGroup]s can now easily have a scheduling action provided by using the
+* [awsx.autoscaling.AutoScalingGroup]s can now easily have a scheduling action provided by using the
   new [AutoScalingGroup.createSchedule] instance method.
-- [awsx.autoscaling.AutoScalingGroup]s can now easily scale based on an [aws.cloudwatch.Metric] or
+* [awsx.autoscaling.AutoScalingGroup]s can now easily scale based on an [aws.cloudwatch.Metric] or
   based on some preexisting well-known metrics.  See the new [AutoScalingGroup.scaleToTrackXXX]
   instance methods. Amazon EC2 Auto Scaling creates and manages the CloudWatch alarms that trigger
   the scaling policy and calculates the scaling adjustment based on the metric and the target value.
   The scaling policy adds or removes capacity as required to keep the metric at, or close to, the
   specified target value.
-- [Step-Scaling-Policies](application-auto-scaling-step-scaling-policies.html-https://docs.aws.amazon.com/autoscaling/application-userguide)
+* [Step-Scaling-Policies](application-auto-scaling-step-scaling-policies.html-https://docs.aws.amazon.com/autoscaling/application-userguide)
   can easily be added for [awsx.autoscaling.AutoScalingGroup]s.  All you need to do is provide an
   appropriate metric and simple information about where your scale-out and scale-in steps should
   begin and the [AutoScalingGroup] will create the appropriate policies and
@@ -293,37 +301,37 @@ from allowing `[key: string]: any` to `[key: string]: string`.
 
 ## 0.18.1 (2019-04-14)
 
-- TypeScript typings for awsx.apigateway.API have been updated to be more accurate.
-- Application LoadBalancers/Listeners/TargetGroups will now create a default SecurityGroup for their
+* TypeScript typings for awsx.apigateway.API have been updated to be more accurate.
+* Application LoadBalancers/Listeners/TargetGroups will now create a default SecurityGroup for their
   LoadBalancer if none is provided.
-- Added easier convenience methods overloads on an awsx.ec2.SecurityGroup to make ingress/egress
+* Added easier convenience methods overloads on an awsx.ec2.SecurityGroup to make ingress/egress
   rules.
-- Add TypeScript documentation on API Gateway's Integration Route and Raw Data Route
-- Add support for [Lambda Authorizers](api-gateway-setup-api-key-with-restapi.html-https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) and [Cognito Authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) and [API Keys](https://docs.aws.amazon.com/apigateway/latest-developerguide) for API Gateway in TypeScripts
+* Add TypeScript documentation on API Gateway's Integration Route and Raw Data Route
+* Add support for [Lambda Authorizers](api-gateway-setup-api-key-with-restapi.html-https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html) and [Cognito Authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html) and [API Keys](https://docs.aws.amazon.com/apigateway/latest-developerguide) for API Gateway in TypeScripts
 
 ## 0.18.0 (2019-03-29)
 
 ### Important
 
-- Moves to the new 0.18.0 version of `@pulumi/aws`.  Version 0.18.0 of `pulumi-aws` is now based on
+* Moves to the new 0.18.0 version of `@pulumi/aws`.  Version 0.18.0 of `pulumi-aws` is now based on
   v2.2.0 of the AWS Terraform Provider, which has a variety of breaking changes from the previous
   version. See documentation in `@pulumi/aws` repo for more details.
 
-- Add support for request parameter validation to API Gateway as well as documentation
+* Add support for request parameter validation to API Gateway as well as documentation
 
 ## 0.17.3 (Released March 25, 2019)
 
-- awsx.ec2.Subnets created for a VPC will have a unique `name: VpcName-SubnetType-Index` entry
+* awsx.ec2.Subnets created for a VPC will have a unique `name: VpcName-SubnetType-Index` entry
   provided for them in their tags.  This can help distinguish things when there are many subnets
   created in a vpc.
-- NatGateways created as part of creating private subnets in an awsx.ec2.VPC will now be parented
+* NatGateways created as part of creating private subnets in an awsx.ec2.VPC will now be parented
   by the VPC.
-- Fixes issue where computation of Fargate Memory/CPU requirements was not being done properly.
-- Fixes issue where VPC might fail to create because tags could not be set on its EIPs.
+* Fixes issue where computation of Fargate Memory/CPU requirements was not being done properly.
+* Fixes issue where VPC might fail to create because tags could not be set on its EIPs.
 
 ## 0.17.1 (2019-03-21)
 
-- Fixes issue where creating an ApplicationListener would fail with an error of:
+* Fixes issue where creating an ApplicationListener would fail with an error of:
     "description" cannot be longer than 255 characters
 
 ## 0.17.0 (2019-03-05)
@@ -333,44 +341,44 @@ from allowing `[key: string]: any` to `[key: string]: string`.
 Updating to v0.17.0 version of `@pulumi/pulumi`.  This is an update that will not play nicely
 in side-by-side applications that pull in prior versions of this package.
 
-See https://github.com/pulumi/pulumi/commit/7f5e089f043a70c02f7e03600d6404ff0e27cc9d for more details.
+See <https://github.com/pulumi/pulumi/commit/7f5e089f043a70c02f7e03600d6404ff0e27cc9d> for more details.
 
 As such, we are rev'ing the minor version of the package from 0.16 to 0.17.  Recent version of `pulumi` will now detect, and warn, if different versions of `@pulumi/pulumi` are loaded into the same application.  If you encounter this warning, it is recommended you move to versions of the `@pulumi/...` packages that are compatible.  i.e. keep everything on 0.16.x until you are ready to move everything to 0.17.x.
 
 ## 0.16.5 (2019-02-22)
 
-- Supply easy mechanisms to add Internet and NAT gateways to a VPC.
-- Change awsx.elasticloadbalancingv2.Listener.endpoint from a method to a property.
-- Change awsx.apigateway.ProxyRoute.target to be a richer type to allow extensibility.
-- Allow awsx.elasticloadbalancingv2.NetworkListener to be used as ProxyRoute.target to simply
+* Supply easy mechanisms to add Internet and NAT gateways to a VPC.
+* Change awsx.elasticloadbalancingv2.Listener.endpoint from a method to a property.
+* Change awsx.apigateway.ProxyRoute.target to be a richer type to allow extensibility.
+* Allow awsx.elasticloadbalancingv2.NetworkListener to be used as ProxyRoute.target to simply
   incoming APIGateway routes to a NetworkListener endpoint.
-- Add support for arbitrary APIGateway integration routes (i.e. to any supported aws service).
+* Add support for arbitrary APIGateway integration routes (i.e. to any supported aws service).
   Note: this comes with a small breaking change where the names of some apigateway types have
   changed from ProxyXXX to IntegrationXXX.
-- Require at least version 0.16.14 of @pulumi/pulumi, in order to support the `deleteBeforeReplace`
+* Require at least version 0.16.14 of @pulumi/pulumi, in order to support the `deleteBeforeReplace`
   option and improve handling of delete-before-replace.
 
 ## 0.16.4 (2019-02-05)
 
-- Renamed 'aws-infra' package to 'awsx'.
-- Moved `aws.apigateway.x.Api` from `@pulumi/aws` into this package under the name `awsx.apigateway.Api`.
+* Renamed 'aws-infra' package to 'awsx'.
+* Moved `aws.apigateway.x.Api` from `@pulumi/aws` into this package under the name `awsx.apigateway.Api`.
 
 ## 0.16.3 (2019-01-25)
 
-- Experimental abstractions have been promoted to supported abstractions.  see new modules for:
-  - autoscaling
-  - ec2
-  - ecs
-  - elasticloadbalancingv2
+* Experimental abstractions have been promoted to supported abstractions.  see new modules for:
+  * autoscaling
+  * ec2
+  * ecs
+  * elasticloadbalancingv2
 
 ## 0.16.2 (2018-12-05)
 
 ### Improvements
 
-- Add some experimental abstractions for Services and Tasks in the `experimental` module.
+* Add some experimental abstractions for Services and Tasks in the `experimental` module.
 
 ## 0.16.1 (2018-11-13)
 
 ### Improvements
 
-- Fix an issue where passing a cluster to another component would fail in some cases.
+* Fix an issue where passing a cluster to another component would fail in some cases.

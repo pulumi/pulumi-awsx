@@ -8,6 +8,7 @@ import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from ._enums import *
+import pulumi_aws
 
 __all__ = [
     'NatGatewayConfigurationArgs',
@@ -130,6 +131,8 @@ class VpcEndpointSpecArgs:
     def __init__(__self__, *,
                  service_name: str,
                  auto_accept: Optional[bool] = None,
+                 dns_options: Optional[pulumi.Input['pulumi_aws.ec2.VpcEndpointDnsOptionsArgs']] = None,
+                 ip_address_type: Optional[pulumi.Input[str]] = None,
                  policy: Optional[pulumi.Input[str]] = None,
                  private_dns_enabled: Optional[bool] = None,
                  route_table_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
@@ -161,21 +164,19 @@ class VpcEndpointSpecArgs:
             service_name="com.amazonaws.us-west-2.s3")
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var s3 = new Aws.Ec2.VpcEndpoint("s3", new()
             {
-                var s3 = new Aws.Ec2.VpcEndpoint("s3", new Aws.Ec2.VpcEndpointArgs
-                {
-                    VpcId = aws_vpc.Main.Id,
-                    ServiceName = "com.amazonaws.us-west-2.s3",
-                });
-            }
+                VpcId = aws_vpc.Main.Id,
+                ServiceName = "com.amazonaws.us-west-2.s3",
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -201,10 +202,17 @@ class VpcEndpointSpecArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.ec2.VpcEndpoint;
+        import com.pulumi.aws.ec2.VpcEndpointArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -213,11 +221,11 @@ class VpcEndpointSpecArgs:
 
             public static void stack(Context ctx) {
                 var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()        
-                    .vpcId(aws_vpc.getMain().getId())
+                    .vpcId(aws_vpc.main().id())
                     .serviceName("com.amazonaws.us-west-2.s3")
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -256,25 +264,23 @@ class VpcEndpointSpecArgs:
             })
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var s3 = new Aws.Ec2.VpcEndpoint("s3", new()
             {
-                var s3 = new Aws.Ec2.VpcEndpoint("s3", new Aws.Ec2.VpcEndpointArgs
+                VpcId = aws_vpc.Main.Id,
+                ServiceName = "com.amazonaws.us-west-2.s3",
+                Tags = 
                 {
-                    VpcId = aws_vpc.Main.Id,
-                    ServiceName = "com.amazonaws.us-west-2.s3",
-                    Tags = 
-                    {
-                        { "Environment", "test" },
-                    },
-                });
-            }
+                    { "Environment", "test" },
+                },
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -303,10 +309,17 @@ class VpcEndpointSpecArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.ec2.VpcEndpoint;
+        import com.pulumi.aws.ec2.VpcEndpointArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -315,12 +328,12 @@ class VpcEndpointSpecArgs:
 
             public static void stack(Context ctx) {
                 var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()        
-                    .vpcId(aws_vpc.getMain().getId())
+                    .vpcId(aws_vpc.main().id())
                     .serviceName("com.amazonaws.us-west-2.s3")
                     .tags(Map.of("Environment", "test"))
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -361,27 +374,25 @@ class VpcEndpointSpecArgs:
             private_dns_enabled=True)
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
+            var ec2 = new Aws.Ec2.VpcEndpoint("ec2", new()
             {
-                var ec2 = new Aws.Ec2.VpcEndpoint("ec2", new Aws.Ec2.VpcEndpointArgs
+                VpcId = aws_vpc.Main.Id,
+                ServiceName = "com.amazonaws.us-west-2.ec2",
+                VpcEndpointType = "Interface",
+                SecurityGroupIds = new[]
                 {
-                    VpcId = aws_vpc.Main.Id,
-                    ServiceName = "com.amazonaws.us-west-2.ec2",
-                    VpcEndpointType = "Interface",
-                    SecurityGroupIds = 
-                    {
-                        aws_security_group.Sg1.Id,
-                    },
-                    PrivateDnsEnabled = true,
-                });
-            }
+                    aws_security_group.Sg1.Id,
+                },
+                PrivateDnsEnabled = true,
+            });
 
-        }
+        });
         ```
         ```go
         package main
@@ -412,10 +423,17 @@ class VpcEndpointSpecArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.ec2.VpcEndpoint;
+        import com.pulumi.aws.ec2.VpcEndpointArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -424,14 +442,14 @@ class VpcEndpointSpecArgs:
 
             public static void stack(Context ctx) {
                 var ec2 = new VpcEndpoint("ec2", VpcEndpointArgs.builder()        
-                    .vpcId(aws_vpc.getMain().getId())
+                    .vpcId(aws_vpc.main().id())
                     .serviceName("com.amazonaws.us-west-2.ec2")
                     .vpcEndpointType("Interface")
-                    .securityGroupIds(aws_security_group.getSg1().getId())
+                    .securityGroupIds(aws_security_group.sg1().id())
                     .privateDnsEnabled(true)
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -483,39 +501,39 @@ class VpcEndpointSpecArgs:
             vpc_id=aws_vpc["example"]["id"])
         ```
         ```csharp
+        using System.Collections.Generic;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
-        class MyStack : Stack
+        return await Deployment.RunAsync(() => 
         {
-            public MyStack()
-            {
-                var current = Output.Create(Aws.GetCallerIdentity.InvokeAsync());
-                var exampleVpcEndpointService = new Aws.Ec2.VpcEndpointService("exampleVpcEndpointService", new Aws.Ec2.VpcEndpointServiceArgs
-                {
-                    AcceptanceRequired = false,
-                    AllowedPrincipals = 
-                    {
-                        current.Apply(current => current.Arn),
-                    },
-                    GatewayLoadBalancerArns = 
-                    {
-                        aws_lb.Example.Arn,
-                    },
-                });
-                var exampleVpcEndpoint = new Aws.Ec2.VpcEndpoint("exampleVpcEndpoint", new Aws.Ec2.VpcEndpointArgs
-                {
-                    ServiceName = exampleVpcEndpointService.ServiceName,
-                    SubnetIds = 
-                    {
-                        aws_subnet.Example.Id,
-                    },
-                    VpcEndpointType = exampleVpcEndpointService.ServiceType,
-                    VpcId = aws_vpc.Example.Id,
-                });
-            }
+            var current = Aws.GetCallerIdentity.Invoke();
 
-        }
+            var exampleVpcEndpointService = new Aws.Ec2.VpcEndpointService("exampleVpcEndpointService", new()
+            {
+                AcceptanceRequired = false,
+                AllowedPrincipals = new[]
+                {
+                    current.Apply(getCallerIdentityResult => getCallerIdentityResult.Arn),
+                },
+                GatewayLoadBalancerArns = new[]
+                {
+                    aws_lb.Example.Arn,
+                },
+            });
+
+            var exampleVpcEndpoint = new Aws.Ec2.VpcEndpoint("exampleVpcEndpoint", new()
+            {
+                ServiceName = exampleVpcEndpointService.ServiceName,
+                SubnetIds = new[]
+                {
+                    aws_subnet.Example.Id,
+                },
+                VpcEndpointType = exampleVpcEndpointService.ServiceType,
+                VpcId = aws_vpc.Example.Id,
+            });
+
+        });
         ```
         ```go
         package main
@@ -562,10 +580,20 @@ class VpcEndpointSpecArgs:
         ```java
         package generated_program;
 
-        import java.util.*;
-        import java.io.*;
-        import java.nio.*;
-        import com.pulumi.*;
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.AwsFunctions;
+        import com.pulumi.aws.ec2.VpcEndpointService;
+        import com.pulumi.aws.ec2.VpcEndpointServiceArgs;
+        import com.pulumi.aws.ec2.VpcEndpoint;
+        import com.pulumi.aws.ec2.VpcEndpointArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
 
         public class App {
             public static void main(String[] args) {
@@ -573,22 +601,22 @@ class VpcEndpointSpecArgs:
             }
 
             public static void stack(Context ctx) {
-                final var current = Output.of(AwsFunctions.getCallerIdentity());
+                final var current = AwsFunctions.getCallerIdentity();
 
                 var exampleVpcEndpointService = new VpcEndpointService("exampleVpcEndpointService", VpcEndpointServiceArgs.builder()        
                     .acceptanceRequired(false)
-                    .allowedPrincipals(current.apply(getCallerIdentityResult -> getCallerIdentityResult.getArn()))
-                    .gatewayLoadBalancerArns(aws_lb.getExample().getArn())
+                    .allowedPrincipals(current.applyValue(getCallerIdentityResult -> getCallerIdentityResult.arn()))
+                    .gatewayLoadBalancerArns(aws_lb.example().arn())
                     .build());
 
                 var exampleVpcEndpoint = new VpcEndpoint("exampleVpcEndpoint", VpcEndpointArgs.builder()        
-                    .serviceName(exampleVpcEndpointService.getServiceName())
-                    .subnetIds(aws_subnet.getExample().getId())
-                    .vpcEndpointType(exampleVpcEndpointService.getServiceType())
-                    .vpcId(aws_vpc.getExample().getId())
+                    .serviceName(exampleVpcEndpointService.serviceName())
+                    .subnetIds(aws_subnet.example().id())
+                    .vpcEndpointType(exampleVpcEndpointService.serviceType())
+                    .vpcId(aws_vpc.example().id())
                     .build());
 
-                }
+            }
         }
         ```
         ```yaml
@@ -629,6 +657,8 @@ class VpcEndpointSpecArgs:
          
         :param str service_name: The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
         :param bool auto_accept: Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
+        :param pulumi.Input['pulumi_aws.ec2.VpcEndpointDnsOptionsArgs'] dns_options: The DNS options for the endpoint. See dns_options below.
+        :param pulumi.Input[str] ip_address_type: The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
         :param pulumi.Input[str] policy: A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.
         :param bool private_dns_enabled: Whether or not to associate a private hosted zone with the specified VPC. Applicable for endpoints of type Interface. Defaults to `false`.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] route_table_ids: One or more route table IDs. Applicable for endpoints of type `Gateway`.
@@ -641,6 +671,10 @@ class VpcEndpointSpecArgs:
         pulumi.set(__self__, "service_name", service_name)
         if auto_accept is not None:
             pulumi.set(__self__, "auto_accept", auto_accept)
+        if dns_options is not None:
+            pulumi.set(__self__, "dns_options", dns_options)
+        if ip_address_type is not None:
+            pulumi.set(__self__, "ip_address_type", ip_address_type)
         if policy is not None:
             pulumi.set(__self__, "policy", policy)
         if private_dns_enabled is not None:
@@ -679,6 +713,30 @@ class VpcEndpointSpecArgs:
     @auto_accept.setter
     def auto_accept(self, value: Optional[bool]):
         pulumi.set(self, "auto_accept", value)
+
+    @property
+    @pulumi.getter(name="dnsOptions")
+    def dns_options(self) -> Optional[pulumi.Input['pulumi_aws.ec2.VpcEndpointDnsOptionsArgs']]:
+        """
+        The DNS options for the endpoint. See dns_options below.
+        """
+        return pulumi.get(self, "dns_options")
+
+    @dns_options.setter
+    def dns_options(self, value: Optional[pulumi.Input['pulumi_aws.ec2.VpcEndpointDnsOptionsArgs']]):
+        pulumi.set(self, "dns_options", value)
+
+    @property
+    @pulumi.getter(name="ipAddressType")
+    def ip_address_type(self) -> Optional[pulumi.Input[str]]:
+        """
+        The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+        """
+        return pulumi.get(self, "ip_address_type")
+
+    @ip_address_type.setter
+    def ip_address_type(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "ip_address_type", value)
 
     @property
     @pulumi.getter

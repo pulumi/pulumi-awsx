@@ -67,7 +67,13 @@ class VpcArgs:
         if cidr_block is not None:
             pulumi.set(__self__, "cidr_block", cidr_block)
         if enable_classiclink is not None:
+            warnings.warn("""With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
+            pulumi.log.warn("""enable_classiclink is deprecated: With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""")
+        if enable_classiclink is not None:
             pulumi.set(__self__, "enable_classiclink", enable_classiclink)
+        if enable_classiclink_dns_support is not None:
+            warnings.warn("""With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
+            pulumi.log.warn("""enable_classiclink_dns_support is deprecated: With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""")
         if enable_classiclink_dns_support is not None:
             pulumi.set(__self__, "enable_classiclink_dns_support", enable_classiclink_dns_support)
         if enable_dns_hostnames is not None:
@@ -442,7 +448,13 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["assign_generated_ipv6_cidr_block"] = assign_generated_ipv6_cidr_block
             __props__.__dict__["availability_zone_names"] = availability_zone_names
             __props__.__dict__["cidr_block"] = cidr_block
+            if enable_classiclink is not None and not opts.urn:
+                warnings.warn("""With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
+                pulumi.log.warn("""enable_classiclink is deprecated: With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""")
             __props__.__dict__["enable_classiclink"] = enable_classiclink
+            if enable_classiclink_dns_support is not None and not opts.urn:
+                warnings.warn("""With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
+                pulumi.log.warn("""enable_classiclink_dns_support is deprecated: With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""")
             __props__.__dict__["enable_classiclink_dns_support"] = enable_classiclink_dns_support
             __props__.__dict__["enable_dns_hostnames"] = enable_dns_hostnames
             __props__.__dict__["enable_dns_support"] = enable_dns_support

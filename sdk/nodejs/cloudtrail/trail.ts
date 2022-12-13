@@ -119,7 +119,7 @@ export interface TrailArgs {
      */
     kmsKeyId?: pulumi.Input<string>;
     /**
-     * Specifies the name of the advanced event selector.
+     * Name of the advanced event selector.
      */
     name?: pulumi.Input<string>;
     /**

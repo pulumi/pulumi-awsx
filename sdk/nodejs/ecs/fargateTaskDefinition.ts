@@ -159,9 +159,12 @@ export interface FargateTaskDefinitionArgs {
      * Configuration block for runtime_platform that containers in your task may use.
      */
     runtimePlatform?: pulumi.Input<pulumiAws.types.input.ecs.TaskDefinitionRuntimePlatform>;
+    /**
+     * Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+     */
     skipDestroy?: pulumi.Input<boolean>;
     /**
-     * Key-value map of resource tags.
+     * Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */
     tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**

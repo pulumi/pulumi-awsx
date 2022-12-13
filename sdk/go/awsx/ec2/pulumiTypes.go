@@ -7,6 +7,7 @@ import (
 	"context"
 	"reflect"
 
+	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -439,6 +440,10 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 type VpcEndpointSpec struct {
 	// Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
 	AutoAccept *bool `pulumi:"autoAccept"`
+	// The DNS options for the endpoint. See dns_options below.
+	DnsOptions *ec2.VpcEndpointDnsOptions `pulumi:"dnsOptions"`
+	// The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+	IpAddressType *string `pulumi:"ipAddressType"`
 	// A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.
 	Policy *string `pulumi:"policy"`
 	// Whether or not to associate a private hosted zone with the specified VPC. Applicable for endpoints of type Interface. Defaults to `false`.
@@ -612,6 +617,10 @@ type VpcEndpointSpecInput interface {
 type VpcEndpointSpecArgs struct {
 	// Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
 	AutoAccept *bool `pulumi:"autoAccept"`
+	// The DNS options for the endpoint. See dns_options below.
+	DnsOptions ec2.VpcEndpointDnsOptionsPtrInput `pulumi:"dnsOptions"`
+	// The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+	IpAddressType pulumi.StringPtrInput `pulumi:"ipAddressType"`
 	// A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.
 	Policy pulumi.StringPtrInput `pulumi:"policy"`
 	// Whether or not to associate a private hosted zone with the specified VPC. Applicable for endpoints of type Interface. Defaults to `false`.
@@ -825,6 +834,16 @@ func (o VpcEndpointSpecOutput) ToVpcEndpointSpecOutputWithContext(ctx context.Co
 // Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
 func (o VpcEndpointSpecOutput) AutoAccept() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) *bool { return v.AutoAccept }).(pulumi.BoolPtrOutput)
+}
+
+// The DNS options for the endpoint. See dns_options below.
+func (o VpcEndpointSpecOutput) DnsOptions() ec2.VpcEndpointDnsOptionsPtrOutput {
+	return o.ApplyT(func(v VpcEndpointSpec) *ec2.VpcEndpointDnsOptions { return v.DnsOptions }).(ec2.VpcEndpointDnsOptionsPtrOutput)
+}
+
+// The IP address type for the endpoint. Valid values are `ipv4`, `dualstack`, and `ipv6`.
+func (o VpcEndpointSpecOutput) IpAddressType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v VpcEndpointSpec) *string { return v.IpAddressType }).(pulumi.StringPtrOutput)
 }
 
 // A policy to attach to the endpoint that controls access to the service. This is a JSON formatted string. Defaults to full access. All `Gateway` and some `Interface` endpoints support policies - see the [relevant AWS documentation](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-access.html) for more details.

@@ -76,6 +76,13 @@ namespace Pulumi.Awsx.Ecr
         }
 
         /// <summary>
+        /// If `true`, will delete the repository even if it contains images.
+        /// Defaults to `false`.
+        /// </summary>
+        [Input("forceDelete")]
+        public Input<bool>? ForceDelete { get; set; }
+
+        /// <summary>
         /// Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.
         /// </summary>
         [Input("imageScanningConfiguration")]

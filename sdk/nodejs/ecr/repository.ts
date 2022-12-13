@@ -52,6 +52,7 @@ export class Repository extends pulumi.ComponentResource {
         opts = opts || {};
         if (!opts.id) {
             resourceInputs["encryptionConfigurations"] = args ? args.encryptionConfigurations : undefined;
+            resourceInputs["forceDelete"] = args ? args.forceDelete : undefined;
             resourceInputs["imageScanningConfiguration"] = args ? args.imageScanningConfiguration : undefined;
             resourceInputs["imageTagMutability"] = args ? args.imageTagMutability : undefined;
             resourceInputs["lifecyclePolicy"] = args ? args.lifecyclePolicy : undefined;
@@ -77,6 +78,11 @@ export interface RepositoryArgs {
      * Encryption configuration for the repository. See below for schema.
      */
     encryptionConfigurations?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecr.RepositoryEncryptionConfiguration>[]>;
+    /**
+     * If `true`, will delete the repository even if it contains images.
+     * Defaults to `false`.
+     */
+    forceDelete?: pulumi.Input<boolean>;
     /**
      * Configuration block that defines image scanning configuration for the repository. By default, image scanning must be manually triggered. See the [ECR User Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning.html) for more information about image scanning.
      */

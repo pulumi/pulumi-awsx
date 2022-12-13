@@ -61,7 +61,7 @@ type trailArgs struct {
 	IsOrganizationTrail *bool `pulumi:"isOrganizationTrail"`
 	// KMS key ARN to use to encrypt the logs delivered by CloudTrail.
 	KmsKeyId *string `pulumi:"kmsKeyId"`
-	// Specifies the name of the advanced event selector.
+	// Name of the advanced event selector.
 	Name *string `pulumi:"name"`
 	// S3 bucket designated for publishing log files.
 	S3Bucket *awsx.RequiredBucket `pulumi:"s3Bucket"`
@@ -95,7 +95,7 @@ type TrailArgs struct {
 	IsOrganizationTrail pulumi.BoolPtrInput
 	// KMS key ARN to use to encrypt the logs delivered by CloudTrail.
 	KmsKeyId pulumi.StringPtrInput
-	// Specifies the name of the advanced event selector.
+	// Name of the advanced event selector.
 	Name pulumi.StringPtrInput
 	// S3 bucket designated for publishing log files.
 	S3Bucket *awsx.RequiredBucketArgs

@@ -74,6 +74,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["listeners"] = args ? args.listeners : undefined;
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["namePrefix"] = args ? args.namePrefix : undefined;
+            resourceInputs["preserveHostHeader"] = args ? args.preserveHostHeader : undefined;
             resourceInputs["securityGroups"] = args ? args.securityGroups : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
             resourceInputs["subnetMappings"] = args ? args.subnetMappings : undefined;
@@ -168,6 +169,10 @@ export interface ApplicationLoadBalancerArgs {
      * Creates a unique name beginning with the specified prefix. Conflicts with `name`.
      */
     namePrefix?: pulumi.Input<string>;
+    /**
+     * Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
+     */
+    preserveHostHeader?: pulumi.Input<boolean>;
     /**
      * A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.
      */

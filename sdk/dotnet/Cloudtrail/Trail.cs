@@ -137,7 +137,7 @@ namespace Pulumi.Awsx.Cloudtrail
         public Input<string>? KmsKeyId { get; set; }
 
         /// <summary>
-        /// Specifies the name of the advanced event selector.
+        /// Name of the advanced event selector.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }

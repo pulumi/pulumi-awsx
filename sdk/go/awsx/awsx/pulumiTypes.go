@@ -2046,7 +2046,7 @@ type RoleWithPolicy struct {
 	PermissionsBoundary *string `pulumi:"permissionsBoundary"`
 	// ARNs of the policies to attach to the created role.
 	PolicyArns []string `pulumi:"policyArns"`
-	// Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	// Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 }
 
@@ -2083,7 +2083,7 @@ type RoleWithPolicyArgs struct {
 	PermissionsBoundary pulumi.StringPtrInput `pulumi:"permissionsBoundary"`
 	// ARNs of the policies to attach to the created role.
 	PolicyArns []string `pulumi:"policyArns"`
-	// Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	// Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 }
 
@@ -2215,7 +2215,7 @@ func (o RoleWithPolicyOutput) PolicyArns() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v RoleWithPolicy) []string { return v.PolicyArns }).(pulumi.StringArrayOutput)
 }
 
-// Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+// Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o RoleWithPolicyOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v RoleWithPolicy) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
@@ -2344,7 +2344,7 @@ func (o RoleWithPolicyPtrOutput) PolicyArns() pulumi.StringArrayOutput {
 	}).(pulumi.StringArrayOutput)
 }
 
-// Key-value mapping of tags for the IAM role. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+// Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o RoleWithPolicyPtrOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v *RoleWithPolicy) map[string]string {
 		if v == nil {
@@ -2368,9 +2368,10 @@ type SecurityGroup struct {
 	NamePrefix *string `pulumi:"namePrefix"`
 	// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
 	RevokeRulesOnDelete *bool `pulumi:"revokeRulesOnDelete"`
-	// Map of tags to assign to the resource.
+	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 	// VPC ID.
+	// Defaults to the region's default VPC.
 	VpcId *string `pulumi:"vpcId"`
 }
 
@@ -2412,9 +2413,10 @@ type SecurityGroupArgs struct {
 	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
 	// Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
 	RevokeRulesOnDelete pulumi.BoolPtrInput `pulumi:"revokeRulesOnDelete"`
-	// Map of tags to assign to the resource.
+	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 	// VPC ID.
+	// Defaults to the region's default VPC.
 	VpcId pulumi.StringPtrInput `pulumi:"vpcId"`
 }
 
@@ -2537,12 +2539,13 @@ func (o SecurityGroupOutput) RevokeRulesOnDelete() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v SecurityGroup) *bool { return v.RevokeRulesOnDelete }).(pulumi.BoolPtrOutput)
 }
 
-// Map of tags to assign to the resource.
+// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o SecurityGroupOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v SecurityGroup) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
 
 // VPC ID.
+// Defaults to the region's default VPC.
 func (o SecurityGroupOutput) VpcId() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v SecurityGroup) *string { return v.VpcId }).(pulumi.StringPtrOutput)
 }
@@ -2631,7 +2634,7 @@ func (o SecurityGroupPtrOutput) RevokeRulesOnDelete() pulumi.BoolPtrOutput {
 	}).(pulumi.BoolPtrOutput)
 }
 
-// Map of tags to assign to the resource.
+// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o SecurityGroupPtrOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v *SecurityGroup) map[string]string {
 		if v == nil {
@@ -2642,6 +2645,7 @@ func (o SecurityGroupPtrOutput) Tags() pulumi.StringMapOutput {
 }
 
 // VPC ID.
+// Defaults to the region's default VPC.
 func (o SecurityGroupPtrOutput) VpcId() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *SecurityGroup) *string {
 		if v == nil {

@@ -16,8 +16,8 @@
         "install": "node scripts/install-pulumi-plugin.js resource awsx ${VERSION}"
     },
     "dependencies": {
-        "@pulumi/aws": "^5.3.0",
-        "@pulumi/docker": "^3.0.0",
+        "@pulumi/aws": "^5.16.2",
+        "@pulumi/docker": "^3.6.1",
         "@pulumi/pulumi": "^3.0.0",
         "@types/aws-lambda": "^8.10.23",
         "mime": "^2.0.0"

@@ -1427,7 +1427,7 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+//			_, err := lb.NewTargetGroup(ctx, "alb-example", &lb.TargetGroupArgs{
 //				TargetType: pulumi.String("alb"),
 //				Port:       pulumi.Int(80),
 //				Protocol:   pulumi.String("TCP"),
@@ -1458,6 +1458,8 @@ type TargetGroup struct {
 	DeregistrationDelay *int `pulumi:"deregistrationDelay"`
 	// Health Check configuration block. Detailed below.
 	HealthCheck *lb.TargetGroupHealthCheck `pulumi:"healthCheck"`
+	// The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
+	IpAddressType *string `pulumi:"ipAddressType"`
 	// Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
 	LambdaMultiValueHeadersEnabled *bool `pulumi:"lambdaMultiValueHeadersEnabled"`
 	// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
@@ -1608,7 +1610,7 @@ type TargetGroupInput interface {
 //
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+//			_, err := lb.NewTargetGroup(ctx, "alb-example", &lb.TargetGroupArgs{
 //				TargetType: pulumi.String("alb"),
 //				Port:       pulumi.Int(80),
 //				Protocol:   pulumi.String("TCP"),
@@ -1639,6 +1641,8 @@ type TargetGroupArgs struct {
 	DeregistrationDelay pulumi.IntPtrInput `pulumi:"deregistrationDelay"`
 	// Health Check configuration block. Detailed below.
 	HealthCheck lb.TargetGroupHealthCheckPtrInput `pulumi:"healthCheck"`
+	// The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
+	IpAddressType pulumi.StringPtrInput `pulumi:"ipAddressType"`
 	// Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
 	LambdaMultiValueHeadersEnabled pulumi.BoolPtrInput `pulumi:"lambdaMultiValueHeadersEnabled"`
 	// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
@@ -1831,7 +1835,7 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Conte
 //
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := lb.NewTargetGroup(ctx, "lambda-example", &lb.TargetGroupArgs{
+//			_, err := lb.NewTargetGroup(ctx, "alb-example", &lb.TargetGroupArgs{
 //				TargetType: pulumi.String("alb"),
 //				Port:       pulumi.Int(80),
 //				Protocol:   pulumi.String("TCP"),
@@ -1892,6 +1896,11 @@ func (o TargetGroupOutput) DeregistrationDelay() pulumi.IntPtrOutput {
 // Health Check configuration block. Detailed below.
 func (o TargetGroupOutput) HealthCheck() lb.TargetGroupHealthCheckPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *lb.TargetGroupHealthCheck { return v.HealthCheck }).(lb.TargetGroupHealthCheckPtrOutput)
+}
+
+// The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
+func (o TargetGroupOutput) IpAddressType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.IpAddressType }).(pulumi.StringPtrOutput)
 }
 
 // Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
@@ -2016,6 +2025,16 @@ func (o TargetGroupPtrOutput) HealthCheck() lb.TargetGroupHealthCheckPtrOutput {
 		}
 		return v.HealthCheck
 	}).(lb.TargetGroupHealthCheckPtrOutput)
+}
+
+// The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
+func (o TargetGroupPtrOutput) IpAddressType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.IpAddressType
+	}).(pulumi.StringPtrOutput)
 }
 
 // Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.

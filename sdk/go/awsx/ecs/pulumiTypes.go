@@ -55,8 +55,9 @@ type EC2ServiceTaskDefinition struct {
 	ProxyConfiguration *ecs.TaskDefinitionProxyConfiguration `pulumi:"proxyConfiguration"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform *ecs.TaskDefinitionRuntimePlatform `pulumi:"runtimePlatform"`
-	SkipDestroy     *bool                              `pulumi:"skipDestroy"`
-	// Key-value map of resource tags.
+	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+	SkipDestroy *bool `pulumi:"skipDestroy"`
+	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
@@ -118,8 +119,9 @@ type EC2ServiceTaskDefinitionArgs struct {
 	ProxyConfiguration ecs.TaskDefinitionProxyConfigurationPtrInput `pulumi:"proxyConfiguration"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform ecs.TaskDefinitionRuntimePlatformPtrInput `pulumi:"runtimePlatform"`
-	SkipDestroy     pulumi.BoolPtrInput                       `pulumi:"skipDestroy"`
-	// Key-value map of resource tags.
+	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+	SkipDestroy pulumi.BoolPtrInput `pulumi:"skipDestroy"`
+	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
@@ -295,11 +297,12 @@ func (o EC2ServiceTaskDefinitionOutput) RuntimePlatform() ecs.TaskDefinitionRunt
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) *ecs.TaskDefinitionRuntimePlatform { return v.RuntimePlatform }).(ecs.TaskDefinitionRuntimePlatformPtrOutput)
 }
 
+// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
 func (o EC2ServiceTaskDefinitionOutput) SkipDestroy() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) *bool { return v.SkipDestroy }).(pulumi.BoolPtrOutput)
 }
 
-// Key-value map of resource tags.
+// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o EC2ServiceTaskDefinitionOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
@@ -497,6 +500,7 @@ func (o EC2ServiceTaskDefinitionPtrOutput) RuntimePlatform() ecs.TaskDefinitionR
 	}).(ecs.TaskDefinitionRuntimePlatformPtrOutput)
 }
 
+// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
 func (o EC2ServiceTaskDefinitionPtrOutput) SkipDestroy() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v *EC2ServiceTaskDefinition) *bool {
 		if v == nil {
@@ -506,7 +510,7 @@ func (o EC2ServiceTaskDefinitionPtrOutput) SkipDestroy() pulumi.BoolPtrOutput {
 	}).(pulumi.BoolPtrOutput)
 }
 
-// Key-value map of resource tags.
+// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o EC2ServiceTaskDefinitionPtrOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v *EC2ServiceTaskDefinition) map[string]string {
 		if v == nil {
@@ -577,8 +581,9 @@ type FargateServiceTaskDefinition struct {
 	ProxyConfiguration *ecs.TaskDefinitionProxyConfiguration `pulumi:"proxyConfiguration"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform *ecs.TaskDefinitionRuntimePlatform `pulumi:"runtimePlatform"`
-	SkipDestroy     *bool                              `pulumi:"skipDestroy"`
-	// Key-value map of resource tags.
+	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+	SkipDestroy *bool `pulumi:"skipDestroy"`
+	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
@@ -638,8 +643,9 @@ type FargateServiceTaskDefinitionArgs struct {
 	ProxyConfiguration ecs.TaskDefinitionProxyConfigurationPtrInput `pulumi:"proxyConfiguration"`
 	// Configuration block for runtime_platform that containers in your task may use.
 	RuntimePlatform ecs.TaskDefinitionRuntimePlatformPtrInput `pulumi:"runtimePlatform"`
-	SkipDestroy     pulumi.BoolPtrInput                       `pulumi:"skipDestroy"`
-	// Key-value map of resource tags.
+	// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
+	SkipDestroy pulumi.BoolPtrInput `pulumi:"skipDestroy"`
+	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
@@ -812,11 +818,12 @@ func (o FargateServiceTaskDefinitionOutput) RuntimePlatform() ecs.TaskDefinition
 	return o.ApplyT(func(v FargateServiceTaskDefinition) *ecs.TaskDefinitionRuntimePlatform { return v.RuntimePlatform }).(ecs.TaskDefinitionRuntimePlatformPtrOutput)
 }
 
+// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
 func (o FargateServiceTaskDefinitionOutput) SkipDestroy() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v FargateServiceTaskDefinition) *bool { return v.SkipDestroy }).(pulumi.BoolPtrOutput)
 }
 
-// Key-value map of resource tags.
+// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o FargateServiceTaskDefinitionOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v FargateServiceTaskDefinition) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
@@ -1004,6 +1011,7 @@ func (o FargateServiceTaskDefinitionPtrOutput) RuntimePlatform() ecs.TaskDefinit
 	}).(ecs.TaskDefinitionRuntimePlatformPtrOutput)
 }
 
+// Whether to retain the old revision when the resource is destroyed or replacement is necessary. Default is `false`.
 func (o FargateServiceTaskDefinitionPtrOutput) SkipDestroy() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v *FargateServiceTaskDefinition) *bool {
 		if v == nil {
@@ -1013,7 +1021,7 @@ func (o FargateServiceTaskDefinitionPtrOutput) SkipDestroy() pulumi.BoolPtrOutpu
 	}).(pulumi.BoolPtrOutput)
 }
 
-// Key-value map of resource tags.
+// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o FargateServiceTaskDefinitionPtrOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v *FargateServiceTaskDefinition) map[string]string {
 		if v == nil {

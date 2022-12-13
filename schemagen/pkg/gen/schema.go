@@ -54,6 +54,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 		Language: map[string]schema.RawMessage{
 			"csharp": rawMessage(map[string]interface{}{
 				"packageReferences": map[string]string{
+					// We use .* format rather than [x,y) because then it prefers the maximum satisfiable version
 					"Pulumi":        "3.*",
 					"Pulumi.Aws":    "5.*",
 					"Pulumi.Docker": "3.*",
@@ -68,14 +69,14 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"java": rawMessage(map[string]interface{}{
 				"packages": map[string]string{
-					"com.pulumi:aws": "5.4.0",
+					"com.pulumi:aws": dependencies.Aws,
 				},
 			}),
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
 					"@pulumi/pulumi":    "^3.0.0",
-					"@pulumi/aws":       "^5.3.0",
-					"@pulumi/docker":    "^3.0.0",
+					"@pulumi/aws":       "^" + dependencies.Aws,
+					"@pulumi/docker":    "^" + dependencies.Docker,
 					"@types/aws-lambda": "^8.10.23",
 					"mime":              "^2.0.0",
 				},
@@ -88,8 +89,8 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
 					"pulumi":        ">=3.47.2,<4.0.0",
-					"pulumi-aws":    ">=5.3.0,<6.0.0",
-					"pulumi-docker": ">=3.0.0,<4.0.0",
+					"pulumi-aws":    fmt.Sprintf(">=%s,<6.0.0", dependencies.Aws),
+					"pulumi-docker": fmt.Sprintf(">=%s,<4.0.0", dependencies.Docker),
 				},
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",

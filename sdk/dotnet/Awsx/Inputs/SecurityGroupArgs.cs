@@ -67,7 +67,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Map of tags to assign to the resource.
+        /// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
@@ -77,6 +77,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
 
         /// <summary>
         /// VPC ID.
+        /// Defaults to the region's default VPC.
         /// </summary>
         [Input("vpcId")]
         public Input<string>? VpcId { get; set; }

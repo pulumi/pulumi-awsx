@@ -42,7 +42,7 @@ class TrailArgs:
         :param pulumi.Input[bool] is_multi_region_trail: Whether the trail is created in the current region or in all regions. Defaults to `false`.
         :param pulumi.Input[bool] is_organization_trail: Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
         :param pulumi.Input[str] kms_key_id: KMS key ARN to use to encrypt the logs delivered by CloudTrail.
-        :param pulumi.Input[str] name: Specifies the name of the advanced event selector.
+        :param pulumi.Input[str] name: Name of the advanced event selector.
         :param '_awsx.RequiredBucketArgs' s3_bucket: S3 bucket designated for publishing log files.
         :param pulumi.Input[str] s3_key_prefix: S3 key prefix that follows the name of the bucket you have designated for log file delivery.
         :param pulumi.Input[str] sns_topic_name: Name of the Amazon SNS topic defined for notification of log file delivery.
@@ -203,7 +203,7 @@ class TrailArgs:
     @pulumi.getter
     def name(self) -> Optional[pulumi.Input[str]]:
         """
-        Specifies the name of the advanced event selector.
+        Name of the advanced event selector.
         """
         return pulumi.get(self, "name")
 
@@ -295,7 +295,7 @@ class Trail(pulumi.ComponentResource):
         :param pulumi.Input[bool] is_multi_region_trail: Whether the trail is created in the current region or in all regions. Defaults to `false`.
         :param pulumi.Input[bool] is_organization_trail: Whether the trail is an AWS Organizations trail. Organization trails log events for the master account and all member accounts. Can only be created in the organization master account. Defaults to `false`.
         :param pulumi.Input[str] kms_key_id: KMS key ARN to use to encrypt the logs delivered by CloudTrail.
-        :param pulumi.Input[str] name: Specifies the name of the advanced event selector.
+        :param pulumi.Input[str] name: Name of the advanced event selector.
         :param pulumi.InputType['_awsx.RequiredBucketArgs'] s3_bucket: S3 bucket designated for publishing log files.
         :param pulumi.Input[str] s3_key_prefix: S3 key prefix that follows the name of the bucket you have designated for log file delivery.
         :param pulumi.Input[str] sns_topic_name: Name of the Amazon SNS topic defined for notification of log file delivery.

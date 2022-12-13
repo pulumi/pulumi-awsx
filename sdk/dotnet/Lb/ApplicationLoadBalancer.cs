@@ -184,6 +184,12 @@ namespace Pulumi.Awsx.Lb
         [Input("namePrefix")]
         public Input<string>? NamePrefix { get; set; }
 
+        /// <summary>
+        /// Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
+        /// </summary>
+        [Input("preserveHostHeader")]
+        public Input<bool>? PreserveHostHeader { get; set; }
+
         [Input("securityGroups")]
         private InputList<string>? _securityGroups;
 
