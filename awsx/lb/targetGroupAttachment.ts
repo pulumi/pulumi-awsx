@@ -47,7 +47,7 @@ export class TargetGroupAttachment extends schema.TargetGroupAttachment {
         return {
           targetGroupArn: arnOutput,
           targetType: arnOutput
-            .apply((arn) => aws.lb.getTargetGroup({ arn }))
+            .apply((arn) => aws.lb.getTargetGroup({ arn }, { parent: this }))
             .apply((tg) => tg.targetType),
         };
       }
@@ -67,9 +67,12 @@ export class TargetGroupAttachment extends schema.TargetGroupAttachment {
         };
       }
       if (instanceId) {
-        const instanceOutputs = aws.ec2.getInstanceOutput({
-          instanceId,
-        });
+        const instanceOutputs = aws.ec2.getInstanceOutput(
+          {
+            instanceId,
+          },
+          { parent: this },
+        );
         return {
           targetId: targetType.apply((t) =>
             t === "instance" ? instanceOutputs.id : instanceOutputs.privateIp,
