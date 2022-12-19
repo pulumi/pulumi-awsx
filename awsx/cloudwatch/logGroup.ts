@@ -69,11 +69,11 @@ export function requiredLogGroup(
   const existing = inputs?.existing;
   if (existing !== undefined) {
     if (existing.arn) {
-      return { logGroupId: makeLogGroupId({ arn: existing.arn }) };
+      return { logGroupId: makeLogGroupId({ arn: existing.arn }, opts) };
     } else if (existing.name) {
       const region = existing.region ? pulumi.output(existing.region) : getRegionFromOpts(opts);
       return {
-        logGroupId: makeLogGroupId({ name: existing.name, region }),
+        logGroupId: makeLogGroupId({ name: existing.name, region }, opts),
       };
     } else {
       throw new Error("One of an existing log group name or ARN must be specified");
@@ -85,7 +85,7 @@ export function requiredLogGroup(
   const region = getRegion(logGroup);
   return {
     logGroup,
-    logGroupId: makeLogGroupId({ name: logGroup.name, region }),
+    logGroupId: makeLogGroupId({ name: logGroup.name, region }, opts),
   };
 }
 
@@ -112,6 +112,7 @@ function makeLogGroupId(
         region: pulumi.Input<string>;
       }
     | { arn: pulumi.Input<string> },
+  opts: pulumi.ResourceOptions,
 ): pulumi.Output<LogGroupId> {
   if ("arn" in args) {
     if ("name" in args) {
@@ -120,7 +121,7 @@ function makeLogGroupId(
     return pulumi.output(args.arn).apply(idFromArn);
   } else {
     return pulumi
-      .all([args.name, args.region, aws.getCallerIdentity()])
+      .all([args.name, args.region, aws.getCallerIdentity(opts)])
       .apply(([name, region, callerIdentity]) => {
         const arn = buildArn({
           name: name,
