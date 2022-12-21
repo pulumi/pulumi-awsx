@@ -86,6 +86,11 @@ Before version 1, this package only supported components in TypeScript. All the 
 
 **Note:** The new top-level components (outside the `classic` namespace) may require additional code changes and resource re-creation.
 
+### Notable changes
+
+- Removed ECS Cluster as this did not add any functionaly over the [AWS Classic ECS Cluster resource](https://www.pulumi.com/registry/packages/aws/api-docs/ecs/cluster/).
+- Removed `Vpc.fromExistingIds()` as this was originally added because other components depended on the concrete VPC component class. The new components in v1 no longer have hard dependencies on other resources, so instead the subnets from the existing VPC can be passed into other components directly.
+
 ## References
 
 * [Tutorial](https://www.pulumi.com/blog/crosswalk-for-aws-1-0/)
