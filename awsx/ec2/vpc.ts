@@ -162,6 +162,7 @@ export class Vpc extends schema.Vpc<VpcData> {
               cidrBlock: spec.cidrBlock,
               tags: {
                 ...args.tags,
+                ...spec.tags,
                 Name: spec.subnetName,
                 SubnetType: spec.type,
               },
