@@ -84,15 +84,14 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
 
+    const sharedTags = { Name: name, ...args.tags }
+    
     const vpc = new aws.ec2.Vpc(
       name,
       {
         ...args,
         cidrBlock,
-        tags: {
-          ...args.tags,
-          Name: name,
-        },
+        tags: sharedTags,
       },
       { parent: this },
     );
@@ -107,10 +106,7 @@ export class Vpc extends schema.Vpc<VpcData> {
       `${name}`,
       {
         vpcId: vpc.id,
-        tags: {
-          ...args.tags,
-          Name: name,
-        },
+        tags: sharedTags,
       },
       { parent: vpc, dependsOn: [vpc] },
     );
@@ -161,7 +157,7 @@ export class Vpc extends schema.Vpc<VpcData> {
               mapPublicIpOnLaunch: spec.type.toLowerCase() === "public",
               cidrBlock: spec.cidrBlock,
               tags: {
-                ...args.tags,
+                ...sharedTags,
                 ...spec.tags,
                 Name: spec.subnetName,
                 SubnetType: spec.type,
@@ -183,8 +179,8 @@ export class Vpc extends schema.Vpc<VpcData> {
             {
               vpcId: vpc.id,
               tags: {
+                ...sharedTags,
                 Name: spec.subnetName,
-                ...args.tags,
                 SubnetType: spec.type,
               },
             },
