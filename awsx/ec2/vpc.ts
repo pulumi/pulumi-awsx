@@ -84,8 +84,8 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
 
-    const sharedTags = { Name: name, ...args.tags }
-    
+    const sharedTags = { Name: name, ...args.tags };
+
     const vpc = new aws.ec2.Vpc(
       name,
       {
