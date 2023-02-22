@@ -3,7 +3,7 @@ CHANGELOG
 
 ## Notice (2022-12-14)
 
-*As of this notice, using CHANGELOG.md is DEPRECATED. We will be using [GitHub Releases](https://github.dev/pulumi/pulumi-awsx/releases) for this repository*
+*As of this notice, using CHANGELOG.md is DEPRECATED. We will be using [GitHub Releases](https://github.com/pulumi/pulumi-awsx/releases) for this repository*
 
 ---
 
