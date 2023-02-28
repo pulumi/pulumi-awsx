@@ -157,6 +157,11 @@ jobs:
           cache: gradle
           distribution: temurin
           java-version: ${{env.JAVAVERSION}}
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          # Pin to known good version until #2262 is resolved
+          gradle-version: "7.6"
       - name: Install Python deps
         run: |-
           pip3 install virtualenv==20.0.23
@@ -303,6 +308,11 @@ jobs:
           cache: gradle
           distribution: temurin
           java-version: ${{env.JAVAVERSION}}
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          # Pin to known good version until #2262 is resolved
+          gradle-version: "7.6"
       - name: Download python SDK
         uses: actions/download-artifact@v2
         with:
