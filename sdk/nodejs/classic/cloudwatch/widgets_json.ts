@@ -58,7 +58,7 @@ export interface MetricWidgetPropertiesJson {
     period: pulumi.Input<number> | undefined;
     region: pulumi.Input<string | undefined>;
     stat: pulumi.Input<string>;
-    view: pulumi.Input<"timeSeries" | "singleValue" | undefined>;
+    view: pulumi.Input<"timeSeries" | "singleValue" | "gauge" | undefined>;
     stacked: pulumi.Input<boolean | undefined>;
     yAxis: pulumi.Input<YAxis> | undefined;
 }
