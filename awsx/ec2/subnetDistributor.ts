@@ -30,7 +30,7 @@ export interface SubnetSpec {
 
 export function getSubnetSpecs(
   vpcName: string,
-  vpcCidr: string,
+  vpcCidr: pulumi.Input<string>,
   azNames: string[],
   subnetInputs?: SubnetSpecInputs[],
 ): SubnetSpec[] {
@@ -42,7 +42,7 @@ export function getSubnetSpecs(
   }
 
   if (subnetInputs === undefined) {
-    return generateDefaultSubnets(vpcName, vpcCidr, azNames, azBases);
+    return generateDefaultSubnets(vpcName, azNames, azBases);
   }
 
   const ipAddress = require("ip-address");
@@ -147,7 +147,7 @@ export function getSubnetSpecs(
 
 function generateDefaultSubnets(
   vpcName: string,
-  vpcCidr: string,
+  // vpcCidr: string,
   azNames: string[],
   azBases: string[],
 ): SubnetSpec[] {
@@ -178,7 +178,7 @@ function generateDefaultSubnets(
   return Array.prototype.concat(privateSubnets, publicSubnets);
 }
 
-function cidrSubnetV4(ipRange: string, newBits: number, netNum: number): string {
+function cidrSubnetV4(ipRange: string|pulumi.Input<string>, newBits: number, netNum: number): string {
   const ipAddress = require("ip-address");
   const BigInteger = require("jsbn").BigInteger;
 
