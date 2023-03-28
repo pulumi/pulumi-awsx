@@ -147,7 +147,6 @@ export function getSubnetSpecs(
 
 function generateDefaultSubnets(
   vpcName: string,
-  // vpcCidr: string,
   azNames: string[],
   azBases: string[],
 ): SubnetSpec[] {
