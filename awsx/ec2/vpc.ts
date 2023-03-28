@@ -77,7 +77,6 @@ export class Vpc extends schema.Vpc<VpcData> {
     const allocationIds = args.natGateways?.elasticIpAllocationIds ?? [];
     validateEips(natGatewayStrategy, allocationIds, availabilityZones);
 
-    // const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
     if (args.cidrBlock && args.ipv4IpamPoolId) {
       throw new Error(
         "Only one of [cidrBlock] and [ipv4IpamPoolId] can be specified",
@@ -90,7 +89,6 @@ export class Vpc extends schema.Vpc<VpcData> {
       name,
       {
         ...args,
-        // cidrBlock,
         tags: sharedTags,
       },
       { parent: this },
