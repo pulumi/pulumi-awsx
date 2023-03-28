@@ -435,9 +435,3 @@ export function validateSubnets(
     throw new Error(msg);
   }
 }
-
-export function getValidIpamCidr(
-  ippoolid: pulumi.Input<string>
-) {
-  return ""
-}
