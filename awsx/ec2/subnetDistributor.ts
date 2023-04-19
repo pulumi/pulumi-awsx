@@ -177,7 +177,11 @@ function generateDefaultSubnets(
   return Array.prototype.concat(privateSubnets, publicSubnets);
 }
 
-function cidrSubnetV4(ipRange: string|pulumi.Input<string>, newBits: number, netNum: number): string {
+function cidrSubnetV4(
+  ipRange: string | pulumi.Input<string>,
+  newBits: number,
+  netNum: number,
+): string {
   const ipAddress = require("ip-address");
   const BigInteger = require("jsbn").BigInteger;
 
