@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionRepositoryCredentialsArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionRepositoryCredentialsArgs : global::Pulumi.ResourceArgs
     {
         [Input("credentialsParameter")]
         public Input<string>? CredentialsParameter { get; set; }
@@ -18,5 +18,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionRepositoryCredentialsArgs()
         {
         }
+        public static new TaskDefinitionRepositoryCredentialsArgs Empty => new TaskDefinitionRepositoryCredentialsArgs();
     }
 }

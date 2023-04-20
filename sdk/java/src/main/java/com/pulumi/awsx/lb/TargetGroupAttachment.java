@@ -23,7 +23,7 @@ public class TargetGroupAttachment extends com.pulumi.resources.ComponentResourc
      * Auto-created Lambda permission, if targeting a Lambda function
      * 
      */
-    @Export(name="lambdaPermission", type=Permission.class, parameters={})
+    @Export(name="lambdaPermission", refs={Permission.class}, tree="[0]")
     private Output</* @Nullable */ Permission> lambdaPermission;
 
     /**
@@ -37,7 +37,7 @@ public class TargetGroupAttachment extends com.pulumi.resources.ComponentResourc
      * Underlying Target Group Attachment resource
      * 
      */
-    @Export(name="targetGroupAttachment", type=com.pulumi.aws.lb.TargetGroupAttachment.class, parameters={})
+    @Export(name="targetGroupAttachment", refs={com.pulumi.aws.lb.TargetGroupAttachment.class}, tree="[0]")
     private Output<com.pulumi.aws.lb.TargetGroupAttachment> targetGroupAttachment;
 
     /**

@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Ecr
     /// Builds a docker image and pushes to the ECR repository
     /// </summary>
     [AwsxResourceType("awsx:ecr:Image")]
-    public partial class Image : Pulumi.ComponentResource
+    public partial class Image : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Unique identifier of the pushed image
@@ -47,7 +47,7 @@ namespace Pulumi.Awsx.Ecr
         }
     }
 
-    public sealed class ImageArgs : Pulumi.ResourceArgs
+    public sealed class ImageArgs : global::Pulumi.ResourceArgs
     {
         [Input("args")]
         private InputMap<string>? _args;
@@ -124,5 +124,6 @@ namespace Pulumi.Awsx.Ecr
         public ImageArgs()
         {
         }
+        public static new ImageArgs Empty => new ImageArgs();
     }
 }

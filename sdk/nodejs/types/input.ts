@@ -2,7 +2,9 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import { input as inputs, output as outputs, enums } from "../types";
+import * as inputs from "../types/input";
+import * as outputs from "../types/output";
+import * as enums from "../types/enums";
 
 import * as pulumiAws from "@pulumi/aws";
 import * as utilities from "../utilities";
@@ -216,14 +218,22 @@ export namespace awsx {
         namePrefix?: pulumi.Input<string>;
         /**
          * Specifies the number of days
-         * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0.
+         * you want to retain log events in the specified log group.  Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1096, 1827, 2192, 2557, 2922, 3288, 3653, and 0.
          * If you select 0, the events in the log group are always retained and never expire.
          */
         retentionInDays?: pulumi.Input<number>;
         /**
+         * Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
+         */
+        skipDestroy?: pulumi.Input<boolean>;
+        /**
          * A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
+         */
+        tagsAll?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     }
 
     /**
@@ -271,19 +281,16 @@ export namespace awsx {
          */
         forceDetachPolicies?: pulumi.Input<boolean>;
         /**
-         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+         * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
          */
         inlinePolicies?: pulumi.Input<pulumi.Input<pulumiAws.types.input.iam.RoleInlinePolicy>[]>;
-        /**
-         * Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
-         */
         managedPolicyArns?: pulumi.Input<pulumi.Input<string>[]>;
         /**
          * Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
          */
         maxSessionDuration?: pulumi.Input<number>;
         /**
-         * Name of the role policy.
+         * Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
          */
         name?: pulumi.Input<string>;
         /**
@@ -306,6 +313,10 @@ export namespace awsx {
          * Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
+         */
+        tagsAll?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     }
 
     /**
@@ -313,15 +324,15 @@ export namespace awsx {
      */
     export interface SecurityGroupArgs {
         /**
-         * Description of this egress rule.
+         * Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use `tags`.
          */
         description?: pulumi.Input<string>;
         /**
-         * Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+         * Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
          */
         egress?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ec2.SecurityGroupEgress>[]>;
         /**
-         * Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+         * Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
          */
         ingress?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ec2.SecurityGroupIngress>[]>;
         /**
@@ -333,7 +344,7 @@ export namespace awsx {
          */
         namePrefix?: pulumi.Input<string>;
         /**
-         * Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+         * Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
          */
         revokeRulesOnDelete?: pulumi.Input<boolean>;
         /**
@@ -341,8 +352,7 @@ export namespace awsx {
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
         /**
-         * VPC ID.
-         * Defaults to the region's default VPC.
+         * VPC ID. Defaults to the region's default VPC.
          */
         vpcId?: pulumi.Input<string>;
     }
@@ -398,6 +408,16 @@ export namespace ec2 {
     }
 
     /**
+     * Provides a VPC Endpoint resource.
+     *
+     * > **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
+     * Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
+     * Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
+     * and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
+     * a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
+     * Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
+     * Doing so will cause a conflict of associations and will overwrite the association.
+     *
      * {{% examples %}}
      * ## Example Usage
      * {{% example %}}
@@ -666,7 +686,7 @@ export namespace ec2 {
      * 			ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
      * 			VpcEndpointType: pulumi.String("Interface"),
      * 			SecurityGroupIds: pulumi.StringArray{
-     * 				pulumi.Any(aws_security_group.Sg1.Id),
+     * 				aws_security_group.Sg1.Id,
      * 			},
      * 			PrivateDnsEnabled: pulumi.Bool(true),
      * 		})
@@ -810,10 +830,10 @@ export namespace ec2 {
      * 		exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
      * 			AcceptanceRequired: pulumi.Bool(false),
      * 			AllowedPrincipals: pulumi.StringArray{
-     * 				pulumi.String(current.Arn),
+     * 				*pulumi.String(current.Arn),
      * 			},
      * 			GatewayLoadBalancerArns: pulumi.StringArray{
-     * 				pulumi.Any(aws_lb.Example.Arn),
+     * 				aws_lb.Example.Arn,
      * 			},
      * 		})
      * 		if err != nil {
@@ -822,7 +842,7 @@ export namespace ec2 {
      * 		_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
      * 			ServiceName: exampleVpcEndpointService.ServiceName,
      * 			SubnetIds: pulumi.StringArray{
-     * 				pulumi.Any(aws_subnet.Example.Id),
+     * 				aws_subnet.Example.Id,
      * 			},
      * 			VpcEndpointType: exampleVpcEndpointService.ServiceType,
      * 			VpcId:           pulumi.Any(aws_vpc.Example.Id),
@@ -896,7 +916,7 @@ export namespace ec2 {
      *       vpcId: ${aws_vpc.example.id}
      * variables:
      *   current:
-     *     Fn::Invoke:
+     *     fn::invoke:
      *       Function: aws:getCallerIdentity
      *       Arguments: {}
      * ```
@@ -1551,7 +1571,7 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: 443
+     *       port: '443'
      *       protocol: HTTPS
      *       sslPolicy: ELBSecurityPolicy-2016-08
      *       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
@@ -1692,7 +1712,7 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${aws_lb.front_end.arn}
-     *       port: 443
+     *       port: '443'
      *       protocol: TLS
      *       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
      *       alpnPolicy: HTTP2Preferred
@@ -1862,12 +1882,12 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: 80
+     *       port: '80'
      *       protocol: HTTP
      *       defaultActions:
      *         - type: redirect
      *           redirect:
-     *             port: 443
+     *             port: '443'
      *             protocol: HTTPS
      *             statusCode: HTTP_301
      * ```
@@ -2033,14 +2053,14 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: 80
+     *       port: '80'
      *       protocol: HTTP
      *       defaultActions:
      *         - type: fixed-response
      *           fixedResponse:
      *             contentType: text/plain
      *             messageBody: Fixed response content
-     *             statusCode: 200
+     *             statusCode: '200'
      * ```
      * {{% /example %}}
      * {{% example %}}
@@ -2295,7 +2315,7 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: 80
+     *       port: '80'
      *       protocol: HTTP
      *       defaultActions:
      *         - type: authenticate-cognito
@@ -2525,7 +2545,7 @@ export namespace lb {
      *     type: aws:lb:Listener
      *     properties:
      *       loadBalancerArn: ${frontEndLoadBalancer.arn}
-     *       port: 80
+     *       port: '80'
      *       protocol: HTTP
      *       defaultActions:
      *         - type: authenticate-oidc
@@ -2797,11 +2817,11 @@ export namespace lb {
          */
         defaultActions?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.ListenerDefaultAction>[]>;
         /**
-         * Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+         * Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
          */
         port?: pulumi.Input<number>;
         /**
-         * Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+         * Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
          */
         protocol?: pulumi.Input<string>;
         /**
@@ -3082,9 +3102,7 @@ export namespace lb {
      * import * as pulumi from "@pulumi/pulumi";
      * import * as aws from "@pulumi/aws";
      *
-     * const lambda_example = new aws.lb.TargetGroup("lambda-example", {
-     *     targetType: "lambda",
-     * });
+     * const lambda_example = new aws.lb.TargetGroup("lambda-example", {targetType: "lambda"});
      * ```
      * ```python
      * import pulumi
@@ -3306,7 +3324,11 @@ export namespace lb {
          */
         loadBalancingAlgorithmType?: pulumi.Input<string>;
         /**
-         * Name of the target group. If omitted, this provider will assign a random, unique name.
+         * Indicates whether cross zone load balancing is enabled. The value is `"true"`, `"false"` or `"use_load_balancer_configuration"`. The default is `"use_load_balancer_configuration"`.
+         */
+        loadBalancingCrossZoneEnabled?: pulumi.Input<string>;
+        /**
+         * Name of the target group. If omitted, this provider will assign a random, unique name. This name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.
          */
         name?: pulumi.Input<string>;
         /**
@@ -3314,7 +3336,7 @@ export namespace lb {
          */
         namePrefix?: pulumi.Input<string>;
         /**
-         * Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+         * Port on which targets receive traffic, unless overridden when registering a specific target. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
          */
         port?: pulumi.Input<number>;
         /**
@@ -3322,11 +3344,11 @@ export namespace lb {
          */
         preserveClientIp?: pulumi.Input<string>;
         /**
-         * Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+         * Protocol to use for routing traffic to the targets. Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
          */
         protocol?: pulumi.Input<string>;
         /**
-         * Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+         * Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
          */
         protocolVersion?: pulumi.Input<string>;
         /**
@@ -3345,6 +3367,10 @@ export namespace lb {
          * Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+        /**
+         * Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+         */
+        targetFailovers?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.TargetGroupTargetFailover>[]>;
         /**
          * Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
          */

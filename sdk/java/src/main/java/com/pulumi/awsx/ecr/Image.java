@@ -22,7 +22,7 @@ public class Image extends com.pulumi.resources.ComponentResource {
      * Unique identifier of the pushed image
      * 
      */
-    @Export(name="imageUri", type=String.class, parameters={})
+    @Export(name="imageUri", refs={String.class}, tree="[0]")
     private Output<String> imageUri;
 
     /**

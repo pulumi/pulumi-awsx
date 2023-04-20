@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// The set of arguments for constructing a Bucket resource.
     /// </summary>
-    public sealed class BucketArgs : Pulumi.ResourceArgs
+    public sealed class BucketArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
@@ -177,5 +177,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public BucketArgs()
         {
         }
+        public static new BucketArgs Empty => new BucketArgs();
     }
 }

@@ -5,16 +5,23 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
-export * from "./defaultVpc";
-export * from "./getDefaultVpc";
-export * from "./vpc";
+export { DefaultVpcArgs } from "./defaultVpc";
+export type DefaultVpc = import("./defaultVpc").DefaultVpc;
+export const DefaultVpc: typeof import("./defaultVpc").DefaultVpc = null as any;
+utilities.lazyLoad(exports, ["DefaultVpc"], () => require("./defaultVpc"));
+
+export { GetDefaultVpcArgs, GetDefaultVpcResult } from "./getDefaultVpc";
+export const getDefaultVpc: typeof import("./getDefaultVpc").getDefaultVpc = null as any;
+utilities.lazyLoad(exports, ["getDefaultVpc"], () => require("./getDefaultVpc"));
+
+export { VpcArgs } from "./vpc";
+export type Vpc = import("./vpc").Vpc;
+export const Vpc: typeof import("./vpc").Vpc = null as any;
+utilities.lazyLoad(exports, ["Vpc"], () => require("./vpc"));
+
 
 // Export enums:
 export * from "../types/enums/ec2";
-
-// Import resources to register:
-import { DefaultVpc } from "./defaultVpc";
-import { Vpc } from "./vpc";
 
 const _module = {
     version: utilities.getVersion(),

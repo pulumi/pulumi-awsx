@@ -5,15 +5,19 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
-export * from "./image";
-export * from "./repository";
+export { ImageArgs } from "./image";
+export type Image = import("./image").Image;
+export const Image: typeof import("./image").Image = null as any;
+utilities.lazyLoad(exports, ["Image"], () => require("./image"));
+
+export { RepositoryArgs } from "./repository";
+export type Repository = import("./repository").Repository;
+export const Repository: typeof import("./repository").Repository = null as any;
+utilities.lazyLoad(exports, ["Repository"], () => require("./repository"));
+
 
 // Export enums:
 export * from "../types/enums/ecr";
-
-// Import resources to register:
-import { Image } from "./image";
-import { Repository } from "./repository";
 
 const _module = {
     version: utilities.getVersion(),

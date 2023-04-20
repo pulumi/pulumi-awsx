@@ -2,7 +2,9 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import { input as inputs, output as outputs, enums } from "../types";
+import * as inputs from "../types/input";
+import * as outputs from "../types/output";
+import * as enums from "../types/enums";
 import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
@@ -46,6 +48,7 @@ export class EC2Service extends pulumi.ComponentResource {
         let resourceInputs: pulumi.Inputs = {};
         opts = opts || {};
         if (!opts.id) {
+            resourceInputs["alarms"] = args ? args.alarms : undefined;
             resourceInputs["cluster"] = args ? args.cluster : undefined;
             resourceInputs["continueBeforeSteadyState"] = args ? args.continueBeforeSteadyState : undefined;
             resourceInputs["deploymentCircuitBreaker"] = args ? args.deploymentCircuitBreaker : undefined;
@@ -66,10 +69,12 @@ export class EC2Service extends pulumi.ComponentResource {
             resourceInputs["platformVersion"] = args ? args.platformVersion : undefined;
             resourceInputs["propagateTags"] = args ? args.propagateTags : undefined;
             resourceInputs["schedulingStrategy"] = args ? args.schedulingStrategy : undefined;
+            resourceInputs["serviceConnectConfiguration"] = args ? args.serviceConnectConfiguration : undefined;
             resourceInputs["serviceRegistries"] = args ? args.serviceRegistries : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["taskDefinition"] = args ? args.taskDefinition : undefined;
             resourceInputs["taskDefinitionArgs"] = args ? args.taskDefinitionArgs : undefined;
+            resourceInputs["triggers"] = args ? args.triggers : undefined;
             resourceInputs["service"] = undefined /*out*/;
         } else {
             resourceInputs["service"] = undefined /*out*/;
@@ -84,6 +89,10 @@ export class EC2Service extends pulumi.ComponentResource {
  * The set of arguments for constructing a EC2Service resource.
  */
 export interface EC2ServiceArgs {
+    /**
+     * Information about the CloudWatch alarms. See below.
+     */
+    alarms?: pulumi.Input<pulumiAws.types.input.ecs.ServiceAlarms>;
     /**
      * ARN of an ECS cluster.
      */
@@ -165,6 +174,10 @@ export interface EC2ServiceArgs {
      */
     schedulingStrategy?: pulumi.Input<string>;
     /**
+     * The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+     */
+    serviceConnectConfiguration?: pulumi.Input<pulumiAws.types.input.ecs.ServiceServiceConnectConfiguration>;
+    /**
      * Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
      */
     serviceRegistries?: pulumi.Input<pulumiAws.types.input.ecs.ServiceServiceRegistries>;
@@ -180,4 +193,8 @@ export interface EC2ServiceArgs {
      * The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
      */
     taskDefinitionArgs?: inputs.ecs.EC2ServiceTaskDefinitionArgs;
+    /**
+     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+     */
+    triggers?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
 }

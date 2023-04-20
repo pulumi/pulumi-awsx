@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// Security Group with default setup unless explicitly skipped or an existing security group id provided.
     /// </summary>
-    public sealed class DefaultSecurityGroupArgs : Pulumi.ResourceArgs
+    public sealed class DefaultSecurityGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
@@ -36,5 +36,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public DefaultSecurityGroupArgs()
         {
         }
+        public static new DefaultSecurityGroupArgs Empty => new DefaultSecurityGroupArgs();
     }
 }

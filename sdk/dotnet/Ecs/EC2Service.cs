@@ -14,7 +14,7 @@ namespace Pulumi.Awsx.Ecs
     /// Creates Task definition if `taskDefinitionArgs` is specified.
     /// </summary>
     [AwsxResourceType("awsx:ecs:EC2Service")]
-    public partial class EC2Service : Pulumi.ComponentResource
+    public partial class EC2Service : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Underlying ECS Service resource
@@ -54,8 +54,14 @@ namespace Pulumi.Awsx.Ecs
         }
     }
 
-    public sealed class EC2ServiceArgs : Pulumi.ResourceArgs
+    public sealed class EC2ServiceArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// Information about the CloudWatch alarms. See below.
+        /// </summary>
+        [Input("alarms")]
+        public Input<Pulumi.Aws.Ecs.Inputs.ServiceAlarmsArgs>? Alarms { get; set; }
+
         /// <summary>
         /// ARN of an ECS cluster.
         /// </summary>
@@ -195,6 +201,12 @@ namespace Pulumi.Awsx.Ecs
         public Input<string>? SchedulingStrategy { get; set; }
 
         /// <summary>
+        /// The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+        /// </summary>
+        [Input("serviceConnectConfiguration")]
+        public Input<Pulumi.Aws.Ecs.Inputs.ServiceServiceConnectConfigurationArgs>? ServiceConnectConfiguration { get; set; }
+
+        /// <summary>
         /// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
         /// </summary>
         [Input("serviceRegistries")]
@@ -224,8 +236,21 @@ namespace Pulumi.Awsx.Ecs
         [Input("taskDefinitionArgs")]
         public Inputs.EC2ServiceTaskDefinitionArgs? TaskDefinitionArgs { get; set; }
 
+        [Input("triggers")]
+        private InputMap<string>? _triggers;
+
+        /// <summary>
+        /// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+        /// </summary>
+        public InputMap<string> Triggers
+        {
+            get => _triggers ?? (_triggers = new InputMap<string>());
+            set => _triggers = value;
+        }
+
         public EC2ServiceArgs()
         {
         }
+        public static new EC2ServiceArgs Empty => new EC2ServiceArgs();
     }
 }

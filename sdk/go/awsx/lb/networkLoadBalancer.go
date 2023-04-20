@@ -54,19 +54,21 @@ type networkLoadBalancerArgs struct {
 	DesyncMitigationMode *string `pulumi:"desyncMitigationMode"`
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
 	DropInvalidHeaderFields *bool `pulumi:"dropInvalidHeaderFields"`
-	// If true, cross-zone load balancing of the load balancer will be enabled.
-	// This is a `network` load balancer feature. Defaults to `false`.
+	// If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
 	EnableCrossZoneLoadBalancing *bool `pulumi:"enableCrossZoneLoadBalancing"`
-	// If true, deletion of the load balancer will be disabled via
-	// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+	// If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
 	EnableDeletionProtection *bool `pulumi:"enableDeletionProtection"`
+	// Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
+	EnableTlsVersionAndCipherSuiteHeaders *bool `pulumi:"enableTlsVersionAndCipherSuiteHeaders"`
 	// Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
 	EnableWafFailOpen *bool `pulumi:"enableWafFailOpen"`
+	// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+	EnableXffClientPort *bool `pulumi:"enableXffClientPort"`
 	// The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
 	IdleTimeout *int `pulumi:"idleTimeout"`
 	// If true, the LB will be internal.
 	Internal *bool `pulumi:"internal"`
-	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
 	IpAddressType *string `pulumi:"ipAddressType"`
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *Listener `pulumi:"listener"`
@@ -90,6 +92,8 @@ type networkLoadBalancerArgs struct {
 	Subnets []*ec2.Subnet `pulumi:"subnets"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
+	// Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+	XffHeaderProcessingMode *string `pulumi:"xffHeaderProcessingMode"`
 }
 
 // The set of arguments for constructing a NetworkLoadBalancer resource.
@@ -106,19 +110,21 @@ type NetworkLoadBalancerArgs struct {
 	DesyncMitigationMode pulumi.StringPtrInput
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
 	DropInvalidHeaderFields pulumi.BoolPtrInput
-	// If true, cross-zone load balancing of the load balancer will be enabled.
-	// This is a `network` load balancer feature. Defaults to `false`.
+	// If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
 	EnableCrossZoneLoadBalancing pulumi.BoolPtrInput
-	// If true, deletion of the load balancer will be disabled via
-	// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+	// If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
 	EnableDeletionProtection pulumi.BoolPtrInput
+	// Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
+	EnableTlsVersionAndCipherSuiteHeaders pulumi.BoolPtrInput
 	// Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
 	EnableWafFailOpen pulumi.BoolPtrInput
+	// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+	EnableXffClientPort pulumi.BoolPtrInput
 	// The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
 	IdleTimeout pulumi.IntPtrInput
 	// If true, the LB will be internal.
 	Internal pulumi.BoolPtrInput
-	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
 	IpAddressType pulumi.StringPtrInput
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *ListenerArgs
@@ -142,6 +148,8 @@ type NetworkLoadBalancerArgs struct {
 	Subnets ec2.SubnetArrayInput
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
+	// Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+	XffHeaderProcessingMode pulumi.StringPtrInput
 }
 
 func (NetworkLoadBalancerArgs) ElementType() reflect.Type {

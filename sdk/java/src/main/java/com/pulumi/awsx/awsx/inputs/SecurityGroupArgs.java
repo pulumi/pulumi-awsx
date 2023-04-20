@@ -26,14 +26,14 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
     public static final SecurityGroupArgs Empty = new SecurityGroupArgs();
 
     /**
-     * Description of this egress rule.
+     * Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use `tags`.
      * 
      */
     @Import(name="description")
     private @Nullable Output<String> description;
 
     /**
-     * @return Description of this egress rule.
+     * @return Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use `tags`.
      * 
      */
     public Optional<Output<String>> description() {
@@ -41,14 +41,14 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+     * Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
      * 
      */
     @Import(name="egress")
     private @Nullable Output<List<SecurityGroupEgressArgs>> egress;
 
     /**
-     * @return Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+     * @return Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
      * 
      */
     public Optional<Output<List<SecurityGroupEgressArgs>>> egress() {
@@ -56,14 +56,14 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+     * Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
      * 
      */
     @Import(name="ingress")
     private @Nullable Output<List<SecurityGroupIngressArgs>> ingress;
 
     /**
-     * @return Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+     * @return Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
      * 
      */
     public Optional<Output<List<SecurityGroupIngressArgs>>> ingress() {
@@ -101,14 +101,14 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+     * Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
      * 
      */
     @Import(name="revokeRulesOnDelete")
     private @Nullable Output<Boolean> revokeRulesOnDelete;
 
     /**
-     * @return Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+     * @return Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
      * 
      */
     public Optional<Output<Boolean>> revokeRulesOnDelete() {
@@ -131,16 +131,14 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * VPC ID.
-     * Defaults to the region&#39;s default VPC.
+     * VPC ID. Defaults to the region&#39;s default VPC.
      * 
      */
     @Import(name="vpcId")
     private @Nullable Output<String> vpcId;
 
     /**
-     * @return VPC ID.
-     * Defaults to the region&#39;s default VPC.
+     * @return VPC ID. Defaults to the region&#39;s default VPC.
      * 
      */
     public Optional<Output<String>> vpcId() {
@@ -179,7 +177,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param description Description of this egress rule.
+         * @param description Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use `tags`.
          * 
          * @return builder
          * 
@@ -190,7 +188,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param description Description of this egress rule.
+         * @param description Security group description. Defaults to `Managed by Pulumi`. Cannot be `&#34;&#34;`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you&#39;d like to classify your security groups in a way that can be updated, use `tags`.
          * 
          * @return builder
          * 
@@ -200,7 +198,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param egress Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+         * @param egress Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
          * 
          * @return builder
          * 
@@ -211,7 +209,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param egress Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+         * @param egress Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
          * 
          * @return builder
          * 
@@ -221,7 +219,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param egress Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below.
+         * @param egress Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
          * 
          * @return builder
          * 
@@ -231,7 +229,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param ingress Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+         * @param ingress Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
          * 
          * @return builder
          * 
@@ -242,7 +240,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param ingress Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+         * @param ingress Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
          * 
          * @return builder
          * 
@@ -252,7 +250,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param ingress Configuration block for egress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below.
+         * @param ingress Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
          * 
          * @return builder
          * 
@@ -304,7 +302,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param revokeRulesOnDelete Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+         * @param revokeRulesOnDelete Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
          * 
          * @return builder
          * 
@@ -315,7 +313,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param revokeRulesOnDelete Instruct this provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
+         * @param revokeRulesOnDelete Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
          * 
          * @return builder
          * 
@@ -346,8 +344,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param vpcId VPC ID.
-         * Defaults to the region&#39;s default VPC.
+         * @param vpcId VPC ID. Defaults to the region&#39;s default VPC.
          * 
          * @return builder
          * 
@@ -358,8 +355,7 @@ public final class SecurityGroupArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param vpcId VPC ID.
-         * Defaults to the region&#39;s default VPC.
+         * @param vpcId VPC ID. Defaults to the region&#39;s default VPC.
          * 
          * @return builder
          * 

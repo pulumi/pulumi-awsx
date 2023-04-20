@@ -5,16 +5,26 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
-export * from "./ec2service";
-export * from "./ec2taskDefinition";
-export * from "./fargateService";
-export * from "./fargateTaskDefinition";
+export { EC2ServiceArgs } from "./ec2service";
+export type EC2Service = import("./ec2service").EC2Service;
+export const EC2Service: typeof import("./ec2service").EC2Service = null as any;
+utilities.lazyLoad(exports, ["EC2Service"], () => require("./ec2service"));
 
-// Import resources to register:
-import { EC2Service } from "./ec2service";
-import { EC2TaskDefinition } from "./ec2taskDefinition";
-import { FargateService } from "./fargateService";
-import { FargateTaskDefinition } from "./fargateTaskDefinition";
+export { EC2TaskDefinitionArgs } from "./ec2taskDefinition";
+export type EC2TaskDefinition = import("./ec2taskDefinition").EC2TaskDefinition;
+export const EC2TaskDefinition: typeof import("./ec2taskDefinition").EC2TaskDefinition = null as any;
+utilities.lazyLoad(exports, ["EC2TaskDefinition"], () => require("./ec2taskDefinition"));
+
+export { FargateServiceArgs } from "./fargateService";
+export type FargateService = import("./fargateService").FargateService;
+export const FargateService: typeof import("./fargateService").FargateService = null as any;
+utilities.lazyLoad(exports, ["FargateService"], () => require("./fargateService"));
+
+export { FargateTaskDefinitionArgs } from "./fargateTaskDefinition";
+export type FargateTaskDefinition = import("./fargateTaskDefinition").FargateTaskDefinition;
+export const FargateTaskDefinition: typeof import("./fargateTaskDefinition").FargateTaskDefinition = null as any;
+utilities.lazyLoad(exports, ["FargateTaskDefinition"], () => require("./fargateTaskDefinition"));
+
 
 const _module = {
     version: utilities.getVersion(),

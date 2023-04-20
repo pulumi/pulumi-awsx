@@ -2,7 +2,9 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
-import { input as inputs, output as outputs, enums } from "../types";
+import * as inputs from "../types/input";
+import * as outputs from "../types/output";
+import * as enums from "../types/enums";
 import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
@@ -61,7 +63,9 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["dropInvalidHeaderFields"] = args ? args.dropInvalidHeaderFields : undefined;
             resourceInputs["enableCrossZoneLoadBalancing"] = args ? args.enableCrossZoneLoadBalancing : undefined;
             resourceInputs["enableDeletionProtection"] = args ? args.enableDeletionProtection : undefined;
+            resourceInputs["enableTlsVersionAndCipherSuiteHeaders"] = args ? args.enableTlsVersionAndCipherSuiteHeaders : undefined;
             resourceInputs["enableWafFailOpen"] = args ? args.enableWafFailOpen : undefined;
+            resourceInputs["enableXffClientPort"] = args ? args.enableXffClientPort : undefined;
             resourceInputs["idleTimeout"] = args ? args.idleTimeout : undefined;
             resourceInputs["internal"] = args ? args.internal : undefined;
             resourceInputs["ipAddressType"] = args ? args.ipAddressType : undefined;
@@ -74,6 +78,7 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["subnetMappings"] = args ? args.subnetMappings : undefined;
             resourceInputs["subnets"] = args ? args.subnets : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
+            resourceInputs["xffHeaderProcessingMode"] = args ? args.xffHeaderProcessingMode : undefined;
             resourceInputs["loadBalancer"] = undefined /*out*/;
             resourceInputs["vpcId"] = undefined /*out*/;
         } else {
@@ -116,19 +121,25 @@ export interface NetworkLoadBalancerArgs {
      */
     dropInvalidHeaderFields?: pulumi.Input<boolean>;
     /**
-     * If true, cross-zone load balancing of the load balancer will be enabled.
-     * This is a `network` load balancer feature. Defaults to `false`.
+     * If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
      */
     enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
     /**
-     * If true, deletion of the load balancer will be disabled via
-     * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+     * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      */
     enableDeletionProtection?: pulumi.Input<boolean>;
+    /**
+     * Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
+     */
+    enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     /**
      * Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
      */
     enableWafFailOpen?: pulumi.Input<boolean>;
+    /**
+     * Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+     */
+    enableXffClientPort?: pulumi.Input<boolean>;
     /**
      * The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
      */
@@ -138,7 +149,7 @@ export interface NetworkLoadBalancerArgs {
      */
     internal?: pulumi.Input<boolean>;
     /**
-     * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+     * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
      */
     ipAddressType?: pulumi.Input<string>;
     /**
@@ -181,4 +192,8 @@ export interface NetworkLoadBalancerArgs {
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */
     tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
+    /**
+     * Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+     */
+    xffHeaderProcessingMode?: pulumi.Input<string>;
 }

@@ -55,31 +55,23 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+     * Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
      * 
      */
     @Import(name="inlinePolicies")
     private @Nullable Output<List<RoleInlinePolicyArgs>> inlinePolicies;
 
     /**
-     * @return Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+     * @return Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
      * 
      */
     public Optional<Output<List<RoleInlinePolicyArgs>>> inlinePolicies() {
         return Optional.ofNullable(this.inlinePolicies);
     }
 
-    /**
-     * Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
-     * 
-     */
     @Import(name="managedPolicyArns")
     private @Nullable Output<List<String>> managedPolicyArns;
 
-    /**
-     * @return Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
-     * 
-     */
     public Optional<Output<List<String>>> managedPolicyArns() {
         return Optional.ofNullable(this.managedPolicyArns);
     }
@@ -100,14 +92,14 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Name of the role policy.
+     * Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
      * 
      */
     @Import(name="name")
     private @Nullable Output<String> name;
 
     /**
-     * @return Name of the role policy.
+     * @return Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
      * 
      */
     public Optional<Output<String>> name() {
@@ -189,6 +181,21 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         return Optional.ofNullable(this.tags);
     }
 
+    /**
+     * A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
+     * 
+     */
+    @Import(name="tagsAll")
+    private @Nullable Output<Map<String,String>> tagsAll;
+
+    /**
+     * @return A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
+     * 
+     */
+    public Optional<Output<Map<String,String>>> tagsAll() {
+        return Optional.ofNullable(this.tagsAll);
+    }
+
     private RoleWithPolicyArgs() {}
 
     private RoleWithPolicyArgs(RoleWithPolicyArgs $) {
@@ -203,6 +210,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         this.permissionsBoundary = $.permissionsBoundary;
         this.policyArns = $.policyArns;
         this.tags = $.tags;
+        this.tagsAll = $.tagsAll;
     }
 
     public static Builder builder() {
@@ -266,7 +274,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
          * 
          * @return builder
          * 
@@ -277,7 +285,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
          * 
          * @return builder
          * 
@@ -287,7 +295,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+         * @param inlinePolicies Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
          * 
          * @return builder
          * 
@@ -296,33 +304,15 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
             return inlinePolicies(List.of(inlinePolicies));
         }
 
-        /**
-         * @param managedPolicyArns Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
-         * 
-         * @return builder
-         * 
-         */
         public Builder managedPolicyArns(@Nullable Output<List<String>> managedPolicyArns) {
             $.managedPolicyArns = managedPolicyArns;
             return this;
         }
 
-        /**
-         * @param managedPolicyArns Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
-         * 
-         * @return builder
-         * 
-         */
         public Builder managedPolicyArns(List<String> managedPolicyArns) {
             return managedPolicyArns(Output.of(managedPolicyArns));
         }
 
-        /**
-         * @param managedPolicyArns Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role&#39;s managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
-         * 
-         * @return builder
-         * 
-         */
         public Builder managedPolicyArns(String... managedPolicyArns) {
             return managedPolicyArns(List.of(managedPolicyArns));
         }
@@ -349,7 +339,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param name Name of the role policy.
+         * @param name Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
          * 
          * @return builder
          * 
@@ -360,7 +350,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param name Name of the role policy.
+         * @param name Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
          * 
          * @return builder
          * 
@@ -472,6 +462,27 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
          */
         public Builder tags(Map<String,String> tags) {
             return tags(Output.of(tags));
+        }
+
+        /**
+         * @param tagsAll A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder tagsAll(@Nullable Output<Map<String,String>> tagsAll) {
+            $.tagsAll = tagsAll;
+            return this;
+        }
+
+        /**
+         * @param tagsAll A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder tagsAll(Map<String,String> tagsAll) {
+            return tagsAll(Output.of(tagsAll));
         }
 
         public RoleWithPolicyArgs build() {

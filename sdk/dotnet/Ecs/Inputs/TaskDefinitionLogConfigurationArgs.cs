@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionLogConfigurationArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionLogConfigurationArgs : global::Pulumi.ResourceArgs
     {
         [Input("logDriver", required: true)]
         public Input<string> LogDriver { get; set; } = null!;
@@ -29,5 +29,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionLogConfigurationArgs()
         {
         }
+        public static new TaskDefinitionLogConfigurationArgs Empty => new TaskDefinitionLogConfigurationArgs();
     }
 }

@@ -38,6 +38,7 @@ def readme():
 
 
 setup(name='pulumi_awsx',
+      python_requires='>=3.7',
       version=VERSION,
       description="Pulumi Amazon Web Services (AWS) AWSX Components.",
       long_description=readme(),

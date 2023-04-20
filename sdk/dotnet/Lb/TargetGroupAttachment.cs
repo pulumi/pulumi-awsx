@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Lb
     /// Attach an EC2 instance or Lambda to a Load Balancer. This will create required permissions if attaching to a Lambda Function.
     /// </summary>
     [AwsxResourceType("awsx:lb:TargetGroupAttachment")]
-    public partial class TargetGroupAttachment : Pulumi.ComponentResource
+    public partial class TargetGroupAttachment : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Auto-created Lambda permission, if targeting a Lambda function
@@ -53,7 +53,7 @@ namespace Pulumi.Awsx.Lb
         }
     }
 
-    public sealed class TargetGroupAttachmentArgs : Pulumi.ResourceArgs
+    public sealed class TargetGroupAttachmentArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// EC2 Instance to attach to the Target Group. Exactly 1 of [instance], [instanceId], [lambda] or [lambdaArn] must be provided.
@@ -94,5 +94,6 @@ namespace Pulumi.Awsx.Lb
         public TargetGroupAttachmentArgs()
         {
         }
+        public static new TargetGroupAttachmentArgs Empty => new TargetGroupAttachmentArgs();
     }
 }

@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ec2
 {
     [AwsxResourceType("awsx:ec2:Vpc")]
-    public partial class Vpc : Pulumi.ComponentResource
+    public partial class Vpc : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
@@ -104,7 +104,7 @@ namespace Pulumi.Awsx.Ec2
         }
     }
 
-    public sealed class VpcArgs : Pulumi.ResourceArgs
+    public sealed class VpcArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
@@ -152,10 +152,16 @@ namespace Pulumi.Awsx.Ec2
         public Input<bool>? EnableDnsHostnames { get; set; }
 
         /// <summary>
-        /// A boolean flag to enable/disable DNS support in the VPC. Defaults true.
+        /// A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
         /// </summary>
         [Input("enableDnsSupport")]
         public Input<bool>? EnableDnsSupport { get; set; }
+
+        /// <summary>
+        /// Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+        /// </summary>
+        [Input("enableNetworkAddressUsageMetrics")]
+        public Input<bool>? EnableNetworkAddressUsageMetrics { get; set; }
 
         /// <summary>
         /// A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
@@ -250,5 +256,6 @@ namespace Pulumi.Awsx.Ec2
         public VpcArgs()
         {
         }
+        public static new VpcArgs Empty => new VpcArgs();
     }
 }

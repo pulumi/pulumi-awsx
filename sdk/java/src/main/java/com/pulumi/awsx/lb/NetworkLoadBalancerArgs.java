@@ -115,16 +115,14 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
-     * If true, cross-zone load balancing of the load balancer will be enabled.
-     * This is a `network` load balancer feature. Defaults to `false`.
+     * If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
      * 
      */
     @Import(name="enableCrossZoneLoadBalancing")
     private @Nullable Output<Boolean> enableCrossZoneLoadBalancing;
 
     /**
-     * @return If true, cross-zone load balancing of the load balancer will be enabled.
-     * This is a `network` load balancer feature. Defaults to `false`.
+     * @return If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableCrossZoneLoadBalancing() {
@@ -132,20 +130,33 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
-     * If true, deletion of the load balancer will be disabled via
-     * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+     * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      * 
      */
     @Import(name="enableDeletionProtection")
     private @Nullable Output<Boolean> enableDeletionProtection;
 
     /**
-     * @return If true, deletion of the load balancer will be disabled via
-     * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+     * @return If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableDeletionProtection() {
         return Optional.ofNullable(this.enableDeletionProtection);
+    }
+
+    /**
+     * Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
+     * 
+     */
+    @Import(name="enableTlsVersionAndCipherSuiteHeaders")
+    private @Nullable Output<Boolean> enableTlsVersionAndCipherSuiteHeaders;
+
+    /**
+     * @return Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
+     * 
+     */
+    public Optional<Output<Boolean>> enableTlsVersionAndCipherSuiteHeaders() {
+        return Optional.ofNullable(this.enableTlsVersionAndCipherSuiteHeaders);
     }
 
     /**
@@ -161,6 +172,21 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
      */
     public Optional<Output<Boolean>> enableWafFailOpen() {
         return Optional.ofNullable(this.enableWafFailOpen);
+    }
+
+    /**
+     * Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+     * 
+     */
+    @Import(name="enableXffClientPort")
+    private @Nullable Output<Boolean> enableXffClientPort;
+
+    /**
+     * @return Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+     * 
+     */
+    public Optional<Output<Boolean>> enableXffClientPort() {
+        return Optional.ofNullable(this.enableXffClientPort);
     }
 
     /**
@@ -194,14 +220,14 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
-     * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+     * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
      * 
      */
     @Import(name="ipAddressType")
     private @Nullable Output<String> ipAddressType;
 
     /**
-     * @return The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+     * @return The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
      * 
      */
     public Optional<Output<String>> ipAddressType() {
@@ -351,6 +377,21 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         return Optional.ofNullable(this.tags);
     }
 
+    /**
+     * Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+     * 
+     */
+    @Import(name="xffHeaderProcessingMode")
+    private @Nullable Output<String> xffHeaderProcessingMode;
+
+    /**
+     * @return Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+     * 
+     */
+    public Optional<Output<String>> xffHeaderProcessingMode() {
+        return Optional.ofNullable(this.xffHeaderProcessingMode);
+    }
+
     private NetworkLoadBalancerArgs() {}
 
     private NetworkLoadBalancerArgs(NetworkLoadBalancerArgs $) {
@@ -362,7 +403,9 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         this.dropInvalidHeaderFields = $.dropInvalidHeaderFields;
         this.enableCrossZoneLoadBalancing = $.enableCrossZoneLoadBalancing;
         this.enableDeletionProtection = $.enableDeletionProtection;
+        this.enableTlsVersionAndCipherSuiteHeaders = $.enableTlsVersionAndCipherSuiteHeaders;
         this.enableWafFailOpen = $.enableWafFailOpen;
+        this.enableXffClientPort = $.enableXffClientPort;
         this.idleTimeout = $.idleTimeout;
         this.internal = $.internal;
         this.ipAddressType = $.ipAddressType;
@@ -375,6 +418,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         this.subnetMappings = $.subnetMappings;
         this.subnets = $.subnets;
         this.tags = $.tags;
+        this.xffHeaderProcessingMode = $.xffHeaderProcessingMode;
     }
 
     public static Builder builder() {
@@ -512,8 +556,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableCrossZoneLoadBalancing If true, cross-zone load balancing of the load balancer will be enabled.
-         * This is a `network` load balancer feature. Defaults to `false`.
+         * @param enableCrossZoneLoadBalancing If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -524,8 +567,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableCrossZoneLoadBalancing If true, cross-zone load balancing of the load balancer will be enabled.
-         * This is a `network` load balancer feature. Defaults to `false`.
+         * @param enableCrossZoneLoadBalancing If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -535,8 +577,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via
-         * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -547,14 +588,34 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via
-         * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
          * 
          * @return builder
          * 
          */
         public Builder enableDeletionProtection(Boolean enableDeletionProtection) {
             return enableDeletionProtection(Output.of(enableDeletionProtection));
+        }
+
+        /**
+         * @param enableTlsVersionAndCipherSuiteHeaders Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableTlsVersionAndCipherSuiteHeaders(@Nullable Output<Boolean> enableTlsVersionAndCipherSuiteHeaders) {
+            $.enableTlsVersionAndCipherSuiteHeaders = enableTlsVersionAndCipherSuiteHeaders;
+            return this;
+        }
+
+        /**
+         * @param enableTlsVersionAndCipherSuiteHeaders Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableTlsVersionAndCipherSuiteHeaders(Boolean enableTlsVersionAndCipherSuiteHeaders) {
+            return enableTlsVersionAndCipherSuiteHeaders(Output.of(enableTlsVersionAndCipherSuiteHeaders));
         }
 
         /**
@@ -576,6 +637,27 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
          */
         public Builder enableWafFailOpen(Boolean enableWafFailOpen) {
             return enableWafFailOpen(Output.of(enableWafFailOpen));
+        }
+
+        /**
+         * @param enableXffClientPort Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableXffClientPort(@Nullable Output<Boolean> enableXffClientPort) {
+            $.enableXffClientPort = enableXffClientPort;
+            return this;
+        }
+
+        /**
+         * @param enableXffClientPort Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableXffClientPort(Boolean enableXffClientPort) {
+            return enableXffClientPort(Output.of(enableXffClientPort));
         }
 
         /**
@@ -621,7 +703,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param ipAddressType The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+         * @param ipAddressType The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
          * 
          * @return builder
          * 
@@ -632,7 +714,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param ipAddressType The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+         * @param ipAddressType The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
          * 
          * @return builder
          * 
@@ -858,6 +940,27 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
          */
         public Builder tags(Map<String,String> tags) {
             return tags(Output.of(tags));
+        }
+
+        /**
+         * @param xffHeaderProcessingMode Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder xffHeaderProcessingMode(@Nullable Output<String> xffHeaderProcessingMode) {
+            $.xffHeaderProcessingMode = xffHeaderProcessingMode;
+            return this;
+        }
+
+        /**
+         * @param xffHeaderProcessingMode Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder xffHeaderProcessingMode(String xffHeaderProcessingMode) {
+            return xffHeaderProcessingMode(Output.of(xffHeaderProcessingMode));
         }
 
         public NetworkLoadBalancerArgs build() {

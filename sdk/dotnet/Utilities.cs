@@ -74,7 +74,7 @@ namespace Pulumi.Awsx
         }
     }
 
-    internal sealed class AwsxResourceTypeAttribute : Pulumi.ResourceTypeAttribute
+    internal sealed class AwsxResourceTypeAttribute : global::Pulumi.ResourceTypeAttribute
     {
         public AwsxResourceTypeAttribute(string type) : base(type, Utilities.Version)
         {
