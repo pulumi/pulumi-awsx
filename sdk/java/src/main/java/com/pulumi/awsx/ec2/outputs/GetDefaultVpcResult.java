@@ -10,24 +10,15 @@ import java.util.Objects;
 
 @CustomType
 public final class GetDefaultVpcResult {
-    private final List<String> privateSubnetIds;
-    private final List<String> publicSubnetIds;
+    private List<String> privateSubnetIds;
+    private List<String> publicSubnetIds;
     /**
      * @return The VPC ID for the default VPC
      * 
      */
-    private final String vpcId;
+    private String vpcId;
 
-    @CustomType.Constructor
-    private GetDefaultVpcResult(
-        @CustomType.Parameter("privateSubnetIds") List<String> privateSubnetIds,
-        @CustomType.Parameter("publicSubnetIds") List<String> publicSubnetIds,
-        @CustomType.Parameter("vpcId") String vpcId) {
-        this.privateSubnetIds = privateSubnetIds;
-        this.publicSubnetIds = publicSubnetIds;
-        this.vpcId = vpcId;
-    }
-
+    private GetDefaultVpcResult() {}
     public List<String> privateSubnetIds() {
         return this.privateSubnetIds;
     }
@@ -49,16 +40,12 @@ public final class GetDefaultVpcResult {
     public static Builder builder(GetDefaultVpcResult defaults) {
         return new Builder(defaults);
     }
-
+    @CustomType.Builder
     public static final class Builder {
         private List<String> privateSubnetIds;
         private List<String> publicSubnetIds;
         private String vpcId;
-
-        public Builder() {
-    	      // Empty
-        }
-
+        public Builder() {}
         public Builder(GetDefaultVpcResult defaults) {
     	      Objects.requireNonNull(defaults);
     	      this.privateSubnetIds = defaults.privateSubnetIds;
@@ -66,6 +53,7 @@ public final class GetDefaultVpcResult {
     	      this.vpcId = defaults.vpcId;
         }
 
+        @CustomType.Setter
         public Builder privateSubnetIds(List<String> privateSubnetIds) {
             this.privateSubnetIds = Objects.requireNonNull(privateSubnetIds);
             return this;
@@ -73,6 +61,7 @@ public final class GetDefaultVpcResult {
         public Builder privateSubnetIds(String... privateSubnetIds) {
             return privateSubnetIds(List.of(privateSubnetIds));
         }
+        @CustomType.Setter
         public Builder publicSubnetIds(List<String> publicSubnetIds) {
             this.publicSubnetIds = Objects.requireNonNull(publicSubnetIds);
             return this;
@@ -80,11 +69,17 @@ public final class GetDefaultVpcResult {
         public Builder publicSubnetIds(String... publicSubnetIds) {
             return publicSubnetIds(List.of(publicSubnetIds));
         }
+        @CustomType.Setter
         public Builder vpcId(String vpcId) {
             this.vpcId = Objects.requireNonNull(vpcId);
             return this;
-        }        public GetDefaultVpcResult build() {
-            return new GetDefaultVpcResult(privateSubnetIds, publicSubnetIds, vpcId);
+        }
+        public GetDefaultVpcResult build() {
+            final var o = new GetDefaultVpcResult();
+            o.privateSubnetIds = privateSubnetIds;
+            o.publicSubnetIds = publicSubnetIds;
+            o.vpcId = vpcId;
+            return o;
         }
     }
 }

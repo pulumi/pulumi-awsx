@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// <summary>
     /// Configuration for a VPC subnet.
     /// </summary>
-    public sealed class SubnetSpecArgs : Pulumi.ResourceArgs
+    public sealed class SubnetSpecArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// The bitmask for the subnet's CIDR block.
@@ -48,5 +48,6 @@ namespace Pulumi.Awsx.Ec2.Inputs
         public SubnetSpecArgs()
         {
         }
+        public static new SubnetSpecArgs Empty => new SubnetSpecArgs();
     }
 }

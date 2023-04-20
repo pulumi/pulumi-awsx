@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// Bucket with default setup.
     /// </summary>
-    public sealed class RequiredBucketArgs : Pulumi.ResourceArgs
+    public sealed class RequiredBucketArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Arguments to use instead of the default values during creation.
@@ -30,5 +30,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public RequiredBucketArgs()
         {
         }
+        public static new RequiredBucketArgs Empty => new RequiredBucketArgs();
     }
 }

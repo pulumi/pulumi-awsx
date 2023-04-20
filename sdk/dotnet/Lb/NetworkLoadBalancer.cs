@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Lb
     /// Provides a Network Load Balancer resource with listeners and default target group.
     /// </summary>
     [AwsxResourceType("awsx:lb:NetworkLoadBalancer")]
-    public partial class NetworkLoadBalancer : Pulumi.ComponentResource
+    public partial class NetworkLoadBalancer : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Default target group, if auto-created
@@ -65,7 +65,7 @@ namespace Pulumi.Awsx.Lb
         }
     }
 
-    public sealed class NetworkLoadBalancerArgs : Pulumi.ResourceArgs
+    public sealed class NetworkLoadBalancerArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// An Access Logs block. Access Logs documented below.
@@ -104,24 +104,34 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? DropInvalidHeaderFields { get; set; }
 
         /// <summary>
-        /// If true, cross-zone load balancing of the load balancer will be enabled.
-        /// This is a `network` load balancer feature. Defaults to `false`.
+        /// If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
         /// </summary>
         [Input("enableCrossZoneLoadBalancing")]
         public Input<bool>? EnableCrossZoneLoadBalancing { get; set; }
 
         /// <summary>
-        /// If true, deletion of the load balancer will be disabled via
-        /// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+        /// If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
         /// </summary>
         [Input("enableDeletionProtection")]
         public Input<bool>? EnableDeletionProtection { get; set; }
+
+        /// <summary>
+        /// Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
+        /// </summary>
+        [Input("enableTlsVersionAndCipherSuiteHeaders")]
+        public Input<bool>? EnableTlsVersionAndCipherSuiteHeaders { get; set; }
 
         /// <summary>
         /// Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
         /// </summary>
         [Input("enableWafFailOpen")]
         public Input<bool>? EnableWafFailOpen { get; set; }
+
+        /// <summary>
+        /// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+        /// </summary>
+        [Input("enableXffClientPort")]
+        public Input<bool>? EnableXffClientPort { get; set; }
 
         /// <summary>
         /// The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
@@ -136,7 +146,7 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? Internal { get; set; }
 
         /// <summary>
-        /// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+        /// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
         /// </summary>
         [Input("ipAddressType")]
         public Input<string>? IpAddressType { get; set; }
@@ -229,8 +239,15 @@ namespace Pulumi.Awsx.Lb
             set => _tags = value;
         }
 
+        /// <summary>
+        /// Determines how the load balancer modifies the `X-Forwarded-For` header in the HTTP request before sending the request to the target. The possible values are `append`, `preserve`, and `remove`. Only valid for Load Balancers of type `application`. The default is `append`.
+        /// </summary>
+        [Input("xffHeaderProcessingMode")]
+        public Input<string>? XffHeaderProcessingMode { get; set; }
+
         public NetworkLoadBalancerArgs()
         {
         }
+        public static new NetworkLoadBalancerArgs Empty => new NetworkLoadBalancerArgs();
     }
 }

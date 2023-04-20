@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// <summary>
     /// Configuration for NAT Gateways.
     /// </summary>
-    public sealed class NatGatewayConfigurationArgs : Pulumi.ResourceArgs
+    public sealed class NatGatewayConfigurationArgs : global::Pulumi.ResourceArgs
     {
         [Input("elasticIpAllocationIds")]
         private List<Input<string>>? _elasticIpAllocationIds;
@@ -36,5 +36,6 @@ namespace Pulumi.Awsx.Ec2.Inputs
         public NatGatewayConfigurationArgs()
         {
         }
+        public static new NatGatewayConfigurationArgs Empty => new NatGatewayConfigurationArgs();
     }
 }

@@ -85,6 +85,7 @@ export interface VpcArgs {
     readonly enableClassiclinkDnsSupport?: pulumi.Input<boolean>;
     readonly enableDnsHostnames?: pulumi.Input<boolean>;
     readonly enableDnsSupport?: pulumi.Input<boolean>;
+    readonly enableNetworkAddressUsageMetrics?: pulumi.Input<boolean>;
     readonly instanceTenancy?: pulumi.Input<string>;
     readonly ipv4IpamPoolId?: pulumi.Input<string>;
     readonly ipv4NetmaskLength?: pulumi.Input<number>;
@@ -139,6 +140,7 @@ export abstract class EC2Service<TData = any> extends (pulumi.ComponentResource)
     }
 }
 export interface EC2ServiceArgs {
+    readonly alarms?: pulumi.Input<aws.types.input.ecs.ServiceAlarms>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
     readonly deploymentCircuitBreaker?: pulumi.Input<aws.types.input.ecs.ServiceDeploymentCircuitBreaker>;
@@ -159,10 +161,12 @@ export interface EC2ServiceArgs {
     readonly platformVersion?: pulumi.Input<string>;
     readonly propagateTags?: pulumi.Input<string>;
     readonly schedulingStrategy?: pulumi.Input<string>;
+    readonly serviceConnectConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceServiceConnectConfiguration>;
     readonly serviceRegistries?: pulumi.Input<aws.types.input.ecs.ServiceServiceRegistries>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: EC2ServiceTaskDefinitionInputs;
+    readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class EC2TaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
@@ -203,6 +207,7 @@ export abstract class FargateService<TData = any> extends (pulumi.ComponentResou
     }
 }
 export interface FargateServiceArgs {
+    readonly alarms?: pulumi.Input<aws.types.input.ecs.ServiceAlarms>;
     readonly assignPublicIp?: pulumi.Input<boolean>;
     readonly cluster?: pulumi.Input<string>;
     readonly continueBeforeSteadyState?: pulumi.Input<boolean>;
@@ -223,10 +228,12 @@ export interface FargateServiceArgs {
     readonly platformVersion?: pulumi.Input<string>;
     readonly propagateTags?: pulumi.Input<string>;
     readonly schedulingStrategy?: pulumi.Input<string>;
+    readonly serviceConnectConfiguration?: pulumi.Input<aws.types.input.ecs.ServiceServiceConnectConfiguration>;
     readonly serviceRegistries?: pulumi.Input<aws.types.input.ecs.ServiceServiceRegistries>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskDefinition?: pulumi.Input<string>;
     readonly taskDefinitionArgs?: FargateServiceTaskDefinitionInputs;
+    readonly triggers?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export abstract class FargateTaskDefinition<TData = any> extends (pulumi.ComponentResource)<TData> {
     public executionRole?: aws.iam.Role | pulumi.Output<aws.iam.Role>;
@@ -278,7 +285,9 @@ export interface ApplicationLoadBalancerArgs {
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
     readonly enableHttp2?: pulumi.Input<boolean>;
+    readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
+    readonly enableXffClientPort?: pulumi.Input<boolean>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
     readonly ipAddressType?: pulumi.Input<string>;
@@ -292,6 +301,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
     readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly xffHeaderProcessingMode?: pulumi.Input<string>;
 }
 export abstract class NetworkLoadBalancer<TData = any> extends (pulumi.ComponentResource)<TData> {
     public defaultTargetGroup!: aws.lb.TargetGroup | pulumi.Output<aws.lb.TargetGroup>;
@@ -311,7 +321,9 @@ export interface NetworkLoadBalancerArgs {
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
+    readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
+    readonly enableXffClientPort?: pulumi.Input<boolean>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
     readonly ipAddressType?: pulumi.Input<string>;
@@ -324,6 +336,7 @@ export interface NetworkLoadBalancerArgs {
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
     readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly xffHeaderProcessingMode?: pulumi.Input<string>;
 }
 export abstract class TargetGroupAttachment<TData = any> extends (pulumi.ComponentResource)<TData> {
     public lambdaPermission?: aws.lambda.Permission | pulumi.Output<aws.lambda.Permission>;
@@ -449,14 +462,18 @@ export interface LogGroupInputs {
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
     readonly retentionInDays?: pulumi.Input<number>;
+    readonly skipDestroy?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly tagsAll?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface LogGroupOutputs {
     readonly kmsKeyId?: pulumi.Output<string>;
     readonly name?: pulumi.Output<string>;
     readonly namePrefix?: pulumi.Output<string>;
     readonly retentionInDays?: pulumi.Output<number>;
+    readonly skipDestroy?: pulumi.Output<boolean>;
     readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly tagsAll?: pulumi.Output<Record<string, string>>;
 }
 export interface OptionalLogGroupInputs {
     readonly args?: LogGroupInputs;
@@ -496,6 +513,7 @@ export interface RoleWithPolicyInputs {
     readonly permissionsBoundary?: pulumi.Input<string>;
     readonly policyArns?: string[];
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly tagsAll?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface RoleWithPolicyOutputs {
     readonly description?: pulumi.Output<string>;
@@ -509,6 +527,7 @@ export interface RoleWithPolicyOutputs {
     readonly permissionsBoundary?: pulumi.Output<string>;
     readonly policyArns?: string[];
     readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly tagsAll?: pulumi.Output<Record<string, string>>;
 }
 export interface SecurityGroupInputs {
     readonly description?: pulumi.Input<string>;
@@ -1003,6 +1022,7 @@ export interface TargetGroupInputs {
     readonly ipAddressType?: pulumi.Input<string>;
     readonly lambdaMultiValueHeadersEnabled?: pulumi.Input<boolean>;
     readonly loadBalancingAlgorithmType?: pulumi.Input<string>;
+    readonly loadBalancingCrossZoneEnabled?: pulumi.Input<string>;
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
     readonly port?: pulumi.Input<number>;
@@ -1013,6 +1033,7 @@ export interface TargetGroupInputs {
     readonly slowStart?: pulumi.Input<number>;
     readonly stickiness?: pulumi.Input<aws.types.input.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+    readonly targetFailovers?: pulumi.Input<pulumi.Input<aws.types.input.lb.TargetGroupTargetFailover>[]>;
     readonly targetType?: pulumi.Input<string>;
     readonly vpcId?: pulumi.Input<string>;
 }
@@ -1023,6 +1044,7 @@ export interface TargetGroupOutputs {
     readonly ipAddressType?: pulumi.Output<string>;
     readonly lambdaMultiValueHeadersEnabled?: pulumi.Output<boolean>;
     readonly loadBalancingAlgorithmType?: pulumi.Output<string>;
+    readonly loadBalancingCrossZoneEnabled?: pulumi.Output<string>;
     readonly name?: pulumi.Output<string>;
     readonly namePrefix?: pulumi.Output<string>;
     readonly port?: pulumi.Output<number>;
@@ -1033,6 +1055,7 @@ export interface TargetGroupOutputs {
     readonly slowStart?: pulumi.Output<number>;
     readonly stickiness?: pulumi.Output<aws.types.output.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Output<Record<string, string>>;
+    readonly targetFailovers?: pulumi.Output<aws.types.output.lb.TargetGroupTargetFailover[]>;
     readonly targetType?: pulumi.Output<string>;
     readonly vpcId?: pulumi.Output<string>;
 }

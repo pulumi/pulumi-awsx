@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Ec2
     /// Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.
     /// </summary>
     [AwsxResourceType("awsx:ec2:DefaultVpc")]
-    public partial class DefaultVpc : Pulumi.ComponentResource
+    public partial class DefaultVpc : global::Pulumi.ComponentResource
     {
         [Output("privateSubnetIds")]
         public Output<ImmutableArray<string>> PrivateSubnetIds { get; private set; } = null!;
@@ -53,10 +53,11 @@ namespace Pulumi.Awsx.Ec2
         }
     }
 
-    public sealed class DefaultVpcArgs : Pulumi.ResourceArgs
+    public sealed class DefaultVpcArgs : global::Pulumi.ResourceArgs
     {
         public DefaultVpcArgs()
         {
         }
+        public static new DefaultVpcArgs Empty => new DefaultVpcArgs();
     }
 }

@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
     /// <summary>
     /// List of container definitions that are passed to the Docker daemon on a container instance
     /// </summary>
-    public sealed class TaskDefinitionContainerDefinitionArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionContainerDefinitionArgs : global::Pulumi.ResourceArgs
     {
         [Input("command")]
         private InputList<string>? _command;
@@ -241,5 +241,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionContainerDefinitionArgs()
         {
         }
+        public static new TaskDefinitionContainerDefinitionArgs Empty => new TaskDefinitionContainerDefinitionArgs();
     }
 }

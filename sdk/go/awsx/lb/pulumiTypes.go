@@ -355,9 +355,9 @@ type Listener struct {
 	CertificateArn *string `pulumi:"certificateArn"`
 	// Configuration block for default actions. Detailed below.
 	DefaultActions []lb.ListenerDefaultAction `pulumi:"defaultActions"`
-	// Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+	// Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
 	Port *int `pulumi:"port"`
-	// Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+	// Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
 	Protocol *string `pulumi:"protocol"`
 	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
 	SslPolicy *string `pulumi:"sslPolicy"`
@@ -720,9 +720,9 @@ type ListenerArgs struct {
 	CertificateArn pulumi.StringPtrInput `pulumi:"certificateArn"`
 	// Configuration block for default actions. Detailed below.
 	DefaultActions lb.ListenerDefaultActionArrayInput `pulumi:"defaultActions"`
-	// Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+	// Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
 	Port pulumi.IntPtrInput `pulumi:"port"`
-	// Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+	// Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
 	Protocol pulumi.StringPtrInput `pulumi:"protocol"`
 	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
 	SslPolicy pulumi.StringPtrInput `pulumi:"sslPolicy"`
@@ -1184,12 +1184,12 @@ func (o ListenerOutput) DefaultActions() lb.ListenerDefaultActionArrayOutput {
 	return o.ApplyT(func(v Listener) []lb.ListenerDefaultAction { return v.DefaultActions }).(lb.ListenerDefaultActionArrayOutput)
 }
 
-// Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+// Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
 func (o ListenerOutput) Port() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v Listener) *int { return v.Port }).(pulumi.IntPtrOutput)
 }
 
-// Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+// Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
 func (o ListenerOutput) Protocol() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Listener) *string { return v.Protocol }).(pulumi.StringPtrOutput)
 }
@@ -1258,7 +1258,7 @@ func (o ListenerPtrOutput) DefaultActions() lb.ListenerDefaultActionArrayOutput 
 	}).(lb.ListenerDefaultActionArrayOutput)
 }
 
-// Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+// Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
 func (o ListenerPtrOutput) Port() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v *Listener) *int {
 		if v == nil {
@@ -1268,7 +1268,7 @@ func (o ListenerPtrOutput) Port() pulumi.IntPtrOutput {
 	}).(pulumi.IntPtrOutput)
 }
 
-// Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+// Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
 func (o ListenerPtrOutput) Protocol() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *Listener) *string {
 		if v == nil {
@@ -1464,17 +1464,19 @@ type TargetGroup struct {
 	LambdaMultiValueHeadersEnabled *bool `pulumi:"lambdaMultiValueHeadersEnabled"`
 	// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
 	LoadBalancingAlgorithmType *string `pulumi:"loadBalancingAlgorithmType"`
-	// Name of the target group. If omitted, this provider will assign a random, unique name.
+	// Indicates whether cross zone load balancing is enabled. The value is `"true"`, `"false"` or `"use_load_balancer_configuration"`. The default is `"use_load_balancer_configuration"`.
+	LoadBalancingCrossZoneEnabled *string `pulumi:"loadBalancingCrossZoneEnabled"`
+	// Name of the target group. If omitted, this provider will assign a random, unique name. This name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.
 	Name *string `pulumi:"name"`
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`. Cannot be longer than 6 characters.
 	NamePrefix *string `pulumi:"namePrefix"`
-	// Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+	// Port on which targets receive traffic, unless overridden when registering a specific target. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 	Port *int `pulumi:"port"`
 	// Whether client IP preservation is enabled. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation) for more information.
 	PreserveClientIp *string `pulumi:"preserveClientIp"`
-	// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+	// Protocol to use for routing traffic to the targets. Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 	Protocol *string `pulumi:"protocol"`
-	// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+	// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
 	ProtocolVersion *string `pulumi:"protocolVersion"`
 	// Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
 	ProxyProtocolV2 *bool `pulumi:"proxyProtocolV2"`
@@ -1484,6 +1486,8 @@ type TargetGroup struct {
 	Stickiness *lb.TargetGroupStickiness `pulumi:"stickiness"`
 	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
+	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+	TargetFailovers []lb.TargetGroupTargetFailover `pulumi:"targetFailovers"`
 	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
 	TargetType *string `pulumi:"targetType"`
 	// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
@@ -1647,17 +1651,19 @@ type TargetGroupArgs struct {
 	LambdaMultiValueHeadersEnabled pulumi.BoolPtrInput `pulumi:"lambdaMultiValueHeadersEnabled"`
 	// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
 	LoadBalancingAlgorithmType pulumi.StringPtrInput `pulumi:"loadBalancingAlgorithmType"`
-	// Name of the target group. If omitted, this provider will assign a random, unique name.
+	// Indicates whether cross zone load balancing is enabled. The value is `"true"`, `"false"` or `"use_load_balancer_configuration"`. The default is `"use_load_balancer_configuration"`.
+	LoadBalancingCrossZoneEnabled pulumi.StringPtrInput `pulumi:"loadBalancingCrossZoneEnabled"`
+	// Name of the target group. If omitted, this provider will assign a random, unique name. This name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.
 	Name pulumi.StringPtrInput `pulumi:"name"`
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`. Cannot be longer than 6 characters.
 	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
-	// Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+	// Port on which targets receive traffic, unless overridden when registering a specific target. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 	Port pulumi.IntPtrInput `pulumi:"port"`
 	// Whether client IP preservation is enabled. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation) for more information.
 	PreserveClientIp pulumi.StringPtrInput `pulumi:"preserveClientIp"`
-	// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+	// Protocol to use for routing traffic to the targets. Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 	Protocol pulumi.StringPtrInput `pulumi:"protocol"`
-	// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+	// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
 	ProtocolVersion pulumi.StringPtrInput `pulumi:"protocolVersion"`
 	// Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
 	ProxyProtocolV2 pulumi.BoolPtrInput `pulumi:"proxyProtocolV2"`
@@ -1667,6 +1673,8 @@ type TargetGroupArgs struct {
 	Stickiness lb.TargetGroupStickinessPtrInput `pulumi:"stickiness"`
 	// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
+	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+	TargetFailovers lb.TargetGroupTargetFailoverArrayInput `pulumi:"targetFailovers"`
 	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
 	TargetType pulumi.StringPtrInput `pulumi:"targetType"`
 	// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
@@ -1913,7 +1921,12 @@ func (o TargetGroupOutput) LoadBalancingAlgorithmType() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *string { return v.LoadBalancingAlgorithmType }).(pulumi.StringPtrOutput)
 }
 
-// Name of the target group. If omitted, this provider will assign a random, unique name.
+// Indicates whether cross zone load balancing is enabled. The value is `"true"`, `"false"` or `"use_load_balancer_configuration"`. The default is `"use_load_balancer_configuration"`.
+func (o TargetGroupOutput) LoadBalancingCrossZoneEnabled() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TargetGroup) *string { return v.LoadBalancingCrossZoneEnabled }).(pulumi.StringPtrOutput)
+}
+
+// Name of the target group. If omitted, this provider will assign a random, unique name. This name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.
 func (o TargetGroupOutput) Name() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *string { return v.Name }).(pulumi.StringPtrOutput)
 }
@@ -1923,7 +1936,7 @@ func (o TargetGroupOutput) NamePrefix() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *string { return v.NamePrefix }).(pulumi.StringPtrOutput)
 }
 
-// Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+// Port on which targets receive traffic, unless overridden when registering a specific target. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 func (o TargetGroupOutput) Port() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *int { return v.Port }).(pulumi.IntPtrOutput)
 }
@@ -1933,12 +1946,12 @@ func (o TargetGroupOutput) PreserveClientIp() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *string { return v.PreserveClientIp }).(pulumi.StringPtrOutput)
 }
 
-// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+// Protocol to use for routing traffic to the targets. Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 func (o TargetGroupOutput) Protocol() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *string { return v.Protocol }).(pulumi.StringPtrOutput)
 }
 
-// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
 func (o TargetGroupOutput) ProtocolVersion() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *string { return v.ProtocolVersion }).(pulumi.StringPtrOutput)
 }
@@ -1961,6 +1974,11 @@ func (o TargetGroupOutput) Stickiness() lb.TargetGroupStickinessPtrOutput {
 // Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o TargetGroupOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v TargetGroup) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+func (o TargetGroupOutput) TargetFailovers() lb.TargetGroupTargetFailoverArrayOutput {
+	return o.ApplyT(func(v TargetGroup) []lb.TargetGroupTargetFailover { return v.TargetFailovers }).(lb.TargetGroupTargetFailoverArrayOutput)
 }
 
 // Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
@@ -2057,7 +2075,17 @@ func (o TargetGroupPtrOutput) LoadBalancingAlgorithmType() pulumi.StringPtrOutpu
 	}).(pulumi.StringPtrOutput)
 }
 
-// Name of the target group. If omitted, this provider will assign a random, unique name.
+// Indicates whether cross zone load balancing is enabled. The value is `"true"`, `"false"` or `"use_load_balancer_configuration"`. The default is `"use_load_balancer_configuration"`.
+func (o TargetGroupPtrOutput) LoadBalancingCrossZoneEnabled() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *TargetGroup) *string {
+		if v == nil {
+			return nil
+		}
+		return v.LoadBalancingCrossZoneEnabled
+	}).(pulumi.StringPtrOutput)
+}
+
+// Name of the target group. If omitted, this provider will assign a random, unique name. This name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.
 func (o TargetGroupPtrOutput) Name() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *TargetGroup) *string {
 		if v == nil {
@@ -2077,7 +2105,7 @@ func (o TargetGroupPtrOutput) NamePrefix() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+// Port on which targets receive traffic, unless overridden when registering a specific target. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 func (o TargetGroupPtrOutput) Port() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v *TargetGroup) *int {
 		if v == nil {
@@ -2097,7 +2125,7 @@ func (o TargetGroupPtrOutput) PreserveClientIp() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+// Protocol to use for routing traffic to the targets. Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 func (o TargetGroupPtrOutput) Protocol() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *TargetGroup) *string {
 		if v == nil {
@@ -2107,7 +2135,7 @@ func (o TargetGroupPtrOutput) Protocol() pulumi.StringPtrOutput {
 	}).(pulumi.StringPtrOutput)
 }
 
-// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
 func (o TargetGroupPtrOutput) ProtocolVersion() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *TargetGroup) *string {
 		if v == nil {
@@ -2155,6 +2183,16 @@ func (o TargetGroupPtrOutput) Tags() pulumi.StringMapOutput {
 		}
 		return v.Tags
 	}).(pulumi.StringMapOutput)
+}
+
+// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+func (o TargetGroupPtrOutput) TargetFailovers() lb.TargetGroupTargetFailoverArrayOutput {
+	return o.ApplyT(func(v *TargetGroup) []lb.TargetGroupTargetFailover {
+		if v == nil {
+			return nil
+		}
+		return v.TargetFailovers
+	}).(lb.TargetGroupTargetFailoverArrayOutput)
 }
 
 // Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.

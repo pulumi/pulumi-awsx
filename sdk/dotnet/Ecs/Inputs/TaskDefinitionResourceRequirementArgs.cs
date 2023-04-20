@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionResourceRequirementArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionResourceRequirementArgs : global::Pulumi.ResourceArgs
     {
         [Input("type", required: true)]
         public Input<string> Type { get; set; } = null!;
@@ -21,5 +21,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionResourceRequirementArgs()
         {
         }
+        public static new TaskDefinitionResourceRequirementArgs Empty => new TaskDefinitionResourceRequirementArgs();
     }
 }

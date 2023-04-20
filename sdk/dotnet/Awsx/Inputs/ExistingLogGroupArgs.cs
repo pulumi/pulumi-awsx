@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// Reference to an existing log group.
     /// </summary>
-    public sealed class ExistingLogGroupArgs : Pulumi.ResourceArgs
+    public sealed class ExistingLogGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Arn of the log group. Only one of [arn] or [name] can be specified.
@@ -36,5 +36,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public ExistingLogGroupArgs()
         {
         }
+        public static new ExistingLogGroupArgs Empty => new ExistingLogGroupArgs();
     }
 }

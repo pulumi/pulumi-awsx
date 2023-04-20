@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionKernelCapabilitiesArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionKernelCapabilitiesArgs : global::Pulumi.ResourceArgs
     {
         [Input("add")]
         private InputList<string>? _add;
@@ -31,5 +31,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionKernelCapabilitiesArgs()
         {
         }
+        public static new TaskDefinitionKernelCapabilitiesArgs Empty => new TaskDefinitionKernelCapabilitiesArgs();
     }
 }

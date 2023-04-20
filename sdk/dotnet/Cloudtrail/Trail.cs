@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Cloudtrail
 {
     [AwsxResourceType("awsx:cloudtrail:Trail")]
-    public partial class Trail : Pulumi.ComponentResource
+    public partial class Trail : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// The managed S3 Bucket where the Trail will place its logs.
@@ -56,7 +56,7 @@ namespace Pulumi.Awsx.Cloudtrail
         }
     }
 
-    public sealed class TrailArgs : Pulumi.ResourceArgs
+    public sealed class TrailArgs : global::Pulumi.ResourceArgs
     {
         [Input("advancedEventSelectors")]
         private InputList<Pulumi.Aws.CloudTrail.Inputs.TrailAdvancedEventSelectorArgs>? _advancedEventSelectors;
@@ -137,7 +137,7 @@ namespace Pulumi.Awsx.Cloudtrail
         public Input<string>? KmsKeyId { get; set; }
 
         /// <summary>
-        /// Name of the advanced event selector.
+        /// Name of the trail.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }
@@ -164,7 +164,7 @@ namespace Pulumi.Awsx.Cloudtrail
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
+        /// Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {
@@ -175,5 +175,6 @@ namespace Pulumi.Awsx.Cloudtrail
         public TrailArgs()
         {
         }
+        public static new TrailArgs Empty => new TrailArgs();
     }
 }

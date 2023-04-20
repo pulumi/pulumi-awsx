@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Ecr.Inputs
     /// <summary>
     /// Simplified lifecycle policy model consisting of one or more rules that determine which images in a repository should be expired. See https://docs.aws.amazon.com/AmazonECR/latest/userguide/lifecycle_policy_examples.html for more details.
     /// </summary>
-    public sealed class LifecyclePolicyArgs : Pulumi.ResourceArgs
+    public sealed class LifecyclePolicyArgs : global::Pulumi.ResourceArgs
     {
         [Input("rules")]
         private InputList<Inputs.LifecyclePolicyRuleArgs>? _rules;
@@ -36,5 +36,6 @@ namespace Pulumi.Awsx.Ecr.Inputs
         public LifecyclePolicyArgs()
         {
         }
+        public static new LifecyclePolicyArgs Empty => new LifecyclePolicyArgs();
     }
 }

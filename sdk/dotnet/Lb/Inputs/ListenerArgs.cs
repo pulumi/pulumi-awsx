@@ -182,7 +182,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: 443
+    ///       port: '443'
     ///       protocol: HTTPS
     ///       sslPolicy: ELBSecurityPolicy-2016-08
     ///       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
@@ -323,7 +323,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${aws_lb.front_end.arn}
-    ///       port: 443
+    ///       port: '443'
     ///       protocol: TLS
     ///       certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
     ///       alpnPolicy: HTTP2Preferred
@@ -493,12 +493,12 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: 80
+    ///       port: '80'
     ///       protocol: HTTP
     ///       defaultActions:
     ///         - type: redirect
     ///           redirect:
-    ///             port: 443
+    ///             port: '443'
     ///             protocol: HTTPS
     ///             statusCode: HTTP_301
     /// ```
@@ -664,14 +664,14 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: 80
+    ///       port: '80'
     ///       protocol: HTTP
     ///       defaultActions:
     ///         - type: fixed-response
     ///           fixedResponse:
     ///             contentType: text/plain
     ///             messageBody: Fixed response content
-    ///             statusCode: 200
+    ///             statusCode: '200'
     /// ```
     /// {{% /example %}}
     /// {{% example %}}
@@ -926,7 +926,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: 80
+    ///       port: '80'
     ///       protocol: HTTP
     ///       defaultActions:
     ///         - type: authenticate-cognito
@@ -1156,7 +1156,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     type: aws:lb:Listener
     ///     properties:
     ///       loadBalancerArn: ${frontEndLoadBalancer.arn}
-    ///       port: 80
+    ///       port: '80'
     ///       protocol: HTTP
     ///       defaultActions:
     ///         - type: authenticate-oidc
@@ -1414,7 +1414,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///  
     /// </summary>
-    public sealed class ListenerArgs : Pulumi.ResourceArgs
+    public sealed class ListenerArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
@@ -1441,13 +1441,13 @@ namespace Pulumi.Awsx.Lb.Inputs
         }
 
         /// <summary>
-        /// Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+        /// Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
         /// </summary>
         [Input("port")]
         public Input<int>? Port { get; set; }
 
         /// <summary>
-        /// Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+        /// Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
         /// </summary>
         [Input("protocol")]
         public Input<string>? Protocol { get; set; }
@@ -1473,5 +1473,6 @@ namespace Pulumi.Awsx.Lb.Inputs
         public ListenerArgs()
         {
         }
+        public static new ListenerArgs Empty => new ListenerArgs();
     }
 }

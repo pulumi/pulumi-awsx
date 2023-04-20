@@ -15,7 +15,7 @@ namespace Pulumi.Awsx.Ecs
     /// Presents required Service load balancers if target group included in port mappings.
     /// </summary>
     [AwsxResourceType("awsx:ecs:FargateTaskDefinition")]
-    public partial class FargateTaskDefinition : Pulumi.ComponentResource
+    public partial class FargateTaskDefinition : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -73,7 +73,7 @@ namespace Pulumi.Awsx.Ecs
         }
     }
 
-    public sealed class FargateTaskDefinitionArgs : Pulumi.ResourceArgs
+    public sealed class FargateTaskDefinitionArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -225,5 +225,6 @@ namespace Pulumi.Awsx.Ecs
         public FargateTaskDefinitionArgs()
         {
         }
+        public static new FargateTaskDefinitionArgs Empty => new FargateTaskDefinitionArgs();
     }
 }

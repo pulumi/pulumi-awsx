@@ -297,6 +297,16 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 	}).(SubnetSpecOutput)
 }
 
+// Provides a VPC Endpoint resource.
+//
+// > **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
+// Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
+// Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
+// and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
+// a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
+// Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
+// Doing so will cause a conflict of associations and will overwrite the association.
+//
 // ## Example Usage
 // ### Basic
 // ```go
@@ -369,7 +379,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
 //				VpcEndpointType: pulumi.String("Interface"),
 //				SecurityGroupIds: pulumi.StringArray{
-//					pulumi.Any(aws_security_group.Sg1.Id),
+//					aws_security_group.Sg1.Id,
 //				},
 //				PrivateDnsEnabled: pulumi.Bool(true),
 //			})
@@ -402,10 +412,10 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //			exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
 //				AcceptanceRequired: pulumi.Bool(false),
 //				AllowedPrincipals: pulumi.StringArray{
-//					pulumi.String(current.Arn),
+//					*pulumi.String(current.Arn),
 //				},
 //				GatewayLoadBalancerArns: pulumi.StringArray{
-//					pulumi.Any(aws_lb.Example.Arn),
+//					aws_lb.Example.Arn,
 //				},
 //			})
 //			if err != nil {
@@ -414,7 +424,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //			_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
 //				ServiceName: exampleVpcEndpointService.ServiceName,
 //				SubnetIds: pulumi.StringArray{
-//					pulumi.Any(aws_subnet.Example.Id),
+//					aws_subnet.Example.Id,
 //				},
 //				VpcEndpointType: exampleVpcEndpointService.ServiceType,
 //				VpcId:           pulumi.Any(aws_vpc.Example.Id),
@@ -474,6 +484,16 @@ type VpcEndpointSpecInput interface {
 	ToVpcEndpointSpecOutputWithContext(context.Context) VpcEndpointSpecOutput
 }
 
+// Provides a VPC Endpoint resource.
+//
+// > **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
+// Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
+// Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
+// and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
+// a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
+// Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
+// Doing so will cause a conflict of associations and will overwrite the association.
+//
 // ## Example Usage
 // ### Basic
 // ```go
@@ -546,7 +566,7 @@ type VpcEndpointSpecInput interface {
 //				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
 //				VpcEndpointType: pulumi.String("Interface"),
 //				SecurityGroupIds: pulumi.StringArray{
-//					pulumi.Any(aws_security_group.Sg1.Id),
+//					aws_security_group.Sg1.Id,
 //				},
 //				PrivateDnsEnabled: pulumi.Bool(true),
 //			})
@@ -579,10 +599,10 @@ type VpcEndpointSpecInput interface {
 //			exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
 //				AcceptanceRequired: pulumi.Bool(false),
 //				AllowedPrincipals: pulumi.StringArray{
-//					pulumi.String(current.Arn),
+//					*pulumi.String(current.Arn),
 //				},
 //				GatewayLoadBalancerArns: pulumi.StringArray{
-//					pulumi.Any(aws_lb.Example.Arn),
+//					aws_lb.Example.Arn,
 //				},
 //			})
 //			if err != nil {
@@ -591,7 +611,7 @@ type VpcEndpointSpecInput interface {
 //			_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
 //				ServiceName: exampleVpcEndpointService.ServiceName,
 //				SubnetIds: pulumi.StringArray{
-//					pulumi.Any(aws_subnet.Example.Id),
+//					aws_subnet.Example.Id,
 //				},
 //				VpcEndpointType: exampleVpcEndpointService.ServiceType,
 //				VpcId:           pulumi.Any(aws_vpc.Example.Id),
@@ -677,6 +697,16 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 	return pulumi.ToOutputWithContext(ctx, i).(VpcEndpointSpecArrayOutput)
 }
 
+// Provides a VPC Endpoint resource.
+//
+// > **NOTE on VPC Endpoints and VPC Endpoint Associations:** The provider provides both standalone VPC Endpoint Associations for
+// Route Tables - (an association between a VPC endpoint and a single `route_table_id`),
+// Security Groups - (an association between a VPC endpoint and a single `security_group_id`),
+// and Subnets - (an association between a VPC endpoint and a single `subnet_id`) and
+// a VPC Endpoint resource with `route_table_ids` and `subnet_ids` attributes.
+// Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
+// Doing so will cause a conflict of associations and will overwrite the association.
+//
 // ## Example Usage
 // ### Basic
 // ```go
@@ -749,7 +779,7 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
 //				VpcEndpointType: pulumi.String("Interface"),
 //				SecurityGroupIds: pulumi.StringArray{
-//					pulumi.Any(aws_security_group.Sg1.Id),
+//					aws_security_group.Sg1.Id,
 //				},
 //				PrivateDnsEnabled: pulumi.Bool(true),
 //			})
@@ -782,10 +812,10 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //			exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
 //				AcceptanceRequired: pulumi.Bool(false),
 //				AllowedPrincipals: pulumi.StringArray{
-//					pulumi.String(current.Arn),
+//					*pulumi.String(current.Arn),
 //				},
 //				GatewayLoadBalancerArns: pulumi.StringArray{
-//					pulumi.Any(aws_lb.Example.Arn),
+//					aws_lb.Example.Arn,
 //				},
 //			})
 //			if err != nil {
@@ -794,7 +824,7 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //			_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
 //				ServiceName: exampleVpcEndpointService.ServiceName,
 //				SubnetIds: pulumi.StringArray{
-//					pulumi.Any(aws_subnet.Example.Id),
+//					aws_subnet.Example.Id,
 //				},
 //				VpcEndpointType: exampleVpcEndpointService.ServiceType,
 //				VpcId:           pulumi.Any(aws_vpc.Example.Id),
