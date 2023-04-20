@@ -27,7 +27,7 @@ public class NetworkLoadBalancer extends com.pulumi.resources.ComponentResource 
      * Default target group, if auto-created
      * 
      */
-    @Export(name="defaultTargetGroup", type=TargetGroup.class, parameters={})
+    @Export(name="defaultTargetGroup", refs={TargetGroup.class}, tree="[0]")
     private Output<TargetGroup> defaultTargetGroup;
 
     /**
@@ -41,7 +41,7 @@ public class NetworkLoadBalancer extends com.pulumi.resources.ComponentResource 
      * Listeners created as part of this load balancer
      * 
      */
-    @Export(name="listeners", type=List.class, parameters={Listener.class})
+    @Export(name="listeners", refs={List.class,Listener.class}, tree="[0,1]")
     private Output</* @Nullable */ List<Listener>> listeners;
 
     /**
@@ -55,7 +55,7 @@ public class NetworkLoadBalancer extends com.pulumi.resources.ComponentResource 
      * Underlying Load Balancer resource
      * 
      */
-    @Export(name="loadBalancer", type=LoadBalancer.class, parameters={})
+    @Export(name="loadBalancer", refs={LoadBalancer.class}, tree="[0]")
     private Output<LoadBalancer> loadBalancer;
 
     /**
@@ -69,7 +69,7 @@ public class NetworkLoadBalancer extends com.pulumi.resources.ComponentResource 
      * Id of the VPC in which this load balancer is operating
      * 
      */
-    @Export(name="vpcId", type=String.class, parameters={})
+    @Export(name="vpcId", refs={String.class}, tree="[0]")
     private Output</* @Nullable */ String> vpcId;
 
     /**

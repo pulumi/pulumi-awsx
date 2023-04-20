@@ -27,7 +27,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
      * 
      */
-    @Export(name="eips", type=List.class, parameters={Eip.class})
+    @Export(name="eips", refs={List.class,Eip.class}, tree="[0,1]")
     private Output<List<Eip>> eips;
 
     /**
@@ -41,7 +41,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * The Internet Gateway for the VPC.
      * 
      */
-    @Export(name="internetGateway", type=InternetGateway.class, parameters={})
+    @Export(name="internetGateway", refs={InternetGateway.class}, tree="[0]")
     private Output<InternetGateway> internetGateway;
 
     /**
@@ -51,7 +51,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
     public Output<InternetGateway> internetGateway() {
         return this.internetGateway;
     }
-    @Export(name="isolatedSubnetIds", type=List.class, parameters={String.class})
+    @Export(name="isolatedSubnetIds", refs={List.class,String.class}, tree="[0,1]")
     private Output<List<String>> isolatedSubnetIds;
 
     public Output<List<String>> isolatedSubnetIds() {
@@ -61,7 +61,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
      * 
      */
-    @Export(name="natGateways", type=List.class, parameters={NatGateway.class})
+    @Export(name="natGateways", refs={List.class,NatGateway.class}, tree="[0,1]")
     private Output<List<NatGateway>> natGateways;
 
     /**
@@ -71,13 +71,13 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
     public Output<List<NatGateway>> natGateways() {
         return this.natGateways;
     }
-    @Export(name="privateSubnetIds", type=List.class, parameters={String.class})
+    @Export(name="privateSubnetIds", refs={List.class,String.class}, tree="[0,1]")
     private Output<List<String>> privateSubnetIds;
 
     public Output<List<String>> privateSubnetIds() {
         return this.privateSubnetIds;
     }
-    @Export(name="publicSubnetIds", type=List.class, parameters={String.class})
+    @Export(name="publicSubnetIds", refs={List.class,String.class}, tree="[0,1]")
     private Output<List<String>> publicSubnetIds;
 
     public Output<List<String>> publicSubnetIds() {
@@ -87,7 +87,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * The Route Table Associations for the VPC.
      * 
      */
-    @Export(name="routeTableAssociations", type=List.class, parameters={RouteTableAssociation.class})
+    @Export(name="routeTableAssociations", refs={List.class,RouteTableAssociation.class}, tree="[0,1]")
     private Output<List<RouteTableAssociation>> routeTableAssociations;
 
     /**
@@ -101,7 +101,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * The Route Tables for the VPC.
      * 
      */
-    @Export(name="routeTables", type=List.class, parameters={RouteTable.class})
+    @Export(name="routeTables", refs={List.class,RouteTable.class}, tree="[0,1]")
     private Output<List<RouteTable>> routeTables;
 
     /**
@@ -115,7 +115,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * The Routes for the VPC.
      * 
      */
-    @Export(name="routes", type=List.class, parameters={Route.class})
+    @Export(name="routes", refs={List.class,Route.class}, tree="[0,1]")
     private Output<List<Route>> routes;
 
     /**
@@ -129,7 +129,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * The VPC&#39;s subnets.
      * 
      */
-    @Export(name="subnets", type=List.class, parameters={Subnet.class})
+    @Export(name="subnets", refs={List.class,Subnet.class}, tree="[0,1]")
     private Output<List<Subnet>> subnets;
 
     /**
@@ -143,7 +143,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * The VPC.
      * 
      */
-    @Export(name="vpc", type=com.pulumi.aws.ec2.Vpc.class, parameters={})
+    @Export(name="vpc", refs={com.pulumi.aws.ec2.Vpc.class}, tree="[0]")
     private Output<com.pulumi.aws.ec2.Vpc> vpc;
 
     /**
@@ -157,7 +157,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      * The VPC Endpoints that are enabled
      * 
      */
-    @Export(name="vpcEndpoints", type=List.class, parameters={VpcEndpoint.class})
+    @Export(name="vpcEndpoints", refs={List.class,VpcEndpoint.class}, tree="[0,1]")
     private Output<List<VpcEndpoint>> vpcEndpoints;
 
     /**
@@ -167,7 +167,7 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
     public Output<List<VpcEndpoint>> vpcEndpoints() {
         return this.vpcEndpoints;
     }
-    @Export(name="vpcId", type=String.class, parameters={})
+    @Export(name="vpcId", refs={String.class}, tree="[0]")
     private Output<String> vpcId;
 
     public Output<String> vpcId() {

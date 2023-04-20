@@ -29,7 +29,7 @@ public class EC2TaskDefinition extends com.pulumi.resources.ComponentResource {
      * Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.
      * 
      */
-    @Export(name="executionRole", type=Role.class, parameters={})
+    @Export(name="executionRole", refs={Role.class}, tree="[0]")
     private Output</* @Nullable */ Role> executionRole;
 
     /**
@@ -43,7 +43,7 @@ public class EC2TaskDefinition extends com.pulumi.resources.ComponentResource {
      * Computed load balancers from target groups specified of container port mappings.
      * 
      */
-    @Export(name="loadBalancers", type=List.class, parameters={ServiceLoadBalancer.class})
+    @Export(name="loadBalancers", refs={List.class,ServiceLoadBalancer.class}, tree="[0,1]")
     private Output<List<ServiceLoadBalancer>> loadBalancers;
 
     /**
@@ -57,7 +57,7 @@ public class EC2TaskDefinition extends com.pulumi.resources.ComponentResource {
      * Auto-created Log Group resource for use by containers.
      * 
      */
-    @Export(name="logGroup", type=LogGroup.class, parameters={})
+    @Export(name="logGroup", refs={LogGroup.class}, tree="[0]")
     private Output</* @Nullable */ LogGroup> logGroup;
 
     /**
@@ -71,7 +71,7 @@ public class EC2TaskDefinition extends com.pulumi.resources.ComponentResource {
      * Underlying ECS Task Definition resource
      * 
      */
-    @Export(name="taskDefinition", type=TaskDefinition.class, parameters={})
+    @Export(name="taskDefinition", refs={TaskDefinition.class}, tree="[0]")
     private Output<TaskDefinition> taskDefinition;
 
     /**
@@ -85,7 +85,7 @@ public class EC2TaskDefinition extends com.pulumi.resources.ComponentResource {
      * Auto-created IAM role that allows your Amazon ECS container task to make calls to other AWS services.
      * 
      */
-    @Export(name="taskRole", type=Role.class, parameters={})
+    @Export(name="taskRole", refs={Role.class}, tree="[0]")
     private Output</* @Nullable */ Role> taskRole;
 
     /**

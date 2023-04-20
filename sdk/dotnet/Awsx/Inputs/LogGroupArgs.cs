@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// The set of arguments for constructing a LogGroup resource.
     /// </summary>
-    public sealed class LogGroupArgs : Pulumi.ResourceArgs
+    public sealed class LogGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
@@ -58,5 +58,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public LogGroupArgs()
         {
         }
+        public static new LogGroupArgs Empty => new LogGroupArgs();
     }
 }

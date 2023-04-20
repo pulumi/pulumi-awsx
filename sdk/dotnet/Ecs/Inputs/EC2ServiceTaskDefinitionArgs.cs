@@ -15,7 +15,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
     /// Creates required log-group and task &amp; execution roles.
     /// Presents required Service load balancers if target group included in port mappings.
     /// </summary>
-    public sealed class EC2ServiceTaskDefinitionArgs : Pulumi.ResourceArgs
+    public sealed class EC2ServiceTaskDefinitionArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -173,5 +173,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public EC2ServiceTaskDefinitionArgs()
         {
         }
+        public static new EC2ServiceTaskDefinitionArgs Empty => new EC2ServiceTaskDefinitionArgs();
     }
 }

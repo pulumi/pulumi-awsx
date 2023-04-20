@@ -13,6 +13,53 @@
     "license": "Apache-2.0",
     "repository": "https://github.com/pulumi/pulumi-awsx",
     "publisher": "Pulumi",
+    "language": {
+        "csharp": {
+            "liftSingleValueMethodReturns": true,
+            "packageReferences": {
+                "Pulumi": "3.*",
+                "Pulumi.Aws": "5.*",
+                "Pulumi.Docker": "3.*"
+            }
+        },
+        "go": {
+            "generateResourceContainerTypes": true,
+            "importBasePath": "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
+            "internalDependencies": [
+                "github.com/pulumi/pulumi-docker/sdk/v3/go/docker"
+            ],
+            "liftSingleValueMethodReturns": true
+        },
+        "java": {
+            "packages": {
+                "com.pulumi:aws": "5.16.2"
+            }
+        },
+        "nodejs": {
+            "dependencies": {
+                "@pulumi/aws": "^5.16.2",
+                "@pulumi/docker": "^3.6.1",
+                "@pulumi/pulumi": "^3.0.0",
+                "@types/aws-lambda": "^8.10.23",
+                "mime": "^2.0.0"
+            },
+            "devDependencies": {
+                "@types/mime": "^2.0.0",
+                "@types/node": "^18",
+                "typescript": "^4.6.2"
+            }
+        },
+        "python": {
+            "liftSingleValueMethodReturns": true,
+            "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
+            "requires": {
+                "pulumi": "\u003e=3.47.2,\u003c4.0.0",
+                "pulumi-aws": "\u003e=5.16.2,\u003c6.0.0",
+                "pulumi-docker": "\u003e=3.6.1,\u003c4.0.0"
+            },
+            "usesIOClasses": true
+        }
+    },
     "config": {},
     "types": {
         "awsx:awsx:Bucket": {
@@ -37,11 +84,13 @@
                         "csharp": {
                             "name": "BucketName"
                         }
-                    }
+                    },
+                    "willReplaceOnChanges": true
                 },
                 "bucketPrefix": {
                     "type": "string",
-                    "description": "Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).\n"
+                    "description": "Creates a unique bucket name beginning with the specified prefix. Conflicts with `bucket`. Must be lowercase and less than or equal to 37 characters in length. A full list of bucket naming rules [may be found here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html).\n",
+                    "willReplaceOnChanges": true
                 },
                 "corsRules": {
                     "type": "array",
@@ -248,11 +297,13 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "The name of the log group. If omitted, this provider will assign a random, unique name.\n"
+                    "description": "The name of the log group. If omitted, this provider will assign a random, unique name.\n",
+                    "willReplaceOnChanges": true
                 },
                 "namePrefix": {
                     "type": "string",
-                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n"
+                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "retentionInDays": {
                     "type": "integer",
@@ -352,15 +403,18 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "Name of the role policy.\n"
+                    "description": "Name of the role policy.\n",
+                    "willReplaceOnChanges": true
                 },
                 "namePrefix": {
                     "type": "string",
-                    "description": "Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.\n"
+                    "description": "Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "path": {
                     "type": "string",
-                    "description": "Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.\n"
+                    "description": "Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.\n",
+                    "willReplaceOnChanges": true
                 },
                 "permissionsBoundary": {
                     "type": "string",
@@ -391,7 +445,8 @@
                 "description": {
                     "type": "string",
                     "description": "Description of this egress rule.\n",
-                    "default": "Managed by Pulumi"
+                    "default": "Managed by Pulumi",
+                    "willReplaceOnChanges": true
                 },
                 "egress": {
                     "type": "array",
@@ -409,11 +464,13 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "Name of the security group. If omitted, this provider will assign a random, unique name.\n"
+                    "description": "Name of the security group. If omitted, this provider will assign a random, unique name.\n",
+                    "willReplaceOnChanges": true
                 },
                 "namePrefix": {
                     "type": "string",
-                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n"
+                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "revokeRulesOnDelete": {
                     "type": "boolean",
@@ -428,7 +485,8 @@
                 },
                 "vpcId": {
                     "type": "string",
-                    "description": "VPC ID.\nDefaults to the region's default VPC.\n"
+                    "description": "VPC ID.\nDefaults to the region's default VPC.\n",
+                    "willReplaceOnChanges": true
                 }
             },
             "type": "object"
@@ -607,7 +665,8 @@
                 },
                 "vpcEndpointType": {
                     "type": "string",
-                    "description": "The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.\n"
+                    "description": "The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.\n",
+                    "willReplaceOnChanges": true
                 }
             },
             "type": "object",
@@ -754,7 +813,8 @@
                 },
                 "ephemeralStorage": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
-                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
+                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
+                    "willReplaceOnChanges": true
                 },
                 "executionRole": {
                     "$ref": "#/types/awsx:awsx:DefaultRoleWithPolicy",
@@ -770,11 +830,13 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
                     },
-                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n"
+                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "ipcMode": {
                     "type": "string",
-                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
+                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "logGroup": {
                     "$ref": "#/types/awsx:awsx:DefaultLogGroup",
@@ -787,26 +849,31 @@
                 },
                 "networkMode": {
                     "type": "string",
-                    "description": "Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.\n"
+                    "description": "Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "pidMode": {
                     "type": "string",
-                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n"
+                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
-                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n"
+                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
-                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n"
+                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "runtimePlatform": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
-                    "description": "Configuration block for runtime_platform that containers in your task may use.\n"
+                    "description": "Configuration block for runtime_platform that containers in your task may use.\n",
+                    "willReplaceOnChanges": true
                 },
                 "skipDestroy": {
                     "type": "boolean",
@@ -829,7 +896,8 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
-                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n"
+                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 }
             },
             "type": "object"
@@ -857,7 +925,8 @@
                 },
                 "ephemeralStorage": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
-                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
+                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
+                    "willReplaceOnChanges": true
                 },
                 "executionRole": {
                     "$ref": "#/types/awsx:awsx:DefaultRoleWithPolicy",
@@ -873,11 +942,13 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
                     },
-                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n"
+                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "ipcMode": {
                     "type": "string",
-                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
+                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "logGroup": {
                     "$ref": "#/types/awsx:awsx:DefaultLogGroup",
@@ -890,22 +961,26 @@
                 },
                 "pidMode": {
                     "type": "string",
-                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n"
+                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
-                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n"
+                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
-                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n"
+                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "runtimePlatform": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
-                    "description": "Configuration block for runtime_platform that containers in your task may use.\n"
+                    "description": "Configuration block for runtime_platform that containers in your task may use.\n",
+                    "willReplaceOnChanges": true
                 },
                 "skipDestroy": {
                     "type": "boolean",
@@ -928,7 +1003,8 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
-                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n"
+                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 }
             },
             "type": "object"
@@ -1470,7 +1546,8 @@
                 },
                 "ipAddressType": {
                     "type": "string",
-                    "description": "The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.\n"
+                    "description": "The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "lambdaMultiValueHeadersEnabled": {
                     "type": "boolean",
@@ -1482,15 +1559,18 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "Name of the target group. If omitted, this provider will assign a random, unique name.\n"
+                    "description": "Name of the target group. If omitted, this provider will assign a random, unique name.\n",
+                    "willReplaceOnChanges": true
                 },
                 "namePrefix": {
                     "type": "string",
-                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`. Cannot be longer than 6 characters.\n"
+                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`. Cannot be longer than 6 characters.\n",
+                    "willReplaceOnChanges": true
                 },
                 "port": {
                     "type": "integer",
-                    "description": "Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.\n"
+                    "description": "Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "preserveClientIp": {
                     "type": "string",
@@ -1498,7 +1578,8 @@
                 },
                 "protocol": {
                     "type": "string",
-                    "description": "Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.\n"
+                    "description": "Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "protocolVersion": {
                     "type": "string",
@@ -1525,11 +1606,13 @@
                 },
                 "targetType": {
                     "type": "string",
-                    "description": "Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.\n"
+                    "description": "Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "vpcId": {
                     "type": "string",
-                    "description": "Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.\n"
+                    "description": "Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.\n",
+                    "willReplaceOnChanges": true
                 }
             },
             "type": "object"
@@ -1613,7 +1696,8 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "Name of the advanced event selector.\n"
+                    "description": "Name of the advanced event selector.\n",
+                    "willReplaceOnChanges": true
                 },
                 "s3Bucket": {
                     "$ref": "#/types/awsx:awsx:RequiredBucket",
@@ -1809,11 +1893,13 @@
                 },
                 "ipv4IpamPoolId": {
                     "type": "string",
-                    "description": "The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.\n"
+                    "description": "The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.\n",
+                    "willReplaceOnChanges": true
                 },
                 "ipv4NetmaskLength": {
                     "type": "integer",
-                    "description": "The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4_ipam_pool_id`.\n"
+                    "description": "The netmask length of the IPv4 CIDR you want to allocate to this VPC. Requires specifying a `ipv4_ipam_pool_id`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "ipv6CidrBlock": {
                     "type": "string",
@@ -1964,7 +2050,8 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecr/RepositoryEncryptionConfiguration:RepositoryEncryptionConfiguration"
                     },
-                    "description": "Encryption configuration for the repository. See below for schema.\n"
+                    "description": "Encryption configuration for the repository. See below for schema.\n",
+                    "willReplaceOnChanges": true
                 },
                 "forceDelete": {
                     "type": "boolean",
@@ -1985,7 +2072,8 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "Name of the repository.\n"
+                    "description": "Name of the repository.\n",
+                    "willReplaceOnChanges": true
                 },
                 "tags": {
                     "type": "object",
@@ -2015,7 +2103,8 @@
             "inputProperties": {
                 "cluster": {
                     "type": "string",
-                    "description": "ARN of an ECS cluster.\n"
+                    "description": "ARN of an ECS cluster.\n",
+                    "willReplaceOnChanges": true
                 },
                 "continueBeforeSteadyState": {
                     "type": "boolean",
@@ -2059,7 +2148,8 @@
                 },
                 "iamRole": {
                     "type": "string",
-                    "description": "ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.\n"
+                    "description": "ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.\n",
+                    "willReplaceOnChanges": true
                 },
                 "loadBalancers": {
                     "type": "array",
@@ -2070,7 +2160,8 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "Name of the service (up to 255 letters, numbers, hyphens, and underscores)\n"
+                    "description": "Name of the service (up to 255 letters, numbers, hyphens, and underscores)\n",
+                    "willReplaceOnChanges": true
                 },
                 "networkConfiguration": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
@@ -2100,7 +2191,8 @@
                 },
                 "schedulingStrategy": {
                     "type": "string",
-                    "description": "Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).\n"
+                    "description": "Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).\n",
+                    "willReplaceOnChanges": true
                 },
                 "serviceRegistries": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
@@ -2177,7 +2269,8 @@
                 },
                 "ephemeralStorage": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
-                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
+                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
+                    "willReplaceOnChanges": true
                 },
                 "executionRole": {
                     "$ref": "#/types/awsx:awsx:DefaultRoleWithPolicy",
@@ -2193,11 +2286,13 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
                     },
-                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n"
+                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "ipcMode": {
                     "type": "string",
-                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
+                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "logGroup": {
                     "$ref": "#/types/awsx:awsx:DefaultLogGroup",
@@ -2210,26 +2305,31 @@
                 },
                 "networkMode": {
                     "type": "string",
-                    "description": "Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.\n"
+                    "description": "Docker networking mode to use for the containers in the task. Valid values are `none`, `bridge`, `awsvpc`, and `host`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "pidMode": {
                     "type": "string",
-                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n"
+                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
-                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n"
+                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
-                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n"
+                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "runtimePlatform": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
-                    "description": "Configuration block for runtime_platform that containers in your task may use.\n"
+                    "description": "Configuration block for runtime_platform that containers in your task may use.\n",
+                    "willReplaceOnChanges": true
                 },
                 "skipDestroy": {
                     "type": "boolean",
@@ -2252,7 +2352,8 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
-                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n"
+                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 }
             },
             "isComponent": true
@@ -2279,7 +2380,8 @@
                 },
                 "cluster": {
                     "type": "string",
-                    "description": "ARN of an ECS cluster.\n"
+                    "description": "ARN of an ECS cluster.\n",
+                    "willReplaceOnChanges": true
                 },
                 "continueBeforeSteadyState": {
                     "type": "boolean",
@@ -2323,7 +2425,8 @@
                 },
                 "iamRole": {
                     "type": "string",
-                    "description": "ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.\n"
+                    "description": "ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.\n",
+                    "willReplaceOnChanges": true
                 },
                 "loadBalancers": {
                     "type": "array",
@@ -2334,7 +2437,8 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "Name of the service (up to 255 letters, numbers, hyphens, and underscores)\n"
+                    "description": "Name of the service (up to 255 letters, numbers, hyphens, and underscores)\n",
+                    "willReplaceOnChanges": true
                 },
                 "networkConfiguration": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/ServiceNetworkConfiguration:ServiceNetworkConfiguration",
@@ -2357,7 +2461,8 @@
                 },
                 "schedulingStrategy": {
                     "type": "string",
-                    "description": "Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).\n"
+                    "description": "Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).\n",
+                    "willReplaceOnChanges": true
                 },
                 "serviceRegistries": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/ServiceServiceRegistries:ServiceServiceRegistries",
@@ -2434,7 +2539,8 @@
                 },
                 "ephemeralStorage": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionEphemeralStorage:TaskDefinitionEphemeralStorage",
-                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n"
+                    "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate. See Ephemeral Storage.\n",
+                    "willReplaceOnChanges": true
                 },
                 "executionRole": {
                     "$ref": "#/types/awsx:awsx:DefaultRoleWithPolicy",
@@ -2450,11 +2556,13 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionInferenceAccelerator:TaskDefinitionInferenceAccelerator"
                     },
-                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n"
+                    "description": "Configuration block(s) with Inference Accelerators settings. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "ipcMode": {
                     "type": "string",
-                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n"
+                    "description": "IPC resource namespace to be used for the containers in the task The valid values are `host`, `task`, and `none`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "logGroup": {
                     "$ref": "#/types/awsx:awsx:DefaultLogGroup",
@@ -2467,22 +2575,26 @@
                 },
                 "pidMode": {
                     "type": "string",
-                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n"
+                    "description": "Process namespace to use for the containers in the task. The valid values are `host` and `task`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "placementConstraints": {
                     "type": "array",
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionPlacementConstraint:TaskDefinitionPlacementConstraint"
                     },
-                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n"
+                    "description": "Configuration block for rules that are taken into consideration during task placement. Maximum number of `placement_constraints` is `10`. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "proxyConfiguration": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionProxyConfiguration:TaskDefinitionProxyConfiguration",
-                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n"
+                    "description": "Configuration block for the App Mesh proxy. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "runtimePlatform": {
                     "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionRuntimePlatform:TaskDefinitionRuntimePlatform",
-                    "description": "Configuration block for runtime_platform that containers in your task may use.\n"
+                    "description": "Configuration block for runtime_platform that containers in your task may use.\n",
+                    "willReplaceOnChanges": true
                 },
                 "skipDestroy": {
                     "type": "boolean",
@@ -2505,7 +2617,8 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:ecs/TaskDefinitionVolume:TaskDefinitionVolume"
                     },
-                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n"
+                    "description": "Configuration block for volumes that containers in your task may use. Detailed below.\n",
+                    "willReplaceOnChanges": true
                 }
             },
             "isComponent": true
@@ -2549,7 +2662,8 @@
                 },
                 "customerOwnedIpv4Pool": {
                     "type": "string",
-                    "description": "The ID of the customer owned ipv4 pool to use for this load balancer.\n"
+                    "description": "The ID of the customer owned ipv4 pool to use for this load balancer.\n",
+                    "willReplaceOnChanges": true
                 },
                 "defaultSecurityGroup": {
                     "$ref": "#/types/awsx:awsx:DefaultSecurityGroup",
@@ -2591,7 +2705,8 @@
                 },
                 "internal": {
                     "type": "boolean",
-                    "description": "If true, the LB will be internal.\n"
+                    "description": "If true, the LB will be internal.\n",
+                    "willReplaceOnChanges": true
                 },
                 "ipAddressType": {
                     "type": "string",
@@ -2613,11 +2728,13 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,\nmust contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,\nthis provider will autogenerate a name beginning with `tf-lb`.\n"
+                    "description": "The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,\nmust contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,\nthis provider will autogenerate a name beginning with `tf-lb`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "namePrefix": {
                     "type": "string",
-                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n"
+                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "preserveHostHeader": {
                     "type": "boolean",
@@ -2642,7 +2759,8 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
                     },
-                    "description": "A subnet mapping block as documented below.\n"
+                    "description": "A subnet mapping block as documented below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "subnets": {
                     "type": "array",
@@ -2696,7 +2814,8 @@
                 },
                 "customerOwnedIpv4Pool": {
                     "type": "string",
-                    "description": "The ID of the customer owned ipv4 pool to use for this load balancer.\n"
+                    "description": "The ID of the customer owned ipv4 pool to use for this load balancer.\n",
+                    "willReplaceOnChanges": true
                 },
                 "defaultTargetGroup": {
                     "$ref": "#/types/awsx:lb:TargetGroup",
@@ -2733,7 +2852,8 @@
                 },
                 "internal": {
                     "type": "boolean",
-                    "description": "If true, the LB will be internal.\n"
+                    "description": "If true, the LB will be internal.\n",
+                    "willReplaceOnChanges": true
                 },
                 "ipAddressType": {
                     "type": "string",
@@ -2755,11 +2875,13 @@
                 },
                 "name": {
                     "type": "string",
-                    "description": "The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,\nmust contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,\nthis provider will autogenerate a name beginning with `tf-lb`.\n"
+                    "description": "The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,\nmust contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,\nthis provider will autogenerate a name beginning with `tf-lb`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "namePrefix": {
                     "type": "string",
-                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n"
+                    "description": "Creates a unique name beginning with the specified prefix. Conflicts with `name`.\n",
+                    "willReplaceOnChanges": true
                 },
                 "preserveHostHeader": {
                     "type": "boolean",
@@ -2777,7 +2899,8 @@
                     "items": {
                         "$ref": "/aws/v5.16.2/schema.json#/types/aws:lb/LoadBalancerSubnetMapping:LoadBalancerSubnetMapping"
                     },
-                    "description": "A subnet mapping block as documented below.\n"
+                    "description": "A subnet mapping block as documented below.\n",
+                    "willReplaceOnChanges": true
                 },
                 "subnets": {
                     "type": "array",
@@ -2853,6 +2976,7 @@
     },
     "functions": {
         "awsx:ec2:getDefaultVpc": {
+            "deprecationMessage": "Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.",
             "description": "[NOT YET IMPLEMENTED] Get the Default VPC for a region.",
             "inputs": {
                 "description": "Arguments for getting the default VPC"
@@ -2882,55 +3006,7 @@
                     "publicSubnetIds",
                     "privateSubnetIds"
                 ]
-            },
-            "deprecationMessage": "Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved."
-        }
-    },
-    "language": {
-        "csharp": {
-            "liftSingleValueMethodReturns": true,
-            "packageReferences": {
-                "Pulumi": "3.*",
-                "Pulumi.Aws": "5.*",
-                "Pulumi.Docker": "3.*"
             }
-        },
-        "go": {
-            "generateResourceContainerTypes": true,
-            "importBasePath": "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
-            "internalDependencies": [
-                "github.com/pulumi/pulumi-docker/sdk/v3/go/docker"
-            ],
-            "liftSingleValueMethodReturns": true
-        },
-        "java": {
-            "packages": {
-                "com.pulumi:aws": "5.16.2"
-            }
-        },
-        "nodejs": {
-            "dependencies": {
-                "@pulumi/aws": "^5.16.2",
-                "@pulumi/docker": "^3.6.1",
-                "@pulumi/pulumi": "^3.0.0",
-                "@types/aws-lambda": "^8.10.23",
-                "mime": "^2.0.0"
-            },
-            "devDependencies": {
-                "@types/mime": "^2.0.0",
-                "@types/node": "^18",
-                "typescript": "^4.6.2"
-            }
-        },
-        "python": {
-            "liftSingleValueMethodReturns": true,
-            "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
-            "requires": {
-                "pulumi": "\u003e=3.47.2,\u003c4.0.0",
-                "pulumi-aws": "\u003e=5.16.2,\u003c6.0.0",
-                "pulumi-docker": "\u003e=3.6.1,\u003c4.0.0"
-            },
-            "usesIOClasses": true
         }
     }
 }

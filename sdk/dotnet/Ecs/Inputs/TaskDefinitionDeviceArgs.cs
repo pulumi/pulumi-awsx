@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionDeviceArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionDeviceArgs : global::Pulumi.ResourceArgs
     {
         [Input("containerPath")]
         public Input<string>? ContainerPath { get; set; }
@@ -29,5 +29,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionDeviceArgs()
         {
         }
+        public static new TaskDefinitionDeviceArgs Empty => new TaskDefinitionDeviceArgs();
     }
 }

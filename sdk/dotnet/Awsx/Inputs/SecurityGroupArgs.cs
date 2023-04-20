@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// The set of arguments for constructing a Security Group resource.
     /// </summary>
-    public sealed class SecurityGroupArgs : Pulumi.ResourceArgs
+    public sealed class SecurityGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Description of this egress rule.
@@ -86,5 +86,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         {
             Description = "Managed by Pulumi";
         }
+        public static new SecurityGroupArgs Empty => new SecurityGroupArgs();
     }
 }

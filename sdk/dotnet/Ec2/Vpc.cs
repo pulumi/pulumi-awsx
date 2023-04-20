@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ec2
 {
     [AwsxResourceType("awsx:ec2:Vpc")]
-    public partial class Vpc : Pulumi.ComponentResource
+    public partial class Vpc : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
@@ -104,7 +104,7 @@ namespace Pulumi.Awsx.Ec2
         }
     }
 
-    public sealed class VpcArgs : Pulumi.ResourceArgs
+    public sealed class VpcArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
@@ -250,5 +250,6 @@ namespace Pulumi.Awsx.Ec2
         public VpcArgs()
         {
         }
+        public static new VpcArgs Empty => new VpcArgs();
     }
 }

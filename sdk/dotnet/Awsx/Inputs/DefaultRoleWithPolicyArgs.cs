@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
     /// </summary>
-    public sealed class DefaultRoleWithPolicyArgs : Pulumi.ResourceArgs
+    public sealed class DefaultRoleWithPolicyArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
@@ -36,5 +36,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public DefaultRoleWithPolicyArgs()
         {
         }
+        public static new DefaultRoleWithPolicyArgs Empty => new DefaultRoleWithPolicyArgs();
     }
 }

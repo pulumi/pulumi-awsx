@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
     /// <summary>
     /// The health check command and associated configuration parameters for the container.
     /// </summary>
-    public sealed class TaskDefinitionHealthCheckArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionHealthCheckArgs : global::Pulumi.ResourceArgs
     {
         [Input("command")]
         private InputList<string>? _command;
@@ -54,5 +54,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionHealthCheckArgs()
         {
         }
+        public static new TaskDefinitionHealthCheckArgs Empty => new TaskDefinitionHealthCheckArgs();
     }
 }

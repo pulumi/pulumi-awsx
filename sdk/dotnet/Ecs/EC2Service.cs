@@ -14,7 +14,7 @@ namespace Pulumi.Awsx.Ecs
     /// Creates Task definition if `taskDefinitionArgs` is specified.
     /// </summary>
     [AwsxResourceType("awsx:ecs:EC2Service")]
-    public partial class EC2Service : Pulumi.ComponentResource
+    public partial class EC2Service : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Underlying ECS Service resource
@@ -54,7 +54,7 @@ namespace Pulumi.Awsx.Ecs
         }
     }
 
-    public sealed class EC2ServiceArgs : Pulumi.ResourceArgs
+    public sealed class EC2ServiceArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// ARN of an ECS cluster.
@@ -227,5 +227,6 @@ namespace Pulumi.Awsx.Ecs
         public EC2ServiceArgs()
         {
         }
+        public static new EC2ServiceArgs Empty => new EC2ServiceArgs();
     }
 }

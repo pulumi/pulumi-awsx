@@ -14,7 +14,7 @@ namespace Pulumi.Awsx.Ecs
     /// Creates Task definition if `taskDefinitionArgs` is specified.
     /// </summary>
     [AwsxResourceType("awsx:ecs:FargateService")]
-    public partial class FargateService : Pulumi.ComponentResource
+    public partial class FargateService : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Underlying ECS Service resource
@@ -54,7 +54,7 @@ namespace Pulumi.Awsx.Ecs
         }
     }
 
-    public sealed class FargateServiceArgs : Pulumi.ResourceArgs
+    public sealed class FargateServiceArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Assign a public IP address to the ENI (Fargate launch type only). Valid values are `true` or `false`. Default `false`.
@@ -221,5 +221,6 @@ namespace Pulumi.Awsx.Ecs
         public FargateServiceArgs()
         {
         }
+        public static new FargateServiceArgs Empty => new FargateServiceArgs();
     }
 }

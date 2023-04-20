@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// Log group which is only created if enabled.
     /// </summary>
-    public sealed class OptionalLogGroupArgs : Pulumi.ResourceArgs
+    public sealed class OptionalLogGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Arguments to use instead of the default values during creation.
@@ -36,5 +36,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public OptionalLogGroupArgs()
         {
         }
+        public static new OptionalLogGroupArgs Empty => new OptionalLogGroupArgs();
     }
 }

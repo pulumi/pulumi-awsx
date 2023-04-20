@@ -15,7 +15,7 @@ namespace Pulumi.Awsx.Ecr
     /// Docker images can be built and pushed to the repo using the [buildAndPushImage] method.  This will call into the `@pulumi/docker/buildAndPushImage` function using this repo as the appropriate destination registry.
     /// </summary>
     [AwsxResourceType("awsx:ecr:Repository")]
-    public partial class Repository : Pulumi.ComponentResource
+    public partial class Repository : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Underlying repository lifecycle policy
@@ -61,7 +61,7 @@ namespace Pulumi.Awsx.Ecr
         }
     }
 
-    public sealed class RepositoryArgs : Pulumi.ResourceArgs
+    public sealed class RepositoryArgs : global::Pulumi.ResourceArgs
     {
         [Input("encryptionConfigurations")]
         private InputList<Pulumi.Aws.Ecr.Inputs.RepositoryEncryptionConfigurationArgs>? _encryptionConfigurations;
@@ -121,5 +121,6 @@ namespace Pulumi.Awsx.Ecr
         public RepositoryArgs()
         {
         }
+        public static new RepositoryArgs Empty => new RepositoryArgs();
     }
 }

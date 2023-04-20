@@ -19,13 +19,13 @@ import javax.annotation.Nullable;
  */
 @ResourceType(type="awsx:ec2:DefaultVpc")
 public class DefaultVpc extends com.pulumi.resources.ComponentResource {
-    @Export(name="privateSubnetIds", type=List.class, parameters={String.class})
+    @Export(name="privateSubnetIds", refs={List.class,String.class}, tree="[0,1]")
     private Output<List<String>> privateSubnetIds;
 
     public Output<List<String>> privateSubnetIds() {
         return this.privateSubnetIds;
     }
-    @Export(name="publicSubnetIds", type=List.class, parameters={String.class})
+    @Export(name="publicSubnetIds", refs={List.class,String.class}, tree="[0,1]")
     private Output<List<String>> publicSubnetIds;
 
     public Output<List<String>> publicSubnetIds() {
@@ -35,7 +35,7 @@ public class DefaultVpc extends com.pulumi.resources.ComponentResource {
      * The VPC ID for the default VPC
      * 
      */
-    @Export(name="vpcId", type=String.class, parameters={})
+    @Export(name="vpcId", refs={String.class}, tree="[0]")
     private Output<String> vpcId;
 
     /**

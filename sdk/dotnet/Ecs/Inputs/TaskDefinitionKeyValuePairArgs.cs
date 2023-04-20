@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionKeyValuePairArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionKeyValuePairArgs : global::Pulumi.ResourceArgs
     {
         [Input("name")]
         public Input<string>? Name { get; set; }
@@ -21,5 +21,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionKeyValuePairArgs()
         {
         }
+        public static new TaskDefinitionKeyValuePairArgs Empty => new TaskDefinitionKeyValuePairArgs();
     }
 }

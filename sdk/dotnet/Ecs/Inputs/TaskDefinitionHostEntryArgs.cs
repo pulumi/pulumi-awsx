@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionHostEntryArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionHostEntryArgs : global::Pulumi.ResourceArgs
     {
         [Input("hostname")]
         public Input<string>? Hostname { get; set; }
@@ -21,5 +21,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionHostEntryArgs()
         {
         }
+        public static new TaskDefinitionHostEntryArgs Empty => new TaskDefinitionHostEntryArgs();
     }
 }

@@ -5,14 +5,21 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
-export * from "./applicationLoadBalancer";
-export * from "./networkLoadBalancer";
-export * from "./targetGroupAttachment";
+export { ApplicationLoadBalancerArgs } from "./applicationLoadBalancer";
+export type ApplicationLoadBalancer = import("./applicationLoadBalancer").ApplicationLoadBalancer;
+export const ApplicationLoadBalancer: typeof import("./applicationLoadBalancer").ApplicationLoadBalancer = null as any;
+utilities.lazyLoad(exports, ["ApplicationLoadBalancer"], () => require("./applicationLoadBalancer"));
 
-// Import resources to register:
-import { ApplicationLoadBalancer } from "./applicationLoadBalancer";
-import { NetworkLoadBalancer } from "./networkLoadBalancer";
-import { TargetGroupAttachment } from "./targetGroupAttachment";
+export { NetworkLoadBalancerArgs } from "./networkLoadBalancer";
+export type NetworkLoadBalancer = import("./networkLoadBalancer").NetworkLoadBalancer;
+export const NetworkLoadBalancer: typeof import("./networkLoadBalancer").NetworkLoadBalancer = null as any;
+utilities.lazyLoad(exports, ["NetworkLoadBalancer"], () => require("./networkLoadBalancer"));
+
+export { TargetGroupAttachmentArgs } from "./targetGroupAttachment";
+export type TargetGroupAttachment = import("./targetGroupAttachment").TargetGroupAttachment;
+export const TargetGroupAttachment: typeof import("./targetGroupAttachment").TargetGroupAttachment = null as any;
+utilities.lazyLoad(exports, ["TargetGroupAttachment"], () => require("./targetGroupAttachment"));
+
 
 const _module = {
     version: utilities.getVersion(),

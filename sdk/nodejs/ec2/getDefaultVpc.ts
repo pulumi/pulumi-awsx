@@ -11,11 +11,8 @@ import * as utilities from "../utilities";
 export function getDefaultVpc(args?: GetDefaultVpcArgs, opts?: pulumi.InvokeOptions): Promise<GetDefaultVpcResult> {
     pulumi.log.warn("getDefaultVpc is deprecated: Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.")
     args = args || {};
-    if (!opts) {
-        opts = {}
-    }
 
-    opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts);
+    opts = pulumi.mergeOptions(utilities.resourceOptsDefaults(), opts || {});
     return pulumi.runtime.invoke("awsx:ec2:getDefaultVpc", {
     }, opts);
 }

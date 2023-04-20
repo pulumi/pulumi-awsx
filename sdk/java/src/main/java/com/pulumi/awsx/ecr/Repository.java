@@ -26,7 +26,7 @@ public class Repository extends com.pulumi.resources.ComponentResource {
      * Underlying repository lifecycle policy
      * 
      */
-    @Export(name="lifecyclePolicy", type=LifecyclePolicy.class, parameters={})
+    @Export(name="lifecyclePolicy", refs={LifecyclePolicy.class}, tree="[0]")
     private Output</* @Nullable */ LifecyclePolicy> lifecyclePolicy;
 
     /**
@@ -40,7 +40,7 @@ public class Repository extends com.pulumi.resources.ComponentResource {
      * Underlying Repository resource
      * 
      */
-    @Export(name="repository", type=com.pulumi.aws.ecr.Repository.class, parameters={})
+    @Export(name="repository", refs={com.pulumi.aws.ecr.Repository.class}, tree="[0]")
     private Output<com.pulumi.aws.ecr.Repository> repository;
 
     /**
@@ -54,7 +54,7 @@ public class Repository extends com.pulumi.resources.ComponentResource {
      * The URL of the repository (in the form aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName).
      * 
      */
-    @Export(name="url", type=String.class, parameters={})
+    @Export(name="url", refs={String.class}, tree="[0]")
     private Output<String> url;
 
     /**

@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
     /// <summary>
     /// The set of arguments for constructing a Role resource and Policy attachments.
     /// </summary>
-    public sealed class RoleWithPolicyArgs : Pulumi.ResourceArgs
+    public sealed class RoleWithPolicyArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Description of the role.
@@ -108,5 +108,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public RoleWithPolicyArgs()
         {
         }
+        public static new RoleWithPolicyArgs Empty => new RoleWithPolicyArgs();
     }
 }

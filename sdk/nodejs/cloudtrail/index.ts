@@ -5,10 +5,11 @@ import * as pulumi from "@pulumi/pulumi";
 import * as utilities from "../utilities";
 
 // Export members:
-export * from "./trail";
+export { TrailArgs } from "./trail";
+export type Trail = import("./trail").Trail;
+export const Trail: typeof import("./trail").Trail = null as any;
+utilities.lazyLoad(exports, ["Trail"], () => require("./trail"));
 
-// Import resources to register:
-import { Trail } from "./trail";
 
 const _module = {
     version: utilities.getVersion(),

@@ -526,7 +526,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// 
     ///  
     /// </summary>
-    public sealed class VpcEndpointSpecArgs : Pulumi.ResourceArgs
+    public sealed class VpcEndpointSpecArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
@@ -622,5 +622,6 @@ namespace Pulumi.Awsx.Ec2.Inputs
         public VpcEndpointSpecArgs()
         {
         }
+        public static new VpcEndpointSpecArgs Empty => new VpcEndpointSpecArgs();
     }
 }

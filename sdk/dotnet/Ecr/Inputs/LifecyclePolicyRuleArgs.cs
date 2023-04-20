@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Ecr.Inputs
     /// <summary>
     /// A lifecycle policy rule that determine which images in a repository should be expired.
     /// </summary>
-    public sealed class LifecyclePolicyRuleArgs : Pulumi.ResourceArgs
+    public sealed class LifecyclePolicyRuleArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Describes the purpose of a rule within a lifecycle policy.
@@ -54,5 +54,6 @@ namespace Pulumi.Awsx.Ecr.Inputs
         public LifecyclePolicyRuleArgs()
         {
         }
+        public static new LifecyclePolicyRuleArgs Empty => new LifecyclePolicyRuleArgs();
     }
 }

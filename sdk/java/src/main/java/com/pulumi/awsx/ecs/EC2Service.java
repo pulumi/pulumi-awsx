@@ -25,7 +25,7 @@ public class EC2Service extends com.pulumi.resources.ComponentResource {
      * Underlying ECS Service resource
      * 
      */
-    @Export(name="service", type=Service.class, parameters={})
+    @Export(name="service", refs={Service.class}, tree="[0]")
     private Output<Service> service;
 
     /**
@@ -39,7 +39,7 @@ public class EC2Service extends com.pulumi.resources.ComponentResource {
      * Underlying EC2 Task definition component resource if created from args
      * 
      */
-    @Export(name="taskDefinition", type=TaskDefinition.class, parameters={})
+    @Export(name="taskDefinition", refs={TaskDefinition.class}, tree="[0]")
     private Output</* @Nullable */ TaskDefinition> taskDefinition;
 
     /**

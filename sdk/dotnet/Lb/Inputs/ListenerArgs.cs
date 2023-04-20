@@ -1414,7 +1414,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///  
     /// </summary>
-    public sealed class ListenerArgs : Pulumi.ResourceArgs
+    public sealed class ListenerArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
@@ -1473,5 +1473,6 @@ namespace Pulumi.Awsx.Lb.Inputs
         public ListenerArgs()
         {
         }
+        public static new ListenerArgs Empty => new ListenerArgs();
     }
 }

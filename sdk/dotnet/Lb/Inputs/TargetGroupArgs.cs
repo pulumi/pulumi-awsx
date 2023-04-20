@@ -476,7 +476,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///  
     /// </summary>
-    public sealed class TargetGroupArgs : Pulumi.ResourceArgs
+    public sealed class TargetGroupArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.
@@ -595,5 +595,6 @@ namespace Pulumi.Awsx.Lb.Inputs
         public TargetGroupArgs()
         {
         }
+        public static new TargetGroupArgs Empty => new TargetGroupArgs();
     }
 }

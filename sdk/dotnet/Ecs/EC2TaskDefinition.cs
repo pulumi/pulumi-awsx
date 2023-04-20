@@ -15,7 +15,7 @@ namespace Pulumi.Awsx.Ecs
     /// Presents required Service load balancers if target group included in port mappings.
     /// </summary>
     [AwsxResourceType("awsx:ecs:EC2TaskDefinition")]
-    public partial class EC2TaskDefinition : Pulumi.ComponentResource
+    public partial class EC2TaskDefinition : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -73,7 +73,7 @@ namespace Pulumi.Awsx.Ecs
         }
     }
 
-    public sealed class EC2TaskDefinitionArgs : Pulumi.ResourceArgs
+    public sealed class EC2TaskDefinitionArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -231,5 +231,6 @@ namespace Pulumi.Awsx.Ecs
         public EC2TaskDefinitionArgs()
         {
         }
+        public static new EC2TaskDefinitionArgs Empty => new EC2TaskDefinitionArgs();
     }
 }

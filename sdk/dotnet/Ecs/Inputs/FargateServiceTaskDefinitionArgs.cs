@@ -15,7 +15,7 @@ namespace Pulumi.Awsx.Ecs.Inputs
     /// Creates required log-group and task &amp; execution roles.
     /// Presents required Service load balancers if target group included in port mappings.
     /// </summary>
-    public sealed class FargateServiceTaskDefinitionArgs : Pulumi.ResourceArgs
+    public sealed class FargateServiceTaskDefinitionArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -167,5 +167,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public FargateServiceTaskDefinitionArgs()
         {
         }
+        public static new FargateServiceTaskDefinitionArgs Empty => new FargateServiceTaskDefinitionArgs();
     }
 }

@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Lb
     /// Provides a Network Load Balancer resource with listeners and default target group.
     /// </summary>
     [AwsxResourceType("awsx:lb:NetworkLoadBalancer")]
-    public partial class NetworkLoadBalancer : Pulumi.ComponentResource
+    public partial class NetworkLoadBalancer : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Default target group, if auto-created
@@ -65,7 +65,7 @@ namespace Pulumi.Awsx.Lb
         }
     }
 
-    public sealed class NetworkLoadBalancerArgs : Pulumi.ResourceArgs
+    public sealed class NetworkLoadBalancerArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// An Access Logs block. Access Logs documented below.
@@ -232,5 +232,6 @@ namespace Pulumi.Awsx.Lb
         public NetworkLoadBalancerArgs()
         {
         }
+        public static new NetworkLoadBalancerArgs Empty => new NetworkLoadBalancerArgs();
     }
 }

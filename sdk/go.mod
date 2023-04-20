@@ -4,7 +4,6 @@ go 1.17
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/pkg/errors v0.9.1
 	github.com/pulumi/pulumi-aws/sdk/v5 v5.16.2
 	github.com/pulumi/pulumi-docker/sdk/v3 v3.2.0
 	github.com/pulumi/pulumi/sdk/v3 v3.34.1
@@ -30,6 +29,7 @@ require (
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/opentracing/basictracer-go v1.0.0 // indirect
 	github.com/opentracing/opentracing-go v1.1.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.8.1 // indirect

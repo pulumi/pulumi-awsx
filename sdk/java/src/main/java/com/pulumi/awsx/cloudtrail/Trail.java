@@ -20,7 +20,7 @@ public class Trail extends com.pulumi.resources.ComponentResource {
      * The managed S3 Bucket where the Trail will place its logs.
      * 
      */
-    @Export(name="bucket", type=Bucket.class, parameters={})
+    @Export(name="bucket", refs={Bucket.class}, tree="[0]")
     private Output</* @Nullable */ Bucket> bucket;
 
     /**
@@ -34,7 +34,7 @@ public class Trail extends com.pulumi.resources.ComponentResource {
      * The managed Cloudwatch Log Group.
      * 
      */
-    @Export(name="logGroup", type=LogGroup.class, parameters={})
+    @Export(name="logGroup", refs={LogGroup.class}, tree="[0]")
     private Output</* @Nullable */ LogGroup> logGroup;
 
     /**
@@ -48,7 +48,7 @@ public class Trail extends com.pulumi.resources.ComponentResource {
      * The CloudTrail Trail.
      * 
      */
-    @Export(name="trail", type=com.pulumi.aws.cloudtrail.Trail.class, parameters={})
+    @Export(name="trail", refs={com.pulumi.aws.cloudtrail.Trail.class}, tree="[0]")
     private Output<com.pulumi.aws.cloudtrail.Trail> trail;
 
     /**

@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Lb
     /// Provides an Application Load Balancer resource with listeners, default target group and default security group.
     /// </summary>
     [AwsxResourceType("awsx:lb:ApplicationLoadBalancer")]
-    public partial class ApplicationLoadBalancer : Pulumi.ComponentResource
+    public partial class ApplicationLoadBalancer : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// Default security group, if auto-created
@@ -71,7 +71,7 @@ namespace Pulumi.Awsx.Lb
         }
     }
 
-    public sealed class ApplicationLoadBalancerArgs : Pulumi.ResourceArgs
+    public sealed class ApplicationLoadBalancerArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// An Access Logs block. Access Logs documented below.
@@ -255,5 +255,6 @@ namespace Pulumi.Awsx.Lb
         public ApplicationLoadBalancerArgs()
         {
         }
+        public static new ApplicationLoadBalancerArgs Empty => new ApplicationLoadBalancerArgs();
     }
 }

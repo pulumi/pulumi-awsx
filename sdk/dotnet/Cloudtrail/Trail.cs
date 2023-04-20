@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Cloudtrail
 {
     [AwsxResourceType("awsx:cloudtrail:Trail")]
-    public partial class Trail : Pulumi.ComponentResource
+    public partial class Trail : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// The managed S3 Bucket where the Trail will place its logs.
@@ -56,7 +56,7 @@ namespace Pulumi.Awsx.Cloudtrail
         }
     }
 
-    public sealed class TrailArgs : Pulumi.ResourceArgs
+    public sealed class TrailArgs : global::Pulumi.ResourceArgs
     {
         [Input("advancedEventSelectors")]
         private InputList<Pulumi.Aws.CloudTrail.Inputs.TrailAdvancedEventSelectorArgs>? _advancedEventSelectors;
@@ -175,5 +175,6 @@ namespace Pulumi.Awsx.Cloudtrail
         public TrailArgs()
         {
         }
+        public static new TrailArgs Empty => new TrailArgs();
     }
 }

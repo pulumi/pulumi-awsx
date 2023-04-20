@@ -10,7 +10,7 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Ecs.Inputs
 {
 
-    public sealed class TaskDefinitionSystemControlArgs : Pulumi.ResourceArgs
+    public sealed class TaskDefinitionSystemControlArgs : global::Pulumi.ResourceArgs
     {
         [Input("namespace")]
         public Input<string>? Namespace { get; set; }
@@ -21,5 +21,6 @@ namespace Pulumi.Awsx.Ecs.Inputs
         public TaskDefinitionSystemControlArgs()
         {
         }
+        public static new TaskDefinitionSystemControlArgs Empty => new TaskDefinitionSystemControlArgs();
     }
 }

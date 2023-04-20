@@ -2381,7 +2381,7 @@ func (val *SecurityGroup) Defaults() *SecurityGroup {
 		return nil
 	}
 	tmp := *val
-	if isZero(tmp.Description) {
+	if tmp.Description == nil {
 		description_ := "Managed by Pulumi"
 		tmp.Description = &description_
 	}
@@ -2426,7 +2426,7 @@ func (val *SecurityGroupArgs) Defaults() *SecurityGroupArgs {
 		return nil
 	}
 	tmp := *val
-	if isZero(tmp.Description) {
+	if tmp.Description == nil {
 		tmp.Description = pulumi.StringPtr("Managed by Pulumi")
 	}
 	return &tmp
