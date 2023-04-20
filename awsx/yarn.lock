@@ -1390,10 +1390,10 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.8.0.tgz#fe2aa90e6df050a11cd57f5c0f47b0641fd2cad3"
   integrity sha512-TYh1MRcm4JnvpqtqOwT9WYaBYY4KERHdToxs/suDTLviGRsQkIjS5yYROTYTSJQUnYLOn/TuOh5GoMwfLSU+Ew==
 
-"@pulumi/aws@5.16.2":
-  version "5.16.2"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-5.16.2.tgz#c434639360b151e65d96ac2e5a1124d5ec9e3c43"
-  integrity sha512-PikY/4oss/BNrNmK2/r8pQWetP7D5J0xCFeoKPmDRqk6mGmrkFFuT8+zdZ6Qm9M5OQ6ulgbnzZTsuW9M+0vFag==
+"@pulumi/aws@5.35.0":
+  version "5.35.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-5.35.0.tgz#fa5a767c1379c51508cd76c58533041f18782845"
+  integrity sha512-GplJF6Iy0lR8Ygx6FceV7HhcIJv1rjyRjU1fKeuMKjgTZmiWqbRmgD5DokalYe0aQlr0gs/QZidkQdPQt/OUsQ==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     aws-sdk "^2.0.0"
