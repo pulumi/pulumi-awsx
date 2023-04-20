@@ -278,9 +278,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// import * as pulumi from "@pulumi/pulumi";
     /// import * as aws from "@pulumi/aws";
     /// 
-    /// const lambda_example = new aws.lb.TargetGroup("lambda-example", {
-    ///     targetType: "lambda",
-    /// });
+    /// const lambda_example = new aws.lb.TargetGroup("lambda-example", {targetType: "lambda"});
     /// ```
     /// ```python
     /// import pulumi
@@ -515,7 +513,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? LoadBalancingAlgorithmType { get; set; }
 
         /// <summary>
-        /// Name of the target group. If omitted, this provider will assign a random, unique name.
+        /// Name of the target group. If omitted, this provider will assign a random, unique name. This name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }
@@ -527,7 +525,7 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? NamePrefix { get; set; }
 
         /// <summary>
-        /// Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+        /// Port on which targets receive traffic, unless overridden when registering a specific target. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         /// </summary>
         [Input("port")]
         public Input<int>? Port { get; set; }
@@ -539,13 +537,13 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? PreserveClientIp { get; set; }
 
         /// <summary>
-        /// Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+        /// Protocol to use for routing traffic to the targets. Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         /// </summary>
         [Input("protocol")]
         public Input<string>? Protocol { get; set; }
 
         /// <summary>
-        /// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+        /// Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
         /// </summary>
         [Input("protocolVersion")]
         public Input<string>? ProtocolVersion { get; set; }
@@ -578,6 +576,18 @@ namespace Pulumi.Awsx.Lb.Inputs
         {
             get => _tags ?? (_tags = new InputMap<string>());
             set => _tags = value;
+        }
+
+        [Input("targetFailovers")]
+        private InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs>? _targetFailovers;
+
+        /// <summary>
+        /// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+        /// </summary>
+        public InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs> TargetFailovers
+        {
+            get => _targetFailovers ?? (_targetFailovers = new InputList<Pulumi.Aws.LB.Inputs.TargetGroupTargetFailoverArgs>());
+            set => _targetFailovers = value;
         }
 
         /// <summary>

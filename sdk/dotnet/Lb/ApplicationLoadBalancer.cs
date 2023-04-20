@@ -116,8 +116,7 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? DropInvalidHeaderFields { get; set; }
 
         /// <summary>
-        /// If true, deletion of the load balancer will be disabled via
-        /// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+        /// If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
         /// </summary>
         [Input("enableDeletionProtection")]
         public Input<bool>? EnableDeletionProtection { get; set; }
@@ -147,7 +146,7 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? Internal { get; set; }
 
         /// <summary>
-        /// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+        /// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
         /// </summary>
         [Input("ipAddressType")]
         public Input<string>? IpAddressType { get; set; }

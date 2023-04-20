@@ -197,7 +197,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 443
+              port: '443'
               protocol: HTTPS
               sslPolicy: ELBSecurityPolicy-2016-08
               certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
@@ -338,7 +338,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${aws_lb.front_end.arn}
-              port: 443
+              port: '443'
               protocol: TLS
               certificateArn: arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4
               alpnPolicy: HTTP2Preferred
@@ -508,12 +508,12 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 80
+              port: '80'
               protocol: HTTP
               defaultActions:
                 - type: redirect
                   redirect:
-                    port: 443
+                    port: '443'
                     protocol: HTTPS
                     statusCode: HTTP_301
         ```
@@ -679,14 +679,14 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 80
+              port: '80'
               protocol: HTTP
               defaultActions:
                 - type: fixed-response
                   fixedResponse:
                     contentType: text/plain
                     messageBody: Fixed response content
-                    statusCode: 200
+                    statusCode: '200'
         ```
         {{% /example %}}
         {{% example %}}
@@ -941,7 +941,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 80
+              port: '80'
               protocol: HTTP
               defaultActions:
                 - type: authenticate-cognito
@@ -1171,7 +1171,7 @@ class ListenerArgs:
             type: aws:lb:Listener
             properties:
               loadBalancerArn: ${frontEndLoadBalancer.arn}
-              port: 80
+              port: '80'
               protocol: HTTP
               defaultActions:
                 - type: authenticate-oidc
@@ -1431,8 +1431,8 @@ class ListenerArgs:
         :param pulumi.Input[str] alpn_policy: Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
         :param pulumi.Input[str] certificate_arn: ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the `aws.lb.ListenerCertificate` resource.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.ListenerDefaultActionArgs']]] default_actions: Configuration block for default actions. Detailed below.
-        :param pulumi.Input[int] port: Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
-        :param pulumi.Input[str] protocol: Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+        :param pulumi.Input[int] port: Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
+        :param pulumi.Input[str] protocol: Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
         :param pulumi.Input[str] ssl_policy: Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
@@ -1491,7 +1491,7 @@ class ListenerArgs:
     @pulumi.getter
     def port(self) -> Optional[pulumi.Input[int]]:
         """
-        Port. Specify a value from `1` to `65535` or `#{port}`. Defaults to `#{port}`.
+        Port on which the load balancer is listening. Not valid for Gateway Load Balancers.
         """
         return pulumi.get(self, "port")
 
@@ -1503,7 +1503,7 @@ class ListenerArgs:
     @pulumi.getter
     def protocol(self) -> Optional[pulumi.Input[str]]:
         """
-        Protocol. Valid values are `HTTP`, `HTTPS`, or `#{protocol}`. Defaults to `#{protocol}`.
+        Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
         """
         return pulumi.get(self, "protocol")
 
@@ -1555,6 +1555,7 @@ class TargetGroupArgs:
                  slow_start: Optional[pulumi.Input[int]] = None,
                  stickiness: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 target_failovers: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]] = None,
                  target_type: Optional[pulumi.Input[str]] = None,
                  vpc_id: Optional[pulumi.Input[str]] = None):
         """
@@ -1825,9 +1826,7 @@ class TargetGroupArgs:
         import * as pulumi from "@pulumi/pulumi";
         import * as aws from "@pulumi/aws";
 
-        const lambda_example = new aws.lb.TargetGroup("lambda-example", {
-            targetType: "lambda",
-        });
+        const lambda_example = new aws.lb.TargetGroup("lambda-example", {targetType: "lambda"});
         ```
         ```python
         import pulumi
@@ -2028,16 +2027,17 @@ class TargetGroupArgs:
         :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the target group, only supported when target type is set to `ip`. Possible values are `ipv4` or `ipv6`.
         :param pulumi.Input[bool] lambda_multi_value_headers_enabled: Whether the request and response headers exchanged between the load balancer and the Lambda function include arrays of values or strings. Only applies when `target_type` is `lambda`. Default is `false`.
         :param pulumi.Input[str] load_balancing_algorithm_type: Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
-        :param pulumi.Input[str] name: Name of the target group. If omitted, this provider will assign a random, unique name.
+        :param pulumi.Input[str] name: Name of the target group. If omitted, this provider will assign a random, unique name. This name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.
         :param pulumi.Input[str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`. Cannot be longer than 6 characters.
-        :param pulumi.Input[int] port: Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+        :param pulumi.Input[int] port: Port on which targets receive traffic, unless overridden when registering a specific target. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         :param pulumi.Input[str] preserve_client_ip: Whether client IP preservation is enabled. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#client-ip-preservation) for more information.
-        :param pulumi.Input[str] protocol: Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
-        :param pulumi.Input[str] protocol_version: Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+        :param pulumi.Input[str] protocol: Protocol to use for routing traffic to the targets. Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
+        :param pulumi.Input[str] protocol_version: Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
         :param pulumi.Input[bool] proxy_protocol_v2: Whether to enable support for proxy protocol v2 on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#proxy-protocol) for more information. Default is `false`.
         :param pulumi.Input[int] slow_start: Amount time for targets to warm up before the load balancer sends them a full share of requests. The range is 30-900 seconds or 0 to disable. The default value is 0 seconds.
         :param pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs'] stickiness: Stickiness configuration block. Detailed below.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]] target_failovers: Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
         :param pulumi.Input[str] target_type: Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
         :param pulumi.Input[str] vpc_id: Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         """
@@ -2073,6 +2073,8 @@ class TargetGroupArgs:
             pulumi.set(__self__, "stickiness", stickiness)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
+        if target_failovers is not None:
+            pulumi.set(__self__, "target_failovers", target_failovers)
         if target_type is not None:
             pulumi.set(__self__, "target_type", target_type)
         if vpc_id is not None:
@@ -2154,7 +2156,7 @@ class TargetGroupArgs:
     @pulumi.getter
     def name(self) -> Optional[pulumi.Input[str]]:
         """
-        Name of the target group. If omitted, this provider will assign a random, unique name.
+        Name of the target group. If omitted, this provider will assign a random, unique name. This name must be unique per region per account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen.
         """
         return pulumi.get(self, "name")
 
@@ -2178,7 +2180,7 @@ class TargetGroupArgs:
     @pulumi.getter
     def port(self) -> Optional[pulumi.Input[int]]:
         """
-        Port to use to connect with the target. Valid values are either ports 1-65535, or `traffic-port`. Defaults to `traffic-port`.
+        Port on which targets receive traffic, unless overridden when registering a specific target. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         """
         return pulumi.get(self, "port")
 
@@ -2202,7 +2204,7 @@ class TargetGroupArgs:
     @pulumi.getter
     def protocol(self) -> Optional[pulumi.Input[str]]:
         """
-        Protocol to use to connect with the target. Defaults to `HTTP`. Not applicable when `target_type` is `lambda`.
+        Protocol to use for routing traffic to the targets. Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         """
         return pulumi.get(self, "protocol")
 
@@ -2214,7 +2216,7 @@ class TargetGroupArgs:
     @pulumi.getter(name="protocolVersion")
     def protocol_version(self) -> Optional[pulumi.Input[str]]:
         """
-        Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify GRPC to send requests to targets using gRPC. Specify HTTP2 to send requests to targets using HTTP/2. The default is HTTP1, which sends requests to targets using HTTP/1.1
+        Only applicable when `protocol` is `HTTP` or `HTTPS`. The protocol version. Specify `GRPC` to send requests to targets using gRPC. Specify `HTTP2` to send requests to targets using HTTP/2. The default is `HTTP1`, which sends requests to targets using HTTP/1.1
         """
         return pulumi.get(self, "protocol_version")
 
@@ -2269,6 +2271,18 @@ class TargetGroupArgs:
     @tags.setter
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
+
+    @property
+    @pulumi.getter(name="targetFailovers")
+    def target_failovers(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]]:
+        """
+        Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
+        """
+        return pulumi.get(self, "target_failovers")
+
+    @target_failovers.setter
+    def target_failovers(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]]):
+        pulumi.set(self, "target_failovers", value)
 
     @property
     @pulumi.getter(name="targetType")

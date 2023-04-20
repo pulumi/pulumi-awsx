@@ -31,7 +31,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         private InputList<Pulumi.Aws.Iam.Inputs.RoleInlinePolicyArgs>? _inlinePolicies;
 
         /// <summary>
-        /// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, this provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
+        /// Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
         /// </summary>
         public InputList<Pulumi.Aws.Iam.Inputs.RoleInlinePolicyArgs> InlinePolicies
         {
@@ -41,10 +41,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
 
         [Input("managedPolicyArns")]
         private InputList<string>? _managedPolicyArns;
-
-        /// <summary>
-        /// Set of exclusive IAM managed policy ARNs to attach to the IAM role. If this attribute is not configured, this provider will ignore policy attachments to this resource. When configured, the provider will align the role's managed policy attachments with this set by attaching or detaching managed policies. Configuring an empty set (i.e., `managed_policy_arns = []`) will cause the provider to remove _all_ managed policy attachments.
-        /// </summary>
         public InputList<string> ManagedPolicyArns
         {
             get => _managedPolicyArns ?? (_managedPolicyArns = new InputList<string>());
@@ -58,7 +54,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public Input<int>? MaxSessionDuration { get; set; }
 
         /// <summary>
-        /// Name of the role policy.
+        /// Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }

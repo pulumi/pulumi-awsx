@@ -11,7 +11,7 @@ GZIP_PREFIX		:= pulumi-resource-${PACK}-v${VERSION}
 BIN				:= ${PROVIDER}
 
 JAVA_GEN 		 := pulumi-java-gen
-JAVA_GEN_VERSION := v0.9.0
+JAVA_GEN_VERSION := v0.8.0
 
 AWSX_SRC 		:= $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
 AWSX_CLASSIC_SRC:= $(wildcard awsx-classic/*.*) $(wildcard awsx-classic/*/*.ts)

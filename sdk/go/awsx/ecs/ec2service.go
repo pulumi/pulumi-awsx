@@ -38,6 +38,8 @@ func NewEC2Service(ctx *pulumi.Context,
 }
 
 type ec2serviceArgs struct {
+	// Information about the CloudWatch alarms. See below.
+	Alarms *ecs.ServiceAlarms `pulumi:"alarms"`
 	// ARN of an ECS cluster.
 	Cluster *string `pulumi:"cluster"`
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
@@ -78,6 +80,8 @@ type ec2serviceArgs struct {
 	PropagateTags *string `pulumi:"propagateTags"`
 	// Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
 	SchedulingStrategy *string `pulumi:"schedulingStrategy"`
+	// The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+	ServiceConnectConfiguration *ecs.ServiceServiceConnectConfiguration `pulumi:"serviceConnectConfiguration"`
 	// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
 	ServiceRegistries *ecs.ServiceServiceRegistries `pulumi:"serviceRegistries"`
 	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -86,10 +90,14 @@ type ec2serviceArgs struct {
 	TaskDefinition *string `pulumi:"taskDefinition"`
 	// The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
 	TaskDefinitionArgs *EC2ServiceTaskDefinition `pulumi:"taskDefinitionArgs"`
+	// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+	Triggers map[string]string `pulumi:"triggers"`
 }
 
 // The set of arguments for constructing a EC2Service resource.
 type EC2ServiceArgs struct {
+	// Information about the CloudWatch alarms. See below.
+	Alarms ecs.ServiceAlarmsPtrInput
 	// ARN of an ECS cluster.
 	Cluster pulumi.StringPtrInput
 	// If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.
@@ -130,6 +138,8 @@ type EC2ServiceArgs struct {
 	PropagateTags pulumi.StringPtrInput
 	// Scheduling strategy to use for the service. The valid values are `REPLICA` and `DAEMON`. Defaults to `REPLICA`. Note that [*Tasks using the Fargate launch type or the `CODE_DEPLOY` or `EXTERNAL` deployment controller types don't support the `DAEMON` scheduling strategy*](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_CreateService.html).
 	SchedulingStrategy pulumi.StringPtrInput
+	// The ECS Service Connect configuration for this service to discover and connect to services, and be discovered by, and connected from, other services within a namespace. See below.
+	ServiceConnectConfiguration ecs.ServiceServiceConnectConfigurationPtrInput
 	// Service discovery registries for the service. The maximum number of `service_registries` blocks is `1`. See below.
 	ServiceRegistries ecs.ServiceServiceRegistriesPtrInput
 	// Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -138,6 +148,8 @@ type EC2ServiceArgs struct {
 	TaskDefinition pulumi.StringPtrInput
 	// The args of task definition that you want to run in your service. Either [taskDefinition] or [taskDefinitionArgs] must be provided.
 	TaskDefinitionArgs *EC2ServiceTaskDefinitionArgs
+	// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+	Triggers pulumi.StringMapInput
 }
 
 func (EC2ServiceArgs) ElementType() reflect.Type {

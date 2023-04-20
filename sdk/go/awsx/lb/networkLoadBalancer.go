@@ -54,11 +54,9 @@ type networkLoadBalancerArgs struct {
 	DesyncMitigationMode *string `pulumi:"desyncMitigationMode"`
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
 	DropInvalidHeaderFields *bool `pulumi:"dropInvalidHeaderFields"`
-	// If true, cross-zone load balancing of the load balancer will be enabled.
-	// This is a `network` load balancer feature. Defaults to `false`.
+	// If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
 	EnableCrossZoneLoadBalancing *bool `pulumi:"enableCrossZoneLoadBalancing"`
-	// If true, deletion of the load balancer will be disabled via
-	// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+	// If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
 	EnableDeletionProtection *bool `pulumi:"enableDeletionProtection"`
 	// Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
 	EnableWafFailOpen *bool `pulumi:"enableWafFailOpen"`
@@ -66,7 +64,7 @@ type networkLoadBalancerArgs struct {
 	IdleTimeout *int `pulumi:"idleTimeout"`
 	// If true, the LB will be internal.
 	Internal *bool `pulumi:"internal"`
-	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
 	IpAddressType *string `pulumi:"ipAddressType"`
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *Listener `pulumi:"listener"`
@@ -106,11 +104,9 @@ type NetworkLoadBalancerArgs struct {
 	DesyncMitigationMode pulumi.StringPtrInput
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
 	DropInvalidHeaderFields pulumi.BoolPtrInput
-	// If true, cross-zone load balancing of the load balancer will be enabled.
-	// This is a `network` load balancer feature. Defaults to `false`.
+	// If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
 	EnableCrossZoneLoadBalancing pulumi.BoolPtrInput
-	// If true, deletion of the load balancer will be disabled via
-	// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+	// If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
 	EnableDeletionProtection pulumi.BoolPtrInput
 	// Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
 	EnableWafFailOpen pulumi.BoolPtrInput
@@ -118,7 +114,7 @@ type NetworkLoadBalancerArgs struct {
 	IdleTimeout pulumi.IntPtrInput
 	// If true, the LB will be internal.
 	Internal pulumi.BoolPtrInput
-	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
 	IpAddressType pulumi.StringPtrInput
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *ListenerArgs

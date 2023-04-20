@@ -68,7 +68,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v3/go/docker"},
 			}),
 			"java": rawMessage(map[string]interface{}{
-				"packages": map[string]string{
+				"dependencies": map[string]string{
 					"com.pulumi:aws": dependencies.Aws,
 				},
 			}),

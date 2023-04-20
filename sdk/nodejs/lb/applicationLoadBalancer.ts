@@ -129,8 +129,7 @@ export interface ApplicationLoadBalancerArgs {
      */
     dropInvalidHeaderFields?: pulumi.Input<boolean>;
     /**
-     * If true, deletion of the load balancer will be disabled via
-     * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+     * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      */
     enableDeletionProtection?: pulumi.Input<boolean>;
     /**
@@ -150,7 +149,7 @@ export interface ApplicationLoadBalancerArgs {
      */
     internal?: pulumi.Input<boolean>;
     /**
-     * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+     * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
      */
     ipAddressType?: pulumi.Input<string>;
     /**

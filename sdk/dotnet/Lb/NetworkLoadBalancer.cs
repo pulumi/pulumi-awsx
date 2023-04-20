@@ -104,15 +104,13 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? DropInvalidHeaderFields { get; set; }
 
         /// <summary>
-        /// If true, cross-zone load balancing of the load balancer will be enabled.
-        /// This is a `network` load balancer feature. Defaults to `false`.
+        /// If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
         /// </summary>
         [Input("enableCrossZoneLoadBalancing")]
         public Input<bool>? EnableCrossZoneLoadBalancing { get; set; }
 
         /// <summary>
-        /// If true, deletion of the load balancer will be disabled via
-        /// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+        /// If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
         /// </summary>
         [Input("enableDeletionProtection")]
         public Input<bool>? EnableDeletionProtection { get; set; }
@@ -136,7 +134,7 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? Internal { get; set; }
 
         /// <summary>
-        /// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+        /// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
         /// </summary>
         [Input("ipAddressType")]
         public Input<string>? IpAddressType { get; set; }

@@ -152,10 +152,16 @@ namespace Pulumi.Awsx.Ec2
         public Input<bool>? EnableDnsHostnames { get; set; }
 
         /// <summary>
-        /// A boolean flag to enable/disable DNS support in the VPC. Defaults true.
+        /// A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
         /// </summary>
         [Input("enableDnsSupport")]
         public Input<bool>? EnableDnsSupport { get; set; }
+
+        /// <summary>
+        /// Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
+        /// </summary>
+        [Input("enableNetworkAddressUsageMetrics")]
+        public Input<bool>? EnableNetworkAddressUsageMetrics { get; set; }
 
         /// <summary>
         /// A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.

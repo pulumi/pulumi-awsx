@@ -62,8 +62,7 @@ type applicationLoadBalancerArgs struct {
 	DesyncMitigationMode *string `pulumi:"desyncMitigationMode"`
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
 	DropInvalidHeaderFields *bool `pulumi:"dropInvalidHeaderFields"`
-	// If true, deletion of the load balancer will be disabled via
-	// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+	// If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
 	EnableDeletionProtection *bool `pulumi:"enableDeletionProtection"`
 	// Indicates whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
 	EnableHttp2 *bool `pulumi:"enableHttp2"`
@@ -73,7 +72,7 @@ type applicationLoadBalancerArgs struct {
 	IdleTimeout *int `pulumi:"idleTimeout"`
 	// If true, the LB will be internal.
 	Internal *bool `pulumi:"internal"`
-	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
 	IpAddressType *string `pulumi:"ipAddressType"`
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *Listener `pulumi:"listener"`
@@ -117,8 +116,7 @@ type ApplicationLoadBalancerArgs struct {
 	DesyncMitigationMode pulumi.StringPtrInput
 	// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
 	DropInvalidHeaderFields pulumi.BoolPtrInput
-	// If true, deletion of the load balancer will be disabled via
-	// the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+	// If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
 	EnableDeletionProtection pulumi.BoolPtrInput
 	// Indicates whether HTTP/2 is enabled in `application` load balancers. Defaults to `true`.
 	EnableHttp2 pulumi.BoolPtrInput
@@ -128,7 +126,7 @@ type ApplicationLoadBalancerArgs struct {
 	IdleTimeout pulumi.IntPtrInput
 	// If true, the LB will be internal.
 	Internal pulumi.BoolPtrInput
-	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
 	IpAddressType pulumi.StringPtrInput
 	// A listener to create. Only one of [listener] and [listeners] can be specified.
 	Listener *ListenerArgs

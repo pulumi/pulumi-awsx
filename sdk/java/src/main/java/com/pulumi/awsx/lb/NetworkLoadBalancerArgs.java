@@ -115,16 +115,14 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
-     * If true, cross-zone load balancing of the load balancer will be enabled.
-     * This is a `network` load balancer feature. Defaults to `false`.
+     * If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
      * 
      */
     @Import(name="enableCrossZoneLoadBalancing")
     private @Nullable Output<Boolean> enableCrossZoneLoadBalancing;
 
     /**
-     * @return If true, cross-zone load balancing of the load balancer will be enabled.
-     * This is a `network` load balancer feature. Defaults to `false`.
+     * @return If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableCrossZoneLoadBalancing() {
@@ -132,16 +130,14 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
-     * If true, deletion of the load balancer will be disabled via
-     * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+     * If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      * 
      */
     @Import(name="enableDeletionProtection")
     private @Nullable Output<Boolean> enableDeletionProtection;
 
     /**
-     * @return If true, deletion of the load balancer will be disabled via
-     * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+     * @return If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableDeletionProtection() {
@@ -194,14 +190,14 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
-     * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+     * The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
      * 
      */
     @Import(name="ipAddressType")
     private @Nullable Output<String> ipAddressType;
 
     /**
-     * @return The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+     * @return The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
      * 
      */
     public Optional<Output<String>> ipAddressType() {
@@ -512,8 +508,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableCrossZoneLoadBalancing If true, cross-zone load balancing of the load balancer will be enabled.
-         * This is a `network` load balancer feature. Defaults to `false`.
+         * @param enableCrossZoneLoadBalancing If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -524,8 +519,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableCrossZoneLoadBalancing If true, cross-zone load balancing of the load balancer will be enabled.
-         * This is a `network` load balancer feature. Defaults to `false`.
+         * @param enableCrossZoneLoadBalancing If true, cross-zone load balancing of the load balancer will be enabled. For `network` and `gateway` type load balancers, this feature is disabled by default (`false`). For `application` load balancer this feature is always enabled (`true`) and cannot be disabled. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -535,8 +529,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via
-         * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -547,8 +540,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via
-         * the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
+         * @param enableDeletionProtection If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -621,7 +613,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param ipAddressType The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+         * @param ipAddressType The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
          * 
          * @return builder
          * 
@@ -632,7 +624,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param ipAddressType The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`
+         * @param ipAddressType The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
          * 
          * @return builder
          * 

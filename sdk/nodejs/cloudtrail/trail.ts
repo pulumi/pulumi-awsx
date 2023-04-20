@@ -121,7 +121,7 @@ export interface TrailArgs {
      */
     kmsKeyId?: pulumi.Input<string>;
     /**
-     * Name of the advanced event selector.
+     * Name of the trail.
      */
     name?: pulumi.Input<string>;
     /**
@@ -137,7 +137,7 @@ export interface TrailArgs {
      */
     snsTopicName?: pulumi.Input<string>;
     /**
-     * Map of tags to assign to the trail. If configured with provider defaultTags present, tags with matching keys will overwrite those defined at the provider-level.
+     * Map of tags to assign to the trail. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */
     tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
 }
