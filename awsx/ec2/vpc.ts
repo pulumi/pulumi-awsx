@@ -80,6 +80,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     if (args.cidrBlock && args.ipv4IpamPoolId) {
       throw new Error("Only one of [cidrBlock] and [ipv4IpamPoolId] can be specified");
     }
+    const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
 
     const sharedTags = { Name: name, ...args.tags };
 
@@ -87,6 +88,7 @@ export class Vpc extends schema.Vpc<VpcData> {
       name,
       {
         ...args,
+        cidrBlock,
         tags: sharedTags,
       },
       { parent: this },
