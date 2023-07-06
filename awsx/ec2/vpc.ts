@@ -77,9 +77,12 @@ export class Vpc extends schema.Vpc<VpcData> {
     const allocationIds = args.natGateways?.elasticIpAllocationIds ?? [];
     validateEips(natGatewayStrategy, allocationIds, availabilityZones);
 
-    if (args.cidrBlock && args.ipv4IpamPoolId) {
-      throw new Error("Only one of [cidrBlock] and [ipv4IpamPoolId] can be specified");
-    }
+    const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
+
+    const subnetSpecs = getSubnetSpecs(name, cidrBlock, availabilityZones, args.subnetSpecs);
+    validateSubnets(subnetSpecs, getOverlappingSubnets);
+
+    validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
 
     const sharedTags = { Name: name, ...args.tags };
 
@@ -87,16 +90,13 @@ export class Vpc extends schema.Vpc<VpcData> {
       name,
       {
         ...args,
+        cidrBlock,
         tags: sharedTags,
       },
       { parent: this },
     );
     const vpcId = vpc.id;
 
-    const subnetSpecs = getSubnetSpecs(name, vpc.cidrBlock, availabilityZones, args.subnetSpecs);
-    validateSubnets(subnetSpecs, getOverlappingSubnets);
-
-    validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
     // We unconditionally create the IGW (even if it's not needed because we
     // only have isolated subnets) because AWS does not charge for it, and
     // therefore there's no harm in adding it, whereas conditional resources
