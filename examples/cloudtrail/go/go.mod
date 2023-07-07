@@ -1,6 +1,6 @@
 module github.com/pulumi/pulumi-awsx/examples/go-trail
 
-go 1.17
+go 1.19
 
 require (
 	github.com/pulumi/pulumi-awsx/sdk v1.0.0-beta.1
