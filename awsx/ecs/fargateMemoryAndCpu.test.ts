@@ -24,7 +24,7 @@ describe("max vcpu and memory", () => {
     });
 
     it("can request valid exact values", async () => {
-        var memCpu = calculateFargateMemoryAndCPU([{
+        const memCpu = calculateFargateMemoryAndCPU([{
             cpu: 8192, // 8 vcpu * 1024
             memory: 20480, // 20 GB * 1024
         }])
@@ -33,7 +33,7 @@ describe("max vcpu and memory", () => {
       });
 
     it("can request valid approximate values", async () => {
-        var memCpu = calculateFargateMemoryAndCPU([{
+        const memCpu = calculateFargateMemoryAndCPU([{
             cpu: 8000, // will be rounded up to 8 vcpu * 1024
             memory: 21000, // will be rounded up to 21 GB = 21,504 MB.
             // TODO,tkappler this doesn't seem correct as Fargate memory for this CPU range can
