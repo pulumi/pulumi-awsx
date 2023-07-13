@@ -30,24 +30,28 @@ function* cpuMemoryConfigs({ vcpu, memGBs }: { vcpu: number; memGBs: Iterable<nu
   }
 }
 
+// from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
+// Supported task CPU and memory values for Fargate tasks are as follows.
+const allConfigs = [
+  ...cpuMemoryConfigs({ vcpu: 0.25, memGBs: [0.5, 1, 2] }),
+  ...cpuMemoryConfigs({ vcpu: 0.5, memGBs: range(1, 4) }),
+  ...cpuMemoryConfigs({ vcpu: 1, memGBs: range(2, 8) }),
+  ...cpuMemoryConfigs({ vcpu: 2, memGBs: range(4, 16) }),
+  ...cpuMemoryConfigs({ vcpu: 4, memGBs: range(8, 30) }),
+  ...cpuMemoryConfigs({ vcpu: 8, memGBs: range(16, 60) }),
+  ...cpuMemoryConfigs({ vcpu: 16, memGBs: range(32, 120) }),
+].sort((c1, c2) => c1.cost - c2.cost);
+
+// exported for tests
+export const maxVCPU = allConfigs.sort((c1, c2) => c1.vcpu - c2.vcpu)[allConfigs.length - 1].vcpu;
+export const maxMemGB = allConfigs.sort((c1, c2) => c1.memGB - c2.memGB)[allConfigs.length - 1].memGB;
+
 /**
  * Gets the list of all supported fargate configs.  We'll compute the amount of memory/vcpu
  * needed by the containers and we'll return the cheapest fargate config that supplies at
  * least that much memory/vcpu.
  */
 function fargateConfigsByPriceAscending() {
-  // from https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
-  // Supported task CPU and memory values for Fargate tasks are as follows.
-  const allConfigs = [
-    ...cpuMemoryConfigs({ vcpu: 0.25, memGBs: [0.5, 1, 2] }),
-    ...cpuMemoryConfigs({ vcpu: 0.5, memGBs: range(1, 4) }),
-    ...cpuMemoryConfigs({ vcpu: 1, memGBs: range(2, 8) }),
-    ...cpuMemoryConfigs({ vcpu: 2, memGBs: range(4, 16) }),
-    ...cpuMemoryConfigs({ vcpu: 4, memGBs: range(8, 30) }),
-    ...cpuMemoryConfigs({ vcpu: 8, memGBs: range(16, 60) }),
-    ...cpuMemoryConfigs({ vcpu: 16, memGBs: range(32, 120) }),
-  ];
-  allConfigs.sort((c1, c2) => c1.cost - c2.cost);
   return allConfigs;
 }
 
@@ -61,13 +65,13 @@ export function calculateFargateMemoryAndCPU(containers: FargateContainerMemoryA
   // First, determine how much VCPU/GB that the user is asking for in their containers.
   let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory(containers);
 
-  // Max CPU that can be requested is only 4.  Don't exceed that.  No need to worry about a
+  // Don't exceed the max CPU that can be requested. No need to worry about a
   // min as we're finding the first config that provides *at least* this amount.
-  requestedVCPU = Math.min(requestedVCPU, 4);
+  requestedVCPU = Math.min(requestedVCPU, maxVCPU);
 
-  // Max memory that can be requested is only 30.  Don't exceed that.  No need to worry about
+  // Don't exceed the max memory that can be requested. No need to worry about
   // a min as we're finding the first config that provides *at least* this amount.
-  requestedGB = Math.min(requestedGB, 30);
+  requestedGB = Math.min(requestedGB, maxMemGB);
 
   // Get all configs that can at least satisfy this pair of cpu/memory needs.
   const config = fargateConfigsByPriceAscending().find(
