@@ -44,7 +44,8 @@ const allConfigs = [
 
 // exported for tests
 export const maxVCPU = allConfigs.sort((c1, c2) => c1.vcpu - c2.vcpu)[allConfigs.length - 1].vcpu;
-export const maxMemGB = allConfigs.sort((c1, c2) => c1.memGB - c2.memGB)[allConfigs.length - 1].memGB;
+export const maxMemGB = allConfigs.sort((c1, c2) => c1.memGB - c2.memGB)[allConfigs.length - 1]
+  .memGB;
 
 /**
  * Gets the list of all supported fargate configs.  We'll compute the amount of memory/vcpu
