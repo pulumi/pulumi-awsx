@@ -57,7 +57,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 					// We use .* format rather than [x,y) because then it prefers the maximum satisfiable version
 					"Pulumi":        "3.*",
 					"Pulumi.Aws":    "5.*",
-					"Pulumi.Docker": "3.*",
+					"Pulumi.Docker": "4.*",
 				},
 				"liftSingleValueMethodReturns": true,
 			}),
@@ -65,11 +65,12 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"generateResourceContainerTypes": true,
 				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
 				"liftSingleValueMethodReturns":   true,
-				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v3/go/docker"},
+				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v4/go/docker"},
 			}),
 			"java": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
-					"com.pulumi:aws": dependencies.Aws,
+					"com.pulumi:aws":    dependencies.Aws,
+					"com.pulumi:docker": dependencies.Docker,
 				},
 			}),
 			"nodejs": rawMessage(map[string]interface{}{
@@ -77,6 +78,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 					"@pulumi/pulumi":    "^3.0.0",
 					"@pulumi/aws":       "^" + dependencies.Aws,
 					"@pulumi/docker":    "^" + dependencies.Docker,
+					"docker-classic":    "npm:@pulumi/docker@3.6.1",
 					"@types/aws-lambda": "^8.10.23",
 					"mime":              "^2.0.0",
 				},
@@ -90,7 +92,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"requires": map[string]string{
 					"pulumi":        ">=3.47.2,<4.0.0",
 					"pulumi-aws":    fmt.Sprintf(">=%s,<6.0.0", dependencies.Aws),
-					"pulumi-docker": fmt.Sprintf(">=%s,<4.0.0", dependencies.Docker),
+					"pulumi-docker": fmt.Sprintf(">=%s,<5.0.0", dependencies.Docker),
 				},
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",

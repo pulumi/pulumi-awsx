@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import * as aws from "@pulumi/aws";
-import * as docker from "@pulumi/docker";
+import * as docker from "docker-classic";
 import * as pulumi from "@pulumi/pulumi";
 
 import { computeImageFromAsset } from "../ecs";

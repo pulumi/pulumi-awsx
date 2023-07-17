@@ -22,11 +22,12 @@
   "//": "Pulumi sub-provider dependencies must be pinned at an exact version because we extract this value to generate the correct dependency in the schema",
   "dependencies": {
     "@pulumi/aws": "5.35.0",
-    "@pulumi/docker": "3.6.1",
+    "@pulumi/docker": "4.3.0",
     "@pulumi/pulumi": "^3.34.0",
     "@types/aws-lambda": "^8.10.23",
     "ip-address": "^8.1.0",
     "mime": "^3.0.0",
+    "docker-classic": "npm:@pulumi/docker@3.6.1",
     "netmask": "^2.0.2"
   },
   "devDependencies": {
