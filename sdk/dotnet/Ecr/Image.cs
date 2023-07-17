@@ -61,6 +61,12 @@ namespace Pulumi.Awsx.Ecr
             set => _args = value;
         }
 
+        /// <summary>
+        /// The version of the Docker builder
+        /// </summary>
+        [Input("builderVersion")]
+        public Input<Pulumi.Docker.BuilderVersion>? BuilderVersion { get; set; }
+
         [Input("cacheFrom")]
         private InputList<string>? _cacheFrom;
 
@@ -74,22 +80,16 @@ namespace Pulumi.Awsx.Ecr
         }
 
         /// <summary>
+        /// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+        /// </summary>
+        [Input("context")]
+        public Input<string>? Context { get; set; }
+
+        /// <summary>
         /// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
         /// </summary>
         [Input("dockerfile")]
         public Input<string>? Dockerfile { get; set; }
-
-        [Input("env")]
-        private InputMap<string>? _env;
-
-        /// <summary>
-        /// Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-        /// </summary>
-        public InputMap<string> Env
-        {
-            get => _env ?? (_env = new InputMap<string>());
-            set => _env = value;
-        }
 
         [Input("extraOptions")]
         private InputList<string>? _extraOptions;
@@ -104,10 +104,10 @@ namespace Pulumi.Awsx.Ecr
         }
 
         /// <summary>
-        /// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+        /// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         /// </summary>
-        [Input("path")]
-        public Input<string>? Path { get; set; }
+        [Input("platform")]
+        public Input<string>? Platform { get; set; }
 
         /// <summary>
         /// Url of the repository

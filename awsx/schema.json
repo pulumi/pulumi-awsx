@@ -19,30 +19,32 @@
             "packageReferences": {
                 "Pulumi": "3.*",
                 "Pulumi.Aws": "6.*",
-                "Pulumi.Docker": "3.*"
+                "Pulumi.Docker": "4.*"
             }
         },
         "go": {
             "generateResourceContainerTypes": true,
             "importBasePath": "github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx",
             "internalDependencies": [
-                "github.com/pulumi/pulumi-docker/sdk/v3/go/docker"
+                "github.com/pulumi/pulumi-docker/sdk/v4/go/docker"
             ],
             "liftSingleValueMethodReturns": true
         },
         "java": {
             "dependencies": {
-                "com.pulumi:aws": "6.0.4"
+                "com.pulumi:aws": "6.0.4",
+                "com.pulumi:docker": "4.4.1"
             }
         },
         "nodejs": {
             "dependencies": {
                 "@aws-sdk/client-ecs": "^3.405.0",
                 "@pulumi/aws": "^6.0.4",
-                "@pulumi/docker": "^3.6.1",
+                "@pulumi/docker": "^4.4.1",
                 "@pulumi/pulumi": "^3.0.0",
                 "@types/aws-lambda": "^8.10.23",
                 "aws-sdk": "^2.1450.0",
+                "docker-classic": "npm:@pulumi/docker@3.6.1",
                 "mime": "^2.0.0"
             },
             "devDependencies": {
@@ -57,7 +59,7 @@
             "requires": {
                 "pulumi": "\u003e=3.76.1,\u003c4.0.0",
                 "pulumi-aws": "\u003e=6.0.4,\u003c7.0.0",
-                "pulumi-docker": "\u003e=3.6.1,\u003c4.0.0"
+                "pulumi-docker": "\u003e=4.4.1,\u003c5.0.0"
             },
             "usesIOClasses": true
         }
@@ -689,6 +691,10 @@
                     },
                     "description": "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction."
                 },
+                "builderVersion": {
+                    "$ref": "/docker/v4.4.1/schema.json#/types/docker:index%2fbuilderVersion:BuilderVersion",
+                    "description": "The version of the Docker builder"
+                },
                 "cacheFrom": {
                     "type": "array",
                     "items": {
@@ -696,16 +702,13 @@
                     },
                     "description": "Images to consider as cache sources"
                 },
+                "context": {
+                    "type": "string",
+                    "description": "Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating."
+                },
                 "dockerfile": {
                     "type": "string",
                     "description": "dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context."
-                },
-                "env": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "description": "Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`."
                 },
                 "extraOptions": {
                     "type": "array",
@@ -714,9 +717,9 @@
                     },
                     "description": "An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`."
                 },
-                "path": {
+                "platform": {
                     "type": "string",
-                    "description": "Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating."
+                    "description": "The architecture of the platform you want to build this image for, e.g. `linux/arm64`."
                 },
                 "target": {
                     "type": "string",
@@ -2016,6 +2019,10 @@
                     },
                     "description": "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction."
                 },
+                "builderVersion": {
+                    "$ref": "/docker/v4.4.1/schema.json#/types/docker:index%2fbuilderVersion:BuilderVersion",
+                    "description": "The version of the Docker builder"
+                },
                 "cacheFrom": {
                     "type": "array",
                     "items": {
@@ -2023,16 +2030,13 @@
                     },
                     "description": "Images to consider as cache sources"
                 },
+                "context": {
+                    "type": "string",
+                    "description": "Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating."
+                },
                 "dockerfile": {
                     "type": "string",
                     "description": "dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context."
-                },
-                "env": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "type": "string"
-                    },
-                    "description": "Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`."
                 },
                 "extraOptions": {
                     "type": "array",
@@ -2041,9 +2045,9 @@
                     },
                     "description": "An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`."
                 },
-                "path": {
+                "platform": {
                     "type": "string",
-                    "description": "Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating."
+                    "description": "The architecture of the platform you want to build this image for, e.g. `linux/arm64`."
                 },
                 "repositoryUrl": {
                     "type": "string",

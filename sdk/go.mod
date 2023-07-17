@@ -5,12 +5,11 @@ go 1.19
 require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/pulumi/pulumi-aws/sdk/v6 v6.0.4
-	github.com/pulumi/pulumi-docker/sdk/v3 v3.6.1
+	github.com/pulumi/pulumi-docker/sdk/v4 v4.4.1
 	github.com/pulumi/pulumi/sdk/v3 v3.81.0
 )
 
 require (
-	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20221026131551-cf6655e29de4 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
