@@ -96,12 +96,18 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
   }
 }
 
-function normalizeFargateTaskDefinitionContainers(args: schema.FargateTaskDefinitionArgs) {
+export function normalizeFargateTaskDefinitionContainers(args: schema.FargateTaskDefinitionArgs) {
   const { container, containers } = args;
   if (containers !== undefined && container === undefined) {
     return containers;
   } else if (container !== undefined && containers === undefined) {
-    return { container: container };
+    const name = container.name ?? "container";
+    return pulumi.output(name).apply((n) => {
+      const rec: Record<string, schema.TaskDefinitionContainerDefinitionInputs> = {
+        [n]: container,
+      };
+      return rec;
+    });
   } else {
     throw new Error("Exactly one of [container] or [containers] must be provided");
   }
