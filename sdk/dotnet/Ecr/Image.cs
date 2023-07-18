@@ -62,10 +62,10 @@ namespace Pulumi.Awsx.Ecr
         }
 
         /// <summary>
-        /// The version of the Docker builder
+        /// The version of the Docker builder.
         /// </summary>
         [Input("builderVersion")]
-        public Input<Pulumi.Docker.BuilderVersion>? BuilderVersion { get; set; }
+        public Pulumi.Awsx.Ecr.BuilderVersion? BuilderVersion { get; set; }
 
         [Input("cacheFrom")]
         private InputList<string>? _cacheFrom;

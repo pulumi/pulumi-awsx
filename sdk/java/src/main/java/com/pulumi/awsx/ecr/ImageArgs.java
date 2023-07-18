@@ -3,9 +3,9 @@
 
 package com.pulumi.awsx.ecr;
 
+import com.pulumi.awsx.ecr.enums.BuilderVersion;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
-import com.pulumi.docker.enums.BuilderVersion;
 import java.lang.String;
 import java.util.List;
 import java.util.Map;
@@ -34,17 +34,17 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The version of the Docker builder
+     * The version of the Docker builder.
      * 
      */
     @Import(name="builderVersion")
-    private @Nullable Output<BuilderVersion> builderVersion;
+    private @Nullable BuilderVersion builderVersion;
 
     /**
-     * @return The version of the Docker builder
+     * @return The version of the Docker builder.
      * 
      */
-    public Optional<Output<BuilderVersion>> builderVersion() {
+    public Optional<BuilderVersion> builderVersion() {
         return Optional.ofNullable(this.builderVersion);
     }
 
@@ -207,24 +207,14 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param builderVersion The version of the Docker builder
+         * @param builderVersion The version of the Docker builder.
          * 
          * @return builder
          * 
          */
-        public Builder builderVersion(@Nullable Output<BuilderVersion> builderVersion) {
+        public Builder builderVersion(@Nullable BuilderVersion builderVersion) {
             $.builderVersion = builderVersion;
             return this;
-        }
-
-        /**
-         * @param builderVersion The version of the Docker builder
-         * 
-         * @return builder
-         * 
-         */
-        public Builder builderVersion(BuilderVersion builderVersion) {
-            return builderVersion(Output.of(builderVersion));
         }
 
         /**

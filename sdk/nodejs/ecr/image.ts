@@ -2,9 +2,10 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
+import * as inputs from "../types/input";
+import * as outputs from "../types/output";
+import * as enums from "../types/enums";
 import * as utilities from "../utilities";
-
-import * as pulumiDocker from "@pulumi/docker";
 
 /**
  * Builds a docker image and pushes to the ECR repository
@@ -70,9 +71,9 @@ export interface ImageArgs {
      */
     args?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
-     * The version of the Docker builder
+     * The version of the Docker builder.
      */
-    builderVersion?: pulumi.Input<pulumiDocker.BuilderVersion>;
+    builderVersion?: enums.ecr.BuilderVersion;
     /**
      * Images to consider as cache sources
      */

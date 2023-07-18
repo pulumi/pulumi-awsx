@@ -10,6 +10,16 @@ import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// The version of the Docker builder
+type BuilderVersion string
+
+const (
+	// The first generation builder for Docker Daemon.
+	BuilderVersionBuilderV1 = BuilderVersion("BuilderV1")
+	// The builder based on moby/buildkit project
+	BuilderVersionBuilderBuildKit = BuilderVersion("BuilderBuildKit")
+)
+
 type LifecycleTagStatus string
 
 const (

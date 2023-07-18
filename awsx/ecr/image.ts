@@ -72,7 +72,7 @@ export function computeImageFromAsset(
         : undefined,
       platform: dockerInputs.platform,
       target: dockerInputs.target,
-      // builderVersion: dockerInputs.builderVersion
+      builderVersion: dockerInputs.builderVersion
     },
     registry: registryCredentials,
   };

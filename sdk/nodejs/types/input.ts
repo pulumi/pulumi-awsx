@@ -7,7 +7,6 @@ import * as outputs from "../types/output";
 import * as enums from "../types/enums";
 
 import * as pulumiAws from "@pulumi/aws";
-import * as pulumiDocker from "@pulumi/docker";
 import * as utilities from "../utilities";
 
 export namespace awsx {

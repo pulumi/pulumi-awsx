@@ -262,3 +262,7 @@ func readPackageDependencies(packageDir string) Dependencies {
 
 	return payload.Dependencies
 }
+
+func localRef(module string, name string) string {
+	return fmt.Sprintf("#/types/awsx:%s:%s", module, name)
+}

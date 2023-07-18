@@ -26,6 +26,7 @@ func generateEcr(awsSpec, dockerSpec schema.PackageSpec) schema.PackageSpec {
 		},
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx:ecr:DockerBuild":         dockerBuild(dockerSpec),
+			"awsx:ecr:BuilderVersion":      builderVersion(),
 			"awsx:ecr:lifecyclePolicy":     lifecyclePolicy(awsSpec),
 			"awsx:ecr:lifecyclePolicyRule": lifecyclePolicyRule(awsSpec),
 			"awsx:ecr:lifecycleTagStatus":  lifecycleTagStatus(awsSpec),
@@ -215,6 +216,25 @@ func dockerBuild(dockerSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
+func builderVersion() schema.ComplexTypeSpec {
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "string",
+			Description: "The version of the Docker builder",
+		},
+		Enum: []schema.EnumValueSpec{
+			{
+				Value:       "BuilderV1",
+				Description: "The first generation builder for Docker Daemon.",
+			},
+			{
+				Value:       "BuilderBuildKit",
+				Description: "The builder based on moby/buildkit project",
+			},
+		},
+	}
+}
+
 func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.PropertySpec {
 	return map[string]schema.PropertySpec{
 		"args": {
@@ -227,9 +247,10 @@ func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.Prop
 			},
 		},
 		"builderVersion": {
-			Description: "The version of the Docker builder",
+			Description: "The version of the Docker builder.",
 			TypeSpec: schema.TypeSpec{
-				Ref: packageRef(dockerSpec, "/types/docker:index%2fbuilderVersion:BuilderVersion"),
+				Ref:   localRef("ecr", "BuilderVersion"),
+				Plain: true,
 			},
 		},
 		"cacheFrom": {

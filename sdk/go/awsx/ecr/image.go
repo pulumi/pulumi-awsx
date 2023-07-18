@@ -8,7 +8,6 @@ import (
 	"reflect"
 
 	"errors"
-	"github.com/pulumi/pulumi-docker/sdk/v4/go/docker"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -41,8 +40,8 @@ func NewImage(ctx *pulumi.Context,
 type imageArgs struct {
 	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
 	Args map[string]string `pulumi:"args"`
-	// The version of the Docker builder
-	BuilderVersion *docker.BuilderVersion `pulumi:"builderVersion"`
+	// The version of the Docker builder.
+	BuilderVersion *BuilderVersion `pulumi:"builderVersion"`
 	// Images to consider as cache sources
 	CacheFrom []string `pulumi:"cacheFrom"`
 	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
@@ -63,8 +62,8 @@ type imageArgs struct {
 type ImageArgs struct {
 	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
 	Args pulumi.StringMapInput
-	// The version of the Docker builder
-	BuilderVersion docker.BuilderVersionPtrInput
+	// The version of the Docker builder.
+	BuilderVersion *BuilderVersion
 	// Images to consider as cache sources
 	CacheFrom pulumi.StringArrayInput
 	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
