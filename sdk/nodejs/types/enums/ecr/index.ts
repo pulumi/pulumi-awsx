@@ -2,6 +2,22 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 
+export const BuilderVersion = {
+    /**
+     * The first generation builder for Docker Daemon.
+     */
+    BuilderV1: "BuilderV1",
+    /**
+     * The builder based on moby/buildkit project
+     */
+    BuilderBuildKit: "BuilderBuildKit",
+} as const;
+
+/**
+ * The version of the Docker builder
+ */
+export type BuilderVersion = (typeof BuilderVersion)[keyof typeof BuilderVersion];
+
 export const LifecycleTagStatus = {
     /**
      * Evaluate rule against all images

@@ -681,6 +681,20 @@
                 "serviceName"
             ]
         },
+        "awsx:ecr:BuilderVersion": {
+            "description": "The version of the Docker builder",
+            "type": "string",
+            "enum": [
+                {
+                    "description": "The first generation builder for Docker Daemon.",
+                    "value": "BuilderV1"
+                },
+                {
+                    "description": "The builder based on moby/buildkit project",
+                    "value": "BuilderBuildKit"
+                }
+            ]
+        },
         "awsx:ecr:DockerBuild": {
             "description": "Arguments for building a docker image",
             "properties": {
@@ -692,8 +706,9 @@
                     "description": "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction."
                 },
                 "builderVersion": {
-                    "$ref": "/docker/v4.4.1/schema.json#/types/docker:index%2fbuilderVersion:BuilderVersion",
-                    "description": "The version of the Docker builder"
+                    "$ref": "#/types/awsx:ecr:BuilderVersion",
+                    "plain": true,
+                    "description": "The version of the Docker builder."
                 },
                 "cacheFrom": {
                     "type": "array",
@@ -2020,8 +2035,9 @@
                     "description": "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction."
                 },
                 "builderVersion": {
-                    "$ref": "/docker/v4.4.1/schema.json#/types/docker:index%2fbuilderVersion:BuilderVersion",
-                    "description": "The version of the Docker builder"
+                    "$ref": "#/types/awsx:ecr:BuilderVersion",
+                    "plain": true,
+                    "description": "The version of the Docker builder."
                 },
                 "cacheFrom": {
                     "type": "array",

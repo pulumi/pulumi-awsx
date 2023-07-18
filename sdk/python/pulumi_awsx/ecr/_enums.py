@@ -5,8 +5,23 @@
 from enum import Enum
 
 __all__ = [
+    'BuilderVersion',
     'LifecycleTagStatus',
 ]
+
+
+class BuilderVersion(str, Enum):
+    """
+    The version of the Docker builder
+    """
+    BUILDER_V1 = "BuilderV1"
+    """
+    The first generation builder for Docker Daemon.
+    """
+    BUILDER_BUILD_KIT = "BuilderBuildKit"
+    """
+    The builder based on moby/buildkit project
+    """
 
 
 class LifecycleTagStatus(str, Enum):
