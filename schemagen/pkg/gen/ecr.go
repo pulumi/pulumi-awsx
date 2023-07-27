@@ -22,11 +22,10 @@ func generateEcr(awsSpec, dockerSpec schema.PackageSpec) schema.PackageSpec {
 	return schema.PackageSpec{
 		Resources: map[string]schema.ResourceSpec{
 			"awsx:ecr:Repository": repository(awsSpec),
-			"awsx:ecr:Image":      ecrImage(awsSpec, dockerSpec),
+			"awsx:ecr:Image":      ecrImage(awsSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:ecr:DockerBuild":         dockerBuild(dockerSpec),
-			"awsx:ecr:BuilderVersion":      builderVersion(),
+			"awsx:ecr:DockerBuild":         dockerBuild(),
 			"awsx:ecr:lifecyclePolicy":     lifecyclePolicy(awsSpec),
 			"awsx:ecr:lifecyclePolicyRule": lifecyclePolicyRule(awsSpec),
 			"awsx:ecr:lifecycleTagStatus":  lifecycleTagStatus(awsSpec),
@@ -178,8 +177,8 @@ func lifecycleTagStatus(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
-func ecrImage(awsSpec schema.PackageSpec, dockerSpec schema.PackageSpec) schema.ResourceSpec {
-	inputs := dockerBuildProperties(dockerSpec)
+func ecrImage(awsSpec schema.PackageSpec) schema.ResourceSpec {
+	inputs := dockerBuildProperties()
 	inputs["repositoryUrl"] = schema.PropertySpec{
 		Description: "Url of the repository",
 		TypeSpec: schema.TypeSpec{
@@ -206,63 +205,19 @@ func ecrImage(awsSpec schema.PackageSpec, dockerSpec schema.PackageSpec) schema.
 	}
 }
 
-func dockerBuild(dockerSpec schema.PackageSpec) schema.ComplexTypeSpec {
+func dockerBuild() schema.ComplexTypeSpec {
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
 			Description: "Arguments for building a docker image",
-			Properties:  dockerBuildProperties(dockerSpec),
+			Properties:  dockerBuildProperties(),
 		},
 	}
 }
 
-func builderVersion() schema.ComplexTypeSpec {
-	return schema.ComplexTypeSpec{
-		ObjectTypeSpec: schema.ObjectTypeSpec{
-			Type:        "string",
-			Description: "The version of the Docker builder",
-		},
-		Enum: []schema.EnumValueSpec{
-			{
-				Value:       "BuilderV1",
-				Description: "The first generation builder for Docker Daemon.",
-			},
-			{
-				Value:       "BuilderBuildKit",
-				Description: "The builder based on moby/buildkit project",
-			},
-		},
-	}
-}
-
-func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.PropertySpec {
+func dockerBuildProperties() map[string]schema.PropertySpec {
 	return map[string]schema.PropertySpec{
-		"args": {
-			Description: "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.",
-			TypeSpec: schema.TypeSpec{
-				Type: "object",
-				AdditionalProperties: &schema.TypeSpec{
-					Type: "string",
-				},
-			},
-		},
-		"builderVersion": {
-			Description: "The version of the Docker builder.",
-			TypeSpec: schema.TypeSpec{
-				Ref:   localRef("ecr", "BuilderVersion"),
-				Plain: true,
-			},
-		},
-		"cacheFrom": {
-			Description: "Images to consider as cache sources",
-			TypeSpec: schema.TypeSpec{
-				Type: "array",
-				Items: &schema.TypeSpec{
-					Type: "string",
-				},
-			},
-		},
-		"context": {
+		"path": {
 			Description: "Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.",
 			TypeSpec: schema.TypeSpec{
 				Type: "string",
@@ -274,6 +229,24 @@ func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.Prop
 				Type: "string",
 			},
 		},
+		"args": {
+			Description: "An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.",
+			TypeSpec: schema.TypeSpec{
+				Type: "object",
+				AdditionalProperties: &schema.TypeSpec{
+					Type: "string",
+				},
+			},
+		},
+		"cacheFrom": {
+			Description: "Images to consider as cache sources",
+			TypeSpec: schema.TypeSpec{
+				Type: "array",
+				Items: &schema.TypeSpec{
+					Type: "string",
+				},
+			},
+		},
 		"extraOptions": {
 			Description: "An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.",
 			TypeSpec: schema.TypeSpec{
@@ -283,10 +256,13 @@ func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.Prop
 				},
 			},
 		},
-		"platform": {
-			Description: "The architecture of the platform you want to build this image for, e.g. `linux/arm64`.",
+		"env": {
+			Description: "Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.",
 			TypeSpec: schema.TypeSpec{
-				Type: "string",
+				Type: "object",
+				AdditionalProperties: &schema.TypeSpec{
+					Type: "string",
+				},
 			},
 		},
 		"target": {

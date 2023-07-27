@@ -16,9 +16,8 @@ package gen
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
+	"strings"
 )
 
 func generateEc2(awsSpec schema.PackageSpec) schema.PackageSpec {
@@ -111,7 +110,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		"natGateways": {
 			Description: "Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.",
 			TypeSpec: schema.TypeSpec{
-				Ref:   localRef("ec2", "NatGatewayConfiguration"),
+				Ref:   localRef("NatGatewayConfiguration"),
 				Plain: true,
 			},
 		},
@@ -300,7 +299,7 @@ func subnetSpecType() schema.ComplexTypeSpec {
 				"type": {
 					Description: "The type of subnet.",
 					TypeSpec: schema.TypeSpec{
-						Ref:   localRef("ec2", "SubnetType"),
+						Ref:   localRef("SubnetType"),
 						Plain: true,
 					},
 				},
@@ -361,7 +360,7 @@ func natGatewayConfigurationType() schema.ComplexTypeSpec {
 				"strategy": {
 					Description: "The strategy for deploying NAT Gateways.",
 					TypeSpec: schema.TypeSpec{
-						Ref:   localRef("ec2", "NatGatewayStrategy"),
+						Ref:   localRef("NatGatewayStrategy"),
 						Plain: true,
 					},
 				},
@@ -511,9 +510,13 @@ func plainArrayOfPlainComplexType(name string) schema.TypeSpec {
 	return schema.TypeSpec{
 		Type: "array",
 		Items: &schema.TypeSpec{
-			Ref:   localRef("ec2", name),
+			Ref:   localRef(name),
 			Plain: true,
 		},
 		Plain: true,
 	}
+}
+
+func localRef(name string) string {
+	return fmt.Sprintf("#/types/awsx:ec2:%s", name)
 }

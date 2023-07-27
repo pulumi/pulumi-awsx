@@ -107,12 +107,11 @@ export abstract class Image<TData = any> extends (pulumi.ComponentResource)<TDat
 }
 export interface ImageArgs {
     readonly args?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-    readonly builderVersion?: BuilderVersionInputs;
     readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
-    readonly context?: pulumi.Input<string>;
     readonly dockerfile?: pulumi.Input<string>;
+    readonly env?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
-    readonly platform?: pulumi.Input<string>;
+    readonly path?: pulumi.Input<string>;
     readonly repositoryUrl: pulumi.Input<string>;
     readonly target?: pulumi.Input<string>;
 }
@@ -612,26 +611,22 @@ export interface VpcEndpointSpecOutputs {
     readonly tags?: pulumi.Output<Record<string, string>>;
     readonly vpcEndpointType?: pulumi.Output<string>;
 }
-export type BuilderVersionInputs = "BuilderV1" | "BuilderBuildKit";
-export type BuilderVersionOutputs = "BuilderV1" | "BuilderBuildKit";
 export interface DockerBuildInputs {
     readonly args?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-    readonly builderVersion?: BuilderVersionInputs;
     readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
-    readonly context?: pulumi.Input<string>;
     readonly dockerfile?: pulumi.Input<string>;
+    readonly env?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
-    readonly platform?: pulumi.Input<string>;
+    readonly path?: pulumi.Input<string>;
     readonly target?: pulumi.Input<string>;
 }
 export interface DockerBuildOutputs {
     readonly args?: pulumi.Output<Record<string, string>>;
-    readonly builderVersion?: BuilderVersionOutputs;
     readonly cacheFrom?: pulumi.Output<string[]>;
-    readonly context?: pulumi.Output<string>;
     readonly dockerfile?: pulumi.Output<string>;
+    readonly env?: pulumi.Output<Record<string, string>>;
     readonly extraOptions?: pulumi.Output<string[]>;
-    readonly platform?: pulumi.Output<string>;
+    readonly path?: pulumi.Output<string>;
     readonly target?: pulumi.Output<string>;
 }
 export interface lifecyclePolicyInputs {

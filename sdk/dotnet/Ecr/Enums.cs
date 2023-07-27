@@ -7,43 +7,6 @@ using Pulumi;
 
 namespace Pulumi.Awsx.Ecr
 {
-    /// <summary>
-    /// The version of the Docker builder
-    /// </summary>
-    [EnumType]
-    public readonly struct BuilderVersion : IEquatable<BuilderVersion>
-    {
-        private readonly string _value;
-
-        private BuilderVersion(string value)
-        {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
-        }
-
-        /// <summary>
-        /// The first generation builder for Docker Daemon.
-        /// </summary>
-        public static BuilderVersion BuilderV1 { get; } = new BuilderVersion("BuilderV1");
-        /// <summary>
-        /// The builder based on moby/buildkit project
-        /// </summary>
-        public static BuilderVersion BuilderBuildKit { get; } = new BuilderVersion("BuilderBuildKit");
-
-        public static bool operator ==(BuilderVersion left, BuilderVersion right) => left.Equals(right);
-        public static bool operator !=(BuilderVersion left, BuilderVersion right) => !left.Equals(right);
-
-        public static explicit operator string(BuilderVersion value) => value._value;
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override bool Equals(object? obj) => obj is BuilderVersion other && Equals(other);
-        public bool Equals(BuilderVersion other) => string.Equals(_value, other._value, StringComparison.Ordinal);
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-
-        public override string ToString() => _value;
-    }
-
     [EnumType]
     public readonly struct LifecycleTagStatus : IEquatable<LifecycleTagStatus>
     {
