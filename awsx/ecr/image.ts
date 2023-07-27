@@ -43,43 +43,48 @@ export function computeImageFromAsset(
   // the unique image name we pushed to.  The name will change if the image changes ensuring
   // the TaskDefinition get's replaced IFF the built image changes.
 
-  const ecrCredentials = aws.ecr.getCredentialsOutput(
-    { registryId: registryId },
-    { parent, async: true },
-  );
-
-  const registryCredentials = ecrCredentials.authorizationToken.apply((authorizationToken) => {
-    const decodedCredentials = Buffer.from(authorizationToken, "base64").toString();
-    const [username, password] = decodedCredentials.split(":");
-    if (!password || !username) {
-      throw new Error("Invalid credentials");
-    }
-    return {
-      registry: ecrCredentials.proxyEndpoint,
-      username: username,
-      password: password,
-    };
-  });
-
-  const dockerImageArgs: docker.ImageArgs = {
-    imageName,
-    build: {
-      args: dockerInputs.args,
-      cacheFrom: dockerInputs.cacheFrom
-        ? {
-            images: dockerInputs.cacheFrom,
-          }
-        : undefined,
-      platform: dockerInputs.platform,
-      target: dockerInputs.target,
-      builderVersion: dockerInputs.builderVersion,
-    },
-    registry: registryCredentials,
+  const dockerBuild: docker.DockerBuild = {
+    args: dockerInputs.args,
+    cacheFrom: dockerInputs.cacheFrom ? { stages: dockerInputs.cacheFrom } : undefined,
+    context: dockerInputs.path,
+    dockerfile: dockerInputs.dockerfile,
+    env: dockerInputs.env,
+    extraOptions: dockerInputs.extraOptions,
+    target: dockerInputs.target,
   };
 
-  const image = new docker.Image(`image`, dockerImageArgs, { parent });
+  const uniqueImageName = docker.buildAndPushImage(
+    imageName,
+    dockerBuild,
+    repositoryUrl,
+    parent,
+    () => {
+      // Construct Docker registry auth data by getting the short-lived authorizationToken from ECR, and
+      // extracting the username/password pair after base64-decoding the token.
+      //
+      // See: http://docs.aws.amazon.com/cli/latest/reference/ecr/get-authorization-token.html
+      if (!registryId) {
+        throw new Error("Expected registry ID to be defined during push");
+      }
 
-  const uniqueImageName = image.imageName;
+      const credentials = aws.ecr.getCredentialsOutput(
+        { registryId: registryId },
+        { parent, async: true },
+      );
+      return credentials.authorizationToken.apply((authorizationToken) => {
+        const decodedCredentials = Buffer.from(authorizationToken, "base64").toString();
+        const [username, password] = decodedCredentials.split(":");
+        if (!password || !username) {
+          throw new Error("Invalid credentials");
+        }
+        return {
+          registry: credentials.proxyEndpoint,
+          username: username,
+          password: password,
+        };
+      });
+    },
+  );
 
   uniqueImageName.apply((d: any) =>
     pulumi.log.debug(`    build complete: ${imageName} (${d})`, parent),
@@ -88,12 +93,12 @@ export function computeImageFromAsset(
   return uniqueImageName;
 }
 
-function getImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>): string {
-  const { context, dockerfile, args } = inputs ?? {};
+function getImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>) {
+  const { path, dockerfile, args } = inputs ?? {};
   // Produce a hash of the build context and use that for the image name.
   let buildSig: string;
 
-  buildSig = context ?? ".";
+  buildSig = path ?? ".";
   if (dockerfile) {
     buildSig += `;dockerfile=${dockerfile}`;
   }

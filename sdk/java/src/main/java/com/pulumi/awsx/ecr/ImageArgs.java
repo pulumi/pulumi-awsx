@@ -3,7 +3,6 @@
 
 package com.pulumi.awsx.ecr;
 
-import com.pulumi.awsx.ecr.enums.BuilderVersion;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.String;
@@ -34,21 +33,6 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The version of the Docker builder.
-     * 
-     */
-    @Import(name="builderVersion")
-    private @Nullable BuilderVersion builderVersion;
-
-    /**
-     * @return The version of the Docker builder.
-     * 
-     */
-    public Optional<BuilderVersion> builderVersion() {
-        return Optional.ofNullable(this.builderVersion);
-    }
-
-    /**
      * Images to consider as cache sources
      * 
      */
@@ -61,21 +45,6 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
      */
     public Optional<Output<List<String>>> cacheFrom() {
         return Optional.ofNullable(this.cacheFrom);
-    }
-
-    /**
-     * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-     * 
-     */
-    @Import(name="context")
-    private @Nullable Output<String> context;
-
-    /**
-     * @return Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-     * 
-     */
-    public Optional<Output<String>> context() {
-        return Optional.ofNullable(this.context);
     }
 
     /**
@@ -94,6 +63,21 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
+     * 
+     */
+    @Import(name="env")
+    private @Nullable Output<Map<String,String>> env;
+
+    /**
+     * @return Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
+     * 
+     */
+    public Optional<Output<Map<String,String>>> env() {
+        return Optional.ofNullable(this.env);
+    }
+
+    /**
      * An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `[&#39;--network&#39;, &#39;host&#39;]`.
      * 
      */
@@ -109,18 +93,18 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
+     * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
      * 
      */
-    @Import(name="platform")
-    private @Nullable Output<String> platform;
+    @Import(name="path")
+    private @Nullable Output<String> path;
 
     /**
-     * @return The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
+     * @return Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
      * 
      */
-    public Optional<Output<String>> platform() {
-        return Optional.ofNullable(this.platform);
+    public Optional<Output<String>> path() {
+        return Optional.ofNullable(this.path);
     }
 
     /**
@@ -157,12 +141,11 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
 
     private ImageArgs(ImageArgs $) {
         this.args = $.args;
-        this.builderVersion = $.builderVersion;
         this.cacheFrom = $.cacheFrom;
-        this.context = $.context;
         this.dockerfile = $.dockerfile;
+        this.env = $.env;
         this.extraOptions = $.extraOptions;
-        this.platform = $.platform;
+        this.path = $.path;
         this.repositoryUrl = $.repositoryUrl;
         this.target = $.target;
     }
@@ -207,17 +190,6 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param builderVersion The version of the Docker builder.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder builderVersion(@Nullable BuilderVersion builderVersion) {
-            $.builderVersion = builderVersion;
-            return this;
-        }
-
-        /**
          * @param cacheFrom Images to consider as cache sources
          * 
          * @return builder
@@ -249,27 +221,6 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param context Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder context(@Nullable Output<String> context) {
-            $.context = context;
-            return this;
-        }
-
-        /**
-         * @param context Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder context(String context) {
-            return context(Output.of(context));
-        }
-
-        /**
          * @param dockerfile dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
          * 
          * @return builder
@@ -288,6 +239,27 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder dockerfile(String dockerfile) {
             return dockerfile(Output.of(dockerfile));
+        }
+
+        /**
+         * @param env Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder env(@Nullable Output<Map<String,String>> env) {
+            $.env = env;
+            return this;
+        }
+
+        /**
+         * @param env Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder env(Map<String,String> env) {
+            return env(Output.of(env));
         }
 
         /**
@@ -322,24 +294,24 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param platform The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
+         * @param path Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
          * 
          * @return builder
          * 
          */
-        public Builder platform(@Nullable Output<String> platform) {
-            $.platform = platform;
+        public Builder path(@Nullable Output<String> path) {
+            $.path = path;
             return this;
         }
 
         /**
-         * @param platform The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
+         * @param path Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
          * 
          * @return builder
          * 
          */
-        public Builder platform(String platform) {
-            return platform(Output.of(platform));
+        public Builder path(String path) {
+            return path(Output.of(path));
         }
 
         /**
