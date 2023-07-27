@@ -40,16 +40,18 @@ func NewImage(ctx *pulumi.Context,
 type imageArgs struct {
 	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
 	Args map[string]string `pulumi:"args"`
+	// The version of the Docker builder.
+	BuilderVersion *BuilderVersion `pulumi:"builderVersion"`
 	// Images to consider as cache sources
 	CacheFrom []string `pulumi:"cacheFrom"`
+	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+	Context *string `pulumi:"context"`
 	// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
 	Dockerfile *string `pulumi:"dockerfile"`
-	// Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-	Env map[string]string `pulumi:"env"`
 	// An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
 	ExtraOptions []string `pulumi:"extraOptions"`
-	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-	Path *string `pulumi:"path"`
+	// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
+	Platform *string `pulumi:"platform"`
 	// Url of the repository
 	RepositoryUrl string `pulumi:"repositoryUrl"`
 	// The target of the dockerfile to build
@@ -60,16 +62,18 @@ type imageArgs struct {
 type ImageArgs struct {
 	// An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
 	Args pulumi.StringMapInput
+	// The version of the Docker builder.
+	BuilderVersion *BuilderVersion
 	// Images to consider as cache sources
 	CacheFrom pulumi.StringArrayInput
+	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+	Context pulumi.StringPtrInput
 	// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
 	Dockerfile pulumi.StringPtrInput
-	// Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-	Env pulumi.StringMapInput
 	// An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
 	ExtraOptions pulumi.StringArrayInput
-	// Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
-	Path pulumi.StringPtrInput
+	// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
+	Platform pulumi.StringPtrInput
 	// Url of the repository
 	RepositoryUrl pulumi.StringInput
 	// The target of the dockerfile to build
