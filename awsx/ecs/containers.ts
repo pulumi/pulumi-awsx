@@ -21,7 +21,9 @@ import * as utils from "../utils";
 /** @internal */
 export function computeContainerDefinitions(
   parent: pulumi.Resource,
-  containers: Record<string, schema.TaskDefinitionContainerDefinitionInputs> | pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
+  containers:
+    | Record<string, schema.TaskDefinitionContainerDefinitionInputs>
+    | pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
   logGroupId: pulumi.Input<LogGroupId> | undefined,
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs[]> {
   const result: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>[] = [];
@@ -38,7 +40,9 @@ export function computeContainerDefinitions(
 function computeContainerDefinition(
   parent: pulumi.Resource,
   containerName: string,
-  container: schema.TaskDefinitionContainerDefinitionInputs | pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>,
+  container:
+    | schema.TaskDefinitionContainerDefinitionInputs
+    | pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>,
   logGroupId: pulumi.Input<LogGroupId> | undefined,
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs> {
   const resolvedMappings = container.portMappings
@@ -88,7 +92,9 @@ export function getMappingInputs(
 
 /** @internal */
 export function computeLoadBalancers(
-  containers: Record<string, schema.TaskDefinitionContainerDefinitionInputs> | pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
+  containers:
+    | Record<string, schema.TaskDefinitionContainerDefinitionInputs>
+    | pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
 ): pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]> {
   const mappedContainers = Object.entries(containers).map(
     ([containerName, containerDefinition]) => {

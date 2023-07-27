@@ -14,24 +14,24 @@
 import { normalizeFargateTaskDefinitionContainers } from "./fargateTaskDefinition";
 
 describe("container naming for single container", () => {
-    it("single container with explicit name", async () => {
-      const args = {
-        container: {
-            name: "myTestName",
-            cpu: 16,
-        }
-      };
-      const normalized = normalizeFargateTaskDefinitionContainers(args);
-      expect(normalized.myTestName).not.toBeUndefined();
-    });
+  it("single container with explicit name", async () => {
+    const args = {
+      container: {
+        name: "myTestName",
+        cpu: 16,
+      },
+    };
+    const normalized = normalizeFargateTaskDefinitionContainers(args);
+    expect(normalized.myTestName).not.toBeUndefined();
+  });
 
-    it("single container without name", async () => {
-        const args = {
-          container: {
-              cpu: 16,
-          }
-        };
-        const normalized = normalizeFargateTaskDefinitionContainers(args);
-        expect(normalized.container).not.toBeUndefined();
-      });
+  it("single container without name", async () => {
+    const args = {
+      container: {
+        cpu: 16,
+      },
+    };
+    const normalized = normalizeFargateTaskDefinitionContainers(args);
+    expect(normalized.container).not.toBeUndefined();
+  });
 });
