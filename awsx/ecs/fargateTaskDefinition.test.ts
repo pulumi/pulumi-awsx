@@ -11,7 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+import * as pulumi from "@pulumi/pulumi";
+
 import { normalizeFargateTaskDefinitionContainers } from "./fargateTaskDefinition";
+
+function promiseOf<T>(output: pulumi.Output<T>): Promise<T> {
+  return new Promise((resolve) => output.apply(resolve));
+}
 
 describe("container naming for single container", () => {
   it("single container with explicit name", async () => {
@@ -22,7 +28,9 @@ describe("container naming for single container", () => {
       },
     };
     const normalized = normalizeFargateTaskDefinitionContainers(args);
-    expect(normalized.myTestName).not.toBeUndefined();
+    const n = await promiseOf(normalized);
+    expect(n.myTestName).toBeDefined();
+    expect(n.container).toBeUndefined();
   });
 
   it("single container without name", async () => {
@@ -32,6 +40,8 @@ describe("container naming for single container", () => {
       },
     };
     const normalized = normalizeFargateTaskDefinitionContainers(args);
-    expect(normalized.container).not.toBeUndefined();
+    const n = await promiseOf(normalized);
+    // "container" is the default name
+    expect(n.container).toBeDefined();
   });
 });

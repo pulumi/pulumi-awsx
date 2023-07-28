@@ -21,9 +21,7 @@ import * as utils from "../utils";
 /** @internal */
 export function computeContainerDefinitions(
   parent: pulumi.Resource,
-  containers:
-    | Record<string, schema.TaskDefinitionContainerDefinitionInputs>
-    | pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
+  containers: pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
   logGroupId: pulumi.Input<LogGroupId> | undefined,
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs[]> {
   const result: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>[] = [];
@@ -92,12 +90,10 @@ export function getMappingInputs(
 
 /** @internal */
 export function computeLoadBalancers(
-  containers:
-    | Record<string, schema.TaskDefinitionContainerDefinitionInputs>
-    | pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
+  containers: pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
 ): pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]> {
-  const mappedContainers = Object.entries(containers).map(
-    ([containerName, containerDefinition]) => {
+  const mappedContainers = containers.apply((conts) => {
+    return Object.entries(conts).map(([containerName, containerDefinition]) => {
       const portMappings:
         | pulumi.Input<pulumi.Input<schema.TaskDefinitionPortMappingInputs>[]>
         | undefined = containerDefinition.portMappings;
@@ -115,30 +111,32 @@ export function computeLoadBalancers(
         });
       });
       return mappedMappings;
-    },
-  );
-  return pulumi.all(mappedContainers).apply((containerGroups) =>
-    utils.collect(containerGroups, (cg) => {
-      if (cg === undefined) {
-        return [];
-      }
-      return utils.choose(
-        cg,
-        ({
-          containerName,
-          tgArn,
-          tgPort,
-        }): aws.types.output.ecs.ServiceLoadBalancer | undefined => {
-          if (tgArn === undefined || tgPort === undefined) {
-            return undefined;
-          }
-          return {
+    });
+  });
+  return mappedContainers.apply((mapped) => {
+    return pulumi.all(mapped).apply((containerGroups) =>
+      utils.collect(containerGroups, (cg) => {
+        if (cg === undefined) {
+          return [];
+        }
+        return utils.choose(
+          cg,
+          ({
             containerName,
-            containerPort: tgPort,
-            targetGroupArn: tgArn,
-          };
-        },
-      );
-    }),
-  );
+            tgArn,
+            tgPort,
+          }): aws.types.output.ecs.ServiceLoadBalancer | undefined => {
+            if (tgArn === undefined || tgPort === undefined) {
+              return undefined;
+            }
+            return {
+              containerName,
+              containerPort: tgPort,
+              targetGroupArn: tgArn,
+            };
+          },
+        );
+      }),
+    );
+  });
 }

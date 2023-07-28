@@ -99,7 +99,9 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
 export function normalizeFargateTaskDefinitionContainers(args: schema.FargateTaskDefinitionArgs) {
   const { container, containers } = args;
   if (containers !== undefined && container === undefined) {
-    return containers;
+    // Wrapping in Outout is not necessary here but it is in the following case, so we do it here,
+    // too, to simplify the return type.
+    return pulumi.output(containers);
   } else if (container !== undefined && containers === undefined) {
     const name = container.name ?? "container";
     return pulumi.output(name).apply((n) => {
