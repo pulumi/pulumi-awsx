@@ -48,11 +48,14 @@ export function computeContainerDefinitions(
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs[]> {
   const result: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>[] = [];
 
-  for (const containerName of Object.keys(containers)) {
-    const container = containers[containerName];
+  containers.apply((c) => {
+    for (const containerName of Object.keys(c)) {
+      console.log(`containerName: ${containerName}`);
+      const container = c[containerName];
 
-    result.push(computeContainerDefinition(parent, containerName, container, logGroupId));
-  }
+      result.push(computeContainerDefinition(parent, containerName, container, logGroupId));
+    }
+  });
 
   return pulumi.all(result);
 }
