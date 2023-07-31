@@ -18,7 +18,7 @@ import { defaultLogGroup } from "../cloudwatch/logGroup";
 import * as role from "../role";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
-import { computeContainerDefinitions, computeLoadBalancers } from "./containers";
+import { normalizeTaskDefinitionContainers, computeContainerDefinitions, computeLoadBalancers } from "./containers";
 import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
 
 /**
@@ -52,7 +52,7 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
       },
     );
 
-    const containers = normalizeFargateTaskDefinitionContainers(args);
+    const containers = normalizeTaskDefinitionContainers(args);
 
     const { logGroup, logGroupId } = defaultLogGroup(name, args.logGroup, {}, { parent: this });
     this.logGroup = logGroup;
@@ -99,7 +99,7 @@ export class FargateTaskDefinition extends schema.FargateTaskDefinition {
 export function normalizeFargateTaskDefinitionContainers(args: schema.FargateTaskDefinitionArgs) {
   const { container, containers } = args;
   if (containers !== undefined && container === undefined) {
-    // Wrapping in Outout is not necessary here but it is in the following case, so we do it here,
+    // Wrapping in Output is not necessary here but it is in the following case, so we do it here,
     // too, to simplify the return type.
     return pulumi.output(containers);
   } else if (container !== undefined && containers === undefined) {

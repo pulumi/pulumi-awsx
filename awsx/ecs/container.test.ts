@@ -11,7 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-import { getMappingInputs } from "./containers";
+import * as pulumi from "@pulumi/pulumi";
+
+import { normalizeTaskDefinitionContainers, getMappingInputs } from "./containers";
 
 describe("port mappings", () => {
   it.each`
@@ -30,4 +32,35 @@ describe("port mappings", () => {
       expect(inputs).toMatchObject({ containerPort: containerOut, hostPort: hostOut });
     },
   );
+});
+
+function promiseOf<T>(output: pulumi.Output<T>): Promise<T> {
+  return new Promise((resolve) => output.apply(resolve));
+}
+
+describe("container naming for single container", () => {
+  it("single container with explicit name", async () => {
+    const args = {
+      container: {
+        name: "myTestName",
+        cpu: 16,
+      },
+    };
+    const normalized = normalizeTaskDefinitionContainers(args);
+    const n = await promiseOf(normalized);
+    expect(n.myTestName).toBeDefined();
+    expect(n.container).toBeUndefined();
+  });
+
+  it("single container without name", async () => {
+    const args = {
+      container: {
+        cpu: 16,
+      },
+    };
+    const normalized = normalizeTaskDefinitionContainers(args);
+    const n = await promiseOf(normalized);
+    // "container" is the default name
+    expect(n.container).toBeDefined();
+  });
 });

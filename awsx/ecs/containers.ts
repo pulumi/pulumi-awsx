@@ -19,6 +19,26 @@ import * as schema from "../schema-types";
 import * as utils from "../utils";
 
 /** @internal */
+export function normalizeTaskDefinitionContainers(args: schema.FargateTaskDefinitionArgs | schema.EC2TaskDefinitionArgs) {
+  const { container, containers } = args;
+  if (containers !== undefined && container === undefined) {
+    // Wrapping in Output is not necessary here but it is in the following case, so we do it here,
+    // too, to simplify the return type.
+    return pulumi.output(containers);
+  } else if (container !== undefined && containers === undefined) {
+    const name = container.name ?? "container";
+    return pulumi.output(name).apply((n) => {
+      const rec: Record<string, schema.TaskDefinitionContainerDefinitionInputs> = {
+        [n]: container,
+      };
+      return rec;
+    });
+  } else {
+    throw new Error("Exactly one of [container] or [containers] must be provided");
+  }
+}
+
+/** @internal */
 export function computeContainerDefinitions(
   parent: pulumi.Resource,
   containers: pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
