@@ -18,7 +18,11 @@ import { defaultLogGroup } from "../cloudwatch/logGroup";
 import * as role from "../role";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
-import { normalizeTaskDefinitionContainers, computeContainerDefinitions, computeLoadBalancers } from "./containers";
+import {
+  normalizeTaskDefinitionContainers,
+  computeContainerDefinitions,
+  computeLoadBalancers,
+} from "./containers";
 import { calculateFargateMemoryAndCPU } from "./fargateMemoryAndCpu";
 
 /**

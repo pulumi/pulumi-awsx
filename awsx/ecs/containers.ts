@@ -19,7 +19,9 @@ import * as schema from "../schema-types";
 import * as utils from "../utils";
 
 /** @internal */
-export function normalizeTaskDefinitionContainers(args: schema.FargateTaskDefinitionArgs | schema.EC2TaskDefinitionArgs) {
+export function normalizeTaskDefinitionContainers(
+  args: schema.FargateTaskDefinitionArgs | schema.EC2TaskDefinitionArgs,
+) {
   const { container, containers } = args;
   if (containers !== undefined && container === undefined) {
     // Wrapping in Output is not necessary here but it is in the following case, so we do it here,
