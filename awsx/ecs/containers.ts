@@ -77,11 +77,9 @@ function computeContainerDefinition(
       )
     : undefined;
 
-  const region = utils.getRegion(parent);
-
   return pulumi
-    .all([container, resolvedMappings, region, logGroupId])
-    .apply(([container, portMappings, region, logGroupId]) => {
+    .all([container, resolvedMappings, logGroupId])
+    .apply(([container, portMappings, logGroupId]) => {
       const containerDefinition = {
         ...container,
         portMappings,
