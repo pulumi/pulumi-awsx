@@ -50,9 +50,7 @@ export function computeContainerDefinitions(
     const res: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>[] = [];
     for (const containerName of Object.keys(c)) {
       const container = c[containerName];
-      res.push(
-        computeContainerDefinition(parent, containerName, container, logGroupId),
-      );
+      res.push(computeContainerDefinition(parent, containerName, container, logGroupId));
     }
     return pulumi.all(res);
   });
