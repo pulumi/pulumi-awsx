@@ -28,10 +28,10 @@ export function normalizeTaskDefinitionContainers(
     // too, to simplify the return type.
     return pulumi.output(containers);
   } else if (container !== undefined && containers === undefined) {
-    const name = container.name ?? "container";
-    return pulumi.output(name).apply((n) => {
+    return pulumi.output(container.name).apply((n) => {
+      const name = n ?? "container";
       const rec: Record<string, schema.TaskDefinitionContainerDefinitionInputs> = {
-        [n]: container,
+        [name]: container,
       };
       return rec;
     });
@@ -46,26 +46,23 @@ export function computeContainerDefinitions(
   containers: pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
   logGroupId: pulumi.Input<LogGroupId> | undefined,
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs[]> {
-  const result: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>[] = [];
-
-  containers.apply((c) => {
+  const computed = containers.apply((c) => {
+    const res: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>[] = [];
     for (const containerName of Object.keys(c)) {
-      console.log(`containerName: ${containerName}`);
       const container = c[containerName];
-
-      result.push(computeContainerDefinition(parent, containerName, container, logGroupId));
+      res.push(
+        computeContainerDefinition(parent, containerName, container, logGroupId),
+      );
     }
+    return pulumi.all(res);
   });
-
-  return pulumi.all(result);
+  return computed;
 }
 
 function computeContainerDefinition(
   parent: pulumi.Resource,
   containerName: string,
-  container:
-    | schema.TaskDefinitionContainerDefinitionInputs
-    | pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>,
+  container: schema.TaskDefinitionContainerDefinitionInputs,
   logGroupId: pulumi.Input<LogGroupId> | undefined,
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs> {
   const resolvedMappings = container.portMappings
@@ -79,7 +76,9 @@ function computeContainerDefinition(
         }),
       )
     : undefined;
+
   const region = utils.getRegion(parent);
+
   return pulumi
     .all([container, resolvedMappings, region, logGroupId])
     .apply(([container, portMappings, region, logGroupId]) => {
