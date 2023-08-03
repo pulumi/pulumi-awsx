@@ -65,7 +65,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"generateResourceContainerTypes": true,
 				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
 				"liftSingleValueMethodReturns":   true,
-				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v3/go/docker"},
+				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v4/go/docker"},
 			}),
 			"java": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
@@ -88,9 +88,9 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
-					"pulumi":        ">=3.47.2,<4.0.0",
-					"pulumi-aws":    fmt.Sprintf(">=%s,<6.0.0", dependencies.Aws),
-					"pulumi-docker": fmt.Sprintf(">=%s,<4.0.0", dependencies.Docker),
+					"pulumi":        ">=3.76.1,<4.0.0",
+					"pulumi-aws":    fmt.Sprintf("=6.0.0-alpha.5", dependencies.Aws),
+					"pulumi-docker": fmt.Sprintf(">=%s,<5.0.0", dependencies.Docker),
 				},
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",

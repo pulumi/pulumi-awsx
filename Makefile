@@ -116,7 +116,7 @@ sdk/go:: bin/${CODEGEN} awsx/schema.json
 	rm -rf sdk/go
 	bin/${CODEGEN} go sdk/go awsx/schema.json $(VERSION)
 	cd sdk && \
-		go get github.com/pulumi/pulumi-aws/sdk/v5@v$(AWS_VERSION) && \
+		go get github.com/pulumi/pulumi-aws/sdk/v6@v$(AWS_VERSION) && \
 		go mod tidy && \
 		go test -v ./... -check.vv
 
