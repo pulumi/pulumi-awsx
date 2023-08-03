@@ -26,7 +26,7 @@
             "generateResourceContainerTypes": true,
             "importBasePath": "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
             "internalDependencies": [
-                "github.com/pulumi/pulumi-docker/sdk/v4/go/docker"
+                "github.com/pulumi/pulumi-docker/sdk/v3/go/docker"
             ],
             "liftSingleValueMethodReturns": true
         },
@@ -55,7 +55,7 @@
             "requires": {
                 "pulumi": "\u003e=3.76.1,\u003c4.0.0",
                 "pulumi-aws": "=6.0.0-alpha.5%!(EXTRA string=5.35.0)",
-                "pulumi-docker": "\u003e=3.6.1,\u003c5.0.0"
+                "pulumi-docker": "\u003e=3.6.1,\u003c4.0.0"
             },
             "usesIOClasses": true
         }
