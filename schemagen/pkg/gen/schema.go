@@ -56,7 +56,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"packageReferences": map[string]string{
 					// We use .* format rather than [x,y) because then it prefers the maximum satisfiable version
 					"Pulumi":        "3.*",
-					"Pulumi.Aws":    "5.*",
+					"Pulumi.Aws":    dependencies.Aws,
 					"Pulumi.Docker": "3.*",
 				},
 				"liftSingleValueMethodReturns": true,
@@ -89,7 +89,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
 					"pulumi":        ">=3.76.1,<4.0.0",
-					"pulumi-aws":    fmt.Sprintf("=6.0.0-alpha.5", dependencies.Aws),
+					"pulumi-aws":    fmt.Sprintf("=%s", dependencies.Aws),
 					"pulumi-docker": fmt.Sprintf(">=%s,<4.0.0", dependencies.Docker),
 				},
 				"usesIOClasses":                true,
@@ -118,7 +118,13 @@ func packageRef(spec schema.PackageSpec, ref string) string {
 }
 
 func getPackageSpec(name, version string) schema.PackageSpec {
-	url := fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-%s/v%s/provider/cmd/pulumi-resource-%s/schema.json", name, version, name)
+	// If the version has a commit hash, strip it off since they are not used in GitHub URLs by tag.
+	urlVersion := version
+	if before, _, found := strings.Cut(version, "+"); found {
+		urlVersion = before
+	}
+
+	url := fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-%s/v%s/provider/cmd/pulumi-resource-%s/schema.json", name, urlVersion, name)
 	spec := getSpecFromUrl(url)
 	if spec.Version == "" {
 		// Version is rarely included, so we'll just add it.
