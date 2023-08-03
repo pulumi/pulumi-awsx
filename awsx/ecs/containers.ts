@@ -21,7 +21,7 @@ import * as utils from "../utils";
 /** @internal */
 export function normalizeTaskDefinitionContainers(
   args: schema.FargateTaskDefinitionArgs | schema.EC2TaskDefinitionArgs,
-) {
+): pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>> {
   const { container, containers } = args;
   if (containers !== undefined && container === undefined) {
     // Wrapping in Output is not necessary here but it is in the following case, so we do it here,
@@ -47,12 +47,11 @@ export function computeContainerDefinitions(
   logGroupId: pulumi.Input<LogGroupId> | undefined,
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs[]> {
   const computed = containers.apply((c) => {
-    const res: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>[] = [];
-    for (const containerName of Object.keys(c)) {
-      const container = c[containerName];
-      res.push(computeContainerDefinition(parent, containerName, container, logGroupId));
-    }
-    return pulumi.all(res);
+    return pulumi.all(
+      Object.entries(c).map(([containerName, container]) =>
+        computeContainerDefinition(parent, containerName, container, logGroupId),
+      ),
+    );
   });
   return computed;
 }
