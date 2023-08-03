@@ -18,7 +18,11 @@ import { defaultLogGroup } from "../cloudwatch/logGroup";
 import * as role from "../role";
 import * as schema from "../schema-types";
 import * as utils from "../utils";
-import { computeContainerDefinitions, computeLoadBalancers } from "./containers";
+import {
+  normalizeTaskDefinitionContainers,
+  computeContainerDefinitions,
+  computeLoadBalancers,
+} from "./containers";
 
 /**
  * Create a TaskDefinition resource with the given unique name, arguments, and options.
@@ -51,7 +55,7 @@ export class EC2TaskDefinition extends schema.EC2TaskDefinition {
       },
     );
 
-    const containers = normalizeEC2TaskDefinitionContainers(args);
+    const containers = normalizeTaskDefinitionContainers(args);
 
     const { logGroup, logGroupId } = defaultLogGroup(name, args.logGroup, {}, { parent: this });
     this.logGroup = logGroup;
@@ -92,17 +96,6 @@ export class EC2TaskDefinition extends schema.EC2TaskDefinition {
       ),
       { parent: this },
     );
-  }
-}
-
-function normalizeEC2TaskDefinitionContainers(args: schema.EC2TaskDefinitionArgs) {
-  const { container, containers } = args;
-  if (containers !== undefined && container === undefined) {
-    return containers;
-  } else if (container !== undefined && containers === undefined) {
-    return { container: container };
-  } else {
-    throw new Error("Exactly one of [container] or [containers] must be provided");
   }
 }
 

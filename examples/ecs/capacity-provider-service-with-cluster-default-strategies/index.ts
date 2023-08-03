@@ -14,7 +14,7 @@ const cluster = new classic.ecs.Cluster("cluster", {
     ],
 });
 
-// // Create a load balancer on port 80 and spin up two instances of Nginx.
+// Create a load balancer on port 80 and spin up two instances of Nginx.
 const lb = new classic.lb.ApplicationListener("nginx-lb", { port: 80 });
 const targetGroup = lb.defaultTargetGroup!.targetGroup;
 

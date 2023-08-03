@@ -19,20 +19,41 @@ import * as schema from "../schema-types";
 import * as utils from "../utils";
 
 /** @internal */
+export function normalizeTaskDefinitionContainers(
+  args: schema.FargateTaskDefinitionArgs | schema.EC2TaskDefinitionArgs,
+): pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>> {
+  const { container, containers } = args;
+  if (containers !== undefined && container === undefined) {
+    // Wrapping in Output is not necessary here but it is in the following case, so we do it here,
+    // too, to simplify the return type.
+    return pulumi.output(containers);
+  } else if (container !== undefined && containers === undefined) {
+    return pulumi.output(container.name).apply((n) => {
+      const name = n ?? "container";
+      const rec: Record<string, schema.TaskDefinitionContainerDefinitionInputs> = {
+        [name]: container,
+      };
+      return rec;
+    });
+  } else {
+    throw new Error("Exactly one of [container] or [containers] must be provided");
+  }
+}
+
+/** @internal */
 export function computeContainerDefinitions(
   parent: pulumi.Resource,
-  containers: Record<string, schema.TaskDefinitionContainerDefinitionInputs>,
+  containers: pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
   logGroupId: pulumi.Input<LogGroupId> | undefined,
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs[]> {
-  const result: pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs>[] = [];
-
-  for (const containerName of Object.keys(containers)) {
-    const container = containers[containerName];
-
-    result.push(computeContainerDefinition(parent, containerName, container, logGroupId));
-  }
-
-  return pulumi.all(result);
+  const computed = containers.apply((c) => {
+    return pulumi.all(
+      Object.entries(c).map(([containerName, container]) =>
+        computeContainerDefinition(parent, containerName, container, logGroupId),
+      ),
+    );
+  });
+  return computed;
 }
 
 function computeContainerDefinition(
@@ -43,7 +64,7 @@ function computeContainerDefinition(
 ): pulumi.Output<schema.TaskDefinitionContainerDefinitionInputs> {
   const resolvedMappings = container.portMappings
     ? pulumi.output(container.portMappings).apply((portMappings) =>
-        portMappings.map((mappingInput) => {
+        portMappings?.map((mappingInput) => {
           return pulumi
             .output(mappingInput.targetGroup?.port)
             .apply((tgPort): schema.TaskDefinitionPortMappingInputs => {
@@ -52,10 +73,10 @@ function computeContainerDefinition(
         }),
       )
     : undefined;
-  const region = utils.getRegion(parent);
+
   return pulumi
-    .all([container, resolvedMappings, region, logGroupId])
-    .apply(([container, portMappings, region, logGroupId]) => {
+    .all([container, resolvedMappings, logGroupId])
+    .apply(([container, portMappings, logGroupId]) => {
       const containerDefinition = {
         ...container,
         portMappings,
@@ -88,10 +109,10 @@ export function getMappingInputs(
 
 /** @internal */
 export function computeLoadBalancers(
-  containers: Record<string, schema.TaskDefinitionContainerDefinitionInputs>,
+  containers: pulumi.Output<Record<string, schema.TaskDefinitionContainerDefinitionInputs>>,
 ): pulumi.Output<aws.types.output.ecs.ServiceLoadBalancer[]> {
-  const mappedContainers = Object.entries(containers).map(
-    ([containerName, containerDefinition]) => {
+  const mappedContainers = containers.apply((conts) => {
+    return Object.entries(conts).map(([containerName, containerDefinition]) => {
       const portMappings:
         | pulumi.Input<pulumi.Input<schema.TaskDefinitionPortMappingInputs>[]>
         | undefined = containerDefinition.portMappings;
@@ -109,30 +130,32 @@ export function computeLoadBalancers(
         });
       });
       return mappedMappings;
-    },
-  );
-  return pulumi.all(mappedContainers).apply((containerGroups) =>
-    utils.collect(containerGroups, (cg) => {
-      if (cg === undefined) {
-        return [];
-      }
-      return utils.choose(
-        cg,
-        ({
-          containerName,
-          tgArn,
-          tgPort,
-        }): aws.types.output.ecs.ServiceLoadBalancer | undefined => {
-          if (tgArn === undefined || tgPort === undefined) {
-            return undefined;
-          }
-          return {
+    });
+  });
+  return mappedContainers.apply((mapped) => {
+    return pulumi.all(mapped).apply((containerGroups) =>
+      utils.collect(containerGroups, (cg) => {
+        if (cg === undefined) {
+          return [];
+        }
+        return utils.choose(
+          cg,
+          ({
             containerName,
-            containerPort: tgPort,
-            targetGroupArn: tgArn,
-          };
-        },
-      );
-    }),
-  );
+            tgArn,
+            tgPort,
+          }): aws.types.output.ecs.ServiceLoadBalancer | undefined => {
+            if (tgArn === undefined || tgPort === undefined) {
+              return undefined;
+            }
+            return {
+              containerName,
+              containerPort: tgPort,
+              targetGroupArn: tgArn,
+            };
+          },
+        );
+      }),
+    );
+  });
 }
