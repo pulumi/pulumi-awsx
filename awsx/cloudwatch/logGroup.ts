@@ -121,7 +121,7 @@ function makeLogGroupId(
     return pulumi.output(args.arn).apply(idFromArn);
   } else {
     return pulumi
-      .all([args.name, args.region, aws.getCallerIdentity(opts)])
+      .all([args.name, args.region, aws.getCallerIdentity({}, opts)])
       .apply(([name, region, callerIdentity]) => {
         const arn = buildArn({
           name: name,
