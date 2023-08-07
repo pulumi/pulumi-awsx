@@ -1073,7 +1073,7 @@ type TaskDefinitionContainerDefinition struct {
 	HealthCheck           *TaskDefinitionHealthCheck           `pulumi:"healthCheck"`
 	Hostname              *string                              `pulumi:"hostname"`
 	// The image used to start a container. This string is passed directly to the Docker daemon.
-	Image            *string                         `pulumi:"image"`
+	Image            string                          `pulumi:"image"`
 	Interactive      *bool                           `pulumi:"interactive"`
 	Links            []string                        `pulumi:"links"`
 	LinuxParameters  *TaskDefinitionLinuxParameters  `pulumi:"linuxParameters"`
@@ -1083,7 +1083,7 @@ type TaskDefinitionContainerDefinition struct {
 	MemoryReservation *int                       `pulumi:"memoryReservation"`
 	MountPoints       []TaskDefinitionMountPoint `pulumi:"mountPoints"`
 	// The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
-	Name *string `pulumi:"name"`
+	Name string `pulumi:"name"`
 	// Port mappings allow containers to access ports on the host container instance to send or receive traffic.
 	PortMappings           []TaskDefinitionPortMapping          `pulumi:"portMappings"`
 	Privileged             *bool                                `pulumi:"privileged"`
@@ -1133,7 +1133,7 @@ type TaskDefinitionContainerDefinitionArgs struct {
 	HealthCheck           TaskDefinitionHealthCheckPtrInput           `pulumi:"healthCheck"`
 	Hostname              pulumi.StringPtrInput                       `pulumi:"hostname"`
 	// The image used to start a container. This string is passed directly to the Docker daemon.
-	Image            pulumi.StringPtrInput                  `pulumi:"image"`
+	Image            pulumi.StringInput                     `pulumi:"image"`
 	Interactive      pulumi.BoolPtrInput                    `pulumi:"interactive"`
 	Links            pulumi.StringArrayInput                `pulumi:"links"`
 	LinuxParameters  TaskDefinitionLinuxParametersPtrInput  `pulumi:"linuxParameters"`
@@ -1143,7 +1143,7 @@ type TaskDefinitionContainerDefinitionArgs struct {
 	MemoryReservation pulumi.IntPtrInput                 `pulumi:"memoryReservation"`
 	MountPoints       TaskDefinitionMountPointArrayInput `pulumi:"mountPoints"`
 	// The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
-	Name pulumi.StringPtrInput `pulumi:"name"`
+	Name pulumi.StringInput `pulumi:"name"`
 	// Port mappings allow containers to access ports on the host container instance to send or receive traffic.
 	PortMappings           TaskDefinitionPortMappingArrayInput         `pulumi:"portMappings"`
 	Privileged             pulumi.BoolPtrInput                         `pulumi:"privileged"`
@@ -1333,8 +1333,8 @@ func (o TaskDefinitionContainerDefinitionOutput) Hostname() pulumi.StringPtrOutp
 }
 
 // The image used to start a container. This string is passed directly to the Docker daemon.
-func (o TaskDefinitionContainerDefinitionOutput) Image() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v TaskDefinitionContainerDefinition) *string { return v.Image }).(pulumi.StringPtrOutput)
+func (o TaskDefinitionContainerDefinitionOutput) Image() pulumi.StringOutput {
+	return o.ApplyT(func(v TaskDefinitionContainerDefinition) string { return v.Image }).(pulumi.StringOutput)
 }
 
 func (o TaskDefinitionContainerDefinitionOutput) Interactive() pulumi.BoolPtrOutput {
@@ -1367,8 +1367,8 @@ func (o TaskDefinitionContainerDefinitionOutput) MountPoints() TaskDefinitionMou
 }
 
 // The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
-func (o TaskDefinitionContainerDefinitionOutput) Name() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v TaskDefinitionContainerDefinition) *string { return v.Name }).(pulumi.StringPtrOutput)
+func (o TaskDefinitionContainerDefinitionOutput) Name() pulumi.StringOutput {
+	return o.ApplyT(func(v TaskDefinitionContainerDefinition) string { return v.Name }).(pulumi.StringOutput)
 }
 
 // Port mappings allow containers to access ports on the host container instance to send or receive traffic.
@@ -1608,7 +1608,7 @@ func (o TaskDefinitionContainerDefinitionPtrOutput) Image() pulumi.StringPtrOutp
 		if v == nil {
 			return nil
 		}
-		return v.Image
+		return &v.Image
 	}).(pulumi.StringPtrOutput)
 }
 
@@ -1682,7 +1682,7 @@ func (o TaskDefinitionContainerDefinitionPtrOutput) Name() pulumi.StringPtrOutpu
 		if v == nil {
 			return nil
 		}
-		return v.Name
+		return &v.Name
 	}).(pulumi.StringPtrOutput)
 }
 
@@ -3344,10 +3344,13 @@ func (o TaskDefinitionMountPointArrayOutput) Index(i pulumi.IntInput) TaskDefini
 }
 
 type TaskDefinitionPortMapping struct {
-	ContainerPort *int            `pulumi:"containerPort"`
-	HostPort      *int            `pulumi:"hostPort"`
-	Protocol      *string         `pulumi:"protocol"`
-	TargetGroup   *lb.TargetGroup `pulumi:"targetGroup"`
+	AppProtocol        *TaskDefinitionPortMappingAppProtocol `pulumi:"appProtocol"`
+	ContainerPort      *int                                  `pulumi:"containerPort"`
+	ContainerPortRange *string                               `pulumi:"containerPortRange"`
+	HostPort           *int                                  `pulumi:"hostPort"`
+	Name               *string                               `pulumi:"name"`
+	Protocol           *string                               `pulumi:"protocol"`
+	TargetGroup        *lb.TargetGroup                       `pulumi:"targetGroup"`
 }
 
 // TaskDefinitionPortMappingInput is an input type that accepts TaskDefinitionPortMappingArgs and TaskDefinitionPortMappingOutput values.
@@ -3362,10 +3365,13 @@ type TaskDefinitionPortMappingInput interface {
 }
 
 type TaskDefinitionPortMappingArgs struct {
-	ContainerPort pulumi.IntPtrInput    `pulumi:"containerPort"`
-	HostPort      pulumi.IntPtrInput    `pulumi:"hostPort"`
-	Protocol      pulumi.StringPtrInput `pulumi:"protocol"`
-	TargetGroup   lb.TargetGroupInput   `pulumi:"targetGroup"`
+	AppProtocol        TaskDefinitionPortMappingAppProtocolPtrInput `pulumi:"appProtocol"`
+	ContainerPort      pulumi.IntPtrInput                           `pulumi:"containerPort"`
+	ContainerPortRange pulumi.StringPtrInput                        `pulumi:"containerPortRange"`
+	HostPort           pulumi.IntPtrInput                           `pulumi:"hostPort"`
+	Name               pulumi.StringPtrInput                        `pulumi:"name"`
+	Protocol           pulumi.StringPtrInput                        `pulumi:"protocol"`
+	TargetGroup        lb.TargetGroupInput                          `pulumi:"targetGroup"`
 }
 
 func (TaskDefinitionPortMappingArgs) ElementType() reflect.Type {
@@ -3419,12 +3425,24 @@ func (o TaskDefinitionPortMappingOutput) ToTaskDefinitionPortMappingOutputWithCo
 	return o
 }
 
+func (o TaskDefinitionPortMappingOutput) AppProtocol() TaskDefinitionPortMappingAppProtocolPtrOutput {
+	return o.ApplyT(func(v TaskDefinitionPortMapping) *TaskDefinitionPortMappingAppProtocol { return v.AppProtocol }).(TaskDefinitionPortMappingAppProtocolPtrOutput)
+}
+
 func (o TaskDefinitionPortMappingOutput) ContainerPort() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v TaskDefinitionPortMapping) *int { return v.ContainerPort }).(pulumi.IntPtrOutput)
 }
 
+func (o TaskDefinitionPortMappingOutput) ContainerPortRange() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TaskDefinitionPortMapping) *string { return v.ContainerPortRange }).(pulumi.StringPtrOutput)
+}
+
 func (o TaskDefinitionPortMappingOutput) HostPort() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v TaskDefinitionPortMapping) *int { return v.HostPort }).(pulumi.IntPtrOutput)
+}
+
+func (o TaskDefinitionPortMappingOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v TaskDefinitionPortMapping) *string { return v.Name }).(pulumi.StringPtrOutput)
 }
 
 func (o TaskDefinitionPortMappingOutput) Protocol() pulumi.StringPtrOutput {

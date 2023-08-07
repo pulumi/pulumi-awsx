@@ -171,15 +171,15 @@ public final class TaskDefinitionContainerDefinitionArgs extends com.pulumi.reso
      * The image used to start a container. This string is passed directly to the Docker daemon.
      * 
      */
-    @Import(name="image")
-    private @Nullable Output<String> image;
+    @Import(name="image", required=true)
+    private Output<String> image;
 
     /**
      * @return The image used to start a container. This string is passed directly to the Docker daemon.
      * 
      */
-    public Optional<Output<String>> image() {
-        return Optional.ofNullable(this.image);
+    public Output<String> image() {
+        return this.image;
     }
 
     @Import(name="interactive")
@@ -243,15 +243,15 @@ public final class TaskDefinitionContainerDefinitionArgs extends com.pulumi.reso
      * The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
      * 
      */
-    @Import(name="name")
-    private @Nullable Output<String> name;
+    @Import(name="name", required=true)
+    private Output<String> name;
 
     /**
      * @return The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
      * 
      */
-    public Optional<Output<String>> name() {
-        return Optional.ofNullable(this.name);
+    public Output<String> name() {
+        return this.name;
     }
 
     /**
@@ -644,7 +644,7 @@ public final class TaskDefinitionContainerDefinitionArgs extends com.pulumi.reso
          * @return builder
          * 
          */
-        public Builder image(@Nullable Output<String> image) {
+        public Builder image(Output<String> image) {
             $.image = image;
             return this;
         }
@@ -748,7 +748,7 @@ public final class TaskDefinitionContainerDefinitionArgs extends com.pulumi.reso
          * @return builder
          * 
          */
-        public Builder name(@Nullable Output<String> name) {
+        public Builder name(Output<String> name) {
             $.name = name;
             return this;
         }
@@ -932,6 +932,8 @@ public final class TaskDefinitionContainerDefinitionArgs extends com.pulumi.reso
         }
 
         public TaskDefinitionContainerDefinitionArgs build() {
+            $.image = Objects.requireNonNull($.image, "expected parameter 'image' to be non-null");
+            $.name = Objects.requireNonNull($.name, "expected parameter 'name' to be non-null");
             return $;
         }
     }

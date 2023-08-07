@@ -26,6 +26,9 @@ export const FargateTaskDefinition: typeof import("./fargateTaskDefinition").Far
 utilities.lazyLoad(exports, ["FargateTaskDefinition"], () => require("./fargateTaskDefinition"));
 
 
+// Export enums:
+export * from "../types/enums/ecs";
+
 const _module = {
     version: utilities.getVersion(),
     construct: (name: string, type: string, urn: string): pulumi.Resource => {

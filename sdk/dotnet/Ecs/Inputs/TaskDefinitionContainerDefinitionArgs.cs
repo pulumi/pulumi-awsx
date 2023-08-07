@@ -119,8 +119,8 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// <summary>
         /// The image used to start a container. This string is passed directly to the Docker daemon.
         /// </summary>
-        [Input("image")]
-        public Input<string>? Image { get; set; }
+        [Input("image", required: true)]
+        public Input<string> Image { get; set; } = null!;
 
         [Input("interactive")]
         public Input<bool>? Interactive { get; set; }
@@ -159,8 +159,8 @@ namespace Pulumi.Awsx.Ecs.Inputs
         /// <summary>
         /// The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
         /// </summary>
-        [Input("name")]
-        public Input<string>? Name { get; set; }
+        [Input("name", required: true)]
+        public Input<string> Name { get; set; } = null!;
 
         [Input("portMappings")]
         private InputList<Inputs.TaskDefinitionPortMappingArgs>? _portMappings;

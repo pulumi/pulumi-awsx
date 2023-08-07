@@ -12,11 +12,20 @@ namespace Pulumi.Awsx.Ecs.Inputs
 
     public sealed class TaskDefinitionPortMappingArgs : global::Pulumi.ResourceArgs
     {
+        [Input("appProtocol")]
+        public Input<Pulumi.Awsx.Ecs.TaskDefinitionPortMappingAppProtocol>? AppProtocol { get; set; }
+
         [Input("containerPort")]
         public Input<int>? ContainerPort { get; set; }
 
+        [Input("containerPortRange")]
+        public Input<string>? ContainerPortRange { get; set; }
+
         [Input("hostPort")]
         public Input<int>? HostPort { get; set; }
+
+        [Input("name")]
+        public Input<string>? Name { get; set; }
 
         [Input("protocol")]
         public Input<string>? Protocol { get; set; }
