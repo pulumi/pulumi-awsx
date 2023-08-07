@@ -45,14 +45,20 @@ describe("validateNetworkMode", () => {
 
   it("the default network mode should be awsvpc", async () => {
     const taskDefinition = new EC2TaskDefinition("default", {
-      container: {},
+      container: {
+        name: "fake-name",
+        image: "fake-image",
+      },
     });
     const networkMode = await promiseOf(taskDefinition.taskDefinition.networkMode);
     expect(networkMode).toBe("awsvpc");
   });
   it("when network mode is set, use it", async () => {
     const taskDefinition = new EC2TaskDefinition("default", {
-      container: {},
+      container: {
+        name: "fake-name",
+        image: "fake-image",
+      },
       networkMode: "bridge",
     });
     const networkMode = await promiseOf(taskDefinition.taskDefinition.networkMode);
