@@ -52,5 +52,4 @@ describe("container naming for single container", () => {
     expect(n.myTestName).toBeDefined();
     expect(n.container).toBeUndefined();
   });
-
 });
