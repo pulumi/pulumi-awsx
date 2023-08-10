@@ -317,7 +317,7 @@ export class Vpc extends pulumi.ComponentResource<VpcData> {
         // those subnets are used to make many downstream resource-creating decisions.
         const vpcId = await args.vpcId;
         const provider = args.provider;
-        const getSubnetsResult = await aws.ec2.getSubnets({ 
+        const getSubnetsResult = await aws.ec2.getSubnets({
             filters: [{ name: "vpc-id", values: [vpcId] }],
         }, { provider, async: true });
         const publicSubnetIds = getSubnetsResult.ids.slice(0, 2);
