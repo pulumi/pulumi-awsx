@@ -125,6 +125,7 @@
         "provider.ts",
         "types/enums/ec2/index.ts",
         "types/enums/ecr/index.ts",
+        "types/enums/ecs/index.ts",
         "types/enums/index.ts",
         "types/index.ts",
         "types/input.ts",

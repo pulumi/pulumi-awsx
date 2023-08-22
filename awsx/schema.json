@@ -1204,7 +1204,11 @@
                     "type": "string"
                 }
             },
-            "type": "object"
+            "type": "object",
+            "required": [
+                "image",
+                "name"
+            ]
         },
         "awsx:ecs:TaskDefinitionContainerDependency": {
             "properties": {
@@ -1392,11 +1396,20 @@
         },
         "awsx:ecs:TaskDefinitionPortMapping": {
             "properties": {
+                "appProtocol": {
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionPortMappingAppProtocol"
+                },
                 "containerPort": {
                     "type": "integer"
                 },
+                "containerPortRange": {
+                    "type": "string"
+                },
                 "hostPort": {
                     "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 },
                 "protocol": {
                     "type": "string"
@@ -1406,6 +1419,23 @@
                 }
             },
             "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionPortMappingAppProtocol": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "Http",
+                    "value": "http"
+                },
+                {
+                    "name": "Http2",
+                    "value": "http2"
+                },
+                {
+                    "name": "Grpc",
+                    "value": "grpc"
+                }
+            ]
         },
         "awsx:ecs:TaskDefinitionRepositoryCredentials": {
             "properties": {

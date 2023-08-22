@@ -19,6 +19,7 @@ class MyStack : Stack
                 Container = new Awsx.Ecs.Inputs.TaskDefinitionContainerDefinitionArgs
                 {
                     Image = "nginx:latest",
+                    Name = "nginx",
                     Cpu = 512,
                     Memory = 128,
                     Essential = true,

@@ -431,6 +431,7 @@ func containerDefinitionTypes(awsSpec, awsNativeSpec schema.PackageSpec) map[str
 		"TaskDefinitionDevice",
 		"TaskDefinitionTmpfs",
 		"TaskDefinitionSecret",
+		"TaskDefinitionPortMappingAppProtocol",
 	}
 	types := map[string]schema.ComplexTypeSpec{}
 	for _, name := range names {

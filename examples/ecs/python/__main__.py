@@ -14,6 +14,7 @@ service = awsx.ecs.FargateService("my-service",
     task_definition_args=awsx.ecs.FargateServiceTaskDefinitionArgs(
         container=awsx.ecs.TaskDefinitionContainerDefinitionArgs(
             image="nginx:latest",
+            name="nginx",
             cpu=512,
             memory=128,
             essential=True,

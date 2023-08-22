@@ -43,6 +43,7 @@ describe("container naming for single container", () => {
     const args = {
       container: {
         name: "myTestName",
+        image: "myTestImage",
         cpu: 16,
       },
     };
@@ -50,17 +51,5 @@ describe("container naming for single container", () => {
     const n = await promiseOf(normalized);
     expect(n.myTestName).toBeDefined();
     expect(n.container).toBeUndefined();
-  });
-
-  it("single container without name", async () => {
-    const args = {
-      container: {
-        cpu: 16,
-      },
-    };
-    const normalized = normalizeTaskDefinitionContainers(args);
-    const n = await promiseOf(normalized);
-    // "container" is the default name
-    expect(n.container).toBeDefined();
   });
 });
