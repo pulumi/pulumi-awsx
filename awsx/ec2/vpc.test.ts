@@ -63,6 +63,7 @@ describe("validateNatGatewayStrategy", () => {
         subnetName: "dummy",
         cidrBlock: "dummy",
         azName: "us-dummy-1a",
+        aliases: []
       };
     });
 
@@ -149,6 +150,7 @@ describe("compareSubnetSpecs", () => {
         azName: "dummy",
         subnetName: "dummy",
         cidrBlock: "dummy",
+        aliases: [],
       };
     });
 
@@ -218,12 +220,14 @@ describe("validateSubnets", () => {
         cidrBlock: "10.0.0.0/16",
         subnetName: "subnet1",
         azName: "us-east-1a",
+        aliases: [],
       },
       {
         type: "Private" as SubnetTypeInputs,
         cidrBlock: "10.0.1.0/16",
         subnetName: "subnet2",
         azName: "us-east-1a",
+        aliases: [],
       },
     ];
 
@@ -241,12 +245,14 @@ describe("validateSubnets", () => {
         cidrBlock: "10.0.0.0/16",
         subnetName: "subnet1",
         azName: "us-east-1a",
+        aliases: [],
       },
       {
         type: "Private" as SubnetTypeInputs,
         cidrBlock: "10.0.0.0/24",
         subnetName: "subnet2",
         azName: "us-east-1a",
+        aliases: [],
       },
     ];
 

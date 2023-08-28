@@ -26,6 +26,7 @@ export interface SubnetSpec {
   tags?: pulumi.Input<{
     [key: string]: pulumi.Input<string>;
   }>;
+  aliases: string[];
 }
 
 export function getSubnetSpecs(
@@ -66,6 +67,13 @@ export function getSubnetSpecs(
       const privateCidrMask: number = privateSubnetsIn[j].cidrMask ?? 19;
       const newBits = privateCidrMask - baseSubnetMask;
 
+      // We changed subnets from being named after their ordinal (e.g.
+      // "public-subnet-2") to being named after the AZ they were contained in
+      // (e.g. "public-subnet-1b") to be more descriptive. We maintain an alias
+      // for backwards compatibility.
+      const oldName = `${vpcName}-${privateSubnetsIn[j].name ?? "private"}-${i + 1}`;
+      const subnetName = `${vpcName}-${privateSubnetsIn[j].name ?? "private"}-${azSuffix}`;
+
       // The "j" input to cidrSubnetV4 below covers the case where we have
       // multiple subnets of each type per AZ. In this case, we need the
       // nth subnet of size newBits in the block for the AZ. The other
@@ -75,8 +83,9 @@ export function getSubnetSpecs(
         azName: azNames[i],
         cidrBlock: privateSubnetCidrBlock,
         type: "Private",
-        subnetName: `${vpcName}-${privateSubnetsIn[j].name ?? "private"}-${azSuffix}`,
+        subnetName: subnetName,
         tags: privateSubnetsIn[j].tags,
+        aliases: [oldName],
       });
     }
 
@@ -95,13 +104,21 @@ export function getSubnetSpecs(
       const publicCidrMask: number = publicSubnetsIn[j].cidrMask ?? 20;
       const newBits = publicCidrMask - baseIp.subnetMask;
 
+      // We changed subnets from being named after their ordinal (e.g.
+      // "public-subnet-2") to being named after the AZ they were contained in
+      // (e.g. "public-subnet-1b") to be more descriptive. We maintain an alias
+      // for backwards compatibility.
+      const oldName = `${vpcName}-${publicSubnetsIn[j].name ?? "public"}-${i + 1}`;
+      const subnetName = `${vpcName}-${publicSubnetsIn[j].name ?? "public"}-${azSuffix}`;
+
       const publicSubnetCidrBlock = cidrSubnetV4(splitBase, newBits, j);
       publicSubnetsOut.push({
         azName: azNames[i],
         cidrBlock: publicSubnetCidrBlock,
         type: "Public",
-        subnetName: `${vpcName}-${publicSubnetsIn[j].name ?? "public"}-${azSuffix}`,
+        subnetName: subnetName,
         tags: publicSubnetsIn[j].tags,
+        aliases: [oldName],
       });
     }
 
@@ -131,13 +148,21 @@ export function getSubnetSpecs(
       const isolatedCidrMask: number = isolatedSubnetsIn[j].cidrMask ?? 24;
       const newBits = isolatedCidrMask - baseIp.subnetMask;
 
+      // We changed subnets from being named after their ordinal (e.g.
+      // "public-subnet-2") to being named after the AZ they were contained in
+      // (e.g. "public-subnet-1b") to be more descriptive. We maintain an alias
+      // for backwards compatibility.
+      const oldName = `${vpcName}-${isolatedSubnetsIn[j].name ?? "isolated"}-${i + 1}`;
+      const subnetName = `${vpcName}-${isolatedSubnetsIn[j].name ?? "isolated"}-${azSuffix}`;
+
       const isolatedSubnetCidrBlock = cidrSubnetV4(splitBase, newBits, j);
       isolatedSubnetsOut.push({
         azName: azNames[i],
         cidrBlock: isolatedSubnetCidrBlock,
         type: "Isolated",
-        subnetName: `${vpcName}-${isolatedSubnetsIn[j].name ?? "isolated"}-${azSuffix}`,
+        subnetName: subnetName,
         tags: isolatedSubnetsIn[j].tags,
+        aliases: [oldName],
       });
     }
 
@@ -156,11 +181,15 @@ function generateDefaultSubnets(
   const privateSubnets: SubnetSpec[] = [];
 
   for (let i = 0; i < azNames.length; i++) {
+    const oldName = `${vpcName}-private-${i + 1}`;
+    const subnetName = `${vpcName}-private-${azNames[i].slice(-2)}`;
+
     privateSubnets.push({
       azName: azNames[i],
       cidrBlock: cidrSubnetV4(azBases[i], 1, 0),
       type: "Private",
-      subnetName: `${vpcName}-private-${azNames[i].slice(-2)}`,
+      subnetName: subnetName,
+      aliases: [oldName],
     });
   }
 
@@ -169,11 +198,15 @@ function generateDefaultSubnets(
   for (let i = 0; i < azNames.length; i++) {
     const splitBase = cidrSubnetV4(privateSubnets[i].cidrBlock, 0, 1);
 
+    const oldName = `${vpcName}-public-${i + 1}`;
+    const subnetName = `${vpcName}-public-${azNames[i].slice(-2)}`;
+
     publicSubnets.push({
       azName: azNames[i],
       cidrBlock: cidrSubnetV4(splitBase, 1, 0),
       type: "Public",
-      subnetName: `${vpcName}-public-${azNames[i].slice(-2)}`,
+      subnetName: subnetName,
+      aliases: [oldName],
     });
   }
 

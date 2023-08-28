@@ -28,36 +28,42 @@ describe("getSubnetSpecs", () => {
         cidrBlock: "10.0.0.0/19",
         azName: "us-east-1a",
         subnetName: "vpcname-private-1a",
+        aliases: ["vpcname-private-1"],
       },
       {
         type: "Private",
         cidrBlock: "10.0.64.0/19",
         azName: "us-east-1b",
         subnetName: "vpcname-private-1b",
+        aliases: ["vpcname-private-2"],
       },
       {
         type: "Private",
         cidrBlock: "10.0.128.0/19",
         azName: "us-east-1c",
         subnetName: "vpcname-private-1c",
+        aliases: ["vpcname-private-3"],
       },
       {
         type: "Public",
         cidrBlock: "10.0.32.0/20",
         azName: "us-east-1a",
         subnetName: "vpcname-public-1a",
+        aliases: ["vpcname-public-1"],
       },
       {
         type: "Public",
         cidrBlock: "10.0.96.0/20",
         azName: "us-east-1b",
         subnetName: "vpcname-public-1b",
+        aliases: ["vpcname-public-2"],
       },
       {
         type: "Public",
         cidrBlock: "10.0.160.0/20",
         azName: "us-east-1c",
         subnetName: "vpcname-public-1c",
+        aliases: ["vpcname-public-3"],
       },
     ];
     expect(result).toEqual(expected);
@@ -78,7 +84,7 @@ describe("getSubnetSpecs", () => {
         },
       ];
 
-      const expected = [
+      const expected: SubnetSpec[] = [
         {
           type: type,
           cidrBlock: "10.0.0.0/19",
@@ -88,6 +94,7 @@ describe("getSubnetSpecs", () => {
             Name: "test",
             Owner: "user1",
           },
+          aliases: ["vpcname-foo-1"],
         },
         {
           type: type,
@@ -98,6 +105,7 @@ describe("getSubnetSpecs", () => {
             Name: "test",
             Owner: "user1",
           },
+          aliases: ["vpcname-foo-2"],
         },
         {
           type: type,
@@ -108,6 +116,7 @@ describe("getSubnetSpecs", () => {
             Name: "test",
             Owner: "user1",
           },
+          aliases: ["vpcname-foo-3"],
         },
       ];
 
@@ -133,42 +142,48 @@ describe("getSubnetSpecs", () => {
       },
     ];
 
-    const expected = [
+    const expected: SubnetSpec[] = [
       {
         type: slash19Type,
         cidrBlock: "10.0.0.0/19",
         azName: "us-east-1a",
         subnetName: "vpcname-foo-1a",
+        aliases: ["vpcname-foo-1"],
       },
       {
         type: slash20Type,
         cidrBlock: "10.0.32.0/20",
         azName: "us-east-1a",
         subnetName: "vpcname-bar-1a",
+        aliases: ["vpcname-bar-1"],
       },
       {
         type: slash19Type,
         cidrBlock: "10.0.64.0/19",
         azName: "us-east-1b",
         subnetName: "vpcname-foo-1b",
+        aliases: ["vpcname-foo-2"],
       },
       {
         type: slash20Type,
         cidrBlock: "10.0.96.0/20",
         azName: "us-east-1b",
         subnetName: "vpcname-bar-1b",
+        aliases: ["vpcname-bar-2"],
       },
       {
         type: slash19Type,
         cidrBlock: "10.0.128.0/19",
         azName: "us-east-1c",
         subnetName: "vpcname-foo-1c",
+        aliases: ["vpcname-foo-3"],
       },
       {
         type: slash20Type,
         cidrBlock: "10.0.160.0/20",
         azName: "us-east-1c",
         subnetName: "vpcname-bar-1c",
+        aliases: ["vpcname-bar-3"],
       },
     ];
 
