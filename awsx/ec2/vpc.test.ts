@@ -63,7 +63,7 @@ describe("validateNatGatewayStrategy", () => {
         subnetName: "dummy",
         cidrBlock: "dummy",
         azName: "us-dummy-1a",
-        aliases: []
+        aliases: [],
       };
     });
 
