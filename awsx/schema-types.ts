@@ -746,7 +746,7 @@ export interface TaskDefinitionContainerDefinitionInputs {
     readonly firelensConfiguration?: pulumi.Input<TaskDefinitionFirelensConfigurationInputs>;
     readonly healthCheck?: pulumi.Input<TaskDefinitionHealthCheckInputs>;
     readonly hostname?: pulumi.Input<string>;
-    readonly image?: pulumi.Input<string>;
+    readonly image: pulumi.Input<string>;
     readonly interactive?: pulumi.Input<boolean>;
     readonly links?: pulumi.Input<pulumi.Input<string>[]>;
     readonly linuxParameters?: pulumi.Input<TaskDefinitionLinuxParametersInputs>;
@@ -754,7 +754,7 @@ export interface TaskDefinitionContainerDefinitionInputs {
     readonly memory?: pulumi.Input<number>;
     readonly memoryReservation?: pulumi.Input<number>;
     readonly mountPoints?: pulumi.Input<pulumi.Input<TaskDefinitionMountPointInputs>[]>;
-    readonly name?: pulumi.Input<string>;
+    readonly name: pulumi.Input<string>;
     readonly portMappings?: pulumi.Input<pulumi.Input<TaskDefinitionPortMappingInputs>[]>;
     readonly privileged?: pulumi.Input<boolean>;
     readonly pseudoTerminal?: pulumi.Input<boolean>;
@@ -787,7 +787,7 @@ export interface TaskDefinitionContainerDefinitionOutputs {
     readonly firelensConfiguration?: pulumi.Output<TaskDefinitionFirelensConfigurationOutputs>;
     readonly healthCheck?: pulumi.Output<TaskDefinitionHealthCheckOutputs>;
     readonly hostname?: pulumi.Output<string>;
-    readonly image?: pulumi.Output<string>;
+    readonly image: pulumi.Output<string>;
     readonly interactive?: pulumi.Output<boolean>;
     readonly links?: pulumi.Output<string[]>;
     readonly linuxParameters?: pulumi.Output<TaskDefinitionLinuxParametersOutputs>;
@@ -795,7 +795,7 @@ export interface TaskDefinitionContainerDefinitionOutputs {
     readonly memory?: pulumi.Output<number>;
     readonly memoryReservation?: pulumi.Output<number>;
     readonly mountPoints?: pulumi.Output<TaskDefinitionMountPointOutputs[]>;
-    readonly name?: pulumi.Output<string>;
+    readonly name: pulumi.Output<string>;
     readonly portMappings?: pulumi.Output<TaskDefinitionPortMappingOutputs[]>;
     readonly privileged?: pulumi.Output<boolean>;
     readonly pseudoTerminal?: pulumi.Output<boolean>;
@@ -922,17 +922,25 @@ export interface TaskDefinitionMountPointOutputs {
     readonly sourceVolume?: pulumi.Output<string>;
 }
 export interface TaskDefinitionPortMappingInputs {
+    readonly appProtocol?: pulumi.Input<TaskDefinitionPortMappingAppProtocolInputs>;
     readonly containerPort?: pulumi.Input<number>;
+    readonly containerPortRange?: pulumi.Input<string>;
     readonly hostPort?: pulumi.Input<number>;
+    readonly name?: pulumi.Input<string>;
     readonly protocol?: pulumi.Input<string>;
     readonly targetGroup?: pulumi.Input<aws.lb.TargetGroup>;
 }
 export interface TaskDefinitionPortMappingOutputs {
+    readonly appProtocol?: pulumi.Output<TaskDefinitionPortMappingAppProtocolOutputs>;
     readonly containerPort?: pulumi.Output<number>;
+    readonly containerPortRange?: pulumi.Output<string>;
     readonly hostPort?: pulumi.Output<number>;
+    readonly name?: pulumi.Output<string>;
     readonly protocol?: pulumi.Output<string>;
     readonly targetGroup?: pulumi.Output<aws.lb.TargetGroup>;
 }
+export type TaskDefinitionPortMappingAppProtocolInputs = "http" | "http2" | "grpc";
+export type TaskDefinitionPortMappingAppProtocolOutputs = "http" | "http2" | "grpc";
 export interface TaskDefinitionRepositoryCredentialsInputs {
     readonly credentialsParameter?: pulumi.Input<string>;
 }

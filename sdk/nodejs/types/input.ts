@@ -1233,7 +1233,7 @@ export namespace ecs {
         /**
          * The image used to start a container. This string is passed directly to the Docker daemon.
          */
-        image?: pulumi.Input<string>;
+        image: pulumi.Input<string>;
         interactive?: pulumi.Input<boolean>;
         links?: pulumi.Input<pulumi.Input<string>[]>;
         linuxParameters?: pulumi.Input<inputs.ecs.TaskDefinitionLinuxParametersArgs>;
@@ -1247,7 +1247,7 @@ export namespace ecs {
         /**
          * The name of a container. Up to 255 letters (uppercase and lowercase), numbers, hyphens, and underscores are allowed
          */
-        name?: pulumi.Input<string>;
+        name: pulumi.Input<string>;
         /**
          * Port mappings allow containers to access ports on the host container instance to send or receive traffic.
          */
@@ -1352,8 +1352,11 @@ export namespace ecs {
     }
 
     export interface TaskDefinitionPortMappingArgs {
+        appProtocol?: pulumi.Input<enums.ecs.TaskDefinitionPortMappingAppProtocol>;
         containerPort?: pulumi.Input<number>;
+        containerPortRange?: pulumi.Input<string>;
         hostPort?: pulumi.Input<number>;
+        name?: pulumi.Input<string>;
         protocol?: pulumi.Input<string>;
         targetGroup?: pulumi.Input<pulumiAws.lb.TargetGroup>;
     }

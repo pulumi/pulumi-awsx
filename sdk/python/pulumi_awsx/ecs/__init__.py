@@ -5,6 +5,7 @@
 from .. import _utilities
 import typing
 # Export this package's modules as members:
+from ._enums import *
 from .ec2_service import *
 from .ec2_task_definition import *
 from .fargate_service import *

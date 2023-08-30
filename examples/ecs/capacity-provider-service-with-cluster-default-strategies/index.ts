@@ -21,6 +21,7 @@ const targetGroup = lb.defaultTargetGroup!.targetGroup;
 const fargateTask = new ecs.FargateTaskDefinition("fargate-task", {
     container: {
         image: "nginx:latest",
+        name: "nginx",
         cpu: 512,
         memory: 128,
         essential: true,

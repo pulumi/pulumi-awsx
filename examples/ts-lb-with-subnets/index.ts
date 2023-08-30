@@ -16,6 +16,7 @@ const service = new awsx.ecs.FargateService("my-service", {
     taskDefinitionArgs: {
         container: {
             image: "nginx:latest",
+            name: "nginx",
             cpu: 512,
             memory: 128,
             essential: true,

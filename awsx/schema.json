@@ -18,7 +18,7 @@
             "liftSingleValueMethodReturns": true,
             "packageReferences": {
                 "Pulumi": "3.*",
-                "Pulumi.Aws": "6.*",
+                "Pulumi.Aws": "6.0.2",
                 "Pulumi.Docker": "3.*"
             }
         },
@@ -54,7 +54,7 @@
             "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
             "requires": {
                 "pulumi": "\u003e=3.76.1,\u003c4.0.0",
-                "pulumi-aws": "\u003e=6.0.2,\u003c7.0.0",
+                "pulumi-aws": "=6.0.2",
                 "pulumi-docker": "\u003e=3.6.1,\u003c4.0.0"
             },
             "usesIOClasses": true
@@ -1190,7 +1190,11 @@
                     "type": "string"
                 }
             },
-            "type": "object"
+            "type": "object",
+            "required": [
+                "image",
+                "name"
+            ]
         },
         "awsx:ecs:TaskDefinitionContainerDependency": {
             "properties": {
@@ -1378,11 +1382,20 @@
         },
         "awsx:ecs:TaskDefinitionPortMapping": {
             "properties": {
+                "appProtocol": {
+                    "$ref": "#/types/awsx:ecs:TaskDefinitionPortMappingAppProtocol"
+                },
                 "containerPort": {
                     "type": "integer"
                 },
+                "containerPortRange": {
+                    "type": "string"
+                },
                 "hostPort": {
                     "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 },
                 "protocol": {
                     "type": "string"
@@ -1392,6 +1405,23 @@
                 }
             },
             "type": "object"
+        },
+        "awsx:ecs:TaskDefinitionPortMappingAppProtocol": {
+            "type": "string",
+            "enum": [
+                {
+                    "name": "Http",
+                    "value": "http"
+                },
+                {
+                    "name": "Http2",
+                    "value": "http2"
+                },
+                {
+                    "name": "Grpc",
+                    "value": "grpc"
+                }
+            ]
         },
         "awsx:ecs:TaskDefinitionRepositoryCredentials": {
             "properties": {

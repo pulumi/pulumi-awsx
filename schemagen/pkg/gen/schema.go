@@ -28,7 +28,7 @@ import (
 )
 
 const (
-	awsNativeTypesVersion = "0.13.0"
+	awsNativeTypesVersion = "0.72.0"
 )
 
 // nolint: lll

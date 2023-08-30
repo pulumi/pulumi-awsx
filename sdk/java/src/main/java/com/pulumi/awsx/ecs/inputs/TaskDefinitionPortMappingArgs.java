@@ -4,6 +4,7 @@
 package com.pulumi.awsx.ecs.inputs;
 
 import com.pulumi.aws.lb.TargetGroup;
+import com.pulumi.awsx.ecs.enums.TaskDefinitionPortMappingAppProtocol;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.Integer;
@@ -17,6 +18,13 @@ public final class TaskDefinitionPortMappingArgs extends com.pulumi.resources.Re
 
     public static final TaskDefinitionPortMappingArgs Empty = new TaskDefinitionPortMappingArgs();
 
+    @Import(name="appProtocol")
+    private @Nullable Output<TaskDefinitionPortMappingAppProtocol> appProtocol;
+
+    public Optional<Output<TaskDefinitionPortMappingAppProtocol>> appProtocol() {
+        return Optional.ofNullable(this.appProtocol);
+    }
+
     @Import(name="containerPort")
     private @Nullable Output<Integer> containerPort;
 
@@ -24,11 +32,25 @@ public final class TaskDefinitionPortMappingArgs extends com.pulumi.resources.Re
         return Optional.ofNullable(this.containerPort);
     }
 
+    @Import(name="containerPortRange")
+    private @Nullable Output<String> containerPortRange;
+
+    public Optional<Output<String>> containerPortRange() {
+        return Optional.ofNullable(this.containerPortRange);
+    }
+
     @Import(name="hostPort")
     private @Nullable Output<Integer> hostPort;
 
     public Optional<Output<Integer>> hostPort() {
         return Optional.ofNullable(this.hostPort);
+    }
+
+    @Import(name="name")
+    private @Nullable Output<String> name;
+
+    public Optional<Output<String>> name() {
+        return Optional.ofNullable(this.name);
     }
 
     @Import(name="protocol")
@@ -48,8 +70,11 @@ public final class TaskDefinitionPortMappingArgs extends com.pulumi.resources.Re
     private TaskDefinitionPortMappingArgs() {}
 
     private TaskDefinitionPortMappingArgs(TaskDefinitionPortMappingArgs $) {
+        this.appProtocol = $.appProtocol;
         this.containerPort = $.containerPort;
+        this.containerPortRange = $.containerPortRange;
         this.hostPort = $.hostPort;
+        this.name = $.name;
         this.protocol = $.protocol;
         this.targetGroup = $.targetGroup;
     }
@@ -72,6 +97,15 @@ public final class TaskDefinitionPortMappingArgs extends com.pulumi.resources.Re
             $ = new TaskDefinitionPortMappingArgs(Objects.requireNonNull(defaults));
         }
 
+        public Builder appProtocol(@Nullable Output<TaskDefinitionPortMappingAppProtocol> appProtocol) {
+            $.appProtocol = appProtocol;
+            return this;
+        }
+
+        public Builder appProtocol(TaskDefinitionPortMappingAppProtocol appProtocol) {
+            return appProtocol(Output.of(appProtocol));
+        }
+
         public Builder containerPort(@Nullable Output<Integer> containerPort) {
             $.containerPort = containerPort;
             return this;
@@ -81,6 +115,15 @@ public final class TaskDefinitionPortMappingArgs extends com.pulumi.resources.Re
             return containerPort(Output.of(containerPort));
         }
 
+        public Builder containerPortRange(@Nullable Output<String> containerPortRange) {
+            $.containerPortRange = containerPortRange;
+            return this;
+        }
+
+        public Builder containerPortRange(String containerPortRange) {
+            return containerPortRange(Output.of(containerPortRange));
+        }
+
         public Builder hostPort(@Nullable Output<Integer> hostPort) {
             $.hostPort = hostPort;
             return this;
@@ -88,6 +131,15 @@ public final class TaskDefinitionPortMappingArgs extends com.pulumi.resources.Re
 
         public Builder hostPort(Integer hostPort) {
             return hostPort(Output.of(hostPort));
+        }
+
+        public Builder name(@Nullable Output<String> name) {
+            $.name = name;
+            return this;
+        }
+
+        public Builder name(String name) {
+            return name(Output.of(name));
         }
 
         public Builder protocol(@Nullable Output<String> protocol) {
