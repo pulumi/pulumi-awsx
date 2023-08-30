@@ -52,9 +52,9 @@ class NetworkLoadBalancerArgs:
         :param pulumi.Input[bool] enable_deletion_protection: If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
         :param pulumi.Input[bool] enable_tls_version_and_cipher_suite_headers: Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
         :param pulumi.Input[bool] enable_waf_fail_open: Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
-        :param pulumi.Input[bool] enable_xff_client_port: Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+        :param pulumi.Input[bool] enable_xff_client_port: Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
         :param pulumi.Input[int] idle_timeout: The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
-        :param pulumi.Input[bool] internal: If true, the LB will be internal.
+        :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
         :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
         :param 'ListenerArgs' listener: A listener to create. Only one of [listener] and [listeners] can be specified.
         :param Sequence['ListenerArgs'] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.
@@ -244,7 +244,7 @@ class NetworkLoadBalancerArgs:
     @pulumi.getter(name="enableXffClientPort")
     def enable_xff_client_port(self) -> Optional[pulumi.Input[bool]]:
         """
-        Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+        Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
         """
         return pulumi.get(self, "enable_xff_client_port")
 
@@ -268,7 +268,7 @@ class NetworkLoadBalancerArgs:
     @pulumi.getter
     def internal(self) -> Optional[pulumi.Input[bool]]:
         """
-        If true, the LB will be internal.
+        If true, the LB will be internal. Defaults to `false`.
         """
         return pulumi.get(self, "internal")
 
@@ -458,9 +458,9 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[bool] enable_deletion_protection: If true, deletion of the load balancer will be disabled via the AWS API. This will prevent this provider from deleting the load balancer. Defaults to `false`.
         :param pulumi.Input[bool] enable_tls_version_and_cipher_suite_headers: Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
         :param pulumi.Input[bool] enable_waf_fail_open: Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
-        :param pulumi.Input[bool] enable_xff_client_port: Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+        :param pulumi.Input[bool] enable_xff_client_port: Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
         :param pulumi.Input[int] idle_timeout: The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
-        :param pulumi.Input[bool] internal: If true, the LB will be internal.
+        :param pulumi.Input[bool] internal: If true, the LB will be internal. Defaults to `false`.
         :param pulumi.Input[str] ip_address_type: The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
         :param pulumi.InputType['ListenerArgs'] listener: A listener to create. Only one of [listener] and [listeners] can be specified.
         :param Sequence[pulumi.InputType['ListenerArgs']] listeners: List of listeners to create. Only one of [listener] and [listeners] can be specified.

@@ -76,6 +76,7 @@ class ListenerArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -110,7 +111,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -241,6 +242,7 @@ class ListenerArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -269,7 +271,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -391,6 +393,7 @@ class ListenerArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -425,7 +428,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -562,6 +565,7 @@ class ListenerArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -596,7 +600,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -761,6 +765,7 @@ class ListenerArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -812,8 +817,8 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cognito"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1019,6 +1024,7 @@ class ListenerArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -1064,7 +1070,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1242,6 +1248,7 @@ class ListenerArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -1290,7 +1297,7 @@ class ListenerArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1421,13 +1428,11 @@ class ListenerArgs:
 
         ## Import
 
-        Listeners can be imported using their ARN, e.g.,
+        terraform import {
 
-        ```sh
-         $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
-        ```
+         to = aws_lb_listener.front_end
 
-         
+         id = "arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96" } Using `pulumi import`, import listeners using their ARN. For exampleconsole % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96 
         :param pulumi.Input[str] alpn_policy: Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
         :param pulumi.Input[str] certificate_arn: ARN of the default SSL server certificate. Exactly one certificate is required if the protocol is HTTPS. For adding additional SSL certificates, see the `aws.lb.ListenerCertificate` resource.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.ListenerDefaultActionArgs']]] default_actions: Configuration block for default actions. Detailed below.
@@ -1435,6 +1440,8 @@ class ListenerArgs:
         :param pulumi.Input[str] protocol: Protocol for connections from clients to the load balancer. For Application Load Balancers, valid values are `HTTP` and `HTTPS`, with a default of `HTTP`. For Network Load Balancers, valid values are `TCP`, `TLS`, `UDP`, and `TCP_UDP`. Not valid to use `UDP` or `TCP_UDP` if dual-stack mode is enabled. Not valid for Gateway Load Balancers.
         :param pulumi.Input[str] ssl_policy: Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+               
+               > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
         """
         if alpn_policy is not None:
             pulumi.set(__self__, "alpn_policy", alpn_policy)
@@ -1528,6 +1535,8 @@ class ListenerArgs:
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
         """
         A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+
+        > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
         """
         return pulumi.get(self, "tags")
 
@@ -1592,6 +1601,7 @@ class TargetGroupArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -1615,8 +1625,8 @@ class TargetGroupArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1718,6 +1728,7 @@ class TargetGroupArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -1742,8 +1753,8 @@ class TargetGroupArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1837,6 +1848,7 @@ class TargetGroupArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -1853,7 +1865,7 @@ class TargetGroupArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -1931,6 +1943,7 @@ class TargetGroupArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -1950,7 +1963,7 @@ class TargetGroupArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -2015,13 +2028,11 @@ class TargetGroupArgs:
 
         ## Import
 
-        Target Groups can be imported using their ARN, e.g.,
+        terraform import {
 
-        ```sh
-         $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
-        ```
+         to = aws_lb_target_group.app_front_end
 
-         
+         id = "arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314" } Using `pulumi import`, import Target Groups using their ARN. For exampleconsole % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314 
         :param pulumi.Input[bool] connection_termination: Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.
         :param pulumi.Input[int] deregistration_delay: Amount time for Elastic Load Balancing to wait before changing the state of a deregistering target from draining to unused. The range is 0-3600 seconds. The default value is 300 seconds.
         :param pulumi.Input['pulumi_aws.lb.TargetGroupHealthCheckArgs'] health_check: Health Check configuration block. Detailed below.
@@ -2041,6 +2052,14 @@ class TargetGroupArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]] target_failovers: Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
         :param pulumi.Input[str] target_type: Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+               
+               Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+               
+               If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+               
+               Network Load Balancers do not support the `lambda` target type.
+               
+               Application Load Balancers do not support the `alb` target type.
         :param pulumi.Input[str] vpc_id: Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         """
         if connection_termination is not None:
@@ -2305,6 +2324,14 @@ class TargetGroupArgs:
     def target_type(self) -> Optional[pulumi.Input[str]]:
         """
         Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+
+        Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+
+        If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+
+        Network Load Balancers do not support the `lambda` target type.
+
+        Application Load Balancers do not support the `alb` target type.
         """
         return pulumi.get(self, "target_type")
 

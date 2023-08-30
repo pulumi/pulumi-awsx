@@ -151,6 +151,8 @@ export interface FargateServiceArgs {
     loadBalancers?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ecs.ServiceLoadBalancer>[]>;
     /**
      * Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+     *
+     * The following arguments are optional:
      */
     name?: pulumi.Input<string>;
     /**

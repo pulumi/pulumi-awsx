@@ -69,6 +69,8 @@ type fargateServiceArgs struct {
 	// Configuration block for load balancers. See below.
 	LoadBalancers []ecs.ServiceLoadBalancer `pulumi:"loadBalancers"`
 	// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+	//
+	// The following arguments are optional:
 	Name *string `pulumi:"name"`
 	// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
 	NetworkConfiguration *ecs.ServiceNetworkConfiguration `pulumi:"networkConfiguration"`
@@ -127,6 +129,8 @@ type FargateServiceArgs struct {
 	// Configuration block for load balancers. See below.
 	LoadBalancers ecs.ServiceLoadBalancerArrayInput
 	// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+	//
+	// The following arguments are optional:
 	Name pulumi.StringPtrInput
 	// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
 	NetworkConfiguration ecs.ServiceNetworkConfigurationPtrInput

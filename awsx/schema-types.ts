@@ -81,8 +81,6 @@ export interface VpcArgs {
     readonly assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
     readonly availabilityZoneNames?: string[];
     readonly cidrBlock?: string;
-    readonly enableClassiclink?: pulumi.Input<boolean>;
-    readonly enableClassiclinkDnsSupport?: pulumi.Input<boolean>;
     readonly enableDnsHostnames?: pulumi.Input<boolean>;
     readonly enableDnsSupport?: pulumi.Input<boolean>;
     readonly enableNetworkAddressUsageMetrics?: pulumi.Input<boolean>;
@@ -464,7 +462,6 @@ export interface LogGroupInputs {
     readonly retentionInDays?: pulumi.Input<number>;
     readonly skipDestroy?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-    readonly tagsAll?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface LogGroupOutputs {
     readonly kmsKeyId?: pulumi.Output<string>;
@@ -473,7 +470,6 @@ export interface LogGroupOutputs {
     readonly retentionInDays?: pulumi.Output<number>;
     readonly skipDestroy?: pulumi.Output<boolean>;
     readonly tags?: pulumi.Output<Record<string, string>>;
-    readonly tagsAll?: pulumi.Output<Record<string, string>>;
 }
 export interface OptionalLogGroupInputs {
     readonly args?: LogGroupInputs;
@@ -513,7 +509,6 @@ export interface RoleWithPolicyInputs {
     readonly permissionsBoundary?: pulumi.Input<string>;
     readonly policyArns?: string[];
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-    readonly tagsAll?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface RoleWithPolicyOutputs {
     readonly description?: pulumi.Output<string>;
@@ -527,7 +522,6 @@ export interface RoleWithPolicyOutputs {
     readonly permissionsBoundary?: pulumi.Output<string>;
     readonly policyArns?: string[];
     readonly tags?: pulumi.Output<Record<string, string>>;
-    readonly tagsAll?: pulumi.Output<Record<string, string>>;
 }
 export interface SecurityGroupInputs {
     readonly description?: pulumi.Input<string>;

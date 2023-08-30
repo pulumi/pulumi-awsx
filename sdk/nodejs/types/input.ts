@@ -60,6 +60,8 @@ export namespace awsx {
         loggings?: pulumi.Input<pulumi.Input<pulumiAws.types.input.s3.BucketLogging>[]>;
         /**
          * A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+         *
+         * > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
          */
         objectLockConfiguration?: pulumi.Input<pulumiAws.types.input.s3.BucketObjectLockConfiguration>;
         /**
@@ -230,10 +232,6 @@ export namespace awsx {
          * A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-        /**
-         * A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-         */
-        tagsAll?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     }
 
     /**
@@ -290,7 +288,7 @@ export namespace awsx {
          */
         maxSessionDuration?: pulumi.Input<number>;
         /**
-         * Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+         * Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
          */
         name?: pulumi.Input<string>;
         /**
@@ -313,10 +311,6 @@ export namespace awsx {
          * Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-        /**
-         * A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-         */
-        tagsAll?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     }
 
     /**
@@ -336,7 +330,7 @@ export namespace awsx {
          */
         ingress?: pulumi.Input<pulumi.Input<pulumiAws.types.input.ec2.SecurityGroupIngress>[]>;
         /**
-         * Name of the security group. If omitted, this provider will assign a random, unique name.
+         * Name of the security group. If omitted, the provider will assign a random, unique name.
          */
         name?: pulumi.Input<string>;
         /**
@@ -442,6 +436,7 @@ export namespace ec2 {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -459,7 +454,7 @@ export namespace ec2 {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -542,6 +537,7 @@ export namespace ec2 {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -563,7 +559,7 @@ export namespace ec2 {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -652,6 +648,7 @@ export namespace ec2 {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -675,7 +672,7 @@ export namespace ec2 {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -779,6 +776,7 @@ export namespace ec2 {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -816,8 +814,8 @@ export namespace ec2 {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -861,6 +859,7 @@ export namespace ec2 {
      * import com.pulumi.Pulumi;
      * import com.pulumi.core.Output;
      * import com.pulumi.aws.AwsFunctions;
+     * import com.pulumi.aws.inputs.GetCallerIdentityArgs;
      * import com.pulumi.aws.ec2.VpcEndpointService;
      * import com.pulumi.aws.ec2.VpcEndpointServiceArgs;
      * import com.pulumi.aws.ec2.VpcEndpoint;
@@ -925,13 +924,11 @@ export namespace ec2 {
      *
      * ## Import
      *
-     * VPC Endpoints can be imported using the `vpc endpoint id`, e.g.,
+     * terraform import {
      *
-     * ```sh
-     *  $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
-     * ```
+     *  to = aws_vpc_endpoint.endpoint1
      *
-     *  
+     *  id = "vpce-3ecf2a57" } Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For exampleconsole % pulumi import aws_vpc_endpoint.endpoint1 vpce-3ecf2a57 
      */
     export interface VpcEndpointSpecArgs {
         /**
@@ -1450,6 +1447,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -1484,7 +1482,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -1615,6 +1613,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -1643,7 +1642,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -1765,6 +1764,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -1799,7 +1799,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -1936,6 +1936,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -1970,7 +1971,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2135,6 +2136,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -2186,8 +2188,8 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cognito"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2393,6 +2395,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -2438,7 +2441,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2616,6 +2619,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -2664,7 +2668,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2795,13 +2799,11 @@ export namespace lb {
      *
      * ## Import
      *
-     * Listeners can be imported using their ARN, e.g.,
+     * terraform import {
      *
-     * ```sh
-     *  $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
-     * ```
+     *  to = aws_lb_listener.front_end
      *
-     *  
+     *  id = "arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96" } Using `pulumi import`, import listeners using their ARN. For exampleconsole % pulumi import aws_lb_listener.front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96 
      */
     export interface ListenerArgs {
         /**
@@ -2830,6 +2832,8 @@ export namespace lb {
         sslPolicy?: pulumi.Input<string>;
         /**
          * A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+         *
+         * > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
          */
         tags?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     }
@@ -2867,6 +2871,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -2890,8 +2895,8 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -2993,6 +2998,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -3017,8 +3023,8 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -3112,6 +3118,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -3128,7 +3135,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -3206,6 +3213,7 @@ export namespace lb {
      * ```
      * ```csharp
      * using System.Collections.Generic;
+     * using System.Linq;
      * using Pulumi;
      * using Aws = Pulumi.Aws;
      *
@@ -3225,7 +3233,7 @@ export namespace lb {
      * package main
      *
      * import (
-     * 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
      * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
      * )
      *
@@ -3290,13 +3298,11 @@ export namespace lb {
      *
      * ## Import
      *
-     * Target Groups can be imported using their ARN, e.g.,
+     * terraform import {
      *
-     * ```sh
-     *  $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
-     * ```
+     *  to = aws_lb_target_group.app_front_end
      *
-     *  
+     *  id = "arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314" } Using `pulumi import`, import Target Groups using their ARN. For exampleconsole % pulumi import aws_lb_target_group.app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314 
      */
     export interface TargetGroupArgs {
         /**
@@ -3373,6 +3379,14 @@ export namespace lb {
         targetFailovers?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.TargetGroupTargetFailover>[]>;
         /**
          * Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+         *
+         * Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+         *
+         * If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+         *
+         * Network Load Balancers do not support the `lambda` target type.
+         *
+         * Application Load Balancers do not support the `alb` target type.
          */
         targetType?: pulumi.Input<string>;
         /**

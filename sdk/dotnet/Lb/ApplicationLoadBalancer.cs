@@ -140,7 +140,7 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? EnableWafFailOpen { get; set; }
 
         /// <summary>
-        /// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+        /// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
         /// </summary>
         [Input("enableXffClientPort")]
         public Input<bool>? EnableXffClientPort { get; set; }
@@ -152,7 +152,7 @@ namespace Pulumi.Awsx.Lb
         public Input<int>? IdleTimeout { get; set; }
 
         /// <summary>
-        /// If true, the LB will be internal.
+        /// If true, the LB will be internal. Defaults to `false`.
         /// </summary>
         [Input("internal")]
         public Input<bool>? Internal { get; set; }

@@ -38,6 +38,8 @@ type Bucket struct {
 	// A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
 	Loggings []s3.BucketLogging `pulumi:"loggings"`
 	// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+	//
+	// > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
 	ObjectLockConfiguration *s3.BucketObjectLockConfiguration `pulumi:"objectLockConfiguration"`
 	// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
 	Policy *string `pulumi:"policy"`
@@ -98,6 +100,8 @@ type BucketArgs struct {
 	// A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
 	Loggings s3.BucketLoggingArrayInput `pulumi:"loggings"`
 	// A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+	//
+	// > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
 	ObjectLockConfiguration s3.BucketObjectLockConfigurationPtrInput `pulumi:"objectLockConfiguration"`
 	// A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
 	Policy pulumi.StringPtrInput `pulumi:"policy"`
@@ -256,6 +260,8 @@ func (o BucketOutput) Loggings() s3.BucketLoggingArrayOutput {
 }
 
 // A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+//
+// > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
 func (o BucketOutput) ObjectLockConfiguration() s3.BucketObjectLockConfigurationPtrOutput {
 	return o.ApplyT(func(v Bucket) *s3.BucketObjectLockConfiguration { return v.ObjectLockConfiguration }).(s3.BucketObjectLockConfigurationPtrOutput)
 }
@@ -443,6 +449,8 @@ func (o BucketPtrOutput) Loggings() s3.BucketLoggingArrayOutput {
 }
 
 // A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+//
+// > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
 func (o BucketPtrOutput) ObjectLockConfiguration() s3.BucketObjectLockConfigurationPtrOutput {
 	return o.ApplyT(func(v *Bucket) *s3.BucketObjectLockConfiguration {
 		if v == nil {
@@ -1465,8 +1473,6 @@ type LogGroup struct {
 	SkipDestroy *bool `pulumi:"skipDestroy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
-	// A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-	TagsAll map[string]string `pulumi:"tagsAll"`
 }
 
 // LogGroupInput is an input type that accepts LogGroupArgs and LogGroupOutput values.
@@ -1498,8 +1504,6 @@ type LogGroupArgs struct {
 	SkipDestroy pulumi.BoolPtrInput `pulumi:"skipDestroy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
-	// A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-	TagsAll pulumi.StringMapInput `pulumi:"tagsAll"`
 }
 
 func (LogGroupArgs) ElementType() reflect.Type {
@@ -1614,11 +1618,6 @@ func (o LogGroupOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v LogGroup) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
 
-// A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-func (o LogGroupOutput) TagsAll() pulumi.StringMapOutput {
-	return o.ApplyT(func(v LogGroup) map[string]string { return v.TagsAll }).(pulumi.StringMapOutput)
-}
-
 type LogGroupPtrOutput struct{ *pulumi.OutputState }
 
 func (LogGroupPtrOutput) ElementType() reflect.Type {
@@ -1704,16 +1703,6 @@ func (o LogGroupPtrOutput) Tags() pulumi.StringMapOutput {
 			return nil
 		}
 		return v.Tags
-	}).(pulumi.StringMapOutput)
-}
-
-// A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-func (o LogGroupPtrOutput) TagsAll() pulumi.StringMapOutput {
-	return o.ApplyT(func(v *LogGroup) map[string]string {
-		if v == nil {
-			return nil
-		}
-		return v.TagsAll
 	}).(pulumi.StringMapOutput)
 }
 
@@ -2073,7 +2062,7 @@ type RoleWithPolicy struct {
 	ManagedPolicyArns []string               `pulumi:"managedPolicyArns"`
 	// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
 	MaxSessionDuration *int `pulumi:"maxSessionDuration"`
-	// Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+	// Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
 	Name *string `pulumi:"name"`
 	// Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix *string `pulumi:"namePrefix"`
@@ -2085,8 +2074,6 @@ type RoleWithPolicy struct {
 	PolicyArns []string `pulumi:"policyArns"`
 	// Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
-	// A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-	TagsAll map[string]string `pulumi:"tagsAll"`
 }
 
 // RoleWithPolicyInput is an input type that accepts RoleWithPolicyArgs and RoleWithPolicyOutput values.
@@ -2111,7 +2098,7 @@ type RoleWithPolicyArgs struct {
 	ManagedPolicyArns pulumi.StringArrayInput        `pulumi:"managedPolicyArns"`
 	// Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
 	MaxSessionDuration pulumi.IntPtrInput `pulumi:"maxSessionDuration"`
-	// Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+	// Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
 	Name pulumi.StringPtrInput `pulumi:"name"`
 	// Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
@@ -2123,8 +2110,6 @@ type RoleWithPolicyArgs struct {
 	PolicyArns []string `pulumi:"policyArns"`
 	// Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
-	// A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-	TagsAll pulumi.StringMapInput `pulumi:"tagsAll"`
 }
 
 func (RoleWithPolicyArgs) ElementType() reflect.Type {
@@ -2229,7 +2214,7 @@ func (o RoleWithPolicyOutput) MaxSessionDuration() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v RoleWithPolicy) *int { return v.MaxSessionDuration }).(pulumi.IntPtrOutput)
 }
 
-// Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+// Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
 func (o RoleWithPolicyOutput) Name() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v RoleWithPolicy) *string { return v.Name }).(pulumi.StringPtrOutput)
 }
@@ -2257,11 +2242,6 @@ func (o RoleWithPolicyOutput) PolicyArns() pulumi.StringArrayOutput {
 // Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 func (o RoleWithPolicyOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v RoleWithPolicy) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
-}
-
-// A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-func (o RoleWithPolicyOutput) TagsAll() pulumi.StringMapOutput {
-	return o.ApplyT(func(v RoleWithPolicy) map[string]string { return v.TagsAll }).(pulumi.StringMapOutput)
 }
 
 type RoleWithPolicyPtrOutput struct{ *pulumi.OutputState }
@@ -2337,7 +2317,7 @@ func (o RoleWithPolicyPtrOutput) MaxSessionDuration() pulumi.IntPtrOutput {
 	}).(pulumi.IntPtrOutput)
 }
 
-// Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+// Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
 func (o RoleWithPolicyPtrOutput) Name() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *RoleWithPolicy) *string {
 		if v == nil {
@@ -2397,16 +2377,6 @@ func (o RoleWithPolicyPtrOutput) Tags() pulumi.StringMapOutput {
 	}).(pulumi.StringMapOutput)
 }
 
-// A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-func (o RoleWithPolicyPtrOutput) TagsAll() pulumi.StringMapOutput {
-	return o.ApplyT(func(v *RoleWithPolicy) map[string]string {
-		if v == nil {
-			return nil
-		}
-		return v.TagsAll
-	}).(pulumi.StringMapOutput)
-}
-
 // The set of arguments for constructing a Security Group resource.
 type SecurityGroup struct {
 	// Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use `tags`.
@@ -2415,7 +2385,7 @@ type SecurityGroup struct {
 	Egress []ec2.SecurityGroupEgress `pulumi:"egress"`
 	// Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
 	Ingress []ec2.SecurityGroupIngress `pulumi:"ingress"`
-	// Name of the security group. If omitted, this provider will assign a random, unique name.
+	// Name of the security group. If omitted, the provider will assign a random, unique name.
 	Name *string `pulumi:"name"`
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix *string `pulumi:"namePrefix"`
@@ -2459,7 +2429,7 @@ type SecurityGroupArgs struct {
 	Egress ec2.SecurityGroupEgressArrayInput `pulumi:"egress"`
 	// Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
 	Ingress ec2.SecurityGroupIngressArrayInput `pulumi:"ingress"`
-	// Name of the security group. If omitted, this provider will assign a random, unique name.
+	// Name of the security group. If omitted, the provider will assign a random, unique name.
 	Name pulumi.StringPtrInput `pulumi:"name"`
 	// Creates a unique name beginning with the specified prefix. Conflicts with `name`.
 	NamePrefix pulumi.StringPtrInput `pulumi:"namePrefix"`
@@ -2575,7 +2545,7 @@ func (o SecurityGroupOutput) Ingress() ec2.SecurityGroupIngressArrayOutput {
 	return o.ApplyT(func(v SecurityGroup) []ec2.SecurityGroupIngress { return v.Ingress }).(ec2.SecurityGroupIngressArrayOutput)
 }
 
-// Name of the security group. If omitted, this provider will assign a random, unique name.
+// Name of the security group. If omitted, the provider will assign a random, unique name.
 func (o SecurityGroupOutput) Name() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v SecurityGroup) *string { return v.Name }).(pulumi.StringPtrOutput)
 }
@@ -2654,7 +2624,7 @@ func (o SecurityGroupPtrOutput) Ingress() ec2.SecurityGroupIngressArrayOutput {
 	}).(ec2.SecurityGroupIngressArrayOutput)
 }
 
-// Name of the security group. If omitted, this provider will assign a random, unique name.
+// Name of the security group. If omitted, the provider will assign a random, unique name.
 func (o SecurityGroupPtrOutput) Name() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *SecurityGroup) *string {
 		if v == nil {

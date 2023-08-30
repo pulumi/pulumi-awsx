@@ -79,8 +79,6 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["assignGeneratedIpv6CidrBlock"] = args ? args.assignGeneratedIpv6CidrBlock : undefined;
             resourceInputs["availabilityZoneNames"] = args ? args.availabilityZoneNames : undefined;
             resourceInputs["cidrBlock"] = args ? args.cidrBlock : undefined;
-            resourceInputs["enableClassiclink"] = args ? args.enableClassiclink : undefined;
-            resourceInputs["enableClassiclinkDnsSupport"] = args ? args.enableClassiclinkDnsSupport : undefined;
             resourceInputs["enableDnsHostnames"] = args ? args.enableDnsHostnames : undefined;
             resourceInputs["enableDnsSupport"] = args ? args.enableDnsSupport : undefined;
             resourceInputs["enableNetworkAddressUsageMetrics"] = args ? args.enableNetworkAddressUsageMetrics : undefined;
@@ -144,21 +142,6 @@ export interface VpcArgs {
      * The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
      */
     cidrBlock?: string;
-    /**
-     * A boolean flag to enable/disable ClassicLink
-     * for the VPC. Only valid in regions and accounts that support EC2 Classic.
-     * See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-     *
-     * @deprecated With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
-     */
-    enableClassiclink?: pulumi.Input<boolean>;
-    /**
-     * A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-     * Only valid in regions and accounts that support EC2 Classic.
-     *
-     * @deprecated With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
-     */
-    enableClassiclinkDnsSupport?: pulumi.Input<boolean>;
     /**
      * A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
      */

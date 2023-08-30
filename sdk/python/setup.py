@@ -62,8 +62,8 @@ setup(name='pulumi_awsx',
       install_requires=[
           'parver>=0.2.1',
           'pulumi>=3.76.1,<4.0.0',
-          'pulumi-aws=6.0.0-alpha.7%!(EXTRA string=5.35.0)',
-          'pulumi-docker>=3.6.1,<5.0.0',
+          'pulumi-aws>=6.0.2,<7.0.0',
+          'pulumi-docker>=3.6.1,<4.0.0',
           'semver>=2.8.1'
       ],
       zip_safe=False)

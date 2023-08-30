@@ -176,6 +176,7 @@ class VpcEndpointSpecArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -193,7 +194,7 @@ class VpcEndpointSpecArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -276,6 +277,7 @@ class VpcEndpointSpecArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -297,7 +299,7 @@ class VpcEndpointSpecArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -386,6 +388,7 @@ class VpcEndpointSpecArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -409,7 +412,7 @@ class VpcEndpointSpecArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -513,6 +516,7 @@ class VpcEndpointSpecArgs:
         ```
         ```csharp
         using System.Collections.Generic;
+        using System.Linq;
         using Pulumi;
         using Aws = Pulumi.Aws;
 
@@ -550,8 +554,8 @@ class VpcEndpointSpecArgs:
         package main
 
         import (
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-        	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
         	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
         )
 
@@ -595,6 +599,7 @@ class VpcEndpointSpecArgs:
         import com.pulumi.Pulumi;
         import com.pulumi.core.Output;
         import com.pulumi.aws.AwsFunctions;
+        import com.pulumi.aws.inputs.GetCallerIdentityArgs;
         import com.pulumi.aws.ec2.VpcEndpointService;
         import com.pulumi.aws.ec2.VpcEndpointServiceArgs;
         import com.pulumi.aws.ec2.VpcEndpoint;
@@ -659,13 +664,11 @@ class VpcEndpointSpecArgs:
 
         ## Import
 
-        VPC Endpoints can be imported using the `vpc endpoint id`, e.g.,
+        terraform import {
 
-        ```sh
-         $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
-        ```
+         to = aws_vpc_endpoint.endpoint1
 
-         
+         id = "vpce-3ecf2a57" } Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For exampleconsole % pulumi import aws_vpc_endpoint.endpoint1 vpce-3ecf2a57 
         :param str service_name: The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
         :param bool auto_accept: Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
         :param pulumi.Input['pulumi_aws.ec2.VpcEndpointDnsOptionsArgs'] dns_options: The DNS options for the endpoint. See dns_options below.

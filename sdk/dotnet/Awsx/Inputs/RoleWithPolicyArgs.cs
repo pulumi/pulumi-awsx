@@ -54,7 +54,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public Input<int>? MaxSessionDuration { get; set; }
 
         /// <summary>
-        /// Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+        /// Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }
@@ -99,18 +99,6 @@ namespace Pulumi.Awsx.Awsx.Inputs
         {
             get => _tags ?? (_tags = new InputMap<string>());
             set => _tags = value;
-        }
-
-        [Input("tagsAll")]
-        private InputMap<string>? _tagsAll;
-
-        /// <summary>
-        /// A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-        /// </summary>
-        public InputMap<string> TagsAll
-        {
-            get => _tagsAll ?? (_tagsAll = new InputMap<string>());
-            set => _tagsAll = value;
         }
 
         public RoleWithPolicyArgs()

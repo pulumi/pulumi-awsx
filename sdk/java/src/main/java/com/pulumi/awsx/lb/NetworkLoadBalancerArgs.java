@@ -175,14 +175,14 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
-     * Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+     * Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
      * 
      */
     @Import(name="enableXffClientPort")
     private @Nullable Output<Boolean> enableXffClientPort;
 
     /**
-     * @return Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+     * @return Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> enableXffClientPort() {
@@ -205,14 +205,14 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
-     * If true, the LB will be internal.
+     * If true, the LB will be internal. Defaults to `false`.
      * 
      */
     @Import(name="internal")
     private @Nullable Output<Boolean> internal;
 
     /**
-     * @return If true, the LB will be internal.
+     * @return If true, the LB will be internal. Defaults to `false`.
      * 
      */
     public Optional<Output<Boolean>> internal() {
@@ -640,7 +640,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableXffClientPort Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+         * @param enableXffClientPort Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -651,7 +651,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param enableXffClientPort Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+         * @param enableXffClientPort Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -682,7 +682,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param internal If true, the LB will be internal.
+         * @param internal If true, the LB will be internal. Defaults to `false`.
          * 
          * @return builder
          * 
@@ -693,7 +693,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         }
 
         /**
-         * @param internal If true, the LB will be internal.
+         * @param internal If true, the LB will be internal. Defaults to `false`.
          * 
          * @return builder
          * 

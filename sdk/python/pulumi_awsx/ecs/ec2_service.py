@@ -61,6 +61,8 @@ class EC2ServiceArgs:
         :param pulumi.Input[str] iam_role: ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceLoadBalancerArgs']]] load_balancers: Configuration block for load balancers. See below.
         :param pulumi.Input[str] name: Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+               
+               The following arguments are optional:
         :param pulumi.Input['pulumi_aws.ecs.ServiceNetworkConfigurationArgs'] network_configuration: Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServiceOrderedPlacementStrategyArgs']]] ordered_placement_strategies: Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.ServicePlacementConstraintArgs']]] placement_constraints: Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
@@ -302,6 +304,8 @@ class EC2ServiceArgs:
     def name(self) -> Optional[pulumi.Input[str]]:
         """
         Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+
+        The following arguments are optional:
         """
         return pulumi.get(self, "name")
 
@@ -508,6 +512,8 @@ class EC2Service(pulumi.ComponentResource):
         :param pulumi.Input[str] iam_role: ARN of the IAM role that allows Amazon ECS to make calls to your load balancer on your behalf. This parameter is required if you are using a load balancer with your service, but only if your task definition does not use the `awsvpc` network mode. If using `awsvpc` network mode, do not specify this role. If your account has already created the Amazon ECS service-linked role, that role is used by default for your service unless you specify a role here.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceLoadBalancerArgs']]]] load_balancers: Configuration block for load balancers. See below.
         :param pulumi.Input[str] name: Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+               
+               The following arguments are optional:
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceNetworkConfigurationArgs']] network_configuration: Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceOrderedPlacementStrategyArgs']]]] ordered_placement_strategies: Service level strategy rules that are taken into consideration during task placement. List from top to bottom in order of precedence. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. The maximum number of `ordered_placement_strategy` blocks is `5`. See below.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServicePlacementConstraintArgs']]]] placement_constraints: Rules that are taken into consideration during task placement. Updates to this configuration will take effect next task deployment unless `force_new_deployment` is enabled. Maximum number of `placement_constraints` is `10`. See below.
