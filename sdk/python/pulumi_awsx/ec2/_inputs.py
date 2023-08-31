@@ -664,11 +664,12 @@ class VpcEndpointSpecArgs:
 
         ## Import
 
-        terraform import {
+        Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 
-         to = aws_vpc_endpoint.endpoint1
-
-         id = "vpce-3ecf2a57" } Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For exampleconsole % pulumi import aws_vpc_endpoint.endpoint1 vpce-3ecf2a57 
+        ```sh
+         $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
+        ```
+         
         :param str service_name: The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
         :param bool auto_accept: Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
         :param pulumi.Input['pulumi_aws.ec2.VpcEndpointDnsOptionsArgs'] dns_options: The DNS options for the endpoint. See dns_options below.

@@ -440,11 +440,13 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //
 // ## Import
 //
-// terraform import {
+// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 //
-//	to = aws_vpc_endpoint.endpoint1
+// ```sh
 //
-//	id = "vpce-3ecf2a57" } Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For exampleconsole % pulumi import aws_vpc_endpoint.endpoint1 vpce-3ecf2a57
+//	$ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
+//
+// ```
 type VpcEndpointSpec struct {
 	// Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
 	AutoAccept *bool `pulumi:"autoAccept"`
@@ -625,11 +627,13 @@ type VpcEndpointSpecInput interface {
 //
 // ## Import
 //
-// terraform import {
+// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 //
-//	to = aws_vpc_endpoint.endpoint1
+// ```sh
 //
-//	id = "vpce-3ecf2a57" } Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For exampleconsole % pulumi import aws_vpc_endpoint.endpoint1 vpce-3ecf2a57
+//	$ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
+//
+// ```
 type VpcEndpointSpecArgs struct {
 	// Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
 	AutoAccept *bool `pulumi:"autoAccept"`
@@ -836,11 +840,13 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //
 // ## Import
 //
-// terraform import {
+// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 //
-//	to = aws_vpc_endpoint.endpoint1
+// ```sh
 //
-//	id = "vpce-3ecf2a57" } Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For exampleconsole % pulumi import aws_vpc_endpoint.endpoint1 vpce-3ecf2a57
+//	$ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
+//
+// ```
 type VpcEndpointSpecOutput struct{ *pulumi.OutputState }
 
 func (VpcEndpointSpecOutput) ElementType() reflect.Type {
