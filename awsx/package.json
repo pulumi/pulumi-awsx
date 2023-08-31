@@ -23,7 +23,7 @@
   "dependencies": {
     "@pulumi/aws": "6.0.2",
     "@pulumi/docker": "3.6.1",
-    "@pulumi/pulumi": "^3.74.0",
+    "@pulumi/pulumi": "^3.79.0",
     "@types/aws-lambda": "^8.10.23",
     "ip-address": "^8.1.0",
     "mime": "^3.0.0",
