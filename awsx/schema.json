@@ -18,7 +18,7 @@
             "liftSingleValueMethodReturns": true,
             "packageReferences": {
                 "Pulumi": "3.*",
-                "Pulumi.Aws": "6.0.3",
+                "Pulumi.Aws": "6.*",
                 "Pulumi.Docker": "3.*"
             }
         },
