@@ -54,7 +54,7 @@
             "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
             "requires": {
                 "pulumi": "\u003e=3.76.1,\u003c4.0.0",
-                "pulumi-aws": "=6.0.3",
+                "pulumi-aws": "\u003e=6.0.3,\u003c7.0.0",
                 "pulumi-docker": "\u003e=3.6.1,\u003c4.0.0"
             },
             "usesIOClasses": true
