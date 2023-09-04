@@ -74,11 +74,13 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
-					"@pulumi/pulumi":    "^3.0.0",
-					"@pulumi/aws":       "^" + dependencies.Aws,
-					"@pulumi/docker":    "^" + dependencies.Docker,
-					"@types/aws-lambda": "^8.10.23",
-					"mime":              "^2.0.0",
+					"@aws-sdk/client-ecs": "^3.405.0",
+					"@pulumi/pulumi":      "^3.0.0",
+					"@pulumi/aws":         "^" + dependencies.Aws,
+					"@pulumi/docker":      "^" + dependencies.Docker,
+					"@types/aws-lambda":   "^8.10.23",
+					"aws-sdk":             "^2.1450.0",
+					"mime":                "^2.0.0",
 				},
 				"devDependencies": map[string]string{
 					"@types/node": "^18",
