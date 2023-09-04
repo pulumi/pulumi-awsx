@@ -4,15 +4,7 @@ import * as classic from "@pulumi/awsx/classic";
 
 const vpc = classic.ec2.Vpc.getDefault();
 
-const cluster = new classic.ecs.Cluster("cluster", {
-    capacityProviders: ["FARGATE_SPOT"],
-    defaultCapacityProviderStrategies: [
-        {
-            capacityProvider: "FARGATE_SPOT",
-            weight: 1,
-        },
-    ],
-});
+const cluster = new classic.ecs.Cluster("cluster");
 
 // Create a load balancer on port 80 and spin up two instances of Nginx.
 const lb = new classic.lb.ApplicationListener("nginx-lb", { port: 80 });
