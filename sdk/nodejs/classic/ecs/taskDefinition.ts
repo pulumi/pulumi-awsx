@@ -15,6 +15,7 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import type * as awssdk from "aws-sdk";
+import * as ecssdk from "@aws-sdk/client-ecs";
 import * as ec2 from "../ec2";
 import * as lb from "../lb";
 import * as role from "../role";
@@ -48,7 +49,7 @@ export abstract class TaskDefinition extends pulumi.ComponentResource {
      */
     public readonly run: (
         params: RunTaskRequest,
-    ) => Promise<awssdk.ECS.Types.RunTaskResponse>;
+    ) => Promise<ecssdk.RunTaskCommandOutput>;
 
     constructor(type: string, name: string,
                 isFargate: boolean, args: TaskDefinitionArgs,
@@ -224,7 +225,7 @@ const _: string = utils.checkCompat<RunTaskRequestOverrideShape, RunTaskRequest>
 function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>) {
     return async function run(params: RunTaskRequest) {
 
-        const ecs = new aws.sdk.ECS();
+        const ecs = new ecssdk.ECS();
 
         const cluster = params.cluster;
         const clusterArn = cluster.id.get();
@@ -248,7 +249,7 @@ function createRunFunction(isFargate: boolean, taskDefArn: pulumi.Output<string>
             },
             ...params,
             cluster: clusterArn, // Make sure to override the value of `params.cluster`
-        }).promise();
+        });
     };
 }
 
