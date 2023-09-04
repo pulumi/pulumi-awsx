@@ -17,6 +17,7 @@ package gen
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -138,16 +139,16 @@ func getPackageSpec(name, version string) schema.PackageSpec {
 func getSpecFromUrl(url string) schema.PackageSpec {
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not GET %s: %v", url, err)
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not read %s: %v", url, err)
 	}
 	var spec schema.PackageSpec
 	err = json.Unmarshal(body, &spec)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not parse %s: %v", url, err)
 	}
 
 	return spec
