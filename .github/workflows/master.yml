@@ -31,13 +31,13 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-        with:
-          fetch-tags: true
       - name: Checkout Scripts Repo
         uses: actions/checkout@v4
         with:
           path: ci-scripts
           repository: pulumi/scripts
+      - name: Unshallow clone for tags
+        run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
