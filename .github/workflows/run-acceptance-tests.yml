@@ -84,6 +84,8 @@ jobs:
           path: dist
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
+      - name: Test tags
+        run: pulumictl get version --language generic
   build-provider:
     runs-on: ubuntu-latest
     steps:
