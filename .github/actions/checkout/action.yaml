@@ -2,6 +2,8 @@ name: Check out the repositories
 description: Checks out the pulumi-awsx and optionally the pulumi/scripts repos
 
 inputs:
+  scripts:
+    description: Set to "false" to skip cloning the pulumi/scripts repo as well
   shallow:
     description: Set to "true" for a shallow clone without tags
 
@@ -10,11 +12,12 @@ runs:
   steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
-    - name: Checkout Scripts Repo
+    - if: scripts != 'false'
+      name: Checkout Scripts Repo
       uses: actions/checkout@v4
       with:
         path: ci-scripts
         repository: pulumi/scripts
-    - if: shallow != 'true'
+    - if: shallow != 'false'
       name: Unshallow clone for tags
       run: git fetch --prune --unshallow --tags
