@@ -72,7 +72,7 @@ jobs:
           tar -zcf ${{ matrix.language }}/${{ matrix.language }}.tar.gz -C ${{ matrix.language }}/awsx
           .
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.language  }}-sdk.tar.gz
           path: ${{ github.workspace}}/${{ matrix.language }}/${{ matrix.language }}.tar.gz
