@@ -18,19 +18,19 @@ package examples
 
 import (
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
-	// "path/filepath"
+	"path/filepath"
 	"testing"
 )
 
-// func TestAccTrail(t *testing.T) {
-// 	test := getGoBaseOptions(t).
-// 		With(integration.ProgramTestOptions{
-// 			RunUpdateTest: false,
-// 			Dir:           filepath.Join(getCwd(t), "cloudtrail", "go"),
-// 		})
+func TestAccTrail(t *testing.T) {
+	test := getGoBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "cloudtrail", "go"),
+		})
 
-// 	integration.ProgramTest(t, &test)
-// }
+	integration.ProgramTest(t, &test)
+}
 
 func getGoBaseOptions(t *testing.T) integration.ProgramTestOptions {
 	region := getEnvRegion(t)
