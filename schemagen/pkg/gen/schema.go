@@ -64,7 +64,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"go": rawMessage(map[string]interface{}{
 				"generateResourceContainerTypes": true,
-				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
+				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx",
 				"liftSingleValueMethodReturns":   true,
 				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v3/go/docker"},
 			}),

@@ -1,4 +1,4 @@
-module github.com/pulumi/pulumi-awsx/sdk
+module github.com/pulumi/pulumi-awsx/sdk/v2
 
 go 1.19
 
@@ -71,5 +71,3 @@ require (
 	lukechampine.com/frand v1.4.2 // indirect
 	sourcegraph.com/sourcegraph/appdash v0.0.0-20211028080628-e2786a622600 // indirect
 )
-
-retract v1.0.0-testplsignore.0 // Published accidentally.
