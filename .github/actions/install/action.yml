@@ -1,0 +1,54 @@
+name: Install Languages & Frameworks
+description: Installs Go, Pulumi, Node.JS Python and optionally dotnet and Java (if not in quick mode)
+
+inputs:
+  skip_dotnet_and_java:
+    description: Set to "true" to skip dotnet and java
+    # These take 13 and 25 seconds, respectively
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: "1.20.x"
+
+    - name: Install Pulumi CLI
+      uses: pulumi/actions@v4
+
+    - name: Setup Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        registry-url: https://registry.npmjs.org
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.7"
+
+    - name: Setup DotNet
+      if: inputs.skip_dotnet_and_java != 'true'
+      uses: actions/setup-dotnet@v3
+      # Codegen emits 3.1 projects but we want to start using 6.0 
+      # Once codegen is updated, 3.1 can be removed.
+      with:
+        dotnet-version: |
+          3.1.301
+          6.0.x
+
+    - name: Setup Java
+      if: inputs.skip_dotnet_and_java != 'true'
+      uses: actions/setup-java@v3
+      with:
+        java-version: "11"
+        distribution: temurin
+        cache: gradle
+
+    - name: Setup Gradle
+      if: inputs.skip_dotnet_and_java != 'true'
+      uses: gradle/gradle-build-action@v2
+      with:
+        # Pin to known good version until #2262 is resolved
+        gradle-version: "7.6"

@@ -58,9 +58,9 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
           registry-url: https://registry.npmjs.org
       - name: Install Yarn
         run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
@@ -101,7 +101,7 @@ jobs:
         with:
           go-version: ${{ env.GOVERSION }}
       - name: Setup Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{env.NODEVERSION}}
           registry-url: https://registry.npmjs.org
@@ -158,36 +158,38 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: pulumi/pulumictl
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v2
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ env.GOVERSION }}
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{env.NODEVERSION}}
-          registry-url: https://registry.npmjs.org
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{env.PYTHONVERSION}}
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{env.DOTNETVERSION}}
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          cache: gradle
-          distribution: temurin
-          java-version: ${{env.JAVAVERSION}}
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          # Pin to known good version until #2262 is resolved
-          gradle-version: "7.6"
+      - name: Install Languages & Frameworks
+        uses: ./.github/actions/install
+      # - name: Install Pulumi CLI
+      #   uses: pulumi/action-install-pulumi-cli@v2
+      # - name: Install Go
+      #   uses: actions/setup-go@v4
+      #   with:
+      #     go-version: ${{ env.GOVERSION }}
+      # - name: Setup Node
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: ${{env.NODEVERSION}}
+      #     registry-url: https://registry.npmjs.org
+      # - name: Setup Python
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: ${{env.PYTHONVERSION}}
+      # - name: Setup DotNet
+      #   uses: actions/setup-dotnet@v1
+      #   with:
+      #     dotnet-version: ${{env.DOTNETVERSION}}
+      # - name: Setup Java
+      #   uses: actions/setup-java@v3
+      #   with:
+      #     cache: gradle
+      #     distribution: temurin
+      #     java-version: ${{env.JAVAVERSION}}
+      # - name: Setup Gradle
+      #   uses: gradle/gradle-build-action@v2
+      #   with:
+      #     # Pin to known good version until #2262 is resolved
+      #     gradle-version: "7.6"
       - name: Install Python deps
         run: |-
           pip3 install virtualenv==20.0.23
