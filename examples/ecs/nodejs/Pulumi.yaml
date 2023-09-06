@@ -1,0 +1,3 @@
+name: ecs-node
+runtime: nodejs
+description: An ECS cluster with a Fargate service
