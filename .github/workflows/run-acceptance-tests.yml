@@ -45,14 +45,14 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
       - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ci-scripts
           repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
@@ -88,14 +88,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
       - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ci-scripts
           repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install Go
         uses: actions/setup-go@v2
         with:
@@ -146,14 +146,14 @@ jobs:
     if: github.event_name == 'repository_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          fetch-tags: true
       - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ci-scripts
           repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.1.0
         with:
@@ -246,3 +246,4 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch: {}
