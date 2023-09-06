@@ -108,7 +108,7 @@ jobs:
           always-auth: true
           registry-url: https://registry.npmjs.org
       - name: Download NodeJS SDK
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: nodejs-sdk.tar.gz
           path: ${{ github.workspace}}/nodejs
@@ -162,7 +162,7 @@ jobs:
           node-version: ${{env.NODEVERSION}}
           registry-url: https://registry.npmjs.org
       - name: Download SDK
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ matrix.language }}-sdk.tar.gz
           path: ${{ github.workspace}}/${{ matrix.language }}/
