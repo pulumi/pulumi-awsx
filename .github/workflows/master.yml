@@ -91,7 +91,7 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
+        uses: pulumi/action-install-pulumi-cli@v2
       - name: Build provider
         run: make test_provider provider
       - name: Check worktree clean
@@ -133,7 +133,7 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
+        uses: pulumi/action-install-pulumi-cli@v2
       - name: Install Go
         uses: actions/setup-go@v4
         with:
@@ -240,7 +240,7 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
+        uses: pulumi/action-install-pulumi-cli@v2
       - name: Download provider binary
         uses: actions/download-artifact@v2
         with:
@@ -275,7 +275,7 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
+        uses: pulumi/action-install-pulumi-cli@v2
       - name: Install Go
         uses: actions/setup-go@v4
         with:
