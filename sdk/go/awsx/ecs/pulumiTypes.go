@@ -10,8 +10,12 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ecs"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/awsx"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
+
+var _ = internal.GetEnvOrDefault
 
 // Create a TaskDefinition resource with the given unique name, arguments, and options.
 // Creates required log-group and task & execution roles.
@@ -142,6 +146,12 @@ func (i EC2ServiceTaskDefinitionArgs) ToEC2ServiceTaskDefinitionOutputWithContex
 	return pulumi.ToOutputWithContext(ctx, i).(EC2ServiceTaskDefinitionOutput)
 }
 
+func (i EC2ServiceTaskDefinitionArgs) ToOutput(ctx context.Context) pulumix.Output[EC2ServiceTaskDefinition] {
+	return pulumix.Output[EC2ServiceTaskDefinition]{
+		OutputState: i.ToEC2ServiceTaskDefinitionOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i EC2ServiceTaskDefinitionArgs) ToEC2ServiceTaskDefinitionPtrOutput() EC2ServiceTaskDefinitionPtrOutput {
 	return i.ToEC2ServiceTaskDefinitionPtrOutputWithContext(context.Background())
 }
@@ -183,6 +193,12 @@ func (i *ec2serviceTaskDefinitionPtrType) ToEC2ServiceTaskDefinitionPtrOutputWit
 	return pulumi.ToOutputWithContext(ctx, i).(EC2ServiceTaskDefinitionPtrOutput)
 }
 
+func (i *ec2serviceTaskDefinitionPtrType) ToOutput(ctx context.Context) pulumix.Output[*EC2ServiceTaskDefinition] {
+	return pulumix.Output[*EC2ServiceTaskDefinition]{
+		OutputState: i.ToEC2ServiceTaskDefinitionPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Create a TaskDefinition resource with the given unique name, arguments, and options.
 // Creates required log-group and task & execution roles.
 // Presents required Service load balancers if target group included in port mappings.
@@ -208,6 +224,12 @@ func (o EC2ServiceTaskDefinitionOutput) ToEC2ServiceTaskDefinitionPtrOutputWithC
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v EC2ServiceTaskDefinition) *EC2ServiceTaskDefinition {
 		return &v
 	}).(EC2ServiceTaskDefinitionPtrOutput)
+}
+
+func (o EC2ServiceTaskDefinitionOutput) ToOutput(ctx context.Context) pulumix.Output[EC2ServiceTaskDefinition] {
+	return pulumix.Output[EC2ServiceTaskDefinition]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -330,6 +352,12 @@ func (o EC2ServiceTaskDefinitionPtrOutput) ToEC2ServiceTaskDefinitionPtrOutput()
 
 func (o EC2ServiceTaskDefinitionPtrOutput) ToEC2ServiceTaskDefinitionPtrOutputWithContext(ctx context.Context) EC2ServiceTaskDefinitionPtrOutput {
 	return o
+}
+
+func (o EC2ServiceTaskDefinitionPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*EC2ServiceTaskDefinition] {
+	return pulumix.Output[*EC2ServiceTaskDefinition]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o EC2ServiceTaskDefinitionPtrOutput) Elem() EC2ServiceTaskDefinitionOutput {
@@ -666,6 +694,12 @@ func (i FargateServiceTaskDefinitionArgs) ToFargateServiceTaskDefinitionOutputWi
 	return pulumi.ToOutputWithContext(ctx, i).(FargateServiceTaskDefinitionOutput)
 }
 
+func (i FargateServiceTaskDefinitionArgs) ToOutput(ctx context.Context) pulumix.Output[FargateServiceTaskDefinition] {
+	return pulumix.Output[FargateServiceTaskDefinition]{
+		OutputState: i.ToFargateServiceTaskDefinitionOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i FargateServiceTaskDefinitionArgs) ToFargateServiceTaskDefinitionPtrOutput() FargateServiceTaskDefinitionPtrOutput {
 	return i.ToFargateServiceTaskDefinitionPtrOutputWithContext(context.Background())
 }
@@ -707,6 +741,12 @@ func (i *fargateServiceTaskDefinitionPtrType) ToFargateServiceTaskDefinitionPtrO
 	return pulumi.ToOutputWithContext(ctx, i).(FargateServiceTaskDefinitionPtrOutput)
 }
 
+func (i *fargateServiceTaskDefinitionPtrType) ToOutput(ctx context.Context) pulumix.Output[*FargateServiceTaskDefinition] {
+	return pulumix.Output[*FargateServiceTaskDefinition]{
+		OutputState: i.ToFargateServiceTaskDefinitionPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Create a TaskDefinition resource with the given unique name, arguments, and options.
 // Creates required log-group and task & execution roles.
 // Presents required Service load balancers if target group included in port mappings.
@@ -732,6 +772,12 @@ func (o FargateServiceTaskDefinitionOutput) ToFargateServiceTaskDefinitionPtrOut
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v FargateServiceTaskDefinition) *FargateServiceTaskDefinition {
 		return &v
 	}).(FargateServiceTaskDefinitionPtrOutput)
+}
+
+func (o FargateServiceTaskDefinitionOutput) ToOutput(ctx context.Context) pulumix.Output[FargateServiceTaskDefinition] {
+	return pulumix.Output[FargateServiceTaskDefinition]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Single container to make a TaskDefinition from.  Useful for simple cases where there aren't
@@ -851,6 +897,12 @@ func (o FargateServiceTaskDefinitionPtrOutput) ToFargateServiceTaskDefinitionPtr
 
 func (o FargateServiceTaskDefinitionPtrOutput) ToFargateServiceTaskDefinitionPtrOutputWithContext(ctx context.Context) FargateServiceTaskDefinitionPtrOutput {
 	return o
+}
+
+func (o FargateServiceTaskDefinitionPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*FargateServiceTaskDefinition] {
+	return pulumix.Output[*FargateServiceTaskDefinition]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o FargateServiceTaskDefinitionPtrOutput) Elem() FargateServiceTaskDefinitionOutput {
@@ -1173,6 +1225,12 @@ func (i TaskDefinitionContainerDefinitionArgs) ToTaskDefinitionContainerDefiniti
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionContainerDefinitionOutput)
 }
 
+func (i TaskDefinitionContainerDefinitionArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionContainerDefinition] {
+	return pulumix.Output[TaskDefinitionContainerDefinition]{
+		OutputState: i.ToTaskDefinitionContainerDefinitionOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i TaskDefinitionContainerDefinitionArgs) ToTaskDefinitionContainerDefinitionPtrOutput() TaskDefinitionContainerDefinitionPtrOutput {
 	return i.ToTaskDefinitionContainerDefinitionPtrOutputWithContext(context.Background())
 }
@@ -1214,6 +1272,12 @@ func (i *taskDefinitionContainerDefinitionPtrType) ToTaskDefinitionContainerDefi
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionContainerDefinitionPtrOutput)
 }
 
+func (i *taskDefinitionContainerDefinitionPtrType) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionContainerDefinition] {
+	return pulumix.Output[*TaskDefinitionContainerDefinition]{
+		OutputState: i.ToTaskDefinitionContainerDefinitionPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionContainerDefinitionMapInput is an input type that accepts TaskDefinitionContainerDefinitionMap and TaskDefinitionContainerDefinitionMapOutput values.
 // You can construct a concrete instance of `TaskDefinitionContainerDefinitionMapInput` via:
 //
@@ -1239,6 +1303,12 @@ func (i TaskDefinitionContainerDefinitionMap) ToTaskDefinitionContainerDefinitio
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionContainerDefinitionMapOutput)
 }
 
+func (i TaskDefinitionContainerDefinitionMap) ToOutput(ctx context.Context) pulumix.Output[map[string]TaskDefinitionContainerDefinition] {
+	return pulumix.Output[map[string]TaskDefinitionContainerDefinition]{
+		OutputState: i.ToTaskDefinitionContainerDefinitionMapOutputWithContext(ctx).OutputState,
+	}
+}
+
 // List of container definitions that are passed to the Docker daemon on a container instance
 type TaskDefinitionContainerDefinitionOutput struct{ *pulumi.OutputState }
 
@@ -1262,6 +1332,12 @@ func (o TaskDefinitionContainerDefinitionOutput) ToTaskDefinitionContainerDefini
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v TaskDefinitionContainerDefinition) *TaskDefinitionContainerDefinition {
 		return &v
 	}).(TaskDefinitionContainerDefinitionPtrOutput)
+}
+
+func (o TaskDefinitionContainerDefinitionOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionContainerDefinition] {
+	return pulumix.Output[TaskDefinitionContainerDefinition]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionContainerDefinitionOutput) Command() pulumi.StringArrayOutput {
@@ -1444,6 +1520,12 @@ func (o TaskDefinitionContainerDefinitionPtrOutput) ToTaskDefinitionContainerDef
 
 func (o TaskDefinitionContainerDefinitionPtrOutput) ToTaskDefinitionContainerDefinitionPtrOutputWithContext(ctx context.Context) TaskDefinitionContainerDefinitionPtrOutput {
 	return o
+}
+
+func (o TaskDefinitionContainerDefinitionPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionContainerDefinition] {
+	return pulumix.Output[*TaskDefinitionContainerDefinition]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionContainerDefinitionPtrOutput) Elem() TaskDefinitionContainerDefinitionOutput {
@@ -1827,6 +1909,12 @@ func (o TaskDefinitionContainerDefinitionMapOutput) ToTaskDefinitionContainerDef
 	return o
 }
 
+func (o TaskDefinitionContainerDefinitionMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]TaskDefinitionContainerDefinition] {
+	return pulumix.Output[map[string]TaskDefinitionContainerDefinition]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o TaskDefinitionContainerDefinitionMapOutput) MapIndex(k pulumi.StringInput) TaskDefinitionContainerDefinitionOutput {
 	return pulumi.All(o, k).ApplyT(func(vs []interface{}) TaskDefinitionContainerDefinition {
 		return vs[0].(map[string]TaskDefinitionContainerDefinition)[vs[1].(string)]
@@ -1866,6 +1954,12 @@ func (i TaskDefinitionContainerDependencyArgs) ToTaskDefinitionContainerDependen
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionContainerDependencyOutput)
 }
 
+func (i TaskDefinitionContainerDependencyArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionContainerDependency] {
+	return pulumix.Output[TaskDefinitionContainerDependency]{
+		OutputState: i.ToTaskDefinitionContainerDependencyOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionContainerDependencyArrayInput is an input type that accepts TaskDefinitionContainerDependencyArray and TaskDefinitionContainerDependencyArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionContainerDependencyArrayInput` via:
 //
@@ -1891,6 +1985,12 @@ func (i TaskDefinitionContainerDependencyArray) ToTaskDefinitionContainerDepende
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionContainerDependencyArrayOutput)
 }
 
+func (i TaskDefinitionContainerDependencyArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionContainerDependency] {
+	return pulumix.Output[[]TaskDefinitionContainerDependency]{
+		OutputState: i.ToTaskDefinitionContainerDependencyArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionContainerDependencyOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionContainerDependencyOutput) ElementType() reflect.Type {
@@ -1903,6 +2003,12 @@ func (o TaskDefinitionContainerDependencyOutput) ToTaskDefinitionContainerDepend
 
 func (o TaskDefinitionContainerDependencyOutput) ToTaskDefinitionContainerDependencyOutputWithContext(ctx context.Context) TaskDefinitionContainerDependencyOutput {
 	return o
+}
+
+func (o TaskDefinitionContainerDependencyOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionContainerDependency] {
+	return pulumix.Output[TaskDefinitionContainerDependency]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionContainerDependencyOutput) Condition() pulumi.StringPtrOutput {
@@ -1925,6 +2031,12 @@ func (o TaskDefinitionContainerDependencyArrayOutput) ToTaskDefinitionContainerD
 
 func (o TaskDefinitionContainerDependencyArrayOutput) ToTaskDefinitionContainerDependencyArrayOutputWithContext(ctx context.Context) TaskDefinitionContainerDependencyArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionContainerDependencyArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionContainerDependency] {
+	return pulumix.Output[[]TaskDefinitionContainerDependency]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionContainerDependencyArrayOutput) Index(i pulumi.IntInput) TaskDefinitionContainerDependencyOutput {
@@ -1968,6 +2080,12 @@ func (i TaskDefinitionDeviceArgs) ToTaskDefinitionDeviceOutputWithContext(ctx co
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionDeviceOutput)
 }
 
+func (i TaskDefinitionDeviceArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionDevice] {
+	return pulumix.Output[TaskDefinitionDevice]{
+		OutputState: i.ToTaskDefinitionDeviceOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionDeviceArrayInput is an input type that accepts TaskDefinitionDeviceArray and TaskDefinitionDeviceArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionDeviceArrayInput` via:
 //
@@ -1993,6 +2111,12 @@ func (i TaskDefinitionDeviceArray) ToTaskDefinitionDeviceArrayOutputWithContext(
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionDeviceArrayOutput)
 }
 
+func (i TaskDefinitionDeviceArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionDevice] {
+	return pulumix.Output[[]TaskDefinitionDevice]{
+		OutputState: i.ToTaskDefinitionDeviceArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionDeviceOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionDeviceOutput) ElementType() reflect.Type {
@@ -2005,6 +2129,12 @@ func (o TaskDefinitionDeviceOutput) ToTaskDefinitionDeviceOutput() TaskDefinitio
 
 func (o TaskDefinitionDeviceOutput) ToTaskDefinitionDeviceOutputWithContext(ctx context.Context) TaskDefinitionDeviceOutput {
 	return o
+}
+
+func (o TaskDefinitionDeviceOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionDevice] {
+	return pulumix.Output[TaskDefinitionDevice]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionDeviceOutput) ContainerPath() pulumi.StringPtrOutput {
@@ -2031,6 +2161,12 @@ func (o TaskDefinitionDeviceArrayOutput) ToTaskDefinitionDeviceArrayOutput() Tas
 
 func (o TaskDefinitionDeviceArrayOutput) ToTaskDefinitionDeviceArrayOutputWithContext(ctx context.Context) TaskDefinitionDeviceArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionDeviceArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionDevice] {
+	return pulumix.Output[[]TaskDefinitionDevice]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionDeviceArrayOutput) Index(i pulumi.IntInput) TaskDefinitionDeviceOutput {
@@ -2072,6 +2208,12 @@ func (i TaskDefinitionEnvironmentFileArgs) ToTaskDefinitionEnvironmentFileOutput
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionEnvironmentFileOutput)
 }
 
+func (i TaskDefinitionEnvironmentFileArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionEnvironmentFile] {
+	return pulumix.Output[TaskDefinitionEnvironmentFile]{
+		OutputState: i.ToTaskDefinitionEnvironmentFileOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionEnvironmentFileArrayInput is an input type that accepts TaskDefinitionEnvironmentFileArray and TaskDefinitionEnvironmentFileArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionEnvironmentFileArrayInput` via:
 //
@@ -2097,6 +2239,12 @@ func (i TaskDefinitionEnvironmentFileArray) ToTaskDefinitionEnvironmentFileArray
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionEnvironmentFileArrayOutput)
 }
 
+func (i TaskDefinitionEnvironmentFileArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionEnvironmentFile] {
+	return pulumix.Output[[]TaskDefinitionEnvironmentFile]{
+		OutputState: i.ToTaskDefinitionEnvironmentFileArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionEnvironmentFileOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionEnvironmentFileOutput) ElementType() reflect.Type {
@@ -2109,6 +2257,12 @@ func (o TaskDefinitionEnvironmentFileOutput) ToTaskDefinitionEnvironmentFileOutp
 
 func (o TaskDefinitionEnvironmentFileOutput) ToTaskDefinitionEnvironmentFileOutputWithContext(ctx context.Context) TaskDefinitionEnvironmentFileOutput {
 	return o
+}
+
+func (o TaskDefinitionEnvironmentFileOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionEnvironmentFile] {
+	return pulumix.Output[TaskDefinitionEnvironmentFile]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionEnvironmentFileOutput) Type() pulumi.StringPtrOutput {
@@ -2131,6 +2285,12 @@ func (o TaskDefinitionEnvironmentFileArrayOutput) ToTaskDefinitionEnvironmentFil
 
 func (o TaskDefinitionEnvironmentFileArrayOutput) ToTaskDefinitionEnvironmentFileArrayOutputWithContext(ctx context.Context) TaskDefinitionEnvironmentFileArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionEnvironmentFileArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionEnvironmentFile] {
+	return pulumix.Output[[]TaskDefinitionEnvironmentFile]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionEnvironmentFileArrayOutput) Index(i pulumi.IntInput) TaskDefinitionEnvironmentFileOutput {
@@ -2170,6 +2330,12 @@ func (i TaskDefinitionFirelensConfigurationArgs) ToTaskDefinitionFirelensConfigu
 
 func (i TaskDefinitionFirelensConfigurationArgs) ToTaskDefinitionFirelensConfigurationOutputWithContext(ctx context.Context) TaskDefinitionFirelensConfigurationOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionFirelensConfigurationOutput)
+}
+
+func (i TaskDefinitionFirelensConfigurationArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionFirelensConfiguration] {
+	return pulumix.Output[TaskDefinitionFirelensConfiguration]{
+		OutputState: i.ToTaskDefinitionFirelensConfigurationOutputWithContext(ctx).OutputState,
+	}
 }
 
 func (i TaskDefinitionFirelensConfigurationArgs) ToTaskDefinitionFirelensConfigurationPtrOutput() TaskDefinitionFirelensConfigurationPtrOutput {
@@ -2213,6 +2379,12 @@ func (i *taskDefinitionFirelensConfigurationPtrType) ToTaskDefinitionFirelensCon
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionFirelensConfigurationPtrOutput)
 }
 
+func (i *taskDefinitionFirelensConfigurationPtrType) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionFirelensConfiguration] {
+	return pulumix.Output[*TaskDefinitionFirelensConfiguration]{
+		OutputState: i.ToTaskDefinitionFirelensConfigurationPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionFirelensConfigurationOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionFirelensConfigurationOutput) ElementType() reflect.Type {
@@ -2237,6 +2409,12 @@ func (o TaskDefinitionFirelensConfigurationOutput) ToTaskDefinitionFirelensConfi
 	}).(TaskDefinitionFirelensConfigurationPtrOutput)
 }
 
+func (o TaskDefinitionFirelensConfigurationOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionFirelensConfiguration] {
+	return pulumix.Output[TaskDefinitionFirelensConfiguration]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o TaskDefinitionFirelensConfigurationOutput) Options() pulumi.AnyOutput {
 	return o.ApplyT(func(v TaskDefinitionFirelensConfiguration) interface{} { return v.Options }).(pulumi.AnyOutput)
 }
@@ -2257,6 +2435,12 @@ func (o TaskDefinitionFirelensConfigurationPtrOutput) ToTaskDefinitionFirelensCo
 
 func (o TaskDefinitionFirelensConfigurationPtrOutput) ToTaskDefinitionFirelensConfigurationPtrOutputWithContext(ctx context.Context) TaskDefinitionFirelensConfigurationPtrOutput {
 	return o
+}
+
+func (o TaskDefinitionFirelensConfigurationPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionFirelensConfiguration] {
+	return pulumix.Output[*TaskDefinitionFirelensConfiguration]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionFirelensConfigurationPtrOutput) Elem() TaskDefinitionFirelensConfigurationOutput {
@@ -2338,6 +2522,12 @@ func (i TaskDefinitionHealthCheckArgs) ToTaskDefinitionHealthCheckOutputWithCont
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionHealthCheckOutput)
 }
 
+func (i TaskDefinitionHealthCheckArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionHealthCheck] {
+	return pulumix.Output[TaskDefinitionHealthCheck]{
+		OutputState: i.ToTaskDefinitionHealthCheckOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i TaskDefinitionHealthCheckArgs) ToTaskDefinitionHealthCheckPtrOutput() TaskDefinitionHealthCheckPtrOutput {
 	return i.ToTaskDefinitionHealthCheckPtrOutputWithContext(context.Background())
 }
@@ -2379,6 +2569,12 @@ func (i *taskDefinitionHealthCheckPtrType) ToTaskDefinitionHealthCheckPtrOutputW
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionHealthCheckPtrOutput)
 }
 
+func (i *taskDefinitionHealthCheckPtrType) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionHealthCheck] {
+	return pulumix.Output[*TaskDefinitionHealthCheck]{
+		OutputState: i.ToTaskDefinitionHealthCheckPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // The health check command and associated configuration parameters for the container.
 type TaskDefinitionHealthCheckOutput struct{ *pulumi.OutputState }
 
@@ -2402,6 +2598,12 @@ func (o TaskDefinitionHealthCheckOutput) ToTaskDefinitionHealthCheckPtrOutputWit
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v TaskDefinitionHealthCheck) *TaskDefinitionHealthCheck {
 		return &v
 	}).(TaskDefinitionHealthCheckPtrOutput)
+}
+
+func (o TaskDefinitionHealthCheckOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionHealthCheck] {
+	return pulumix.Output[TaskDefinitionHealthCheck]{
+		OutputState: o.OutputState,
+	}
 }
 
 // A string array representing the command that the container runs to determine if it is healthy.
@@ -2441,6 +2643,12 @@ func (o TaskDefinitionHealthCheckPtrOutput) ToTaskDefinitionHealthCheckPtrOutput
 
 func (o TaskDefinitionHealthCheckPtrOutput) ToTaskDefinitionHealthCheckPtrOutputWithContext(ctx context.Context) TaskDefinitionHealthCheckPtrOutput {
 	return o
+}
+
+func (o TaskDefinitionHealthCheckPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionHealthCheck] {
+	return pulumix.Output[*TaskDefinitionHealthCheck]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionHealthCheckPtrOutput) Elem() TaskDefinitionHealthCheckOutput {
@@ -2536,6 +2744,12 @@ func (i TaskDefinitionHostEntryArgs) ToTaskDefinitionHostEntryOutputWithContext(
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionHostEntryOutput)
 }
 
+func (i TaskDefinitionHostEntryArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionHostEntry] {
+	return pulumix.Output[TaskDefinitionHostEntry]{
+		OutputState: i.ToTaskDefinitionHostEntryOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionHostEntryArrayInput is an input type that accepts TaskDefinitionHostEntryArray and TaskDefinitionHostEntryArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionHostEntryArrayInput` via:
 //
@@ -2561,6 +2775,12 @@ func (i TaskDefinitionHostEntryArray) ToTaskDefinitionHostEntryArrayOutputWithCo
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionHostEntryArrayOutput)
 }
 
+func (i TaskDefinitionHostEntryArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionHostEntry] {
+	return pulumix.Output[[]TaskDefinitionHostEntry]{
+		OutputState: i.ToTaskDefinitionHostEntryArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionHostEntryOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionHostEntryOutput) ElementType() reflect.Type {
@@ -2573,6 +2793,12 @@ func (o TaskDefinitionHostEntryOutput) ToTaskDefinitionHostEntryOutput() TaskDef
 
 func (o TaskDefinitionHostEntryOutput) ToTaskDefinitionHostEntryOutputWithContext(ctx context.Context) TaskDefinitionHostEntryOutput {
 	return o
+}
+
+func (o TaskDefinitionHostEntryOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionHostEntry] {
+	return pulumix.Output[TaskDefinitionHostEntry]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionHostEntryOutput) Hostname() pulumi.StringPtrOutput {
@@ -2595,6 +2821,12 @@ func (o TaskDefinitionHostEntryArrayOutput) ToTaskDefinitionHostEntryArrayOutput
 
 func (o TaskDefinitionHostEntryArrayOutput) ToTaskDefinitionHostEntryArrayOutputWithContext(ctx context.Context) TaskDefinitionHostEntryArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionHostEntryArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionHostEntry] {
+	return pulumix.Output[[]TaskDefinitionHostEntry]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionHostEntryArrayOutput) Index(i pulumi.IntInput) TaskDefinitionHostEntryOutput {
@@ -2634,6 +2866,12 @@ func (i TaskDefinitionKernelCapabilitiesArgs) ToTaskDefinitionKernelCapabilities
 
 func (i TaskDefinitionKernelCapabilitiesArgs) ToTaskDefinitionKernelCapabilitiesOutputWithContext(ctx context.Context) TaskDefinitionKernelCapabilitiesOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionKernelCapabilitiesOutput)
+}
+
+func (i TaskDefinitionKernelCapabilitiesArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionKernelCapabilities] {
+	return pulumix.Output[TaskDefinitionKernelCapabilities]{
+		OutputState: i.ToTaskDefinitionKernelCapabilitiesOutputWithContext(ctx).OutputState,
+	}
 }
 
 func (i TaskDefinitionKernelCapabilitiesArgs) ToTaskDefinitionKernelCapabilitiesPtrOutput() TaskDefinitionKernelCapabilitiesPtrOutput {
@@ -2677,6 +2915,12 @@ func (i *taskDefinitionKernelCapabilitiesPtrType) ToTaskDefinitionKernelCapabili
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionKernelCapabilitiesPtrOutput)
 }
 
+func (i *taskDefinitionKernelCapabilitiesPtrType) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionKernelCapabilities] {
+	return pulumix.Output[*TaskDefinitionKernelCapabilities]{
+		OutputState: i.ToTaskDefinitionKernelCapabilitiesPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionKernelCapabilitiesOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionKernelCapabilitiesOutput) ElementType() reflect.Type {
@@ -2701,6 +2945,12 @@ func (o TaskDefinitionKernelCapabilitiesOutput) ToTaskDefinitionKernelCapabiliti
 	}).(TaskDefinitionKernelCapabilitiesPtrOutput)
 }
 
+func (o TaskDefinitionKernelCapabilitiesOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionKernelCapabilities] {
+	return pulumix.Output[TaskDefinitionKernelCapabilities]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o TaskDefinitionKernelCapabilitiesOutput) Add() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v TaskDefinitionKernelCapabilities) []string { return v.Add }).(pulumi.StringArrayOutput)
 }
@@ -2721,6 +2971,12 @@ func (o TaskDefinitionKernelCapabilitiesPtrOutput) ToTaskDefinitionKernelCapabil
 
 func (o TaskDefinitionKernelCapabilitiesPtrOutput) ToTaskDefinitionKernelCapabilitiesPtrOutputWithContext(ctx context.Context) TaskDefinitionKernelCapabilitiesPtrOutput {
 	return o
+}
+
+func (o TaskDefinitionKernelCapabilitiesPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionKernelCapabilities] {
+	return pulumix.Output[*TaskDefinitionKernelCapabilities]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionKernelCapabilitiesPtrOutput) Elem() TaskDefinitionKernelCapabilitiesOutput {
@@ -2784,6 +3040,12 @@ func (i TaskDefinitionKeyValuePairArgs) ToTaskDefinitionKeyValuePairOutputWithCo
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionKeyValuePairOutput)
 }
 
+func (i TaskDefinitionKeyValuePairArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionKeyValuePair] {
+	return pulumix.Output[TaskDefinitionKeyValuePair]{
+		OutputState: i.ToTaskDefinitionKeyValuePairOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionKeyValuePairArrayInput is an input type that accepts TaskDefinitionKeyValuePairArray and TaskDefinitionKeyValuePairArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionKeyValuePairArrayInput` via:
 //
@@ -2809,6 +3071,12 @@ func (i TaskDefinitionKeyValuePairArray) ToTaskDefinitionKeyValuePairArrayOutput
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionKeyValuePairArrayOutput)
 }
 
+func (i TaskDefinitionKeyValuePairArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionKeyValuePair] {
+	return pulumix.Output[[]TaskDefinitionKeyValuePair]{
+		OutputState: i.ToTaskDefinitionKeyValuePairArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionKeyValuePairOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionKeyValuePairOutput) ElementType() reflect.Type {
@@ -2821,6 +3089,12 @@ func (o TaskDefinitionKeyValuePairOutput) ToTaskDefinitionKeyValuePairOutput() T
 
 func (o TaskDefinitionKeyValuePairOutput) ToTaskDefinitionKeyValuePairOutputWithContext(ctx context.Context) TaskDefinitionKeyValuePairOutput {
 	return o
+}
+
+func (o TaskDefinitionKeyValuePairOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionKeyValuePair] {
+	return pulumix.Output[TaskDefinitionKeyValuePair]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionKeyValuePairOutput) Name() pulumi.StringPtrOutput {
@@ -2843,6 +3117,12 @@ func (o TaskDefinitionKeyValuePairArrayOutput) ToTaskDefinitionKeyValuePairArray
 
 func (o TaskDefinitionKeyValuePairArrayOutput) ToTaskDefinitionKeyValuePairArrayOutputWithContext(ctx context.Context) TaskDefinitionKeyValuePairArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionKeyValuePairArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionKeyValuePair] {
+	return pulumix.Output[[]TaskDefinitionKeyValuePair]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionKeyValuePairArrayOutput) Index(i pulumi.IntInput) TaskDefinitionKeyValuePairOutput {
@@ -2894,6 +3174,12 @@ func (i TaskDefinitionLinuxParametersArgs) ToTaskDefinitionLinuxParametersOutput
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionLinuxParametersOutput)
 }
 
+func (i TaskDefinitionLinuxParametersArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionLinuxParameters] {
+	return pulumix.Output[TaskDefinitionLinuxParameters]{
+		OutputState: i.ToTaskDefinitionLinuxParametersOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i TaskDefinitionLinuxParametersArgs) ToTaskDefinitionLinuxParametersPtrOutput() TaskDefinitionLinuxParametersPtrOutput {
 	return i.ToTaskDefinitionLinuxParametersPtrOutputWithContext(context.Background())
 }
@@ -2935,6 +3221,12 @@ func (i *taskDefinitionLinuxParametersPtrType) ToTaskDefinitionLinuxParametersPt
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionLinuxParametersPtrOutput)
 }
 
+func (i *taskDefinitionLinuxParametersPtrType) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionLinuxParameters] {
+	return pulumix.Output[*TaskDefinitionLinuxParameters]{
+		OutputState: i.ToTaskDefinitionLinuxParametersPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionLinuxParametersOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionLinuxParametersOutput) ElementType() reflect.Type {
@@ -2957,6 +3249,12 @@ func (o TaskDefinitionLinuxParametersOutput) ToTaskDefinitionLinuxParametersPtrO
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v TaskDefinitionLinuxParameters) *TaskDefinitionLinuxParameters {
 		return &v
 	}).(TaskDefinitionLinuxParametersPtrOutput)
+}
+
+func (o TaskDefinitionLinuxParametersOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionLinuxParameters] {
+	return pulumix.Output[TaskDefinitionLinuxParameters]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionLinuxParametersOutput) Capabilities() TaskDefinitionKernelCapabilitiesPtrOutput {
@@ -2999,6 +3297,12 @@ func (o TaskDefinitionLinuxParametersPtrOutput) ToTaskDefinitionLinuxParametersP
 
 func (o TaskDefinitionLinuxParametersPtrOutput) ToTaskDefinitionLinuxParametersPtrOutputWithContext(ctx context.Context) TaskDefinitionLinuxParametersPtrOutput {
 	return o
+}
+
+func (o TaskDefinitionLinuxParametersPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionLinuxParameters] {
+	return pulumix.Output[*TaskDefinitionLinuxParameters]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionLinuxParametersPtrOutput) Elem() TaskDefinitionLinuxParametersOutput {
@@ -3109,6 +3413,12 @@ func (i TaskDefinitionLogConfigurationArgs) ToTaskDefinitionLogConfigurationOutp
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionLogConfigurationOutput)
 }
 
+func (i TaskDefinitionLogConfigurationArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionLogConfiguration] {
+	return pulumix.Output[TaskDefinitionLogConfiguration]{
+		OutputState: i.ToTaskDefinitionLogConfigurationOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i TaskDefinitionLogConfigurationArgs) ToTaskDefinitionLogConfigurationPtrOutput() TaskDefinitionLogConfigurationPtrOutput {
 	return i.ToTaskDefinitionLogConfigurationPtrOutputWithContext(context.Background())
 }
@@ -3150,6 +3460,12 @@ func (i *taskDefinitionLogConfigurationPtrType) ToTaskDefinitionLogConfiguration
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionLogConfigurationPtrOutput)
 }
 
+func (i *taskDefinitionLogConfigurationPtrType) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionLogConfiguration] {
+	return pulumix.Output[*TaskDefinitionLogConfiguration]{
+		OutputState: i.ToTaskDefinitionLogConfigurationPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionLogConfigurationOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionLogConfigurationOutput) ElementType() reflect.Type {
@@ -3172,6 +3488,12 @@ func (o TaskDefinitionLogConfigurationOutput) ToTaskDefinitionLogConfigurationPt
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v TaskDefinitionLogConfiguration) *TaskDefinitionLogConfiguration {
 		return &v
 	}).(TaskDefinitionLogConfigurationPtrOutput)
+}
+
+func (o TaskDefinitionLogConfigurationOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionLogConfiguration] {
+	return pulumix.Output[TaskDefinitionLogConfiguration]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionLogConfigurationOutput) LogDriver() pulumi.StringOutput {
@@ -3198,6 +3520,12 @@ func (o TaskDefinitionLogConfigurationPtrOutput) ToTaskDefinitionLogConfiguratio
 
 func (o TaskDefinitionLogConfigurationPtrOutput) ToTaskDefinitionLogConfigurationPtrOutputWithContext(ctx context.Context) TaskDefinitionLogConfigurationPtrOutput {
 	return o
+}
+
+func (o TaskDefinitionLogConfigurationPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionLogConfiguration] {
+	return pulumix.Output[*TaskDefinitionLogConfiguration]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionLogConfigurationPtrOutput) Elem() TaskDefinitionLogConfigurationOutput {
@@ -3272,6 +3600,12 @@ func (i TaskDefinitionMountPointArgs) ToTaskDefinitionMountPointOutputWithContex
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionMountPointOutput)
 }
 
+func (i TaskDefinitionMountPointArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionMountPoint] {
+	return pulumix.Output[TaskDefinitionMountPoint]{
+		OutputState: i.ToTaskDefinitionMountPointOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionMountPointArrayInput is an input type that accepts TaskDefinitionMountPointArray and TaskDefinitionMountPointArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionMountPointArrayInput` via:
 //
@@ -3297,6 +3631,12 @@ func (i TaskDefinitionMountPointArray) ToTaskDefinitionMountPointArrayOutputWith
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionMountPointArrayOutput)
 }
 
+func (i TaskDefinitionMountPointArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionMountPoint] {
+	return pulumix.Output[[]TaskDefinitionMountPoint]{
+		OutputState: i.ToTaskDefinitionMountPointArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionMountPointOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionMountPointOutput) ElementType() reflect.Type {
@@ -3309,6 +3649,12 @@ func (o TaskDefinitionMountPointOutput) ToTaskDefinitionMountPointOutput() TaskD
 
 func (o TaskDefinitionMountPointOutput) ToTaskDefinitionMountPointOutputWithContext(ctx context.Context) TaskDefinitionMountPointOutput {
 	return o
+}
+
+func (o TaskDefinitionMountPointOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionMountPoint] {
+	return pulumix.Output[TaskDefinitionMountPoint]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionMountPointOutput) ContainerPath() pulumi.StringPtrOutput {
@@ -3335,6 +3681,12 @@ func (o TaskDefinitionMountPointArrayOutput) ToTaskDefinitionMountPointArrayOutp
 
 func (o TaskDefinitionMountPointArrayOutput) ToTaskDefinitionMountPointArrayOutputWithContext(ctx context.Context) TaskDefinitionMountPointArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionMountPointArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionMountPoint] {
+	return pulumix.Output[[]TaskDefinitionMountPoint]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionMountPointArrayOutput) Index(i pulumi.IntInput) TaskDefinitionMountPointOutput {
@@ -3386,6 +3738,12 @@ func (i TaskDefinitionPortMappingArgs) ToTaskDefinitionPortMappingOutputWithCont
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionPortMappingOutput)
 }
 
+func (i TaskDefinitionPortMappingArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionPortMapping] {
+	return pulumix.Output[TaskDefinitionPortMapping]{
+		OutputState: i.ToTaskDefinitionPortMappingOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionPortMappingArrayInput is an input type that accepts TaskDefinitionPortMappingArray and TaskDefinitionPortMappingArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionPortMappingArrayInput` via:
 //
@@ -3411,6 +3769,12 @@ func (i TaskDefinitionPortMappingArray) ToTaskDefinitionPortMappingArrayOutputWi
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionPortMappingArrayOutput)
 }
 
+func (i TaskDefinitionPortMappingArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionPortMapping] {
+	return pulumix.Output[[]TaskDefinitionPortMapping]{
+		OutputState: i.ToTaskDefinitionPortMappingArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionPortMappingOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionPortMappingOutput) ElementType() reflect.Type {
@@ -3423,6 +3787,12 @@ func (o TaskDefinitionPortMappingOutput) ToTaskDefinitionPortMappingOutput() Tas
 
 func (o TaskDefinitionPortMappingOutput) ToTaskDefinitionPortMappingOutputWithContext(ctx context.Context) TaskDefinitionPortMappingOutput {
 	return o
+}
+
+func (o TaskDefinitionPortMappingOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionPortMapping] {
+	return pulumix.Output[TaskDefinitionPortMapping]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionPortMappingOutput) AppProtocol() TaskDefinitionPortMappingAppProtocolPtrOutput {
@@ -3467,6 +3837,12 @@ func (o TaskDefinitionPortMappingArrayOutput) ToTaskDefinitionPortMappingArrayOu
 	return o
 }
 
+func (o TaskDefinitionPortMappingArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionPortMapping] {
+	return pulumix.Output[[]TaskDefinitionPortMapping]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o TaskDefinitionPortMappingArrayOutput) Index(i pulumi.IntInput) TaskDefinitionPortMappingOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) TaskDefinitionPortMapping {
 		return vs[0].([]TaskDefinitionPortMapping)[vs[1].(int)]
@@ -3502,6 +3878,12 @@ func (i TaskDefinitionRepositoryCredentialsArgs) ToTaskDefinitionRepositoryCrede
 
 func (i TaskDefinitionRepositoryCredentialsArgs) ToTaskDefinitionRepositoryCredentialsOutputWithContext(ctx context.Context) TaskDefinitionRepositoryCredentialsOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionRepositoryCredentialsOutput)
+}
+
+func (i TaskDefinitionRepositoryCredentialsArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionRepositoryCredentials] {
+	return pulumix.Output[TaskDefinitionRepositoryCredentials]{
+		OutputState: i.ToTaskDefinitionRepositoryCredentialsOutputWithContext(ctx).OutputState,
+	}
 }
 
 func (i TaskDefinitionRepositoryCredentialsArgs) ToTaskDefinitionRepositoryCredentialsPtrOutput() TaskDefinitionRepositoryCredentialsPtrOutput {
@@ -3545,6 +3927,12 @@ func (i *taskDefinitionRepositoryCredentialsPtrType) ToTaskDefinitionRepositoryC
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionRepositoryCredentialsPtrOutput)
 }
 
+func (i *taskDefinitionRepositoryCredentialsPtrType) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionRepositoryCredentials] {
+	return pulumix.Output[*TaskDefinitionRepositoryCredentials]{
+		OutputState: i.ToTaskDefinitionRepositoryCredentialsPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionRepositoryCredentialsOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionRepositoryCredentialsOutput) ElementType() reflect.Type {
@@ -3569,6 +3957,12 @@ func (o TaskDefinitionRepositoryCredentialsOutput) ToTaskDefinitionRepositoryCre
 	}).(TaskDefinitionRepositoryCredentialsPtrOutput)
 }
 
+func (o TaskDefinitionRepositoryCredentialsOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionRepositoryCredentials] {
+	return pulumix.Output[TaskDefinitionRepositoryCredentials]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o TaskDefinitionRepositoryCredentialsOutput) CredentialsParameter() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TaskDefinitionRepositoryCredentials) *string { return v.CredentialsParameter }).(pulumi.StringPtrOutput)
 }
@@ -3585,6 +3979,12 @@ func (o TaskDefinitionRepositoryCredentialsPtrOutput) ToTaskDefinitionRepository
 
 func (o TaskDefinitionRepositoryCredentialsPtrOutput) ToTaskDefinitionRepositoryCredentialsPtrOutputWithContext(ctx context.Context) TaskDefinitionRepositoryCredentialsPtrOutput {
 	return o
+}
+
+func (o TaskDefinitionRepositoryCredentialsPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionRepositoryCredentials] {
+	return pulumix.Output[*TaskDefinitionRepositoryCredentials]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionRepositoryCredentialsPtrOutput) Elem() TaskDefinitionRepositoryCredentialsOutput {
@@ -3639,6 +4039,12 @@ func (i TaskDefinitionResourceRequirementArgs) ToTaskDefinitionResourceRequireme
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionResourceRequirementOutput)
 }
 
+func (i TaskDefinitionResourceRequirementArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionResourceRequirement] {
+	return pulumix.Output[TaskDefinitionResourceRequirement]{
+		OutputState: i.ToTaskDefinitionResourceRequirementOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionResourceRequirementArrayInput is an input type that accepts TaskDefinitionResourceRequirementArray and TaskDefinitionResourceRequirementArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionResourceRequirementArrayInput` via:
 //
@@ -3664,6 +4070,12 @@ func (i TaskDefinitionResourceRequirementArray) ToTaskDefinitionResourceRequirem
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionResourceRequirementArrayOutput)
 }
 
+func (i TaskDefinitionResourceRequirementArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionResourceRequirement] {
+	return pulumix.Output[[]TaskDefinitionResourceRequirement]{
+		OutputState: i.ToTaskDefinitionResourceRequirementArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionResourceRequirementOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionResourceRequirementOutput) ElementType() reflect.Type {
@@ -3676,6 +4088,12 @@ func (o TaskDefinitionResourceRequirementOutput) ToTaskDefinitionResourceRequire
 
 func (o TaskDefinitionResourceRequirementOutput) ToTaskDefinitionResourceRequirementOutputWithContext(ctx context.Context) TaskDefinitionResourceRequirementOutput {
 	return o
+}
+
+func (o TaskDefinitionResourceRequirementOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionResourceRequirement] {
+	return pulumix.Output[TaskDefinitionResourceRequirement]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionResourceRequirementOutput) Type() pulumi.StringOutput {
@@ -3698,6 +4116,12 @@ func (o TaskDefinitionResourceRequirementArrayOutput) ToTaskDefinitionResourceRe
 
 func (o TaskDefinitionResourceRequirementArrayOutput) ToTaskDefinitionResourceRequirementArrayOutputWithContext(ctx context.Context) TaskDefinitionResourceRequirementArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionResourceRequirementArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionResourceRequirement] {
+	return pulumix.Output[[]TaskDefinitionResourceRequirement]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionResourceRequirementArrayOutput) Index(i pulumi.IntInput) TaskDefinitionResourceRequirementOutput {
@@ -3739,6 +4163,12 @@ func (i TaskDefinitionSecretArgs) ToTaskDefinitionSecretOutputWithContext(ctx co
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionSecretOutput)
 }
 
+func (i TaskDefinitionSecretArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionSecret] {
+	return pulumix.Output[TaskDefinitionSecret]{
+		OutputState: i.ToTaskDefinitionSecretOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionSecretArrayInput is an input type that accepts TaskDefinitionSecretArray and TaskDefinitionSecretArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionSecretArrayInput` via:
 //
@@ -3764,6 +4194,12 @@ func (i TaskDefinitionSecretArray) ToTaskDefinitionSecretArrayOutputWithContext(
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionSecretArrayOutput)
 }
 
+func (i TaskDefinitionSecretArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionSecret] {
+	return pulumix.Output[[]TaskDefinitionSecret]{
+		OutputState: i.ToTaskDefinitionSecretArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionSecretOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionSecretOutput) ElementType() reflect.Type {
@@ -3776,6 +4212,12 @@ func (o TaskDefinitionSecretOutput) ToTaskDefinitionSecretOutput() TaskDefinitio
 
 func (o TaskDefinitionSecretOutput) ToTaskDefinitionSecretOutputWithContext(ctx context.Context) TaskDefinitionSecretOutput {
 	return o
+}
+
+func (o TaskDefinitionSecretOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionSecret] {
+	return pulumix.Output[TaskDefinitionSecret]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionSecretOutput) Name() pulumi.StringOutput {
@@ -3798,6 +4240,12 @@ func (o TaskDefinitionSecretArrayOutput) ToTaskDefinitionSecretArrayOutput() Tas
 
 func (o TaskDefinitionSecretArrayOutput) ToTaskDefinitionSecretArrayOutputWithContext(ctx context.Context) TaskDefinitionSecretArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionSecretArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionSecret] {
+	return pulumix.Output[[]TaskDefinitionSecret]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionSecretArrayOutput) Index(i pulumi.IntInput) TaskDefinitionSecretOutput {
@@ -3839,6 +4287,12 @@ func (i TaskDefinitionSystemControlArgs) ToTaskDefinitionSystemControlOutputWith
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionSystemControlOutput)
 }
 
+func (i TaskDefinitionSystemControlArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionSystemControl] {
+	return pulumix.Output[TaskDefinitionSystemControl]{
+		OutputState: i.ToTaskDefinitionSystemControlOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionSystemControlArrayInput is an input type that accepts TaskDefinitionSystemControlArray and TaskDefinitionSystemControlArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionSystemControlArrayInput` via:
 //
@@ -3864,6 +4318,12 @@ func (i TaskDefinitionSystemControlArray) ToTaskDefinitionSystemControlArrayOutp
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionSystemControlArrayOutput)
 }
 
+func (i TaskDefinitionSystemControlArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionSystemControl] {
+	return pulumix.Output[[]TaskDefinitionSystemControl]{
+		OutputState: i.ToTaskDefinitionSystemControlArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionSystemControlOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionSystemControlOutput) ElementType() reflect.Type {
@@ -3876,6 +4336,12 @@ func (o TaskDefinitionSystemControlOutput) ToTaskDefinitionSystemControlOutput()
 
 func (o TaskDefinitionSystemControlOutput) ToTaskDefinitionSystemControlOutputWithContext(ctx context.Context) TaskDefinitionSystemControlOutput {
 	return o
+}
+
+func (o TaskDefinitionSystemControlOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionSystemControl] {
+	return pulumix.Output[TaskDefinitionSystemControl]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionSystemControlOutput) Namespace() pulumi.StringPtrOutput {
@@ -3898,6 +4364,12 @@ func (o TaskDefinitionSystemControlArrayOutput) ToTaskDefinitionSystemControlArr
 
 func (o TaskDefinitionSystemControlArrayOutput) ToTaskDefinitionSystemControlArrayOutputWithContext(ctx context.Context) TaskDefinitionSystemControlArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionSystemControlArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionSystemControl] {
+	return pulumix.Output[[]TaskDefinitionSystemControl]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionSystemControlArrayOutput) Index(i pulumi.IntInput) TaskDefinitionSystemControlOutput {
@@ -3941,6 +4413,12 @@ func (i TaskDefinitionTmpfsArgs) ToTaskDefinitionTmpfsOutputWithContext(ctx cont
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionTmpfsOutput)
 }
 
+func (i TaskDefinitionTmpfsArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionTmpfs] {
+	return pulumix.Output[TaskDefinitionTmpfs]{
+		OutputState: i.ToTaskDefinitionTmpfsOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionTmpfsArrayInput is an input type that accepts TaskDefinitionTmpfsArray and TaskDefinitionTmpfsArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionTmpfsArrayInput` via:
 //
@@ -3966,6 +4444,12 @@ func (i TaskDefinitionTmpfsArray) ToTaskDefinitionTmpfsArrayOutputWithContext(ct
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionTmpfsArrayOutput)
 }
 
+func (i TaskDefinitionTmpfsArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionTmpfs] {
+	return pulumix.Output[[]TaskDefinitionTmpfs]{
+		OutputState: i.ToTaskDefinitionTmpfsArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionTmpfsOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionTmpfsOutput) ElementType() reflect.Type {
@@ -3978,6 +4462,12 @@ func (o TaskDefinitionTmpfsOutput) ToTaskDefinitionTmpfsOutput() TaskDefinitionT
 
 func (o TaskDefinitionTmpfsOutput) ToTaskDefinitionTmpfsOutputWithContext(ctx context.Context) TaskDefinitionTmpfsOutput {
 	return o
+}
+
+func (o TaskDefinitionTmpfsOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionTmpfs] {
+	return pulumix.Output[TaskDefinitionTmpfs]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionTmpfsOutput) ContainerPath() pulumi.StringPtrOutput {
@@ -4004,6 +4494,12 @@ func (o TaskDefinitionTmpfsArrayOutput) ToTaskDefinitionTmpfsArrayOutput() TaskD
 
 func (o TaskDefinitionTmpfsArrayOutput) ToTaskDefinitionTmpfsArrayOutputWithContext(ctx context.Context) TaskDefinitionTmpfsArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionTmpfsArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionTmpfs] {
+	return pulumix.Output[[]TaskDefinitionTmpfs]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionTmpfsArrayOutput) Index(i pulumi.IntInput) TaskDefinitionTmpfsOutput {
@@ -4047,6 +4543,12 @@ func (i TaskDefinitionUlimitArgs) ToTaskDefinitionUlimitOutputWithContext(ctx co
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionUlimitOutput)
 }
 
+func (i TaskDefinitionUlimitArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionUlimit] {
+	return pulumix.Output[TaskDefinitionUlimit]{
+		OutputState: i.ToTaskDefinitionUlimitOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionUlimitArrayInput is an input type that accepts TaskDefinitionUlimitArray and TaskDefinitionUlimitArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionUlimitArrayInput` via:
 //
@@ -4072,6 +4574,12 @@ func (i TaskDefinitionUlimitArray) ToTaskDefinitionUlimitArrayOutputWithContext(
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionUlimitArrayOutput)
 }
 
+func (i TaskDefinitionUlimitArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionUlimit] {
+	return pulumix.Output[[]TaskDefinitionUlimit]{
+		OutputState: i.ToTaskDefinitionUlimitArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionUlimitOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionUlimitOutput) ElementType() reflect.Type {
@@ -4084,6 +4592,12 @@ func (o TaskDefinitionUlimitOutput) ToTaskDefinitionUlimitOutput() TaskDefinitio
 
 func (o TaskDefinitionUlimitOutput) ToTaskDefinitionUlimitOutputWithContext(ctx context.Context) TaskDefinitionUlimitOutput {
 	return o
+}
+
+func (o TaskDefinitionUlimitOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionUlimit] {
+	return pulumix.Output[TaskDefinitionUlimit]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionUlimitOutput) HardLimit() pulumi.IntOutput {
@@ -4110,6 +4624,12 @@ func (o TaskDefinitionUlimitArrayOutput) ToTaskDefinitionUlimitArrayOutput() Tas
 
 func (o TaskDefinitionUlimitArrayOutput) ToTaskDefinitionUlimitArrayOutputWithContext(ctx context.Context) TaskDefinitionUlimitArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionUlimitArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionUlimit] {
+	return pulumix.Output[[]TaskDefinitionUlimit]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionUlimitArrayOutput) Index(i pulumi.IntInput) TaskDefinitionUlimitOutput {
@@ -4151,6 +4671,12 @@ func (i TaskDefinitionVolumeFromArgs) ToTaskDefinitionVolumeFromOutputWithContex
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionVolumeFromOutput)
 }
 
+func (i TaskDefinitionVolumeFromArgs) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionVolumeFrom] {
+	return pulumix.Output[TaskDefinitionVolumeFrom]{
+		OutputState: i.ToTaskDefinitionVolumeFromOutputWithContext(ctx).OutputState,
+	}
+}
+
 // TaskDefinitionVolumeFromArrayInput is an input type that accepts TaskDefinitionVolumeFromArray and TaskDefinitionVolumeFromArrayOutput values.
 // You can construct a concrete instance of `TaskDefinitionVolumeFromArrayInput` via:
 //
@@ -4176,6 +4702,12 @@ func (i TaskDefinitionVolumeFromArray) ToTaskDefinitionVolumeFromArrayOutputWith
 	return pulumi.ToOutputWithContext(ctx, i).(TaskDefinitionVolumeFromArrayOutput)
 }
 
+func (i TaskDefinitionVolumeFromArray) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionVolumeFrom] {
+	return pulumix.Output[[]TaskDefinitionVolumeFrom]{
+		OutputState: i.ToTaskDefinitionVolumeFromArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 type TaskDefinitionVolumeFromOutput struct{ *pulumi.OutputState }
 
 func (TaskDefinitionVolumeFromOutput) ElementType() reflect.Type {
@@ -4188,6 +4720,12 @@ func (o TaskDefinitionVolumeFromOutput) ToTaskDefinitionVolumeFromOutput() TaskD
 
 func (o TaskDefinitionVolumeFromOutput) ToTaskDefinitionVolumeFromOutputWithContext(ctx context.Context) TaskDefinitionVolumeFromOutput {
 	return o
+}
+
+func (o TaskDefinitionVolumeFromOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionVolumeFrom] {
+	return pulumix.Output[TaskDefinitionVolumeFrom]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionVolumeFromOutput) ReadOnly() pulumi.BoolPtrOutput {
@@ -4210,6 +4748,12 @@ func (o TaskDefinitionVolumeFromArrayOutput) ToTaskDefinitionVolumeFromArrayOutp
 
 func (o TaskDefinitionVolumeFromArrayOutput) ToTaskDefinitionVolumeFromArrayOutputWithContext(ctx context.Context) TaskDefinitionVolumeFromArrayOutput {
 	return o
+}
+
+func (o TaskDefinitionVolumeFromArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]TaskDefinitionVolumeFrom] {
+	return pulumix.Output[[]TaskDefinitionVolumeFrom]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionVolumeFromArrayOutput) Index(i pulumi.IntInput) TaskDefinitionVolumeFromOutput {

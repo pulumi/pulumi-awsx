@@ -10,7 +10,9 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
 	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/awsx"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // Provides an Application Load Balancer resource with listeners, default target group and default security group.
@@ -39,6 +41,7 @@ func NewApplicationLoadBalancer(ctx *pulumi.Context,
 	if args.DefaultSecurityGroup != nil {
 		args.DefaultSecurityGroup = args.DefaultSecurityGroup.Defaults()
 	}
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource ApplicationLoadBalancer
 	err := ctx.RegisterRemoteComponentResource("awsx:lb:ApplicationLoadBalancer", name, args, &resource, opts...)
 	if err != nil {
@@ -189,6 +192,12 @@ func (i *ApplicationLoadBalancer) ToApplicationLoadBalancerOutputWithContext(ctx
 	return pulumi.ToOutputWithContext(ctx, i).(ApplicationLoadBalancerOutput)
 }
 
+func (i *ApplicationLoadBalancer) ToOutput(ctx context.Context) pulumix.Output[*ApplicationLoadBalancer] {
+	return pulumix.Output[*ApplicationLoadBalancer]{
+		OutputState: i.ToApplicationLoadBalancerOutputWithContext(ctx).OutputState,
+	}
+}
+
 // ApplicationLoadBalancerArrayInput is an input type that accepts ApplicationLoadBalancerArray and ApplicationLoadBalancerArrayOutput values.
 // You can construct a concrete instance of `ApplicationLoadBalancerArrayInput` via:
 //
@@ -212,6 +221,12 @@ func (i ApplicationLoadBalancerArray) ToApplicationLoadBalancerArrayOutput() App
 
 func (i ApplicationLoadBalancerArray) ToApplicationLoadBalancerArrayOutputWithContext(ctx context.Context) ApplicationLoadBalancerArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(ApplicationLoadBalancerArrayOutput)
+}
+
+func (i ApplicationLoadBalancerArray) ToOutput(ctx context.Context) pulumix.Output[[]*ApplicationLoadBalancer] {
+	return pulumix.Output[[]*ApplicationLoadBalancer]{
+		OutputState: i.ToApplicationLoadBalancerArrayOutputWithContext(ctx).OutputState,
+	}
 }
 
 // ApplicationLoadBalancerMapInput is an input type that accepts ApplicationLoadBalancerMap and ApplicationLoadBalancerMapOutput values.
@@ -239,6 +254,12 @@ func (i ApplicationLoadBalancerMap) ToApplicationLoadBalancerMapOutputWithContex
 	return pulumi.ToOutputWithContext(ctx, i).(ApplicationLoadBalancerMapOutput)
 }
 
+func (i ApplicationLoadBalancerMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*ApplicationLoadBalancer] {
+	return pulumix.Output[map[string]*ApplicationLoadBalancer]{
+		OutputState: i.ToApplicationLoadBalancerMapOutputWithContext(ctx).OutputState,
+	}
+}
+
 type ApplicationLoadBalancerOutput struct{ *pulumi.OutputState }
 
 func (ApplicationLoadBalancerOutput) ElementType() reflect.Type {
@@ -251,6 +272,12 @@ func (o ApplicationLoadBalancerOutput) ToApplicationLoadBalancerOutput() Applica
 
 func (o ApplicationLoadBalancerOutput) ToApplicationLoadBalancerOutputWithContext(ctx context.Context) ApplicationLoadBalancerOutput {
 	return o
+}
+
+func (o ApplicationLoadBalancerOutput) ToOutput(ctx context.Context) pulumix.Output[*ApplicationLoadBalancer] {
+	return pulumix.Output[*ApplicationLoadBalancer]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Default security group, if auto-created
@@ -292,6 +319,12 @@ func (o ApplicationLoadBalancerArrayOutput) ToApplicationLoadBalancerArrayOutput
 	return o
 }
 
+func (o ApplicationLoadBalancerArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*ApplicationLoadBalancer] {
+	return pulumix.Output[[]*ApplicationLoadBalancer]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o ApplicationLoadBalancerArrayOutput) Index(i pulumi.IntInput) ApplicationLoadBalancerOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *ApplicationLoadBalancer {
 		return vs[0].([]*ApplicationLoadBalancer)[vs[1].(int)]
@@ -310,6 +343,12 @@ func (o ApplicationLoadBalancerMapOutput) ToApplicationLoadBalancerMapOutput() A
 
 func (o ApplicationLoadBalancerMapOutput) ToApplicationLoadBalancerMapOutputWithContext(ctx context.Context) ApplicationLoadBalancerMapOutput {
 	return o
+}
+
+func (o ApplicationLoadBalancerMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*ApplicationLoadBalancer] {
+	return pulumix.Output[map[string]*ApplicationLoadBalancer]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o ApplicationLoadBalancerMapOutput) MapIndex(k pulumi.StringInput) ApplicationLoadBalancerOutput {

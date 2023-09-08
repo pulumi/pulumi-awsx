@@ -12,8 +12,7 @@
     "repository": "https://github.com/pulumi/pulumi-awsx",
     "license": "Apache-2.0",
     "scripts": {
-        "build": "tsc",
-        "install": "node scripts/install-pulumi-plugin.js resource awsx ${VERSION}"
+        "build": "tsc"
     },
     "dependencies": {
         "@pulumi/aws": "^5.35.0",

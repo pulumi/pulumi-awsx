@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 type LifecycleTagStatus string
@@ -81,6 +82,12 @@ func (o LifecycleTagStatusOutput) ToLifecycleTagStatusPtrOutputWithContext(ctx c
 	}).(LifecycleTagStatusPtrOutput)
 }
 
+func (o LifecycleTagStatusOutput) ToOutput(ctx context.Context) pulumix.Output[LifecycleTagStatus] {
+	return pulumix.Output[LifecycleTagStatus]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o LifecycleTagStatusOutput) ToStringOutput() pulumi.StringOutput {
 	return o.ToStringOutputWithContext(context.Background())
 }
@@ -114,6 +121,12 @@ func (o LifecycleTagStatusPtrOutput) ToLifecycleTagStatusPtrOutput() LifecycleTa
 
 func (o LifecycleTagStatusPtrOutput) ToLifecycleTagStatusPtrOutputWithContext(ctx context.Context) LifecycleTagStatusPtrOutput {
 	return o
+}
+
+func (o LifecycleTagStatusPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*LifecycleTagStatus] {
+	return pulumix.Output[*LifecycleTagStatus]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o LifecycleTagStatusPtrOutput) Elem() LifecycleTagStatusOutput {
@@ -176,6 +189,12 @@ func (in *lifecycleTagStatusPtr) ToLifecycleTagStatusPtrOutput() LifecycleTagSta
 
 func (in *lifecycleTagStatusPtr) ToLifecycleTagStatusPtrOutputWithContext(ctx context.Context) LifecycleTagStatusPtrOutput {
 	return pulumi.ToOutputWithContext(ctx, in).(LifecycleTagStatusPtrOutput)
+}
+
+func (in *lifecycleTagStatusPtr) ToOutput(ctx context.Context) pulumix.Output[*LifecycleTagStatus] {
+	return pulumix.Output[*LifecycleTagStatus]{
+		OutputState: in.ToLifecycleTagStatusPtrOutputWithContext(ctx).OutputState,
+	}
 }
 
 func init() {

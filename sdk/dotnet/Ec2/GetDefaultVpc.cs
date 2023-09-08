@@ -17,6 +17,12 @@ namespace Pulumi.Awsx.Ec2
         /// </summary>
         public static Task<GetDefaultVpcResult> InvokeAsync(GetDefaultVpcArgs? args = null, InvokeOptions? options = null)
             => global::Pulumi.Deployment.Instance.InvokeAsync<GetDefaultVpcResult>("awsx:ec2:getDefaultVpc", args ?? new GetDefaultVpcArgs(), options.WithDefaults());
+
+        /// <summary>
+        /// [NOT YET IMPLEMENTED] Get the Default VPC for a region.
+        /// </summary>
+        public static Output<GetDefaultVpcResult> Invoke(InvokeOptions? options = null)
+            => global::Pulumi.Deployment.Instance.Invoke<GetDefaultVpcResult>("awsx:ec2:getDefaultVpc", InvokeArgs.Empty, options.WithDefaults());
     }
 
 
