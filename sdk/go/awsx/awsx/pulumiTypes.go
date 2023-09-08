@@ -10,8 +10,12 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/s3"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
+
+var _ = internal.GetEnvOrDefault
 
 // The set of arguments for constructing a Bucket resource.
 type Bucket struct {
@@ -134,6 +138,12 @@ func (i BucketArgs) ToBucketOutputWithContext(ctx context.Context) BucketOutput 
 	return pulumi.ToOutputWithContext(ctx, i).(BucketOutput)
 }
 
+func (i BucketArgs) ToOutput(ctx context.Context) pulumix.Output[Bucket] {
+	return pulumix.Output[Bucket]{
+		OutputState: i.ToBucketOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i BucketArgs) ToBucketPtrOutput() BucketPtrOutput {
 	return i.ToBucketPtrOutputWithContext(context.Background())
 }
@@ -175,6 +185,12 @@ func (i *bucketPtrType) ToBucketPtrOutputWithContext(ctx context.Context) Bucket
 	return pulumi.ToOutputWithContext(ctx, i).(BucketPtrOutput)
 }
 
+func (i *bucketPtrType) ToOutput(ctx context.Context) pulumix.Output[*Bucket] {
+	return pulumix.Output[*Bucket]{
+		OutputState: i.ToBucketPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // The set of arguments for constructing a Bucket resource.
 type BucketOutput struct{ *pulumi.OutputState }
 
@@ -198,6 +214,12 @@ func (o BucketOutput) ToBucketPtrOutputWithContext(ctx context.Context) BucketPt
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v Bucket) *Bucket {
 		return &v
 	}).(BucketPtrOutput)
+}
+
+func (o BucketOutput) ToOutput(ctx context.Context) pulumix.Output[Bucket] {
+	return pulumix.Output[Bucket]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Sets the accelerate configuration of an existing bucket. Can be `Enabled` or `Suspended`.
@@ -320,6 +342,12 @@ func (o BucketPtrOutput) ToBucketPtrOutput() BucketPtrOutput {
 
 func (o BucketPtrOutput) ToBucketPtrOutputWithContext(ctx context.Context) BucketPtrOutput {
 	return o
+}
+
+func (o BucketPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*Bucket] {
+	return pulumix.Output[*Bucket]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o BucketPtrOutput) Elem() BucketOutput {
@@ -598,6 +626,12 @@ func (i DefaultLogGroupArgs) ToDefaultLogGroupOutputWithContext(ctx context.Cont
 	return pulumi.ToOutputWithContext(ctx, i).(DefaultLogGroupOutput)
 }
 
+func (i DefaultLogGroupArgs) ToOutput(ctx context.Context) pulumix.Output[DefaultLogGroup] {
+	return pulumix.Output[DefaultLogGroup]{
+		OutputState: i.ToDefaultLogGroupOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i DefaultLogGroupArgs) ToDefaultLogGroupPtrOutput() DefaultLogGroupPtrOutput {
 	return i.ToDefaultLogGroupPtrOutputWithContext(context.Background())
 }
@@ -639,6 +673,12 @@ func (i *defaultLogGroupPtrType) ToDefaultLogGroupPtrOutputWithContext(ctx conte
 	return pulumi.ToOutputWithContext(ctx, i).(DefaultLogGroupPtrOutput)
 }
 
+func (i *defaultLogGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*DefaultLogGroup] {
+	return pulumix.Output[*DefaultLogGroup]{
+		OutputState: i.ToDefaultLogGroupPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Log group with default setup unless explicitly skipped.
 type DefaultLogGroupOutput struct{ *pulumi.OutputState }
 
@@ -662,6 +702,12 @@ func (o DefaultLogGroupOutput) ToDefaultLogGroupPtrOutputWithContext(ctx context
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v DefaultLogGroup) *DefaultLogGroup {
 		return &v
 	}).(DefaultLogGroupPtrOutput)
+}
+
+func (o DefaultLogGroupOutput) ToOutput(ctx context.Context) pulumix.Output[DefaultLogGroup] {
+	return pulumix.Output[DefaultLogGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Arguments to use instead of the default values during creation.
@@ -691,6 +737,12 @@ func (o DefaultLogGroupPtrOutput) ToDefaultLogGroupPtrOutput() DefaultLogGroupPt
 
 func (o DefaultLogGroupPtrOutput) ToDefaultLogGroupPtrOutputWithContext(ctx context.Context) DefaultLogGroupPtrOutput {
 	return o
+}
+
+func (o DefaultLogGroupPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*DefaultLogGroup] {
+	return pulumix.Output[*DefaultLogGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o DefaultLogGroupPtrOutput) Elem() DefaultLogGroupOutput {
@@ -776,6 +828,12 @@ func (i DefaultRoleWithPolicyArgs) ToDefaultRoleWithPolicyOutputWithContext(ctx 
 	return pulumi.ToOutputWithContext(ctx, i).(DefaultRoleWithPolicyOutput)
 }
 
+func (i DefaultRoleWithPolicyArgs) ToOutput(ctx context.Context) pulumix.Output[DefaultRoleWithPolicy] {
+	return pulumix.Output[DefaultRoleWithPolicy]{
+		OutputState: i.ToDefaultRoleWithPolicyOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i DefaultRoleWithPolicyArgs) ToDefaultRoleWithPolicyPtrOutput() DefaultRoleWithPolicyPtrOutput {
 	return i.ToDefaultRoleWithPolicyPtrOutputWithContext(context.Background())
 }
@@ -817,6 +875,12 @@ func (i *defaultRoleWithPolicyPtrType) ToDefaultRoleWithPolicyPtrOutputWithConte
 	return pulumi.ToOutputWithContext(ctx, i).(DefaultRoleWithPolicyPtrOutput)
 }
 
+func (i *defaultRoleWithPolicyPtrType) ToOutput(ctx context.Context) pulumix.Output[*DefaultRoleWithPolicy] {
+	return pulumix.Output[*DefaultRoleWithPolicy]{
+		OutputState: i.ToDefaultRoleWithPolicyPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Role and policy attachments with default setup unless explicitly skipped or an existing role ARN provided.
 type DefaultRoleWithPolicyOutput struct{ *pulumi.OutputState }
 
@@ -840,6 +904,12 @@ func (o DefaultRoleWithPolicyOutput) ToDefaultRoleWithPolicyPtrOutputWithContext
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v DefaultRoleWithPolicy) *DefaultRoleWithPolicy {
 		return &v
 	}).(DefaultRoleWithPolicyPtrOutput)
+}
+
+func (o DefaultRoleWithPolicyOutput) ToOutput(ctx context.Context) pulumix.Output[DefaultRoleWithPolicy] {
+	return pulumix.Output[DefaultRoleWithPolicy]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Args to use when creating the role and policies. Can't be specified if `roleArn` is used.
@@ -869,6 +939,12 @@ func (o DefaultRoleWithPolicyPtrOutput) ToDefaultRoleWithPolicyPtrOutput() Defau
 
 func (o DefaultRoleWithPolicyPtrOutput) ToDefaultRoleWithPolicyPtrOutputWithContext(ctx context.Context) DefaultRoleWithPolicyPtrOutput {
 	return o
+}
+
+func (o DefaultRoleWithPolicyPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*DefaultRoleWithPolicy] {
+	return pulumix.Output[*DefaultRoleWithPolicy]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o DefaultRoleWithPolicyPtrOutput) Elem() DefaultRoleWithPolicyOutput {
@@ -975,6 +1051,12 @@ func (i DefaultSecurityGroupArgs) ToDefaultSecurityGroupOutputWithContext(ctx co
 	return pulumi.ToOutputWithContext(ctx, i).(DefaultSecurityGroupOutput)
 }
 
+func (i DefaultSecurityGroupArgs) ToOutput(ctx context.Context) pulumix.Output[DefaultSecurityGroup] {
+	return pulumix.Output[DefaultSecurityGroup]{
+		OutputState: i.ToDefaultSecurityGroupOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i DefaultSecurityGroupArgs) ToDefaultSecurityGroupPtrOutput() DefaultSecurityGroupPtrOutput {
 	return i.ToDefaultSecurityGroupPtrOutputWithContext(context.Background())
 }
@@ -1016,6 +1098,12 @@ func (i *defaultSecurityGroupPtrType) ToDefaultSecurityGroupPtrOutputWithContext
 	return pulumi.ToOutputWithContext(ctx, i).(DefaultSecurityGroupPtrOutput)
 }
 
+func (i *defaultSecurityGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*DefaultSecurityGroup] {
+	return pulumix.Output[*DefaultSecurityGroup]{
+		OutputState: i.ToDefaultSecurityGroupPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Security Group with default setup unless explicitly skipped or an existing security group id provided.
 type DefaultSecurityGroupOutput struct{ *pulumi.OutputState }
 
@@ -1039,6 +1127,12 @@ func (o DefaultSecurityGroupOutput) ToDefaultSecurityGroupPtrOutputWithContext(c
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v DefaultSecurityGroup) *DefaultSecurityGroup {
 		return &v
 	}).(DefaultSecurityGroupPtrOutput)
+}
+
+func (o DefaultSecurityGroupOutput) ToOutput(ctx context.Context) pulumix.Output[DefaultSecurityGroup] {
+	return pulumix.Output[DefaultSecurityGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Args to use when creating the security group. Can't be specified if `securityGroupId` is used.
@@ -1068,6 +1162,12 @@ func (o DefaultSecurityGroupPtrOutput) ToDefaultSecurityGroupPtrOutput() Default
 
 func (o DefaultSecurityGroupPtrOutput) ToDefaultSecurityGroupPtrOutputWithContext(ctx context.Context) DefaultSecurityGroupPtrOutput {
 	return o
+}
+
+func (o DefaultSecurityGroupPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*DefaultSecurityGroup] {
+	return pulumix.Output[*DefaultSecurityGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o DefaultSecurityGroupPtrOutput) Elem() DefaultSecurityGroupOutput {
@@ -1149,6 +1249,12 @@ func (i ExistingBucketArgs) ToExistingBucketOutputWithContext(ctx context.Contex
 	return pulumi.ToOutputWithContext(ctx, i).(ExistingBucketOutput)
 }
 
+func (i ExistingBucketArgs) ToOutput(ctx context.Context) pulumix.Output[ExistingBucket] {
+	return pulumix.Output[ExistingBucket]{
+		OutputState: i.ToExistingBucketOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i ExistingBucketArgs) ToExistingBucketPtrOutput() ExistingBucketPtrOutput {
 	return i.ToExistingBucketPtrOutputWithContext(context.Background())
 }
@@ -1190,6 +1296,12 @@ func (i *existingBucketPtrType) ToExistingBucketPtrOutputWithContext(ctx context
 	return pulumi.ToOutputWithContext(ctx, i).(ExistingBucketPtrOutput)
 }
 
+func (i *existingBucketPtrType) ToOutput(ctx context.Context) pulumix.Output[*ExistingBucket] {
+	return pulumix.Output[*ExistingBucket]{
+		OutputState: i.ToExistingBucketPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Reference to an existing bucket.
 type ExistingBucketOutput struct{ *pulumi.OutputState }
 
@@ -1215,6 +1327,12 @@ func (o ExistingBucketOutput) ToExistingBucketPtrOutputWithContext(ctx context.C
 	}).(ExistingBucketPtrOutput)
 }
 
+func (o ExistingBucketOutput) ToOutput(ctx context.Context) pulumix.Output[ExistingBucket] {
+	return pulumix.Output[ExistingBucket]{
+		OutputState: o.OutputState,
+	}
+}
+
 // Arn of the bucket. Only one of [arn] or [name] can be specified.
 func (o ExistingBucketOutput) Arn() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v ExistingBucket) *string { return v.Arn }).(pulumi.StringPtrOutput)
@@ -1237,6 +1355,12 @@ func (o ExistingBucketPtrOutput) ToExistingBucketPtrOutput() ExistingBucketPtrOu
 
 func (o ExistingBucketPtrOutput) ToExistingBucketPtrOutputWithContext(ctx context.Context) ExistingBucketPtrOutput {
 	return o
+}
+
+func (o ExistingBucketPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*ExistingBucket] {
+	return pulumix.Output[*ExistingBucket]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o ExistingBucketPtrOutput) Elem() ExistingBucketOutput {
@@ -1312,6 +1436,12 @@ func (i ExistingLogGroupArgs) ToExistingLogGroupOutputWithContext(ctx context.Co
 	return pulumi.ToOutputWithContext(ctx, i).(ExistingLogGroupOutput)
 }
 
+func (i ExistingLogGroupArgs) ToOutput(ctx context.Context) pulumix.Output[ExistingLogGroup] {
+	return pulumix.Output[ExistingLogGroup]{
+		OutputState: i.ToExistingLogGroupOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i ExistingLogGroupArgs) ToExistingLogGroupPtrOutput() ExistingLogGroupPtrOutput {
 	return i.ToExistingLogGroupPtrOutputWithContext(context.Background())
 }
@@ -1353,6 +1483,12 @@ func (i *existingLogGroupPtrType) ToExistingLogGroupPtrOutputWithContext(ctx con
 	return pulumi.ToOutputWithContext(ctx, i).(ExistingLogGroupPtrOutput)
 }
 
+func (i *existingLogGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*ExistingLogGroup] {
+	return pulumix.Output[*ExistingLogGroup]{
+		OutputState: i.ToExistingLogGroupPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Reference to an existing log group.
 type ExistingLogGroupOutput struct{ *pulumi.OutputState }
 
@@ -1376,6 +1512,12 @@ func (o ExistingLogGroupOutput) ToExistingLogGroupPtrOutputWithContext(ctx conte
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v ExistingLogGroup) *ExistingLogGroup {
 		return &v
 	}).(ExistingLogGroupPtrOutput)
+}
+
+func (o ExistingLogGroupOutput) ToOutput(ctx context.Context) pulumix.Output[ExistingLogGroup] {
+	return pulumix.Output[ExistingLogGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Arn of the log group. Only one of [arn] or [name] can be specified.
@@ -1405,6 +1547,12 @@ func (o ExistingLogGroupPtrOutput) ToExistingLogGroupPtrOutput() ExistingLogGrou
 
 func (o ExistingLogGroupPtrOutput) ToExistingLogGroupPtrOutputWithContext(ctx context.Context) ExistingLogGroupPtrOutput {
 	return o
+}
+
+func (o ExistingLogGroupPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*ExistingLogGroup] {
+	return pulumix.Output[*ExistingLogGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o ExistingLogGroupPtrOutput) Elem() ExistingLogGroupOutput {
@@ -1514,6 +1662,12 @@ func (i LogGroupArgs) ToLogGroupOutputWithContext(ctx context.Context) LogGroupO
 	return pulumi.ToOutputWithContext(ctx, i).(LogGroupOutput)
 }
 
+func (i LogGroupArgs) ToOutput(ctx context.Context) pulumix.Output[LogGroup] {
+	return pulumix.Output[LogGroup]{
+		OutputState: i.ToLogGroupOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i LogGroupArgs) ToLogGroupPtrOutput() LogGroupPtrOutput {
 	return i.ToLogGroupPtrOutputWithContext(context.Background())
 }
@@ -1555,6 +1709,12 @@ func (i *logGroupPtrType) ToLogGroupPtrOutputWithContext(ctx context.Context) Lo
 	return pulumi.ToOutputWithContext(ctx, i).(LogGroupPtrOutput)
 }
 
+func (i *logGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*LogGroup] {
+	return pulumix.Output[*LogGroup]{
+		OutputState: i.ToLogGroupPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // The set of arguments for constructing a LogGroup resource.
 type LogGroupOutput struct{ *pulumi.OutputState }
 
@@ -1578,6 +1738,12 @@ func (o LogGroupOutput) ToLogGroupPtrOutputWithContext(ctx context.Context) LogG
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v LogGroup) *LogGroup {
 		return &v
 	}).(LogGroupPtrOutput)
+}
+
+func (o LogGroupOutput) ToOutput(ctx context.Context) pulumix.Output[LogGroup] {
+	return pulumix.Output[LogGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 // The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
@@ -1631,6 +1797,12 @@ func (o LogGroupPtrOutput) ToLogGroupPtrOutput() LogGroupPtrOutput {
 
 func (o LogGroupPtrOutput) ToLogGroupPtrOutputWithContext(ctx context.Context) LogGroupPtrOutput {
 	return o
+}
+
+func (o LogGroupPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*LogGroup] {
+	return pulumix.Output[*LogGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o LogGroupPtrOutput) Elem() LogGroupOutput {
@@ -1760,6 +1932,12 @@ func (i OptionalLogGroupArgs) ToOptionalLogGroupOutputWithContext(ctx context.Co
 	return pulumi.ToOutputWithContext(ctx, i).(OptionalLogGroupOutput)
 }
 
+func (i OptionalLogGroupArgs) ToOutput(ctx context.Context) pulumix.Output[OptionalLogGroup] {
+	return pulumix.Output[OptionalLogGroup]{
+		OutputState: i.ToOptionalLogGroupOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i OptionalLogGroupArgs) ToOptionalLogGroupPtrOutput() OptionalLogGroupPtrOutput {
 	return i.ToOptionalLogGroupPtrOutputWithContext(context.Background())
 }
@@ -1801,6 +1979,12 @@ func (i *optionalLogGroupPtrType) ToOptionalLogGroupPtrOutputWithContext(ctx con
 	return pulumi.ToOutputWithContext(ctx, i).(OptionalLogGroupPtrOutput)
 }
 
+func (i *optionalLogGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*OptionalLogGroup] {
+	return pulumix.Output[*OptionalLogGroup]{
+		OutputState: i.ToOptionalLogGroupPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Log group which is only created if enabled.
 type OptionalLogGroupOutput struct{ *pulumi.OutputState }
 
@@ -1824,6 +2008,12 @@ func (o OptionalLogGroupOutput) ToOptionalLogGroupPtrOutputWithContext(ctx conte
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v OptionalLogGroup) *OptionalLogGroup {
 		return &v
 	}).(OptionalLogGroupPtrOutput)
+}
+
+func (o OptionalLogGroupOutput) ToOutput(ctx context.Context) pulumix.Output[OptionalLogGroup] {
+	return pulumix.Output[OptionalLogGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Arguments to use instead of the default values during creation.
@@ -1853,6 +2043,12 @@ func (o OptionalLogGroupPtrOutput) ToOptionalLogGroupPtrOutput() OptionalLogGrou
 
 func (o OptionalLogGroupPtrOutput) ToOptionalLogGroupPtrOutputWithContext(ctx context.Context) OptionalLogGroupPtrOutput {
 	return o
+}
+
+func (o OptionalLogGroupPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*OptionalLogGroup] {
+	return pulumix.Output[*OptionalLogGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o OptionalLogGroupPtrOutput) Elem() OptionalLogGroupOutput {
@@ -1934,6 +2130,12 @@ func (i RequiredBucketArgs) ToRequiredBucketOutputWithContext(ctx context.Contex
 	return pulumi.ToOutputWithContext(ctx, i).(RequiredBucketOutput)
 }
 
+func (i RequiredBucketArgs) ToOutput(ctx context.Context) pulumix.Output[RequiredBucket] {
+	return pulumix.Output[RequiredBucket]{
+		OutputState: i.ToRequiredBucketOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i RequiredBucketArgs) ToRequiredBucketPtrOutput() RequiredBucketPtrOutput {
 	return i.ToRequiredBucketPtrOutputWithContext(context.Background())
 }
@@ -1975,6 +2177,12 @@ func (i *requiredBucketPtrType) ToRequiredBucketPtrOutputWithContext(ctx context
 	return pulumi.ToOutputWithContext(ctx, i).(RequiredBucketPtrOutput)
 }
 
+func (i *requiredBucketPtrType) ToOutput(ctx context.Context) pulumix.Output[*RequiredBucket] {
+	return pulumix.Output[*RequiredBucket]{
+		OutputState: i.ToRequiredBucketPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Bucket with default setup.
 type RequiredBucketOutput struct{ *pulumi.OutputState }
 
@@ -2000,6 +2208,12 @@ func (o RequiredBucketOutput) ToRequiredBucketPtrOutputWithContext(ctx context.C
 	}).(RequiredBucketPtrOutput)
 }
 
+func (o RequiredBucketOutput) ToOutput(ctx context.Context) pulumix.Output[RequiredBucket] {
+	return pulumix.Output[RequiredBucket]{
+		OutputState: o.OutputState,
+	}
+}
+
 // Arguments to use instead of the default values during creation.
 func (o RequiredBucketOutput) Args() BucketPtrOutput {
 	return o.ApplyT(func(v RequiredBucket) *Bucket { return v.Args }).(BucketPtrOutput)
@@ -2022,6 +2236,12 @@ func (o RequiredBucketPtrOutput) ToRequiredBucketPtrOutput() RequiredBucketPtrOu
 
 func (o RequiredBucketPtrOutput) ToRequiredBucketPtrOutputWithContext(ctx context.Context) RequiredBucketPtrOutput {
 	return o
+}
+
+func (o RequiredBucketPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*RequiredBucket] {
+	return pulumix.Output[*RequiredBucket]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o RequiredBucketPtrOutput) Elem() RequiredBucketOutput {
@@ -2139,6 +2359,12 @@ func (i RoleWithPolicyArgs) ToRoleWithPolicyOutputWithContext(ctx context.Contex
 	return pulumi.ToOutputWithContext(ctx, i).(RoleWithPolicyOutput)
 }
 
+func (i RoleWithPolicyArgs) ToOutput(ctx context.Context) pulumix.Output[RoleWithPolicy] {
+	return pulumix.Output[RoleWithPolicy]{
+		OutputState: i.ToRoleWithPolicyOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i RoleWithPolicyArgs) ToRoleWithPolicyPtrOutput() RoleWithPolicyPtrOutput {
 	return i.ToRoleWithPolicyPtrOutputWithContext(context.Background())
 }
@@ -2180,6 +2406,12 @@ func (i *roleWithPolicyPtrType) ToRoleWithPolicyPtrOutputWithContext(ctx context
 	return pulumi.ToOutputWithContext(ctx, i).(RoleWithPolicyPtrOutput)
 }
 
+func (i *roleWithPolicyPtrType) ToOutput(ctx context.Context) pulumix.Output[*RoleWithPolicy] {
+	return pulumix.Output[*RoleWithPolicy]{
+		OutputState: i.ToRoleWithPolicyPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // The set of arguments for constructing a Role resource and Policy attachments.
 type RoleWithPolicyOutput struct{ *pulumi.OutputState }
 
@@ -2203,6 +2435,12 @@ func (o RoleWithPolicyOutput) ToRoleWithPolicyPtrOutputWithContext(ctx context.C
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v RoleWithPolicy) *RoleWithPolicy {
 		return &v
 	}).(RoleWithPolicyPtrOutput)
+}
+
+func (o RoleWithPolicyOutput) ToOutput(ctx context.Context) pulumix.Output[RoleWithPolicy] {
+	return pulumix.Output[RoleWithPolicy]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Description of the role.
@@ -2276,6 +2514,12 @@ func (o RoleWithPolicyPtrOutput) ToRoleWithPolicyPtrOutput() RoleWithPolicyPtrOu
 
 func (o RoleWithPolicyPtrOutput) ToRoleWithPolicyPtrOutputWithContext(ctx context.Context) RoleWithPolicyPtrOutput {
 	return o
+}
+
+func (o RoleWithPolicyPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*RoleWithPolicy] {
+	return pulumix.Output[*RoleWithPolicy]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o RoleWithPolicyPtrOutput) Elem() RoleWithPolicyOutput {
@@ -2494,6 +2738,12 @@ func (i SecurityGroupArgs) ToSecurityGroupOutputWithContext(ctx context.Context)
 	return pulumi.ToOutputWithContext(ctx, i).(SecurityGroupOutput)
 }
 
+func (i SecurityGroupArgs) ToOutput(ctx context.Context) pulumix.Output[SecurityGroup] {
+	return pulumix.Output[SecurityGroup]{
+		OutputState: i.ToSecurityGroupOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i SecurityGroupArgs) ToSecurityGroupPtrOutput() SecurityGroupPtrOutput {
 	return i.ToSecurityGroupPtrOutputWithContext(context.Background())
 }
@@ -2535,6 +2785,12 @@ func (i *securityGroupPtrType) ToSecurityGroupPtrOutputWithContext(ctx context.C
 	return pulumi.ToOutputWithContext(ctx, i).(SecurityGroupPtrOutput)
 }
 
+func (i *securityGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*SecurityGroup] {
+	return pulumix.Output[*SecurityGroup]{
+		OutputState: i.ToSecurityGroupPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // The set of arguments for constructing a Security Group resource.
 type SecurityGroupOutput struct{ *pulumi.OutputState }
 
@@ -2558,6 +2814,12 @@ func (o SecurityGroupOutput) ToSecurityGroupPtrOutputWithContext(ctx context.Con
 	return o.ApplyTWithContext(ctx, func(_ context.Context, v SecurityGroup) *SecurityGroup {
 		return &v
 	}).(SecurityGroupPtrOutput)
+}
+
+func (o SecurityGroupOutput) ToOutput(ctx context.Context) pulumix.Output[SecurityGroup] {
+	return pulumix.Output[SecurityGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 // Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use `tags`.
@@ -2612,6 +2874,12 @@ func (o SecurityGroupPtrOutput) ToSecurityGroupPtrOutput() SecurityGroupPtrOutpu
 
 func (o SecurityGroupPtrOutput) ToSecurityGroupPtrOutputWithContext(ctx context.Context) SecurityGroupPtrOutput {
 	return o
+}
+
+func (o SecurityGroupPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*SecurityGroup] {
+	return pulumix.Output[*SecurityGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o SecurityGroupPtrOutput) Elem() SecurityGroupOutput {

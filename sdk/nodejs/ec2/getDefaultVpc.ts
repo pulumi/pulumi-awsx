@@ -34,3 +34,10 @@ export interface GetDefaultVpcResult {
      */
     readonly vpcId: string;
 }
+/**
+ * [NOT YET IMPLEMENTED] Get the Default VPC for a region.
+ */
+/** @deprecated Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved. */
+export function getDefaultVpcOutput(opts?: pulumi.InvokeOptions): pulumi.Output<GetDefaultVpcResult> {
+    return pulumi.output(getDefaultVpc(opts))
+}

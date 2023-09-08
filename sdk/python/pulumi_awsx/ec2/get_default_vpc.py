@@ -73,6 +73,6 @@ def get_default_vpc(opts: Optional[pulumi.InvokeOptions] = None) -> AwaitableGet
     __ret__ = pulumi.runtime.invoke('awsx:ec2:getDefaultVpc', __args__, opts=opts, typ=GetDefaultVpcResult).value
 
     return AwaitableGetDefaultVpcResult(
-        private_subnet_ids=__ret__.private_subnet_ids,
-        public_subnet_ids=__ret__.public_subnet_ids,
-        vpc_id=__ret__.vpc_id)
+        private_subnet_ids=pulumi.get(__ret__, 'private_subnet_ids'),
+        public_subnet_ids=pulumi.get(__ret__, 'public_subnet_ids'),
+        vpc_id=pulumi.get(__ret__, 'vpc_id'))

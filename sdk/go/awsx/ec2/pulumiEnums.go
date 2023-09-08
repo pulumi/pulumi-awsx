@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // A strategy for creating NAT Gateways for private subnets within a VPC.
@@ -82,6 +83,12 @@ func (o NatGatewayStrategyOutput) ToNatGatewayStrategyPtrOutputWithContext(ctx c
 	}).(NatGatewayStrategyPtrOutput)
 }
 
+func (o NatGatewayStrategyOutput) ToOutput(ctx context.Context) pulumix.Output[NatGatewayStrategy] {
+	return pulumix.Output[NatGatewayStrategy]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o NatGatewayStrategyOutput) ToStringOutput() pulumi.StringOutput {
 	return o.ToStringOutputWithContext(context.Background())
 }
@@ -115,6 +122,12 @@ func (o NatGatewayStrategyPtrOutput) ToNatGatewayStrategyPtrOutput() NatGatewayS
 
 func (o NatGatewayStrategyPtrOutput) ToNatGatewayStrategyPtrOutputWithContext(ctx context.Context) NatGatewayStrategyPtrOutput {
 	return o
+}
+
+func (o NatGatewayStrategyPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*NatGatewayStrategy] {
+	return pulumix.Output[*NatGatewayStrategy]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o NatGatewayStrategyPtrOutput) Elem() NatGatewayStrategyOutput {
@@ -177,6 +190,12 @@ func (in *natGatewayStrategyPtr) ToNatGatewayStrategyPtrOutput() NatGatewayStrat
 
 func (in *natGatewayStrategyPtr) ToNatGatewayStrategyPtrOutputWithContext(ctx context.Context) NatGatewayStrategyPtrOutput {
 	return pulumi.ToOutputWithContext(ctx, in).(NatGatewayStrategyPtrOutput)
+}
+
+func (in *natGatewayStrategyPtr) ToOutput(ctx context.Context) pulumix.Output[*NatGatewayStrategy] {
+	return pulumix.Output[*NatGatewayStrategy]{
+		OutputState: in.ToNatGatewayStrategyPtrOutputWithContext(ctx).OutputState,
+	}
 }
 
 // A type of subnet within a VPC.
@@ -251,6 +270,12 @@ func (o SubnetTypeOutput) ToSubnetTypePtrOutputWithContext(ctx context.Context) 
 	}).(SubnetTypePtrOutput)
 }
 
+func (o SubnetTypeOutput) ToOutput(ctx context.Context) pulumix.Output[SubnetType] {
+	return pulumix.Output[SubnetType]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o SubnetTypeOutput) ToStringOutput() pulumi.StringOutput {
 	return o.ToStringOutputWithContext(context.Background())
 }
@@ -284,6 +309,12 @@ func (o SubnetTypePtrOutput) ToSubnetTypePtrOutput() SubnetTypePtrOutput {
 
 func (o SubnetTypePtrOutput) ToSubnetTypePtrOutputWithContext(ctx context.Context) SubnetTypePtrOutput {
 	return o
+}
+
+func (o SubnetTypePtrOutput) ToOutput(ctx context.Context) pulumix.Output[*SubnetType] {
+	return pulumix.Output[*SubnetType]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o SubnetTypePtrOutput) Elem() SubnetTypeOutput {
@@ -346,6 +377,12 @@ func (in *subnetTypePtr) ToSubnetTypePtrOutput() SubnetTypePtrOutput {
 
 func (in *subnetTypePtr) ToSubnetTypePtrOutputWithContext(ctx context.Context) SubnetTypePtrOutput {
 	return pulumi.ToOutputWithContext(ctx, in).(SubnetTypePtrOutput)
+}
+
+func (in *subnetTypePtr) ToOutput(ctx context.Context) pulumix.Output[*SubnetType] {
+	return pulumix.Output[*SubnetType]{
+		OutputState: in.ToSubnetTypePtrOutputWithContext(ctx).OutputState,
+	}
 }
 
 func init() {

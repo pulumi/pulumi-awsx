@@ -12,7 +12,8 @@ utilities.lazyLoad(exports, ["DefaultVpc"], () => require("./defaultVpc"));
 
 export { GetDefaultVpcArgs, GetDefaultVpcResult } from "./getDefaultVpc";
 export const getDefaultVpc: typeof import("./getDefaultVpc").getDefaultVpc = null as any;
-utilities.lazyLoad(exports, ["getDefaultVpc"], () => require("./getDefaultVpc"));
+export const getDefaultVpcOutput: typeof import("./getDefaultVpc").getDefaultVpcOutput = null as any;
+utilities.lazyLoad(exports, ["getDefaultVpc","getDefaultVpcOutput"], () => require("./getDefaultVpc"));
 
 export { VpcArgs } from "./vpc";
 export type Vpc = import("./vpc").Vpc;

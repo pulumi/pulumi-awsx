@@ -8,8 +8,12 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
+
+var _ = internal.GetEnvOrDefault
 
 // Configuration for NAT Gateways.
 type NatGatewayConfiguration struct {
@@ -48,6 +52,12 @@ func (i NatGatewayConfigurationArgs) ToNatGatewayConfigurationOutput() NatGatewa
 
 func (i NatGatewayConfigurationArgs) ToNatGatewayConfigurationOutputWithContext(ctx context.Context) NatGatewayConfigurationOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(NatGatewayConfigurationOutput)
+}
+
+func (i NatGatewayConfigurationArgs) ToOutput(ctx context.Context) pulumix.Output[NatGatewayConfiguration] {
+	return pulumix.Output[NatGatewayConfiguration]{
+		OutputState: i.ToNatGatewayConfigurationOutputWithContext(ctx).OutputState,
+	}
 }
 
 func (i NatGatewayConfigurationArgs) ToNatGatewayConfigurationPtrOutput() NatGatewayConfigurationPtrOutput {
@@ -91,6 +101,12 @@ func (i *natGatewayConfigurationPtrType) ToNatGatewayConfigurationPtrOutputWithC
 	return pulumi.ToOutputWithContext(ctx, i).(NatGatewayConfigurationPtrOutput)
 }
 
+func (i *natGatewayConfigurationPtrType) ToOutput(ctx context.Context) pulumix.Output[*NatGatewayConfiguration] {
+	return pulumix.Output[*NatGatewayConfiguration]{
+		OutputState: i.ToNatGatewayConfigurationPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Configuration for NAT Gateways.
 type NatGatewayConfigurationOutput struct{ *pulumi.OutputState }
 
@@ -116,6 +132,12 @@ func (o NatGatewayConfigurationOutput) ToNatGatewayConfigurationPtrOutputWithCon
 	}).(NatGatewayConfigurationPtrOutput)
 }
 
+func (o NatGatewayConfigurationOutput) ToOutput(ctx context.Context) pulumix.Output[NatGatewayConfiguration] {
+	return pulumix.Output[NatGatewayConfiguration]{
+		OutputState: o.OutputState,
+	}
+}
+
 // A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
 func (o NatGatewayConfigurationOutput) ElasticIpAllocationIds() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v NatGatewayConfiguration) []string { return v.ElasticIpAllocationIds }).(pulumi.StringArrayOutput)
@@ -138,6 +160,12 @@ func (o NatGatewayConfigurationPtrOutput) ToNatGatewayConfigurationPtrOutput() N
 
 func (o NatGatewayConfigurationPtrOutput) ToNatGatewayConfigurationPtrOutputWithContext(ctx context.Context) NatGatewayConfigurationPtrOutput {
 	return o
+}
+
+func (o NatGatewayConfigurationPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*NatGatewayConfiguration] {
+	return pulumix.Output[*NatGatewayConfiguration]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o NatGatewayConfigurationPtrOutput) Elem() NatGatewayConfigurationOutput {
@@ -217,6 +245,12 @@ func (i SubnetSpecArgs) ToSubnetSpecOutputWithContext(ctx context.Context) Subne
 	return pulumi.ToOutputWithContext(ctx, i).(SubnetSpecOutput)
 }
 
+func (i SubnetSpecArgs) ToOutput(ctx context.Context) pulumix.Output[SubnetSpec] {
+	return pulumix.Output[SubnetSpec]{
+		OutputState: i.ToSubnetSpecOutputWithContext(ctx).OutputState,
+	}
+}
+
 // SubnetSpecArrayInput is an input type that accepts SubnetSpecArray and SubnetSpecArrayOutput values.
 // You can construct a concrete instance of `SubnetSpecArrayInput` via:
 //
@@ -242,6 +276,12 @@ func (i SubnetSpecArray) ToSubnetSpecArrayOutputWithContext(ctx context.Context)
 	return pulumi.ToOutputWithContext(ctx, i).(SubnetSpecArrayOutput)
 }
 
+func (i SubnetSpecArray) ToOutput(ctx context.Context) pulumix.Output[[]SubnetSpec] {
+	return pulumix.Output[[]SubnetSpec]{
+		OutputState: i.ToSubnetSpecArrayOutputWithContext(ctx).OutputState,
+	}
+}
+
 // Configuration for a VPC subnet.
 type SubnetSpecOutput struct{ *pulumi.OutputState }
 
@@ -255,6 +295,12 @@ func (o SubnetSpecOutput) ToSubnetSpecOutput() SubnetSpecOutput {
 
 func (o SubnetSpecOutput) ToSubnetSpecOutputWithContext(ctx context.Context) SubnetSpecOutput {
 	return o
+}
+
+func (o SubnetSpecOutput) ToOutput(ctx context.Context) pulumix.Output[SubnetSpec] {
+	return pulumix.Output[SubnetSpec]{
+		OutputState: o.OutputState,
+	}
 }
 
 // The bitmask for the subnet's CIDR block.
@@ -289,6 +335,12 @@ func (o SubnetSpecArrayOutput) ToSubnetSpecArrayOutput() SubnetSpecArrayOutput {
 
 func (o SubnetSpecArrayOutput) ToSubnetSpecArrayOutputWithContext(ctx context.Context) SubnetSpecArrayOutput {
 	return o
+}
+
+func (o SubnetSpecArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]SubnetSpec] {
+	return pulumix.Output[[]SubnetSpec]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
@@ -672,6 +724,12 @@ func (i VpcEndpointSpecArgs) ToVpcEndpointSpecOutputWithContext(ctx context.Cont
 	return pulumi.ToOutputWithContext(ctx, i).(VpcEndpointSpecOutput)
 }
 
+func (i VpcEndpointSpecArgs) ToOutput(ctx context.Context) pulumix.Output[VpcEndpointSpec] {
+	return pulumix.Output[VpcEndpointSpec]{
+		OutputState: i.ToVpcEndpointSpecOutputWithContext(ctx).OutputState,
+	}
+}
+
 // VpcEndpointSpecArrayInput is an input type that accepts VpcEndpointSpecArray and VpcEndpointSpecArrayOutput values.
 // You can construct a concrete instance of `VpcEndpointSpecArrayInput` via:
 //
@@ -695,6 +753,12 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutput() VpcEndpointSpecArra
 
 func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx context.Context) VpcEndpointSpecArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(VpcEndpointSpecArrayOutput)
+}
+
+func (i VpcEndpointSpecArray) ToOutput(ctx context.Context) pulumix.Output[[]VpcEndpointSpec] {
+	return pulumix.Output[[]VpcEndpointSpec]{
+		OutputState: i.ToVpcEndpointSpecArrayOutputWithContext(ctx).OutputState,
+	}
 }
 
 // Provides a VPC Endpoint resource.
@@ -861,6 +925,12 @@ func (o VpcEndpointSpecOutput) ToVpcEndpointSpecOutputWithContext(ctx context.Co
 	return o
 }
 
+func (o VpcEndpointSpecOutput) ToOutput(ctx context.Context) pulumix.Output[VpcEndpointSpec] {
+	return pulumix.Output[VpcEndpointSpec]{
+		OutputState: o.OutputState,
+	}
+}
+
 // Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
 func (o VpcEndpointSpecOutput) AutoAccept() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) *bool { return v.AutoAccept }).(pulumi.BoolPtrOutput)
@@ -929,6 +999,12 @@ func (o VpcEndpointSpecArrayOutput) ToVpcEndpointSpecArrayOutput() VpcEndpointSp
 
 func (o VpcEndpointSpecArrayOutput) ToVpcEndpointSpecArrayOutputWithContext(ctx context.Context) VpcEndpointSpecArrayOutput {
 	return o
+}
+
+func (o VpcEndpointSpecArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]VpcEndpointSpec] {
+	return pulumix.Output[[]VpcEndpointSpec]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o VpcEndpointSpecArrayOutput) Index(i pulumi.IntInput) VpcEndpointSpecOutput {
