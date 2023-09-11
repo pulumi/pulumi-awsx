@@ -3,6 +3,12 @@
 
 package cloudtrail
 
+import (
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+)
+
+var _ = utilities.GetEnvOrDefault
+
 // Defines the log group configuration for the CloudWatch Log Group to send logs to.
 type LogGroup struct {
 	// The ARN of the KMS Key to use when encrypting log data.

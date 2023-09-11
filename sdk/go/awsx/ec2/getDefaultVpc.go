@@ -4,6 +4,7 @@
 package ec2
 
 import (
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
@@ -11,6 +12,7 @@ import (
 //
 // Deprecated: Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.
 func GetDefaultVpc(ctx *pulumi.Context, args *GetDefaultVpcArgs, opts ...pulumi.InvokeOption) (*GetDefaultVpcResult, error) {
+	opts = utilities.PkgInvokeDefaultOpts(opts)
 	var rv GetDefaultVpcResult
 	err := ctx.Invoke("awsx:ec2:getDefaultVpc", args, &rv, opts...)
 	if err != nil {

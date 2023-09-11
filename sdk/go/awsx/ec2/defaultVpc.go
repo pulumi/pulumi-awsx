@@ -7,7 +7,9 @@ import (
 	"context"
 	"reflect"
 
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // Pseudo resource representing the default VPC and associated subnets for an account and region. This does not create any resources. This will be replaced with `getDefaultVpc` in the future.
@@ -27,6 +29,7 @@ func NewDefaultVpc(ctx *pulumi.Context,
 		args = &DefaultVpcArgs{}
 	}
 
+	opts = utilities.PkgResourceDefaultOpts(opts)
 	var resource DefaultVpc
 	err := ctx.RegisterRemoteComponentResource("awsx:ec2:DefaultVpc", name, args, &resource, opts...)
 	if err != nil {
@@ -65,6 +68,12 @@ func (i *DefaultVpc) ToDefaultVpcOutputWithContext(ctx context.Context) DefaultV
 	return pulumi.ToOutputWithContext(ctx, i).(DefaultVpcOutput)
 }
 
+func (i *DefaultVpc) ToOutput(ctx context.Context) pulumix.Output[*DefaultVpc] {
+	return pulumix.Output[*DefaultVpc]{
+		OutputState: i.ToDefaultVpcOutputWithContext(ctx).OutputState,
+	}
+}
+
 // DefaultVpcArrayInput is an input type that accepts DefaultVpcArray and DefaultVpcArrayOutput values.
 // You can construct a concrete instance of `DefaultVpcArrayInput` via:
 //
@@ -88,6 +97,12 @@ func (i DefaultVpcArray) ToDefaultVpcArrayOutput() DefaultVpcArrayOutput {
 
 func (i DefaultVpcArray) ToDefaultVpcArrayOutputWithContext(ctx context.Context) DefaultVpcArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(DefaultVpcArrayOutput)
+}
+
+func (i DefaultVpcArray) ToOutput(ctx context.Context) pulumix.Output[[]*DefaultVpc] {
+	return pulumix.Output[[]*DefaultVpc]{
+		OutputState: i.ToDefaultVpcArrayOutputWithContext(ctx).OutputState,
+	}
 }
 
 // DefaultVpcMapInput is an input type that accepts DefaultVpcMap and DefaultVpcMapOutput values.
@@ -115,6 +130,12 @@ func (i DefaultVpcMap) ToDefaultVpcMapOutputWithContext(ctx context.Context) Def
 	return pulumi.ToOutputWithContext(ctx, i).(DefaultVpcMapOutput)
 }
 
+func (i DefaultVpcMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*DefaultVpc] {
+	return pulumix.Output[map[string]*DefaultVpc]{
+		OutputState: i.ToDefaultVpcMapOutputWithContext(ctx).OutputState,
+	}
+}
+
 type DefaultVpcOutput struct{ *pulumi.OutputState }
 
 func (DefaultVpcOutput) ElementType() reflect.Type {
@@ -127,6 +148,12 @@ func (o DefaultVpcOutput) ToDefaultVpcOutput() DefaultVpcOutput {
 
 func (o DefaultVpcOutput) ToDefaultVpcOutputWithContext(ctx context.Context) DefaultVpcOutput {
 	return o
+}
+
+func (o DefaultVpcOutput) ToOutput(ctx context.Context) pulumix.Output[*DefaultVpc] {
+	return pulumix.Output[*DefaultVpc]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o DefaultVpcOutput) PrivateSubnetIds() pulumi.StringArrayOutput {
@@ -156,6 +183,12 @@ func (o DefaultVpcArrayOutput) ToDefaultVpcArrayOutputWithContext(ctx context.Co
 	return o
 }
 
+func (o DefaultVpcArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*DefaultVpc] {
+	return pulumix.Output[[]*DefaultVpc]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o DefaultVpcArrayOutput) Index(i pulumi.IntInput) DefaultVpcOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *DefaultVpc {
 		return vs[0].([]*DefaultVpc)[vs[1].(int)]
@@ -174,6 +207,12 @@ func (o DefaultVpcMapOutput) ToDefaultVpcMapOutput() DefaultVpcMapOutput {
 
 func (o DefaultVpcMapOutput) ToDefaultVpcMapOutputWithContext(ctx context.Context) DefaultVpcMapOutput {
 	return o
+}
+
+func (o DefaultVpcMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*DefaultVpc] {
+	return pulumix.Output[map[string]*DefaultVpc]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o DefaultVpcMapOutput) MapIndex(k pulumi.StringInput) DefaultVpcOutput {

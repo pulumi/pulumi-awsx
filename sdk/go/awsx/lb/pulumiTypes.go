@@ -8,8 +8,12 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
+
+var _ = utilities.GetEnvOrDefault
 
 // Provides a Load Balancer Listener resource.
 //
@@ -746,6 +750,12 @@ func (i ListenerArgs) ToListenerOutputWithContext(ctx context.Context) ListenerO
 	return pulumi.ToOutputWithContext(ctx, i).(ListenerOutput)
 }
 
+func (i ListenerArgs) ToOutput(ctx context.Context) pulumix.Output[Listener] {
+	return pulumix.Output[Listener]{
+		OutputState: i.ToListenerOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i ListenerArgs) ToListenerPtrOutput() ListenerPtrOutput {
 	return i.ToListenerPtrOutputWithContext(context.Background())
 }
@@ -787,6 +797,12 @@ func (i *listenerPtrType) ToListenerPtrOutputWithContext(ctx context.Context) Li
 	return pulumi.ToOutputWithContext(ctx, i).(ListenerPtrOutput)
 }
 
+func (i *listenerPtrType) ToOutput(ctx context.Context) pulumix.Output[*Listener] {
+	return pulumix.Output[*Listener]{
+		OutputState: i.ToListenerPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // ListenerArrayInput is an input type that accepts ListenerArray and ListenerArrayOutput values.
 // You can construct a concrete instance of `ListenerArrayInput` via:
 //
@@ -810,6 +826,12 @@ func (i ListenerArray) ToListenerArrayOutput() ListenerArrayOutput {
 
 func (i ListenerArray) ToListenerArrayOutputWithContext(ctx context.Context) ListenerArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(ListenerArrayOutput)
+}
+
+func (i ListenerArray) ToOutput(ctx context.Context) pulumix.Output[[]Listener] {
+	return pulumix.Output[[]Listener]{
+		OutputState: i.ToListenerArrayOutputWithContext(ctx).OutputState,
+	}
 }
 
 // Provides a Load Balancer Listener resource.
@@ -1173,6 +1195,12 @@ func (o ListenerOutput) ToListenerPtrOutputWithContext(ctx context.Context) List
 	}).(ListenerPtrOutput)
 }
 
+func (o ListenerOutput) ToOutput(ctx context.Context) pulumix.Output[Listener] {
+	return pulumix.Output[Listener]{
+		OutputState: o.OutputState,
+	}
+}
+
 // Name of the Application-Layer Protocol Negotiation (ALPN) policy. Can be set if `protocol` is `TLS`. Valid values are `HTTP1Only`, `HTTP2Only`, `HTTP2Optional`, `HTTP2Preferred`, and `None`.
 func (o ListenerOutput) AlpnPolicy() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v Listener) *string { return v.AlpnPolicy }).(pulumi.StringPtrOutput)
@@ -1222,6 +1250,12 @@ func (o ListenerPtrOutput) ToListenerPtrOutput() ListenerPtrOutput {
 
 func (o ListenerPtrOutput) ToListenerPtrOutputWithContext(ctx context.Context) ListenerPtrOutput {
 	return o
+}
+
+func (o ListenerPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*Listener] {
+	return pulumix.Output[*Listener]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o ListenerPtrOutput) Elem() ListenerOutput {
@@ -1318,6 +1352,12 @@ func (o ListenerArrayOutput) ToListenerArrayOutput() ListenerArrayOutput {
 
 func (o ListenerArrayOutput) ToListenerArrayOutputWithContext(ctx context.Context) ListenerArrayOutput {
 	return o
+}
+
+func (o ListenerArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]Listener] {
+	return pulumix.Output[[]Listener]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
@@ -1717,6 +1757,12 @@ func (i TargetGroupArgs) ToTargetGroupOutputWithContext(ctx context.Context) Tar
 	return pulumi.ToOutputWithContext(ctx, i).(TargetGroupOutput)
 }
 
+func (i TargetGroupArgs) ToOutput(ctx context.Context) pulumix.Output[TargetGroup] {
+	return pulumix.Output[TargetGroup]{
+		OutputState: i.ToTargetGroupOutputWithContext(ctx).OutputState,
+	}
+}
+
 func (i TargetGroupArgs) ToTargetGroupPtrOutput() TargetGroupPtrOutput {
 	return i.ToTargetGroupPtrOutputWithContext(context.Background())
 }
@@ -1756,6 +1802,12 @@ func (i *targetGroupPtrType) ToTargetGroupPtrOutput() TargetGroupPtrOutput {
 
 func (i *targetGroupPtrType) ToTargetGroupPtrOutputWithContext(ctx context.Context) TargetGroupPtrOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(TargetGroupPtrOutput)
+}
+
+func (i *targetGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*TargetGroup] {
+	return pulumix.Output[*TargetGroup]{
+		OutputState: i.ToTargetGroupPtrOutputWithContext(ctx).OutputState,
+	}
 }
 
 // Provides a Target Group resource for use with Load Balancer resources.
@@ -1915,6 +1967,12 @@ func (o TargetGroupOutput) ToTargetGroupPtrOutputWithContext(ctx context.Context
 	}).(TargetGroupPtrOutput)
 }
 
+func (o TargetGroupOutput) ToOutput(ctx context.Context) pulumix.Output[TargetGroup] {
+	return pulumix.Output[TargetGroup]{
+		OutputState: o.OutputState,
+	}
+}
+
 // Whether to terminate connections at the end of the deregistration timeout on Network Load Balancers. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-target-groups.html#deregistration-delay) for more information. Default is `false`.
 func (o TargetGroupOutput) ConnectionTermination() pulumi.BoolPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *bool { return v.ConnectionTermination }).(pulumi.BoolPtrOutput)
@@ -2035,6 +2093,12 @@ func (o TargetGroupPtrOutput) ToTargetGroupPtrOutput() TargetGroupPtrOutput {
 
 func (o TargetGroupPtrOutput) ToTargetGroupPtrOutputWithContext(ctx context.Context) TargetGroupPtrOutput {
 	return o
+}
+
+func (o TargetGroupPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TargetGroup] {
+	return pulumix.Output[*TargetGroup]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TargetGroupPtrOutput) Elem() TargetGroupOutput {

@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 type TaskDefinitionPortMappingAppProtocol string
@@ -78,6 +79,12 @@ func (o TaskDefinitionPortMappingAppProtocolOutput) ToTaskDefinitionPortMappingA
 	}).(TaskDefinitionPortMappingAppProtocolPtrOutput)
 }
 
+func (o TaskDefinitionPortMappingAppProtocolOutput) ToOutput(ctx context.Context) pulumix.Output[TaskDefinitionPortMappingAppProtocol] {
+	return pulumix.Output[TaskDefinitionPortMappingAppProtocol]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o TaskDefinitionPortMappingAppProtocolOutput) ToStringOutput() pulumi.StringOutput {
 	return o.ToStringOutputWithContext(context.Background())
 }
@@ -111,6 +118,12 @@ func (o TaskDefinitionPortMappingAppProtocolPtrOutput) ToTaskDefinitionPortMappi
 
 func (o TaskDefinitionPortMappingAppProtocolPtrOutput) ToTaskDefinitionPortMappingAppProtocolPtrOutputWithContext(ctx context.Context) TaskDefinitionPortMappingAppProtocolPtrOutput {
 	return o
+}
+
+func (o TaskDefinitionPortMappingAppProtocolPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionPortMappingAppProtocol] {
+	return pulumix.Output[*TaskDefinitionPortMappingAppProtocol]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o TaskDefinitionPortMappingAppProtocolPtrOutput) Elem() TaskDefinitionPortMappingAppProtocolOutput {
@@ -173,6 +186,12 @@ func (in *taskDefinitionPortMappingAppProtocolPtr) ToTaskDefinitionPortMappingAp
 
 func (in *taskDefinitionPortMappingAppProtocolPtr) ToTaskDefinitionPortMappingAppProtocolPtrOutputWithContext(ctx context.Context) TaskDefinitionPortMappingAppProtocolPtrOutput {
 	return pulumi.ToOutputWithContext(ctx, in).(TaskDefinitionPortMappingAppProtocolPtrOutput)
+}
+
+func (in *taskDefinitionPortMappingAppProtocolPtr) ToOutput(ctx context.Context) pulumix.Output[*TaskDefinitionPortMappingAppProtocol] {
+	return pulumix.Output[*TaskDefinitionPortMappingAppProtocol]{
+		OutputState: in.ToTaskDefinitionPortMappingAppProtocolPtrOutputWithContext(ctx).OutputState,
+	}
 }
 
 func init() {

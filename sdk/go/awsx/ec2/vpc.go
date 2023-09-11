@@ -8,7 +8,9 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 type Vpc struct {
@@ -45,6 +47,7 @@ func NewVpc(ctx *pulumi.Context,
 		args = &VpcArgs{}
 	}
 
+	opts = utilities.PkgResourceDefaultOpts(opts)
 	var resource Vpc
 	err := ctx.RegisterRemoteComponentResource("awsx:ec2:Vpc", name, args, &resource, opts...)
 	if err != nil {
@@ -155,6 +158,12 @@ func (i *Vpc) ToVpcOutputWithContext(ctx context.Context) VpcOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(VpcOutput)
 }
 
+func (i *Vpc) ToOutput(ctx context.Context) pulumix.Output[*Vpc] {
+	return pulumix.Output[*Vpc]{
+		OutputState: i.ToVpcOutputWithContext(ctx).OutputState,
+	}
+}
+
 // VpcArrayInput is an input type that accepts VpcArray and VpcArrayOutput values.
 // You can construct a concrete instance of `VpcArrayInput` via:
 //
@@ -178,6 +187,12 @@ func (i VpcArray) ToVpcArrayOutput() VpcArrayOutput {
 
 func (i VpcArray) ToVpcArrayOutputWithContext(ctx context.Context) VpcArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(VpcArrayOutput)
+}
+
+func (i VpcArray) ToOutput(ctx context.Context) pulumix.Output[[]*Vpc] {
+	return pulumix.Output[[]*Vpc]{
+		OutputState: i.ToVpcArrayOutputWithContext(ctx).OutputState,
+	}
 }
 
 // VpcMapInput is an input type that accepts VpcMap and VpcMapOutput values.
@@ -205,6 +220,12 @@ func (i VpcMap) ToVpcMapOutputWithContext(ctx context.Context) VpcMapOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(VpcMapOutput)
 }
 
+func (i VpcMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*Vpc] {
+	return pulumix.Output[map[string]*Vpc]{
+		OutputState: i.ToVpcMapOutputWithContext(ctx).OutputState,
+	}
+}
+
 type VpcOutput struct{ *pulumi.OutputState }
 
 func (VpcOutput) ElementType() reflect.Type {
@@ -217,6 +238,12 @@ func (o VpcOutput) ToVpcOutput() VpcOutput {
 
 func (o VpcOutput) ToVpcOutputWithContext(ctx context.Context) VpcOutput {
 	return o
+}
+
+func (o VpcOutput) ToOutput(ctx context.Context) pulumix.Output[*Vpc] {
+	return pulumix.Output[*Vpc]{
+		OutputState: o.OutputState,
+	}
 }
 
 // The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
@@ -294,6 +321,12 @@ func (o VpcArrayOutput) ToVpcArrayOutputWithContext(ctx context.Context) VpcArra
 	return o
 }
 
+func (o VpcArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*Vpc] {
+	return pulumix.Output[[]*Vpc]{
+		OutputState: o.OutputState,
+	}
+}
+
 func (o VpcArrayOutput) Index(i pulumi.IntInput) VpcOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *Vpc {
 		return vs[0].([]*Vpc)[vs[1].(int)]
@@ -312,6 +345,12 @@ func (o VpcMapOutput) ToVpcMapOutput() VpcMapOutput {
 
 func (o VpcMapOutput) ToVpcMapOutputWithContext(ctx context.Context) VpcMapOutput {
 	return o
+}
+
+func (o VpcMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*Vpc] {
+	return pulumix.Output[map[string]*Vpc]{
+		OutputState: o.OutputState,
+	}
 }
 
 func (o VpcMapOutput) MapIndex(k pulumi.StringInput) VpcOutput {

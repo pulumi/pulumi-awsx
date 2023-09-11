@@ -28,6 +28,7 @@
             "internalDependencies": [
                 "github.com/pulumi/pulumi-docker/sdk/v3/go/docker"
             ],
+            "internalModuleName": "utilities",
             "liftSingleValueMethodReturns": true
         },
         "java": {
