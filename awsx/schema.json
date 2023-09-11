@@ -51,6 +51,9 @@
         },
         "python": {
             "liftSingleValueMethodReturns": true,
+            "pyproject": {
+                "enabled": true
+            },
             "readme": "Pulumi Amazon Web Services (AWS) AWSX Components.",
             "requires": {
                 "pulumi": "\u003e=3.47.2,\u003c4.0.0",
