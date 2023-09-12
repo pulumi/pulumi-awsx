@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/pulumi/pulumi-awsx/sdk/v2 v2.0.0-beta.2
-	github.com/pulumi/pulumi/sdk/v3 v3.76.1
+	github.com/pulumi/pulumi/sdk/v3 v3.82.0
 )
 
 require (
@@ -34,7 +34,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-	github.com/mattn/go-runewidth v0.0.13 // indirect
+	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/opentracing/basictracer-go v1.1.0 // indirect
