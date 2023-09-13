@@ -4,10 +4,10 @@
 package cloudtrail
 
 import (
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 )
 
-var _ = utilities.GetEnvOrDefault
+var _ = internal.GetEnvOrDefault
 
 // Defines the log group configuration for the CloudWatch Log Group to send logs to.
 type LogGroup struct {

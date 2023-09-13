@@ -10,12 +10,12 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/s3"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
-var _ = utilities.GetEnvOrDefault
+var _ = internal.GetEnvOrDefault
 
 // The set of arguments for constructing a Bucket resource.
 type Bucket struct {

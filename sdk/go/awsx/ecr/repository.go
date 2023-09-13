@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecr"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -34,7 +34,7 @@ func NewRepository(ctx *pulumi.Context,
 		args = &RepositoryArgs{}
 	}
 
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Repository
 	err := ctx.RegisterRemoteComponentResource("awsx:ecr:Repository", name, args, &resource, opts...)
 	if err != nil {

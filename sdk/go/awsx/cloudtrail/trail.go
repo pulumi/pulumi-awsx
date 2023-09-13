@@ -11,7 +11,7 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cloudwatch"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/s3"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -34,7 +34,7 @@ func NewTrail(ctx *pulumi.Context,
 		args = &TrailArgs{}
 	}
 
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Trail
 	err := ctx.RegisterRemoteComponentResource("awsx:cloudtrail:Trail", name, args, &resource, opts...)
 	if err != nil {

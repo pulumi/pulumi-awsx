@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -47,7 +47,7 @@ func NewVpc(ctx *pulumi.Context,
 		args = &VpcArgs{}
 	}
 
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Vpc
 	err := ctx.RegisterRemoteComponentResource("awsx:ec2:Vpc", name, args, &resource, opts...)
 	if err != nil {

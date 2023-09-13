@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/blang/semver"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	_ "github.com/pulumi/pulumi-docker/sdk/v3/go/docker"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
@@ -33,7 +33,7 @@ func (m *module) Construct(ctx *pulumi.Context, name, typ, urn string) (r pulumi
 }
 
 func init() {
-	version, err := utilities.PkgVersion()
+	version, err := internal.PkgVersion()
 	if err != nil {
 		version = semver.Version{Major: 1}
 	}

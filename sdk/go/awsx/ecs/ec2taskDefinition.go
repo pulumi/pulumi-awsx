@@ -11,7 +11,7 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecs"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -41,7 +41,7 @@ func NewEC2TaskDefinition(ctx *pulumi.Context,
 		args = &EC2TaskDefinitionArgs{}
 	}
 
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource EC2TaskDefinition
 	err := ctx.RegisterRemoteComponentResource("awsx:ecs:EC2TaskDefinition", name, args, &resource, opts...)
 	if err != nil {

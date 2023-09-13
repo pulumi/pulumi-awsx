@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecs"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -31,7 +31,7 @@ func NewEC2Service(ctx *pulumi.Context,
 		args = &EC2ServiceArgs{}
 	}
 
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource EC2Service
 	err := ctx.RegisterRemoteComponentResource("awsx:ecs:EC2Service", name, args, &resource, opts...)
 	if err != nil {

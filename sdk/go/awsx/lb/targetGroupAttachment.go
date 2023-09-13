@@ -10,7 +10,7 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lambda"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -32,7 +32,7 @@ func NewTargetGroupAttachment(ctx *pulumi.Context,
 		args = &TargetGroupAttachmentArgs{}
 	}
 
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource TargetGroupAttachment
 	err := ctx.RegisterRemoteComponentResource("awsx:lb:TargetGroupAttachment", name, args, &resource, opts...)
 	if err != nil {

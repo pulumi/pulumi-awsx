@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"errors"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -31,7 +31,7 @@ func NewImage(ctx *pulumi.Context,
 	if args.RepositoryUrl == nil {
 		return nil, errors.New("invalid value for required argument 'RepositoryUrl'")
 	}
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource Image
 	err := ctx.RegisterRemoteComponentResource("awsx:ecr:Image", name, args, &resource, opts...)
 	if err != nil {

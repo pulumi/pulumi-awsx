@@ -8,7 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecs"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -31,7 +31,7 @@ func NewFargateService(ctx *pulumi.Context,
 		args = &FargateServiceArgs{}
 	}
 
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource FargateService
 	err := ctx.RegisterRemoteComponentResource("awsx:ecs:FargateService", name, args, &resource, opts...)
 	if err != nil {

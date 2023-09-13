@@ -10,12 +10,12 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecs"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
-var _ = utilities.GetEnvOrDefault
+var _ = internal.GetEnvOrDefault
 
 // Create a TaskDefinition resource with the given unique name, arguments, and options.
 // Creates required log-group and task & execution roles.

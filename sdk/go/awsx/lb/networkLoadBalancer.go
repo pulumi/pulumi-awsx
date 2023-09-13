@@ -9,7 +9,7 @@ import (
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -35,7 +35,7 @@ func NewNetworkLoadBalancer(ctx *pulumi.Context,
 		args = &NetworkLoadBalancerArgs{}
 	}
 
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource NetworkLoadBalancer
 	err := ctx.RegisterRemoteComponentResource("awsx:lb:NetworkLoadBalancer", name, args, &resource, opts...)
 	if err != nil {

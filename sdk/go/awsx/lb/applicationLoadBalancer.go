@@ -10,7 +10,7 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/utilities"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -41,7 +41,7 @@ func NewApplicationLoadBalancer(ctx *pulumi.Context,
 	if args.DefaultSecurityGroup != nil {
 		args.DefaultSecurityGroup = args.DefaultSecurityGroup.Defaults()
 	}
-	opts = utilities.PkgResourceDefaultOpts(opts)
+	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource ApplicationLoadBalancer
 	err := ctx.RegisterRemoteComponentResource("awsx:lb:ApplicationLoadBalancer", name, args, &resource, opts...)
 	if err != nil {
