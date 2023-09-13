@@ -20,5 +20,5 @@ const repository = new awsx.ecr.Repository("repository", { forceDelete: true });
 
 export const image = new awsx.ecr.Image("image", {
   repositoryUrl: repository.repository.repositoryUrl,
-  path: "./app",
+  context: "./app",
 }).imageUri;
