@@ -21,7 +21,6 @@ import * as utils from "../utils";
 export class Image extends schema.Image {
   constructor(name: string, args: schema.ImageArgs, opts: pulumi.ComponentResourceOptions = {}) {
     super(name, args, opts);
-    const { repositoryUrl, ...dockerArgs } = args;
     this.imageUri = pulumi.output(args).apply((args) => computeImageFromAsset(args, this));
   }
 }
@@ -70,6 +69,7 @@ export function computeImageFromAsset(
             images: dockerInputs.cacheFrom,
           }
         : undefined,
+      context: dockerInputs.context,
       platform: dockerInputs.platform,
       target: dockerInputs.target,
       builderVersion: dockerInputs.builderVersion,
