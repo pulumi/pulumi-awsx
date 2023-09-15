@@ -79,13 +79,11 @@ export function computeImageFromAsset(
 
   const image = new docker.Image(`image`, dockerImageArgs, { parent });
 
-  const uniqueImageName = image.imageName;
-
-  uniqueImageName.apply((d: any) =>
+  image.repoDigest.apply((d: any) =>
     pulumi.log.debug(`    build complete: ${imageName} (${d})`, parent),
   );
 
-  return uniqueImageName;
+  return image.repoDigest;
 }
 
 function getImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>): string {
