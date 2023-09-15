@@ -104,5 +104,5 @@ function getImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>): string {
   }
 
   buildSig += pulumi.getStack();
-  return `${utils.sha1hash(buildSig)}-container`;
+  return `docker.io/library/${utils.sha1hash(buildSig)}-container`;
 }
