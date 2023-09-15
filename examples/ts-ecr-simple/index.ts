@@ -16,9 +16,9 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const repository = new awsx.ecr.Repository("pulumi.test.registry/unicorns", { forceDelete: true });
+const repository = new awsx.ecr.Repository("repository", { forceDelete: true });
 
-export const image = new awsx.ecr.Image("pulumi.test.registry/unicorns/image", {
+export const image = new awsx.ecr.Image("image", {
   repositoryUrl: repository.repository.repositoryUrl,
   context: "./app",
 }).imageUri;
