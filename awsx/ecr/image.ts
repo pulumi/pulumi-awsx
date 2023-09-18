@@ -31,12 +31,14 @@ export function computeImageFromAsset(
   parent: pulumi.Resource,
 ) {
   const { repositoryUrl, ...dockerInputs } = args ?? {};
+
   const url = new URL("https://" + repositoryUrl); // Add protocol to help it parse
   const registryId = url.hostname.split(".")[0];
 
   pulumi.log.debug(`Building container image at '${JSON.stringify(dockerInputs)}'`, parent);
 
   const imageName = getImageName(dockerInputs);
+  const canonicalImageName = `${repositoryUrl}:${imageName}`; // TODO tag?
 
   // If we haven't, build and push the local build context to the ECR repository.  Then return
   // the unique image name we pushed to.  The name will change if the image changes ensuring
@@ -61,7 +63,7 @@ export function computeImageFromAsset(
   });
 
   const dockerImageArgs: docker.ImageArgs = {
-    imageName,
+    imageName: canonicalImageName,
     build: {
       args: dockerInputs.args,
       cacheFrom: dockerInputs.cacheFrom
