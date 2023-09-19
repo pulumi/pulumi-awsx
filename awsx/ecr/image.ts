@@ -37,8 +37,9 @@ export function computeImageFromAsset(
 
   pulumi.log.debug(`Building container image at '${JSON.stringify(dockerInputs)}'`, parent);
 
-  const imageName = getImageName(dockerInputs);
-  const canonicalImageName = `${repositoryUrl}:${imageName}`; // TODO tag?
+  const imageName = createUniqueImageName(dockerInputs);
+  // Note: the tag, if provided, is included in the image name.
+  const canonicalImageName = `${repositoryUrl}:${imageName}`;
 
   // If we haven't, build and push the local build context to the ECR repository.  Then return
   // the unique image name we pushed to.  The name will change if the image changes ensuring
@@ -88,7 +89,7 @@ export function computeImageFromAsset(
   return image.repoDigest;
 }
 
-function getImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>): string {
+function createUniqueImageName(inputs: pulumi.Unwrap<schema.DockerBuildInputs>): string {
   const { context, dockerfile, args } = inputs ?? {};
   // Produce a hash of the build context and use that for the image name.
   let buildSig: string;
