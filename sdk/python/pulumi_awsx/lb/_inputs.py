@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 import pulumi_aws
 
@@ -1444,20 +1444,41 @@ class ListenerArgs:
                
                > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
         """
+        ListenerArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            alpn_policy=alpn_policy,
+            certificate_arn=certificate_arn,
+            default_actions=default_actions,
+            port=port,
+            protocol=protocol,
+            ssl_policy=ssl_policy,
+            tags=tags,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             alpn_policy: Optional[pulumi.Input[str]] = None,
+             certificate_arn: Optional[pulumi.Input[str]] = None,
+             default_actions: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.ListenerDefaultActionArgs']]]] = None,
+             port: Optional[pulumi.Input[int]] = None,
+             protocol: Optional[pulumi.Input[str]] = None,
+             ssl_policy: Optional[pulumi.Input[str]] = None,
+             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if alpn_policy is not None:
-            pulumi.set(__self__, "alpn_policy", alpn_policy)
+            _setter("alpn_policy", alpn_policy)
         if certificate_arn is not None:
-            pulumi.set(__self__, "certificate_arn", certificate_arn)
+            _setter("certificate_arn", certificate_arn)
         if default_actions is not None:
-            pulumi.set(__self__, "default_actions", default_actions)
+            _setter("default_actions", default_actions)
         if port is not None:
-            pulumi.set(__self__, "port", port)
+            _setter("port", port)
         if protocol is not None:
-            pulumi.set(__self__, "protocol", protocol)
+            _setter("protocol", protocol)
         if ssl_policy is not None:
-            pulumi.set(__self__, "ssl_policy", ssl_policy)
+            _setter("ssl_policy", ssl_policy)
         if tags is not None:
-            pulumi.set(__self__, "tags", tags)
+            _setter("tags", tags)
 
     @property
     @pulumi.getter(name="alpnPolicy")
@@ -2064,46 +2085,93 @@ class TargetGroupArgs:
                Application Load Balancers do not support the `alb` target type.
         :param pulumi.Input[str] vpc_id: Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
         """
+        TargetGroupArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            connection_termination=connection_termination,
+            deregistration_delay=deregistration_delay,
+            health_check=health_check,
+            ip_address_type=ip_address_type,
+            lambda_multi_value_headers_enabled=lambda_multi_value_headers_enabled,
+            load_balancing_algorithm_type=load_balancing_algorithm_type,
+            load_balancing_cross_zone_enabled=load_balancing_cross_zone_enabled,
+            name=name,
+            name_prefix=name_prefix,
+            port=port,
+            preserve_client_ip=preserve_client_ip,
+            protocol=protocol,
+            protocol_version=protocol_version,
+            proxy_protocol_v2=proxy_protocol_v2,
+            slow_start=slow_start,
+            stickiness=stickiness,
+            tags=tags,
+            target_failovers=target_failovers,
+            target_type=target_type,
+            vpc_id=vpc_id,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             connection_termination: Optional[pulumi.Input[bool]] = None,
+             deregistration_delay: Optional[pulumi.Input[int]] = None,
+             health_check: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupHealthCheckArgs']] = None,
+             ip_address_type: Optional[pulumi.Input[str]] = None,
+             lambda_multi_value_headers_enabled: Optional[pulumi.Input[bool]] = None,
+             load_balancing_algorithm_type: Optional[pulumi.Input[str]] = None,
+             load_balancing_cross_zone_enabled: Optional[pulumi.Input[str]] = None,
+             name: Optional[pulumi.Input[str]] = None,
+             name_prefix: Optional[pulumi.Input[str]] = None,
+             port: Optional[pulumi.Input[int]] = None,
+             preserve_client_ip: Optional[pulumi.Input[str]] = None,
+             protocol: Optional[pulumi.Input[str]] = None,
+             protocol_version: Optional[pulumi.Input[str]] = None,
+             proxy_protocol_v2: Optional[pulumi.Input[bool]] = None,
+             slow_start: Optional[pulumi.Input[int]] = None,
+             stickiness: Optional[pulumi.Input['pulumi_aws.lb.TargetGroupStickinessArgs']] = None,
+             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             target_failovers: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.TargetGroupTargetFailoverArgs']]]] = None,
+             target_type: Optional[pulumi.Input[str]] = None,
+             vpc_id: Optional[pulumi.Input[str]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if connection_termination is not None:
-            pulumi.set(__self__, "connection_termination", connection_termination)
+            _setter("connection_termination", connection_termination)
         if deregistration_delay is not None:
-            pulumi.set(__self__, "deregistration_delay", deregistration_delay)
+            _setter("deregistration_delay", deregistration_delay)
         if health_check is not None:
-            pulumi.set(__self__, "health_check", health_check)
+            _setter("health_check", health_check)
         if ip_address_type is not None:
-            pulumi.set(__self__, "ip_address_type", ip_address_type)
+            _setter("ip_address_type", ip_address_type)
         if lambda_multi_value_headers_enabled is not None:
-            pulumi.set(__self__, "lambda_multi_value_headers_enabled", lambda_multi_value_headers_enabled)
+            _setter("lambda_multi_value_headers_enabled", lambda_multi_value_headers_enabled)
         if load_balancing_algorithm_type is not None:
-            pulumi.set(__self__, "load_balancing_algorithm_type", load_balancing_algorithm_type)
+            _setter("load_balancing_algorithm_type", load_balancing_algorithm_type)
         if load_balancing_cross_zone_enabled is not None:
-            pulumi.set(__self__, "load_balancing_cross_zone_enabled", load_balancing_cross_zone_enabled)
+            _setter("load_balancing_cross_zone_enabled", load_balancing_cross_zone_enabled)
         if name is not None:
-            pulumi.set(__self__, "name", name)
+            _setter("name", name)
         if name_prefix is not None:
-            pulumi.set(__self__, "name_prefix", name_prefix)
+            _setter("name_prefix", name_prefix)
         if port is not None:
-            pulumi.set(__self__, "port", port)
+            _setter("port", port)
         if preserve_client_ip is not None:
-            pulumi.set(__self__, "preserve_client_ip", preserve_client_ip)
+            _setter("preserve_client_ip", preserve_client_ip)
         if protocol is not None:
-            pulumi.set(__self__, "protocol", protocol)
+            _setter("protocol", protocol)
         if protocol_version is not None:
-            pulumi.set(__self__, "protocol_version", protocol_version)
+            _setter("protocol_version", protocol_version)
         if proxy_protocol_v2 is not None:
-            pulumi.set(__self__, "proxy_protocol_v2", proxy_protocol_v2)
+            _setter("proxy_protocol_v2", proxy_protocol_v2)
         if slow_start is not None:
-            pulumi.set(__self__, "slow_start", slow_start)
+            _setter("slow_start", slow_start)
         if stickiness is not None:
-            pulumi.set(__self__, "stickiness", stickiness)
+            _setter("stickiness", stickiness)
         if tags is not None:
-            pulumi.set(__self__, "tags", tags)
+            _setter("tags", tags)
         if target_failovers is not None:
-            pulumi.set(__self__, "target_failovers", target_failovers)
+            _setter("target_failovers", target_failovers)
         if target_type is not None:
-            pulumi.set(__self__, "target_type", target_type)
+            _setter("target_type", target_type)
         if vpc_id is not None:
-            pulumi.set(__self__, "vpc_id", vpc_id)
+            _setter("vpc_id", vpc_id)
 
     @property
     @pulumi.getter(name="connectionTermination")

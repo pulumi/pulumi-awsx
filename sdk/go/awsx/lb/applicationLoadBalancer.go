@@ -93,7 +93,7 @@ type applicationLoadBalancerArgs struct {
 	NamePrefix *string `pulumi:"namePrefix"`
 	// Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader *bool `pulumi:"preserveHostHeader"`
-	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.
+	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
 	SecurityGroups []string `pulumi:"securityGroups"`
 	// A list of subnet IDs to attach to the LB. Subnets
 	// cannot be updated for Load Balancers of type `network`. Changing this value
@@ -153,7 +153,7 @@ type ApplicationLoadBalancerArgs struct {
 	NamePrefix pulumi.StringPtrInput
 	// Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader pulumi.BoolPtrInput
-	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.
+	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
 	SecurityGroups pulumi.StringArrayInput
 	// A list of subnet IDs to attach to the LB. Subnets
 	// cannot be updated for Load Balancers of type `network`. Changing this value

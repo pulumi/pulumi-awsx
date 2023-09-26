@@ -6,13 +6,14 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 
 __all__ = [
     'GetDefaultVpcResult',
     'AwaitableGetDefaultVpcResult',
     'get_default_vpc',
+    'get_default_vpc_output',
 ]
 
 warnings.warn("""Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.""", DeprecationWarning)
@@ -76,3 +77,12 @@ def get_default_vpc(opts: Optional[pulumi.InvokeOptions] = None) -> AwaitableGet
         private_subnet_ids=pulumi.get(__ret__, 'private_subnet_ids'),
         public_subnet_ids=pulumi.get(__ret__, 'public_subnet_ids'),
         vpc_id=pulumi.get(__ret__, 'vpc_id'))
+
+
+@_utilities.lift_output_func(get_default_vpc)
+def get_default_vpc_output(opts: Optional[pulumi.InvokeOptions] = None) -> pulumi.Output[GetDefaultVpcResult]:
+    """
+    [NOT YET IMPLEMENTED] Get the Default VPC for a region.
+    """
+    pulumi.log.warn("""get_default_vpc is deprecated: Waiting for https://github.com/pulumi/pulumi/issues/7583. Use the DefaultVpc resource until resolved.""")
+    ...

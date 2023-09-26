@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from ._enums import *
 import pulumi_aws
@@ -27,9 +27,20 @@ class NatGatewayConfigurationArgs:
         :param 'NatGatewayStrategy' strategy: The strategy for deploying NAT Gateways.
         :param Sequence[pulumi.Input[str]] elastic_ip_allocation_ids: A list of EIP allocation IDs to assign to the NAT Gateways. Optional. If specified, the number of supplied values must match the chosen strategy (either one, or the number of availability zones).
         """
-        pulumi.set(__self__, "strategy", strategy)
+        NatGatewayConfigurationArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            strategy=strategy,
+            elastic_ip_allocation_ids=elastic_ip_allocation_ids,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             strategy: 'NatGatewayStrategy',
+             elastic_ip_allocation_ids: Optional[Sequence[pulumi.Input[str]]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
+        _setter("strategy", strategy)
         if elastic_ip_allocation_ids is not None:
-            pulumi.set(__self__, "elastic_ip_allocation_ids", elastic_ip_allocation_ids)
+            _setter("elastic_ip_allocation_ids", elastic_ip_allocation_ids)
 
     @property
     @pulumi.getter
@@ -70,13 +81,28 @@ class SubnetSpecArgs:
         :param str name: The subnet's name. Will be templated upon creation.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource.
         """
-        pulumi.set(__self__, "type", type)
+        SubnetSpecArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            type=type,
+            cidr_mask=cidr_mask,
+            name=name,
+            tags=tags,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             type: 'SubnetType',
+             cidr_mask: Optional[int] = None,
+             name: Optional[str] = None,
+             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
+        _setter("type", type)
         if cidr_mask is not None:
-            pulumi.set(__self__, "cidr_mask", cidr_mask)
+            _setter("cidr_mask", cidr_mask)
         if name is not None:
-            pulumi.set(__self__, "name", name)
+            _setter("name", name)
         if tags is not None:
-            pulumi.set(__self__, "tags", tags)
+            _setter("tags", tags)
 
     @property
     @pulumi.getter
@@ -683,27 +709,56 @@ class VpcEndpointSpecArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] vpc_endpoint_type: The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
         """
-        pulumi.set(__self__, "service_name", service_name)
+        VpcEndpointSpecArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            service_name=service_name,
+            auto_accept=auto_accept,
+            dns_options=dns_options,
+            ip_address_type=ip_address_type,
+            policy=policy,
+            private_dns_enabled=private_dns_enabled,
+            route_table_ids=route_table_ids,
+            security_group_ids=security_group_ids,
+            subnet_ids=subnet_ids,
+            tags=tags,
+            vpc_endpoint_type=vpc_endpoint_type,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             service_name: str,
+             auto_accept: Optional[bool] = None,
+             dns_options: Optional[pulumi.Input['pulumi_aws.ec2.VpcEndpointDnsOptionsArgs']] = None,
+             ip_address_type: Optional[pulumi.Input[str]] = None,
+             policy: Optional[pulumi.Input[str]] = None,
+             private_dns_enabled: Optional[bool] = None,
+             route_table_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+             security_group_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+             subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             vpc_endpoint_type: Optional[pulumi.Input[str]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
+        _setter("service_name", service_name)
         if auto_accept is not None:
-            pulumi.set(__self__, "auto_accept", auto_accept)
+            _setter("auto_accept", auto_accept)
         if dns_options is not None:
-            pulumi.set(__self__, "dns_options", dns_options)
+            _setter("dns_options", dns_options)
         if ip_address_type is not None:
-            pulumi.set(__self__, "ip_address_type", ip_address_type)
+            _setter("ip_address_type", ip_address_type)
         if policy is not None:
-            pulumi.set(__self__, "policy", policy)
+            _setter("policy", policy)
         if private_dns_enabled is not None:
-            pulumi.set(__self__, "private_dns_enabled", private_dns_enabled)
+            _setter("private_dns_enabled", private_dns_enabled)
         if route_table_ids is not None:
-            pulumi.set(__self__, "route_table_ids", route_table_ids)
+            _setter("route_table_ids", route_table_ids)
         if security_group_ids is not None:
-            pulumi.set(__self__, "security_group_ids", security_group_ids)
+            _setter("security_group_ids", security_group_ids)
         if subnet_ids is not None:
-            pulumi.set(__self__, "subnet_ids", subnet_ids)
+            _setter("subnet_ids", subnet_ids)
         if tags is not None:
-            pulumi.set(__self__, "tags", tags)
+            _setter("tags", tags)
         if vpc_endpoint_type is not None:
-            pulumi.set(__self__, "vpc_endpoint_type", vpc_endpoint_type)
+            _setter("vpc_endpoint_type", vpc_endpoint_type)
 
     @property
     @pulumi.getter(name="serviceName")

@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from ._enums import *
 
@@ -31,15 +31,32 @@ class LifecyclePolicyRuleArgs:
         :param pulumi.Input[float] maximum_number_of_images: The maximum number of images that you want to retain in your repository. Either [maximumNumberOfImages] or [maximumAgeLimit] must be provided.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] tag_prefix_list: A list of image tag prefixes on which to take action with your lifecycle policy. Only used if you specified "tagStatus": "tagged". For example, if your images are tagged as prod, prod1, prod2, and so on, you would use the tag prefix prod to specify all of them. If you specify multiple tags, only the images with all specified tags are selected.
         """
-        pulumi.set(__self__, "tag_status", tag_status)
+        LifecyclePolicyRuleArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            tag_status=tag_status,
+            description=description,
+            maximum_age_limit=maximum_age_limit,
+            maximum_number_of_images=maximum_number_of_images,
+            tag_prefix_list=tag_prefix_list,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             tag_status: pulumi.Input['LifecycleTagStatus'],
+             description: Optional[pulumi.Input[str]] = None,
+             maximum_age_limit: Optional[pulumi.Input[float]] = None,
+             maximum_number_of_images: Optional[pulumi.Input[float]] = None,
+             tag_prefix_list: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
+        _setter("tag_status", tag_status)
         if description is not None:
-            pulumi.set(__self__, "description", description)
+            _setter("description", description)
         if maximum_age_limit is not None:
-            pulumi.set(__self__, "maximum_age_limit", maximum_age_limit)
+            _setter("maximum_age_limit", maximum_age_limit)
         if maximum_number_of_images is not None:
-            pulumi.set(__self__, "maximum_number_of_images", maximum_number_of_images)
+            _setter("maximum_number_of_images", maximum_number_of_images)
         if tag_prefix_list is not None:
-            pulumi.set(__self__, "tag_prefix_list", tag_prefix_list)
+            _setter("tag_prefix_list", tag_prefix_list)
 
     @property
     @pulumi.getter(name="tagStatus")
@@ -112,10 +129,21 @@ class LifecyclePolicyArgs:
         :param pulumi.Input[Sequence[pulumi.Input['LifecyclePolicyRuleArgs']]] rules: Specifies the rules to determine how images should be retired from this repository. Rules are ordered from lowest priority to highest.  If there is a rule with a `selection` value of `any`, then it will have the highest priority.
         :param bool skip: Skips creation of the policy if set to `true`.
         """
+        LifecyclePolicyArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            rules=rules,
+            skip=skip,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             rules: Optional[pulumi.Input[Sequence[pulumi.Input['LifecyclePolicyRuleArgs']]]] = None,
+             skip: Optional[bool] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if rules is not None:
-            pulumi.set(__self__, "rules", rules)
+            _setter("rules", rules)
         if skip is not None:
-            pulumi.set(__self__, "skip", skip)
+            _setter("skip", skip)
 
     @property
     @pulumi.getter

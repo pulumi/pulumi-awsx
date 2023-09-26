@@ -205,7 +205,7 @@ namespace Pulumi.Awsx.Lb
         private InputList<string>? _securityGroups;
 
         /// <summary>
-        /// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.
+        /// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
         /// </summary>
         public InputList<string> SecurityGroups
         {

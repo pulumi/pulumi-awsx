@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from ._enums import *
 
@@ -36,23 +36,48 @@ class ImageArgs:
         :param pulumi.Input[str] platform: The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         :param pulumi.Input[str] target: The target of the dockerfile to build
         """
-        pulumi.set(__self__, "repository_url", repository_url)
+        ImageArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            repository_url=repository_url,
+            args=args,
+            builder_version=builder_version,
+            cache_from=cache_from,
+            context=context,
+            dockerfile=dockerfile,
+            extra_options=extra_options,
+            platform=platform,
+            target=target,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             repository_url: pulumi.Input[str],
+             args: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             builder_version: Optional['BuilderVersion'] = None,
+             cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+             context: Optional[pulumi.Input[str]] = None,
+             dockerfile: Optional[pulumi.Input[str]] = None,
+             extra_options: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+             platform: Optional[pulumi.Input[str]] = None,
+             target: Optional[pulumi.Input[str]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
+        _setter("repository_url", repository_url)
         if args is not None:
-            pulumi.set(__self__, "args", args)
+            _setter("args", args)
         if builder_version is not None:
-            pulumi.set(__self__, "builder_version", builder_version)
+            _setter("builder_version", builder_version)
         if cache_from is not None:
-            pulumi.set(__self__, "cache_from", cache_from)
+            _setter("cache_from", cache_from)
         if context is not None:
-            pulumi.set(__self__, "context", context)
+            _setter("context", context)
         if dockerfile is not None:
-            pulumi.set(__self__, "dockerfile", dockerfile)
+            _setter("dockerfile", dockerfile)
         if extra_options is not None:
-            pulumi.set(__self__, "extra_options", extra_options)
+            _setter("extra_options", extra_options)
         if platform is not None:
-            pulumi.set(__self__, "platform", platform)
+            _setter("platform", platform)
         if target is not None:
-            pulumi.set(__self__, "target", target)
+            _setter("target", target)
 
     @property
     @pulumi.getter(name="repositoryUrl")
@@ -212,6 +237,10 @@ class Image(pulumi.ComponentResource):
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
+            kwargs = kwargs or {}
+            def _setter(key, value):
+                kwargs[key] = value
+            ImageArgs._configure(_setter, **kwargs)
             __self__._internal_init(resource_name, *args, **kwargs)
 
     def _internal_init(__self__,
