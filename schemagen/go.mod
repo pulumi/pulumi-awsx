@@ -1,6 +1,8 @@
 module github.com/pulumi/pulumi-awsx/schemagen
 
-go 1.19
+go 1.21
+
+toolchain go1.21.1
 
 require (
 	github.com/pkg/errors v0.9.1
@@ -160,6 +162,7 @@ require (
 	github.com/pkg/browser v0.0.0-20210115035449-ce105d075bb4 // indirect
 	github.com/pkg/term v1.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/pulumi/pulumi-aws/sdk/v6 v6.3.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
