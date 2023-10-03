@@ -15,10 +15,6 @@ import * as pulumi from "@pulumi/pulumi";
 
 import { EC2TaskDefinition } from "./ec2TaskDefinition";
 
-function promiseOf<T>(output: pulumi.Output<T>): Promise<T> {
-  return new Promise((resolve) => output.apply(resolve));
-}
-
 describe("validateNetworkMode", () => {
   beforeAll(() => {
     // Put Pulumi in unit-test mode, mocking all calls to cloud-provider APIs.
@@ -50,9 +46,12 @@ describe("validateNetworkMode", () => {
         image: "fake-image",
       },
     });
-    const networkMode = await promiseOf(taskDefinition.taskDefinition.networkMode);
-    expect(networkMode).toBe("awsvpc");
+    console.log(taskDefinition);
+    taskDefinition.taskDefinition.networkMode.apply((networkMode) => {
+      expect(networkMode).toBe("awsvpc");
+    });
   });
+
   it("when network mode is set, use it", async () => {
     const taskDefinition = new EC2TaskDefinition("default", {
       container: {
@@ -61,7 +60,8 @@ describe("validateNetworkMode", () => {
       },
       networkMode: "bridge",
     });
-    const networkMode = await promiseOf(taskDefinition.taskDefinition.networkMode);
-    expect(networkMode).toBe("bridge");
+    taskDefinition.taskDefinition.networkMode.apply((networkMode) => {
+      expect(networkMode).toBe("bridge");
+    });
   });
 });
