@@ -57,7 +57,7 @@ type fargateServiceArgs struct {
 	DeploymentMaximumPercent *int `pulumi:"deploymentMaximumPercent"`
 	// Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment.
 	DeploymentMinimumHealthyPercent *int `pulumi:"deploymentMinimumHealthyPercent"`
-	// Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+	// Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
 	DesiredCount *int `pulumi:"desiredCount"`
 	// Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
 	EnableEcsManagedTags *bool `pulumi:"enableEcsManagedTags"`
@@ -115,7 +115,7 @@ type FargateServiceArgs struct {
 	DeploymentMaximumPercent pulumi.IntPtrInput
 	// Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment.
 	DeploymentMinimumHealthyPercent pulumi.IntPtrInput
-	// Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+	// Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
 	DesiredCount pulumi.IntPtrInput
 	// Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
 	EnableEcsManagedTags pulumi.BoolPtrInput

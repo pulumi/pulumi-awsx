@@ -149,14 +149,14 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+     * Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
      * 
      */
     @Import(name="desiredCount")
     private @Nullable Output<Integer> desiredCount;
 
     /**
-     * @return Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+     * @return Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
      * 
      */
     public Optional<Output<Integer>> desiredCount() {
@@ -652,7 +652,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param desiredCount Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+         * @param desiredCount Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
          * 
          * @return builder
          * 
@@ -663,7 +663,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param desiredCount Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+         * @param desiredCount Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
          * 
          * @return builder
          * 

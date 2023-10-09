@@ -55,7 +55,7 @@ class FargateServiceArgs:
         :param pulumi.Input['pulumi_aws.ecs.ServiceDeploymentControllerArgs'] deployment_controller: Configuration block for deployment controller configuration. See below.
         :param pulumi.Input[int] deployment_maximum_percent: Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment. Not valid when using the `DAEMON` scheduling strategy.
         :param pulumi.Input[int] deployment_minimum_healthy_percent: Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment.
-        :param pulumi.Input[int] desired_count: Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+        :param pulumi.Input[int] desired_count: Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
         :param pulumi.Input[bool] enable_ecs_managed_tags: Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
         :param pulumi.Input[bool] enable_execute_command: Specifies whether to enable Amazon ECS Exec for the tasks within the service.
         :param pulumi.Input[bool] force_new_deployment: Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.
@@ -230,7 +230,7 @@ class FargateServiceArgs:
     @pulumi.getter(name="desiredCount")
     def desired_count(self) -> Optional[pulumi.Input[int]]:
         """
-        Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+        Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
         """
         return pulumi.get(self, "desired_count")
 
@@ -502,7 +502,7 @@ class FargateService(pulumi.ComponentResource):
         :param pulumi.Input[pulumi.InputType['pulumi_aws.ecs.ServiceDeploymentControllerArgs']] deployment_controller: Configuration block for deployment controller configuration. See below.
         :param pulumi.Input[int] deployment_maximum_percent: Upper limit (as a percentage of the service's desiredCount) of the number of running tasks that can be running in a service during a deployment. Not valid when using the `DAEMON` scheduling strategy.
         :param pulumi.Input[int] deployment_minimum_healthy_percent: Lower limit (as a percentage of the service's desiredCount) of the number of running tasks that must remain running and healthy in a service during a deployment.
-        :param pulumi.Input[int] desired_count: Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+        :param pulumi.Input[int] desired_count: Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
         :param pulumi.Input[bool] enable_ecs_managed_tags: Specifies whether to enable Amazon ECS managed tags for the tasks within the service.
         :param pulumi.Input[bool] enable_execute_command: Specifies whether to enable Amazon ECS Exec for the tasks within the service.
         :param pulumi.Input[bool] force_new_deployment: Enable to force a new task deployment of the service. This can be used to update tasks to use a newer Docker image with same image/tag combination (e.g., `myimage:latest`), roll Fargate tasks onto a newer platform version, or immediately deploy `ordered_placement_strategy` and `placement_constraints` updates.

@@ -2487,7 +2487,7 @@
                 },
                 "desiredCount": {
                     "type": "integer",
-                    "description": "Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.\n"
+                    "description": "Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.\n"
                 },
                 "enableEcsManagedTags": {
                     "type": "boolean",

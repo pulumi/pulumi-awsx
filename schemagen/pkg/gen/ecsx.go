@@ -15,6 +15,8 @@
 package gen
 
 import (
+	"strings"
+
 	"github.com/pulumi/pulumi/pkg/v3/codegen/schema"
 )
 
@@ -119,6 +121,15 @@ func fargateService(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	delete(inputProperties, "waitForSteadyState")
 	delete(inputProperties, "capacityProviderStrategies")
 	delete(inputProperties, "orderedPlacementStrategies")
+
+	// Adjust docs to change of default value in https://github.com/pulumi/pulumi-awsx/pull/787
+	if desiredCount, ok := inputProperties["desiredCount"]; ok {
+		inputProperties["desiredCount"] = schema.PropertySpec{
+			Description: strings.Replace(desiredCount.Description, "Defaults to 0.", "Defaults to 1.", 1),
+			TypeSpec:    desiredCount.TypeSpec,
+		}
+	}
+
 	inputProperties["continueBeforeSteadyState"] = schema.PropertySpec{
 		Description: "If `true`, this provider will not wait for the service to reach a steady state (like [`aws ecs wait services-stable`](https://docs.aws.amazon.com/cli/latest/reference/ecs/wait/services-stable.html)) before continuing. Default `false`.",
 		TypeSpec: schema.TypeSpec{
