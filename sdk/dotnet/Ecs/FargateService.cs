@@ -105,7 +105,7 @@ namespace Pulumi.Awsx.Ecs
         public Input<int>? DeploymentMinimumHealthyPercent { get; set; }
 
         /// <summary>
-        /// Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+        /// Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
         /// </summary>
         [Input("desiredCount")]
         public Input<int>? DesiredCount { get; set; }

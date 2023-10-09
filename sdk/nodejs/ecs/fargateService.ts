@@ -122,7 +122,7 @@ export interface FargateServiceArgs {
      */
     deploymentMinimumHealthyPercent?: pulumi.Input<number>;
     /**
-     * Number of instances of the task definition to place and keep running. Defaults to 0. Do not specify if using the `DAEMON` scheduling strategy.
+     * Number of instances of the task definition to place and keep running. Defaults to 1. Do not specify if using the `DAEMON` scheduling strategy.
      */
     desiredCount?: pulumi.Input<number>;
     /**
