@@ -164,7 +164,6 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: ${{ env.GOVERSION }}
-          check-latest: true
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
