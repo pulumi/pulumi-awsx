@@ -1477,10 +1477,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@pulumi/aws@6.3.0":
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.3.0.tgz#71e1fa067b17991bc62e5a0029b172a260e8b9b8"
-  integrity sha512-BOuIMoPg2bD4AIxU6PZq6k/lIzZnR5JQpozEtlFEpSGj81ECALn17pPqnqlYTGCCevWySK/L+kLCj3rKVzn+7A==
+"@pulumi/aws@6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.5.0.tgz#11afe5b033be24d317b0db9918bf2e9012289515"
+  integrity sha512-oBoL+ZwQaBbnq7NiR/lrRexylj3GAu4dvg1s6AGi1fACbpvruIJgjtOecNnPaEJfiOpyoqPYuTURrBCk90R3rA==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     builtin-modules "3.0.0"
@@ -1488,10 +1488,10 @@
     read-package-tree "^5.2.1"
     resolve "^1.7.1"
 
-"@pulumi/docker@4.4.1":
-  version "4.4.1"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.4.1.tgz#40bc674360c729d39432f24438147c8525a0b0e2"
-  integrity sha512-UEYM3p8EhiC+ekNTIKvlz5s6MeaKokOmDgjXkGryLFgJcx5rIqE//VIsJ3hqJs+DYR5ePFN/znDOBSWXFakqlg==
+"@pulumi/docker@4.4.3":
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.4.3.tgz#5779aa2b294973001b821219706f7775f92b432c"
+  integrity sha512-KuA0AbPKu5gwgTbMTSPjwLltwxoOBusvQadcruZaacSwtZmxG8IwfdTiDKVdPSHZ69nCfdr9hTfdKAKXbuIjAw==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     semver "^5.4.0"
