@@ -45,6 +45,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -62,7 +63,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -145,6 +146,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -166,7 +168,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -255,6 +257,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -278,7 +281,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -382,6 +385,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -419,8 +423,8 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -464,6 +468,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// import com.pulumi.Pulumi;
     /// import com.pulumi.core.Output;
     /// import com.pulumi.aws.AwsFunctions;
+    /// import com.pulumi.aws.inputs.GetCallerIdentityArgs;
     /// import com.pulumi.aws.ec2.VpcEndpointService;
     /// import com.pulumi.aws.ec2.VpcEndpointServiceArgs;
     /// import com.pulumi.aws.ec2.VpcEndpoint;
@@ -528,12 +533,11 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// 
     /// ## Import
     /// 
-    /// VPC Endpoints can be imported using the `vpc endpoint id`, e.g.,
+    /// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
     /// 
     /// ```sh
     ///  $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
     /// ```
-    /// 
     ///  
     /// </summary>
     public sealed class VpcEndpointSpecArgs : global::Pulumi.ResourceArgs

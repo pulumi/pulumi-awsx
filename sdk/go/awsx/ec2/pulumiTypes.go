@@ -7,8 +7,8 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -366,7 +366,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -391,7 +391,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -419,7 +419,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -449,8 +449,8 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -492,7 +492,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //
 // ## Import
 //
-// VPC Endpoints can be imported using the `vpc endpoint id`, e.g.,
+// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 //
 // ```sh
 //
@@ -553,7 +553,7 @@ type VpcEndpointSpecInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -578,7 +578,7 @@ type VpcEndpointSpecInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -606,7 +606,7 @@ type VpcEndpointSpecInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -636,8 +636,8 @@ type VpcEndpointSpecInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -679,7 +679,7 @@ type VpcEndpointSpecInput interface {
 //
 // ## Import
 //
-// VPC Endpoints can be imported using the `vpc endpoint id`, e.g.,
+// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 //
 // ```sh
 //
@@ -778,7 +778,7 @@ func (i VpcEndpointSpecArray) ToOutput(ctx context.Context) pulumix.Output[[]Vpc
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -803,7 +803,7 @@ func (i VpcEndpointSpecArray) ToOutput(ctx context.Context) pulumix.Output[[]Vpc
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -831,7 +831,7 @@ func (i VpcEndpointSpecArray) ToOutput(ctx context.Context) pulumix.Output[[]Vpc
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -861,8 +861,8 @@ func (i VpcEndpointSpecArray) ToOutput(ctx context.Context) pulumix.Output[[]Vpc
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -904,7 +904,7 @@ func (i VpcEndpointSpecArray) ToOutput(ctx context.Context) pulumix.Output[[]Vpc
 //
 // ## Import
 //
-// VPC Endpoints can be imported using the `vpc endpoint id`, e.g.,
+// Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 //
 // ```sh
 //

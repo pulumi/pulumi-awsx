@@ -92,14 +92,14 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+     * Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
      * 
      */
     @Import(name="name")
     private @Nullable Output<String> name;
 
     /**
-     * @return Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+     * @return Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
      * 
      */
     public Optional<Output<String>> name() {
@@ -181,21 +181,6 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         return Optional.ofNullable(this.tags);
     }
 
-    /**
-     * A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-     * 
-     */
-    @Import(name="tagsAll")
-    private @Nullable Output<Map<String,String>> tagsAll;
-
-    /**
-     * @return A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-     * 
-     */
-    public Optional<Output<Map<String,String>>> tagsAll() {
-        return Optional.ofNullable(this.tagsAll);
-    }
-
     private RoleWithPolicyArgs() {}
 
     private RoleWithPolicyArgs(RoleWithPolicyArgs $) {
@@ -210,7 +195,6 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         this.permissionsBoundary = $.permissionsBoundary;
         this.policyArns = $.policyArns;
         this.tags = $.tags;
-        this.tagsAll = $.tagsAll;
     }
 
     public static Builder builder() {
@@ -339,7 +323,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param name Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+         * @param name Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
          * 
          * @return builder
          * 
@@ -350,7 +334,7 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param name Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+         * @param name Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
          * 
          * @return builder
          * 
@@ -462,27 +446,6 @@ public final class RoleWithPolicyArgs extends com.pulumi.resources.ResourceArgs 
          */
         public Builder tags(Map<String,String> tags) {
             return tags(Output.of(tags));
-        }
-
-        /**
-         * @param tagsAll A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder tagsAll(@Nullable Output<Map<String,String>> tagsAll) {
-            $.tagsAll = tagsAll;
-            return this;
-        }
-
-        /**
-         * @param tagsAll A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder tagsAll(Map<String,String> tagsAll) {
-            return tagsAll(Output.of(tagsAll));
         }
 
         public RoleWithPolicyArgs build() {

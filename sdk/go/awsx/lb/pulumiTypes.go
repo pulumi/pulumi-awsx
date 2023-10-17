@@ -7,8 +7,8 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -26,7 +26,7 @@ var _ = internal.GetEnvOrDefault
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -69,7 +69,7 @@ var _ = internal.GetEnvOrDefault
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -103,7 +103,7 @@ var _ = internal.GetEnvOrDefault
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -143,7 +143,7 @@ var _ = internal.GetEnvOrDefault
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -183,8 +183,8 @@ var _ = internal.GetEnvOrDefault
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cognito"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -244,7 +244,7 @@ var _ = internal.GetEnvOrDefault
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -295,7 +295,7 @@ var _ = internal.GetEnvOrDefault
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -345,7 +345,7 @@ var _ = internal.GetEnvOrDefault
 //
 // ## Import
 //
-// Listeners can be imported using their ARN, e.g.,
+// Using `pulumi import`, import listeners using their ARN. For example:
 //
 // ```sh
 //
@@ -366,6 +366,8 @@ type Listener struct {
 	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
 	SslPolicy *string `pulumi:"sslPolicy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	//
+	// > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
 	Tags map[string]string `pulumi:"tags"`
 }
 
@@ -391,7 +393,7 @@ type ListenerInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -434,7 +436,7 @@ type ListenerInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -468,7 +470,7 @@ type ListenerInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -508,7 +510,7 @@ type ListenerInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -548,8 +550,8 @@ type ListenerInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cognito"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -609,7 +611,7 @@ type ListenerInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -660,7 +662,7 @@ type ListenerInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -710,7 +712,7 @@ type ListenerInput interface {
 //
 // ## Import
 //
-// Listeners can be imported using their ARN, e.g.,
+// Using `pulumi import`, import listeners using their ARN. For example:
 //
 // ```sh
 //
@@ -731,6 +733,8 @@ type ListenerArgs struct {
 	// Name of the SSL Policy for the listener. Required if `protocol` is `HTTPS` or `TLS`.
 	SslPolicy pulumi.StringPtrInput `pulumi:"sslPolicy"`
 	// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	//
+	// > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 }
 
@@ -841,7 +845,7 @@ func (i ListenerArray) ToOutput(ctx context.Context) pulumix.Output[[]Listener] 
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -884,7 +888,7 @@ func (i ListenerArray) ToOutput(ctx context.Context) pulumix.Output[[]Listener] 
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -918,7 +922,7 @@ func (i ListenerArray) ToOutput(ctx context.Context) pulumix.Output[[]Listener] 
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -958,7 +962,7 @@ func (i ListenerArray) ToOutput(ctx context.Context) pulumix.Output[[]Listener] 
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -998,8 +1002,8 @@ func (i ListenerArray) ToOutput(ctx context.Context) pulumix.Output[[]Listener] 
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cognito"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1059,7 +1063,7 @@ func (i ListenerArray) ToOutput(ctx context.Context) pulumix.Output[[]Listener] 
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1110,7 +1114,7 @@ func (i ListenerArray) ToOutput(ctx context.Context) pulumix.Output[[]Listener] 
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1160,7 +1164,7 @@ func (i ListenerArray) ToOutput(ctx context.Context) pulumix.Output[[]Listener] 
 //
 // ## Import
 //
-// Listeners can be imported using their ARN, e.g.,
+// Using `pulumi import`, import listeners using their ARN. For example:
 //
 // ```sh
 //
@@ -1228,6 +1232,8 @@ func (o ListenerOutput) SslPolicy() pulumi.StringPtrOutput {
 }
 
 // A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+//
+// > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
 func (o ListenerOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v Listener) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
 }
@@ -1323,6 +1329,8 @@ func (o ListenerPtrOutput) SslPolicy() pulumi.StringPtrOutput {
 }
 
 // A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+//
+// > **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
 func (o ListenerPtrOutput) Tags() pulumi.StringMapOutput {
 	return o.ApplyT(func(v *Listener) map[string]string {
 		if v == nil {
@@ -1369,8 +1377,8 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1402,8 +1410,8 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1436,7 +1444,7 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1460,7 +1468,7 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1484,7 +1492,7 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //
 // ## Import
 //
-// Target Groups can be imported using their ARN, e.g.,
+// Using `pulumi import`, import Target Groups using their ARN. For example:
 //
 // ```sh
 //
@@ -1529,6 +1537,14 @@ type TargetGroup struct {
 	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
 	TargetFailovers []lb.TargetGroupTargetFailover `pulumi:"targetFailovers"`
 	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+	//
+	// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+	//
+	// If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+	//
+	// Network Load Balancers do not support the `lambda` target type.
+	//
+	// Application Load Balancers do not support the `alb` target type.
 	TargetType *string `pulumi:"targetType"`
 	// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 	VpcId *string `pulumi:"vpcId"`
@@ -1556,8 +1572,8 @@ type TargetGroupInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1589,8 +1605,8 @@ type TargetGroupInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1623,7 +1639,7 @@ type TargetGroupInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1647,7 +1663,7 @@ type TargetGroupInput interface {
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1671,7 +1687,7 @@ type TargetGroupInput interface {
 //
 // ## Import
 //
-// Target Groups can be imported using their ARN, e.g.,
+// Using `pulumi import`, import Target Groups using their ARN. For example:
 //
 // ```sh
 //
@@ -1716,6 +1732,14 @@ type TargetGroupArgs struct {
 	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
 	TargetFailovers lb.TargetGroupTargetFailoverArrayInput `pulumi:"targetFailovers"`
 	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+	//
+	// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+	//
+	// If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+	//
+	// Network Load Balancers do not support the `lambda` target type.
+	//
+	// Application Load Balancers do not support the `alb` target type.
 	TargetType pulumi.StringPtrInput `pulumi:"targetType"`
 	// Identifier of the VPC in which to create the target group. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
 	VpcId pulumi.StringPtrInput `pulumi:"vpcId"`
@@ -1797,8 +1821,8 @@ func (i *targetGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*Targe
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1830,8 +1854,8 @@ func (i *targetGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*Targe
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1864,7 +1888,7 @@ func (i *targetGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*Targe
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1888,7 +1912,7 @@ func (i *targetGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*Targe
 //
 // import (
 //
-//	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 //	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 //
 // )
@@ -1912,7 +1936,7 @@ func (i *targetGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*Targe
 //
 // ## Import
 //
-// Target Groups can be imported using their ARN, e.g.,
+// Using `pulumi import`, import Target Groups using their ARN. For example:
 //
 // ```sh
 //
@@ -2040,6 +2064,14 @@ func (o TargetGroupOutput) TargetFailovers() lb.TargetGroupTargetFailoverArrayOu
 }
 
 // Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+//
+// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+//
+// If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+//
+// Network Load Balancers do not support the `lambda` target type.
+//
+// Application Load Balancers do not support the `alb` target type.
 func (o TargetGroupOutput) TargetType() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v TargetGroup) *string { return v.TargetType }).(pulumi.StringPtrOutput)
 }
@@ -2260,6 +2292,14 @@ func (o TargetGroupPtrOutput) TargetFailovers() lb.TargetGroupTargetFailoverArra
 }
 
 // Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+//
+// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+//
+// If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+//
+// Network Load Balancers do not support the `lambda` target type.
+//
+// Application Load Balancers do not support the `alb` target type.
 func (o TargetGroupPtrOutput) TargetType() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v *TargetGroup) *string {
 		if v == nil {

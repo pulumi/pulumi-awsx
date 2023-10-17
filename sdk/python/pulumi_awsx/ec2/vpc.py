@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from ._enums import *
 from ._inputs import *
@@ -20,8 +20,6 @@ class VpcArgs:
                  assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
                  availability_zone_names: Optional[Sequence[str]] = None,
                  cidr_block: Optional[str] = None,
-                 enable_classiclink: Optional[pulumi.Input[bool]] = None,
-                 enable_classiclink_dns_support: Optional[pulumi.Input[bool]] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
                  enable_dns_support: Optional[pulumi.Input[bool]] = None,
                  enable_network_address_usage_metrics: Optional[pulumi.Input[bool]] = None,
@@ -42,11 +40,6 @@ class VpcArgs:
         :param pulumi.Input[bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
         :param Sequence[str] availability_zone_names: A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
-        :param pulumi.Input[bool] enable_classiclink: A boolean flag to enable/disable ClassicLink
-               for the VPC. Only valid in regions and accounts that support EC2 Classic.
-               See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-        :param pulumi.Input[bool] enable_classiclink_dns_support: A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-               Only valid in regions and accounts that support EC2 Classic.
         :param pulumi.Input[bool] enable_dns_hostnames: A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
         :param pulumi.Input[bool] enable_dns_support: A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
         :param pulumi.Input[bool] enable_network_address_usage_metrics: Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
@@ -63,52 +56,85 @@ class VpcArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param Sequence['VpcEndpointSpecArgs'] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
         """
+        VpcArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            assign_generated_ipv6_cidr_block=assign_generated_ipv6_cidr_block,
+            availability_zone_names=availability_zone_names,
+            cidr_block=cidr_block,
+            enable_dns_hostnames=enable_dns_hostnames,
+            enable_dns_support=enable_dns_support,
+            enable_network_address_usage_metrics=enable_network_address_usage_metrics,
+            instance_tenancy=instance_tenancy,
+            ipv4_ipam_pool_id=ipv4_ipam_pool_id,
+            ipv4_netmask_length=ipv4_netmask_length,
+            ipv6_cidr_block=ipv6_cidr_block,
+            ipv6_cidr_block_network_border_group=ipv6_cidr_block_network_border_group,
+            ipv6_ipam_pool_id=ipv6_ipam_pool_id,
+            ipv6_netmask_length=ipv6_netmask_length,
+            nat_gateways=nat_gateways,
+            number_of_availability_zones=number_of_availability_zones,
+            subnet_specs=subnet_specs,
+            tags=tags,
+            vpc_endpoint_specs=vpc_endpoint_specs,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
+             availability_zone_names: Optional[Sequence[str]] = None,
+             cidr_block: Optional[str] = None,
+             enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
+             enable_dns_support: Optional[pulumi.Input[bool]] = None,
+             enable_network_address_usage_metrics: Optional[pulumi.Input[bool]] = None,
+             instance_tenancy: Optional[pulumi.Input[str]] = None,
+             ipv4_ipam_pool_id: Optional[pulumi.Input[str]] = None,
+             ipv4_netmask_length: Optional[pulumi.Input[int]] = None,
+             ipv6_cidr_block: Optional[pulumi.Input[str]] = None,
+             ipv6_cidr_block_network_border_group: Optional[pulumi.Input[str]] = None,
+             ipv6_ipam_pool_id: Optional[pulumi.Input[str]] = None,
+             ipv6_netmask_length: Optional[pulumi.Input[int]] = None,
+             nat_gateways: Optional['NatGatewayConfigurationArgs'] = None,
+             number_of_availability_zones: Optional[int] = None,
+             subnet_specs: Optional[Sequence['SubnetSpecArgs']] = None,
+             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             vpc_endpoint_specs: Optional[Sequence['VpcEndpointSpecArgs']] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if assign_generated_ipv6_cidr_block is not None:
-            pulumi.set(__self__, "assign_generated_ipv6_cidr_block", assign_generated_ipv6_cidr_block)
+            _setter("assign_generated_ipv6_cidr_block", assign_generated_ipv6_cidr_block)
         if availability_zone_names is not None:
-            pulumi.set(__self__, "availability_zone_names", availability_zone_names)
+            _setter("availability_zone_names", availability_zone_names)
         if cidr_block is not None:
-            pulumi.set(__self__, "cidr_block", cidr_block)
-        if enable_classiclink is not None:
-            warnings.warn("""With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
-            pulumi.log.warn("""enable_classiclink is deprecated: With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""")
-        if enable_classiclink is not None:
-            pulumi.set(__self__, "enable_classiclink", enable_classiclink)
-        if enable_classiclink_dns_support is not None:
-            warnings.warn("""With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
-            pulumi.log.warn("""enable_classiclink_dns_support is deprecated: With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""")
-        if enable_classiclink_dns_support is not None:
-            pulumi.set(__self__, "enable_classiclink_dns_support", enable_classiclink_dns_support)
+            _setter("cidr_block", cidr_block)
         if enable_dns_hostnames is not None:
-            pulumi.set(__self__, "enable_dns_hostnames", enable_dns_hostnames)
+            _setter("enable_dns_hostnames", enable_dns_hostnames)
         if enable_dns_support is not None:
-            pulumi.set(__self__, "enable_dns_support", enable_dns_support)
+            _setter("enable_dns_support", enable_dns_support)
         if enable_network_address_usage_metrics is not None:
-            pulumi.set(__self__, "enable_network_address_usage_metrics", enable_network_address_usage_metrics)
+            _setter("enable_network_address_usage_metrics", enable_network_address_usage_metrics)
         if instance_tenancy is not None:
-            pulumi.set(__self__, "instance_tenancy", instance_tenancy)
+            _setter("instance_tenancy", instance_tenancy)
         if ipv4_ipam_pool_id is not None:
-            pulumi.set(__self__, "ipv4_ipam_pool_id", ipv4_ipam_pool_id)
+            _setter("ipv4_ipam_pool_id", ipv4_ipam_pool_id)
         if ipv4_netmask_length is not None:
-            pulumi.set(__self__, "ipv4_netmask_length", ipv4_netmask_length)
+            _setter("ipv4_netmask_length", ipv4_netmask_length)
         if ipv6_cidr_block is not None:
-            pulumi.set(__self__, "ipv6_cidr_block", ipv6_cidr_block)
+            _setter("ipv6_cidr_block", ipv6_cidr_block)
         if ipv6_cidr_block_network_border_group is not None:
-            pulumi.set(__self__, "ipv6_cidr_block_network_border_group", ipv6_cidr_block_network_border_group)
+            _setter("ipv6_cidr_block_network_border_group", ipv6_cidr_block_network_border_group)
         if ipv6_ipam_pool_id is not None:
-            pulumi.set(__self__, "ipv6_ipam_pool_id", ipv6_ipam_pool_id)
+            _setter("ipv6_ipam_pool_id", ipv6_ipam_pool_id)
         if ipv6_netmask_length is not None:
-            pulumi.set(__self__, "ipv6_netmask_length", ipv6_netmask_length)
+            _setter("ipv6_netmask_length", ipv6_netmask_length)
         if nat_gateways is not None:
-            pulumi.set(__self__, "nat_gateways", nat_gateways)
+            _setter("nat_gateways", nat_gateways)
         if number_of_availability_zones is not None:
-            pulumi.set(__self__, "number_of_availability_zones", number_of_availability_zones)
+            _setter("number_of_availability_zones", number_of_availability_zones)
         if subnet_specs is not None:
-            pulumi.set(__self__, "subnet_specs", subnet_specs)
+            _setter("subnet_specs", subnet_specs)
         if tags is not None:
-            pulumi.set(__self__, "tags", tags)
+            _setter("tags", tags)
         if vpc_endpoint_specs is not None:
-            pulumi.set(__self__, "vpc_endpoint_specs", vpc_endpoint_specs)
+            _setter("vpc_endpoint_specs", vpc_endpoint_specs)
 
     @property
     @pulumi.getter(name="assignGeneratedIpv6CidrBlock")
@@ -145,39 +171,6 @@ class VpcArgs:
     @cidr_block.setter
     def cidr_block(self, value: Optional[str]):
         pulumi.set(self, "cidr_block", value)
-
-    @property
-    @pulumi.getter(name="enableClassiclink")
-    def enable_classiclink(self) -> Optional[pulumi.Input[bool]]:
-        """
-        A boolean flag to enable/disable ClassicLink
-        for the VPC. Only valid in regions and accounts that support EC2 Classic.
-        See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-        """
-        warnings.warn("""With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
-        pulumi.log.warn("""enable_classiclink is deprecated: With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""")
-
-        return pulumi.get(self, "enable_classiclink")
-
-    @enable_classiclink.setter
-    def enable_classiclink(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "enable_classiclink", value)
-
-    @property
-    @pulumi.getter(name="enableClassiclinkDnsSupport")
-    def enable_classiclink_dns_support(self) -> Optional[pulumi.Input[bool]]:
-        """
-        A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-        Only valid in regions and accounts that support EC2 Classic.
-        """
-        warnings.warn("""With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
-        pulumi.log.warn("""enable_classiclink_dns_support is deprecated: With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""")
-
-        return pulumi.get(self, "enable_classiclink_dns_support")
-
-    @enable_classiclink_dns_support.setter
-    def enable_classiclink_dns_support(self, value: Optional[pulumi.Input[bool]]):
-        pulumi.set(self, "enable_classiclink_dns_support", value)
 
     @property
     @pulumi.getter(name="enableDnsHostnames")
@@ -368,8 +361,6 @@ class Vpc(pulumi.ComponentResource):
                  assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
                  availability_zone_names: Optional[Sequence[str]] = None,
                  cidr_block: Optional[str] = None,
-                 enable_classiclink: Optional[pulumi.Input[bool]] = None,
-                 enable_classiclink_dns_support: Optional[pulumi.Input[bool]] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
                  enable_dns_support: Optional[pulumi.Input[bool]] = None,
                  enable_network_address_usage_metrics: Optional[pulumi.Input[bool]] = None,
@@ -393,11 +384,6 @@ class Vpc(pulumi.ComponentResource):
         :param pulumi.Input[bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
         :param Sequence[str] availability_zone_names: A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
-        :param pulumi.Input[bool] enable_classiclink: A boolean flag to enable/disable ClassicLink
-               for the VPC. Only valid in regions and accounts that support EC2 Classic.
-               See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-        :param pulumi.Input[bool] enable_classiclink_dns_support: A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-               Only valid in regions and accounts that support EC2 Classic.
         :param pulumi.Input[bool] enable_dns_hostnames: A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
         :param pulumi.Input[bool] enable_dns_support: A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
         :param pulumi.Input[bool] enable_network_address_usage_metrics: Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
@@ -432,6 +418,10 @@ class Vpc(pulumi.ComponentResource):
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
+            kwargs = kwargs or {}
+            def _setter(key, value):
+                kwargs[key] = value
+            VpcArgs._configure(_setter, **kwargs)
             __self__._internal_init(resource_name, *args, **kwargs)
 
     def _internal_init(__self__,
@@ -440,8 +430,6 @@ class Vpc(pulumi.ComponentResource):
                  assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
                  availability_zone_names: Optional[Sequence[str]] = None,
                  cidr_block: Optional[str] = None,
-                 enable_classiclink: Optional[pulumi.Input[bool]] = None,
-                 enable_classiclink_dns_support: Optional[pulumi.Input[bool]] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
                  enable_dns_support: Optional[pulumi.Input[bool]] = None,
                  enable_network_address_usage_metrics: Optional[pulumi.Input[bool]] = None,
@@ -471,14 +459,6 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["assign_generated_ipv6_cidr_block"] = assign_generated_ipv6_cidr_block
             __props__.__dict__["availability_zone_names"] = availability_zone_names
             __props__.__dict__["cidr_block"] = cidr_block
-            if enable_classiclink is not None and not opts.urn:
-                warnings.warn("""With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
-                pulumi.log.warn("""enable_classiclink is deprecated: With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.""")
-            __props__.__dict__["enable_classiclink"] = enable_classiclink
-            if enable_classiclink_dns_support is not None and not opts.urn:
-                warnings.warn("""With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""", DeprecationWarning)
-                pulumi.log.warn("""enable_classiclink_dns_support is deprecated: With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.""")
-            __props__.__dict__["enable_classiclink_dns_support"] = enable_classiclink_dns_support
             __props__.__dict__["enable_dns_hostnames"] = enable_dns_hostnames
             __props__.__dict__["enable_dns_support"] = enable_dns_support
             __props__.__dict__["enable_network_address_usage_metrics"] = enable_network_address_usage_metrics
@@ -489,6 +469,11 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["ipv6_cidr_block_network_border_group"] = ipv6_cidr_block_network_border_group
             __props__.__dict__["ipv6_ipam_pool_id"] = ipv6_ipam_pool_id
             __props__.__dict__["ipv6_netmask_length"] = ipv6_netmask_length
+            if nat_gateways is not None and not isinstance(nat_gateways, NatGatewayConfigurationArgs):
+                nat_gateways = nat_gateways or {}
+                def _setter(key, value):
+                    nat_gateways[key] = value
+                NatGatewayConfigurationArgs._configure(_setter, **nat_gateways)
             __props__.__dict__["nat_gateways"] = nat_gateways
             __props__.__dict__["number_of_availability_zones"] = number_of_availability_zones
             __props__.__dict__["subnet_specs"] = subnet_specs

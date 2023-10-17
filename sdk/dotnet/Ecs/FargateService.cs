@@ -154,6 +154,8 @@ namespace Pulumi.Awsx.Ecs
 
         /// <summary>
         /// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+        /// 
+        /// The following arguments are optional:
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }

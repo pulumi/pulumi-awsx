@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 import pulumi_aws
 
@@ -62,6 +62,8 @@ class BucketArgs:
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLifecycleRuleArgs']]] lifecycle_rules: A configuration of [object lifecycle management](http://docs.aws.amazon.com/AmazonS3/latest/dev/object-lifecycle-mgmt.html) (documented below).
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLoggingArgs']]] loggings: A settings of [bucket logging](https://docs.aws.amazon.com/AmazonS3/latest/UG/ManagingBucketLogging.html) (documented below).
         :param pulumi.Input['pulumi_aws.s3.BucketObjectLockConfigurationArgs'] object_lock_configuration: A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+               
+               > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
         :param pulumi.Input[str] policy: A valid [bucket policy](https://docs.aws.amazon.com/AmazonS3/latest/dev/example-bucket-policies.html) JSON document. Note that if the policy document is not specific enough (but still valid), this provider may view the policy as constantly changing in a `pulumi preview`. In this case, please make sure you use the verbose/specific version of the policy.
         :param pulumi.Input['pulumi_aws.s3.BucketReplicationConfigurationArgs'] replication_configuration: A configuration of [replication configuration](http://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html) (documented below).
         :param pulumi.Input[str] request_payer: Specifies who should bear the cost of Amazon S3 data transfer.
@@ -75,48 +77,97 @@ class BucketArgs:
         :param pulumi.Input[str] website_domain: The domain of the website endpoint, if the bucket is configured with a website. If not, this will be an empty string. This is used to create Route 53 alias records.
         :param pulumi.Input[str] website_endpoint: The website endpoint, if the bucket is configured with a website. If not, this will be an empty string.
         """
+        BucketArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            acceleration_status=acceleration_status,
+            acl=acl,
+            arn=arn,
+            bucket=bucket,
+            bucket_prefix=bucket_prefix,
+            cors_rules=cors_rules,
+            force_destroy=force_destroy,
+            grants=grants,
+            hosted_zone_id=hosted_zone_id,
+            lifecycle_rules=lifecycle_rules,
+            loggings=loggings,
+            object_lock_configuration=object_lock_configuration,
+            policy=policy,
+            replication_configuration=replication_configuration,
+            request_payer=request_payer,
+            server_side_encryption_configuration=server_side_encryption_configuration,
+            tags=tags,
+            versioning=versioning,
+            website=website,
+            website_domain=website_domain,
+            website_endpoint=website_endpoint,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             acceleration_status: Optional[pulumi.Input[str]] = None,
+             acl: Optional[pulumi.Input[str]] = None,
+             arn: Optional[pulumi.Input[str]] = None,
+             bucket: Optional[pulumi.Input[str]] = None,
+             bucket_prefix: Optional[pulumi.Input[str]] = None,
+             cors_rules: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketCorsRuleArgs']]]] = None,
+             force_destroy: Optional[pulumi.Input[bool]] = None,
+             grants: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketGrantArgs']]]] = None,
+             hosted_zone_id: Optional[pulumi.Input[str]] = None,
+             lifecycle_rules: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLifecycleRuleArgs']]]] = None,
+             loggings: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.s3.BucketLoggingArgs']]]] = None,
+             object_lock_configuration: Optional[pulumi.Input['pulumi_aws.s3.BucketObjectLockConfigurationArgs']] = None,
+             policy: Optional[pulumi.Input[str]] = None,
+             replication_configuration: Optional[pulumi.Input['pulumi_aws.s3.BucketReplicationConfigurationArgs']] = None,
+             request_payer: Optional[pulumi.Input[str]] = None,
+             server_side_encryption_configuration: Optional[pulumi.Input['pulumi_aws.s3.BucketServerSideEncryptionConfigurationArgs']] = None,
+             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             versioning: Optional[pulumi.Input['pulumi_aws.s3.BucketVersioningArgs']] = None,
+             website: Optional[pulumi.Input['pulumi_aws.s3.BucketWebsiteArgs']] = None,
+             website_domain: Optional[pulumi.Input[str]] = None,
+             website_endpoint: Optional[pulumi.Input[str]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if acceleration_status is not None:
-            pulumi.set(__self__, "acceleration_status", acceleration_status)
+            _setter("acceleration_status", acceleration_status)
         if acl is not None:
-            pulumi.set(__self__, "acl", acl)
+            _setter("acl", acl)
         if arn is not None:
-            pulumi.set(__self__, "arn", arn)
+            _setter("arn", arn)
         if bucket is not None:
-            pulumi.set(__self__, "bucket", bucket)
+            _setter("bucket", bucket)
         if bucket_prefix is not None:
-            pulumi.set(__self__, "bucket_prefix", bucket_prefix)
+            _setter("bucket_prefix", bucket_prefix)
         if cors_rules is not None:
-            pulumi.set(__self__, "cors_rules", cors_rules)
+            _setter("cors_rules", cors_rules)
         if force_destroy is not None:
-            pulumi.set(__self__, "force_destroy", force_destroy)
+            _setter("force_destroy", force_destroy)
         if grants is not None:
-            pulumi.set(__self__, "grants", grants)
+            _setter("grants", grants)
         if hosted_zone_id is not None:
-            pulumi.set(__self__, "hosted_zone_id", hosted_zone_id)
+            _setter("hosted_zone_id", hosted_zone_id)
         if lifecycle_rules is not None:
-            pulumi.set(__self__, "lifecycle_rules", lifecycle_rules)
+            _setter("lifecycle_rules", lifecycle_rules)
         if loggings is not None:
-            pulumi.set(__self__, "loggings", loggings)
+            _setter("loggings", loggings)
         if object_lock_configuration is not None:
-            pulumi.set(__self__, "object_lock_configuration", object_lock_configuration)
+            _setter("object_lock_configuration", object_lock_configuration)
         if policy is not None:
-            pulumi.set(__self__, "policy", policy)
+            _setter("policy", policy)
         if replication_configuration is not None:
-            pulumi.set(__self__, "replication_configuration", replication_configuration)
+            _setter("replication_configuration", replication_configuration)
         if request_payer is not None:
-            pulumi.set(__self__, "request_payer", request_payer)
+            _setter("request_payer", request_payer)
         if server_side_encryption_configuration is not None:
-            pulumi.set(__self__, "server_side_encryption_configuration", server_side_encryption_configuration)
+            _setter("server_side_encryption_configuration", server_side_encryption_configuration)
         if tags is not None:
-            pulumi.set(__self__, "tags", tags)
+            _setter("tags", tags)
         if versioning is not None:
-            pulumi.set(__self__, "versioning", versioning)
+            _setter("versioning", versioning)
         if website is not None:
-            pulumi.set(__self__, "website", website)
+            _setter("website", website)
         if website_domain is not None:
-            pulumi.set(__self__, "website_domain", website_domain)
+            _setter("website_domain", website_domain)
         if website_endpoint is not None:
-            pulumi.set(__self__, "website_endpoint", website_endpoint)
+            _setter("website_endpoint", website_endpoint)
 
     @property
     @pulumi.getter(name="accelerationStatus")
@@ -255,6 +306,8 @@ class BucketArgs:
     def object_lock_configuration(self) -> Optional[pulumi.Input['pulumi_aws.s3.BucketObjectLockConfigurationArgs']]:
         """
         A configuration of [S3 object locking](https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock.html) (documented below)
+
+        > **NOTE:** You cannot use `acceleration_status` in `cn-north-1` or `us-gov-west-1`
         """
         return pulumi.get(self, "object_lock_configuration")
 
@@ -386,12 +439,25 @@ class DefaultLogGroupArgs:
         :param 'ExistingLogGroupArgs' existing: Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
         :param bool skip: Skip creation of the log group.
         """
+        DefaultLogGroupArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            args=args,
+            existing=existing,
+            skip=skip,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             args: Optional['LogGroupArgs'] = None,
+             existing: Optional['ExistingLogGroupArgs'] = None,
+             skip: Optional[bool] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if args is not None:
-            pulumi.set(__self__, "args", args)
+            _setter("args", args)
         if existing is not None:
-            pulumi.set(__self__, "existing", existing)
+            _setter("existing", existing)
         if skip is not None:
-            pulumi.set(__self__, "skip", skip)
+            _setter("skip", skip)
 
     @property
     @pulumi.getter
@@ -442,12 +508,25 @@ class DefaultRoleWithPolicyArgs:
         :param pulumi.Input[str] role_arn: ARN of existing role to use instead of creating a new role. Cannot be used in combination with `args` or `opts`.
         :param bool skip: Skips creation of the role if set to `true`.
         """
+        DefaultRoleWithPolicyArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            args=args,
+            role_arn=role_arn,
+            skip=skip,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             args: Optional['RoleWithPolicyArgs'] = None,
+             role_arn: Optional[pulumi.Input[str]] = None,
+             skip: Optional[bool] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if args is not None:
-            pulumi.set(__self__, "args", args)
+            _setter("args", args)
         if role_arn is not None:
-            pulumi.set(__self__, "role_arn", role_arn)
+            _setter("role_arn", role_arn)
         if skip is not None:
-            pulumi.set(__self__, "skip", skip)
+            _setter("skip", skip)
 
     @property
     @pulumi.getter
@@ -498,12 +577,25 @@ class DefaultSecurityGroupArgs:
         :param pulumi.Input[str] security_group_id: Id of existing security group to use instead of creating a new security group. Cannot be used in combination with `args` or `opts`.
         :param bool skip: Skips creation of the security group if set to `true`.
         """
+        DefaultSecurityGroupArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            args=args,
+            security_group_id=security_group_id,
+            skip=skip,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             args: Optional['SecurityGroupArgs'] = None,
+             security_group_id: Optional[pulumi.Input[str]] = None,
+             skip: Optional[bool] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if args is not None:
-            pulumi.set(__self__, "args", args)
+            _setter("args", args)
         if security_group_id is not None:
-            pulumi.set(__self__, "security_group_id", security_group_id)
+            _setter("security_group_id", security_group_id)
         if skip is not None:
-            pulumi.set(__self__, "skip", skip)
+            _setter("skip", skip)
 
     @property
     @pulumi.getter
@@ -552,10 +644,21 @@ class ExistingBucketArgs:
         :param pulumi.Input[str] arn: Arn of the bucket. Only one of [arn] or [name] can be specified.
         :param pulumi.Input[str] name: Name of the bucket. Only one of [arn] or [name] can be specified.
         """
+        ExistingBucketArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            arn=arn,
+            name=name,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             arn: Optional[pulumi.Input[str]] = None,
+             name: Optional[pulumi.Input[str]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if arn is not None:
-            pulumi.set(__self__, "arn", arn)
+            _setter("arn", arn)
         if name is not None:
-            pulumi.set(__self__, "name", name)
+            _setter("name", name)
 
     @property
     @pulumi.getter
@@ -594,12 +697,25 @@ class ExistingLogGroupArgs:
         :param pulumi.Input[str] name: Name of the log group. Only one of [arn] or [name] can be specified.
         :param pulumi.Input[str] region: Region of the log group. If not specified, the provider region will be used.
         """
+        ExistingLogGroupArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            arn=arn,
+            name=name,
+            region=region,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             arn: Optional[pulumi.Input[str]] = None,
+             name: Optional[pulumi.Input[str]] = None,
+             region: Optional[pulumi.Input[str]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if arn is not None:
-            pulumi.set(__self__, "arn", arn)
+            _setter("arn", arn)
         if name is not None:
-            pulumi.set(__self__, "name", name)
+            _setter("name", name)
         if region is not None:
-            pulumi.set(__self__, "region", region)
+            _setter("region", region)
 
     @property
     @pulumi.getter
@@ -646,8 +762,7 @@ class LogGroupArgs:
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  retention_in_days: Optional[pulumi.Input[int]] = None,
                  skip_destroy: Optional[pulumi.Input[bool]] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 tags_all: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a LogGroup resource.
         :param pulumi.Input[str] kms_key_id: The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
@@ -660,22 +775,38 @@ class LogGroupArgs:
                If you select 0, the events in the log group are always retained and never expire.
         :param pulumi.Input[bool] skip_destroy: Set to true if you do not wish the log group (and any logs it may contain) to be deleted at destroy time, and instead just remove the log group from the state.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags_all: A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
         """
+        LogGroupArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            kms_key_id=kms_key_id,
+            name=name,
+            name_prefix=name_prefix,
+            retention_in_days=retention_in_days,
+            skip_destroy=skip_destroy,
+            tags=tags,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             kms_key_id: Optional[pulumi.Input[str]] = None,
+             name: Optional[pulumi.Input[str]] = None,
+             name_prefix: Optional[pulumi.Input[str]] = None,
+             retention_in_days: Optional[pulumi.Input[int]] = None,
+             skip_destroy: Optional[pulumi.Input[bool]] = None,
+             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if kms_key_id is not None:
-            pulumi.set(__self__, "kms_key_id", kms_key_id)
+            _setter("kms_key_id", kms_key_id)
         if name is not None:
-            pulumi.set(__self__, "name", name)
+            _setter("name", name)
         if name_prefix is not None:
-            pulumi.set(__self__, "name_prefix", name_prefix)
+            _setter("name_prefix", name_prefix)
         if retention_in_days is not None:
-            pulumi.set(__self__, "retention_in_days", retention_in_days)
+            _setter("retention_in_days", retention_in_days)
         if skip_destroy is not None:
-            pulumi.set(__self__, "skip_destroy", skip_destroy)
+            _setter("skip_destroy", skip_destroy)
         if tags is not None:
-            pulumi.set(__self__, "tags", tags)
-        if tags_all is not None:
-            pulumi.set(__self__, "tags_all", tags_all)
+            _setter("tags", tags)
 
     @property
     @pulumi.getter(name="kmsKeyId")
@@ -753,18 +884,6 @@ class LogGroupArgs:
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
 
-    @property
-    @pulumi.getter(name="tagsAll")
-    def tags_all(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
-        """
-        A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-        """
-        return pulumi.get(self, "tags_all")
-
-    @tags_all.setter
-    def tags_all(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
-        pulumi.set(self, "tags_all", value)
-
 
 @pulumi.input_type
 class OptionalLogGroupArgs:
@@ -778,12 +897,25 @@ class OptionalLogGroupArgs:
         :param bool enable: Enable creation of the log group.
         :param 'ExistingLogGroupArgs' existing: Identity of an existing log group to use. Cannot be used in combination with `args` or `opts`.
         """
+        OptionalLogGroupArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            args=args,
+            enable=enable,
+            existing=existing,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             args: Optional['LogGroupArgs'] = None,
+             enable: Optional[bool] = None,
+             existing: Optional['ExistingLogGroupArgs'] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if args is not None:
-            pulumi.set(__self__, "args", args)
+            _setter("args", args)
         if enable is not None:
-            pulumi.set(__self__, "enable", enable)
+            _setter("enable", enable)
         if existing is not None:
-            pulumi.set(__self__, "existing", existing)
+            _setter("existing", existing)
 
     @property
     @pulumi.getter
@@ -832,10 +964,21 @@ class RequiredBucketArgs:
         :param 'BucketArgs' args: Arguments to use instead of the default values during creation.
         :param 'ExistingBucketArgs' existing: Identity of an existing bucket to use. Cannot be used in combination with `args`.
         """
+        RequiredBucketArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            args=args,
+            existing=existing,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             args: Optional['BucketArgs'] = None,
+             existing: Optional['ExistingBucketArgs'] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if args is not None:
-            pulumi.set(__self__, "args", args)
+            _setter("args", args)
         if existing is not None:
-            pulumi.set(__self__, "existing", existing)
+            _setter("existing", existing)
 
     @property
     @pulumi.getter
@@ -875,46 +1018,71 @@ class RoleWithPolicyArgs:
                  path: Optional[pulumi.Input[str]] = None,
                  permissions_boundary: Optional[pulumi.Input[str]] = None,
                  policy_arns: Optional[Sequence[str]] = None,
-                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-                 tags_all: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         The set of arguments for constructing a Role resource and Policy attachments.
         :param pulumi.Input[str] description: Description of the role.
         :param pulumi.Input[bool] force_detach_policies: Whether to force detaching any policies the role has before destroying it. Defaults to `false`.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgs']]] inline_policies: Configuration block defining an exclusive set of IAM inline policies associated with the IAM role. See below. If no blocks are configured, the provider will not manage any inline policies in this resource. Configuring one empty block (i.e., `inline_policy {}`) will cause the provider to remove _all_ inline policies added out of band on `apply`.
         :param pulumi.Input[int] max_session_duration: Maximum session duration (in seconds) that you want to set for the specified role. If you do not specify a value for this setting, the default maximum of one hour is applied. This setting can have a value from 1 hour to 12 hours.
-        :param pulumi.Input[str] name: Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+        :param pulumi.Input[str] name: Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
         :param pulumi.Input[str] name_prefix: Creates a unique friendly name beginning with the specified prefix. Conflicts with `name`.
         :param pulumi.Input[str] path: Path to the role. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
         :param pulumi.Input[str] permissions_boundary: ARN of the policy that is used to set the permissions boundary for the role.
         :param Sequence[str] policy_arns: ARNs of the policies to attach to the created role.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags_all: A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
         """
+        RoleWithPolicyArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            description=description,
+            force_detach_policies=force_detach_policies,
+            inline_policies=inline_policies,
+            managed_policy_arns=managed_policy_arns,
+            max_session_duration=max_session_duration,
+            name=name,
+            name_prefix=name_prefix,
+            path=path,
+            permissions_boundary=permissions_boundary,
+            policy_arns=policy_arns,
+            tags=tags,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             description: Optional[pulumi.Input[str]] = None,
+             force_detach_policies: Optional[pulumi.Input[bool]] = None,
+             inline_policies: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.iam.RoleInlinePolicyArgs']]]] = None,
+             managed_policy_arns: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+             max_session_duration: Optional[pulumi.Input[int]] = None,
+             name: Optional[pulumi.Input[str]] = None,
+             name_prefix: Optional[pulumi.Input[str]] = None,
+             path: Optional[pulumi.Input[str]] = None,
+             permissions_boundary: Optional[pulumi.Input[str]] = None,
+             policy_arns: Optional[Sequence[str]] = None,
+             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if description is not None:
-            pulumi.set(__self__, "description", description)
+            _setter("description", description)
         if force_detach_policies is not None:
-            pulumi.set(__self__, "force_detach_policies", force_detach_policies)
+            _setter("force_detach_policies", force_detach_policies)
         if inline_policies is not None:
-            pulumi.set(__self__, "inline_policies", inline_policies)
+            _setter("inline_policies", inline_policies)
         if managed_policy_arns is not None:
-            pulumi.set(__self__, "managed_policy_arns", managed_policy_arns)
+            _setter("managed_policy_arns", managed_policy_arns)
         if max_session_duration is not None:
-            pulumi.set(__self__, "max_session_duration", max_session_duration)
+            _setter("max_session_duration", max_session_duration)
         if name is not None:
-            pulumi.set(__self__, "name", name)
+            _setter("name", name)
         if name_prefix is not None:
-            pulumi.set(__self__, "name_prefix", name_prefix)
+            _setter("name_prefix", name_prefix)
         if path is not None:
-            pulumi.set(__self__, "path", path)
+            _setter("path", path)
         if permissions_boundary is not None:
-            pulumi.set(__self__, "permissions_boundary", permissions_boundary)
+            _setter("permissions_boundary", permissions_boundary)
         if policy_arns is not None:
-            pulumi.set(__self__, "policy_arns", policy_arns)
+            _setter("policy_arns", policy_arns)
         if tags is not None:
-            pulumi.set(__self__, "tags", tags)
-        if tags_all is not None:
-            pulumi.set(__self__, "tags_all", tags_all)
+            _setter("tags", tags)
 
     @property
     @pulumi.getter
@@ -977,7 +1145,7 @@ class RoleWithPolicyArgs:
     @pulumi.getter
     def name(self) -> Optional[pulumi.Input[str]]:
         """
-        Friendly name of the role. If omitted, this provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
+        Friendly name of the role. If omitted, the provider will assign a random, unique name. See [IAM Identifiers](https://docs.aws.amazon.com/IAM/latest/UserGuide/Using_Identifiers.html) for more information.
         """
         return pulumi.get(self, "name")
 
@@ -1045,18 +1213,6 @@ class RoleWithPolicyArgs:
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
 
-    @property
-    @pulumi.getter(name="tagsAll")
-    def tags_all(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
-        """
-        A map of tags assigned to the resource, including those inherited from the provider `default_tags` configuration block.
-        """
-        return pulumi.get(self, "tags_all")
-
-    @tags_all.setter
-    def tags_all(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
-        pulumi.set(self, "tags_all", value)
-
 
 @pulumi.input_type
 class SecurityGroupArgs:
@@ -1074,30 +1230,53 @@ class SecurityGroupArgs:
         :param pulumi.Input[str] description: Security group description. Defaults to `Managed by Pulumi`. Cannot be `""`. **NOTE**: This field maps to the AWS `GroupDescription` attribute, for which there is no Update API. If you'd like to classify your security groups in a way that can be updated, use `tags`.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupEgressArgs']]] egress: Configuration block for egress rules. Can be specified multiple times for each egress rule. Each egress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupIngressArgs']]] ingress: Configuration block for ingress rules. Can be specified multiple times for each ingress rule. Each ingress block supports fields documented below. This argument is processed in attribute-as-blocks mode.
-        :param pulumi.Input[str] name: Name of the security group. If omitted, this provider will assign a random, unique name.
+        :param pulumi.Input[str] name: Name of the security group. If omitted, the provider will assign a random, unique name.
         :param pulumi.Input[str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
         :param pulumi.Input[bool] revoke_rules_on_delete: Instruct the provider to revoke all of the Security Groups attached ingress and egress rules before deleting the rule itself. This is normally not needed, however certain AWS services such as Elastic Map Reduce may automatically add required rules to security groups used with the service, and those rules may contain a cyclic dependency that prevent the security groups from being destroyed without removing the dependency first. Default `false`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] vpc_id: VPC ID. Defaults to the region's default VPC.
         """
+        SecurityGroupArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            description=description,
+            egress=egress,
+            ingress=ingress,
+            name=name,
+            name_prefix=name_prefix,
+            revoke_rules_on_delete=revoke_rules_on_delete,
+            tags=tags,
+            vpc_id=vpc_id,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             description: Optional[pulumi.Input[str]] = None,
+             egress: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupEgressArgs']]]] = None,
+             ingress: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.SecurityGroupIngressArgs']]]] = None,
+             name: Optional[pulumi.Input[str]] = None,
+             name_prefix: Optional[pulumi.Input[str]] = None,
+             revoke_rules_on_delete: Optional[pulumi.Input[bool]] = None,
+             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             vpc_id: Optional[pulumi.Input[str]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
         if description is None:
             description = 'Managed by Pulumi'
         if description is not None:
-            pulumi.set(__self__, "description", description)
+            _setter("description", description)
         if egress is not None:
-            pulumi.set(__self__, "egress", egress)
+            _setter("egress", egress)
         if ingress is not None:
-            pulumi.set(__self__, "ingress", ingress)
+            _setter("ingress", ingress)
         if name is not None:
-            pulumi.set(__self__, "name", name)
+            _setter("name", name)
         if name_prefix is not None:
-            pulumi.set(__self__, "name_prefix", name_prefix)
+            _setter("name_prefix", name_prefix)
         if revoke_rules_on_delete is not None:
-            pulumi.set(__self__, "revoke_rules_on_delete", revoke_rules_on_delete)
+            _setter("revoke_rules_on_delete", revoke_rules_on_delete)
         if tags is not None:
-            pulumi.set(__self__, "tags", tags)
+            _setter("tags", tags)
         if vpc_id is not None:
-            pulumi.set(__self__, "vpc_id", vpc_id)
+            _setter("vpc_id", vpc_id)
 
     @property
     @pulumi.getter
@@ -1139,7 +1318,7 @@ class SecurityGroupArgs:
     @pulumi.getter
     def name(self) -> Optional[pulumi.Input[str]]:
         """
-        Name of the security group. If omitted, this provider will assign a random, unique name.
+        Name of the security group. If omitted, the provider will assign a random, unique name.
         """
         return pulumi.get(self, "name")
 

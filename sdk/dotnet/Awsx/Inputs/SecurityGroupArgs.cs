@@ -46,7 +46,7 @@ namespace Pulumi.Awsx.Awsx.Inputs
         }
 
         /// <summary>
-        /// Name of the security group. If omitted, this provider will assign a random, unique name.
+        /// Name of the security group. If omitted, the provider will assign a random, unique name.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }

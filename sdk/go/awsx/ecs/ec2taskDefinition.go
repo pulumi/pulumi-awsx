@@ -7,11 +7,11 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cloudwatch"
-	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ecs"
-	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/iam"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/awsx"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cloudwatch"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecs"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/iam"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )

@@ -4,7 +4,7 @@
 package cloudtrail
 
 import (
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 )
 
 var _ = internal.GetEnvOrDefault

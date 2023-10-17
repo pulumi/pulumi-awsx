@@ -68,58 +68,6 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * A boolean flag to enable/disable ClassicLink
-     * for the VPC. Only valid in regions and accounts that support EC2 Classic.
-     * See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-     * 
-     * @deprecated
-     * With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
-     * 
-     */
-    @Deprecated /* With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version. */
-    @Import(name="enableClassiclink")
-    private @Nullable Output<Boolean> enableClassiclink;
-
-    /**
-     * @return A boolean flag to enable/disable ClassicLink
-     * for the VPC. Only valid in regions and accounts that support EC2 Classic.
-     * See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-     * 
-     * @deprecated
-     * With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
-     * 
-     */
-    @Deprecated /* With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version. */
-    public Optional<Output<Boolean>> enableClassiclink() {
-        return Optional.ofNullable(this.enableClassiclink);
-    }
-
-    /**
-     * A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-     * Only valid in regions and accounts that support EC2 Classic.
-     * 
-     * @deprecated
-     * With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
-     * 
-     */
-    @Deprecated /* With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version. */
-    @Import(name="enableClassiclinkDnsSupport")
-    private @Nullable Output<Boolean> enableClassiclinkDnsSupport;
-
-    /**
-     * @return A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-     * Only valid in regions and accounts that support EC2 Classic.
-     * 
-     * @deprecated
-     * With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
-     * 
-     */
-    @Deprecated /* With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version. */
-    public Optional<Output<Boolean>> enableClassiclinkDnsSupport() {
-        return Optional.ofNullable(this.enableClassiclinkDnsSupport);
-    }
-
-    /**
      * A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
      * 
      */
@@ -350,8 +298,6 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         this.assignGeneratedIpv6CidrBlock = $.assignGeneratedIpv6CidrBlock;
         this.availabilityZoneNames = $.availabilityZoneNames;
         this.cidrBlock = $.cidrBlock;
-        this.enableClassiclink = $.enableClassiclink;
-        this.enableClassiclinkDnsSupport = $.enableClassiclinkDnsSupport;
         this.enableDnsHostnames = $.enableDnsHostnames;
         this.enableDnsSupport = $.enableDnsSupport;
         this.enableNetworkAddressUsageMetrics = $.enableNetworkAddressUsageMetrics;
@@ -438,70 +384,6 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         public Builder cidrBlock(@Nullable String cidrBlock) {
             $.cidrBlock = cidrBlock;
             return this;
-        }
-
-        /**
-         * @param enableClassiclink A boolean flag to enable/disable ClassicLink
-         * for the VPC. Only valid in regions and accounts that support EC2 Classic.
-         * See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-         * 
-         * @return builder
-         * 
-         * @deprecated
-         * With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
-         * 
-         */
-        @Deprecated /* With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version. */
-        public Builder enableClassiclink(@Nullable Output<Boolean> enableClassiclink) {
-            $.enableClassiclink = enableClassiclink;
-            return this;
-        }
-
-        /**
-         * @param enableClassiclink A boolean flag to enable/disable ClassicLink
-         * for the VPC. Only valid in regions and accounts that support EC2 Classic.
-         * See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-         * 
-         * @return builder
-         * 
-         * @deprecated
-         * With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
-         * 
-         */
-        @Deprecated /* With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version. */
-        public Builder enableClassiclink(Boolean enableClassiclink) {
-            return enableClassiclink(Output.of(enableClassiclink));
-        }
-
-        /**
-         * @param enableClassiclinkDnsSupport A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-         * Only valid in regions and accounts that support EC2 Classic.
-         * 
-         * @return builder
-         * 
-         * @deprecated
-         * With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
-         * 
-         */
-        @Deprecated /* With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version. */
-        public Builder enableClassiclinkDnsSupport(@Nullable Output<Boolean> enableClassiclinkDnsSupport) {
-            $.enableClassiclinkDnsSupport = enableClassiclinkDnsSupport;
-            return this;
-        }
-
-        /**
-         * @param enableClassiclinkDnsSupport A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-         * Only valid in regions and accounts that support EC2 Classic.
-         * 
-         * @return builder
-         * 
-         * @deprecated
-         * With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
-         * 
-         */
-        @Deprecated /* With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version. */
-        public Builder enableClassiclinkDnsSupport(Boolean enableClassiclinkDnsSupport) {
-            return enableClassiclinkDnsSupport(Output.of(enableClassiclinkDnsSupport));
         }
 
         /**

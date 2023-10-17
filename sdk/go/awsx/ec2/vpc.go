@@ -7,8 +7,8 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -63,17 +63,6 @@ type vpcArgs struct {
 	AvailabilityZoneNames []string `pulumi:"availabilityZoneNames"`
 	// The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
 	CidrBlock *string `pulumi:"cidrBlock"`
-	// A boolean flag to enable/disable ClassicLink
-	// for the VPC. Only valid in regions and accounts that support EC2 Classic.
-	// See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-	//
-	// Deprecated: With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
-	EnableClassiclink *bool `pulumi:"enableClassiclink"`
-	// A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-	// Only valid in regions and accounts that support EC2 Classic.
-	//
-	// Deprecated: With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
-	EnableClassiclinkDnsSupport *bool `pulumi:"enableClassiclinkDnsSupport"`
 	// A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
 	EnableDnsHostnames *bool `pulumi:"enableDnsHostnames"`
 	// A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
@@ -114,17 +103,6 @@ type VpcArgs struct {
 	AvailabilityZoneNames []string
 	// The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
 	CidrBlock *string
-	// A boolean flag to enable/disable ClassicLink
-	// for the VPC. Only valid in regions and accounts that support EC2 Classic.
-	// See the [ClassicLink documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/vpc-classiclink.html) for more information. Defaults false.
-	//
-	// Deprecated: With the retirement of EC2-Classic the enable_classiclink attribute has been deprecated and will be removed in a future version.
-	EnableClassiclink pulumi.BoolPtrInput
-	// A boolean flag to enable/disable ClassicLink DNS Support for the VPC.
-	// Only valid in regions and accounts that support EC2 Classic.
-	//
-	// Deprecated: With the retirement of EC2-Classic the enable_classiclink_dns_support attribute has been deprecated and will be removed in a future version.
-	EnableClassiclinkDnsSupport pulumi.BoolPtrInput
 	// A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
 	EnableDnsHostnames pulumi.BoolPtrInput
 	// A boolean flag to enable/disable DNS support in the VPC. Defaults to true.

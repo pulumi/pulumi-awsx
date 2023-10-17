@@ -11,7 +11,7 @@ GZIP_PREFIX		:= pulumi-resource-${PACK}-v${VERSION}
 BIN				:= ${PROVIDER}
 
 JAVA_GEN 		 := pulumi-java-gen
-JAVA_GEN_VERSION := v0.9.2
+JAVA_GEN_VERSION := v0.9.7
 
 AWSX_SRC 		:= $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
 AWSX_CLASSIC_SRC:= $(wildcard awsx-classic/*.*) $(wildcard awsx-classic/*/*.ts)
@@ -116,7 +116,7 @@ sdk/go:: bin/${CODEGEN} awsx/schema.json
 	rm -rf sdk/go
 	bin/${CODEGEN} go sdk/go awsx/schema.json $(VERSION)
 	cd sdk && \
-		go get github.com/pulumi/pulumi-aws/sdk/v5@v$(AWS_VERSION) && \
+		go get github.com/pulumi/pulumi-aws/sdk/v6@v$(AWS_VERSION) && \
 		go mod tidy && \
 		go test -v ./... -check.vv
 

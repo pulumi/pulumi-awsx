@@ -37,7 +37,7 @@ func TestAccEcsCapacityProviderService(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
-			Dir:           filepath.Join(getCwd(t), "ecs", "capacity-provider-service-with-cluster-default-strategies"),
+			Dir:           filepath.Join(getCwd(t), "ecs", "nodejs"),
 		})
 
 	integration.ProgramTest(t, &test)

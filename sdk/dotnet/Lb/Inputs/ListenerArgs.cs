@@ -61,6 +61,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -95,7 +96,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -226,6 +227,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -254,7 +256,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -376,6 +378,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -410,7 +413,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -547,6 +550,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -581,7 +585,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -746,6 +750,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -797,8 +802,8 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/cognito"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/cognito"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -1004,6 +1009,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -1049,7 +1055,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -1227,6 +1233,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -1275,7 +1282,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -1406,12 +1413,11 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// ## Import
     /// 
-    /// Listeners can be imported using their ARN, e.g.,
+    /// Using `pulumi import`, import listeners using their ARN. For example:
     /// 
     /// ```sh
     ///  $ pulumi import aws:lb/listener:Listener front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:listener/app/front-end-alb/8e4497da625e2d8a/9ab28ade35828f96
     /// ```
-    /// 
     ///  
     /// </summary>
     public sealed class ListenerArgs : global::Pulumi.ResourceArgs
@@ -1463,6 +1469,8 @@ namespace Pulumi.Awsx.Lb.Inputs
 
         /// <summary>
         /// A map of tags to assign to the resource. .If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// 
+        /// &gt; **NOTE::** Please note that listeners that are attached to Application Load Balancers must use either `HTTP` or `HTTPS` protocols while listeners that are attached to Network Load Balancers must use the `TCP` protocol.
         /// </summary>
         public InputMap<string> Tags
         {

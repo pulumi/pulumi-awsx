@@ -7,10 +7,10 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/awsx"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -73,11 +73,11 @@ type applicationLoadBalancerArgs struct {
 	EnableTlsVersionAndCipherSuiteHeaders *bool `pulumi:"enableTlsVersionAndCipherSuiteHeaders"`
 	// Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
 	EnableWafFailOpen *bool `pulumi:"enableWafFailOpen"`
-	// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+	// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
 	EnableXffClientPort *bool `pulumi:"enableXffClientPort"`
 	// The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
 	IdleTimeout *int `pulumi:"idleTimeout"`
-	// If true, the LB will be internal.
+	// If true, the LB will be internal. Defaults to `false`.
 	Internal *bool `pulumi:"internal"`
 	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
 	IpAddressType *string `pulumi:"ipAddressType"`
@@ -93,7 +93,7 @@ type applicationLoadBalancerArgs struct {
 	NamePrefix *string `pulumi:"namePrefix"`
 	// Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader *bool `pulumi:"preserveHostHeader"`
-	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.
+	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
 	SecurityGroups []string `pulumi:"securityGroups"`
 	// A list of subnet IDs to attach to the LB. Subnets
 	// cannot be updated for Load Balancers of type `network`. Changing this value
@@ -133,11 +133,11 @@ type ApplicationLoadBalancerArgs struct {
 	EnableTlsVersionAndCipherSuiteHeaders pulumi.BoolPtrInput
 	// Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
 	EnableWafFailOpen pulumi.BoolPtrInput
-	// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+	// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
 	EnableXffClientPort pulumi.BoolPtrInput
 	// The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
 	IdleTimeout pulumi.IntPtrInput
-	// If true, the LB will be internal.
+	// If true, the LB will be internal. Defaults to `false`.
 	Internal pulumi.BoolPtrInput
 	// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
 	IpAddressType pulumi.StringPtrInput
@@ -153,7 +153,7 @@ type ApplicationLoadBalancerArgs struct {
 	NamePrefix pulumi.StringPtrInput
 	// Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader pulumi.BoolPtrInput
-	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.
+	// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
 	SecurityGroups pulumi.StringArrayInput
 	// A list of subnet IDs to attach to the LB. Subnets
 	// cannot be updated for Load Balancers of type `network`. Changing this value

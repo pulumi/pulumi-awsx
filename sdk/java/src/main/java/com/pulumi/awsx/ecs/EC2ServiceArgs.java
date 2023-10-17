@@ -242,12 +242,16 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
     /**
      * Name of the service (up to 255 letters, numbers, hyphens, and underscores)
      * 
+     * The following arguments are optional:
+     * 
      */
     @Import(name="name")
     private @Nullable Output<String> name;
 
     /**
      * @return Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+     * 
+     * The following arguments are optional:
      * 
      */
     public Optional<Output<String>> name() {
@@ -791,6 +795,8 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
         /**
          * @param name Name of the service (up to 255 letters, numbers, hyphens, and underscores)
          * 
+         * The following arguments are optional:
+         * 
          * @return builder
          * 
          */
@@ -801,6 +807,8 @@ public final class EC2ServiceArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param name Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+         * 
+         * The following arguments are optional:
          * 
          * @return builder
          * 

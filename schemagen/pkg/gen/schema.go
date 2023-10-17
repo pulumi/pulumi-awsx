@@ -17,6 +17,7 @@ package gen
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -56,29 +57,33 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"packageReferences": map[string]string{
 					// We use .* format rather than [x,y) because then it prefers the maximum satisfiable version
 					"Pulumi":        "3.*",
-					"Pulumi.Aws":    "5.*",
-					"Pulumi.Docker": "3.*",
+					"Pulumi.Aws":    "6.*",
+					"Pulumi.Docker": "4.*",
 				},
 				"liftSingleValueMethodReturns": true,
 			}),
 			"go": rawMessage(map[string]interface{}{
 				"generateResourceContainerTypes": true,
-				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/go/awsx",
+				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx",
 				"liftSingleValueMethodReturns":   true,
-				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v3/go/docker"},
+				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v4/go/docker"},
 			}),
 			"java": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
-					"com.pulumi:aws": dependencies.Aws,
+					"com.pulumi:aws":    dependencies.Aws,
+					"com.pulumi:docker": dependencies.Docker,
 				},
 			}),
 			"nodejs": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
-					"@pulumi/pulumi":    "^3.0.0",
-					"@pulumi/aws":       "^" + dependencies.Aws,
-					"@pulumi/docker":    "^" + dependencies.Docker,
-					"@types/aws-lambda": "^8.10.23",
-					"mime":              "^2.0.0",
+					"@aws-sdk/client-ecs": "^3.405.0",
+					"@pulumi/pulumi":      "^3.0.0",
+					"@pulumi/aws":         "^" + dependencies.Aws,
+					"@pulumi/docker":      "^" + dependencies.Docker,
+					"docker-classic":      "npm:@pulumi/docker@3.6.1",
+					"@types/aws-lambda":   "^8.10.23",
+					"aws-sdk":             "^2.1450.0",
+					"mime":                "^2.0.0",
 				},
 				"devDependencies": map[string]string{
 					"@types/node": "^18",
@@ -88,9 +93,9 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 			}),
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
-					"pulumi":        ">=3.47.2,<4.0.0",
-					"pulumi-aws":    fmt.Sprintf(">=%s,<6.0.0", dependencies.Aws),
-					"pulumi-docker": fmt.Sprintf(">=%s,<4.0.0", dependencies.Docker),
+					"pulumi":        ">=3.76.1,<4.0.0",
+					"pulumi-aws":    ">=6.0.4,<7.0.0",
+					"pulumi-docker": fmt.Sprintf(">=%s,<5.0.0", dependencies.Docker),
 				},
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",
@@ -118,7 +123,13 @@ func packageRef(spec schema.PackageSpec, ref string) string {
 }
 
 func getPackageSpec(name, version string) schema.PackageSpec {
-	url := fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-%s/v%s/provider/cmd/pulumi-resource-%s/schema.json", name, version, name)
+	// If the version has a commit hash, strip it off since they are not used in GitHub URLs by tag.
+	urlVersion := version
+	if before, _, found := strings.Cut(version, "+"); found {
+		urlVersion = before
+	}
+
+	url := fmt.Sprintf("https://raw.githubusercontent.com/pulumi/pulumi-%s/v%s/provider/cmd/pulumi-resource-%s/schema.json", name, urlVersion, name)
 	spec := getSpecFromUrl(url)
 	if spec.Version == "" {
 		// Version is rarely included, so we'll just add it.
@@ -130,16 +141,16 @@ func getPackageSpec(name, version string) schema.PackageSpec {
 func getSpecFromUrl(url string) schema.PackageSpec {
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not GET %s: %v", url, err)
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not read %s: %v", url, err)
 	}
 	var spec schema.PackageSpec
 	err = json.Unmarshal(body, &spec)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Could not parse %s: %v", url, err)
 	}
 
 	return spec
@@ -259,4 +270,8 @@ func readPackageDependencies(packageDir string) Dependencies {
 	}
 
 	return payload.Dependencies
+}
+
+func localRef(module string, name string) string {
+	return fmt.Sprintf("#/types/awsx:%s:%s", module, name)
 }

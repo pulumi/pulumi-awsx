@@ -140,7 +140,7 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? EnableWafFailOpen { get; set; }
 
         /// <summary>
-        /// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `true`.
+        /// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
         /// </summary>
         [Input("enableXffClientPort")]
         public Input<bool>? EnableXffClientPort { get; set; }
@@ -152,7 +152,7 @@ namespace Pulumi.Awsx.Lb
         public Input<int>? IdleTimeout { get; set; }
 
         /// <summary>
-        /// If true, the LB will be internal.
+        /// If true, the LB will be internal. Defaults to `false`.
         /// </summary>
         [Input("internal")]
         public Input<bool>? Internal { get; set; }
@@ -205,7 +205,7 @@ namespace Pulumi.Awsx.Lb
         private InputList<string>? _securityGroups;
 
         /// <summary>
-        /// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application`.
+        /// A list of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
         /// </summary>
         public InputList<string> SecurityGroups
         {

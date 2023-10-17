@@ -7,8 +7,8 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ecs"
-	"github.com/pulumi/pulumi-awsx/sdk/go/awsx/internal"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecs"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
@@ -70,6 +70,8 @@ type ec2serviceArgs struct {
 	// Configuration block for load balancers. See below.
 	LoadBalancers []ecs.ServiceLoadBalancer `pulumi:"loadBalancers"`
 	// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+	//
+	// The following arguments are optional:
 	Name *string `pulumi:"name"`
 	// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
 	NetworkConfiguration *ecs.ServiceNetworkConfiguration `pulumi:"networkConfiguration"`
@@ -128,6 +130,8 @@ type EC2ServiceArgs struct {
 	// Configuration block for load balancers. See below.
 	LoadBalancers ecs.ServiceLoadBalancerArrayInput
 	// Name of the service (up to 255 letters, numbers, hyphens, and underscores)
+	//
+	// The following arguments are optional:
 	Name pulumi.StringPtrInput
 	// Network configuration for the service. This parameter is required for task definitions that use the `awsvpc` network mode to receive their own Elastic Network Interface, and it is not supported for other network modes. See below.
 	NetworkConfiguration ecs.ServiceNetworkConfigurationPtrInput

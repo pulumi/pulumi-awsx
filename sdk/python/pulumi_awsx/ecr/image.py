@@ -6,8 +6,9 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
+from ._enums import *
 
 __all__ = ['ImageArgs', 'Image']
 
@@ -16,38 +17,67 @@ class ImageArgs:
     def __init__(__self__, *,
                  repository_url: pulumi.Input[str],
                  args: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 builder_version: Optional['BuilderVersion'] = None,
                  cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 context: Optional[pulumi.Input[str]] = None,
                  dockerfile: Optional[pulumi.Input[str]] = None,
-                 env: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  extra_options: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 path: Optional[pulumi.Input[str]] = None,
+                 platform: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None):
         """
         The set of arguments for constructing a Image resource.
         :param pulumi.Input[str] repository_url: Url of the repository
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+        :param 'BuilderVersion' builder_version: The version of the Docker builder.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_from: Images to consider as cache sources
+        :param pulumi.Input[str] context: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
         :param pulumi.Input[str] dockerfile: dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] env: Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] extra_options: An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-        :param pulumi.Input[str] path: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+        :param pulumi.Input[str] platform: The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         :param pulumi.Input[str] target: The target of the dockerfile to build
         """
-        pulumi.set(__self__, "repository_url", repository_url)
+        ImageArgs._configure(
+            lambda key, value: pulumi.set(__self__, key, value),
+            repository_url=repository_url,
+            args=args,
+            builder_version=builder_version,
+            cache_from=cache_from,
+            context=context,
+            dockerfile=dockerfile,
+            extra_options=extra_options,
+            platform=platform,
+            target=target,
+        )
+    @staticmethod
+    def _configure(
+             _setter: Callable[[Any, Any], None],
+             repository_url: pulumi.Input[str],
+             args: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+             builder_version: Optional['BuilderVersion'] = None,
+             cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+             context: Optional[pulumi.Input[str]] = None,
+             dockerfile: Optional[pulumi.Input[str]] = None,
+             extra_options: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+             platform: Optional[pulumi.Input[str]] = None,
+             target: Optional[pulumi.Input[str]] = None,
+             opts: Optional[pulumi.ResourceOptions]=None):
+        _setter("repository_url", repository_url)
         if args is not None:
-            pulumi.set(__self__, "args", args)
+            _setter("args", args)
+        if builder_version is not None:
+            _setter("builder_version", builder_version)
         if cache_from is not None:
-            pulumi.set(__self__, "cache_from", cache_from)
+            _setter("cache_from", cache_from)
+        if context is not None:
+            _setter("context", context)
         if dockerfile is not None:
-            pulumi.set(__self__, "dockerfile", dockerfile)
-        if env is not None:
-            pulumi.set(__self__, "env", env)
+            _setter("dockerfile", dockerfile)
         if extra_options is not None:
-            pulumi.set(__self__, "extra_options", extra_options)
-        if path is not None:
-            pulumi.set(__self__, "path", path)
+            _setter("extra_options", extra_options)
+        if platform is not None:
+            _setter("platform", platform)
         if target is not None:
-            pulumi.set(__self__, "target", target)
+            _setter("target", target)
 
     @property
     @pulumi.getter(name="repositoryUrl")
@@ -74,6 +104,18 @@ class ImageArgs:
         pulumi.set(self, "args", value)
 
     @property
+    @pulumi.getter(name="builderVersion")
+    def builder_version(self) -> Optional['BuilderVersion']:
+        """
+        The version of the Docker builder.
+        """
+        return pulumi.get(self, "builder_version")
+
+    @builder_version.setter
+    def builder_version(self, value: Optional['BuilderVersion']):
+        pulumi.set(self, "builder_version", value)
+
+    @property
     @pulumi.getter(name="cacheFrom")
     def cache_from(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
         """
@@ -87,6 +129,18 @@ class ImageArgs:
 
     @property
     @pulumi.getter
+    def context(self) -> Optional[pulumi.Input[str]]:
+        """
+        Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+        """
+        return pulumi.get(self, "context")
+
+    @context.setter
+    def context(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "context", value)
+
+    @property
+    @pulumi.getter
     def dockerfile(self) -> Optional[pulumi.Input[str]]:
         """
         dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
@@ -96,18 +150,6 @@ class ImageArgs:
     @dockerfile.setter
     def dockerfile(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "dockerfile", value)
-
-    @property
-    @pulumi.getter
-    def env(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
-        """
-        Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-        """
-        return pulumi.get(self, "env")
-
-    @env.setter
-    def env(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
-        pulumi.set(self, "env", value)
 
     @property
     @pulumi.getter(name="extraOptions")
@@ -123,15 +165,15 @@ class ImageArgs:
 
     @property
     @pulumi.getter
-    def path(self) -> Optional[pulumi.Input[str]]:
+    def platform(self) -> Optional[pulumi.Input[str]]:
         """
-        Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+        The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         """
-        return pulumi.get(self, "path")
+        return pulumi.get(self, "platform")
 
-    @path.setter
-    def path(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "path", value)
+    @platform.setter
+    def platform(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "platform", value)
 
     @property
     @pulumi.getter
@@ -152,11 +194,12 @@ class Image(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 builder_version: Optional['BuilderVersion'] = None,
                  cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 context: Optional[pulumi.Input[str]] = None,
                  dockerfile: Optional[pulumi.Input[str]] = None,
-                 env: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  extra_options: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 path: Optional[pulumi.Input[str]] = None,
+                 platform: Optional[pulumi.Input[str]] = None,
                  repository_url: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None,
                  __props__=None):
@@ -166,11 +209,12 @@ class Image(pulumi.ComponentResource):
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] args: An optional map of named build-time argument variables to set during the Docker build.  This flag allows you to pass built-time variables that can be accessed like environment variables inside the `RUN` instruction.
+        :param 'BuilderVersion' builder_version: The version of the Docker builder.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_from: Images to consider as cache sources
+        :param pulumi.Input[str] context: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
         :param pulumi.Input[str] dockerfile: dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
-        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] env: Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] extra_options: An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-        :param pulumi.Input[str] path: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+        :param pulumi.Input[str] platform: The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         :param pulumi.Input[str] repository_url: Url of the repository
         :param pulumi.Input[str] target: The target of the dockerfile to build
         """
@@ -193,17 +237,22 @@ class Image(pulumi.ComponentResource):
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
+            kwargs = kwargs or {}
+            def _setter(key, value):
+                kwargs[key] = value
+            ImageArgs._configure(_setter, **kwargs)
             __self__._internal_init(resource_name, *args, **kwargs)
 
     def _internal_init(__self__,
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  args: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 builder_version: Optional['BuilderVersion'] = None,
                  cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 context: Optional[pulumi.Input[str]] = None,
                  dockerfile: Optional[pulumi.Input[str]] = None,
-                 env: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  extra_options: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
-                 path: Optional[pulumi.Input[str]] = None,
+                 platform: Optional[pulumi.Input[str]] = None,
                  repository_url: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None,
                  __props__=None):
@@ -218,11 +267,12 @@ class Image(pulumi.ComponentResource):
             __props__ = ImageArgs.__new__(ImageArgs)
 
             __props__.__dict__["args"] = args
+            __props__.__dict__["builder_version"] = builder_version
             __props__.__dict__["cache_from"] = cache_from
+            __props__.__dict__["context"] = context
             __props__.__dict__["dockerfile"] = dockerfile
-            __props__.__dict__["env"] = env
             __props__.__dict__["extra_options"] = extra_options
-            __props__.__dict__["path"] = path
+            __props__.__dict__["platform"] = platform
             if repository_url is None and not opts.urn:
                 raise TypeError("Missing required property 'repository_url'")
             __props__.__dict__["repository_url"] = repository_url

@@ -43,6 +43,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -66,8 +67,8 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -169,6 +170,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -193,8 +195,8 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/ec2"
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -288,6 +290,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -304,7 +307,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -382,6 +385,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
+    /// using System.Linq;
     /// using Pulumi;
     /// using Aws = Pulumi.Aws;
     /// 
@@ -401,7 +405,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// package main
     /// 
     /// import (
-    /// 	"github.com/pulumi/pulumi-aws/sdk/v5/go/aws/lb"
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
     /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
     /// )
     /// 
@@ -466,12 +470,11 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// ## Import
     /// 
-    /// Target Groups can be imported using their ARN, e.g.,
+    /// Using `pulumi import`, import Target Groups using their ARN. For example:
     /// 
     /// ```sh
     ///  $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
     /// ```
-    /// 
     ///  
     /// </summary>
     public sealed class TargetGroupArgs : global::Pulumi.ResourceArgs
@@ -598,6 +601,14 @@ namespace Pulumi.Awsx.Lb.Inputs
 
         /// <summary>
         /// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+        /// 
+        /// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
+        /// 
+        /// If the target type is `ip`, specify IP addresses from the subnets of the virtual private cloud (VPC) for the target group, the RFC 1918 range (10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16), and the RFC 6598 range (100.64.0.0/10). You can't specify publicly routable IP addresses.
+        /// 
+        /// Network Load Balancers do not support the `lambda` target type.
+        /// 
+        /// Application Load Balancers do not support the `alb` target type.
         /// </summary>
         [Input("targetType")]
         public Input<string>? TargetType { get; set; }

@@ -2,6 +2,9 @@
 // *** Do not edit by hand unless you're certain you know what you are doing! ***
 
 import * as pulumi from "@pulumi/pulumi";
+import * as inputs from "../types/input";
+import * as outputs from "../types/output";
+import * as enums from "../types/enums";
 import * as utilities from "../utilities";
 
 /**
@@ -42,11 +45,12 @@ export class Image extends pulumi.ComponentResource {
                 throw new Error("Missing required property 'repositoryUrl'");
             }
             resourceInputs["args"] = args ? args.args : undefined;
+            resourceInputs["builderVersion"] = args ? args.builderVersion : undefined;
             resourceInputs["cacheFrom"] = args ? args.cacheFrom : undefined;
+            resourceInputs["context"] = args ? args.context : undefined;
             resourceInputs["dockerfile"] = args ? args.dockerfile : undefined;
-            resourceInputs["env"] = args ? args.env : undefined;
             resourceInputs["extraOptions"] = args ? args.extraOptions : undefined;
-            resourceInputs["path"] = args ? args.path : undefined;
+            resourceInputs["platform"] = args ? args.platform : undefined;
             resourceInputs["repositoryUrl"] = args ? args.repositoryUrl : undefined;
             resourceInputs["target"] = args ? args.target : undefined;
             resourceInputs["imageUri"] = undefined /*out*/;
@@ -67,25 +71,29 @@ export interface ImageArgs {
      */
     args?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
     /**
+     * The version of the Docker builder.
+     */
+    builderVersion?: enums.ecr.BuilderVersion;
+    /**
      * Images to consider as cache sources
      */
     cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
+    /**
+     * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+     */
+    context?: pulumi.Input<string>;
     /**
      * dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
      */
     dockerfile?: pulumi.Input<string>;
     /**
-     * Environment variables to set on the invocation of `docker build`, for example to support `DOCKER_BUILDKIT=1 docker build`.
-     */
-    env?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
-    /**
      * An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
      */
     extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
     /**
-     * Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
+     * The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
      */
-    path?: pulumi.Input<string>;
+    platform?: pulumi.Input<string>;
     /**
      * Url of the repository
      */

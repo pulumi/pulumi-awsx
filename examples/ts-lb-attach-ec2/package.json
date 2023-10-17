@@ -1,13 +1,13 @@
 {
   "name": "ts-lb-attach-ec2",
   "devDependencies": {
-    "@types/node": "^10.0.0"
+    "@types/node": "^18.0.0"
   },
   "dependencies": {
-    "@pulumi/aws": "^5.4.0",
+    "@pulumi/aws": "^6.0.0",
     "@pulumi/pulumi": "^3.0.0"
   },
   "peerDependencies": {
-    "@pulumi/awsx": "^0.40.0"
+    "@pulumi/awsx": "latest"
   }
 }
