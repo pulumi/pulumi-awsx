@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import { SubnetArgs } from "./subnet";
 import { VpcSubnetArgs, VpcSubnetType } from "./vpc";
