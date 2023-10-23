@@ -37,7 +37,7 @@ func TestExamples(t *testing.T) {
 		// TODO[pulumi/pulumi-awsx#1112] skipping recording a few programs that time out locally after 20min.
 		// "ts-lb-simple",
 		// TODO[pulumi/providertest#21] ecs/nodejs clobbers cloudtrail/nodejs.
-		"cloudtrail/nodejs",
+		// "ecs/nodejs"
 
 		// Skipping because it does not work on pre-2.x versions, so upgrade tests cannot run.
 		// "ts-vpc-getDefaultVpc",  // Property 'vpc' does not exist
