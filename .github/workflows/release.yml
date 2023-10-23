@@ -29,16 +29,16 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ci-scripts
           repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: pulumi/pulumictl
       - name: Setup Node
@@ -62,16 +62,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ci-scripts
           repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GOVERSION }}
       - name: Setup Node
@@ -86,11 +86,11 @@ jobs:
           echo "$HOME/.yarn/bin" >> $GITHUB_PATH
           echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
+        uses: pulumi/action-install-pulumi-cli@v2
       - name: Build provider
         run: make test_provider provider
       - name: Check worktree clean
@@ -103,7 +103,7 @@ jobs:
       - name: Tar provider bin
         run: tar -zcf ${{ github.workspace }}/provider.tar.gz -C ${{ github.workspace }}/${{ env.PROVIDER }}/bin/ .
       - name: Upload provider bin
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ env.PROVIDER }}-provider.tar.gz
           path: ${{ github.workspace }}/provider.tar.gz
@@ -119,48 +119,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ci-scripts
           repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: pulumi/pulumictl
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ env.GOVERSION }}
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{env.NODEVERSION}}
-          registry-url: https://registry.npmjs.org
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{env.PYTHONVERSION}}
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{env.DOTNETVERSION}}
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          cache: gradle
-          distribution: temurin
-          java-version: ${{env.JAVAVERSION}}
+      - name: Install Languages & Frameworks
+        uses: ./.github/actions/install
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          # Pin to known good version until #2262 is resolved
-          gradle-version: "7.6"
+          gradle-version: "8.4"
       - name: Install Python deps
         run: |-
           pip3 install virtualenv==20.0.23
@@ -182,7 +158,7 @@ jobs:
         run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
           .
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.language  }}-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz
@@ -192,7 +168,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: v2.4.0
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-region: ${{ env.AWS_REGION }}
@@ -218,11 +194,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-region: us-east-2
@@ -235,13 +211,13 @@ jobs:
         with:
           tag: v2.1.5-procursus2
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: pulumi/pulumictl
       - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
+        uses: pulumi/action-install-pulumi-cli@v2
       - name: Download provider binary
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: ${{ env.PROVIDER }}-provider.tar.gz
           path: ${{ github.workspace }}/bin
@@ -268,65 +244,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Checkout Scripts Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: ci-scripts
           repository: pulumi/scripts
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: pulumi/pulumictl
-      - name: Install Pulumi CLI
-        uses: pulumi/action-install-pulumi-cli@v1.0.1
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: ${{ env.GOVERSION }}
-      - name: Setup DotNet
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: ${{env.DOTNETVERSION}}
-      - name: Setup Node
-        uses: actions/setup-node@v1
-        with:
-          always-auth: true
-          registry-url: https://registry.npmjs.org
-          node-version: ${{env.NODEVERSION}}
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{env.PYTHONVERSION}}
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          cache: gradle
-          distribution: temurin
-          java-version: ${{env.JAVAVERSION}}
+      - name: Install Languages & Frameworks
+        uses: ./.github/actions/install
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          # Pin to known good version until #2262 is resolved
-          gradle-version: "7.6"
+          gradle-version: "8.4"
       - name: Download python SDK
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: python-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/
       - name: Uncompress python SDK
         run: tar -zxf ${{github.workspace}}/sdk/python.tar.gz -C ${{github.workspace}}/sdk/python
       - name: Download dotnet SDK
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: dotnet-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/
       - name: Uncompress dotnet SDK
         run: tar -zxf ${{github.workspace}}/sdk/dotnet.tar.gz -C ${{github.workspace}}/sdk/dotnet
       - name: Download nodejs SDK
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: nodejs-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/
@@ -338,7 +289,7 @@ jobs:
         name: Publish SDK
         run: ./scripts/publish_packages.sh
       - name: Download java SDK
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: java-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/
@@ -359,9 +310,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.2.0
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: pulumi/pulumictl
       - name: Add SDK version tag
@@ -373,7 +324,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install pulumictl
-        uses: jaxxstorm/action-install-gh-release@v1.1.0
+        uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: pulumi/pulumictl
       - env:
