@@ -169,7 +169,7 @@ test_provider:: PATH := $(WORKING_DIR)/bin:$(PATH)
 test_provider:: awsx/node_modules bin/${PROVIDER}
 	cd awsx && yarn test
 	@export PATH
-	cd provider && go test -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+	cd provider && go test -tags=yaml -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 istanbul_tests::
 	cd awsx-classic/tests && \
@@ -178,26 +178,31 @@ istanbul_tests::
 test_nodejs:: PATH := $(WORKING_DIR)/bin:$(PATH)
 test_nodejs:: bin/${PROVIDER} install_nodejs_sdk
 	@export PATH
+	cd provider && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_python:: PATH := $(WORKING_DIR)/bin:$(PATH)
 test_python:: bin/${PROVIDER}
 	@export PATH
+	cd provider && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_java:: PATH := $(WORKING_DIR)/bin:$(PATH)
 test_java:: bin/${PROVIDER}
 	@export PATH
+	cd provider && go test -tags=java -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=java -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_go:: PATH := $(WORKING_DIR)/bin:$(PATH)
 test_go:: bin/${PROVIDER}
 	@export PATH
+	cd provider && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_dotnet:: PATH := $(WORKING_DIR)/bin:$(PATH)
 test_dotnet:: bin/${PROVIDER} install_dotnet_sdk
 	@export PATH
+	cd provider && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test:: PATH := $(WORKING_DIR)/bin:$(PATH)
