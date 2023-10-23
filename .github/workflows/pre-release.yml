@@ -84,11 +84,6 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GOVERSION }}
-      - name: Install gotestfmt
-        uses: GoTestTools/gotestfmt-action@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: v2.4.0
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
@@ -179,11 +174,6 @@ jobs:
         with:
           name: ${{ matrix.language  }}-sdk.tar.gz
           path: ${{ github.workspace}}/sdk/${{ matrix.language }}.tar.gz
-      - name: Install gotestfmt
-        uses: GoTestTools/gotestfmt-action@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: v2.4.0
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -211,16 +201,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
-<<<<<<< HEAD
         uses: actions/checkout@v4
-=======
-        uses: actions/checkout@v2
-      - name: Install gotestfmt
-        uses: GoTestTools/gotestfmt-action@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          version: v2.4.0
->>>>>>> 661983f (Enable CI to run upgrade tests)
       - name: Unshallow clone for tags
         run: git fetch --prune --unshallow --tags
       - name: Configure AWS Credentials

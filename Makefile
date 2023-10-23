@@ -166,7 +166,7 @@ lint:: awsx/node_modules
 		yarn format && yarn lint
 
 test_provider:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_provider:: awsx/node_modules bin/${PROVIDER}
+test_provider:: awsx/node_modules bin/${PROVIDER} bin/gotestfmt
 	cd awsx && yarn test
 	@export PATH
 	cd provider && go test -tags=yaml -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
@@ -176,37 +176,37 @@ istanbul_tests::
 		yarn && yarn run build && yarn run mocha $$(find bin -name '*.spec.js')
 
 test_nodejs:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_nodejs:: bin/${PROVIDER} install_nodejs_sdk
+test_nodejs:: bin/${PROVIDER} install_nodejs_sdk bin/gotestfmt
 	@export PATH
 	cd provider && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_python:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_python:: bin/${PROVIDER}
+test_python:: bin/${PROVIDER} bin/gotestfmt
 	@export PATH
 	cd provider && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=python -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_java:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_java:: bin/${PROVIDER}
+test_java:: bin/${PROVIDER} bin/gotestfmt
 	@export PATH
 	cd provider && go test -tags=java -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=java -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_go:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_go:: bin/${PROVIDER}
+test_go:: bin/${PROVIDER} bin/gotestfmt
 	@export PATH
 	cd provider && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=go -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_dotnet:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_dotnet:: bin/${PROVIDER} install_dotnet_sdk
+test_dotnet:: bin/${PROVIDER} install_dotnet_sdk bin/gotestfmt
 	@export PATH
 	cd provider && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=dotnet -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test::
+test:: bin/gotestfmt
 	@export PATH
 	@if [ -z "${Test}" ]; then \
 		cd examples && go test -tags=$(LanguageTags) -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt; \
@@ -231,5 +231,9 @@ build_sdks: build_nodejs build_python build_go build_dotnet build_java
 build:: provider test_provider build_sdks
 
 dev:: lint test_provider build_nodejs
+
+bin/gotestfmt:
+	@mkdir -p bin
+	@GOBIN="${PWD}/bin" go install github.com/gotesttools/gotestfmt/v2/cmd/gotestfmt@v2.5.0
 
 .PHONY: clean provider install_% dist sdk/go
