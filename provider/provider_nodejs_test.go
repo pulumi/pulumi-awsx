@@ -33,9 +33,13 @@ func TestExamples(t *testing.T) {
 
 	examples := []string{
 		"ts-nlb-simple",
+		"cloudtrail/nodejs",
+		"vpc/nodejs/default-args",
 
-		// Skipping because recording locally keeps timing out after 20 min; should be possible though?
+		// TODO[pulumi/pulumi-awsx#1112] skipping recording a few programs that time out locally after 20min.
 		// "ts-lb-simple",
+		// TODO[pulumi/providertest#21] ecs/nodejs clobbers cloudtrail/nodejs.
+		"cloudtrail/nodejs",
 
 		// Skipping because it does not work on pre-2.x versions, so upgrade tests cannot run.
 		// "ts-vpc-getDefaultVpc",  // Property 'vpc' does not exist
@@ -46,17 +50,9 @@ func TestExamples(t *testing.T) {
 		// "ts-lb-with-subnets",
 		// "ts-lb-attach-lambda",
 		// "ts-lb-attach-ec2",
-
-		// NOTE: the automatically picked recording example will be "nodejs" which conflicts
-		// with "cloudtrail/nodejs", this needs to be fixed in providertests.
-		"ecs/nodejs",
-
-		"cloudtrail/nodejs",
-
 		// "vpc/nodejs/custom-provider",
 		// "vpc/nodejs/specific-vpc-layout",
 		// "vpc/nodejs/vpc-with-service-endpoint",
-		"vpc/nodejs/default-args",
 		// "vpc/nodejs/vpc-multiple-similar-subnet-types",
 		// "vpc/nodejs/vpc-subnets-with-tags",
 	}
