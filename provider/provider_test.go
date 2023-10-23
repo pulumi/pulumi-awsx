@@ -48,7 +48,7 @@ func TestExamples(t *testing.T) {
 		// "vpc/nodejs/custom-provider",
 		// "vpc/nodejs/specific-vpc-layout",
 		// "vpc/nodejs/vpc-with-service-endpoint",
-		// "vpc/nodejs/default-args",
+		"vpc/nodejs/default-args",
 		// "vpc/nodejs/vpc-multiple-similar-subnet-types",
 		// "vpc/nodejs/vpc-subnets-with-tags",
 	}
