@@ -41,7 +41,10 @@ func TestExamples(t *testing.T) {
 		// "ts-lb-with-subnets",
 		// "ts-lb-attach-lambda",
 		// "ts-lb-attach-ec2",
-		// "ecs/nodejs",
+
+		// NOTE: the automatically picked recording example will be "nodejs" which conflicts
+		// with "cloudtrail/nodejs", this needs to be fixed in providertests.
+		"ecs/nodejs",
 
 		"cloudtrail/nodejs",
 
