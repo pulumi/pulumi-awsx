@@ -42,7 +42,9 @@ func TestExamples(t *testing.T) {
 		// "ts-lb-attach-lambda",
 		// "ts-lb-attach-ec2",
 		// "ecs/nodejs",
-		// "cloudtrail/nodejs",
+
+		"cloudtrail/nodejs",
+
 		// "vpc/nodejs/custom-provider",
 		// "vpc/nodejs/specific-vpc-layout",
 		// "vpc/nodejs/vpc-with-service-endpoint",
