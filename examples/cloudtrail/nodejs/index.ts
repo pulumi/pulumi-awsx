@@ -4,12 +4,12 @@ import assert = require("assert");
 
 // No S3 bucket configuration given, so the default AES encryption is used.
 // https://docs.aws.amazon.com/AmazonS3/latest/userguide/default-encryption-faq.html
-const defaultTrail = new awsx.cloudtrail.Trail("tkappler-trail", {
+const defaultTrail = new awsx.cloudtrail.Trail("example-trail", {
     enableLogging: true,
 })
 
 // Same as above but explicit.
-const aesEncryptedBucketTrail = new awsx.cloudtrail.Trail("tkappler-aes-bucket-trail", {
+const aesEncryptedBucketTrail = new awsx.cloudtrail.Trail("example-aes-bucket-trail", {
     enableLogging: true,
     s3Bucket: {
         args: {
@@ -24,7 +24,7 @@ const aesEncryptedBucketTrail = new awsx.cloudtrail.Trail("tkappler-aes-bucket-t
     }
 })
 
-const kmsEncryptedBucketTrail = new awsx.cloudtrail.Trail("tkappler-kms-bucket-trail", {
+const kmsEncryptedBucketTrail = new awsx.cloudtrail.Trail("example-kms-bucket-trail", {
     enableLogging: true,
     s3Bucket: {
         args: {
@@ -39,18 +39,14 @@ const kmsEncryptedBucketTrail = new awsx.cloudtrail.Trail("tkappler-kms-bucket-t
     }
 })
 
-pulumi.all([defaultTrail.bucket, aesEncryptedBucketTrail.bucket, kmsEncryptedBucketTrail.bucket])
-    .apply(([defaultBucket, aesBucket, kmsBucket]) => {
-        var defaultBucketAlg = defaultBucket?.serverSideEncryptionConfiguration
-            .rule.applyServerSideEncryptionByDefault.sseAlgorithm
-        var aesBucketAlg = aesBucket?.serverSideEncryptionConfiguration
-            .rule.applyServerSideEncryptionByDefault.sseAlgorithm
-        var kmsBucketAlg = kmsBucket?.serverSideEncryptionConfiguration
-            .rule.applyServerSideEncryptionByDefault.sseAlgorithm
+defaultTrail.bucket.apply(b => b!)
+    .serverSideEncryptionConfiguration.rule.applyServerSideEncryptionByDefault.sseAlgorithm
+    .apply(alg => assert.strictEqual(alg, "AES256"));
 
-        pulumi.all([defaultBucketAlg, aesBucketAlg, kmsBucketAlg]).apply(([defaultAlg, aesAlg, kmsAlg]) => {
-            assert.strictEqual(defaultAlg, "AES256")
-            assert.strictEqual(aesAlg, "AES256")
-            assert.strictEqual(kmsAlg, "aws:kms")
-        })
-    })
+aesEncryptedBucketTrail.bucket.apply(b => b!)
+    .serverSideEncryptionConfiguration.rule.applyServerSideEncryptionByDefault.sseAlgorithm
+    .apply(alg => assert.strictEqual(alg, "AES256"));
+
+kmsEncryptedBucketTrail.bucket.apply(b => b!)
+    .serverSideEncryptionConfiguration.rule.applyServerSideEncryptionByDefault.sseAlgorithm
+    .apply(kmsAlg => assert.strictEqual(kmsAlg, "aws:kms"));
