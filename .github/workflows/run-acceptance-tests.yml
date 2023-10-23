@@ -1,3 +1,4 @@
+
 env:
   AWS_REGION: us-west-2
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -89,6 +90,15 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-region: ${{ env.AWS_REGION }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-duration-seconds: 3600
+          role-session-name: ${{ env.PROVIDER }}@githubActions
+          role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
       - name: Checkout Scripts Repo
         uses: actions/checkout@v4
         with:
@@ -100,6 +110,11 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GOVERSION }}
+      - name: Install gotestfmt
+        uses: GoTestTools/gotestfmt-action@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          version: v2.4.0
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -118,7 +133,9 @@ jobs:
       - name: Install Pulumi CLI
         uses: pulumi/action-install-pulumi-cli@v2
       - name: Build provider
-        run: make test_provider provider
+        run: make provider
+      - name: Test provider
+        run: make test_provider
       - name: Check worktree clean
         run: ./ci-scripts/ci/check-worktree-is-clean
       - name: Upload bin
