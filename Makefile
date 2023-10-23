@@ -51,7 +51,7 @@ awsx/bin: awsx/node_modules ${AWSX_SRC}
 ifneq ($(LOCAL_PLAT),"")
 bin/${PROVIDER}:: bin/provider/$(LOCAL_PLAT)/${PROVIDER}
 	cp bin/provider/$(LOCAL_PLAT)/${PROVIDER} bin/${PROVIDER}
-else 
+else
 bin/${PROVIDER}: awsx/bin awsx/node_modules
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output $(WORKING_DIR)/bin/${PROVIDER}
 endif
@@ -72,7 +72,7 @@ dist/${GZIP_PREFIX}-darwin-amd64.tar.gz:: bin/provider/darwin-amd64/${PROVIDER}
 dist/${GZIP_PREFIX}-darwin-arm64.tar.gz:: bin/provider/darwin-arm64/${PROVIDER}
 dist/${GZIP_PREFIX}-windows-amd64.tar.gz:: bin/provider/windows-amd64/${PROVIDER}.exe
 
-dist/${GZIP_PREFIX}-%.tar.gz:: 
+dist/${GZIP_PREFIX}-%.tar.gz::
 	@mkdir -p dist
 	@# $< is the last dependency (the binary path from above)
 	tar --gzip -cf $@ README.md LICENSE -C $$(dirname $<) .
@@ -165,8 +165,11 @@ lint:: awsx/node_modules
 	cd awsx && \
 		yarn format && yarn lint
 
-test_provider:: awsx/node_modules
+test_provider:: PATH := $(WORKING_DIR)/bin:$(PATH)
+test_provider:: awsx/node_modules bin/${PROVIDER}
 	cd awsx && yarn test
+	@export PATH
+	cd provider && go test -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 istanbul_tests::
 	cd awsx-classic/tests && \
