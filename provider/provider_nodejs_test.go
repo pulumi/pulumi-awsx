@@ -29,8 +29,6 @@ import (
 // Of specific interest are upgrade tests that check for lack of replacements when upgrading stacks
 // from a baseline to the current version of the provider.
 func TestExamples(t *testing.T) {
-	t.Skipf("Skip temporarily")
-
 	examples := []string{
 		"ts-nlb-simple",
 		"cloudtrail/nodejs",
