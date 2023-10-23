@@ -103,6 +103,16 @@ func TestEcrSimple(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestEcrDockerfile(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ts-ecr-dockerfile"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func TestDefaultVpc(t *testing.T) {
 	t.Skip("https://github.com/pulumi/pulumi-awsx/issues/788")
 	test := getNodeJSBaseOptions(t).
