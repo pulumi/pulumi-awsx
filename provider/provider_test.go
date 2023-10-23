@@ -74,5 +74,10 @@ func test(dir string, opts ...providertest.Option) *providertest.ProviderTest {
 			"aws": "5.42.0",
 		}),
 	)
+
 	return providertest.NewProviderTest(dir, opts...)
+}
+
+func TestReportUpgradeCoverage(t *testing.T) {
+	providertest.ReportUpgradeCoverage(t)
 }
