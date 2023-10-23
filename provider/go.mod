@@ -2,7 +2,7 @@ module github.com/pulumi/pulumi-awsx/provider
 
 go 1.21.0
 
-require github.com/pulumi/providertest v0.0.2-0.20231020160510-02a33f58732b
+require github.com/pulumi/providertest v0.0.2
 
 require (
 	cloud.google.com/go v0.110.4 // indirect
