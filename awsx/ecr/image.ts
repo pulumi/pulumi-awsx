@@ -67,15 +67,16 @@ export function computeImageFromAsset(
     imageName: canonicalImageName,
     build: {
       args: dockerInputs.args,
+      builderVersion: dockerInputs.builderVersion,
       cacheFrom: dockerInputs.cacheFrom
         ? {
             images: dockerInputs.cacheFrom,
           }
         : undefined,
       context: dockerInputs.context,
+      dockerfile: dockerInputs.dockerfile,
       platform: dockerInputs.platform,
       target: dockerInputs.target,
-      builderVersion: dockerInputs.builderVersion,
     },
     registry: registryCredentials,
   };
