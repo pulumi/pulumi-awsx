@@ -1,0 +1,1729 @@
+{
+    "version": 3,
+    "deployment": {
+        "manifest": {
+            "time": "2023-10-24T14:57:08.17146+02:00",
+            "magic": "dd54feca624e562f51e71ff6bb7db534a0d001d766436f3d6d3c904eabb291a9",
+            "version": "v3.90.0"
+        },
+        "secrets_providers": {
+            "type": "passphrase",
+            "state": {
+                "salt": "v1:J7xtDdkDiOA=:v1:K+VEXx6kuhm/qhF9:A1SU0xKJ38TcSOYRm1i2g6jUcYF+5A=="
+            }
+        },
+        "resources": [
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:pulumi:Stack::nodejs-p-it-tmpfritzbo-vpc-with-s-110865e1",
+                "custom": false,
+                "type": "pulumi:pulumi:Stack",
+                "outputs": {
+                    "privateSubnetIds": [
+                        "subnet-049db154052a67f89",
+                        "subnet-099466eee8ea4fa6c",
+                        "subnet-044939f98f88516ee"
+                    ],
+                    "publicSubnetIds": [
+                        "subnet-08c106231d9d1f471",
+                        "subnet-0592fed2991c6b822",
+                        "subnet-0d4f56f68871c4a2e"
+                    ],
+                    "vpcEndpoints": [],
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "created": "2023-10-24T12:54:27.639292Z",
+                "modified": "2023-10-24T12:54:27.639292Z",
+                "sourcePosition": "project:///node_modules/@pulumi/runtime/stack.ts#36,23"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:awsx::default_1_0_6",
+                "custom": true,
+                "id": "459b49ab-b163-4fc3-9884-00ebc01a74b5",
+                "type": "pulumi:providers:awsx",
+                "inputs": {
+                    "version": "1.0.6"
+                },
+                "outputs": {
+                    "version": "1.0.6"
+                },
+                "created": "2023-10-24T12:54:28.014246Z",
+                "modified": "2023-10-24T12:54:28.014246Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc::awsx-with-service-endpoint",
+                "custom": false,
+                "type": "awsx:ec2:Vpc",
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:pulumi:Stack::nodejs-p-it-tmpfritzbo-vpc-with-s-110865e1",
+                "created": "2023-10-24T12:54:28.03122Z",
+                "modified": "2023-10-24T12:54:28.03122Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0",
+                "custom": true,
+                "id": "f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "type": "pulumi:providers:aws",
+                "inputs": {
+                    "version": "5.35.0"
+                },
+                "outputs": {
+                    "version": "5.35.0"
+                },
+                "created": "2023-10-24T12:54:28.114776Z",
+                "modified": "2023-10-24T12:54:28.114776Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint",
+                "custom": true,
+                "id": "vpc-02ddf84149304c91f",
+                "type": "aws:ec2/vpc:Vpc",
+                "inputs": {
+                    "__defaults": [
+                        "enableDnsSupport",
+                        "instanceTenancy"
+                    ],
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint",
+                        "__defaults": []
+                    }
+                },
+                "outputs": {
+                    "__meta": "{\"schema_version\":\"1\"}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:vpc/vpc-02ddf84149304c91f",
+                    "assignGeneratedIpv6CidrBlock": false,
+                    "cidrBlock": "10.0.0.0/16",
+                    "defaultNetworkAclId": "acl-062df8c9146be41bc",
+                    "defaultRouteTableId": "rtb-076533fa7b04c4bfb",
+                    "defaultSecurityGroupId": "sg-022ce94ab54043b68",
+                    "dhcpOptionsId": "dopt-1649d26e",
+                    "enableClassiclink": false,
+                    "enableClassiclinkDnsSupport": false,
+                    "enableDnsHostnames": false,
+                    "enableDnsSupport": true,
+                    "enableNetworkAddressUsageMetrics": false,
+                    "id": "vpc-02ddf84149304c91f",
+                    "instanceTenancy": "default",
+                    "ipv6AssociationId": "",
+                    "ipv6CidrBlock": "",
+                    "ipv6CidrBlockNetworkBorderGroup": "",
+                    "ipv6IpamPoolId": "",
+                    "ipv6NetmaskLength": 0,
+                    "mainRouteTableId": "rtb-076533fa7b04c4bfb",
+                    "ownerId": "616138583583",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint"
+                    }
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc::awsx-with-service-endpoint",
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "cidrBlock": null,
+                    "tags": null
+                },
+                "created": "2023-10-24T12:54:35.761953Z",
+                "modified": "2023-10-24T12:54:35.761953Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-with-service-endpoint",
+                "custom": true,
+                "id": "igw-02e84321d867a4f45",
+                "type": "aws:ec2/internetGateway:InternetGateway",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":1200000000000,\"delete\":1200000000000,\"update\":1200000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:internet-gateway/igw-02e84321d867a4f45",
+                    "id": "igw-02e84321d867a4f45",
+                    "ownerId": "616138583583",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:37.167387Z",
+                "modified": "2023-10-24T12:54:37.167387Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-1",
+                "custom": true,
+                "id": "subnet-049db154052a67f89",
+                "type": "aws:ec2/subnet:Subnet",
+                "inputs": {
+                    "__defaults": [
+                        "assignIpv6AddressOnCreation",
+                        "enableDns64",
+                        "enableResourceNameDnsARecordOnLaunch",
+                        "enableResourceNameDnsAaaaRecordOnLaunch",
+                        "ipv6Native"
+                    ],
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2a",
+                    "cidrBlock": "10.0.0.0/19",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "ipv6Native": false,
+                    "mapPublicIpOnLaunch": false,
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-1",
+                        "SubnetType": "Private",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-049db154052a67f89",
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2a",
+                    "availabilityZoneId": "usw2-az2",
+                    "cidrBlock": "10.0.0.0/19",
+                    "customerOwnedIpv4Pool": "",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "id": "subnet-049db154052a67f89",
+                    "ipv6CidrBlock": "",
+                    "ipv6CidrBlockAssociationId": "",
+                    "ipv6Native": false,
+                    "mapCustomerOwnedIpOnLaunch": false,
+                    "mapPublicIpOnLaunch": false,
+                    "outpostArn": "",
+                    "ownerId": "616138583583",
+                    "privateDnsHostnameTypeOnLaunch": "ip-name",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-1",
+                        "SubnetType": "Private"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-private-1",
+                        "SubnetType": "Private"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "availabilityZone": null,
+                    "cidrBlock": null,
+                    "mapPublicIpOnLaunch": null,
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:37.283557Z",
+                "modified": "2023-10-24T12:54:37.283557Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-3",
+                "custom": true,
+                "id": "subnet-044939f98f88516ee",
+                "type": "aws:ec2/subnet:Subnet",
+                "inputs": {
+                    "__defaults": [
+                        "assignIpv6AddressOnCreation",
+                        "enableDns64",
+                        "enableResourceNameDnsARecordOnLaunch",
+                        "enableResourceNameDnsAaaaRecordOnLaunch",
+                        "ipv6Native"
+                    ],
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2c",
+                    "cidrBlock": "10.0.128.0/19",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "ipv6Native": false,
+                    "mapPublicIpOnLaunch": false,
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-3",
+                        "SubnetType": "Private",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-044939f98f88516ee",
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2c",
+                    "availabilityZoneId": "usw2-az3",
+                    "cidrBlock": "10.0.128.0/19",
+                    "customerOwnedIpv4Pool": "",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "id": "subnet-044939f98f88516ee",
+                    "ipv6CidrBlock": "",
+                    "ipv6CidrBlockAssociationId": "",
+                    "ipv6Native": false,
+                    "mapCustomerOwnedIpOnLaunch": false,
+                    "mapPublicIpOnLaunch": false,
+                    "outpostArn": "",
+                    "ownerId": "616138583583",
+                    "privateDnsHostnameTypeOnLaunch": "ip-name",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-3",
+                        "SubnetType": "Private"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-private-3",
+                        "SubnetType": "Private"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "availabilityZone": null,
+                    "cidrBlock": null,
+                    "mapPublicIpOnLaunch": null,
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:37.530101Z",
+                "modified": "2023-10-24T12:54:37.530101Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-2",
+                "custom": true,
+                "id": "subnet-099466eee8ea4fa6c",
+                "type": "aws:ec2/subnet:Subnet",
+                "inputs": {
+                    "__defaults": [
+                        "assignIpv6AddressOnCreation",
+                        "enableDns64",
+                        "enableResourceNameDnsARecordOnLaunch",
+                        "enableResourceNameDnsAaaaRecordOnLaunch",
+                        "ipv6Native"
+                    ],
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2b",
+                    "cidrBlock": "10.0.64.0/19",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "ipv6Native": false,
+                    "mapPublicIpOnLaunch": false,
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-2",
+                        "SubnetType": "Private",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-099466eee8ea4fa6c",
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2b",
+                    "availabilityZoneId": "usw2-az1",
+                    "cidrBlock": "10.0.64.0/19",
+                    "customerOwnedIpv4Pool": "",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "id": "subnet-099466eee8ea4fa6c",
+                    "ipv6CidrBlock": "",
+                    "ipv6CidrBlockAssociationId": "",
+                    "ipv6Native": false,
+                    "mapCustomerOwnedIpOnLaunch": false,
+                    "mapPublicIpOnLaunch": false,
+                    "outpostArn": "",
+                    "ownerId": "616138583583",
+                    "privateDnsHostnameTypeOnLaunch": "ip-name",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-2",
+                        "SubnetType": "Private"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-private-2",
+                        "SubnetType": "Private"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "availabilityZone": null,
+                    "cidrBlock": null,
+                    "mapPublicIpOnLaunch": null,
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:37.541143Z",
+                "modified": "2023-10-24T12:54:37.541143Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-1",
+                "custom": true,
+                "id": "rtb-046b8184194105c77",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-1",
+                        "SubnetType": "Private",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-046b8184194105c77",
+                    "id": "rtb-046b8184194105c77",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-1",
+                        "SubnetType": "Private"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-private-1",
+                        "SubnetType": "Private"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-1",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:38.405863Z",
+                "modified": "2023-10-24T12:54:38.405863Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-3",
+                "custom": true,
+                "id": "rtb-0dface3bdf0b022c8",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-3",
+                        "SubnetType": "Private",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0dface3bdf0b022c8",
+                    "id": "rtb-0dface3bdf0b022c8",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-3",
+                        "SubnetType": "Private"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-private-3",
+                        "SubnetType": "Private"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-3",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:38.64474Z",
+                "modified": "2023-10-24T12:54:38.64474Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-2",
+                "custom": true,
+                "id": "rtb-042e0f8175b9d4d75",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-2",
+                        "SubnetType": "Private",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-042e0f8175b9d4d75",
+                    "id": "rtb-042e0f8175b9d4d75",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-private-2",
+                        "SubnetType": "Private"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-private-2",
+                        "SubnetType": "Private"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-2",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:38.659301Z",
+                "modified": "2023-10-24T12:54:38.659301Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-with-service-endpoint-private-1",
+                "custom": true,
+                "id": "rtbassoc-01b09df902763e7ee",
+                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
+                "inputs": {
+                    "__defaults": [],
+                    "routeTableId": "rtb-046b8184194105c77",
+                    "subnetId": "subnet-049db154052a67f89"
+                },
+                "outputs": {
+                    "gatewayId": "",
+                    "id": "rtbassoc-01b09df902763e7ee",
+                    "routeTableId": "rtb-046b8184194105c77",
+                    "subnetId": "subnet-049db154052a67f89"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-1",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-1"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-1"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-1"
+                    ]
+                },
+                "created": "2023-10-24T12:54:39.279794Z",
+                "modified": "2023-10-24T12:54:39.279794Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-with-service-endpoint-private-2",
+                "custom": true,
+                "id": "rtbassoc-0cf876e951c133093",
+                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
+                "inputs": {
+                    "__defaults": [],
+                    "routeTableId": "rtb-042e0f8175b9d4d75",
+                    "subnetId": "subnet-099466eee8ea4fa6c"
+                },
+                "outputs": {
+                    "gatewayId": "",
+                    "id": "rtbassoc-0cf876e951c133093",
+                    "routeTableId": "rtb-042e0f8175b9d4d75",
+                    "subnetId": "subnet-099466eee8ea4fa6c"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-2",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-2"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-2"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-2"
+                    ]
+                },
+                "created": "2023-10-24T12:54:39.647842Z",
+                "modified": "2023-10-24T12:54:39.647842Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-with-service-endpoint-private-3",
+                "custom": true,
+                "id": "rtbassoc-0c89581c77c37b6c4",
+                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
+                "inputs": {
+                    "__defaults": [],
+                    "routeTableId": "rtb-0dface3bdf0b022c8",
+                    "subnetId": "subnet-044939f98f88516ee"
+                },
+                "outputs": {
+                    "gatewayId": "",
+                    "id": "rtbassoc-0c89581c77c37b6c4",
+                    "routeTableId": "rtb-0dface3bdf0b022c8",
+                    "subnetId": "subnet-044939f98f88516ee"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-3",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-3"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-3"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-private-3"
+                    ]
+                },
+                "created": "2023-10-24T12:54:39.652834Z",
+                "modified": "2023-10-24T12:54:39.652834Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/vpcEndpoint:VpcEndpoint::com.amazonaws.us-west-2.s3",
+                "custom": true,
+                "id": "vpce-0e18855427053a045",
+                "type": "aws:ec2/vpcEndpoint:VpcEndpoint",
+                "inputs": {
+                    "__defaults": [
+                        "privateDnsEnabled",
+                        "vpcEndpointType"
+                    ],
+                    "privateDnsEnabled": false,
+                    "serviceName": "com.amazonaws.us-west-2.s3",
+                    "vpcEndpointType": "Gateway",
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":600000000000,\"update\":600000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:vpc-endpoint/vpce-0e18855427053a045",
+                    "cidrBlocks": [
+                        "3.5.76.0/22",
+                        "3.5.80.0/21",
+                        "18.34.48.0/20",
+                        "18.34.244.0/22",
+                        "52.92.128.0/17",
+                        "52.218.128.0/17"
+                    ],
+                    "dnsEntries": [],
+                    "dnsOptions": null,
+                    "id": "vpce-0e18855427053a045",
+                    "ipAddressType": "",
+                    "networkInterfaceIds": [],
+                    "ownerId": "616138583583",
+                    "policy": "{\"Statement\":[{\"Action\":\"*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2008-10-17\"}",
+                    "prefixListId": "pl-68a54001",
+                    "privateDnsEnabled": false,
+                    "requesterManaged": false,
+                    "routeTableIds": [],
+                    "securityGroupIds": [],
+                    "serviceName": "com.amazonaws.us-west-2.s3",
+                    "state": "available",
+                    "subnetIds": [],
+                    "tags": {},
+                    "tagsAll": {},
+                    "vpcEndpointType": "Gateway",
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "serviceName": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:43.036343Z",
+                "modified": "2023-10-24T12:54:43.036343Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1",
+                "custom": true,
+                "id": "subnet-08c106231d9d1f471",
+                "type": "aws:ec2/subnet:Subnet",
+                "inputs": {
+                    "__defaults": [
+                        "assignIpv6AddressOnCreation",
+                        "enableDns64",
+                        "enableResourceNameDnsARecordOnLaunch",
+                        "enableResourceNameDnsAaaaRecordOnLaunch",
+                        "ipv6Native"
+                    ],
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2a",
+                    "cidrBlock": "10.0.32.0/20",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "ipv6Native": false,
+                    "mapPublicIpOnLaunch": true,
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-1",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-08c106231d9d1f471",
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2a",
+                    "availabilityZoneId": "usw2-az2",
+                    "cidrBlock": "10.0.32.0/20",
+                    "customerOwnedIpv4Pool": "",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "id": "subnet-08c106231d9d1f471",
+                    "ipv6CidrBlock": "",
+                    "ipv6CidrBlockAssociationId": "",
+                    "ipv6Native": false,
+                    "mapCustomerOwnedIpOnLaunch": false,
+                    "mapPublicIpOnLaunch": true,
+                    "outpostArn": "",
+                    "ownerId": "616138583583",
+                    "privateDnsHostnameTypeOnLaunch": "ip-name",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-1",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-public-1",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "availabilityZone": null,
+                    "cidrBlock": null,
+                    "mapPublicIpOnLaunch": null,
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:47.606085Z",
+                "modified": "2023-10-24T12:54:47.606085Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3",
+                "custom": true,
+                "id": "subnet-0d4f56f68871c4a2e",
+                "type": "aws:ec2/subnet:Subnet",
+                "inputs": {
+                    "__defaults": [
+                        "assignIpv6AddressOnCreation",
+                        "enableDns64",
+                        "enableResourceNameDnsARecordOnLaunch",
+                        "enableResourceNameDnsAaaaRecordOnLaunch",
+                        "ipv6Native"
+                    ],
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2c",
+                    "cidrBlock": "10.0.160.0/20",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "ipv6Native": false,
+                    "mapPublicIpOnLaunch": true,
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-3",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0d4f56f68871c4a2e",
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2c",
+                    "availabilityZoneId": "usw2-az3",
+                    "cidrBlock": "10.0.160.0/20",
+                    "customerOwnedIpv4Pool": "",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "id": "subnet-0d4f56f68871c4a2e",
+                    "ipv6CidrBlock": "",
+                    "ipv6CidrBlockAssociationId": "",
+                    "ipv6Native": false,
+                    "mapCustomerOwnedIpOnLaunch": false,
+                    "mapPublicIpOnLaunch": true,
+                    "outpostArn": "",
+                    "ownerId": "616138583583",
+                    "privateDnsHostnameTypeOnLaunch": "ip-name",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-3",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-public-3",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "availabilityZone": null,
+                    "cidrBlock": null,
+                    "mapPublicIpOnLaunch": null,
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:47.832673Z",
+                "modified": "2023-10-24T12:54:47.832673Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2",
+                "custom": true,
+                "id": "subnet-0592fed2991c6b822",
+                "type": "aws:ec2/subnet:Subnet",
+                "inputs": {
+                    "__defaults": [
+                        "assignIpv6AddressOnCreation",
+                        "enableDns64",
+                        "enableResourceNameDnsARecordOnLaunch",
+                        "enableResourceNameDnsAaaaRecordOnLaunch",
+                        "ipv6Native"
+                    ],
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2b",
+                    "cidrBlock": "10.0.96.0/20",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "ipv6Native": false,
+                    "mapPublicIpOnLaunch": true,
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-2",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0592fed2991c6b822",
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2b",
+                    "availabilityZoneId": "usw2-az1",
+                    "cidrBlock": "10.0.96.0/20",
+                    "customerOwnedIpv4Pool": "",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "id": "subnet-0592fed2991c6b822",
+                    "ipv6CidrBlock": "",
+                    "ipv6CidrBlockAssociationId": "",
+                    "ipv6Native": false,
+                    "mapCustomerOwnedIpOnLaunch": false,
+                    "mapPublicIpOnLaunch": true,
+                    "outpostArn": "",
+                    "ownerId": "616138583583",
+                    "privateDnsHostnameTypeOnLaunch": "ip-name",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-2",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-public-2",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "availabilityZone": null,
+                    "cidrBlock": null,
+                    "mapPublicIpOnLaunch": null,
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:48.112463Z",
+                "modified": "2023-10-24T12:54:48.112463Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-with-service-endpoint-1",
+                "custom": true,
+                "id": "eipalloc-0daf7e977791e5f44",
+                "type": "aws:ec2/eip:Eip",
+                "inputs": {
+                    "__defaults": []
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
+                    "allocationId": "eipalloc-0daf7e977791e5f44",
+                    "associationId": "",
+                    "carrierIp": "",
+                    "customerOwnedIp": "",
+                    "customerOwnedIpv4Pool": "",
+                    "domain": "vpc",
+                    "id": "eipalloc-0daf7e977791e5f44",
+                    "instance": "",
+                    "networkBorderGroup": "us-west-2",
+                    "networkInterface": "",
+                    "privateIp": "",
+                    "publicDns": "ec2-44-224-58-90.us-west-2.compute.amazonaws.com",
+                    "publicIp": "44.224.58.90",
+                    "publicIpv4Pool": "amazon",
+                    "tags": {},
+                    "tagsAll": {},
+                    "vpc": true
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "created": "2023-10-24T12:54:48.64118Z",
+                "modified": "2023-10-24T12:54:48.64118Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-with-service-endpoint-3",
+                "custom": true,
+                "id": "eipalloc-00643ae3eaf38237c",
+                "type": "aws:ec2/eip:Eip",
+                "inputs": {
+                    "__defaults": []
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
+                    "allocationId": "eipalloc-00643ae3eaf38237c",
+                    "associationId": "",
+                    "carrierIp": "",
+                    "customerOwnedIp": "",
+                    "customerOwnedIpv4Pool": "",
+                    "domain": "vpc",
+                    "id": "eipalloc-00643ae3eaf38237c",
+                    "instance": "",
+                    "networkBorderGroup": "us-west-2",
+                    "networkInterface": "",
+                    "privateIp": "",
+                    "publicDns": "ec2-52-35-246-67.us-west-2.compute.amazonaws.com",
+                    "publicIp": "52.35.246.67",
+                    "publicIpv4Pool": "amazon",
+                    "tags": {},
+                    "tagsAll": {},
+                    "vpc": true
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "created": "2023-10-24T12:54:48.685115Z",
+                "modified": "2023-10-24T12:54:48.685115Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-1",
+                "custom": true,
+                "id": "rtb-0dbe45207cc0f219f",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-1",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0dbe45207cc0f219f",
+                    "id": "rtb-0dbe45207cc0f219f",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-1",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-public-1",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:48.725881Z",
+                "modified": "2023-10-24T12:54:48.725881Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-with-service-endpoint-2",
+                "custom": true,
+                "id": "eipalloc-03da8e4e5d716df5e",
+                "type": "aws:ec2/eip:Eip",
+                "inputs": {
+                    "__defaults": []
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
+                    "allocationId": "eipalloc-03da8e4e5d716df5e",
+                    "associationId": "",
+                    "carrierIp": "",
+                    "customerOwnedIp": "",
+                    "customerOwnedIpv4Pool": "",
+                    "domain": "vpc",
+                    "id": "eipalloc-03da8e4e5d716df5e",
+                    "instance": "",
+                    "networkBorderGroup": "us-west-2",
+                    "networkInterface": "",
+                    "privateIp": "",
+                    "publicDns": "ec2-50-112-237-197.us-west-2.compute.amazonaws.com",
+                    "publicIp": "50.112.237.197",
+                    "publicIpv4Pool": "amazon",
+                    "tags": {},
+                    "tagsAll": {},
+                    "vpc": true
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "created": "2023-10-24T12:54:48.986628Z",
+                "modified": "2023-10-24T12:54:48.986628Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-3",
+                "custom": true,
+                "id": "rtb-00fe5f4c4123be300",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-3",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-00fe5f4c4123be300",
+                    "id": "rtb-00fe5f4c4123be300",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-3",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-public-3",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:48.992895Z",
+                "modified": "2023-10-24T12:54:48.992895Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-2",
+                "custom": true,
+                "id": "rtb-02526d14b91f70048",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-2",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-02526d14b91f70048",
+                    "id": "rtb-02526d14b91f70048",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-public-2",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-public-2",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-02ddf84149304c91f"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-with-service-endpoint"
+                    ]
+                },
+                "created": "2023-10-24T12:54:49.230899Z",
+                "modified": "2023-10-24T12:54:49.230899Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-with-service-endpoint-public-1",
+                "custom": true,
+                "id": "rtbassoc-085d9034059935b78",
+                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
+                "inputs": {
+                    "__defaults": [],
+                    "routeTableId": "rtb-0dbe45207cc0f219f",
+                    "subnetId": "subnet-08c106231d9d1f471"
+                },
+                "outputs": {
+                    "gatewayId": "",
+                    "id": "rtbassoc-085d9034059935b78",
+                    "routeTableId": "rtb-0dbe45207cc0f219f",
+                    "subnetId": "subnet-08c106231d9d1f471"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-1",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-1"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1"
+                    ]
+                },
+                "created": "2023-10-24T12:54:49.553271Z",
+                "modified": "2023-10-24T12:54:49.553271Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-with-service-endpoint-public-1",
+                "custom": true,
+                "id": "r-rtb-0dbe45207cc0f219f1080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": "igw-02e84321d867a4f45",
+                    "routeTableId": "rtb-0dbe45207cc0f219f"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "igw-02e84321d867a4f45",
+                    "id": "r-rtb-0dbe45207cc0f219f1080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-0dbe45207cc0f219f",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-1",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "gatewayId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-with-service-endpoint"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-1"
+                    ]
+                },
+                "created": "2023-10-24T12:54:49.818021Z",
+                "modified": "2023-10-24T12:54:49.818021Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-with-service-endpoint-public-3",
+                "custom": true,
+                "id": "rtbassoc-031f2e30649aab2a5",
+                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
+                "inputs": {
+                    "__defaults": [],
+                    "routeTableId": "rtb-00fe5f4c4123be300",
+                    "subnetId": "subnet-0d4f56f68871c4a2e"
+                },
+                "outputs": {
+                    "gatewayId": "",
+                    "id": "rtbassoc-031f2e30649aab2a5",
+                    "routeTableId": "rtb-00fe5f4c4123be300",
+                    "subnetId": "subnet-0d4f56f68871c4a2e"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-3",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-3"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3"
+                    ]
+                },
+                "created": "2023-10-24T12:54:49.822593Z",
+                "modified": "2023-10-24T12:54:49.822593Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-with-service-endpoint-public-3",
+                "custom": true,
+                "id": "r-rtb-00fe5f4c4123be3001080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": "igw-02e84321d867a4f45",
+                    "routeTableId": "rtb-00fe5f4c4123be300"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "igw-02e84321d867a4f45",
+                    "id": "r-rtb-00fe5f4c4123be3001080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-00fe5f4c4123be300",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-3",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "gatewayId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-with-service-endpoint"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-3"
+                    ]
+                },
+                "created": "2023-10-24T12:54:50.087558Z",
+                "modified": "2023-10-24T12:54:50.087558Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-with-service-endpoint-public-2",
+                "custom": true,
+                "id": "r-rtb-02526d14b91f700481080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": "igw-02e84321d867a4f45",
+                    "routeTableId": "rtb-02526d14b91f70048"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "igw-02e84321d867a4f45",
+                    "id": "r-rtb-02526d14b91f700481080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-02526d14b91f70048",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-2",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-with-service-endpoint"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "gatewayId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-with-service-endpoint"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-2"
+                    ]
+                },
+                "created": "2023-10-24T12:54:50.394559Z",
+                "modified": "2023-10-24T12:54:50.394559Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-with-service-endpoint-public-2",
+                "custom": true,
+                "id": "rtbassoc-0e12958cab051c69b",
+                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
+                "inputs": {
+                    "__defaults": [],
+                    "routeTableId": "rtb-02526d14b91f70048",
+                    "subnetId": "subnet-0592fed2991c6b822"
+                },
+                "outputs": {
+                    "gatewayId": "",
+                    "id": "rtbassoc-0e12958cab051c69b",
+                    "routeTableId": "rtb-02526d14b91f70048",
+                    "subnetId": "subnet-0592fed2991c6b822"
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-2",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-public-2"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2"
+                    ]
+                },
+                "created": "2023-10-24T12:55:03.918798Z",
+                "modified": "2023-10-24T12:55:03.918798Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-with-service-endpoint-2",
+                "custom": true,
+                "id": "nat-01190487f1907340a",
+                "type": "aws:ec2/natGateway:NatGateway",
+                "inputs": {
+                    "__defaults": [
+                        "connectivityType"
+                    ],
+                    "allocationId": "eipalloc-03da8e4e5d716df5e",
+                    "connectivityType": "public",
+                    "subnetId": "subnet-0592fed2991c6b822",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-2",
+                        "__defaults": []
+                    }
+                },
+                "outputs": {
+                    "allocationId": "eipalloc-03da8e4e5d716df5e",
+                    "connectivityType": "public",
+                    "id": "nat-01190487f1907340a",
+                    "networkInterfaceId": "eni-0d63c5006900494f8",
+                    "privateIp": "10.0.98.2",
+                    "publicIp": "50.112.237.197",
+                    "subnetId": "subnet-0592fed2991c6b822",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-2"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-2"
+                    }
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-with-service-endpoint-2"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "allocationId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-with-service-endpoint-2"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-2"
+                    ],
+                    "tags": null
+                },
+                "created": "2023-10-24T12:56:25.748101Z",
+                "modified": "2023-10-24T12:56:25.748101Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-with-service-endpoint-private-2",
+                "custom": true,
+                "id": "r-rtb-042e0f8175b9d4d751080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "natGatewayId": "nat-01190487f1907340a",
+                    "routeTableId": "rtb-042e0f8175b9d4d75"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "",
+                    "id": "r-rtb-042e0f8175b9d4d751080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "nat-01190487f1907340a",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-042e0f8175b9d4d75",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-2",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-with-service-endpoint-2"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "natGatewayId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-with-service-endpoint-2"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-2"
+                    ]
+                },
+                "created": "2023-10-24T12:56:27.365683Z",
+                "modified": "2023-10-24T12:56:27.365683Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-with-service-endpoint-3",
+                "custom": true,
+                "id": "nat-028cdc5efd66cec78",
+                "type": "aws:ec2/natGateway:NatGateway",
+                "inputs": {
+                    "__defaults": [
+                        "connectivityType"
+                    ],
+                    "allocationId": "eipalloc-00643ae3eaf38237c",
+                    "connectivityType": "public",
+                    "subnetId": "subnet-0d4f56f68871c4a2e",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-3",
+                        "__defaults": []
+                    }
+                },
+                "outputs": {
+                    "allocationId": "eipalloc-00643ae3eaf38237c",
+                    "connectivityType": "public",
+                    "id": "nat-028cdc5efd66cec78",
+                    "networkInterfaceId": "eni-0413025f6811fa014",
+                    "privateIp": "10.0.175.20",
+                    "publicIp": "52.35.246.67",
+                    "subnetId": "subnet-0d4f56f68871c4a2e",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-3"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-3"
+                    }
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-with-service-endpoint-3"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "allocationId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-with-service-endpoint-3"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-3"
+                    ],
+                    "tags": null
+                },
+                "created": "2023-10-24T12:56:45.857186Z",
+                "modified": "2023-10-24T12:56:45.857186Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-with-service-endpoint-private-3",
+                "custom": true,
+                "id": "r-rtb-0dface3bdf0b022c81080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "natGatewayId": "nat-028cdc5efd66cec78",
+                    "routeTableId": "rtb-0dface3bdf0b022c8"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "",
+                    "id": "r-rtb-0dface3bdf0b022c81080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "nat-028cdc5efd66cec78",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-0dface3bdf0b022c8",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-3",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-with-service-endpoint-3"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "natGatewayId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-with-service-endpoint-3"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-3"
+                    ]
+                },
+                "created": "2023-10-24T12:56:47.433924Z",
+                "modified": "2023-10-24T12:56:47.433924Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-with-service-endpoint-1",
+                "custom": true,
+                "id": "nat-0d98cf93e8e1df872",
+                "type": "aws:ec2/natGateway:NatGateway",
+                "inputs": {
+                    "__defaults": [
+                        "connectivityType"
+                    ],
+                    "allocationId": "eipalloc-0daf7e977791e5f44",
+                    "connectivityType": "public",
+                    "subnetId": "subnet-08c106231d9d1f471",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-1",
+                        "__defaults": []
+                    }
+                },
+                "outputs": {
+                    "allocationId": "eipalloc-0daf7e977791e5f44",
+                    "connectivityType": "public",
+                    "id": "nat-0d98cf93e8e1df872",
+                    "networkInterfaceId": "eni-094201d301f3f3fdc",
+                    "privateIp": "10.0.47.96",
+                    "publicIp": "44.224.58.90",
+                    "subnetId": "subnet-08c106231d9d1f471",
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-1"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-with-service-endpoint-1"
+                    }
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-with-service-endpoint-1"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "allocationId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-with-service-endpoint-1"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-with-service-endpoint-public-1"
+                    ],
+                    "tags": null
+                },
+                "created": "2023-10-24T12:57:06.299394Z",
+                "modified": "2023-10-24T12:57:06.299394Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-with-service-endpoint-private-1",
+                "custom": true,
+                "id": "r-rtb-046b8184194105c771080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "natGatewayId": "nat-0d98cf93e8e1df872",
+                    "routeTableId": "rtb-046b8184194105c77"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "",
+                    "id": "r-rtb-046b8184194105c771080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "nat-0d98cf93e8e1df872",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-046b8184194105c77",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-1",
+                    "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-with-service-endpoint-1"
+                ],
+                "provider": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:aws::default_5_35_0::f8c6c960-1e00-4d8b-a635-5edb984b7c07",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "natGatewayId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-with-service-endpoint-1"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-with-service-endpoint-private-1"
+                    ]
+                },
+                "created": "2023-10-24T12:57:07.921242Z",
+                "modified": "2023-10-24T12:57:07.921242Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-tmpfritzbo-vpc-with-s-110865e1::nodejs::pulumi:providers:pulumi::default",
+                "custom": true,
+                "id": "4e6fa6a6-23fe-4eeb-af14-8135612c3532",
+                "type": "pulumi:providers:pulumi",
+                "created": "2023-10-24T12:57:08.167081Z",
+                "modified": "2023-10-24T12:57:08.167081Z"
+            }
+        ]
+    }
+}

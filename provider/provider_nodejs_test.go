@@ -51,9 +51,9 @@ func TestExamples(t *testing.T) {
 		// "ts-lb-with-subnets",
 		// "ts-lb-attach-lambda",
 		// "ts-lb-attach-ec2",
-		// "vpc/nodejs/custom-provider",
-		// "vpc/nodejs/specific-vpc-layout",
-		// "vpc/nodejs/vpc-with-service-endpoint",
+		"vpc/nodejs/custom-provider",
+		"vpc/nodejs/specific-vpc-layout",
+		"vpc/nodejs/vpc-with-service-endpoint",
 		// "vpc/nodejs/vpc-multiple-similar-subnet-types",
 		// "vpc/nodejs/vpc-subnets-with-tags",
 	}
@@ -73,10 +73,10 @@ func test(dir string, opts ...providertest.Option) *providertest.ProviderTest {
 			providertest.UpgradeTestMode_Quick,
 			"Quick mode is only supported for providers written in Go at the moment"),
 
-		providertest.WithBaselineVersion("1.0.6"),
+		providertest.WithBaselineVersion("1.0.6"), // latest v1
 
 		providertest.WithExtraBaselineDependencies(map[string]string{
-			"aws": "5.42.0",
+			"aws": "5.42.0", // latest v5
 		}),
 	)
 

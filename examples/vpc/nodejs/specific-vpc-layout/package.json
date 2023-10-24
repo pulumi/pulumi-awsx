@@ -1,9 +1,10 @@
 {
     "name": "nodejs",
     "devDependencies": {
-        "@types/node": "^14"
+        "@types/node": "^18"
     },
     "dependencies": {
-        "@pulumi/pulumi": "^3.0.0"
+        "@pulumi/pulumi": "^3.0.0",
+        "@pulumi/awsx": "^2.0.2"
     }
 }
