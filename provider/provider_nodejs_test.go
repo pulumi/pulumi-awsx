@@ -54,8 +54,8 @@ func TestExamples(t *testing.T) {
 		"vpc/nodejs/custom-provider",
 		"vpc/nodejs/specific-vpc-layout",
 		"vpc/nodejs/vpc-with-service-endpoint",
-		// "vpc/nodejs/vpc-multiple-similar-subnet-types",
-		// "vpc/nodejs/vpc-subnets-with-tags",
+		"vpc/nodejs/vpc-multiple-similar-subnet-types",
+		"vpc/nodejs/vpc-subnets-with-tags",
 	}
 
 	for _, ex := range examples {
