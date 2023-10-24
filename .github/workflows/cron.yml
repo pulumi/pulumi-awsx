@@ -70,7 +70,7 @@ jobs:
           path: ci-scripts
           repository: pulumi/scripts
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-region: ${{ env.AWS_REGION }}
