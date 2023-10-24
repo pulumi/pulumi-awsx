@@ -1,3 +1,4 @@
+import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
@@ -10,25 +11,41 @@ const lb = new awsx.lb.ApplicationLoadBalancer("nginx-lb", {
     subnetIds: vpc.publicSubnetIds.apply((x) => x!),
 });
 
-const service = new awsx.ecs.FargateService("my-service", {
-    cluster: cluster.arn,
-    assignPublicIp: true,
-    taskDefinitionArgs: {
-        container: {
-            image: "nginx:latest",
-            name: "nginx",
-            cpu: 512,
-            memory: 128,
-            essential: true,
-            portMappings: [
-                {
-                    containerPort: 80,
-                    targetGroup: lb.defaultTargetGroup,
-                },
-            ],
+const service = new awsx.ecs.FargateService(
+    "my-service",
+    {
+        cluster: cluster.arn,
+        assignPublicIp: true,
+        taskDefinitionArgs: {
+            container: {
+                image: "nginx:latest",
+                name: "nginx",
+                cpu: 512,
+                memory: 128,
+                essential: true,
+                portMappings: [
+                    {
+                        containerPort: 80,
+                        targetGroup: lb.defaultTargetGroup,
+                    },
+                ],
+            },
         },
     },
-});
+    {
+        transformations: [
+            (args) => {
+                if (args.type === "aws:ecs/service:Service") {
+                    return {
+                        props: args.props,
+                        opts: pulumi.mergeOptions(args.opts, { customTimeouts: { create: "30m" } }),
+                    };
+                }
+                return undefined;
+            },
+        ],
+    },
+);
 
 // Export the load balancer's address so that it's easy to access.
 export const url = lb.loadBalancer.dnsName;
