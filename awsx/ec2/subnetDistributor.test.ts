@@ -12,8 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SubnetTypeInputs } from "../schema-types";
+import fc from "fast-check";
+import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import { getSubnetSpecs, SubnetSpec } from "./subnetDistributor";
+
+describe("subnet ranges", () => {
+  it("should have smaller subnets than the vpc", () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 16, max: 27 }), // vpc mask
+        fc.integer({ min: 2, max: 4 }), // az count
+        fc.integer({ min: 1, max: 4 }), // subnet count
+        (vpcMask, azCount, subnetCount) => {
+          const vpcCidr = `10.0.0.0/${vpcMask}`;
+          const azs: string[] = [];
+          for (let index = 0; index < azCount; index++) {
+            azs.push("us-east-1" + String.fromCharCode("c".charCodeAt(0) + index));
+          }
+          const subnetTypes: SubnetTypeInputs[] = ["Private", "Public", "Isolated"];
+          const specs: SubnetSpecInputs[] = [];
+          for (let index = 0; index < subnetCount; index++) {
+            specs.push({ type: subnetTypes[index % 3] });
+          }
+          const result = getSubnetSpecs("vpcName", vpcCidr, azs, specs);
+          for (const subnet of result) {
+            const subnetMask = getCidrMask(subnet.cidrBlock);
+            // Larger mask means smaller subnet
+            expect(subnetMask).toBeGreaterThan(vpcMask);
+          }
+        },
+      ),
+    );
+  });
+});
+
+function getCidrMask(cidrBlock: string): number {
+  return parseInt(cidrBlock.split("/")[1], 10);
+}
 
 describe("getSubnetSpecs", () => {
   const azs = ["us-east-1a", "us-east-1b", "us-east-1c"];
