@@ -32,37 +32,35 @@ func TestExamples(t *testing.T) {
 	examples := []string{
 
 		"cloudtrail/nodejs",
+
 		"vpc/nodejs/default-args",
+		"vpc/nodejs/custom-provider",
+		"vpc/nodejs/specific-vpc-layout",
+		"vpc/nodejs/vpc-with-service-endpoint",
+		"vpc/nodejs/vpc-multiple-similar-subnet-types",
+		"vpc/nodejs/vpc-subnets-with-tags",
 
 		// TODO[pulumi/pulumi-awsx#1114] this passes locally on Mac OS and Pulumi 3.86.0 but is failing in CI.
 		// "ts-nlb-simple",
 
 		// TODO[pulumi/pulumi-awsx#1112] skipping recording a few programs that time out locally after 20min.
 		// "ts-lb-simple",
+		// "ts-lb-with-subnets",
+		// "ts-lb-attach-lambda",
+		// "ts-lb-attach-ec2",
+
 		// TODO[pulumi/providertest#21] ecs/nodejs clobbers cloudtrail/nodejs.
 		// "ecs/nodejs"
 
 		// Skipping because it does not work on pre-2.x versions, so upgrade tests cannot run.
 		// "ts-vpc-getDefaultVpc",  // Property 'vpc' does not exist
-		// "ts-ecr-simple",
-
-		// Still need to try recording these:
-		//
-		// "ts-lb-with-subnets",
-		// "ts-lb-attach-lambda",
-		// "ts-lb-attach-ec2",
-		"vpc/nodejs/custom-provider",
-		"vpc/nodejs/specific-vpc-layout",
-		"vpc/nodejs/vpc-with-service-endpoint",
-		"vpc/nodejs/vpc-multiple-similar-subnet-types",
-		"vpc/nodejs/vpc-subnets-with-tags",
+		// "ts-ecr-simple", // docker.Patch -> docker.Context
 	}
 
 	for _, ex := range examples {
 		dir := filepath.Join("..", "examples", ex)
 		t.Run(ex, test(dir).Run)
 	}
-
 }
 
 func test(dir string, opts ...providertest.Option) *providertest.ProviderTest {
