@@ -11,6 +11,11 @@ const service = new awsx.ecs.FargateService("my-service", {
     cluster: cluster.arn,
     assignPublicIp: true,
     taskDefinitionArgs: {
+        logGroup: {
+            args: {
+                name: "my-log-group",
+            }
+        },
         container: {
             image: "nginx:latest",
             name: "nginx",
@@ -23,6 +28,14 @@ const service = new awsx.ecs.FargateService("my-service", {
                     targetGroup: lb.defaultTargetGroup,
                 },
             ],
+            logConfiguration: {
+                logDriver: "awslogs",
+                options: {
+                    "awslogs-group": "my-log-group",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "my-app",
+                },
+            },
         },
     },
 });

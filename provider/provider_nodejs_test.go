@@ -44,7 +44,7 @@ func TestExamples(t *testing.T) {
 		// "ts-nlb-simple",
 
 		// TODO[pulumi/pulumi-awsx#1112] skipping recording a few programs that time out locally after 20min.
-		// "ts-lb-simple",
+		"ts-lb-simple",
 		// "ts-lb-with-subnets",
 		// "ts-lb-attach-lambda",
 		// "ts-lb-attach-ec2",
