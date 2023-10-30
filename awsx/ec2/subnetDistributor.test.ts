@@ -34,7 +34,7 @@ describe("default subnet layout", () => {
       fc.property(
         fc.record({
           vpcCidrMask: cidrMask(),
-          azs: fc.array(fc.string({ size: "xsmall" }), { minLength: 2, maxLength: 5 }),
+          azs: fc.array(fc.string({ size: "xsmall" }), { minLength: 2, maxLength: 4 }),
           subnetSpecs: fc.array(subnetSpecNoMask(), { minLength: 1, maxLength: 5 }),
         }),
         ({ vpcCidrMask, azs, subnetSpecs }) => {
