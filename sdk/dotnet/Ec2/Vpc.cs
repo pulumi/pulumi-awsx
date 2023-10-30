@@ -206,7 +206,7 @@ namespace Pulumi.Awsx.Ec2
         private List<Inputs.SubnetSpecArgs>? _subnetSpecs;
 
         /// <summary>
-        /// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC.
+        /// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
         /// </summary>
         public List<Inputs.SubnetSpecArgs> SubnetSpecs
         {
