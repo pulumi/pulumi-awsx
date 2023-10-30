@@ -1,0 +1,163 @@
+version: 3
+
+vars:
+  CWD:
+    sh: pwd
+  VERSION:
+    sh: pulumictl get version
+
+tasks:
+  clean:
+    run: once
+    cmds:
+      - rm -rf bin dist obj awsx/bin awsx/node_modules
+
+  schemagen:
+    run: once
+    cmds:
+      - go build -o ../bin/pulumi-gen-awsx ./cmd/pulumi-gen-awsx
+    dir: schemagen
+    generates:
+      - ../bin/pulumi-gen-awsx
+    sources:
+      - "**/*"
+    
+  schema:
+    run: once
+    cmds:
+      - bin/pulumi-gen-awsx schema awsx
+    deps:
+      - schemagen
+    generates:
+      - awsx/schema.json
+    sources:
+      - bin/pulumi-gen-awsx
+
+  provider:install:
+    run: once
+    cmds:
+      - yarn install --no-progress
+    dir: awsx
+    generates:
+      - node_modules/**/*
+    sources:
+      - package.json
+      - yarn.lock
+
+  provider:gen:
+    run: once
+    cmds:
+      - yarn gen-types
+    deps:
+      - provider:install
+      - schema
+    dir: awsx
+    generates:
+      - schema-types.ts
+    sources:
+      - schema.json
+      - scripts/generate-provider-types.ts
+
+  provider:transpile:
+    run: once
+    cmds:
+      - yarn tsc
+      - cp package.json schema.json ./bin/
+      - sed -i.bak -e "s/\${VERSION}/{{ .VERSION }}/g" ./bin/package.json
+    deps:
+      - provider:install
+      - provider:gen
+    dir: awsx
+    generates:
+      - bin/**/*
+    sources:
+      - "**/*.ts"
+      - "*.*"
+
+  provider:build:
+    run: when_changed
+    vars:
+      TARGET: '{{ default "node16" .TARGET }}'
+      OUTPUT: '{{ default "../bin/pulumi-resource-awsx" .OUTPUT }}'
+    cmds:
+      - yarn run pkg . --no-bytecode --public-packages "*" --public --target {{ .TARGET }} --output {{ .OUTPUT }}
+    deps:
+      - provider:transpile
+    dir: awsx
+    generates:
+      - "{{ .OUTPUT }}"
+    sources:
+      - bin/**/*
+      - "*"
+
+  provider:build-linux-amd64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-linux-x64
+          OUTPUT: ../obj/provider/linux-amd64/pulumi-resource-awsx
+  provider:build-linux-arm64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-linux-arm64
+          OUTPUT: ../obj/provider/linux-arm64/pulumi-resource-awsx
+  provider:build-darwin-amd64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-macos-x64
+          OUTPUT: ../obj/provider/darwin-amd64/pulumi-resource-awsx
+  provider:build-darwin-arm64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-macos-arm64
+          OUTPUT: ../obj/provider/darwin-arm64/pulumi-resource-awsx
+  provider:build-windows-amd64:
+    deps:
+      - task: provider:build
+        vars:
+          TARGET: node16-win-x64
+          OUTPUT: ../obj/provider/windows-amd64/pulumi-resource-awsx.exe
+
+  provider:build-all:
+    deps:
+      - task: provider:build-linux-amd64
+      - task: provider:build-linux-arm64
+      - task: provider:build-darwin-amd64
+      - task: provider:build-darwin-arm64
+      - task: provider:build-windows-amd64
+
+  provider:dist-dir:
+    dir: dist
+
+  provider:pack:
+    vars:
+      TAR: pulumi-resource-awsx-v{{ .VERSION }}-{{ .PLAT }}.tar.gz
+      BIN_DIR: obj/provider/{{ .PLAT }}
+    cmds:
+      - tar --gzip -cf dist/{{ .TAR }} README.md LICENSE -C {{ .BIN_DIR }} .
+    deps:
+      - provider:build-{{ .PLAT }}
+      - provider:dist-dir
+    generates:
+      - dist/{{ .TAR }}
+
+  dist:
+    deps:
+      - task: provider:pack
+        vars:
+          PLAT: linux-amd64
+      - task: provider:pack
+        vars:
+          PLAT: linux-arm64
+      - task: provider:pack
+        vars:
+          PLAT: darwin-amd64
+      - task: provider:pack
+        vars:
+          PLAT: darwin-arm64
+      - task: provider:pack
+        vars:
+          PLAT: windows-amd64
