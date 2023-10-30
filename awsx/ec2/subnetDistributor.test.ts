@@ -15,6 +15,7 @@
 import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import { getSubnetSpecs, SubnetSpec, validateRanges } from "./subnetDistributor";
+import { knownWorkingSubnets } from "./knownWorkingSubnets";
 
 function cidrMask(args?: { min?: number; max?: number }): fc.Arbitrary<number> {
   return fc.integer({ min: args?.min ?? 16, max: args?.max ?? 27 });
@@ -149,6 +150,24 @@ describe("default subnet layout", () => {
         },
       ),
     );
+  });
+
+  describe("known working subnets", () => {
+    for (const knownCase of knownWorkingSubnets) {
+      it(`should work for ${knownCase.vpcCidr} with subnets ${knownCase.subnetSpecs
+        .map((s) => `${s.type}:${s.cidrMask}`)
+        .join(", ")}`, () => {
+        const result = getSubnetSpecs(
+          "vpcName",
+          knownCase.vpcCidr,
+          ["us-east-1a"],
+          knownCase.subnetSpecs,
+        );
+        const actual = result.map((s) => s.cidrBlock);
+
+        expect(actual).toEqual(knownCase.result);
+      });
+    }
   });
 });
 
