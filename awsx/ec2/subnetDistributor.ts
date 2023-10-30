@@ -41,7 +41,11 @@ export function validateRanges(specs: SubnetSpec[]) {
   for (const current of ranges.slice(1)) {
     if (current.start.compareTo(previous.end) <= 0) {
       throw new Error(
-        `Subnet ranges must not overlap. Found a gap between ${previous.addr.address} and ${current.addr.address}`,
+        `Subnet ranges must not overlap. ${previous.addr.address} (from ${
+          previous.addr.startAddress().address
+        } to ${previous.addr.endAddress().address}) and ${current.addr.address} (from ${
+          previous.addr.startAddress().address
+        } to ${previous.addr.endAddress().address}) overlap.)`,
       );
     }
     previous = current;
