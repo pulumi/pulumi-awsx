@@ -55,6 +55,11 @@ The SDKs are also generated from the `awsx/schema.json` using the `schemagen` pr
 
 ## Testing Workflow
 
+To test a locally developed Pulumi provider against a given Pulumi program, we have to change 2 things:
+
+1. The Pulumi program must point to the local version of the Pulumi SDK.
+1. The local version of the Pulumi provider binary must be first in the user's path before any other versions of the provider.
+
 Before testing, make sure you are authenticated with Pulumi and AWS in your terminal.
 
 For running Typescript examples locally:

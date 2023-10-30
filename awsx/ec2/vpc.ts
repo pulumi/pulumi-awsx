@@ -163,9 +163,14 @@ export class Vpc extends schema.Vpc<VpcData> {
                 SubnetType: spec.type,
               },
             },
-            { parent: vpc, dependsOn: [vpc] },
+            {
+              parent: vpc,
+              dependsOn: [vpc],
+              aliases: spec.aliases,
+            },
           );
           subnets.push(subnet);
+
           if (spec.type.toLowerCase() === "public") {
             publicSubnetIds.push(subnet.id);
           } else if (spec.type.toLowerCase() === "private") {
@@ -184,7 +189,11 @@ export class Vpc extends schema.Vpc<VpcData> {
                 SubnetType: spec.type,
               },
             },
-            { parent: subnet, dependsOn: [subnet] },
+            {
+              parent: subnet,
+              dependsOn: [subnet],
+              aliases: spec.aliases,
+            },
           );
           routeTables.push(routeTable);
 
@@ -194,7 +203,11 @@ export class Vpc extends schema.Vpc<VpcData> {
               routeTableId: routeTable.id,
               subnetId: subnet.id,
             },
-            { parent: routeTable, dependsOn: [routeTable] },
+            {
+              parent: routeTable,
+              dependsOn: [routeTable],
+              aliases: spec.aliases,
+            },
           );
           routeTableAssociations.push(routeTableAssoc);
 
@@ -237,7 +250,11 @@ export class Vpc extends schema.Vpc<VpcData> {
                 gatewayId: igw.id,
                 destinationCidrBlock: "0.0.0.0/0",
               },
-              { parent: routeTable, dependsOn: [routeTable] },
+              {
+                parent: routeTable,
+                dependsOn: [routeTable],
+                aliases: spec.aliases,
+              },
             );
             routes.push(route);
           } else if (spec.type.toLowerCase() === "private") {
@@ -258,7 +275,11 @@ export class Vpc extends schema.Vpc<VpcData> {
                   natGatewayId,
                   destinationCidrBlock: "0.0.0.0/0",
                 },
-                { parent: routeTable, dependsOn: [routeTable] },
+                {
+                  parent: routeTable,
+                  dependsOn: [routeTable],
+                  aliases: spec.aliases,
+                },
               );
               routes.push(route);
             }
