@@ -41,9 +41,9 @@ func TestExamples(t *testing.T) {
 
 		// TODO[pulumi/pulumi-awsx#1114] this passes locally on Mac OS and Pulumi 3.86.0 but is failing in CI.
 		// "ts-nlb-simple",
+		// "ts-lb-simple",
 
 		// TODO[pulumi/pulumi-awsx#1112] skipping recording a few programs that time out locally after 20min.
-		"ts-lb-simple",
 		// "ts-lb-with-subnets",
 		// "ts-lb-attach-lambda",
 		// "ts-lb-attach-ec2",
