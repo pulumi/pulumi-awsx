@@ -34,7 +34,6 @@ func TestExamples(t *testing.T) {
 		"cloudtrail/nodejs",
 
 		"vpc/nodejs/default-args",
-		"vpc/nodejs/custom-provider",
 		"vpc/nodejs/specific-vpc-layout",
 		"vpc/nodejs/vpc-with-service-endpoint",
 		"vpc/nodejs/vpc-multiple-similar-subnet-types",
@@ -53,6 +52,7 @@ func TestExamples(t *testing.T) {
 		// "ecs/nodejs"
 
 		// Skipping because it does not work on pre-2.x versions, so upgrade tests cannot run.
+		// "vpc/nodejs/custom-provider", // enableClassiclink and enableClassiclinkDnsSupport removed from outputs
 		// "ts-vpc-getDefaultVpc",  // Property 'vpc' does not exist
 		// "ts-ecr-simple", // docker.Patch -> docker.Context
 	}
