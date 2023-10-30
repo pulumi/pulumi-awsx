@@ -17,6 +17,7 @@
 
 import * as pulumi from "@pulumi/pulumi";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
+import * as ipAddress from "ip-address";
 
 export interface SubnetSpec {
   cidrBlock: string;
@@ -26,6 +27,25 @@ export interface SubnetSpec {
   tags?: pulumi.Input<{
     [key: string]: pulumi.Input<string>;
   }>;
+}
+
+export function validateRanges(specs: SubnetSpec[]) {
+  const ranges = specs
+    .map((spec) => new ipAddress.Address4(spec.cidrBlock))
+    .map((addr) => {
+      const start = addr.startAddress().bigInteger();
+      const end = addr.endAddress().bigInteger();
+      return { addr, start, end };
+    });
+  let previous = ranges[0];
+  for (const current of ranges.slice(1)) {
+    if (current.start.compareTo(previous.end) <= 0) {
+      throw new Error(
+        `Subnet ranges must not overlap. Found a gap between ${previous.addr.address} and ${current.addr.address}`,
+      );
+    }
+    previous = current;
+  }
 }
 
 export function getSubnetSpecs(
@@ -50,7 +70,6 @@ export function getSubnetSpecs(
     return generateDefaultSubnets(vpcName, vpcCidr, azNames, azBases);
   }
 
-  const ipAddress = require("ip-address");
   const ipv4 = new ipAddress.Address4(azBases[0]);
   const baseSubnetMask = ipv4.subnetMask;
 
@@ -190,7 +209,6 @@ function generateDefaultSubnets(
 }
 
 function cidrSubnetV4(ipRange: string, newBits: number, netNum: number): string {
-  const ipAddress = require("ip-address");
   const BigInteger = require("jsbn").BigInteger;
 
   const ipv4 = new ipAddress.Address4(ipRange);
