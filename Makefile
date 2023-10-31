@@ -130,20 +130,21 @@ bin/pulumi-java-gen::
 		go test -v ./... -check.vv
 	@touch $@
 
-sdk/dotnet/bin:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
-sdk/dotnet/bin:: bin/${CODEGEN} .make/schema
+.make/build_dotnet: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
+.make/build_dotnet: bin/${CODEGEN} .make/schema
 	rm -rf sdk/dotnet
 	bin/${CODEGEN} dotnet sdk/dotnet awsx/schema.json $(VERSION)
 	cd sdk/dotnet/ && \
 		echo "${DOTNET_VERSION}" >version.txt && \
 		dotnet build /p:Version=${DOTNET_VERSION}
+	@touch $@
 
 # Phony targets
 
 build_nodejs: .make/build_nodejs
 build_python: .make/build_python
 build_go: .make/build_go
-build_dotnet:: sdk/dotnet/bin
+build_dotnet: .make/build_dotnet
 build_java: .make/build_java
 
 install_provider: bin/${PROVIDER}
@@ -159,7 +160,7 @@ install_python_sdk: .make/build_python
 install_go_sdk: .make/build_go
 	#Intentionally empty for CI / CD templating
 
-install_dotnet_sdk:: sdk/dotnet/bin
+install_dotnet_sdk: .make/build_dotnet
 	mkdir -p $(WORKING_DIR)/nuget
 	find sdk/dotnet/bin -name '*.nupkg' -print -exec cp -p {} ${WORKING_DIR}/nuget \;
 	@if ! dotnet nuget list source | grep ${WORKING_DIR}; then \
