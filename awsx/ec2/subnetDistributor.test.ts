@@ -12,8 +12,108 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { SubnetTypeInputs } from "../schema-types";
+import fc from "fast-check";
+import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import { getSubnetSpecs, SubnetSpec } from "./subnetDistributor";
+
+function cidrMask(args?: { min?: number; max?: number }): fc.Arbitrary<number> {
+  return fc.integer({ min: args?.min ?? 16, max: args?.max ?? 27 });
+}
+
+function subnetSpecNoMask() {
+  return fc.constantFrom("Private", "Public", "Isolated").map(
+    (type): SubnetSpecInputs => ({
+      type: type as SubnetTypeInputs,
+    }),
+  );
+}
+
+describe("default subnet layout", () => {
+  it("should have smaller subnets than the vpc", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          vpcCidrMask: cidrMask(),
+          azs: fc.array(fc.string({ size: "xsmall" }), { minLength: 2, maxLength: 4 }),
+          subnetSpecs: fc.array(subnetSpecNoMask(), { minLength: 1, maxLength: 5 }),
+        }),
+        ({ vpcCidrMask, azs, subnetSpecs }) => {
+          const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
+
+          const result = getSubnetSpecs("vpcName", vpcCidr, azs, subnetSpecs);
+
+          for (const subnet of result) {
+            const subnetMask = getCidrMask(subnet.cidrBlock);
+            // Larger mask means smaller subnet
+            expect(subnetMask).toBeGreaterThan(vpcCidrMask);
+          }
+        },
+      ),
+    );
+  });
+
+  it("should use whole space if there's only one subnet and VPC is small", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          vpcCidrMask: cidrMask({ min: 24 }),
+          subnetSpec: subnetSpecNoMask(),
+        }),
+        ({ vpcCidrMask, subnetSpec }) => {
+          const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
+
+          const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], [subnetSpec]);
+
+          expect(result.length).toBe(1);
+          expect(result[0].cidrBlock).toBe(vpcCidr);
+        },
+      ),
+    );
+  });
+
+  it("should use default values if VPC is large", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          vpcCidrMask: cidrMask({ max: 17 }),
+          subnetSpec: subnetSpecNoMask(),
+        }),
+        ({ vpcCidrMask }) => {
+          const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
+
+          const result = getSubnetSpecs(
+            "vpcName",
+            vpcCidr,
+            ["us-east-1a"],
+            [{ type: "Public" }, { type: "Private" }, { type: "Isolated" }],
+          );
+
+          expect(result).toMatchObject([
+            {
+              cidrBlock: "10.0.0.0/19",
+              subnetName: "vpcName-private-1",
+              type: "Private",
+            },
+            {
+              cidrBlock: "10.0.32.0/20",
+              subnetName: "vpcName-public-1",
+              type: "Public",
+            },
+            {
+              cidrBlock: "10.0.48.0/24",
+              subnetName: "vpcName-isolated-1",
+              type: "Isolated",
+            },
+          ]);
+        },
+      ),
+    );
+  });
+});
+
+function getCidrMask(cidrBlock: string): number {
+  return parseInt(cidrBlock.split("/")[1], 10);
+}
 
 describe("getSubnetSpecs", () => {
   const azs = ["us-east-1a", "us-east-1b", "us-east-1c"];

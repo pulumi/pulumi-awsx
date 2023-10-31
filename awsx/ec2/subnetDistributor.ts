@@ -34,6 +34,11 @@ export function getSubnetSpecs(
   azNames: string[],
   subnetInputs?: SubnetSpecInputs[],
 ): SubnetSpec[] {
+  // Design:
+  // 1. Split the VPC CIDR block evenly between the AZs.
+  // 2. Assign private subnets within each AZ using /19 blocks if possible.
+  // 3. Assign public subnets within each AZ using /20 blocks if possible.
+  // 4. Assign isolated subnets within each AZ using /24 blocks if possible.
   const newBitsPerAZ = Math.log2(nextPow2(azNames.length));
 
   const azBases: string[] = [];
@@ -55,13 +60,17 @@ export function getSubnetSpecs(
 
   let subnetsOut: SubnetSpec[] = [];
 
+  // How many bits do we need if just dividing up evenly?
+  const newBitsPerSubnet = Math.log2(nextPow2(subnetInputs.length));
+
   for (let i = 0; i < azNames.length; i++) {
     const privateSubnetsOut: SubnetSpec[] = [];
     const publicSubnetsOut: SubnetSpec[] = [];
     const isolatedSubnetsOut: SubnetSpec[] = [];
 
     for (let j = 0; j < privateSubnetsIn.length; j++) {
-      const privateCidrMask: number = privateSubnetsIn[j].cidrMask ?? 19;
+      const privateCidrMask: number =
+        privateSubnetsIn[j].cidrMask ?? Math.max(baseSubnetMask + newBitsPerSubnet, 19);
       const newBits = privateCidrMask - baseSubnetMask;
 
       // The "j" input to cidrSubnetV4 below covers the case where we have
@@ -90,7 +99,8 @@ export function getSubnetSpecs(
       const baseIp = new ipAddress.Address4(baseCidr);
 
       const splitBase = privateSubnetsOut.length > 0 ? cidrSubnetV4(baseCidr, 0, 1) : azBases[i];
-      const publicCidrMask: number = publicSubnetsIn[j].cidrMask ?? 20;
+      const publicCidrMask: number =
+        publicSubnetsIn[j].cidrMask ?? Math.max(baseSubnetMask + newBitsPerSubnet, 20);
       const newBits = publicCidrMask - baseIp.subnetMask;
 
       const publicSubnetCidrBlock = cidrSubnetV4(splitBase, newBits, j);
@@ -126,7 +136,8 @@ export function getSubnetSpecs(
         splitBase = azBases[i];
       }
 
-      const isolatedCidrMask: number = isolatedSubnetsIn[j].cidrMask ?? 24;
+      const isolatedCidrMask: number =
+        isolatedSubnetsIn[j].cidrMask ?? Math.max(baseSubnetMask + newBitsPerSubnet, 24);
       const newBits = isolatedCidrMask - baseIp.subnetMask;
 
       const isolatedSubnetCidrBlock = cidrSubnetV4(splitBase, newBits, j);
