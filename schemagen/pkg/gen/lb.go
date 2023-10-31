@@ -28,6 +28,7 @@ func generateLb(awsSpec schema.PackageSpec) schema.PackageSpec {
 		Types: map[string]schema.ComplexTypeSpec{
 			"awsx:lb:Listener":    lbListener(awsSpec),
 			"awsx:lb:TargetGroup": lbTargetGroup(awsSpec),
+			// "awsx:lb:TargetGroupTargetHealthState": lbTargetGroupTargetHealthState(awsSpec),
 		},
 	}
 }
@@ -251,6 +252,17 @@ func lbListener(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 
 func lbTargetGroup(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	spec := awsSpec.Resources["aws:lb/targetGroup:TargetGroup"]
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: spec.Description,
+			Properties:  renameAwsPropertiesRefs(awsSpec, spec.InputProperties),
+		},
+	}
+}
+
+func lbTargetGroupTargetHealthState(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+	spec := awsSpec.Resources["aws:lb/targetGroupTargetHealthState:TargetGroupTargetHealthState"]
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
