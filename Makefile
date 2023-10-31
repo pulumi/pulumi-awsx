@@ -95,12 +95,13 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 		cp ../../README.md ../../LICENSE bin/
 	@touch $@
 
-sdk/java/build:: VERSION := $(shell pulumictl get version --language javascript)
-sdk/java/build:: bin/pulumi-java-gen .make/schema ${AWSX_CLASSIC_SRC}
+.make/build_java: VERSION := $(shell pulumictl get version --language javascript)
+.make/build_java: bin/pulumi-java-gen .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/java
 	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema awsx/schema.json --out sdk/java --build gradle-nexus
 	cd sdk/java && \
 		gradle --console=plain build
+	@touch $@
 
 bin/pulumi-java-gen::
 	$(shell pulumictl download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java)
@@ -141,7 +142,7 @@ build_nodejs: .make/build_nodejs
 build_python:: sdk/python/bin
 build_go:: sdk/go
 build_dotnet:: sdk/dotnet/bin
-build_java:: sdk/java/build
+build_java: .make/build_java
 
 install_provider: bin/${PROVIDER}
 	rm -f ${GOBIN}/${PROVIDER}
