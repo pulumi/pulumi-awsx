@@ -45,18 +45,19 @@ bin/${CODEGEN}: ${CODEGEN_SRC}
 awsx/schema-types.ts: .make/awsx_node_modules .make/schema
 	cd awsx && yarn gen-types
 
-awsx/bin: .make/awsx_node_modules ${AWSX_SRC}
+.make/awsx_bin: .make/awsx_node_modules ${AWSX_SRC}
 	@cd awsx && \
 		yarn tsc && \
 		cp package.json schema.json ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
+	@touch $@
 
 # Re-use the local platform if provided (e.g. `make provider LOCAL_PLAT=linux-amd64`)
 ifneq ($(LOCAL_PLAT),"")
 bin/${PROVIDER}:: bin/provider/$(LOCAL_PLAT)/${PROVIDER}
 	cp bin/provider/$(LOCAL_PLAT)/${PROVIDER} bin/${PROVIDER}
 else
-bin/${PROVIDER}: awsx/bin .make/awsx_node_modules
+bin/${PROVIDER}: .make/awsx_bin .make/awsx_node_modules
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output $(WORKING_DIR)/bin/${PROVIDER}
 endif
 
@@ -65,7 +66,7 @@ bin/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linuxstatic-arm64
 bin/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
 bin/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
 bin/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
-bin/provider/%:: awsx/bin .make/awsx_node_modules
+bin/provider/%:: .make/awsx_bin .make/awsx_node_modules
 	test ${TARGET}
 	cd awsx && \
 		yarn run pkg . ${PKG_ARGS} --target ${TARGET} --output ${WORKING_DIR}/$@
