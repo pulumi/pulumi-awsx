@@ -83,8 +83,8 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 	@# $< is the last dependency (the binary path from above)
 	tar --gzip -cf $@ README.md LICENSE -C $$(dirname $<) .
 
-sdk/nodejs/bin:: VERSION := $(shell pulumictl get version --language javascript)
-sdk/nodejs/bin:: bin/${CODEGEN} .make/schema ${AWSX_CLASSIC_SRC}
+.make/build_nodejs: VERSION := $(shell pulumictl get version --language javascript)
+.make/build_nodejs: bin/${CODEGEN} .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
 	bin/${CODEGEN} nodejs sdk/nodejs awsx/schema.json $(VERSION)
 	cd sdk/nodejs && \
@@ -93,6 +93,7 @@ sdk/nodejs/bin:: bin/${CODEGEN} .make/schema ${AWSX_CLASSIC_SRC}
 		yarn run tsc && \
 		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
 		cp ../../README.md ../../LICENSE bin/
+	@touch $@
 
 sdk/java/build:: VERSION := $(shell pulumictl get version --language javascript)
 sdk/java/build:: bin/pulumi-java-gen .make/schema ${AWSX_CLASSIC_SRC}
@@ -136,7 +137,7 @@ sdk/dotnet/bin:: bin/${CODEGEN} .make/schema
 
 # Phony targets
 
-build_nodejs:: sdk/nodejs/bin
+build_nodejs: .make/build_nodejs
 build_python:: sdk/python/bin
 build_go:: sdk/go
 build_dotnet:: sdk/dotnet/bin
@@ -146,7 +147,7 @@ install_provider: bin/${PROVIDER}
 	rm -f ${GOBIN}/${PROVIDER}
 	cp bin/${PROVIDER} ${GOBIN}/${PROVIDER}
 
-install_nodejs_sdk:: sdk/nodejs/bin
+install_nodejs_sdk: .make/build_nodejs
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
 install_python_sdk:: sdk/python/bin
