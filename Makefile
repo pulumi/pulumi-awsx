@@ -119,15 +119,16 @@ bin/pulumi-java-gen::
 		cd ./bin && python3 setup.py build sdist
 	@touch $@
 
-sdk/go:: VERSION := $(shell pulumictl get version --language generic)
-sdk/go:: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
-sdk/go:: bin/${CODEGEN} .make/schema
+.make/build_go: VERSION := $(shell pulumictl get version --language generic)
+.make/build_go: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
+.make/build_go: bin/${CODEGEN} .make/schema
 	rm -rf sdk/go
 	bin/${CODEGEN} go sdk/go awsx/schema.json $(VERSION)
 	cd sdk && \
 		go get github.com/pulumi/pulumi-aws/sdk/v6@v$(AWS_VERSION) && \
 		go mod tidy && \
 		go test -v ./... -check.vv
+	@touch $@
 
 sdk/dotnet/bin:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 sdk/dotnet/bin:: bin/${CODEGEN} .make/schema
@@ -141,7 +142,7 @@ sdk/dotnet/bin:: bin/${CODEGEN} .make/schema
 
 build_nodejs: .make/build_nodejs
 build_python: .make/build_python
-build_go:: sdk/go
+build_go: .make/build_go
 build_dotnet:: sdk/dotnet/bin
 build_java: .make/build_java
 
@@ -155,7 +156,7 @@ install_nodejs_sdk: .make/build_nodejs
 install_python_sdk: .make/build_python
 	#Intentionall empty for CI / CD templating
 
-install_go_sdk:: sdk/go
+install_go_sdk: .make/build_go
 	#Intentionally empty for CI / CD templating
 
 install_dotnet_sdk:: sdk/dotnet/bin
