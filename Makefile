@@ -106,8 +106,8 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 bin/pulumi-java-gen::
 	$(shell pulumictl download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java)
 
-sdk/python/bin:: PYPI_VERSION := $(shell pulumictl get version --language python)
-sdk/python/bin:: bin/${CODEGEN} .make/schema README.md
+.make/build_python: PYPI_VERSION := $(shell pulumictl get version --language python)
+.make/build_python: bin/${CODEGEN} .make/schema README.md
 	rm -rf sdk/python
 	bin/${CODEGEN} python sdk/python awsx/schema.json $(VERSION)
 	cd sdk/python/ && \
@@ -117,6 +117,7 @@ sdk/python/bin:: bin/${CODEGEN} .make/schema README.md
 		sed -i.bak -e 's/^VERSION = .*/VERSION = "$(PYPI_VERSION)"/g' -e 's/^PLUGIN_VERSION = .*/PLUGIN_VERSION = "$(VERSION)"/g' ./bin/setup.py && \
 		rm ./bin/setup.py.bak && \
 		cd ./bin && python3 setup.py build sdist
+	@touch $@
 
 sdk/go:: VERSION := $(shell pulumictl get version --language generic)
 sdk/go:: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
@@ -139,7 +140,7 @@ sdk/dotnet/bin:: bin/${CODEGEN} .make/schema
 # Phony targets
 
 build_nodejs: .make/build_nodejs
-build_python:: sdk/python/bin
+build_python: .make/build_python
 build_go:: sdk/go
 build_dotnet:: sdk/dotnet/bin
 build_java: .make/build_java
@@ -151,7 +152,7 @@ install_provider: bin/${PROVIDER}
 install_nodejs_sdk: .make/build_nodejs
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
-install_python_sdk:: sdk/python/bin
+install_python_sdk: .make/build_python
 	#Intentionall empty for CI / CD templating
 
 install_go_sdk:: sdk/go
