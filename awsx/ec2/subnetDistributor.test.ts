@@ -14,7 +14,8 @@
 
 import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
-import { getSubnetSpecs, SubnetSpec } from "./subnetDistributor";
+import { getSubnetSpecs, SubnetSpec, validateRanges } from "./subnetDistributor";
+import { knownWorkingSubnets } from "./knownWorkingSubnets";
 
 function cidrMask(args?: { min?: number; max?: number }): fc.Arbitrary<number> {
   return fc.integer({ min: args?.min ?? 16, max: args?.max ?? 27 });
@@ -26,6 +27,17 @@ function subnetSpecNoMask() {
       type: type as SubnetTypeInputs,
     }),
   );
+}
+
+function subnetSpec() {
+  return fc
+    .record({ type: fc.constantFrom("Private", "Public", "Isolated"), cidrMask: cidrMask() })
+    .map(
+      ({ type, cidrMask }): SubnetSpecInputs => ({
+        type: type as SubnetTypeInputs,
+        cidrMask,
+      }),
+    );
 }
 
 describe("default subnet layout", () => {
@@ -108,6 +120,54 @@ describe("default subnet layout", () => {
         },
       ),
     );
+  });
+
+  it("should not have overlapping ranges", () => {
+    fc.assert(
+      fc.property(
+        fc
+          .record({
+            vpcCidrMask: cidrMask(),
+            // We're just focusing on the logic of choosing the next range, so we don't need large numbers of specs.
+            // Similarly, we only need a single AZ because AZs are always split evenly.
+            subnetSpecs: fc.array(subnetSpec(), { minLength: 1, maxLength: 2 }),
+          })
+          .filter(({ vpcCidrMask, subnetSpecs }) => {
+            for (const subnetSpec of subnetSpecs) {
+              // Requite subnet to be smaller than VPC
+              if (subnetSpec.cidrMask! <= vpcCidrMask) {
+                return false;
+              }
+            }
+            return true;
+          }),
+        ({ vpcCidrMask, subnetSpecs }) => {
+          const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
+
+          const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], subnetSpecs);
+
+          validateRanges(result);
+        },
+      ),
+    );
+  });
+
+  describe("known working subnets", () => {
+    for (const knownCase of knownWorkingSubnets) {
+      it(`should work for ${knownCase.vpcCidr} with subnets ${knownCase.subnetSpecs
+        .map((s) => `${s.type}:${s.cidrMask}`)
+        .join(", ")}`, () => {
+        const result = getSubnetSpecs(
+          "vpcName",
+          knownCase.vpcCidr,
+          ["us-east-1a"],
+          knownCase.subnetSpecs,
+        );
+        const actual = result.map((s) => s.cidrBlock);
+
+        expect(actual).toEqual(knownCase.result);
+      });
+    }
   });
 });
 
