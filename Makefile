@@ -42,10 +42,11 @@ bin/${CODEGEN}: ${CODEGEN_SRC}
 	yarn install --cwd awsx --no-progress
 	@touch $@
 
-awsx/schema-types.ts: .make/awsx_node_modules .make/schema
+.make/gen_types: .make/awsx_node_modules .make/schema
 	cd awsx && yarn gen-types
+	@touch $@
 
-.make/awsx_bin: .make/awsx_node_modules ${AWSX_SRC}
+.make/awsx_bin: .make/awsx_node_modules .make/gen_types ${AWSX_SRC}
 	@cd awsx && \
 		yarn tsc && \
 		cp package.json schema.json ./bin/ && \
@@ -57,7 +58,7 @@ ifneq ($(LOCAL_PLAT),"")
 bin/${PROVIDER}:: bin/provider/$(LOCAL_PLAT)/${PROVIDER}
 	cp bin/provider/$(LOCAL_PLAT)/${PROVIDER} bin/${PROVIDER}
 else
-bin/${PROVIDER}: .make/awsx_bin .make/awsx_node_modules
+bin/${PROVIDER}: .make/awsx_bin .make/awsx_node_modules .make/gen_types
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output $(WORKING_DIR)/bin/${PROVIDER}
 endif
 
@@ -66,7 +67,7 @@ bin/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linuxstatic-arm64
 bin/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
 bin/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
 bin/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
-bin/provider/%:: .make/awsx_bin .make/awsx_node_modules
+bin/provider/%:: .make/awsx_bin  .make/gen_types
 	test ${TARGET}
 	cd awsx && \
 		yarn run pkg . ${PKG_ARGS} --target ${TARGET} --output ${WORKING_DIR}/$@
@@ -171,7 +172,7 @@ lint:: .make/awsx_node_modules
 		yarn format && yarn lint
 
 test_provider:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_provider:: .make/awsx_node_modules bin/${PROVIDER} bin/gotestfmt
+test_provider:: .make/awsx_node_modules .make/gen_types bin/${PROVIDER} bin/gotestfmt
 	cd awsx && yarn test
 	@export PATH
 	cd provider && go test -tags=yaml -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
