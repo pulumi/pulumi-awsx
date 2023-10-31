@@ -6,6 +6,7 @@ package com.pulumi.awsx.lb.inputs;
 import com.pulumi.aws.lb.inputs.TargetGroupHealthCheckArgs;
 import com.pulumi.aws.lb.inputs.TargetGroupStickinessArgs;
 import com.pulumi.aws.lb.inputs.TargetGroupTargetFailoverArgs;
+import com.pulumi.aws.lb.inputs.TargetGroupTargetHealthStateArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.Boolean;
@@ -155,6 +156,41 @@ import javax.annotation.Nullable;
  *             .port(80)
  *             .protocol(&#34;TCP&#34;)
  *             .vpcId(aws_vpc.main().id())
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * ### Target group with unhealthy connection termination disabled
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lb.TargetGroup;
+ * import com.pulumi.aws.lb.TargetGroupArgs;
+ * import com.pulumi.aws.lb.inputs.TargetGroupTargetHealthStateArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var tcp_example = new TargetGroup(&#34;tcp-example&#34;, TargetGroupArgs.builder()        
+ *             .port(25)
+ *             .protocol(&#34;TCP&#34;)
+ *             .vpcId(aws_vpc.main().id())
+ *             .targetHealthStates(TargetGroupTargetHealthStateArgs.builder()
+ *                 .enableUnhealthyConnectionTermination(false)
+ *                 .build())
  *             .build());
  * 
  *     }
@@ -445,6 +481,21 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+     * 
+     */
+    @Import(name="targetHealthStates")
+    private @Nullable Output<List<TargetGroupTargetHealthStateArgs>> targetHealthStates;
+
+    /**
+     * @return Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+     * 
+     */
+    public Optional<Output<List<TargetGroupTargetHealthStateArgs>>> targetHealthStates() {
+        return Optional.ofNullable(this.targetHealthStates);
+    }
+
+    /**
      * Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
      * 
      * Note that you can&#39;t specify targets for a target group using both instance IDs and IP addresses.
@@ -511,6 +562,7 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
         this.stickiness = $.stickiness;
         this.tags = $.tags;
         this.targetFailovers = $.targetFailovers;
+        this.targetHealthStates = $.targetHealthStates;
         this.targetType = $.targetType;
         this.vpcId = $.vpcId;
     }
@@ -919,6 +971,37 @@ public final class TargetGroupArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder targetFailovers(TargetGroupTargetFailoverArgs... targetFailovers) {
             return targetFailovers(List.of(targetFailovers));
+        }
+
+        /**
+         * @param targetHealthStates Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder targetHealthStates(@Nullable Output<List<TargetGroupTargetHealthStateArgs>> targetHealthStates) {
+            $.targetHealthStates = targetHealthStates;
+            return this;
+        }
+
+        /**
+         * @param targetHealthStates Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder targetHealthStates(List<TargetGroupTargetHealthStateArgs> targetHealthStates) {
+            return targetHealthStates(Output.of(targetHealthStates));
+        }
+
+        /**
+         * @param targetHealthStates Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder targetHealthStates(TargetGroupTargetHealthStateArgs... targetHealthStates) {
+            return targetHealthStates(List.of(targetHealthStates));
         }
 
         /**

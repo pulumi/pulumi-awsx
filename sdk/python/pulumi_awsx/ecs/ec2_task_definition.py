@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 from .. import awsx as _awsx
 from ._enums import *
@@ -68,89 +68,44 @@ class EC2TaskDefinitionArgs:
                Will be created automatically if not defined.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.
         """
-        EC2TaskDefinitionArgs._configure(
-            lambda key, value: pulumi.set(__self__, key, value),
-            container=container,
-            containers=containers,
-            cpu=cpu,
-            ephemeral_storage=ephemeral_storage,
-            execution_role=execution_role,
-            family=family,
-            inference_accelerators=inference_accelerators,
-            ipc_mode=ipc_mode,
-            log_group=log_group,
-            memory=memory,
-            network_mode=network_mode,
-            pid_mode=pid_mode,
-            placement_constraints=placement_constraints,
-            proxy_configuration=proxy_configuration,
-            runtime_platform=runtime_platform,
-            skip_destroy=skip_destroy,
-            tags=tags,
-            task_role=task_role,
-            volumes=volumes,
-        )
-    @staticmethod
-    def _configure(
-             _setter: Callable[[Any, Any], None],
-             container: Optional['TaskDefinitionContainerDefinitionArgs'] = None,
-             containers: Optional[Mapping[str, 'TaskDefinitionContainerDefinitionArgs']] = None,
-             cpu: Optional[pulumi.Input[str]] = None,
-             ephemeral_storage: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs']] = None,
-             execution_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
-             family: Optional[pulumi.Input[str]] = None,
-             inference_accelerators: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionInferenceAcceleratorArgs']]]] = None,
-             ipc_mode: Optional[pulumi.Input[str]] = None,
-             log_group: Optional['_awsx.DefaultLogGroupArgs'] = None,
-             memory: Optional[pulumi.Input[str]] = None,
-             network_mode: Optional[pulumi.Input[str]] = None,
-             pid_mode: Optional[pulumi.Input[str]] = None,
-             placement_constraints: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionPlacementConstraintArgs']]]] = None,
-             proxy_configuration: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs']] = None,
-             runtime_platform: Optional[pulumi.Input['pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs']] = None,
-             skip_destroy: Optional[pulumi.Input[bool]] = None,
-             tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
-             task_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
-             volumes: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] = None,
-             opts: Optional[pulumi.ResourceOptions]=None):
         if container is not None:
-            _setter("container", container)
+            pulumi.set(__self__, "container", container)
         if containers is not None:
-            _setter("containers", containers)
+            pulumi.set(__self__, "containers", containers)
         if cpu is not None:
-            _setter("cpu", cpu)
+            pulumi.set(__self__, "cpu", cpu)
         if ephemeral_storage is not None:
-            _setter("ephemeral_storage", ephemeral_storage)
+            pulumi.set(__self__, "ephemeral_storage", ephemeral_storage)
         if execution_role is not None:
-            _setter("execution_role", execution_role)
+            pulumi.set(__self__, "execution_role", execution_role)
         if family is not None:
-            _setter("family", family)
+            pulumi.set(__self__, "family", family)
         if inference_accelerators is not None:
-            _setter("inference_accelerators", inference_accelerators)
+            pulumi.set(__self__, "inference_accelerators", inference_accelerators)
         if ipc_mode is not None:
-            _setter("ipc_mode", ipc_mode)
+            pulumi.set(__self__, "ipc_mode", ipc_mode)
         if log_group is not None:
-            _setter("log_group", log_group)
+            pulumi.set(__self__, "log_group", log_group)
         if memory is not None:
-            _setter("memory", memory)
+            pulumi.set(__self__, "memory", memory)
         if network_mode is not None:
-            _setter("network_mode", network_mode)
+            pulumi.set(__self__, "network_mode", network_mode)
         if pid_mode is not None:
-            _setter("pid_mode", pid_mode)
+            pulumi.set(__self__, "pid_mode", pid_mode)
         if placement_constraints is not None:
-            _setter("placement_constraints", placement_constraints)
+            pulumi.set(__self__, "placement_constraints", placement_constraints)
         if proxy_configuration is not None:
-            _setter("proxy_configuration", proxy_configuration)
+            pulumi.set(__self__, "proxy_configuration", proxy_configuration)
         if runtime_platform is not None:
-            _setter("runtime_platform", runtime_platform)
+            pulumi.set(__self__, "runtime_platform", runtime_platform)
         if skip_destroy is not None:
-            _setter("skip_destroy", skip_destroy)
+            pulumi.set(__self__, "skip_destroy", skip_destroy)
         if tags is not None:
-            _setter("tags", tags)
+            pulumi.set(__self__, "tags", tags)
         if task_role is not None:
-            _setter("task_role", task_role)
+            pulumi.set(__self__, "task_role", task_role)
         if volumes is not None:
-            _setter("volumes", volumes)
+            pulumi.set(__self__, "volumes", volumes)
 
     @property
     @pulumi.getter
@@ -472,10 +427,6 @@ class EC2TaskDefinition(pulumi.ComponentResource):
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
-            kwargs = kwargs or {}
-            def _setter(key, value):
-                kwargs[key] = value
-            EC2TaskDefinitionArgs._configure(_setter, **kwargs)
             __self__._internal_init(resource_name, *args, **kwargs)
 
     def _internal_init(__self__,
@@ -511,58 +462,23 @@ class EC2TaskDefinition(pulumi.ComponentResource):
                 raise TypeError('__props__ is only valid when passed in combination with a valid opts.id to get an existing resource')
             __props__ = EC2TaskDefinitionArgs.__new__(EC2TaskDefinitionArgs)
 
-            if container is not None and not isinstance(container, TaskDefinitionContainerDefinitionArgs):
-                container = container or {}
-                def _setter(key, value):
-                    container[key] = value
-                TaskDefinitionContainerDefinitionArgs._configure(_setter, **container)
             __props__.__dict__["container"] = container
             __props__.__dict__["containers"] = containers
             __props__.__dict__["cpu"] = cpu
-            if ephemeral_storage is not None and not isinstance(ephemeral_storage, pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs):
-                ephemeral_storage = ephemeral_storage or {}
-                def _setter(key, value):
-                    ephemeral_storage[key] = value
-                pulumi_aws.ecs.TaskDefinitionEphemeralStorageArgs._configure(_setter, **ephemeral_storage)
             __props__.__dict__["ephemeral_storage"] = ephemeral_storage
-            if execution_role is not None and not isinstance(execution_role, _awsx.DefaultRoleWithPolicyArgs):
-                execution_role = execution_role or {}
-                def _setter(key, value):
-                    execution_role[key] = value
-                _awsx.DefaultRoleWithPolicyArgs._configure(_setter, **execution_role)
             __props__.__dict__["execution_role"] = execution_role
             __props__.__dict__["family"] = family
             __props__.__dict__["inference_accelerators"] = inference_accelerators
             __props__.__dict__["ipc_mode"] = ipc_mode
-            if log_group is not None and not isinstance(log_group, _awsx.DefaultLogGroupArgs):
-                log_group = log_group or {}
-                def _setter(key, value):
-                    log_group[key] = value
-                _awsx.DefaultLogGroupArgs._configure(_setter, **log_group)
             __props__.__dict__["log_group"] = log_group
             __props__.__dict__["memory"] = memory
             __props__.__dict__["network_mode"] = network_mode
             __props__.__dict__["pid_mode"] = pid_mode
             __props__.__dict__["placement_constraints"] = placement_constraints
-            if proxy_configuration is not None and not isinstance(proxy_configuration, pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs):
-                proxy_configuration = proxy_configuration or {}
-                def _setter(key, value):
-                    proxy_configuration[key] = value
-                pulumi_aws.ecs.TaskDefinitionProxyConfigurationArgs._configure(_setter, **proxy_configuration)
             __props__.__dict__["proxy_configuration"] = proxy_configuration
-            if runtime_platform is not None and not isinstance(runtime_platform, pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs):
-                runtime_platform = runtime_platform or {}
-                def _setter(key, value):
-                    runtime_platform[key] = value
-                pulumi_aws.ecs.TaskDefinitionRuntimePlatformArgs._configure(_setter, **runtime_platform)
             __props__.__dict__["runtime_platform"] = runtime_platform
             __props__.__dict__["skip_destroy"] = skip_destroy
             __props__.__dict__["tags"] = tags
-            if task_role is not None and not isinstance(task_role, _awsx.DefaultRoleWithPolicyArgs):
-                task_role = task_role or {}
-                def _setter(key, value):
-                    task_role[key] = value
-                _awsx.DefaultRoleWithPolicyArgs._configure(_setter, **task_role)
             __props__.__dict__["task_role"] = task_role
             __props__.__dict__["volumes"] = volumes
             __props__.__dict__["load_balancers"] = None

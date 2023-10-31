@@ -3299,6 +3299,131 @@ export namespace lb {
      *       vpcId: ${aws_vpc.main.id}
      * ```
      * {{% /example %}}
+     * {{% example %}}
+     * ### Target group with unhealthy connection termination disabled
+     *
+     * ```typescript
+     * import * as pulumi from "@pulumi/pulumi";
+     * import * as aws from "@pulumi/aws";
+     *
+     * const tcp_example = new aws.lb.TargetGroup("tcp-example", {
+     *     port: 25,
+     *     protocol: "TCP",
+     *     vpcId: aws_vpc.main.id,
+     *     targetHealthStates: [{
+     *         enableUnhealthyConnectionTermination: false,
+     *     }],
+     * });
+     * ```
+     * ```python
+     * import pulumi
+     * import pulumi_aws as aws
+     *
+     * tcp_example = aws.lb.TargetGroup("tcp-example",
+     *     port=25,
+     *     protocol="TCP",
+     *     vpc_id=aws_vpc["main"]["id"],
+     *     target_health_states=[aws.lb.TargetGroupTargetHealthStateArgs(
+     *         enable_unhealthy_connection_termination=False,
+     *     )])
+     * ```
+     * ```csharp
+     * using System.Collections.Generic;
+     * using System.Linq;
+     * using Pulumi;
+     * using Aws = Pulumi.Aws;
+     *
+     * return await Deployment.RunAsync(() => 
+     * {
+     *     var tcp_example = new Aws.LB.TargetGroup("tcp-example", new()
+     *     {
+     *         Port = 25,
+     *         Protocol = "TCP",
+     *         VpcId = aws_vpc.Main.Id,
+     *         TargetHealthStates = new[]
+     *         {
+     *             new Aws.LB.Inputs.TargetGroupTargetHealthStateArgs
+     *             {
+     *                 EnableUnhealthyConnectionTermination = false,
+     *             },
+     *         },
+     *     });
+     *
+     * });
+     * ```
+     * ```go
+     * package main
+     *
+     * import (
+     * 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+     * 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+     * )
+     *
+     * func main() {
+     * 	pulumi.Run(func(ctx *pulumi.Context) error {
+     * 		_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
+     * 			Port:     pulumi.Int(25),
+     * 			Protocol: pulumi.String("TCP"),
+     * 			VpcId:    pulumi.Any(aws_vpc.Main.Id),
+     * 			TargetHealthStates: lb.TargetGroupTargetHealthStateArray{
+     * 				&lb.TargetGroupTargetHealthStateArgs{
+     * 					EnableUnhealthyConnectionTermination: pulumi.Bool(false),
+     * 				},
+     * 			},
+     * 		})
+     * 		if err != nil {
+     * 			return err
+     * 		}
+     * 		return nil
+     * 	})
+     * }
+     * ```
+     * ```java
+     * package generated_program;
+     *
+     * import com.pulumi.Context;
+     * import com.pulumi.Pulumi;
+     * import com.pulumi.core.Output;
+     * import com.pulumi.aws.lb.TargetGroup;
+     * import com.pulumi.aws.lb.TargetGroupArgs;
+     * import com.pulumi.aws.lb.inputs.TargetGroupTargetHealthStateArgs;
+     * import java.util.List;
+     * import java.util.ArrayList;
+     * import java.util.Map;
+     * import java.io.File;
+     * import java.nio.file.Files;
+     * import java.nio.file.Paths;
+     *
+     * public class App {
+     *     public static void main(String[] args) {
+     *         Pulumi.run(App::stack);
+     *     }
+     *
+     *     public static void stack(Context ctx) {
+     *         var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()        
+     *             .port(25)
+     *             .protocol("TCP")
+     *             .vpcId(aws_vpc.main().id())
+     *             .targetHealthStates(TargetGroupTargetHealthStateArgs.builder()
+     *                 .enableUnhealthyConnectionTermination(false)
+     *                 .build())
+     *             .build());
+     *
+     *     }
+     * }
+     * ```
+     * ```yaml
+     * resources:
+     *   tcp-example:
+     *     type: aws:lb:TargetGroup
+     *     properties:
+     *       port: 25
+     *       protocol: TCP
+     *       vpcId: ${aws_vpc.main.id}
+     *       targetHealthStates:
+     *         - enableUnhealthyConnectionTermination: false
+     * ```
+     * {{% /example %}}
      * {{% /examples %}}
      *
      * ## Import
@@ -3383,6 +3508,10 @@ export namespace lb {
          * Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
          */
         targetFailovers?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.TargetGroupTargetFailover>[]>;
+        /**
+         * Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+         */
+        targetHealthStates?: pulumi.Input<pulumi.Input<pulumiAws.types.input.lb.TargetGroupTargetHealthState>[]>;
         /**
          * Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
          *
