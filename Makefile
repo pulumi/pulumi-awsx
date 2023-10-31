@@ -26,6 +26,9 @@ LOCAL_PLAT		?= ""
 
 PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
 
+# Pre-requisites: ensure these folders exist
+_ := $(shell mkdir -p .make bin dist)
+
 all:: lint lint_classic provider build_sdks test_provider
 
 bin/${CODEGEN}: ${CODEGEN_SRC}
