@@ -34,14 +34,15 @@ all:: lint lint_classic provider build_sdks test_provider
 bin/${CODEGEN}: ${CODEGEN_SRC}
 	cd schemagen && go build -o $(WORKING_DIR)/bin/${CODEGEN} $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
 
-awsx/schema.json: bin/${CODEGEN}
+.make/schema: bin/${CODEGEN}
 	cd schemagen/cmd/$(CODEGEN) && go run . schema $(WORKING_DIR)/$(PACK)
+	@touch $@
 
 awsx/node_modules: awsx/package.json awsx/yarn.lock
 	yarn install --cwd awsx --no-progress
 	@touch awsx/node_modules
 
-awsx/schema-types.ts: awsx/node_modules awsx/schema.json
+awsx/schema-types.ts: awsx/node_modules .make/schema
 	cd awsx && yarn gen-types
 
 awsx/bin: awsx/node_modules ${AWSX_SRC}
@@ -81,7 +82,7 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 	tar --gzip -cf $@ README.md LICENSE -C $$(dirname $<) .
 
 sdk/nodejs/bin:: VERSION := $(shell pulumictl get version --language javascript)
-sdk/nodejs/bin:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
+sdk/nodejs/bin:: bin/${CODEGEN} .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
 	bin/${CODEGEN} nodejs sdk/nodejs awsx/schema.json $(VERSION)
 	cd sdk/nodejs && \
@@ -92,7 +93,7 @@ sdk/nodejs/bin:: bin/${CODEGEN} awsx/schema.json ${AWSX_CLASSIC_SRC}
 		cp ../../README.md ../../LICENSE bin/
 
 sdk/java/build:: VERSION := $(shell pulumictl get version --language javascript)
-sdk/java/build:: bin/pulumi-java-gen awsx/schema.json ${AWSX_CLASSIC_SRC}
+sdk/java/build:: bin/pulumi-java-gen .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/java
 	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema awsx/schema.json --out sdk/java --build gradle-nexus
 	cd sdk/java && \
@@ -102,7 +103,7 @@ bin/pulumi-java-gen::
 	$(shell pulumictl download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java)
 
 sdk/python/bin:: PYPI_VERSION := $(shell pulumictl get version --language python)
-sdk/python/bin:: bin/${CODEGEN} awsx/schema.json README.md
+sdk/python/bin:: bin/${CODEGEN} .make/schema README.md
 	rm -rf sdk/python
 	bin/${CODEGEN} python sdk/python awsx/schema.json $(VERSION)
 	cd sdk/python/ && \
@@ -115,7 +116,7 @@ sdk/python/bin:: bin/${CODEGEN} awsx/schema.json README.md
 
 sdk/go:: VERSION := $(shell pulumictl get version --language generic)
 sdk/go:: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
-sdk/go:: bin/${CODEGEN} awsx/schema.json
+sdk/go:: bin/${CODEGEN} .make/schema
 	rm -rf sdk/go
 	bin/${CODEGEN} go sdk/go awsx/schema.json $(VERSION)
 	cd sdk && \
@@ -124,7 +125,7 @@ sdk/go:: bin/${CODEGEN} awsx/schema.json
 		go test -v ./... -check.vv
 
 sdk/dotnet/bin:: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
-sdk/dotnet/bin:: bin/${CODEGEN} awsx/schema.json
+sdk/dotnet/bin:: bin/${CODEGEN} .make/schema
 	rm -rf sdk/dotnet
 	bin/${CODEGEN} dotnet sdk/dotnet awsx/schema.json $(VERSION)
 	cd sdk/dotnet/ && \
@@ -218,7 +219,7 @@ test:: bin/gotestfmt
 	fi
 
 schemagen:: bin/${CODEGEN}
-schema: awsx/schema.json
+schema: .make/schema
 provider: bin/${PROVIDER}
 dist:: dist/${GZIP_PREFIX}-linux-amd64.tar.gz
 dist:: dist/${GZIP_PREFIX}-linux-arm64.tar.gz
