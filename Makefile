@@ -38,14 +38,14 @@ bin/${CODEGEN}: ${CODEGEN_SRC}
 	cd schemagen/cmd/$(CODEGEN) && go run . schema $(WORKING_DIR)/$(PACK)
 	@touch $@
 
-awsx/node_modules: awsx/package.json awsx/yarn.lock
+.make/awsx_node_modules: awsx/package.json awsx/yarn.lock
 	yarn install --cwd awsx --no-progress
-	@touch awsx/node_modules
+	@touch $@
 
-awsx/schema-types.ts: awsx/node_modules .make/schema
+awsx/schema-types.ts: .make/awsx_node_modules .make/schema
 	cd awsx && yarn gen-types
 
-awsx/bin: awsx/node_modules ${AWSX_SRC}
+awsx/bin: .make/awsx_node_modules ${AWSX_SRC}
 	@cd awsx && \
 		yarn tsc && \
 		cp package.json schema.json ./bin/ && \
@@ -56,7 +56,7 @@ ifneq ($(LOCAL_PLAT),"")
 bin/${PROVIDER}:: bin/provider/$(LOCAL_PLAT)/${PROVIDER}
 	cp bin/provider/$(LOCAL_PLAT)/${PROVIDER} bin/${PROVIDER}
 else
-bin/${PROVIDER}: awsx/bin awsx/node_modules
+bin/${PROVIDER}: awsx/bin .make/awsx_node_modules
 	cd awsx && yarn run pkg . ${PKG_ARGS} --target node16 --output $(WORKING_DIR)/bin/${PROVIDER}
 endif
 
@@ -65,7 +65,7 @@ bin/provider/linux-arm64/${PROVIDER}:: TARGET := node16-linuxstatic-arm64
 bin/provider/darwin-amd64/${PROVIDER}:: TARGET := node16-macos-x64
 bin/provider/darwin-arm64/${PROVIDER}:: TARGET := node16-macos-arm64
 bin/provider/windows-amd64/${PROVIDER}.exe:: TARGET := node16-win-x64
-bin/provider/%:: awsx/bin awsx/node_modules
+bin/provider/%:: awsx/bin .make/awsx_node_modules
 	test ${TARGET}
 	cd awsx && \
 		yarn run pkg . ${PKG_ARGS} --target ${TARGET} --output ${WORKING_DIR}/$@
@@ -165,12 +165,12 @@ lint_classic:
 		yarn install --no-progress && \
 		yarn lint
 
-lint:: awsx/node_modules
+lint:: .make/awsx_node_modules
 	cd awsx && \
 		yarn format && yarn lint
 
 test_provider:: PATH := $(WORKING_DIR)/bin:$(PATH)
-test_provider:: awsx/node_modules bin/${PROVIDER} bin/gotestfmt
+test_provider:: .make/awsx_node_modules bin/${PROVIDER} bin/gotestfmt
 	cd awsx && yarn test
 	@export PATH
 	cd provider && go test -tags=yaml -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
@@ -228,7 +228,7 @@ dist:: dist/${GZIP_PREFIX}-darwin-arm64.tar.gz
 dist:: dist/${GZIP_PREFIX}-windows-amd64.tar.gz
 
 clean:
-	rm -rf bin dist awsx/bin awsx/node_modules
+	rm -rf bin dist .make awsx/bin awsx/node_modules
 
 build_sdks: build_nodejs build_python build_go build_dotnet build_java
 
