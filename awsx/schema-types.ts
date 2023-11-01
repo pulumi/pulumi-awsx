@@ -281,6 +281,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly defaultTargetGroup?: TargetGroupInputs;
     readonly defaultTargetGroupPort?: pulumi.Input<number>;
     readonly desyncMitigationMode?: pulumi.Input<string>;
+    readonly dnsRecordClientRoutingPolicy?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
     readonly enableHttp2?: pulumi.Input<boolean>;
@@ -317,6 +318,7 @@ export interface NetworkLoadBalancerArgs {
     readonly defaultTargetGroup?: TargetGroupInputs;
     readonly defaultTargetGroupPort?: pulumi.Input<number>;
     readonly desyncMitigationMode?: pulumi.Input<string>;
+    readonly dnsRecordClientRoutingPolicy?: pulumi.Input<string>;
     readonly dropInvalidHeaderFields?: pulumi.Input<boolean>;
     readonly enableCrossZoneLoadBalancing?: pulumi.Input<boolean>;
     readonly enableDeletionProtection?: pulumi.Input<boolean>;
@@ -1041,6 +1043,7 @@ export interface TargetGroupInputs {
     readonly stickiness?: pulumi.Input<aws.types.input.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly targetFailovers?: pulumi.Input<pulumi.Input<aws.types.input.lb.TargetGroupTargetFailover>[]>;
+    readonly targetHealthStates?: pulumi.Input<pulumi.Input<aws.types.input.lb.TargetGroupTargetHealthState>[]>;
     readonly targetType?: pulumi.Input<string>;
     readonly vpcId?: pulumi.Input<string>;
 }
@@ -1063,6 +1066,7 @@ export interface TargetGroupOutputs {
     readonly stickiness?: pulumi.Output<aws.types.output.lb.TargetGroupStickiness>;
     readonly tags?: pulumi.Output<Record<string, string>>;
     readonly targetFailovers?: pulumi.Output<aws.types.output.lb.TargetGroupTargetFailover[]>;
+    readonly targetHealthStates?: pulumi.Output<aws.types.output.lb.TargetGroupTargetHealthState[]>;
     readonly targetType?: pulumi.Output<string>;
     readonly vpcId?: pulumi.Output<string>;
 }

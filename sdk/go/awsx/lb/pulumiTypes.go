@@ -1489,6 +1489,37 @@ func (o ListenerArrayOutput) Index(i pulumi.IntInput) ListenerOutput {
 //	}
 //
 // ```
+// ### Target group with unhealthy connection termination disabled
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
+//				Port:     pulumi.Int(25),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(aws_vpc.Main.Id),
+//				TargetHealthStates: lb.TargetGroupTargetHealthStateArray{
+//					&lb.TargetGroupTargetHealthStateArgs{
+//						EnableUnhealthyConnectionTermination: pulumi.Bool(false),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
 //
 // ## Import
 //
@@ -1536,6 +1567,8 @@ type TargetGroup struct {
 	Tags map[string]string `pulumi:"tags"`
 	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
 	TargetFailovers []lb.TargetGroupTargetFailover `pulumi:"targetFailovers"`
+	// Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+	TargetHealthStates []lb.TargetGroupTargetHealthState `pulumi:"targetHealthStates"`
 	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
 	//
 	// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
@@ -1684,6 +1717,37 @@ type TargetGroupInput interface {
 //	}
 //
 // ```
+// ### Target group with unhealthy connection termination disabled
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
+//				Port:     pulumi.Int(25),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(aws_vpc.Main.Id),
+//				TargetHealthStates: lb.TargetGroupTargetHealthStateArray{
+//					&lb.TargetGroupTargetHealthStateArgs{
+//						EnableUnhealthyConnectionTermination: pulumi.Bool(false),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
 //
 // ## Import
 //
@@ -1731,6 +1795,8 @@ type TargetGroupArgs struct {
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 	// Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
 	TargetFailovers lb.TargetGroupTargetFailoverArrayInput `pulumi:"targetFailovers"`
+	// Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+	TargetHealthStates lb.TargetGroupTargetHealthStateArrayInput `pulumi:"targetHealthStates"`
 	// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
 	//
 	// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
@@ -1933,6 +1999,37 @@ func (i *targetGroupPtrType) ToOutput(ctx context.Context) pulumix.Output[*Targe
 //	}
 //
 // ```
+// ### Target group with unhealthy connection termination disabled
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := lb.NewTargetGroup(ctx, "tcp-example", &lb.TargetGroupArgs{
+//				Port:     pulumi.Int(25),
+//				Protocol: pulumi.String("TCP"),
+//				VpcId:    pulumi.Any(aws_vpc.Main.Id),
+//				TargetHealthStates: lb.TargetGroupTargetHealthStateArray{
+//					&lb.TargetGroupTargetHealthStateArgs{
+//						EnableUnhealthyConnectionTermination: pulumi.Bool(false),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
 //
 // ## Import
 //
@@ -2061,6 +2158,11 @@ func (o TargetGroupOutput) Tags() pulumi.StringMapOutput {
 // Target failover block. Only applicable for Gateway Load Balancer target groups. See target_failover for more information.
 func (o TargetGroupOutput) TargetFailovers() lb.TargetGroupTargetFailoverArrayOutput {
 	return o.ApplyT(func(v TargetGroup) []lb.TargetGroupTargetFailover { return v.TargetFailovers }).(lb.TargetGroupTargetFailoverArrayOutput)
+}
+
+// Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+func (o TargetGroupOutput) TargetHealthStates() lb.TargetGroupTargetHealthStateArrayOutput {
+	return o.ApplyT(func(v TargetGroup) []lb.TargetGroupTargetHealthState { return v.TargetHealthStates }).(lb.TargetGroupTargetHealthStateArrayOutput)
 }
 
 // Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
@@ -2289,6 +2391,16 @@ func (o TargetGroupPtrOutput) TargetFailovers() lb.TargetGroupTargetFailoverArra
 		}
 		return v.TargetFailovers
 	}).(lb.TargetGroupTargetFailoverArrayOutput)
+}
+
+// Target health state block. Only applicable for Network Load Balancer target groups when `protocol` is `TCP` or `TLS`. See target_health_state for more information.
+func (o TargetGroupPtrOutput) TargetHealthStates() lb.TargetGroupTargetHealthStateArrayOutput {
+	return o.ApplyT(func(v *TargetGroup) []lb.TargetGroupTargetHealthState {
+		if v == nil {
+			return nil
+		}
+		return v.TargetHealthStates
+	}).(lb.TargetGroupTargetHealthStateArrayOutput)
 }
 
 // Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.

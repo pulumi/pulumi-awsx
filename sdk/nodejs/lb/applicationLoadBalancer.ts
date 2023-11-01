@@ -65,6 +65,7 @@ export class ApplicationLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["defaultTargetGroup"] = args ? args.defaultTargetGroup : undefined;
             resourceInputs["defaultTargetGroupPort"] = args ? args.defaultTargetGroupPort : undefined;
             resourceInputs["desyncMitigationMode"] = args ? args.desyncMitigationMode : undefined;
+            resourceInputs["dnsRecordClientRoutingPolicy"] = args ? args.dnsRecordClientRoutingPolicy : undefined;
             resourceInputs["dropInvalidHeaderFields"] = args ? args.dropInvalidHeaderFields : undefined;
             resourceInputs["enableDeletionProtection"] = args ? args.enableDeletionProtection : undefined;
             resourceInputs["enableHttp2"] = args ? args.enableHttp2 : undefined;
@@ -127,6 +128,10 @@ export interface ApplicationLoadBalancerArgs {
      * Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
      */
     desyncMitigationMode?: pulumi.Input<string>;
+    /**
+     * Indicates how traffic is distributed among the load balancer Availability Zones. Possible values are `any_availability_zone` (default), `availability_zone_affinity`, or `partial_availability_zone_affinity`. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for `network` type load balancers.
+     */
+    dnsRecordClientRoutingPolicy?: pulumi.Input<string>;
     /**
      * Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
      */

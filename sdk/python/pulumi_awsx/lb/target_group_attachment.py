@@ -6,7 +6,7 @@ import copy
 import warnings
 import pulumi
 import pulumi.runtime
-from typing import Any, Callable, Mapping, Optional, Sequence, Union, overload
+from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
 import pulumi_aws
 
@@ -30,37 +30,18 @@ class TargetGroupAttachmentArgs:
         :param pulumi.Input['pulumi_aws.lb.TargetGroup'] target_group: Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         :param pulumi.Input[str] target_group_arn: ARN of the Target Group to attach to. Exactly one of [targetGroup] or [targetGroupArn] must be specified.
         """
-        TargetGroupAttachmentArgs._configure(
-            lambda key, value: pulumi.set(__self__, key, value),
-            instance=instance,
-            instance_id=instance_id,
-            lambda_=lambda_,
-            lambda_arn=lambda_arn,
-            target_group=target_group,
-            target_group_arn=target_group_arn,
-        )
-    @staticmethod
-    def _configure(
-             _setter: Callable[[Any, Any], None],
-             instance: Optional[pulumi.Input['pulumi_aws.ec2.Instance']] = None,
-             instance_id: Optional[pulumi.Input[str]] = None,
-             lambda_: Optional[pulumi.Input['pulumi_aws.lambda_.Function']] = None,
-             lambda_arn: Optional[pulumi.Input[str]] = None,
-             target_group: Optional[pulumi.Input['pulumi_aws.lb.TargetGroup']] = None,
-             target_group_arn: Optional[pulumi.Input[str]] = None,
-             opts: Optional[pulumi.ResourceOptions]=None):
         if instance is not None:
-            _setter("instance", instance)
+            pulumi.set(__self__, "instance", instance)
         if instance_id is not None:
-            _setter("instance_id", instance_id)
+            pulumi.set(__self__, "instance_id", instance_id)
         if lambda_ is not None:
-            _setter("lambda_", lambda_)
+            pulumi.set(__self__, "lambda_", lambda_)
         if lambda_arn is not None:
-            _setter("lambda_arn", lambda_arn)
+            pulumi.set(__self__, "lambda_arn", lambda_arn)
         if target_group is not None:
-            _setter("target_group", target_group)
+            pulumi.set(__self__, "target_group", target_group)
         if target_group_arn is not None:
-            _setter("target_group_arn", target_group_arn)
+            pulumi.set(__self__, "target_group_arn", target_group_arn)
 
     @property
     @pulumi.getter
@@ -178,10 +159,6 @@ class TargetGroupAttachment(pulumi.ComponentResource):
         if resource_args is not None:
             __self__._internal_init(resource_name, opts, **resource_args.__dict__)
         else:
-            kwargs = kwargs or {}
-            def _setter(key, value):
-                kwargs[key] = value
-            TargetGroupAttachmentArgs._configure(_setter, **kwargs)
             __self__._internal_init(resource_name, *args, **kwargs)
 
     def _internal_init(__self__,

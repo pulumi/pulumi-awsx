@@ -4,8 +4,12 @@
 package ec2
 
 import (
+	"context"
+	"reflect"
+
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // [NOT YET IMPLEMENTED] Get the Default VPC for a region.
@@ -31,4 +35,63 @@ type GetDefaultVpcResult struct {
 	PublicSubnetIds  []string `pulumi:"publicSubnetIds"`
 	// The VPC ID for the default VPC
 	VpcId string `pulumi:"vpcId"`
+}
+
+func GetDefaultVpcOutput(ctx *pulumi.Context, args GetDefaultVpcOutputArgs, opts ...pulumi.InvokeOption) GetDefaultVpcResultOutput {
+	return pulumi.ToOutputWithContext(context.Background(), args).
+		ApplyT(func(v interface{}) (GetDefaultVpcResult, error) {
+			args := v.(GetDefaultVpcArgs)
+			r, err := GetDefaultVpc(ctx, &args, opts...)
+			var s GetDefaultVpcResult
+			if r != nil {
+				s = *r
+			}
+			return s, err
+		}).(GetDefaultVpcResultOutput)
+}
+
+// Arguments for getting the default VPC
+type GetDefaultVpcOutputArgs struct {
+}
+
+func (GetDefaultVpcOutputArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*GetDefaultVpcArgs)(nil)).Elem()
+}
+
+// Outputs from the default VPC configuration
+type GetDefaultVpcResultOutput struct{ *pulumi.OutputState }
+
+func (GetDefaultVpcResultOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*GetDefaultVpcResult)(nil)).Elem()
+}
+
+func (o GetDefaultVpcResultOutput) ToGetDefaultVpcResultOutput() GetDefaultVpcResultOutput {
+	return o
+}
+
+func (o GetDefaultVpcResultOutput) ToGetDefaultVpcResultOutputWithContext(ctx context.Context) GetDefaultVpcResultOutput {
+	return o
+}
+
+func (o GetDefaultVpcResultOutput) ToOutput(ctx context.Context) pulumix.Output[GetDefaultVpcResult] {
+	return pulumix.Output[GetDefaultVpcResult]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o GetDefaultVpcResultOutput) PrivateSubnetIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v GetDefaultVpcResult) []string { return v.PrivateSubnetIds }).(pulumi.StringArrayOutput)
+}
+
+func (o GetDefaultVpcResultOutput) PublicSubnetIds() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v GetDefaultVpcResult) []string { return v.PublicSubnetIds }).(pulumi.StringArrayOutput)
+}
+
+// The VPC ID for the default VPC
+func (o GetDefaultVpcResultOutput) VpcId() pulumi.StringOutput {
+	return o.ApplyT(func(v GetDefaultVpcResult) string { return v.VpcId }).(pulumi.StringOutput)
+}
+
+func init() {
+	pulumi.RegisterOutputType(GetDefaultVpcResultOutput{})
 }

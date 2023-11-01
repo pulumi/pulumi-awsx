@@ -1519,10 +1519,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@pulumi/aws@6.5.0":
-  version "6.5.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.5.0.tgz#11afe5b033be24d317b0db9918bf2e9012289515"
-  integrity sha512-oBoL+ZwQaBbnq7NiR/lrRexylj3GAu4dvg1s6AGi1fACbpvruIJgjtOecNnPaEJfiOpyoqPYuTURrBCk90R3rA==
+"@pulumi/aws@6.7.0":
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.7.0.tgz#50b4d7d3d604c21bbef404b9c1563485b9c7f16b"
+  integrity sha512-7COqQ4jkXNtfcfoNbLAvp1BK00STwNLnsM9liKl4MnRiKg7+wL+Z7jz7UiIE8m9ZqxW10wEVW8Inj92TkgjwVg==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     builtin-modules "3.0.0"
@@ -1530,18 +1530,18 @@
     read-package-tree "^5.2.1"
     resolve "^1.7.1"
 
-"@pulumi/docker@4.4.3":
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.4.3.tgz#5779aa2b294973001b821219706f7775f92b432c"
-  integrity sha512-KuA0AbPKu5gwgTbMTSPjwLltwxoOBusvQadcruZaacSwtZmxG8IwfdTiDKVdPSHZ69nCfdr9hTfdKAKXbuIjAw==
+"@pulumi/docker@4.4.4":
+  version "4.4.4"
+  resolved "https://registry.yarnpkg.com/@pulumi/docker/-/docker-4.4.4.tgz#1e412663311d36c8aeba301587e2385a201a9364"
+  integrity sha512-CuW5UAI+mZWJqD3ZKEv74ReWu/jCpoJKyXpjtp3m4I+bWoOoOfg7jUGoJnwLODQPnrmlawOviNa0TzMR5WdXaQ==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     semver "^5.4.0"
 
-"@pulumi/pulumi@^3.0.0", "@pulumi/pulumi@^3.81.0":
-  version "3.82.1"
-  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.82.1.tgz#91c0595f392bae10096c342493406822abc107eb"
-  integrity sha512-wIQHSVFnlX5TeUliSQNTfn8wZZMq9z1y6JOi7KcVM1rkfHFx3kxVBwK+5ri308cl8QMEzFprXTgH56lHQ2855w==
+"@pulumi/pulumi@^3.0.0", "@pulumi/pulumi@^3.91.1":
+  version "3.91.1"
+  resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.91.1.tgz#fea7720178f87388146692df371d9285a43093d7"
+  integrity sha512-ZKX9twt1+EDSb/Sg3d9fffA74f3Ikx90Xc8k7C++qdaOkcwKd2RTycciZdzvM/ri7KW4B6CYU2qCgKy33li6tQ==
   dependencies:
     "@grpc/grpc-js" "^1.8.16"
     "@logdna/tail-file" "^2.0.6"
