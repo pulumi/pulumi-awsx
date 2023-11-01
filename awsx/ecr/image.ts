@@ -81,7 +81,7 @@ export function computeImageFromAsset(
     registry: registryCredentials,
   };
 
-  const image = new docker.Image(imageName, dockerImageArgs, { parent });
+  const image = new docker.Image(`image`, dockerImageArgs, { parent });
 
   image.repoDigest.apply((d: any) =>
     pulumi.log.debug(`    build complete: ${imageName} (${d})`, parent),
