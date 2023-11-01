@@ -75,6 +75,9 @@ func test(dir string, opts ...providertest.Option) *providertest.ProviderTest {
 
 		providertest.WithBaselineVersion("1.0.6"),
 
+		// Ensure we use the same region for all tests - when recording and replaying.
+		providertest.WithConfig("aws:region", "us-west-2"),
+
 		providertest.WithExtraBaselineDependencies(map[string]string{
 			"aws": "5.42.0",
 		}),
