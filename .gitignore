@@ -26,3 +26,5 @@ sdk/java/.gradle
 sdk/java/gradle
 sdk/java/gradlew
 sdk/java/gradlew.bat
+
+.make
