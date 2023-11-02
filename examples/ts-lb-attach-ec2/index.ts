@@ -2,7 +2,9 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as awsx from "@pulumi/awsx";
 
-const lb = new awsx.lb.ApplicationLoadBalancer("lb");
+const vpc = new awsx.ec2.Vpc("vpc", { subnetSpecs: [{ type: "Public" }], natGateways: { strategy: "None"} });
+
+const lb = new awsx.lb.ApplicationLoadBalancer("lb", { subnets: vpc.subnets });
 
 // Get the id for the latest Amazon Linux AMI
 const ami = aws.ec2.getAmiOutput({
