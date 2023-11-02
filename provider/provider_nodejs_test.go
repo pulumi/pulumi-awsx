@@ -51,6 +51,7 @@ func TestExamples(t *testing.T) {
 		// "ts-lb-with-subnets",
 		// "ts-lb-attach-lambda",
 		"ts-lb-attach-ec2",
+		"ts-ecr-repo",
 		// "vpc/nodejs/custom-provider",
 		// "vpc/nodejs/specific-vpc-layout",
 		// "vpc/nodejs/vpc-with-service-endpoint",
