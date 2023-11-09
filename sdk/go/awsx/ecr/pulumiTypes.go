@@ -26,8 +26,6 @@ type DockerBuild struct {
 	Context *string `pulumi:"context"`
 	// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
 	Dockerfile *string `pulumi:"dockerfile"`
-	// An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-	ExtraOptions []string `pulumi:"extraOptions"`
 	// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
 	Platform *string `pulumi:"platform"`
 	// The target of the dockerfile to build

@@ -49,7 +49,6 @@ export class Image extends pulumi.ComponentResource {
             resourceInputs["cacheFrom"] = args ? args.cacheFrom : undefined;
             resourceInputs["context"] = args ? args.context : undefined;
             resourceInputs["dockerfile"] = args ? args.dockerfile : undefined;
-            resourceInputs["extraOptions"] = args ? args.extraOptions : undefined;
             resourceInputs["platform"] = args ? args.platform : undefined;
             resourceInputs["repositoryUrl"] = args ? args.repositoryUrl : undefined;
             resourceInputs["target"] = args ? args.target : undefined;
@@ -86,10 +85,6 @@ export interface ImageArgs {
      * dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
      */
     dockerfile?: pulumi.Input<string>;
-    /**
-     * An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-     */
-    extraOptions?: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
      */

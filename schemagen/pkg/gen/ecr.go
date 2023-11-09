@@ -274,15 +274,6 @@ func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.Prop
 				Type: "string",
 			},
 		},
-		"extraOptions": {
-			Description: "An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.",
-			TypeSpec: schema.TypeSpec{
-				Type: "array",
-				Items: &schema.TypeSpec{
-					Type: "string",
-				},
-			},
-		},
 		"platform": {
 			Description: "The architecture of the platform you want to build this image for, e.g. `linux/arm64`.",
 			TypeSpec: schema.TypeSpec{
