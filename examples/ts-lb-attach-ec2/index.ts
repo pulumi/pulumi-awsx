@@ -6,9 +6,10 @@ const vpc = new awsx.ec2.Vpc("vpc", { subnetSpecs: [{ type: "Public" }], natGate
 
 const lb = new awsx.lb.ApplicationLoadBalancer("lb", { subnets: vpc.subnets });
 
-// Get the id for the latest Amazon Linux AMI
+// Get the Amazon Linux AMI. We use a specific version because its id is serialized into the
+// recorded snapshot for upgrade tests. Using a later image requires re-recording the snapshot.
 const ami = aws.ec2.getAmiOutput({
-    filters: [{ name: "name", values: ["amzn-ami-hvm-*-x86_64-ebs"] }],
+    filters: [{ name: "name", values: ["amzn-ami-hvm-2018.03.0.20231024.0-x86_64-ebs"] }],
     owners: ["137112412989"], // Amazon
     mostRecent: true,
 }).id;
