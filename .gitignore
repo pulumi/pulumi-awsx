@@ -10,6 +10,7 @@ vendor/
 yarn.lock
 package-lock.json
 .idea/
+**/.vscode
 **/version.txt
 **/dist
 .DS_Store
