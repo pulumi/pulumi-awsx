@@ -28,13 +28,14 @@ func generateEc2(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:ec2:DefaultVpc": defaultVpcResource(awsSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:awsx:DefaultSecurityGroup":   defaultSecurityGroupArgs(awsSpec),
-			"awsx:awsx:SecurityGroup":          securityGroupArgs(awsSpec),
-			"awsx:ec2:NatGatewayStrategy":      natGatewayStrategyType(),
-			"awsx:ec2:NatGatewayConfiguration": natGatewayConfigurationType(),
-			"awsx:ec2:SubnetType":              subnetType(),
-			"awsx:ec2:SubnetSpec":              subnetSpecType(),
-			"awsx:ec2:VpcEndpointSpec":         vpcEndpointSpec(awsSpec),
+			"awsx:awsx:DefaultSecurityGroup":    defaultSecurityGroupArgs(awsSpec),
+			"awsx:awsx:SecurityGroup":           securityGroupArgs(awsSpec),
+			"awsx:ec2:NatGatewayStrategy":       natGatewayStrategyType(),
+			"awsx:ec2:NatGatewayConfiguration":  natGatewayConfigurationType(),
+			"awsx:ec2:SubnetType":               subnetType(),
+			"awsx:ec2:SubnetAllocationStrategy": subnetAllocationStrategy(),
+			"awsx:ec2:SubnetSpec":               subnetSpecType(),
+			"awsx:ec2:VpcEndpointSpec":          vpcEndpointSpec(awsSpec),
 		},
 		Functions: map[string]schema.FunctionSpec{
 			"awsx:ec2:getDefaultVpc": defaultVpcArgs(),
@@ -113,6 +114,12 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			TypeSpec: schema.TypeSpec{
 				Ref:   localRef("ec2", "NatGatewayConfiguration"),
 				Plain: true,
+			},
+		},
+		"subnetStrategy": {
+			Description: "The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.",
+			TypeSpec: schema.TypeSpec{
+				Ref: localRef("ec2", "SubnetAllocationStrategy"),
 			},
 		},
 		subnetSpecs: {
@@ -314,6 +321,10 @@ func subnetSpecType() schema.ComplexTypeSpec {
 					Description: "The bitmask for the subnet's CIDR block.",
 					TypeSpec:    plainInt(),
 				},
+				// TODO: Add this as a follow-up feature.
+				// "cidrBlocks": {
+				// 	Description: "A list of CIDR blocks to assign to the subnet spec for each AZ. Cannot be specified in conjunction with `cidrMask`. The count must match the number of AZs being used for the VPC. `cidrBlocks` must be specified for all subnet specs if specified on any spec.",
+				// },
 				"tags": {
 					TypeSpec: schema.TypeSpec{
 						Type:                 "object",
@@ -347,6 +358,33 @@ func subnetType() schema.ComplexTypeSpec {
 			{
 				Value:       "Isolated",
 				Description: "A subnet whose hosts have no connectivity with the internet.",
+			},
+			{
+				Value:       "Unused",
+				Description: "A subnet range which is reserved, but no subnet will be created.",
+			},
+		},
+	}
+}
+
+func subnetAllocationStrategy() schema.ComplexTypeSpec {
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "string",
+			Description: "Strategy for calculating subnet ranges from the subnet specifications.",
+		},
+		Enum: []schema.EnumValueSpec{
+			{
+				Value:       "Legacy",
+				Description: "Group private subnets first, followed by public subnets, followed by isolated subnets.",
+			},
+			{
+				Value:       "Auto",
+				Description: "Order remains as specified by specs, allowing gaps where required.",
+			},
+			{
+				Value:       "Exact",
+				Description: "Whole range of VPC must be accounted for, using \"Unused\" spec types for deliberate gaps.",
 			},
 		},
 	}
