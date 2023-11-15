@@ -119,7 +119,8 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		"subnetStrategy": {
 			Description: "The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.",
 			TypeSpec: schema.TypeSpec{
-				Ref: localRef("ec2", "SubnetAllocationStrategy"),
+				Ref:   localRef("ec2", "SubnetAllocationStrategy"),
+				Plain: true,
 			},
 		},
 		subnetSpecs: {
@@ -318,7 +319,7 @@ func subnetSpecType() schema.ComplexTypeSpec {
 				"cidrMask": {
 					// The validation rules are too difficult to concisely describe here, so we'll leave that job to any
 					// error messages generated from the component itself.
-					Description: "The bitmask for the subnet's CIDR block.",
+					Description: "The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
 					TypeSpec:    plainInt(),
 				},
 				// TODO: Add this as a follow-up feature.

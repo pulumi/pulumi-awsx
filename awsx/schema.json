@@ -587,7 +587,7 @@
                 "cidrMask": {
                     "type": "integer",
                     "plain": true,
-                    "description": "The bitmask for the subnet's CIDR block."
+                    "description": "The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone."
                 },
                 "name": {
                     "type": "string",
@@ -2026,6 +2026,7 @@
                 },
                 "subnetStrategy": {
                     "$ref": "#/types/awsx:ec2:SubnetAllocationStrategy",
+                    "plain": true,
                     "description": "The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`."
                 },
                 "tags": {
