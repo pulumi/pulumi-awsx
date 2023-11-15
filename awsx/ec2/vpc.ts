@@ -84,13 +84,13 @@ export class Vpc extends schema.Vpc<VpcData> {
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
 
     const subnetSpecs =
-      subnetStrategy == "Legacy"
+      subnetStrategy === "Legacy"
         ? getSubnetSpecsLegacy(name, cidrBlock, availabilityZones, args.subnetSpecs)
         : getSubnetSpecs(name, cidrBlock, availabilityZones, args.subnetSpecs);
 
     validateSubnets(subnetSpecs, getOverlappingSubnets);
 
-    if (subnetStrategy == "Exact") {
+    if (subnetStrategy === "Exact") {
       validateNoGaps(cidrBlock, subnetSpecs);
     }
 
