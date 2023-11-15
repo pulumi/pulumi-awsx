@@ -16,7 +16,7 @@ import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import { getSubnetSpecs, nextNetmask } from "./subnetDistributorNew";
 import { Netmask } from "netmask";
-import { getOverlappingSubnets, validateSubnets } from "./vpc";
+import { getOverlappingSubnets, validateNoGaps, validateSubnets } from "./vpc";
 
 function cidrMask(args?: { min?: number; max?: number }): fc.Arbitrary<number> {
   return fc.integer({ min: args?.min ?? 16, max: args?.max ?? 27 });
@@ -166,5 +166,71 @@ describe("nextNetmask", () => {
     const previous = new Netmask("10.0.0.0/17");
     const next = nextNetmask(previous, 16);
     expect(next.toString()).toBe("10.1.0.0/16");
+  });
+});
+
+describe("validating exact layouts", () => {
+  it("should pass for a single subnet", () => {
+    validateNoGaps("10.0.0.0/16", [
+      {
+        azName: "az",
+        type: "Public",
+        cidrBlock: "10.0.0.0/16",
+        subnetName: "sub1",
+      },
+    ]);
+  });
+
+  it("should highlight a gap", () => {
+    expect(() =>
+      validateNoGaps("10.0.0.0/16", [
+        {
+          azName: "",
+          type: "Public",
+          cidrBlock: "10.0.0.0/18",
+          subnetName: "sub1",
+        },
+        // "10.0.1.0/16" is missing
+        {
+          azName: "",
+          type: "Public",
+          cidrBlock: "10.0.128.0/17",
+          subnetName: "sub2",
+        },
+      ]),
+    ).toThrowError(
+      "There are gaps in the subnet ranges. Please fix the following gaps: sub1 (10.0.0.0/18) <=> sub2 (10.0.128.0/17)",
+    );
+  });
+
+  it("highlights gaps at end of VPC", () => {
+    const vpcCidr = "10.0.0.0/16";
+    const result = getSubnetSpecs(
+      "vpcName",
+      vpcCidr,
+      ["us-east-1a"],
+      // 3 subnets to leave a gap at the end when dividing evenly.
+      [{ type: "Public" }, { type: "Private" }, { type: "Isolated" }],
+    );
+    expect(() => {
+      validateNoGaps(vpcCidr, result);
+    }).toThrowError(
+      "Please fix the following gaps: vpcName-isolated-1 (ending 10.0.191.254) ends before VPC ends (at 10.0.255.254})",
+    );
+  });
+
+  it("highlights a gap at the start of the VPC", () => {
+    expect(() =>
+      validateNoGaps("10.0.0.0/16", [
+        {
+          azName: "",
+          type: "Public",
+          cidrBlock: "10.0.128.0/17",
+          subnetName: "sub1",
+        },
+      ]),
+    ).toThrowError(
+      "Please fix the following gaps: sub1 (10.0.128.0/17) does not start at the beginning of the VPC (10.0.0.0/16)",
+    );
   });
 });

@@ -17,6 +17,7 @@ import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 import { getSubnetSpecsLegacy, SubnetSpec } from "./subnetDistributorLegacy";
 import { getSubnetSpecs } from "./subnetDistributorNew";
+import { Netmask } from "netmask";
 
 interface VpcData {
   vpc: aws.ec2.Vpc;
@@ -88,6 +89,10 @@ export class Vpc extends schema.Vpc<VpcData> {
         : getSubnetSpecs(name, cidrBlock, availabilityZones, args.subnetSpecs);
 
     validateSubnets(subnetSpecs, getOverlappingSubnets);
+
+    if (subnetStrategy == "Exact") {
+      validateNoGaps(cidrBlock, subnetSpecs);
+    }
 
     validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
 
@@ -439,4 +444,44 @@ export function validateSubnets(
 
     throw new Error(msg);
   }
+}
+export function validateNoGaps(vpcCidr: string, subnetSpecs: SubnetSpec[]) {
+  const vpcNetmask = new Netmask(vpcCidr);
+  const gaps: string[] = [];
+  let current: SubnetSpec | undefined;
+  for (const spec of subnetSpecs) {
+    const prev = current;
+    current = spec;
+    const currentNetmask = new Netmask(current.cidrBlock);
+    if (prev === undefined) {
+      // Check the first subnet against the VPC CIDR
+      if (currentNetmask.base !== vpcNetmask.base) {
+        gaps.push(
+          `${spec.subnetName} (${spec.cidrBlock}) does not start at the beginning of the VPC (${vpcCidr})`,
+        );
+      }
+      continue;
+    }
+    const prevNetmask = new Netmask(prev.cidrBlock);
+    const expectedNext = prevNetmask.next();
+    if (currentNetmask.base !== expectedNext.base) {
+      gaps.push(
+        `${prev.subnetName} (${prev.cidrBlock}) <=> ${spec.subnetName} (${spec.cidrBlock})`,
+      );
+    }
+  }
+  const lastBlockNetmask = new Netmask(current!.cidrBlock);
+  if (lastBlockNetmask.last !== vpcNetmask.last) {
+    gaps.push(
+      `${current!.subnetName} (ending ${lastBlockNetmask.last}) ends before VPC ends (at ${
+        vpcNetmask.last
+      }})`,
+    );
+  }
+  if (gaps.length === 0) {
+    return;
+  }
+  throw new Error(
+    `There are gaps in the subnet ranges. Please fix the following gaps: ${gaps.join(", ")}`,
+  );
 }
