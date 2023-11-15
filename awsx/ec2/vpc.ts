@@ -79,7 +79,7 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
 
-    const subnetSpecs = getSubnetSpecs(name, cidrBlock, availabilityZones, args.subnetSpecs);
+    const subnetSpecs = getSubnetSpecsLegacy(name, cidrBlock, availabilityZones, args.subnetSpecs);
     validateSubnets(subnetSpecs, getOverlappingSubnets);
 
     validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);

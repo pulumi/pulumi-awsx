@@ -30,7 +30,7 @@ export interface SubnetSpec {
   }>;
 }
 
-export function getSubnetSpecs(
+export function getSubnetSpecsLegacy(
   vpcName: string,
   vpcCidr: string,
   azNames: string[],

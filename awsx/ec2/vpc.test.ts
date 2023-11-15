@@ -14,7 +14,7 @@
 
 import { getOverlappingSubnets } from ".";
 import { NatGatewayStrategyInputs, SubnetTypeInputs } from "../schema-types";
-import { getSubnetSpecs } from "./subnetDistributor";
+import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import {
   compareSubnetSpecs,
   OverlappingSubnet,

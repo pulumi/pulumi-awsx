@@ -14,7 +14,7 @@
 
 import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
-import { getSubnetSpecs, SubnetSpec, validateRanges } from "./subnetDistributor";
+import { getSubnetSpecsLegacy, SubnetSpec, validateRanges } from "./subnetDistributorLegacy";
 import { knownWorkingSubnets } from "./knownWorkingSubnets";
 
 function cidrMask(args?: { min?: number; max?: number }): fc.Arbitrary<number> {
@@ -52,7 +52,7 @@ describe("default subnet layout", () => {
         ({ vpcCidrMask, azs, subnetSpecs }) => {
           const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
 
-          const result = getSubnetSpecs("vpcName", vpcCidr, azs, subnetSpecs);
+          const result = getSubnetSpecsLegacy("vpcName", vpcCidr, azs, subnetSpecs);
 
           for (const subnet of result) {
             const subnetMask = getCidrMask(subnet.cidrBlock);
@@ -74,7 +74,7 @@ describe("default subnet layout", () => {
         ({ vpcCidrMask, subnetSpec }) => {
           const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
 
-          const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], [subnetSpec]);
+          const result = getSubnetSpecsLegacy("vpcName", vpcCidr, ["us-east-1a"], [subnetSpec]);
 
           expect(result.length).toBe(1);
           expect(result[0].cidrBlock).toBe(vpcCidr);
@@ -93,7 +93,7 @@ describe("default subnet layout", () => {
         ({ vpcCidrMask }) => {
           const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
 
-          const result = getSubnetSpecs(
+          const result = getSubnetSpecsLegacy(
             "vpcName",
             vpcCidr,
             ["us-east-1a"],
@@ -144,7 +144,7 @@ describe("default subnet layout", () => {
         ({ vpcCidrMask, subnetSpecs }) => {
           const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
 
-          const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], subnetSpecs);
+          const result = getSubnetSpecsLegacy("vpcName", vpcCidr, ["us-east-1a"], subnetSpecs);
 
           validateRanges(result);
         },
@@ -157,7 +157,7 @@ describe("default subnet layout", () => {
       it(`should work for ${knownCase.vpcCidr} with subnets ${knownCase.subnetSpecs
         .map((s) => `${s.type}:${s.cidrMask}`)
         .join(", ")}`, () => {
-        const result = getSubnetSpecs(
+        const result = getSubnetSpecsLegacy(
           "vpcName",
           knownCase.vpcCidr,
           ["us-east-1a"],
@@ -181,7 +181,7 @@ describe("getSubnetSpecs", () => {
   const vpcName = "vpcname";
 
   it("should return the default subnets with no parameters and 3 AZs", () => {
-    const result = getSubnetSpecs(vpcName, vpcCidr, azs);
+    const result = getSubnetSpecsLegacy(vpcName, vpcCidr, azs);
     const expected: SubnetSpec[] = [
       {
         type: "Private",
@@ -271,7 +271,7 @@ describe("getSubnetSpecs", () => {
         },
       ];
 
-      expect(getSubnetSpecs(vpcName, vpcCidr, azs, inputs)).toEqual(expected);
+      expect(getSubnetSpecsLegacy(vpcName, vpcCidr, azs, inputs)).toEqual(expected);
     },
   );
 
@@ -332,6 +332,6 @@ describe("getSubnetSpecs", () => {
       },
     ];
 
-    expect(getSubnetSpecs(vpcName, vpcCidr, azs, inputs)).toEqual(expected);
+    expect(getSubnetSpecsLegacy(vpcName, vpcCidr, azs, inputs)).toEqual(expected);
   });
 });
