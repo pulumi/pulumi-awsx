@@ -66,7 +66,7 @@ class SubnetSpecArgs:
         """
         Configuration for a VPC subnet.
         :param 'SubnetType' type: The type of subnet.
-        :param int cidr_mask: The bitmask for the subnet's CIDR block.
+        :param int cidr_mask: The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
         :param str name: The subnet's name. Will be templated upon creation.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource.
         """
@@ -94,7 +94,7 @@ class SubnetSpecArgs:
     @pulumi.getter(name="cidrMask")
     def cidr_mask(self) -> Optional[int]:
         """
-        The bitmask for the subnet's CIDR block.
+        The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
         """
         return pulumi.get(self, "cidr_mask")
 

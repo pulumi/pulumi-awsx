@@ -214,6 +214,12 @@ namespace Pulumi.Awsx.Ec2
             set => _subnetSpecs = value;
         }
 
+        /// <summary>
+        /// The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
+        /// </summary>
+        [Input("subnetStrategy")]
+        public Pulumi.Awsx.Ec2.SubnetAllocationStrategy? SubnetStrategy { get; set; }
+
         [Input("tags")]
         private InputMap<string>? _tags;
 

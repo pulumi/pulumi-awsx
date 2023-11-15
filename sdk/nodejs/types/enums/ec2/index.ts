@@ -22,6 +22,26 @@ export const NatGatewayStrategy = {
  */
 export type NatGatewayStrategy = (typeof NatGatewayStrategy)[keyof typeof NatGatewayStrategy];
 
+export const SubnetAllocationStrategy = {
+    /**
+     * Group private subnets first, followed by public subnets, followed by isolated subnets.
+     */
+    Legacy: "Legacy",
+    /**
+     * Order remains as specified by specs, allowing gaps where required.
+     */
+    Auto: "Auto",
+    /**
+     * Whole range of VPC must be accounted for, using "Unused" spec types for deliberate gaps.
+     */
+    Exact: "Exact",
+} as const;
+
+/**
+ * Strategy for calculating subnet ranges from the subnet specifications.
+ */
+export type SubnetAllocationStrategy = (typeof SubnetAllocationStrategy)[keyof typeof SubnetAllocationStrategy];
+
 export const SubnetType = {
     /**
      * A subnet whose hosts can directly communicate with the internet.
@@ -35,6 +55,10 @@ export const SubnetType = {
      * A subnet whose hosts have no connectivity with the internet.
      */
     Isolated: "Isolated",
+    /**
+     * A subnet range which is reserved, but no subnet will be created.
+     */
+    Unused: "Unused",
 } as const;
 
 /**

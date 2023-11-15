@@ -89,6 +89,8 @@ type vpcArgs struct {
 	NumberOfAvailabilityZones *int `pulumi:"numberOfAvailabilityZones"`
 	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
 	SubnetSpecs []SubnetSpec `pulumi:"subnetSpecs"`
+	// The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
+	SubnetStrategy *SubnetAllocationStrategy `pulumi:"subnetStrategy"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
 	// A list of VPC Endpoints specs to be deployed as part of the VPC
@@ -129,6 +131,8 @@ type VpcArgs struct {
 	NumberOfAvailabilityZones *int
 	// A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
 	SubnetSpecs []SubnetSpecArgs
+	// The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
+	SubnetStrategy *SubnetAllocationStrategy
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 	// A list of VPC Endpoints specs to be deployed as part of the VPC

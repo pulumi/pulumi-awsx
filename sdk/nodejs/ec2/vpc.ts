@@ -92,6 +92,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["natGateways"] = args ? args.natGateways : undefined;
             resourceInputs["numberOfAvailabilityZones"] = args ? args.numberOfAvailabilityZones : undefined;
             resourceInputs["subnetSpecs"] = args ? args.subnetSpecs : undefined;
+            resourceInputs["subnetStrategy"] = args ? args.subnetStrategy : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["vpcEndpointSpecs"] = args ? args.vpcEndpointSpecs : undefined;
             resourceInputs["eips"] = undefined /*out*/;
@@ -194,6 +195,10 @@ export interface VpcArgs {
      * A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
      */
     subnetSpecs?: inputs.ec2.SubnetSpecArgs[];
+    /**
+     * The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
+     */
+    subnetStrategy?: enums.ec2.SubnetAllocationStrategy;
     /**
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */

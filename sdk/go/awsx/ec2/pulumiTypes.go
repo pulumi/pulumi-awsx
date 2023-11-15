@@ -200,7 +200,7 @@ func (o NatGatewayConfigurationPtrOutput) Strategy() NatGatewayStrategyPtrOutput
 
 // Configuration for a VPC subnet.
 type SubnetSpec struct {
-	// The bitmask for the subnet's CIDR block.
+	// The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
 	CidrMask *int `pulumi:"cidrMask"`
 	// The subnet's name. Will be templated upon creation.
 	Name *string `pulumi:"name"`
@@ -223,7 +223,7 @@ type SubnetSpecInput interface {
 
 // Configuration for a VPC subnet.
 type SubnetSpecArgs struct {
-	// The bitmask for the subnet's CIDR block.
+	// The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
 	CidrMask *int `pulumi:"cidrMask"`
 	// The subnet's name. Will be templated upon creation.
 	Name *string `pulumi:"name"`
@@ -303,7 +303,7 @@ func (o SubnetSpecOutput) ToOutput(ctx context.Context) pulumix.Output[SubnetSpe
 	}
 }
 
-// The bitmask for the subnet's CIDR block.
+// The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
 func (o SubnetSpecOutput) CidrMask() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v SubnetSpec) *int { return v.CidrMask }).(pulumi.IntPtrOutput)
 }

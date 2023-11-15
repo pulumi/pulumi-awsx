@@ -23,14 +23,14 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
     public static final SubnetSpecArgs Empty = new SubnetSpecArgs();
 
     /**
-     * The bitmask for the subnet&#39;s CIDR block.
+     * The bitmask for the subnet&#39;s CIDR block. The default value is set based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by availability zone.
      * 
      */
     @Import(name="cidrMask")
     private @Nullable Integer cidrMask;
 
     /**
-     * @return The bitmask for the subnet&#39;s CIDR block.
+     * @return The bitmask for the subnet&#39;s CIDR block. The default value is set based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by availability zone.
      * 
      */
     public Optional<Integer> cidrMask() {
@@ -110,7 +110,7 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param cidrMask The bitmask for the subnet&#39;s CIDR block.
+         * @param cidrMask The bitmask for the subnet&#39;s CIDR block. The default value is set based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by availability zone.
          * 
          * @return builder
          * 

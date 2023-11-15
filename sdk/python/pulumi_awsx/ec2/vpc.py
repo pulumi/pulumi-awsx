@@ -33,6 +33,7 @@ class VpcArgs:
                  nat_gateways: Optional['NatGatewayConfigurationArgs'] = None,
                  number_of_availability_zones: Optional[int] = None,
                  subnet_specs: Optional[Sequence['SubnetSpecArgs']] = None,
+                 subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  vpc_endpoint_specs: Optional[Sequence['VpcEndpointSpecArgs']] = None):
         """
@@ -53,6 +54,7 @@ class VpcArgs:
         :param 'NatGatewayConfigurationArgs' nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
         :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param Sequence['SubnetSpecArgs'] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
+        :param 'SubnetAllocationStrategy' subnet_strategy: The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param Sequence['VpcEndpointSpecArgs'] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
         """
@@ -88,6 +90,8 @@ class VpcArgs:
             pulumi.set(__self__, "number_of_availability_zones", number_of_availability_zones)
         if subnet_specs is not None:
             pulumi.set(__self__, "subnet_specs", subnet_specs)
+        if subnet_strategy is not None:
+            pulumi.set(__self__, "subnet_strategy", subnet_strategy)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
         if vpc_endpoint_specs is not None:
@@ -286,6 +290,18 @@ class VpcArgs:
         pulumi.set(self, "subnet_specs", value)
 
     @property
+    @pulumi.getter(name="subnetStrategy")
+    def subnet_strategy(self) -> Optional['SubnetAllocationStrategy']:
+        """
+        The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
+        """
+        return pulumi.get(self, "subnet_strategy")
+
+    @subnet_strategy.setter
+    def subnet_strategy(self, value: Optional['SubnetAllocationStrategy']):
+        pulumi.set(self, "subnet_strategy", value)
+
+    @property
     @pulumi.getter
     def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
         """
@@ -331,6 +347,7 @@ class Vpc(pulumi.ComponentResource):
                  nat_gateways: Optional[pulumi.InputType['NatGatewayConfigurationArgs']] = None,
                  number_of_availability_zones: Optional[int] = None,
                  subnet_specs: Optional[Sequence[pulumi.InputType['SubnetSpecArgs']]] = None,
+                 subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  vpc_endpoint_specs: Optional[Sequence[pulumi.InputType['VpcEndpointSpecArgs']]] = None,
                  __props__=None):
@@ -354,6 +371,7 @@ class Vpc(pulumi.ComponentResource):
         :param pulumi.InputType['NatGatewayConfigurationArgs'] nat_gateways: Configuration for NAT Gateways. Optional. If private and public subnets are both specified, defaults to one gateway per availability zone. Otherwise, no gateways will be created.
         :param int number_of_availability_zones: A number of availability zones to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param Sequence[pulumi.InputType['SubnetSpecArgs']] subnet_specs: A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
+        :param 'SubnetAllocationStrategy' subnet_strategy: The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param Sequence[pulumi.InputType['VpcEndpointSpecArgs']] vpc_endpoint_specs: A list of VPC Endpoints specs to be deployed as part of the VPC
         """
@@ -396,6 +414,7 @@ class Vpc(pulumi.ComponentResource):
                  nat_gateways: Optional[pulumi.InputType['NatGatewayConfigurationArgs']] = None,
                  number_of_availability_zones: Optional[int] = None,
                  subnet_specs: Optional[Sequence[pulumi.InputType['SubnetSpecArgs']]] = None,
+                 subnet_strategy: Optional['SubnetAllocationStrategy'] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  vpc_endpoint_specs: Optional[Sequence[pulumi.InputType['VpcEndpointSpecArgs']]] = None,
                  __props__=None):
@@ -425,6 +444,7 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["nat_gateways"] = nat_gateways
             __props__.__dict__["number_of_availability_zones"] = number_of_availability_zones
             __props__.__dict__["subnet_specs"] = subnet_specs
+            __props__.__dict__["subnet_strategy"] = subnet_strategy
             __props__.__dict__["tags"] = tags
             __props__.__dict__["vpc_endpoint_specs"] = vpc_endpoint_specs
             __props__.__dict__["eips"] = None

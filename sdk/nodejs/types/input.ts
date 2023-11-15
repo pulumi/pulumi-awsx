@@ -384,7 +384,7 @@ export namespace ec2 {
      */
     export interface SubnetSpecArgs {
         /**
-         * The bitmask for the subnet's CIDR block.
+         * The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
          */
         cidrMask?: number;
         /**

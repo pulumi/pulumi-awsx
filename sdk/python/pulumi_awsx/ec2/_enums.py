@@ -6,6 +6,7 @@ from enum import Enum
 
 __all__ = [
     'NatGatewayStrategy',
+    'SubnetAllocationStrategy',
     'SubnetType',
 ]
 
@@ -28,6 +29,24 @@ class NatGatewayStrategy(str, Enum):
     """
 
 
+class SubnetAllocationStrategy(str, Enum):
+    """
+    Strategy for calculating subnet ranges from the subnet specifications.
+    """
+    LEGACY = "Legacy"
+    """
+    Group private subnets first, followed by public subnets, followed by isolated subnets.
+    """
+    AUTO = "Auto"
+    """
+    Order remains as specified by specs, allowing gaps where required.
+    """
+    EXACT = "Exact"
+    """
+    Whole range of VPC must be accounted for, using "Unused" spec types for deliberate gaps.
+    """
+
+
 class SubnetType(str, Enum):
     """
     A type of subnet within a VPC.
@@ -43,4 +62,8 @@ class SubnetType(str, Enum):
     ISOLATED = "Isolated"
     """
     A subnet whose hosts have no connectivity with the internet.
+    """
+    UNUSED = "Unused"
+    """
+    A subnet range which is reserved, but no subnet will be created.
     """

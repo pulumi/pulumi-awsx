@@ -198,6 +198,193 @@ func (in *natGatewayStrategyPtr) ToOutput(ctx context.Context) pulumix.Output[*N
 	}
 }
 
+// Strategy for calculating subnet ranges from the subnet specifications.
+type SubnetAllocationStrategy string
+
+const (
+	// Group private subnets first, followed by public subnets, followed by isolated subnets.
+	SubnetAllocationStrategyLegacy = SubnetAllocationStrategy("Legacy")
+	// Order remains as specified by specs, allowing gaps where required.
+	SubnetAllocationStrategyAuto = SubnetAllocationStrategy("Auto")
+	// Whole range of VPC must be accounted for, using "Unused" spec types for deliberate gaps.
+	SubnetAllocationStrategyExact = SubnetAllocationStrategy("Exact")
+)
+
+func (SubnetAllocationStrategy) ElementType() reflect.Type {
+	return reflect.TypeOf((*SubnetAllocationStrategy)(nil)).Elem()
+}
+
+func (e SubnetAllocationStrategy) ToSubnetAllocationStrategyOutput() SubnetAllocationStrategyOutput {
+	return pulumi.ToOutput(e).(SubnetAllocationStrategyOutput)
+}
+
+func (e SubnetAllocationStrategy) ToSubnetAllocationStrategyOutputWithContext(ctx context.Context) SubnetAllocationStrategyOutput {
+	return pulumi.ToOutputWithContext(ctx, e).(SubnetAllocationStrategyOutput)
+}
+
+func (e SubnetAllocationStrategy) ToSubnetAllocationStrategyPtrOutput() SubnetAllocationStrategyPtrOutput {
+	return e.ToSubnetAllocationStrategyPtrOutputWithContext(context.Background())
+}
+
+func (e SubnetAllocationStrategy) ToSubnetAllocationStrategyPtrOutputWithContext(ctx context.Context) SubnetAllocationStrategyPtrOutput {
+	return SubnetAllocationStrategy(e).ToSubnetAllocationStrategyOutputWithContext(ctx).ToSubnetAllocationStrategyPtrOutputWithContext(ctx)
+}
+
+func (e SubnetAllocationStrategy) ToStringOutput() pulumi.StringOutput {
+	return pulumi.ToOutput(pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e SubnetAllocationStrategy) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return pulumi.ToOutputWithContext(ctx, pulumi.String(e)).(pulumi.StringOutput)
+}
+
+func (e SubnetAllocationStrategy) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringPtrOutputWithContext(context.Background())
+}
+
+func (e SubnetAllocationStrategy) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return pulumi.String(e).ToStringOutputWithContext(ctx).ToStringPtrOutputWithContext(ctx)
+}
+
+type SubnetAllocationStrategyOutput struct{ *pulumi.OutputState }
+
+func (SubnetAllocationStrategyOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*SubnetAllocationStrategy)(nil)).Elem()
+}
+
+func (o SubnetAllocationStrategyOutput) ToSubnetAllocationStrategyOutput() SubnetAllocationStrategyOutput {
+	return o
+}
+
+func (o SubnetAllocationStrategyOutput) ToSubnetAllocationStrategyOutputWithContext(ctx context.Context) SubnetAllocationStrategyOutput {
+	return o
+}
+
+func (o SubnetAllocationStrategyOutput) ToSubnetAllocationStrategyPtrOutput() SubnetAllocationStrategyPtrOutput {
+	return o.ToSubnetAllocationStrategyPtrOutputWithContext(context.Background())
+}
+
+func (o SubnetAllocationStrategyOutput) ToSubnetAllocationStrategyPtrOutputWithContext(ctx context.Context) SubnetAllocationStrategyPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v SubnetAllocationStrategy) *SubnetAllocationStrategy {
+		return &v
+	}).(SubnetAllocationStrategyPtrOutput)
+}
+
+func (o SubnetAllocationStrategyOutput) ToOutput(ctx context.Context) pulumix.Output[SubnetAllocationStrategy] {
+	return pulumix.Output[SubnetAllocationStrategy]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o SubnetAllocationStrategyOutput) ToStringOutput() pulumi.StringOutput {
+	return o.ToStringOutputWithContext(context.Background())
+}
+
+func (o SubnetAllocationStrategyOutput) ToStringOutputWithContext(ctx context.Context) pulumi.StringOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e SubnetAllocationStrategy) string {
+		return string(e)
+	}).(pulumi.StringOutput)
+}
+
+func (o SubnetAllocationStrategyOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o SubnetAllocationStrategyOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e SubnetAllocationStrategy) *string {
+		v := string(e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+type SubnetAllocationStrategyPtrOutput struct{ *pulumi.OutputState }
+
+func (SubnetAllocationStrategyPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**SubnetAllocationStrategy)(nil)).Elem()
+}
+
+func (o SubnetAllocationStrategyPtrOutput) ToSubnetAllocationStrategyPtrOutput() SubnetAllocationStrategyPtrOutput {
+	return o
+}
+
+func (o SubnetAllocationStrategyPtrOutput) ToSubnetAllocationStrategyPtrOutputWithContext(ctx context.Context) SubnetAllocationStrategyPtrOutput {
+	return o
+}
+
+func (o SubnetAllocationStrategyPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*SubnetAllocationStrategy] {
+	return pulumix.Output[*SubnetAllocationStrategy]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o SubnetAllocationStrategyPtrOutput) Elem() SubnetAllocationStrategyOutput {
+	return o.ApplyT(func(v *SubnetAllocationStrategy) SubnetAllocationStrategy {
+		if v != nil {
+			return *v
+		}
+		var ret SubnetAllocationStrategy
+		return ret
+	}).(SubnetAllocationStrategyOutput)
+}
+
+func (o SubnetAllocationStrategyPtrOutput) ToStringPtrOutput() pulumi.StringPtrOutput {
+	return o.ToStringPtrOutputWithContext(context.Background())
+}
+
+func (o SubnetAllocationStrategyPtrOutput) ToStringPtrOutputWithContext(ctx context.Context) pulumi.StringPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, e *SubnetAllocationStrategy) *string {
+		if e == nil {
+			return nil
+		}
+		v := string(*e)
+		return &v
+	}).(pulumi.StringPtrOutput)
+}
+
+// SubnetAllocationStrategyInput is an input type that accepts SubnetAllocationStrategyArgs and SubnetAllocationStrategyOutput values.
+// You can construct a concrete instance of `SubnetAllocationStrategyInput` via:
+//
+//	SubnetAllocationStrategyArgs{...}
+type SubnetAllocationStrategyInput interface {
+	pulumi.Input
+
+	ToSubnetAllocationStrategyOutput() SubnetAllocationStrategyOutput
+	ToSubnetAllocationStrategyOutputWithContext(context.Context) SubnetAllocationStrategyOutput
+}
+
+var subnetAllocationStrategyPtrType = reflect.TypeOf((**SubnetAllocationStrategy)(nil)).Elem()
+
+type SubnetAllocationStrategyPtrInput interface {
+	pulumi.Input
+
+	ToSubnetAllocationStrategyPtrOutput() SubnetAllocationStrategyPtrOutput
+	ToSubnetAllocationStrategyPtrOutputWithContext(context.Context) SubnetAllocationStrategyPtrOutput
+}
+
+type subnetAllocationStrategyPtr string
+
+func SubnetAllocationStrategyPtr(v string) SubnetAllocationStrategyPtrInput {
+	return (*subnetAllocationStrategyPtr)(&v)
+}
+
+func (*subnetAllocationStrategyPtr) ElementType() reflect.Type {
+	return subnetAllocationStrategyPtrType
+}
+
+func (in *subnetAllocationStrategyPtr) ToSubnetAllocationStrategyPtrOutput() SubnetAllocationStrategyPtrOutput {
+	return pulumi.ToOutput(in).(SubnetAllocationStrategyPtrOutput)
+}
+
+func (in *subnetAllocationStrategyPtr) ToSubnetAllocationStrategyPtrOutputWithContext(ctx context.Context) SubnetAllocationStrategyPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, in).(SubnetAllocationStrategyPtrOutput)
+}
+
+func (in *subnetAllocationStrategyPtr) ToOutput(ctx context.Context) pulumix.Output[*SubnetAllocationStrategy] {
+	return pulumix.Output[*SubnetAllocationStrategy]{
+		OutputState: in.ToSubnetAllocationStrategyPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
 // A type of subnet within a VPC.
 type SubnetType string
 
@@ -208,6 +395,8 @@ const (
 	SubnetTypePrivate = SubnetType("Private")
 	// A subnet whose hosts have no connectivity with the internet.
 	SubnetTypeIsolated = SubnetType("Isolated")
+	// A subnet range which is reserved, but no subnet will be created.
+	SubnetTypeUnused = SubnetType("Unused")
 )
 
 func (SubnetType) ElementType() reflect.Type {
@@ -388,10 +577,14 @@ func (in *subnetTypePtr) ToOutput(ctx context.Context) pulumix.Output[*SubnetTyp
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*NatGatewayStrategyInput)(nil)).Elem(), NatGatewayStrategy("None"))
 	pulumi.RegisterInputType(reflect.TypeOf((*NatGatewayStrategyPtrInput)(nil)).Elem(), NatGatewayStrategy("None"))
+	pulumi.RegisterInputType(reflect.TypeOf((*SubnetAllocationStrategyInput)(nil)).Elem(), SubnetAllocationStrategy("Legacy"))
+	pulumi.RegisterInputType(reflect.TypeOf((*SubnetAllocationStrategyPtrInput)(nil)).Elem(), SubnetAllocationStrategy("Legacy"))
 	pulumi.RegisterInputType(reflect.TypeOf((*SubnetTypeInput)(nil)).Elem(), SubnetType("Public"))
 	pulumi.RegisterInputType(reflect.TypeOf((*SubnetTypePtrInput)(nil)).Elem(), SubnetType("Public"))
 	pulumi.RegisterOutputType(NatGatewayStrategyOutput{})
 	pulumi.RegisterOutputType(NatGatewayStrategyPtrOutput{})
+	pulumi.RegisterOutputType(SubnetAllocationStrategyOutput{})
+	pulumi.RegisterOutputType(SubnetAllocationStrategyPtrOutput{})
 	pulumi.RegisterOutputType(SubnetTypeOutput{})
 	pulumi.RegisterOutputType(SubnetTypePtrOutput{})
 }
