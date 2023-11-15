@@ -94,6 +94,7 @@ export interface VpcArgs {
     readonly natGateways?: NatGatewayConfigurationInputs;
     readonly numberOfAvailabilityZones?: number;
     readonly subnetSpecs?: SubnetSpecInputs[];
+    readonly subnetStrategy?: SubnetAllocationStrategyInputs;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly vpcEndpointSpecs?: VpcEndpointSpecInputs[];
 }
@@ -568,6 +569,8 @@ export interface NatGatewayConfigurationOutputs {
 }
 export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
 export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
+export type SubnetAllocationStrategyInputs = "Legacy" | "Auto" | "Exact";
+export type SubnetAllocationStrategyOutputs = "Legacy" | "Auto" | "Exact";
 export interface SubnetSpecInputs {
     readonly cidrMask?: number;
     readonly name?: string;
@@ -580,8 +583,8 @@ export interface SubnetSpecOutputs {
     readonly tags?: pulumi.Output<Record<string, string>>;
     readonly type: SubnetTypeOutputs;
 }
-export type SubnetTypeInputs = "Public" | "Private" | "Isolated";
-export type SubnetTypeOutputs = "Public" | "Private" | "Isolated";
+export type SubnetTypeInputs = "Public" | "Private" | "Isolated" | "Unused";
+export type SubnetTypeOutputs = "Public" | "Private" | "Isolated" | "Unused";
 export interface VpcEndpointSpecInputs {
     readonly autoAccept?: boolean;
     readonly dnsOptions?: pulumi.Input<aws.types.input.ec2.VpcEndpointDnsOptions>;

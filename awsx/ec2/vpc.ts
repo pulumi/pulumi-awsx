@@ -15,7 +15,8 @@
 import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
-import { getSubnetSpecs, SubnetSpec } from "./subnetDistributor";
+import { getSubnetSpecsLegacy, SubnetSpec } from "./subnetDistributorLegacy";
+import { getSubnetSpecs } from "./subnetDistributorNew";
 
 interface VpcData {
   vpc: aws.ec2.Vpc;
@@ -79,7 +80,13 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
 
-    const subnetSpecs = getSubnetSpecsLegacy(name, cidrBlock, availabilityZones, args.subnetSpecs);
+    const subnetStrategy = args.subnetStrategy ?? "Legacy";
+
+    const subnetSpecs =
+      subnetStrategy == "Legacy"
+        ? getSubnetSpecsLegacy(name, cidrBlock, availabilityZones, args.subnetSpecs)
+        : getSubnetSpecs(name, cidrBlock, availabilityZones, args.subnetSpecs);
+
     validateSubnets(subnetSpecs, getOverlappingSubnets);
 
     validateNatGatewayStrategy(natGatewayStrategy, subnetSpecs);
@@ -146,7 +153,7 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     for (let i = 0; i < availabilityZones.length; i++) {
       subnetSpecs
-        .filter((x) => x.azName === availabilityZones[i])
+        .filter((x) => x.azName === availabilityZones[i] && x.type !== "Unused")
         .sort(compareSubnetSpecs)
         .forEach((spec) => {
           const subnet = new aws.ec2.Subnet(
