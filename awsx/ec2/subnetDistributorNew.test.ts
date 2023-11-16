@@ -14,9 +14,10 @@
 
 import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
-import { getSubnetSpecs, nextNetmask } from "./subnetDistributorNew";
+import { defaultSubnetInputs, getSubnetSpecs, nextNetmask } from "./subnetDistributorNew";
 import { Netmask } from "netmask";
 import { getOverlappingSubnets, validateNoGaps, validateSubnets } from "./vpc";
+import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 
 function cidrMask(args?: { min?: number; max?: number }): fc.Arbitrary<number> {
   return fc.integer({ min: args?.min ?? 16, max: args?.max ?? 27 });
@@ -79,40 +80,6 @@ describe("default subnet layout", () => {
 
           expect(result.length).toBe(1);
           expect(result[0].cidrBlock).toBe(vpcCidr);
-        },
-      ),
-    );
-  });
-
-  it("should use default values if VPC is large", () => {
-    fc.assert(
-      fc.property(
-        fc.record({
-          vpcCidrMask: cidrMask({ min: 10, max: 17 }),
-          subnetSpec: subnetSpecNoMask(),
-        }),
-        ({ vpcCidrMask }) => {
-          const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
-
-          const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], undefined);
-
-          expect(result).toMatchObject([
-            {
-              cidrBlock: "10.0.0.0/19",
-              subnetName: "vpcName-private-1",
-              type: "Private",
-            },
-            {
-              cidrBlock: "10.0.32.0/20",
-              subnetName: "vpcName-public-1",
-              type: "Public",
-            },
-            {
-              cidrBlock: "10.0.48.0/24",
-              subnetName: "vpcName-isolated-1",
-              type: "Isolated",
-            },
-          ]);
         },
       ),
     );
@@ -232,5 +199,71 @@ describe("validating exact layouts", () => {
     ).toThrowError(
       "Please fix the following gaps: sub1 (10.0.128.0/17) does not start at the beginning of the VPC (10.0.0.0/16)",
     );
+  });
+
+  it("Has same default layout as legacy", () => {
+    fc.assert(
+      fc.property(
+        fc.record({
+          // Allow space for 2 bits to be used for AZs
+          vpcCidrMask: cidrMask({ max: 24 }),
+          azs: fc.array(fc.string({ size: "xsmall" }), { minLength: 1, maxLength: 4 }),
+        }),
+        ({ vpcCidrMask, azs }) => {
+          const vpcCidr = `10.0.0.0/${vpcCidrMask}`;
+
+          const newResult = getSubnetSpecs("vpcName", vpcCidr, azs, undefined);
+          const legacyResult = getSubnetSpecsLegacy("vpcName", vpcCidr, azs, undefined);
+
+          expect(newResult).toEqual(expect.arrayContaining(legacyResult));
+        },
+      ),
+    );
+  });
+
+  describe("Default subnet layouts", () => {
+    it("has fixed size for /16 or larger", () => {
+      fc.assert(
+        fc.property(cidrMask({ max: 16 }), (azCidrMask) => {
+          const result = defaultSubnetInputs(azCidrMask);
+          expect(result).toEqual([
+            {
+              type: "Private",
+              cidrMask: 17,
+            },
+            {
+              type: "Public",
+              cidrMask: 18,
+            },
+          ]);
+        }),
+      );
+    });
+    it("has relative size for /16 to /26", () => {
+      fc.assert(
+        fc.property(cidrMask({ min: 16, max: 26 }), (azCidrMask) => {
+          const result = defaultSubnetInputs(azCidrMask);
+          expect(result).toEqual([
+            {
+              type: "Private",
+              cidrMask: azCidrMask + 1,
+            },
+            {
+              type: "Public",
+              cidrMask: azCidrMask + 2,
+            },
+          ]);
+        }),
+      );
+    });
+    it("fails for larger than /26", () => {
+      fc.assert(
+        fc.property(cidrMask({ min: 27 }), (azCidrMask) => {
+          expect(() => {
+            defaultSubnetInputs(azCidrMask);
+          }).toThrowError();
+        }),
+      );
+    });
   });
 });

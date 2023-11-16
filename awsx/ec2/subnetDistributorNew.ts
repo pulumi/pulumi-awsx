@@ -93,7 +93,7 @@ export function getSubnetSpecs(
   return subnets;
 }
 
-function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {
+export function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {
   // For a large VPC (up to /17), the layout will be:
   // Private:  /19 (10.0.0.0  - 10.0.31.255), 8190 addresses
   // Public:   /20 (10.0.32.0 - 10.0.47.255), 4094 addresses
@@ -107,24 +107,17 @@ function defaultSubnetInputs(azBitmask: number): SubnetSpecInputs[] {
         `If you do need very small subnets, please specify them explicitly.`,
     );
   }
-  // Even if we've got more than /17, only use the first /17 for the default subnets.
+  // Even if we've got more than /16, only use the first /16 for the default subnets.
   // Leave the rest for the user to add later if needed.
-  const maxBitmask = Math.max(azBitmask, 17);
+  const maxBitmask = Math.max(azBitmask, 16);
   return [
     {
       type: "Private",
-      // Make the private largest - between /19 and /28.
-      cidrMask: Math.min(maxBitmask + 2, 28),
+      cidrMask: maxBitmask + 1,
     },
     {
       type: "Public",
-      // Make the public second largest - between /20 and /28.
-      cidrMask: Math.min(maxBitmask + 3, 28),
-    },
-    {
-      type: "Isolated",
-      // Make the isolated smallest - between /24 and /28.
-      cidrMask: Math.min(maxBitmask + 7, 28),
+      cidrMask: maxBitmask + 2,
     },
   ];
 }
