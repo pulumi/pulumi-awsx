@@ -81,12 +81,18 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const cidrBlock = args.cidrBlock ?? "10.0.0.0/16";
 
-    const subnetStrategy = args.subnetStrategy ?? "Legacy";
     const parsedSpecs = validateAndNormalizeSubnetInputs(
       args.subnetSpecs,
       availabilityZones.length,
     );
 
+    if (args.subnetStrategy === undefined && parsedSpecs?.isExplicitLayout === false) {
+      pulumi.log.warn(
+        `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly.`,
+      );
+    }
+
+    const subnetStrategy = args.subnetStrategy ?? "Legacy";
     const subnetSpecs = (() => {
       if (parsedSpecs?.isExplicitLayout || subnetStrategy !== "Legacy") {
         return getSubnetSpecs(name, cidrBlock, availabilityZones, parsedSpecs?.normalizedSpecs);
