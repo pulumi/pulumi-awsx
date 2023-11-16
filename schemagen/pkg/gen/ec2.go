@@ -319,13 +319,17 @@ func subnetSpecType() schema.ComplexTypeSpec {
 				"cidrMask": {
 					// The validation rules are too difficult to concisely describe here, so we'll leave that job to any
 					// error messages generated from the component itself.
-					Description: "The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
+					Description: "The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
 					TypeSpec:    plainInt(),
 				},
-				// TODO: Add this as a follow-up feature.
-				// "cidrBlocks": {
-				// 	Description: "A list of CIDR blocks to assign to the subnet spec for each AZ. Cannot be specified in conjunction with `cidrMask`. The count must match the number of AZs being used for the VPC. `cidrBlocks` must be specified for all subnet specs if specified on any spec.",
-				// },
+				"cidrBlocks": {
+					Description: "An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.",
+					TypeSpec:    plainArrayOfPlainStrings(),
+				},
+				"size": {
+					Description: "Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
+					TypeSpec:    plainInt(),
+				},
 				"tags": {
 					TypeSpec: schema.TypeSpec{
 						Type:                 "object",

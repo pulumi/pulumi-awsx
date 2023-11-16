@@ -200,10 +200,14 @@ func (o NatGatewayConfigurationPtrOutput) Strategy() NatGatewayStrategyPtrOutput
 
 // Configuration for a VPC subnet.
 type SubnetSpec struct {
-	// The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
+	// An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+	CidrBlocks []string `pulumi:"cidrBlocks"`
+	// The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
 	CidrMask *int `pulumi:"cidrMask"`
 	// The subnet's name. Will be templated upon creation.
 	Name *string `pulumi:"name"`
+	// Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
+	Size *int `pulumi:"size"`
 	// A map of tags to assign to the resource.
 	Tags map[string]string `pulumi:"tags"`
 	// The type of subnet.
@@ -223,10 +227,14 @@ type SubnetSpecInput interface {
 
 // Configuration for a VPC subnet.
 type SubnetSpecArgs struct {
-	// The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
+	// An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+	CidrBlocks []string `pulumi:"cidrBlocks"`
+	// The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
 	CidrMask *int `pulumi:"cidrMask"`
 	// The subnet's name. Will be templated upon creation.
 	Name *string `pulumi:"name"`
+	// Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
+	Size *int `pulumi:"size"`
 	// A map of tags to assign to the resource.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
 	// The type of subnet.
@@ -303,7 +311,12 @@ func (o SubnetSpecOutput) ToOutput(ctx context.Context) pulumix.Output[SubnetSpe
 	}
 }
 
-// The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
+// An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+func (o SubnetSpecOutput) CidrBlocks() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v SubnetSpec) []string { return v.CidrBlocks }).(pulumi.StringArrayOutput)
+}
+
+// The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
 func (o SubnetSpecOutput) CidrMask() pulumi.IntPtrOutput {
 	return o.ApplyT(func(v SubnetSpec) *int { return v.CidrMask }).(pulumi.IntPtrOutput)
 }
@@ -311,6 +324,11 @@ func (o SubnetSpecOutput) CidrMask() pulumi.IntPtrOutput {
 // The subnet's name. Will be templated upon creation.
 func (o SubnetSpecOutput) Name() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v SubnetSpec) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
+func (o SubnetSpecOutput) Size() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v SubnetSpec) *int { return v.Size }).(pulumi.IntPtrOutput)
 }
 
 // A map of tags to assign to the resource.

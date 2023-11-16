@@ -584,15 +584,29 @@
         "awsx:ec2:SubnetSpec": {
             "description": "Configuration for a VPC subnet.",
             "properties": {
+                "cidrBlocks": {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "plain": true
+                    },
+                    "plain": true,
+                    "description": "An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs."
+                },
                 "cidrMask": {
                     "type": "integer",
                     "plain": true,
-                    "description": "The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone."
+                    "description": "The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone."
                 },
                 "name": {
                     "type": "string",
                     "plain": true,
                     "description": "The subnet's name. Will be templated upon creation."
+                },
+                "size": {
+                    "type": "integer",
+                    "plain": true,
+                    "description": "Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone."
                 },
                 "tags": {
                     "type": "object",

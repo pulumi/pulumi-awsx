@@ -14,7 +14,13 @@
 
 import fc from "fast-check";
 import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
-import { defaultSubnetInputs, getSubnetSpecs, nextNetmask } from "./subnetDistributorNew";
+import {
+  defaultSubnetInputs,
+  getSubnetSpecs,
+  nextNetmask,
+  validSubnetSizes,
+  validateAndNormalizeSubnetInputs,
+} from "./subnetDistributorNew";
 import { Netmask } from "netmask";
 import { getOverlappingSubnets, validateNoGaps, validateSubnets } from "./vpc";
 import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
@@ -263,6 +269,140 @@ describe("validating exact layouts", () => {
             defaultSubnetInputs(azCidrMask);
           }).toThrowError();
         }),
+      );
+    });
+  });
+});
+
+describe("explicit subnet layouts", () => {
+  it("should produce specified subnets", () => {
+    const result = getSubnetSpecs(
+      "vpcName",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b"],
+      [
+        { type: "Public", cidrBlocks: ["10.0.0.0/18", "10.0.64.0/19"] },
+        { type: "Private", cidrBlocks: ["10.0.96.0/19", "10.0.128.0/20"] },
+      ],
+    );
+    expect(result).toEqual([
+      {
+        azName: "us-east-1a",
+        cidrBlock: "10.0.0.0/18",
+        subnetName: "vpcName-public-1",
+        type: "Public",
+      },
+      {
+        azName: "us-east-1a",
+        cidrBlock: "10.0.96.0/19",
+        subnetName: "vpcName-private-1",
+        type: "Private",
+      },
+      {
+        azName: "us-east-1b",
+        cidrBlock: "10.0.64.0/19",
+        subnetName: "vpcName-public-2",
+        type: "Public",
+      },
+      {
+        azName: "us-east-1b",
+        cidrBlock: "10.0.128.0/20",
+        subnetName: "vpcName-private-2",
+        type: "Private",
+      },
+    ]);
+  });
+});
+
+describe("valid subnet sizes", () => {
+  const sizes = validSubnetSizes;
+  expect(sizes.length).toBe(31);
+  for (let index = 0; index < sizes.length; index++) {
+    const size = sizes[index];
+    // Index is also the netmask
+    expect(size).toEqual(4294967296 / 2 ** index);
+  }
+});
+
+describe("validating and normalizing inputs", () => {
+  it("detects invalid sizes", () => {
+    expect(() => validateAndNormalizeSubnetInputs([{ type: "Public", size: 100 }], 1)).toThrowError(
+      "The following subnet sizes are invalid: 100. Valid sizes are: ",
+    );
+  });
+  it("detects mismatched size and netmask", () => {
+    expect(() =>
+      validateAndNormalizeSubnetInputs([{ type: "Public", size: 4096, cidrMask: 21 }], 1),
+    ).toThrowError("Subnet size 4096 does not match the expected size for a /21 subnet (2048).");
+  });
+  it("allows size only", () => {
+    const result = validateAndNormalizeSubnetInputs([{ type: "Public", size: 1024 }], 1);
+    expect(result!.normalizedSpecs).toEqual([{ type: "Public", size: 1024, cidrMask: 22 }]);
+  });
+  it("allows cidrMask only", () => {
+    const result = validateAndNormalizeSubnetInputs([{ type: "Public", cidrMask: 23 }], 1);
+    expect(result!.normalizedSpecs).toEqual([{ type: "Public", size: 512, cidrMask: 23 }]);
+  });
+  it("allows cidrMask and size when matching", () => {
+    const result = validateAndNormalizeSubnetInputs(
+      [{ type: "Public", cidrMask: 24, size: 256 }],
+      1,
+    );
+    expect(result!.normalizedSpecs).toEqual([{ type: "Public", size: 256, cidrMask: 24 }]);
+  });
+  describe("explicit layouts", () => {
+    it("detects block count mismatching AZ count", () => {
+      expect(() =>
+        validateAndNormalizeSubnetInputs([{ type: "Public", cidrBlocks: ["10.0.0.0/16"] }], 2),
+      ).toThrowError(
+        "The number of CIDR blocks in subnetSpecs[0] must match the number of availability zones (2).",
+      );
+    });
+    it("detects partially specified blocks", () => {
+      expect(() =>
+        validateAndNormalizeSubnetInputs(
+          [{ type: "Public", cidrBlocks: ["10.0.0.0/16"] }, { type: "Private" }],
+          1,
+        ),
+      ).toThrowError(
+        "If any subnet spec has explicit cidrBlocks, all subnets must have explicit cidrBlocks.",
+      );
+    });
+    it("detects cidr blocks with mismatched netmask", () => {
+      expect(() =>
+        validateAndNormalizeSubnetInputs(
+          [{ type: "Public", cidrBlocks: ["10.0.0.0/16"], cidrMask: 17 }],
+          1,
+        ),
+      ).toThrowError(
+        "The cidrMask in subnetSpecs[0] must match all cidrBlocks or be left undefined.",
+      );
+    });
+    it("detects cidr blocks with mismatched netmask", () => {
+      expect(() =>
+        validateAndNormalizeSubnetInputs(
+          [{ type: "Public", cidrBlocks: ["10.0.0.0/16"], size: 1024 }],
+          1,
+        ),
+      ).toThrowError("The size in subnetSpecs[0] must match all cidrBlocks or be left undefined.");
+    });
+    it("allows all argument to be in agreement", () => {
+      validateAndNormalizeSubnetInputs(
+        [
+          {
+            type: "Public",
+            cidrBlocks: ["10.0.0.0/20", "10.0.16.0/20"],
+            size: 4096,
+            cidrMask: 20,
+          },
+          {
+            type: "Public",
+            cidrBlocks: ["10.0.32.0/21", "10.0.40.0/21"],
+            size: 2048,
+            cidrMask: 21,
+          },
+        ],
+        2,
       );
     });
   });

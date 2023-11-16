@@ -15,8 +15,20 @@ namespace Pulumi.Awsx.Ec2.Inputs
     /// </summary>
     public sealed class SubnetSpecArgs : global::Pulumi.ResourceArgs
     {
+        [Input("cidrBlocks")]
+        private List<string>? _cidrBlocks;
+
         /// <summary>
-        /// The bitmask for the subnet's CIDR block. The default value is set based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
+        /// An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+        /// </summary>
+        public List<string> CidrBlocks
+        {
+            get => _cidrBlocks ?? (_cidrBlocks = new List<string>());
+            set => _cidrBlocks = value;
+        }
+
+        /// <summary>
+        /// The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
         /// </summary>
         [Input("cidrMask")]
         public int? CidrMask { get; set; }
@@ -26,6 +38,12 @@ namespace Pulumi.Awsx.Ec2.Inputs
         /// </summary>
         [Input("name")]
         public string? Name { get; set; }
+
+        /// <summary>
+        /// Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
+        /// </summary>
+        [Input("size")]
+        public int? Size { get; set; }
 
         [Input("tags")]
         private InputMap<string>? _tags;
