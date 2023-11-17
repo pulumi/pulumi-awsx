@@ -36,7 +36,7 @@ export function getSubnetSpecs(
   subnetInputs: SubnetSpecInputs[] | undefined,
 ): SubnetSpec[] {
   const vpcNetmask = new Netmask(vpcCidr);
-  const newBitsPerAZ = Math.log2(nextPow2(azNames.length));
+  const newBitsPerAZ = newBits(azNames.length);
   const azBitmask = vpcNetmask.bitmask + newBitsPerAZ;
 
   const subnetSpecs = subnetInputs ?? defaultSubnetInputs(azBitmask);
@@ -44,7 +44,7 @@ export function getSubnetSpecs(
     throw new Error("No subnets specified");
   }
 
-  const defaultNewBitsPerSubnet = Math.log2(nextPow2(subnetSpecs.length));
+  const defaultNewBitsPerSubnet = newBits(subnetSpecs.length);
   const defaultSubnetBitmask = azBitmask + defaultNewBitsPerSubnet;
 
   const azSize = new Netmask(vpcNetmask.base, azBitmask).size;
@@ -129,24 +129,11 @@ export function nextNetmask(previous: Netmask, nextBitmask: number): Netmask {
   return lastAddressInNewSizeBlock.next();
 }
 
-/**
- * nextPow2 returns the next integer greater or equal to n which is a power of 2.
- * @param {number} n input number
- * @returns {number} next power of 2 to n (>= n)
- */
-function nextPow2(n: number): number {
-  if (n === 0) {
-    return 1;
+export function newBits(count: number): number {
+  if (count === 0) {
+    return 0;
   }
-
-  n--;
-  n |= n >> 1;
-  n |= n >> 2;
-  n |= n >> 4;
-  n |= n >> 8;
-  n |= n >> 16;
-
-  return n + 1;
+  return Math.ceil(Math.log2(count));
 }
 
 export type ExplicitSubnetSpecInputs = SubnetSpecInputs &
@@ -225,7 +212,7 @@ export function validateAndNormalizeSubnetInputs(
       }
 
       // Number of cidrBlocks must match the number of availability zones.
-      if (cidrBlocks !== undefined && cidrBlocks.length !== availabilityZoneCount) {
+      if (cidrBlocks.length !== availabilityZoneCount) {
         issues.push(
           `The number of CIDR blocks in subnetSpecs[${specIndex}] must match the number of availability zones (${availabilityZoneCount}).`,
         );
