@@ -15,6 +15,7 @@
 package gen
 
 import (
+	_ "embed"
 	"fmt"
 	"strings"
 
@@ -91,6 +92,9 @@ func securityGroupArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
+//go:embed ec2-vpc.md
+var vpcDocs string
+
 func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	awsVpcResource := awsSpec.Resources["aws:ec2/vpc:Vpc"]
 	inputProperties := map[string]schema.PropertySpec{
@@ -146,6 +150,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	return schema.ResourceSpec{
 		IsComponent: true,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Description: vpcDocs,
 			Properties: map[string]schema.PropertySpec{
 				"vpc": {
 					Description: "The VPC.",
