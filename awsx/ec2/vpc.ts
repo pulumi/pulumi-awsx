@@ -207,7 +207,12 @@ export class Vpc extends schema.Vpc<VpcData> {
             if (createEip) {
               const eip = new aws.ec2.Eip(
                 `${name}-${i + 1}`,
-                {},
+                {
+                  tags: {
+                    ...args.tags,
+                    Name: `${name}-${i + 1}`,
+                  },
+                },
                 { parent: subnet, dependsOn: [subnet] },
               );
               eips.push(eip);
