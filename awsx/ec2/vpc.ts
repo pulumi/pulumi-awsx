@@ -90,9 +90,15 @@ export class Vpc extends schema.Vpc<VpcData> {
       availabilityZones.length,
     );
 
-    if (args.subnetStrategy === undefined && parsedSpecs?.isExplicitLayout === false) {
+    // Only warn if they're using a custom, non-explicit layout and haven't specified a strategy.
+    if (
+      args.subnetStrategy === undefined &&
+      parsedSpecs !== undefined &&
+      parsedSpecs.isExplicitLayout === false
+    ) {
       pulumi.log.warn(
         `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly.`,
+        this,
       );
     }
 
