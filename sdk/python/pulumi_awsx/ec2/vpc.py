@@ -18,6 +18,7 @@ __all__ = ['VpcArgs', 'Vpc']
 class VpcArgs:
     def __init__(__self__, *,
                  assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
+                 availability_zone_cidr_mask: Optional[int] = None,
                  availability_zone_names: Optional[Sequence[str]] = None,
                  cidr_block: Optional[str] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
@@ -39,6 +40,7 @@ class VpcArgs:
         """
         The set of arguments for constructing a Vpc resource.
         :param pulumi.Input[bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
+        :param int availability_zone_cidr_mask: The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
         :param Sequence[str] availability_zone_names: A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         :param pulumi.Input[bool] enable_dns_hostnames: A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
@@ -60,6 +62,8 @@ class VpcArgs:
         """
         if assign_generated_ipv6_cidr_block is not None:
             pulumi.set(__self__, "assign_generated_ipv6_cidr_block", assign_generated_ipv6_cidr_block)
+        if availability_zone_cidr_mask is not None:
+            pulumi.set(__self__, "availability_zone_cidr_mask", availability_zone_cidr_mask)
         if availability_zone_names is not None:
             pulumi.set(__self__, "availability_zone_names", availability_zone_names)
         if cidr_block is not None:
@@ -108,6 +112,18 @@ class VpcArgs:
     @assign_generated_ipv6_cidr_block.setter
     def assign_generated_ipv6_cidr_block(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "assign_generated_ipv6_cidr_block", value)
+
+    @property
+    @pulumi.getter(name="availabilityZoneCidrMask")
+    def availability_zone_cidr_mask(self) -> Optional[int]:
+        """
+        The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
+        """
+        return pulumi.get(self, "availability_zone_cidr_mask")
+
+    @availability_zone_cidr_mask.setter
+    def availability_zone_cidr_mask(self, value: Optional[int]):
+        pulumi.set(self, "availability_zone_cidr_mask", value)
 
     @property
     @pulumi.getter(name="availabilityZoneNames")
@@ -332,6 +348,7 @@ class Vpc(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
+                 availability_zone_cidr_mask: Optional[int] = None,
                  availability_zone_names: Optional[Sequence[str]] = None,
                  cidr_block: Optional[str] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
@@ -395,6 +412,7 @@ class Vpc(pulumi.ComponentResource):
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         :param pulumi.Input[bool] assign_generated_ipv6_cidr_block: Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
+        :param int availability_zone_cidr_mask: The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
         :param Sequence[str] availability_zone_names: A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
         :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         :param pulumi.Input[bool] enable_dns_hostnames: A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
@@ -477,6 +495,7 @@ class Vpc(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  assign_generated_ipv6_cidr_block: Optional[pulumi.Input[bool]] = None,
+                 availability_zone_cidr_mask: Optional[int] = None,
                  availability_zone_names: Optional[Sequence[str]] = None,
                  cidr_block: Optional[str] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
@@ -507,6 +526,7 @@ class Vpc(pulumi.ComponentResource):
             __props__ = VpcArgs.__new__(VpcArgs)
 
             __props__.__dict__["assign_generated_ipv6_cidr_block"] = assign_generated_ipv6_cidr_block
+            __props__.__dict__["availability_zone_cidr_mask"] = availability_zone_cidr_mask
             __props__.__dict__["availability_zone_names"] = availability_zone_names
             __props__.__dict__["cidr_block"] = cidr_block
             __props__.__dict__["enable_dns_hostnames"] = enable_dns_hostnames

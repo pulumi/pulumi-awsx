@@ -118,6 +118,7 @@ export class Vpc extends pulumi.ComponentResource {
         opts = opts || {};
         if (!opts.id) {
             resourceInputs["assignGeneratedIpv6CidrBlock"] = args ? args.assignGeneratedIpv6CidrBlock : undefined;
+            resourceInputs["availabilityZoneCidrMask"] = args ? args.availabilityZoneCidrMask : undefined;
             resourceInputs["availabilityZoneNames"] = args ? args.availabilityZoneNames : undefined;
             resourceInputs["cidrBlock"] = args ? args.cidrBlock : undefined;
             resourceInputs["enableDnsHostnames"] = args ? args.enableDnsHostnames : undefined;
@@ -176,6 +177,10 @@ export interface VpcArgs {
      * Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
      */
     assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
+    /**
+     * The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
+     */
+    availabilityZoneCidrMask?: number;
     /**
      * A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
      */

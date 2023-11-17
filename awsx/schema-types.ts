@@ -79,6 +79,7 @@ export abstract class Vpc<TData = any> extends (pulumi.ComponentResource)<TData>
 }
 export interface VpcArgs {
     readonly assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
+    readonly availabilityZoneCidrMask?: number;
     readonly availabilityZoneNames?: string[];
     readonly cidrBlock?: string;
     readonly enableDnsHostnames?: pulumi.Input<boolean>;

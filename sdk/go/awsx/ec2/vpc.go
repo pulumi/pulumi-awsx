@@ -113,6 +113,8 @@ func NewVpc(ctx *pulumi.Context,
 type vpcArgs struct {
 	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
 	AssignGeneratedIpv6CidrBlock *bool `pulumi:"assignGeneratedIpv6CidrBlock"`
+	// The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
+	AvailabilityZoneCidrMask *int `pulumi:"availabilityZoneCidrMask"`
 	// A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
 	AvailabilityZoneNames []string `pulumi:"availabilityZoneNames"`
 	// The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
@@ -155,6 +157,8 @@ type vpcArgs struct {
 type VpcArgs struct {
 	// Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
 	AssignGeneratedIpv6CidrBlock pulumi.BoolPtrInput
+	// The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
+	AvailabilityZoneCidrMask *int
 	// A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
 	AvailabilityZoneNames []string
 	// The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.

@@ -121,6 +121,11 @@ describe("default subnet layout", () => {
       ),
     );
   });
+  it("can override az cidr mask", () => {
+    const vpcCidr = "10.0.0.0/16";
+    const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], [{ type: "Public" }], 19);
+    expect(result[0].cidrBlock).toBe("10.0.0.0/19"); // Would default to /16 as only a single AZ and single subnet
+  });
 });
 
 function getCidrMask(cidrBlock: string): number {

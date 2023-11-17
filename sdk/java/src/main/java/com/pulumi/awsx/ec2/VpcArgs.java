@@ -39,6 +39,21 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by the number of availability zones.
+     * 
+     */
+    @Import(name="availabilityZoneCidrMask")
+    private @Nullable Integer availabilityZoneCidrMask;
+
+    /**
+     * @return The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by the number of availability zones.
+     * 
+     */
+    public Optional<Integer> availabilityZoneCidrMask() {
+        return Optional.ofNullable(this.availabilityZoneCidrMask);
+    }
+
+    /**
      * A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
      * 
      */
@@ -312,6 +327,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
 
     private VpcArgs(VpcArgs $) {
         this.assignGeneratedIpv6CidrBlock = $.assignGeneratedIpv6CidrBlock;
+        this.availabilityZoneCidrMask = $.availabilityZoneCidrMask;
         this.availabilityZoneNames = $.availabilityZoneNames;
         this.cidrBlock = $.cidrBlock;
         this.enableDnsHostnames = $.enableDnsHostnames;
@@ -369,6 +385,17 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder assignGeneratedIpv6CidrBlock(Boolean assignGeneratedIpv6CidrBlock) {
             return assignGeneratedIpv6CidrBlock(Output.of(assignGeneratedIpv6CidrBlock));
+        }
+
+        /**
+         * @param availabilityZoneCidrMask The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by the number of availability zones.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder availabilityZoneCidrMask(@Nullable Integer availabilityZoneCidrMask) {
+            $.availabilityZoneCidrMask = availabilityZoneCidrMask;
+            return this;
         }
 
         /**

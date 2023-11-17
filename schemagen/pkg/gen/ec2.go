@@ -104,10 +104,11 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		},
 		"numberOfAvailabilityZones": {
 			Description: fmt.Sprintf("A number of availability zones to which the subnets defined in %v will be deployed. Optional, defaults to the first 3 AZs in the current region.", subnetSpecs),
-			TypeSpec: schema.TypeSpec{
-				Type:  "integer",
-				Plain: true,
-			},
+			TypeSpec:    plainInt(),
+		},
+		"availabilityZoneCidrMask": {
+			Description: "The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.",
+			TypeSpec:    plainInt(),
 		},
 		"cidrBlock": {
 			Description: "The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.",

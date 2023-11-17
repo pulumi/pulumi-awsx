@@ -162,6 +162,12 @@ namespace Pulumi.Awsx.Ec2
         [Input("assignGeneratedIpv6CidrBlock")]
         public Input<bool>? AssignGeneratedIpv6CidrBlock { get; set; }
 
+        /// <summary>
+        /// The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
+        /// </summary>
+        [Input("availabilityZoneCidrMask")]
+        public int? AvailabilityZoneCidrMask { get; set; }
+
         [Input("availabilityZoneNames")]
         private List<string>? _availabilityZoneNames;
 

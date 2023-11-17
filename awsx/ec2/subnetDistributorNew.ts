@@ -34,10 +34,10 @@ export function getSubnetSpecs(
   vpcCidr: string,
   azNames: string[],
   subnetInputs: SubnetSpecInputs[] | undefined,
+  azCidrMask?: number,
 ): SubnetSpec[] {
   const vpcNetmask = new Netmask(vpcCidr);
-  const newBitsPerAZ = newBits(azNames.length);
-  const azBitmask = vpcNetmask.bitmask + newBitsPerAZ;
+  const azBitmask = azCidrMask ?? vpcNetmask.bitmask + newBits(azNames.length);
 
   const subnetSpecs = subnetInputs ?? defaultSubnetInputs(azBitmask);
   if (subnetSpecs.length === 0) {

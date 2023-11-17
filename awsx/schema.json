@@ -1964,6 +1964,11 @@
                     "type": "boolean",
                     "description": "Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`\n"
                 },
+                "availabilityZoneCidrMask": {
+                    "type": "integer",
+                    "plain": true,
+                    "description": "The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones."
+                },
                 "availabilityZoneNames": {
                     "type": "array",
                     "items": {

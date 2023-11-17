@@ -116,7 +116,13 @@ export class Vpc extends schema.Vpc<VpcData> {
       if (parsedSpecs.isExplicitLayout) {
         return getSubnetSpecsExplicit(name, availabilityZones, parsedSpecs.normalizedSpecs);
       }
-      return getSubnetSpecs(name, cidrBlock, availabilityZones, parsedSpecs.normalizedSpecs);
+      return getSubnetSpecs(
+        name,
+        cidrBlock,
+        availabilityZones,
+        parsedSpecs.normalizedSpecs,
+        args.availabilityZoneCidrMask,
+      );
     })();
 
     validateSubnets(subnetSpecs, getOverlappingSubnets);
