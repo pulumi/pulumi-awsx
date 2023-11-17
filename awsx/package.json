@@ -17,7 +17,8 @@
     "format": "prettier --list-different --write .",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "test": "jest",
-    "tsc": "tsc --incremental"
+    "tsc": "tsc --incremental",
+    "start": "ts-node index.ts"
   },
   "//": "Pulumi sub-provider dependencies must be pinned at an exact version because we extract this value to generate the correct dependency in the schema",
   "dependencies": {
