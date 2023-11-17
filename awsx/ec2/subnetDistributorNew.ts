@@ -66,28 +66,23 @@ export function getSubnetSpecs(
     const azNum = azIndex + 1;
     let currentSubnetNetmask: Netmask | undefined;
     for (const subnetSpec of subnetSpecs) {
-      let subnetCidr = subnetSpec.cidrBlocks?.[azIndex];
-      if (subnetCidr === undefined) {
-        if (currentSubnetNetmask === undefined) {
-          currentSubnetNetmask = new Netmask(
-            currentAzNetmask.base,
-            subnetSpec.cidrMask ?? defaultSubnetBitmask,
-          );
-        } else {
-          currentSubnetNetmask = nextNetmask(
-            currentSubnetNetmask,
-            subnetSpec.cidrMask ?? defaultSubnetBitmask,
-          );
-        }
-        subnetCidr = currentSubnetNetmask.toString();
+      if (currentSubnetNetmask === undefined) {
+        currentSubnetNetmask = new Netmask(
+          currentAzNetmask.base,
+          subnetSpec.cidrMask ?? defaultSubnetBitmask,
+        );
+      } else {
+        currentSubnetNetmask = nextNetmask(
+          currentSubnetNetmask,
+          subnetSpec.cidrMask ?? defaultSubnetBitmask,
+        );
       }
-      const specName = subnetSpec.name ?? subnetSpec.type.toLowerCase();
-      const subnetName = `${vpcName}-${specName}-${azNum}`;
+      const subnetCidr = currentSubnetNetmask.toString();
       subnets.push({
         cidrBlock: subnetCidr,
         type: subnetSpec.type,
         azName,
-        subnetName,
+        subnetName: subnetName(vpcName, subnetSpec, azNum),
       });
     }
 
@@ -154,13 +149,47 @@ function nextPow2(n: number): number {
   return n + 1;
 }
 
+export type ExplicitSubnetSpecInputs = SubnetSpecInputs &
+  Required<Pick<SubnetSpecInputs, "cidrBlocks">>;
+
+export function getSubnetSpecsExplicit(
+  vpcName: string,
+  azNames: string[],
+  subnetInputs: ExplicitSubnetSpecInputs[],
+): SubnetSpec[] {
+  const subnets: SubnetSpec[] = [];
+  for (let azIndex = 0; azIndex < azNames.length; azIndex++) {
+    const azName = azNames[azIndex];
+    const azNum = azIndex + 1;
+    for (const subnetSpec of subnetInputs) {
+      const subnetCidr = subnetSpec.cidrBlocks[azIndex];
+      subnets.push({
+        cidrBlock: subnetCidr,
+        type: subnetSpec.type,
+        azName,
+        subnetName: subnetName(vpcName, subnetSpec, azNum),
+      });
+    }
+  }
+
+  return subnets;
+}
+
+function subnetName(vpcName: string, subnet: SubnetSpecInputs, azNum: number): string {
+  const specName = subnet.name ?? subnet.type.toLowerCase();
+  return `${vpcName}-${specName}-${azNum}`;
+}
+
 /* Ensure all inputs are consistent and fill in missing values with defaults
  * Ensure any specified, netmask, size or blocks are in agreement.
  */
 export function validateAndNormalizeSubnetInputs(
   subnetArgs: SubnetSpecInputs[] | undefined,
   availabilityZoneCount: number,
-): { normalizedSpecs: SubnetSpecInputs[]; isExplicitLayout: boolean } | undefined {
+):
+  | { normalizedSpecs: SubnetSpecInputs[]; isExplicitLayout: false }
+  | { normalizedSpecs: ExplicitSubnetSpecInputs[]; isExplicitLayout: true }
+  | undefined {
   if (subnetArgs === undefined) {
     return undefined;
   }
@@ -181,49 +210,56 @@ export function validateAndNormalizeSubnetInputs(
 
   const hasExplicitLayouts = subnetArgs.some((subnet) => subnet.cidrBlocks !== undefined);
   if (hasExplicitLayouts) {
-    // If any subnet spec has explicit cidrBlocks, all subnets must have explicit cidrBlocks.
-    const hasMissingExplicitLayouts = subnetArgs.some((subnet) => subnet.cidrBlocks === undefined);
-    if (hasMissingExplicitLayouts) {
-      issues.push(
-        "If any subnet spec has explicit cidrBlocks, all subnets must have explicit cidrBlocks.",
-      );
-    }
+    const explicitSpecs: ExplicitSubnetSpecInputs[] = [];
 
-    // Number of cidrBlocks must match the number of availability zones.
     for (let specIndex = 0; specIndex < subnetArgs.length; specIndex++) {
       const spec = subnetArgs[specIndex];
-      if (spec.cidrBlocks !== undefined && spec.cidrBlocks.length !== availabilityZoneCount) {
+      const cidrBlocks = spec.cidrBlocks;
+
+      // If any subnet spec has explicit cidrBlocks, all subnets must have explicit cidrBlocks.
+      if (cidrBlocks === undefined) {
+        issues.push(
+          "If any subnet spec has explicit cidrBlocks, all subnets must have explicit cidrBlocks.",
+        );
+        continue;
+      }
+
+      // Number of cidrBlocks must match the number of availability zones.
+      if (cidrBlocks !== undefined && cidrBlocks.length !== availabilityZoneCount) {
         issues.push(
           `The number of CIDR blocks in subnetSpecs[${specIndex}] must match the number of availability zones (${availabilityZoneCount}).`,
         );
-      }
-    }
-
-    // Any size or cidrMask must be in agreement with the cidrBlocks.
-    for (let specIndex = 0; specIndex < subnetArgs.length; specIndex++) {
-      const spec = subnetArgs[specIndex];
-      if (spec.cidrBlocks === undefined) {
         continue;
       }
+
+      // Any cidrMask specified must be in agreement with the cidrBlocks.
       const blockMasks = spec.cidrBlocks!.map((b) => new Netmask(b));
       if (spec.cidrMask !== undefined) {
         if (!blockMasks.every((b) => b.bitmask === spec.cidrMask)) {
           issues.push(
             `The cidrMask in subnetSpecs[${specIndex}] must match all cidrBlocks or be left undefined.`,
           );
+          continue;
         }
       }
+
+      // Any size specified must be in agreement with the cidrBlocks.
       if (spec.size !== undefined) {
         if (!blockMasks.every((b) => b.size === spec.size!)) {
           issues.push(
             `The size in subnetSpecs[${specIndex}] must match all cidrBlocks or be left undefined.`,
           );
+          continue;
         }
       }
+      explicitSpecs.push({
+        ...spec,
+        cidrBlocks,
+      });
     }
 
     if (issues.length === 0) {
-      return { normalizedSpecs: subnetArgs, isExplicitLayout: true };
+      return { normalizedSpecs: explicitSpecs, isExplicitLayout: true };
     }
   } else {
     const normalizedSpecs = subnetArgs.map((spec) => {

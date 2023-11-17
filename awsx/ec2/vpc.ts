@@ -16,7 +16,11 @@ import * as aws from "@pulumi/aws";
 import * as pulumi from "@pulumi/pulumi";
 import * as schema from "../schema-types";
 import { getSubnetSpecsLegacy, SubnetSpec } from "./subnetDistributorLegacy";
-import { getSubnetSpecs, validateAndNormalizeSubnetInputs } from "./subnetDistributorNew";
+import {
+  getSubnetSpecs,
+  getSubnetSpecsExplicit,
+  validateAndNormalizeSubnetInputs,
+} from "./subnetDistributorNew";
 import { Netmask } from "netmask";
 
 interface VpcData {
@@ -94,10 +98,19 @@ export class Vpc extends schema.Vpc<VpcData> {
 
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
     const subnetSpecs = (() => {
-      if (parsedSpecs?.isExplicitLayout || subnetStrategy !== "Legacy") {
-        return getSubnetSpecs(name, cidrBlock, availabilityZones, parsedSpecs?.normalizedSpecs);
+      if (parsedSpecs === undefined || subnetStrategy === "Legacy") {
+        return getSubnetSpecsLegacy(
+          name,
+          cidrBlock,
+          availabilityZones,
+          parsedSpecs?.normalizedSpecs,
+        );
       }
-      return getSubnetSpecsLegacy(name, cidrBlock, availabilityZones, parsedSpecs?.normalizedSpecs);
+
+      if (parsedSpecs.isExplicitLayout) {
+        return getSubnetSpecsExplicit(name, availabilityZones, parsedSpecs.normalizedSpecs);
+      }
+      return getSubnetSpecs(name, cidrBlock, availabilityZones, parsedSpecs.normalizedSpecs);
     })();
 
     validateSubnets(subnetSpecs, getOverlappingSubnets);

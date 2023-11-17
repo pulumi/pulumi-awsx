@@ -17,6 +17,7 @@ import { SubnetSpecInputs, SubnetTypeInputs } from "../schema-types";
 import {
   defaultSubnetInputs,
   getSubnetSpecs,
+  getSubnetSpecsExplicit,
   nextNetmask,
   validSubnetSizes,
   validateAndNormalizeSubnetInputs,
@@ -276,9 +277,8 @@ describe("validating exact layouts", () => {
 
 describe("explicit subnet layouts", () => {
   it("should produce specified subnets", () => {
-    const result = getSubnetSpecs(
+    const result = getSubnetSpecsExplicit(
       "vpcName",
-      "10.0.0.0/16",
       ["us-east-1a", "us-east-1b"],
       [
         { type: "Public", cidrBlocks: ["10.0.0.0/18", "10.0.64.0/19"] },
