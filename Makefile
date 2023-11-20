@@ -15,7 +15,7 @@ JAVA_GEN_VERSION := v0.9.7
 
 AWSX_SRC 		:= $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
 AWSX_CLASSIC_SRC:= $(wildcard awsx-classic/*.*) $(wildcard awsx-classic/*/*.ts)
-CODEGEN_SRC 	:= $(wildcard schemagen/go.*) $(wildcard schemagen/pkg/*/*) $(wildcard schemagen/pkg/cmd/${CODEGEN}/*.go)
+CODEGEN_SRC 	:= $(shell find schemagen -type f)
 
 WORKING_DIR     := $(shell pwd)
 
@@ -35,7 +35,7 @@ bin/${CODEGEN}: ${CODEGEN_SRC}
 	cd schemagen && go build -o $(WORKING_DIR)/bin/${CODEGEN} $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
 
 .make/schema: bin/${CODEGEN}
-	cd schemagen/cmd/$(CODEGEN) && go run . schema $(WORKING_DIR)/$(PACK)
+	bin/${CODEGEN} schema $(WORKING_DIR)
 	@touch $@
 
 .make/awsx_node_modules: awsx/package.json awsx/yarn.lock
@@ -49,7 +49,7 @@ bin/${CODEGEN}: ${CODEGEN_SRC}
 .make/awsx_bin: .make/awsx_node_modules .make/gen_types ${AWSX_SRC}
 	@cd awsx && \
 		yarn tsc && \
-		cp package.json schema.json ./bin/ && \
+		cp package.json ../schema.json ./bin/ && \
 		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
 	@touch $@
 
@@ -86,7 +86,7 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 .make/build_nodejs: VERSION := $(shell pulumictl get version --language javascript)
 .make/build_nodejs: bin/${CODEGEN} .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
-	bin/${CODEGEN} nodejs sdk/nodejs awsx/schema.json $(VERSION)
+	bin/${CODEGEN} nodejs sdk/nodejs schema.json $(VERSION)
 	cd sdk/nodejs && \
 		yarn install --no-progress && \
 		yarn run tsc --version && \
@@ -98,7 +98,7 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 .make/build_java: VERSION := $(shell pulumictl get version --language javascript)
 .make/build_java: bin/pulumi-java-gen .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/java
-	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema awsx/schema.json --out sdk/java --build gradle-nexus
+	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema schema.json --out sdk/java --build gradle-nexus
 	cd sdk/java && \
 		gradle --console=plain build
 	@touch $@
@@ -109,7 +109,7 @@ bin/pulumi-java-gen::
 .make/build_python: PYPI_VERSION := $(shell pulumictl get version --language python)
 .make/build_python: bin/${CODEGEN} .make/schema README.md
 	rm -rf sdk/python
-	bin/${CODEGEN} python sdk/python awsx/schema.json $(VERSION)
+	bin/${CODEGEN} python sdk/python schema.json $(VERSION)
 	cd sdk/python/ && \
 		cp ../../README.md . && \
 		python3 setup.py clean --all 2>/dev/null && \
@@ -123,7 +123,7 @@ bin/pulumi-java-gen::
 .make/build_go: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
 .make/build_go: bin/${CODEGEN} .make/schema
 	rm -rf sdk/go
-	bin/${CODEGEN} go sdk/go awsx/schema.json $(VERSION)
+	bin/${CODEGEN} go sdk/go schema.json $(VERSION)
 	cd sdk && \
 		go get github.com/pulumi/pulumi-aws/sdk/v6@v$(AWS_VERSION) && \
 		go mod tidy && \
@@ -133,7 +133,7 @@ bin/pulumi-java-gen::
 .make/build_dotnet: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 .make/build_dotnet: bin/${CODEGEN} .make/schema
 	rm -rf sdk/dotnet
-	bin/${CODEGEN} dotnet sdk/dotnet awsx/schema.json $(VERSION)
+	bin/${CODEGEN} dotnet sdk/dotnet schema.json $(VERSION)
 	cd sdk/dotnet/ && \
 		echo "${DOTNET_VERSION}" >version.txt && \
 		dotnet build /p:Version=${DOTNET_VERSION}

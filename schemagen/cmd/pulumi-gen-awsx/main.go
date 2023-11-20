@@ -18,7 +18,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -56,7 +55,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	language, outdir := Language(args[0]), args[1]
+	language, outDir := Language(args[0]), args[1]
 
 	var schemaFile string
 	var version string
@@ -70,16 +69,16 @@ func main() {
 
 	switch language {
 	case DotNet:
-		genDotNet(readSchema(schemaFile, version), outdir)
+		genDotNet(readSchema(schemaFile, version), outDir)
 	case Go:
-		genGo(readSchema(schemaFile, version), outdir)
+		genGo(readSchema(schemaFile, version), outDir)
 	case Python:
-		genPython(readSchema(schemaFile, version), outdir)
+		genPython(readSchema(schemaFile, version), outDir)
 	case Nodejs:
-		genNodejs(readSchema(schemaFile, version), outdir)
+		genNodejs(readSchema(schemaFile, version), outDir)
 	case Schema:
-		pkgSpec := gen.GenerateSchema(outdir)
-		mustWritePulumiSchema(pkgSpec, outdir)
+		pkgSpec := gen.GenerateSchema(filepath.Join(outDir, "awsx"))
+		mustWritePulumiSchema(pkgSpec, outDir)
 	default:
 		panic(fmt.Sprintf("Unrecognized language %q", language))
 	}
@@ -87,7 +86,7 @@ func main() {
 
 func readSchema(schemaPath string, version string) *schema.Package {
 	// Read in, decode, and import the schema.
-	schemaBytes, err := ioutil.ReadFile(schemaPath)
+	schemaBytes, err := os.ReadFile(schemaPath)
 	if err != nil {
 		panic(err)
 	}
@@ -147,7 +146,7 @@ func genNodejs(pkg *schema.Package, outdir string) {
 				return nil
 			}
 		}
-		content, err := ioutil.ReadFile(path)
+		content, err := os.ReadFile(path)
 		if err != nil {
 			return err
 		}
@@ -177,7 +176,7 @@ func mustWriteFile(rootDir, filename string, contents []byte) {
 	if err := os.MkdirAll(filepath.Dir(outPath), 0755); err != nil {
 		panic(err)
 	}
-	err := ioutil.WriteFile(outPath, contents, 0600)
+	err := os.WriteFile(outPath, contents, 0600)
 	if err != nil {
 		panic(err)
 	}
