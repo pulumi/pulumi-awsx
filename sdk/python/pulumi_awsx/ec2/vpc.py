@@ -8,6 +8,7 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
+from . import outputs
 from ._enums import *
 from ._inputs import *
 import pulumi_aws
@@ -407,7 +408,7 @@ class Vpc(pulumi.ComponentResource):
 
         ### Legacy
 
-        The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" layout option.
+        The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" strategy. The output property `subnetLayout` shows the configuration required if specifying the "Auto" strategy to maintain the current layout.
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -477,7 +478,7 @@ class Vpc(pulumi.ComponentResource):
 
         ### Legacy
 
-        The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" layout option.
+        The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" strategy. The output property `subnetLayout` shows the configuration required if specifying the "Auto" strategy to maintain the current layout.
 
         :param str resource_name: The name of the resource.
         :param VpcArgs args: The arguments to use to populate this resource's properties.
@@ -553,6 +554,7 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["route_table_associations"] = None
             __props__.__dict__["route_tables"] = None
             __props__.__dict__["routes"] = None
+            __props__.__dict__["subnet_layout"] = None
             __props__.__dict__["subnets"] = None
             __props__.__dict__["vpc"] = None
             __props__.__dict__["vpc_endpoints"] = None
@@ -626,6 +628,14 @@ class Vpc(pulumi.ComponentResource):
         The Routes for the VPC.
         """
         return pulumi.get(self, "routes")
+
+    @property
+    @pulumi.getter(name="subnetLayout")
+    def subnet_layout(self) -> pulumi.Output[Sequence['outputs.ResolvedSubnetSpec']]:
+        """
+        The resolved subnet specs layout deployed to each availability zone.
+        """
+        return pulumi.get(self, "subnet_layout")
 
     @property
     @pulumi.getter

@@ -48,7 +48,7 @@ import * as pulumiAws from "@pulumi/aws";
  *
  * ### Legacy
  *
- * The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" layout option.
+ * The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" strategy. The output property `subnetLayout` shows the configuration required if specifying the "Auto" strategy to maintain the current layout.
  */
 export class Vpc extends pulumi.ComponentResource {
     /** @internal */
@@ -92,6 +92,10 @@ export class Vpc extends pulumi.ComponentResource {
      * The Routes for the VPC.
      */
     public /*out*/ readonly routes!: pulumi.Output<pulumiAws.ec2.Route[]>;
+    /**
+     * The resolved subnet specs layout deployed to each availability zone.
+     */
+    public /*out*/ readonly subnetLayout!: pulumi.Output<outputs.ec2.ResolvedSubnetSpec[]>;
     /**
      * The VPC's subnets.
      */
@@ -145,6 +149,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["routeTableAssociations"] = undefined /*out*/;
             resourceInputs["routeTables"] = undefined /*out*/;
             resourceInputs["routes"] = undefined /*out*/;
+            resourceInputs["subnetLayout"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
             resourceInputs["vpcEndpoints"] = undefined /*out*/;
@@ -159,6 +164,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["routeTableAssociations"] = undefined /*out*/;
             resourceInputs["routeTables"] = undefined /*out*/;
             resourceInputs["routes"] = undefined /*out*/;
+            resourceInputs["subnetLayout"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
             resourceInputs["vpcEndpoints"] = undefined /*out*/;

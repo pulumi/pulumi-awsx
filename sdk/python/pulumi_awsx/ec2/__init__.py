@@ -10,3 +10,4 @@ from .default_vpc import *
 from .get_default_vpc import *
 from .vpc import *
 from ._inputs import *
+from . import outputs

@@ -36,6 +36,7 @@ func generateEc2(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:ec2:SubnetType":               subnetType(),
 			"awsx:ec2:SubnetAllocationStrategy": subnetAllocationStrategy(),
 			"awsx:ec2:SubnetSpec":               subnetSpecType(),
+			"awsx:ec2:ResolvedSubnetSpec":       resolvedSubnetSpecType(),
 			"awsx:ec2:VpcEndpointSpec":          vpcEndpointSpec(awsSpec),
 		},
 		Functions: map[string]schema.FunctionSpec{
@@ -194,6 +195,13 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					Description: "The EIPs for any NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.",
 					TypeSpec:    arrayOfAwsType(awsSpec, "ec2", "eip"),
 				},
+				"subnetLayout": {
+					Description: "The resolved subnet specs layout deployed to each availability zone.",
+					TypeSpec: schema.TypeSpec{
+						Type:  "array",
+						Items: &schema.TypeSpec{Ref: localRef("ec2", "ResolvedSubnetSpec")},
+					},
+				},
 				"publicSubnetIds": {
 					TypeSpec: schema.TypeSpec{
 						Type: "array",
@@ -226,7 +234,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			},
 			Required: []string{
 				"vpc", "subnets", "routeTables", "routeTableAssociations", "routes", "internetGateway", "natGateways",
-				"eips", "publicSubnetIds", "privateSubnetIds", "isolatedSubnetIds", "vpcId", "vpcEndpoints",
+				"eips", "subnetLayout", "publicSubnetIds", "privateSubnetIds", "isolatedSubnetIds", "vpcId", "vpcEndpoints",
 			},
 		},
 		InputProperties: inputProperties,
@@ -342,6 +350,45 @@ func subnetSpecType() schema.ComplexTypeSpec {
 						AdditionalProperties: &schema.TypeSpec{Type: "string"},
 					},
 					Description: "A map of tags to assign to the resource.",
+				},
+			},
+			Required: []string{
+				"type",
+			},
+		},
+	}
+}
+
+func resolvedSubnetSpecType() schema.ComplexTypeSpec {
+	return schema.ComplexTypeSpec{
+		ObjectTypeSpec: schema.ObjectTypeSpec{
+			Type:        "object",
+			Description: "Configuration for a VPC subnet spec.",
+			Properties: map[string]schema.PropertySpec{
+				"type": {
+					Description: "The type of subnet.",
+					TypeSpec: schema.TypeSpec{
+						Ref:   localRef("ec2", "SubnetType"),
+						Plain: true,
+					},
+				},
+				"name": {
+					Description: "The subnet's name. Will be templated upon creation.",
+					TypeSpec:    plainString(),
+				},
+				"cidrMask": {
+					// The validation rules are too difficult to concisely describe here, so we'll leave that job to any
+					// error messages generated from the component itself.
+					Description: "The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
+					TypeSpec:    plainInt(),
+				},
+				"cidrBlocks": {
+					Description: "An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.",
+					TypeSpec:    plainArrayOfPlainStrings(),
+				},
+				"size": {
+					Description: "Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.",
+					TypeSpec:    plainInt(),
 				},
 			},
 			Required: []string{

@@ -33,6 +33,7 @@ interface VpcData {
   igw: aws.ec2.InternetGateway;
   natGateways: aws.ec2.NatGateway[];
   eips: aws.ec2.Eip[];
+  subnetLayout: schema.ResolvedSubnetSpecInputs[];
   publicSubnetIds: pulumi.Output<string>[];
   privateSubnetIds: pulumi.Output<string>[];
   isolatedSubnetIds: pulumi.Output<string>[];
@@ -53,6 +54,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     this.internetGateway = data.igw;
     this.natGateways = data.natGateways;
     this.eips = data.eips;
+    this.subnetLayout = data.subnetLayout;
 
     this.privateSubnetIds = data.privateSubnetIds;
     this.publicSubnetIds = data.publicSubnetIds;
@@ -90,27 +92,16 @@ export class Vpc extends schema.Vpc<VpcData> {
       availabilityZones.length,
     );
 
-    // Only warn if they're using a custom, non-explicit layout and haven't specified a strategy.
-    if (
-      args.subnetStrategy === undefined &&
-      parsedSpecs !== undefined &&
-      parsedSpecs.isExplicitLayout === false
-    ) {
-      pulumi.log.warn(
-        `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly.`,
-        this,
-      );
-    }
-
     const subnetStrategy = args.subnetStrategy ?? "Legacy";
     const subnetSpecs = (() => {
       if (parsedSpecs === undefined || subnetStrategy === "Legacy") {
-        return getSubnetSpecsLegacy(
+        const legacySubnetSpecs = getSubnetSpecsLegacy(
           name,
           cidrBlock,
           availabilityZones,
           parsedSpecs?.normalizedSpecs,
         );
+        return legacySubnetSpecs;
       }
 
       if (parsedSpecs.isExplicitLayout) {
@@ -124,6 +115,26 @@ export class Vpc extends schema.Vpc<VpcData> {
         args.availabilityZoneCidrMask,
       );
     })();
+
+    let subnetLayout = parsedSpecs?.normalizedSpecs;
+    if (subnetStrategy === "Legacy" || subnetLayout === undefined) {
+      subnetLayout = extractSubnetSpecInputFromLegacyLayout(subnetSpecs, name, availabilityZones);
+    }
+    // Only warn if they're using a custom, non-explicit layout and haven't specified a strategy.
+    if (
+      args.subnetStrategy === undefined &&
+      parsedSpecs !== undefined &&
+      parsedSpecs.isExplicitLayout === false
+    ) {
+      pulumi.log.warn(
+        `The default subnetStrategy will change from "Legacy" to "Auto" in the next major version. Please specify the subnetStrategy explicitly. The current subnet layout can be specified via "Auto" as:\n\n${JSON.stringify(
+          subnetLayout,
+          undefined,
+          2,
+        )}`,
+        this,
+      );
+    }
 
     validateSubnets(subnetSpecs, getOverlappingSubnets);
 
@@ -327,6 +338,7 @@ export class Vpc extends schema.Vpc<VpcData> {
       routes,
       natGateways,
       eips,
+      subnetLayout: subnetLayout,
       privateSubnetIds,
       publicSubnetIds,
       isolatedSubnetIds,
@@ -344,6 +356,71 @@ export class Vpc extends schema.Vpc<VpcData> {
     }
     return result.names.slice(0, desiredCount);
   }
+}
+
+export function extractSubnetSpecInputFromLegacyLayout(
+  subnetSpecs: SubnetSpec[],
+  vpcName: string,
+  availabilityZones: string[],
+) {
+  const singleAzLength = subnetSpecs.length / availabilityZones.length;
+  function extractName(subnetName: string, type: schema.SubnetTypeInputs) {
+    const withoutVpcPrefix = subnetName.replace(`${vpcName}-`, "");
+    const subnetSpecName = withoutVpcPrefix.replace(/-\d+$/, "");
+    // If the spec name is the same as the type, it doesn't need to be specified.
+    if (subnetSpecName === type.toLowerCase()) {
+      return {};
+    }
+    return { subnetName: subnetSpecName };
+  }
+  const subnetSpecInputs: schema.SubnetSpecInputs[] = [];
+  // Just look at the first AZ's subnets, since they're all the same pattern.
+  let previousNetmask: Netmask | undefined;
+  const singleAzSubnets = subnetSpecs.slice(0, singleAzLength);
+  for (const subnet of singleAzSubnets) {
+    const netmask = new Netmask(subnet.cidrBlock);
+    if (previousNetmask !== undefined) {
+      const gaps = findSubnetGap(previousNetmask, netmask);
+      for (const gap of gaps) {
+        subnetSpecInputs.push({
+          type: "Unused",
+          cidrMask: gap.bitmask,
+        });
+      }
+    }
+    subnetSpecInputs.push({
+      type: subnet.type,
+      ...extractName(subnet.subnetName, subnet.type),
+      cidrMask: netmask.bitmask,
+      ...(subnet.tags ? { tags: subnet.tags } : {}),
+    });
+    previousNetmask = netmask;
+  }
+  return subnetSpecInputs;
+}
+
+/** Find the subnets required to fill the gap between two subnets. */
+export function findSubnetGap(a: Netmask, b: Netmask): Netmask[] {
+  // Normalise start to be before the end.
+  const [start, end] = a.netLong < b.netLong ? [a, b] : [b, a];
+  // Where the start and end differ by more than 1 bit there may be multiple subnets required to fill the gap.
+  const gaps: Netmask[] = [];
+  let previous = a;
+  let next = start.next();
+  while (next.netLong < end.netLong) {
+    // Try to find widest possible gap that doesn't overlap the start or end subnet.
+    while (true) {
+      const nextWiderGap = new Netmask(`${next.base}/${next.bitmask - 1}`);
+      if (nextWiderGap.contains(previous.last) || nextWiderGap.contains(end.first)) {
+        break;
+      }
+      next = nextWiderGap;
+    }
+    gaps.push(next);
+    previous = next;
+    next = next.next();
+  }
+  return gaps;
 }
 
 export function validateEips(

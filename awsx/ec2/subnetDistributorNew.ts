@@ -83,6 +83,7 @@ export function getSubnetSpecs(
         type: subnetSpec.type,
         azName,
         subnetName: subnetName(vpcName, subnetSpec, azNum),
+        tags: subnetSpec.tags,
       });
     }
 

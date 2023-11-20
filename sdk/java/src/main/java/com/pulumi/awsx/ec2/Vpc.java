@@ -13,6 +13,7 @@ import com.pulumi.aws.ec2.Subnet;
 import com.pulumi.aws.ec2.VpcEndpoint;
 import com.pulumi.awsx.Utilities;
 import com.pulumi.awsx.ec2.VpcArgs;
+import com.pulumi.awsx.ec2.outputs.ResolvedSubnetSpec;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Export;
 import com.pulumi.core.annotations.ResourceType;
@@ -79,7 +80,7 @@ import javax.annotation.Nullable;
  * 
  * ### Legacy
  * 
- * The &#34;Legacy&#34; works similarly to the &#34;Auto&#34; strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the &#34;Auto&#34; layout option.
+ * The &#34;Legacy&#34; works similarly to the &#34;Auto&#34; strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the &#34;Auto&#34; strategy. The output property `subnetLayout` shows the configuration required if specifying the &#34;Auto&#34; strategy to maintain the current layout.
  * 
  */
 @ResourceType(type="awsx:ec2:Vpc")
@@ -185,6 +186,20 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      */
     public Output<List<Route>> routes() {
         return this.routes;
+    }
+    /**
+     * The resolved subnet specs layout deployed to each availability zone.
+     * 
+     */
+    @Export(name="subnetLayout", refs={List.class,ResolvedSubnetSpec.class}, tree="[0,1]")
+    private Output<List<ResolvedSubnetSpec>> subnetLayout;
+
+    /**
+     * @return The resolved subnet specs layout deployed to each availability zone.
+     * 
+     */
+    public Output<List<ResolvedSubnetSpec>> subnetLayout() {
+        return this.subnetLayout;
     }
     /**
      * The VPC&#39;s subnets.

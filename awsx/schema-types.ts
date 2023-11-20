@@ -69,12 +69,13 @@ export abstract class Vpc<TData = any> extends (pulumi.ComponentResource)<TData>
     public routeTableAssociations!: aws.ec2.RouteTableAssociation[] | pulumi.Output<aws.ec2.RouteTableAssociation[]>;
     public routeTables!: aws.ec2.RouteTable[] | pulumi.Output<aws.ec2.RouteTable[]>;
     public routes!: aws.ec2.Route[] | pulumi.Output<aws.ec2.Route[]>;
+    public subnetLayout!: ResolvedSubnetSpecOutputs[] | pulumi.Output<ResolvedSubnetSpecOutputs[]>;
     public subnets!: aws.ec2.Subnet[] | pulumi.Output<aws.ec2.Subnet[]>;
     public vpc!: aws.ec2.Vpc | pulumi.Output<aws.ec2.Vpc>;
     public vpcEndpoints!: aws.ec2.VpcEndpoint[] | pulumi.Output<aws.ec2.VpcEndpoint[]>;
     public vpcId!: string | pulumi.Output<string>;
     constructor(name: string, args: pulumi.Inputs, opts: pulumi.ComponentResourceOptions = {}) {
-        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, isolatedSubnetIds: undefined, natGateways: undefined, privateSubnetIds: undefined, publicSubnetIds: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnets: undefined, vpc: undefined, vpcEndpoints: undefined, vpcId: undefined } : { name, args, opts }, opts);
+        super("awsx:ec2:Vpc", name, opts.urn ? { eips: undefined, internetGateway: undefined, isolatedSubnetIds: undefined, natGateways: undefined, privateSubnetIds: undefined, publicSubnetIds: undefined, routeTableAssociations: undefined, routeTables: undefined, routes: undefined, subnetLayout: undefined, subnets: undefined, vpc: undefined, vpcEndpoints: undefined, vpcId: undefined } : { name, args, opts }, opts);
     }
 }
 export interface VpcArgs {
@@ -570,6 +571,20 @@ export interface NatGatewayConfigurationOutputs {
 }
 export type NatGatewayStrategyInputs = "None" | "Single" | "OnePerAz";
 export type NatGatewayStrategyOutputs = "None" | "Single" | "OnePerAz";
+export interface ResolvedSubnetSpecInputs {
+    readonly cidrBlocks?: string[];
+    readonly cidrMask?: number;
+    readonly name?: string;
+    readonly size?: number;
+    readonly type: SubnetTypeInputs;
+}
+export interface ResolvedSubnetSpecOutputs {
+    readonly cidrBlocks?: string[];
+    readonly cidrMask?: number;
+    readonly name?: string;
+    readonly size?: number;
+    readonly type: SubnetTypeOutputs;
+}
 export type SubnetAllocationStrategyInputs = "Legacy" | "Auto" | "Exact";
 export type SubnetAllocationStrategyOutputs = "Legacy" | "Auto" | "Exact";
 export interface SubnetSpecInputs {
