@@ -338,7 +338,7 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
         name: Dispatch event
-        run: pulumictl create docs-build pulumi-${{ env.PROVIDER }} ${GITHUB_REF#refs/tags/} --schema-path awsx/schema.json
+        run: pulumictl create docs-build pulumi-${{ env.PROVIDER }} ${GITHUB_REF#refs/tags/} --schema-path schema.json
 name: release
 "on":
   push:
