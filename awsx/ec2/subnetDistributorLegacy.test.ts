@@ -171,7 +171,7 @@ describe("default subnet layout", () => {
 
         expect(actual).toEqual(knownCase.result);
       });
-      it.only(`should be convertible to new format (${knownCase.vpcCidr}, ${specDescription})`, () => {
+      it(`should be convertible to new format (${knownCase.vpcCidr}, ${specDescription})`, () => {
         const vpcName = "vpcName";
         const availabilityZones = ["us-east-1a"];
         const legacyResult = getSubnetSpecsLegacy(
