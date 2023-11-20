@@ -13,6 +13,7 @@ import com.pulumi.aws.ec2.Subnet;
 import com.pulumi.aws.ec2.VpcEndpoint;
 import com.pulumi.awsx.Utilities;
 import com.pulumi.awsx.ec2.VpcArgs;
+import com.pulumi.awsx.ec2.outputs.ResolvedSubnetSpec;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Export;
 import com.pulumi.core.annotations.ResourceType;
@@ -21,6 +22,67 @@ import java.lang.String;
 import java.util.List;
 import javax.annotation.Nullable;
 
+/**
+ * The VPC component provides a VPC with configured subnets and NAT gateways.
+ * 
+ * ## Example Usage
+ * 
+ * Basic usage:
+ * 
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.awsx.ec2.Vpc;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var vpc = new Vpc(&#34;vpc&#34;);
+ * 
+ *         ctx.export(&#34;vpcId&#34;, vpc.vpcId());
+ *         ctx.export(&#34;vpcPrivateSubnetIds&#34;, vpc.privateSubnetIds());
+ *         ctx.export(&#34;vpcPublicSubnetIds&#34;, vpc.publicSubnetIds());
+ *     }
+ * }
+ * ```
+ * 
+ * ## Subnet Layout Strategies
+ * 
+ * If no subnet arguments are passed, then a public and private subnet will be created in each AZ with default sizing. The layout of these subnets can be customised by specifying additional arguments.
+ * 
+ * All strategies are designed to help build a uniform layout of subnets each each availability zone.
+ * 
+ * If no strategy is specified, &#34;Legacy&#34; will be used for backward compatibility reasons. In the next major version this will change to defaulting to &#34;Auto&#34;.
+ * 
+ * ### Auto
+ * 
+ * The &#34;Auto&#34; strategy divides the VPC space evenly between the availability zones. Within each availability zone it allocates each subnet in the order they were specified. If a CIDR mask or size was not specified it will default to an even division of the availability zone range. If subnets have different sizes, spaces will be automatically added to ensure subnets don&#39;t overlap (e.g. where a previous subnet is smaller than the next).
+ * 
+ * ### Exact
+ * 
+ * The &#34;Exact&#34; strategy is the same as &#34;Auto&#34; with the additional requirement to explicitly specify what the whole of each zone&#39;s range will be used for. Where you expect to have a gap between or after subnets, these must be passed using the subnet specification type &#34;Unused&#34; to show all space has been properly accounted for.
+ * 
+ * ### Explicit CIDR Blocks
+ * 
+ * If you prefer to do your CIDR block calculations yourself, you can specify a list of CIDR blocks for each subnet spec which it will be allocated for in each availability zone. If using explicit layouts, all subnet specs must be declared with explicit CIDR blocks. Each list of CIDR blocks must have the same length as the number of availability zones for the VPC.
+ * 
+ * ### Legacy
+ * 
+ * The &#34;Legacy&#34; works similarly to the &#34;Auto&#34; strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the &#34;Auto&#34; strategy. The output property `subnetLayout` shows the configuration required if specifying the &#34;Auto&#34; strategy to maintain the current layout.
+ * 
+ */
 @ResourceType(type="awsx:ec2:Vpc")
 public class Vpc extends com.pulumi.resources.ComponentResource {
     /**
@@ -124,6 +186,20 @@ public class Vpc extends com.pulumi.resources.ComponentResource {
      */
     public Output<List<Route>> routes() {
         return this.routes;
+    }
+    /**
+     * The resolved subnet specs layout deployed to each availability zone.
+     * 
+     */
+    @Export(name="subnetLayout", refs={List.class,ResolvedSubnetSpec.class}, tree="[0,1]")
+    private Output<List<ResolvedSubnetSpec>> subnetLayout;
+
+    /**
+     * @return The resolved subnet specs layout deployed to each availability zone.
+     * 
+     */
+    public Output<List<ResolvedSubnetSpec>> subnetLayout() {
+        return this.subnetLayout;
     }
     /**
      * The VPC&#39;s subnets.

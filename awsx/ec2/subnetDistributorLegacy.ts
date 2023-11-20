@@ -30,11 +30,12 @@ export interface SubnetSpec {
   }>;
 }
 
-export function getSubnetSpecs(
+export function getSubnetSpecsLegacy(
   vpcName: string,
   vpcCidr: string,
   azNames: string[],
   subnetInputs?: SubnetSpecInputs[],
+  azCidrMask?: number,
 ): SubnetSpec[] {
   // Design:
   // 1. Split the VPC CIDR block evenly between the AZs.
@@ -46,7 +47,10 @@ export function getSubnetSpecs(
   // 1. Attempt to use the legacy method (cidrSubnetV4) to get the next block.
   // 2. Check if the generated next block overlaps with the previous block.
   // 3. If there's overlap, use the new method (nextBlock) to get the next block.
-  const newBitsPerAZ = Math.log2(nextPow2(azNames.length));
+  const newBitsPerAZ =
+    azCidrMask !== undefined
+      ? azCidrMask - new ipAddress.Address4(vpcCidr).subnetMask
+      : Math.log2(nextPow2(azNames.length));
 
   const azBases: string[] = [];
   for (let i = 0; i < azNames.length; i++) {

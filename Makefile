@@ -15,7 +15,7 @@ JAVA_GEN_VERSION := v0.9.7
 
 AWSX_SRC 		:= $(wildcard awsx/*.*) $(wildcard awsx/*/*.ts)
 AWSX_CLASSIC_SRC:= $(wildcard awsx-classic/*.*) $(wildcard awsx-classic/*/*.ts)
-CODEGEN_SRC 	:= $(wildcard schemagen/go.*) $(wildcard schemagen/pkg/*/*.go) $(wildcard schemagen/pkg/cmd/${CODEGEN}/*.go)
+CODEGEN_SRC 	:= $(wildcard schemagen/go.*) $(wildcard schemagen/pkg/*/*) $(wildcard schemagen/pkg/cmd/${CODEGEN}/*.go)
 
 WORKING_DIR     := $(shell pwd)
 

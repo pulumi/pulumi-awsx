@@ -12,17 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import fc from "fast-check";
 import { getOverlappingSubnets } from ".";
 import { NatGatewayStrategyInputs, SubnetTypeInputs } from "../schema-types";
-import { getSubnetSpecs } from "./subnetDistributor";
+import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import {
   compareSubnetSpecs,
+  findSubnetGap,
   OverlappingSubnet,
   shouldCreateNatGateway,
   validateEips,
   validateNatGatewayStrategy,
   validateSubnets,
 } from "./vpc";
+import { Netmask, long2ip, ip2long } from "netmask";
 
 describe("validateEips", () => {
   it("should not throw an exception if NAT Gateway strategy is Single and no EIPs are supplied", () => {
@@ -261,5 +264,30 @@ describe("validateSubnets", () => {
       "2. subnet2: 10.0.0.0/24\n";
 
     expect(() => validateSubnets(subnets, mockFunc)).toThrow(msg);
+  });
+});
+
+describe("finding subnet gaps", () => {
+  it("comparison between any subnets", () => {
+    const vpcSpace = new Netmask("10.0.0.0", 7);
+    const minIpLong = ip2long(vpcSpace.first);
+    const maxIpLong = ip2long(vpcSpace.last);
+    fc.assert(
+      fc.property(
+        fc.record({
+          fromIpLong: fc.integer({ min: minIpLong, max: maxIpLong }),
+          fromCidrMask: fc.integer({ min: 8, max: 32 }),
+          toIpLong: fc.integer({ min: minIpLong, max: maxIpLong }),
+          toCidrMask: fc.integer({ min: 8, max: 32 }),
+        }),
+        ({ fromIpLong: fromIp, fromCidrMask, toIpLong: toIp, toCidrMask }) => {
+          const from = new Netmask(long2ip(fromIp), fromCidrMask);
+          const to = new Netmask(long2ip(toIp), toCidrMask);
+          const gap = findSubnetGap(from, to);
+          expect(gap.length).toBeGreaterThanOrEqual(0);
+          expect(gap.length).toBeLessThan(32);
+        },
+      ),
+    );
   });
 });

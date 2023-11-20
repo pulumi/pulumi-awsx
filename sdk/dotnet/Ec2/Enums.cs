@@ -49,6 +49,47 @@ namespace Pulumi.Awsx.Ec2
     }
 
     /// <summary>
+    /// Strategy for calculating subnet ranges from the subnet specifications.
+    /// </summary>
+    [EnumType]
+    public readonly struct SubnetAllocationStrategy : IEquatable<SubnetAllocationStrategy>
+    {
+        private readonly string _value;
+
+        private SubnetAllocationStrategy(string value)
+        {
+            _value = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
+        /// Group private subnets first, followed by public subnets, followed by isolated subnets.
+        /// </summary>
+        public static SubnetAllocationStrategy Legacy { get; } = new SubnetAllocationStrategy("Legacy");
+        /// <summary>
+        /// Order remains as specified by specs, allowing gaps where required.
+        /// </summary>
+        public static SubnetAllocationStrategy Auto { get; } = new SubnetAllocationStrategy("Auto");
+        /// <summary>
+        /// Whole range of VPC must be accounted for, using "Unused" spec types for deliberate gaps.
+        /// </summary>
+        public static SubnetAllocationStrategy Exact { get; } = new SubnetAllocationStrategy("Exact");
+
+        public static bool operator ==(SubnetAllocationStrategy left, SubnetAllocationStrategy right) => left.Equals(right);
+        public static bool operator !=(SubnetAllocationStrategy left, SubnetAllocationStrategy right) => !left.Equals(right);
+
+        public static explicit operator string(SubnetAllocationStrategy value) => value._value;
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override bool Equals(object? obj) => obj is SubnetAllocationStrategy other && Equals(other);
+        public bool Equals(SubnetAllocationStrategy other) => string.Equals(_value, other._value, StringComparison.Ordinal);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+
+        public override string ToString() => _value;
+    }
+
+    /// <summary>
     /// A type of subnet within a VPC.
     /// </summary>
     [EnumType]
@@ -73,6 +114,10 @@ namespace Pulumi.Awsx.Ec2
         /// A subnet whose hosts have no connectivity with the internet.
         /// </summary>
         public static SubnetType Isolated { get; } = new SubnetType("Isolated");
+        /// <summary>
+        /// A subnet range which is reserved, but no subnet will be created.
+        /// </summary>
+        public static SubnetType Unused { get; } = new SubnetType("Unused");
 
         public static bool operator ==(SubnetType left, SubnetType right) => left.Equals(right);
         public static bool operator !=(SubnetType left, SubnetType right) => !left.Equals(right);

@@ -7,65 +7,53 @@ using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Pulumi.Serialization;
 
-namespace Pulumi.Awsx.Ec2.Inputs
+namespace Pulumi.Awsx.Ec2.Outputs
 {
 
     /// <summary>
-    /// Configuration for a VPC subnet.
+    /// Configuration for a VPC subnet spec.
     /// </summary>
-    public sealed class SubnetSpecArgs : global::Pulumi.ResourceArgs
+    [OutputType]
+    public sealed class ResolvedSubnetSpec
     {
-        [Input("cidrBlocks")]
-        private List<string>? _cidrBlocks;
-
         /// <summary>
         /// An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
         /// </summary>
-        public List<string> CidrBlocks
-        {
-            get => _cidrBlocks ?? (_cidrBlocks = new List<string>());
-            set => _cidrBlocks = value;
-        }
-
+        public readonly ImmutableArray<string> CidrBlocks;
         /// <summary>
         /// The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
         /// </summary>
-        [Input("cidrMask")]
-        public int? CidrMask { get; set; }
-
+        public readonly int? CidrMask;
         /// <summary>
         /// The subnet's name. Will be templated upon creation.
         /// </summary>
-        [Input("name")]
-        public string? Name { get; set; }
-
+        public readonly string? Name;
         /// <summary>
         /// Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
         /// </summary>
-        [Input("size")]
-        public int? Size { get; set; }
-
-        [Input("tags")]
-        private InputMap<string>? _tags;
-
-        /// <summary>
-        /// A map of tags to assign to the resource.
-        /// </summary>
-        public InputMap<string> Tags
-        {
-            get => _tags ?? (_tags = new InputMap<string>());
-            set => _tags = value;
-        }
-
+        public readonly int? Size;
         /// <summary>
         /// The type of subnet.
         /// </summary>
-        [Input("type", required: true)]
-        public Pulumi.Awsx.Ec2.SubnetType Type { get; set; }
+        public readonly Pulumi.Awsx.Ec2.SubnetType Type;
 
-        public SubnetSpecArgs()
+        [OutputConstructor]
+        private ResolvedSubnetSpec(
+            ImmutableArray<string> cidrBlocks,
+
+            int? cidrMask,
+
+            string? name,
+
+            int? size,
+
+            Pulumi.Awsx.Ec2.SubnetType type)
         {
+            CidrBlocks = cidrBlocks;
+            CidrMask = cidrMask;
+            Name = name;
+            Size = size;
+            Type = type;
         }
-        public static new SubnetSpecArgs Empty => new SubnetSpecArgs();
     }
 }

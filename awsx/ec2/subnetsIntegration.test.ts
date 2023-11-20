@@ -13,12 +13,12 @@
 // limitations under the License.
 
 import { SubnetSpecInputs } from "../schema-types";
-import { getSubnetSpecs } from "./subnetDistributor";
+import { getSubnetSpecsLegacy } from "./subnetDistributorLegacy";
 import { getOverlappingSubnets } from "./vpc";
 
 describe("subnet creation integration tests", () => {
   it("should return no overlapping subnets for the default subnet specs for this component", () => {
-    const defaultSpecs = getSubnetSpecs("dummy", "10.0.0.0/16", [
+    const defaultSpecs = getSubnetSpecsLegacy("dummy", "10.0.0.0/16", [
       "us-east-1a",
       "us-east-1b",
       "us-east-1c",
@@ -39,7 +39,7 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs(
+    const subnetSpecs = getSubnetSpecsLegacy(
       "dummy",
       "10.0.0.0/16",
       ["us-east-1a", "us-east-1b", "us-east-1c"],
@@ -62,7 +62,7 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs(
+    const subnetSpecs = getSubnetSpecsLegacy(
       "dummy",
       "10.0.0.0/16",
       ["us-east-1a", "us-east-1b", "us-east-1c"],
@@ -84,7 +84,7 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs(
+    const subnetSpecs = getSubnetSpecsLegacy(
       "dummy",
       "10.0.0.0/16",
       ["us-east-1a", "us-east-1b", "us-east-1c"],
@@ -106,7 +106,7 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs(
+    const subnetSpecs = getSubnetSpecsLegacy(
       "dummy",
       "10.0.0.0/16",
       ["us-east-1a", "us-east-1b", "us-east-1c"],
@@ -132,7 +132,7 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs(
+    const subnetSpecs = getSubnetSpecsLegacy(
       "dummy",
       "10.0.0.0/16",
       ["us-east-1a", "us-east-1b", "us-east-1c"],
@@ -158,7 +158,7 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs(
+    const subnetSpecs = getSubnetSpecsLegacy(
       "dummy",
       "10.0.0.0/16",
       ["us-east-1a", "us-east-1b", "us-east-1c"],
@@ -196,7 +196,7 @@ describe("subnet creation integration tests", () => {
       },
     ];
 
-    const subnetSpecs = getSubnetSpecs(
+    const subnetSpecs = getSubnetSpecsLegacy(
       "dummy",
       "10.0.0.0/16",
       ["us-east-1a", "us-east-1b", "us-east-1c"],

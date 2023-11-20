@@ -9,6 +9,47 @@ import * as utilities from "../utilities";
 
 import * as pulumiAws from "@pulumi/aws";
 
+/**
+ * The VPC component provides a VPC with configured subnets and NAT gateways.
+ *
+ * ## Example Usage
+ *
+ * Basic usage:
+ *
+ * ```typescript
+ * import * as pulumi from "@pulumi/pulumi";
+ * import * as awsx from "@pulumi/awsx";
+ *
+ * const vpc = new awsx.ec2.Vpc("vpc", {});
+ * export const vpcId = vpc.vpcId;
+ * export const vpcPrivateSubnetIds = vpc.privateSubnetIds;
+ * export const vpcPublicSubnetIds = vpc.publicSubnetIds;
+ * ```
+ *
+ * ## Subnet Layout Strategies
+ *
+ * If no subnet arguments are passed, then a public and private subnet will be created in each AZ with default sizing. The layout of these subnets can be customised by specifying additional arguments.
+ *
+ * All strategies are designed to help build a uniform layout of subnets each each availability zone.
+ *
+ * If no strategy is specified, "Legacy" will be used for backward compatibility reasons. In the next major version this will change to defaulting to "Auto".
+ *
+ * ### Auto
+ *
+ * The "Auto" strategy divides the VPC space evenly between the availability zones. Within each availability zone it allocates each subnet in the order they were specified. If a CIDR mask or size was not specified it will default to an even division of the availability zone range. If subnets have different sizes, spaces will be automatically added to ensure subnets don't overlap (e.g. where a previous subnet is smaller than the next).
+ *
+ * ### Exact
+ *
+ * The "Exact" strategy is the same as "Auto" with the additional requirement to explicitly specify what the whole of each zone's range will be used for. Where you expect to have a gap between or after subnets, these must be passed using the subnet specification type "Unused" to show all space has been properly accounted for.
+ *
+ * ### Explicit CIDR Blocks
+ *
+ * If you prefer to do your CIDR block calculations yourself, you can specify a list of CIDR blocks for each subnet spec which it will be allocated for in each availability zone. If using explicit layouts, all subnet specs must be declared with explicit CIDR blocks. Each list of CIDR blocks must have the same length as the number of availability zones for the VPC.
+ *
+ * ### Legacy
+ *
+ * The "Legacy" works similarly to the "Auto" strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the "Auto" strategy. The output property `subnetLayout` shows the configuration required if specifying the "Auto" strategy to maintain the current layout.
+ */
 export class Vpc extends pulumi.ComponentResource {
     /** @internal */
     public static readonly __pulumiType = 'awsx:ec2:Vpc';
@@ -52,6 +93,10 @@ export class Vpc extends pulumi.ComponentResource {
      */
     public /*out*/ readonly routes!: pulumi.Output<pulumiAws.ec2.Route[]>;
     /**
+     * The resolved subnet specs layout deployed to each availability zone.
+     */
+    public /*out*/ readonly subnetLayout!: pulumi.Output<outputs.ec2.ResolvedSubnetSpec[]>;
+    /**
      * The VPC's subnets.
      */
     public /*out*/ readonly subnets!: pulumi.Output<pulumiAws.ec2.Subnet[]>;
@@ -77,6 +122,7 @@ export class Vpc extends pulumi.ComponentResource {
         opts = opts || {};
         if (!opts.id) {
             resourceInputs["assignGeneratedIpv6CidrBlock"] = args ? args.assignGeneratedIpv6CidrBlock : undefined;
+            resourceInputs["availabilityZoneCidrMask"] = args ? args.availabilityZoneCidrMask : undefined;
             resourceInputs["availabilityZoneNames"] = args ? args.availabilityZoneNames : undefined;
             resourceInputs["cidrBlock"] = args ? args.cidrBlock : undefined;
             resourceInputs["enableDnsHostnames"] = args ? args.enableDnsHostnames : undefined;
@@ -92,6 +138,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["natGateways"] = args ? args.natGateways : undefined;
             resourceInputs["numberOfAvailabilityZones"] = args ? args.numberOfAvailabilityZones : undefined;
             resourceInputs["subnetSpecs"] = args ? args.subnetSpecs : undefined;
+            resourceInputs["subnetStrategy"] = args ? args.subnetStrategy : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["vpcEndpointSpecs"] = args ? args.vpcEndpointSpecs : undefined;
             resourceInputs["eips"] = undefined /*out*/;
@@ -102,6 +149,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["routeTableAssociations"] = undefined /*out*/;
             resourceInputs["routeTables"] = undefined /*out*/;
             resourceInputs["routes"] = undefined /*out*/;
+            resourceInputs["subnetLayout"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
             resourceInputs["vpcEndpoints"] = undefined /*out*/;
@@ -116,6 +164,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["routeTableAssociations"] = undefined /*out*/;
             resourceInputs["routeTables"] = undefined /*out*/;
             resourceInputs["routes"] = undefined /*out*/;
+            resourceInputs["subnetLayout"] = undefined /*out*/;
             resourceInputs["subnets"] = undefined /*out*/;
             resourceInputs["vpc"] = undefined /*out*/;
             resourceInputs["vpcEndpoints"] = undefined /*out*/;
@@ -134,6 +183,10 @@ export interface VpcArgs {
      * Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IP addresses, or the size of the CIDR block. Default is `false`. Conflicts with `ipv6_ipam_pool_id`
      */
     assignGeneratedIpv6CidrBlock?: pulumi.Input<boolean>;
+    /**
+     * The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC's CIDR block after being divided evenly by the number of availability zones.
+     */
+    availabilityZoneCidrMask?: number;
     /**
      * A list of availability zone names to which the subnets defined in subnetSpecs will be deployed. Optional, defaults to the first 3 AZs in the current region.
      */
@@ -194,6 +247,10 @@ export interface VpcArgs {
      * A list of subnet specs that should be deployed to each AZ specified in availabilityZoneNames. Optional. Defaults to a (smaller) public subnet and a (larger) private subnet based on the size of the CIDR block for the VPC. Private subnets are allocated CIDR block ranges first, followed by Private subnets, and Isolated subnets are allocated last.
      */
     subnetSpecs?: inputs.ec2.SubnetSpecArgs[];
+    /**
+     * The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
+     */
+    subnetStrategy?: enums.ec2.SubnetAllocationStrategy;
     /**
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */

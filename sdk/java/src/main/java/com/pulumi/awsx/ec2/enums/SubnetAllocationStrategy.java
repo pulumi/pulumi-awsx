@@ -9,35 +9,30 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
     /**
-     * A type of subnet within a VPC.
+     * Strategy for calculating subnet ranges from the subnet specifications.
      * 
      */
     @EnumType
-    public enum SubnetType {
+    public enum SubnetAllocationStrategy {
         /**
-         * A subnet whose hosts can directly communicate with the internet.
+         * Group private subnets first, followed by public subnets, followed by isolated subnets.
          * 
          */
-        Public("Public"),
+        Legacy("Legacy"),
         /**
-         * A subnet whose hosts can not directly communicate with the internet, but can initiate outbound network traffic via a NAT Gateway.
+         * Order remains as specified by specs, allowing gaps where required.
          * 
          */
-        Private("Private"),
+        Auto("Auto"),
         /**
-         * A subnet whose hosts have no connectivity with the internet.
+         * Whole range of VPC must be accounted for, using &#34;Unused&#34; spec types for deliberate gaps.
          * 
          */
-        Isolated("Isolated"),
-        /**
-         * A subnet range which is reserved, but no subnet will be created.
-         * 
-         */
-        Unused("Unused");
+        Exact("Exact");
 
         private final String value;
 
-        SubnetType(String value) {
+        SubnetAllocationStrategy(String value) {
             this.value = Objects.requireNonNull(value);
         }
 
@@ -48,7 +43,7 @@ import java.util.StringJoiner;
 
         @Override
         public String toString() {
-            return new StringJoiner(", ", "SubnetType[", "]")
+            return new StringJoiner(", ", "SubnetAllocationStrategy[", "]")
                 .add("value='" + this.value + "'")
                 .toString();
         }

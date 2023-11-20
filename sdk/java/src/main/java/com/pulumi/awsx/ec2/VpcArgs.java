@@ -3,6 +3,7 @@
 
 package com.pulumi.awsx.ec2;
 
+import com.pulumi.awsx.ec2.enums.SubnetAllocationStrategy;
 import com.pulumi.awsx.ec2.inputs.NatGatewayConfigurationArgs;
 import com.pulumi.awsx.ec2.inputs.SubnetSpecArgs;
 import com.pulumi.awsx.ec2.inputs.VpcEndpointSpecArgs;
@@ -35,6 +36,21 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
      */
     public Optional<Output<Boolean>> assignGeneratedIpv6CidrBlock() {
         return Optional.ofNullable(this.assignGeneratedIpv6CidrBlock);
+    }
+
+    /**
+     * The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by the number of availability zones.
+     * 
+     */
+    @Import(name="availabilityZoneCidrMask")
+    private @Nullable Integer availabilityZoneCidrMask;
+
+    /**
+     * @return The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by the number of availability zones.
+     * 
+     */
+    public Optional<Integer> availabilityZoneCidrMask() {
+        return Optional.ofNullable(this.availabilityZoneCidrMask);
     }
 
     /**
@@ -263,6 +279,21 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
+     * 
+     */
+    @Import(name="subnetStrategy")
+    private @Nullable SubnetAllocationStrategy subnetStrategy;
+
+    /**
+     * @return The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
+     * 
+     */
+    public Optional<SubnetAllocationStrategy> subnetStrategy() {
+        return Optional.ofNullable(this.subnetStrategy);
+    }
+
+    /**
      * A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      * 
      */
@@ -296,6 +327,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
 
     private VpcArgs(VpcArgs $) {
         this.assignGeneratedIpv6CidrBlock = $.assignGeneratedIpv6CidrBlock;
+        this.availabilityZoneCidrMask = $.availabilityZoneCidrMask;
         this.availabilityZoneNames = $.availabilityZoneNames;
         this.cidrBlock = $.cidrBlock;
         this.enableDnsHostnames = $.enableDnsHostnames;
@@ -311,6 +343,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         this.natGateways = $.natGateways;
         this.numberOfAvailabilityZones = $.numberOfAvailabilityZones;
         this.subnetSpecs = $.subnetSpecs;
+        this.subnetStrategy = $.subnetStrategy;
         this.tags = $.tags;
         this.vpcEndpointSpecs = $.vpcEndpointSpecs;
     }
@@ -352,6 +385,17 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder assignGeneratedIpv6CidrBlock(Boolean assignGeneratedIpv6CidrBlock) {
             return assignGeneratedIpv6CidrBlock(Output.of(assignGeneratedIpv6CidrBlock));
+        }
+
+        /**
+         * @param availabilityZoneCidrMask The netmask for each available zone to be aligned to. This is optional, the default value is inferred based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by the number of availability zones.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder availabilityZoneCidrMask(@Nullable Integer availabilityZoneCidrMask) {
+            $.availabilityZoneCidrMask = availabilityZoneCidrMask;
+            return this;
         }
 
         /**
@@ -637,6 +681,17 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder subnetSpecs(SubnetSpecArgs... subnetSpecs) {
             return subnetSpecs(List.of(subnetSpecs));
+        }
+
+        /**
+         * @param subnetStrategy The strategy to use when allocating subnets for the VPC. Optional. Defaults to `Legacy`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder subnetStrategy(@Nullable SubnetAllocationStrategy subnetStrategy) {
+            $.subnetStrategy = subnetStrategy;
+            return this;
         }
 
         /**
