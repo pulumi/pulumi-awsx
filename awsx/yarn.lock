@@ -1519,10 +1519,10 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@pulumi/aws@6.7.0":
-  version "6.7.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.7.0.tgz#50b4d7d3d604c21bbef404b9c1563485b9c7f16b"
-  integrity sha512-7COqQ4jkXNtfcfoNbLAvp1BK00STwNLnsM9liKl4MnRiKg7+wL+Z7jz7UiIE8m9ZqxW10wEVW8Inj92TkgjwVg==
+"@pulumi/aws@6.9.0":
+  version "6.9.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.9.0.tgz#1f65cd5843d22aa477f97468b3d5b8d6311b538c"
+  integrity sha512-c0ivz01YEuZesfroFSQJdjXivyltdvXBW8hcOhGCwAycjmHpDnXI0HSXk9aIkwxVrUBAW0MQYEa+QRHb5W2V1Q==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     builtin-modules "3.0.0"

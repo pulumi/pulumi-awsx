@@ -302,14 +302,14 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
-     * The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+     * The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
      * 
      */
     @Import(name="subnetIds")
     private @Nullable Output<List<String>> subnetIds;
 
     /**
-     * @return The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+     * @return The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
      * 
      */
     public Optional<Output<List<String>>> subnetIds() {
@@ -542,7 +542,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param subnetIds The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+         * @param subnetIds The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
          * 
          * @return builder
          * 
@@ -553,7 +553,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param subnetIds The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+         * @param subnetIds The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
          * 
          * @return builder
          * 
@@ -563,7 +563,7 @@ public final class VpcEndpointSpecArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param subnetIds The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+         * @param subnetIds The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
          * 
          * @return builder
          * 

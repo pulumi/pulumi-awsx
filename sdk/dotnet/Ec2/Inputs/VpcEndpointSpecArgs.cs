@@ -607,7 +607,7 @@ namespace Pulumi.Awsx.Ec2.Inputs
         private InputList<string>? _subnetIds;
 
         /// <summary>
-        /// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+        /// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
         /// </summary>
         public InputList<string> SubnetIds
         {

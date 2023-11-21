@@ -621,7 +621,7 @@ type VpcEndpointSpec struct {
 	SecurityGroupIds []string `pulumi:"securityGroupIds"`
 	// The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 	ServiceName string `pulumi:"serviceName"`
-	// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+	// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
 	SubnetIds []string `pulumi:"subnetIds"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags map[string]string `pulumi:"tags"`
@@ -808,7 +808,7 @@ type VpcEndpointSpecArgs struct {
 	SecurityGroupIds pulumi.StringArrayInput `pulumi:"securityGroupIds"`
 	// The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
 	ServiceName string `pulumi:"serviceName"`
-	// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+	// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
 	SubnetIds pulumi.StringArrayInput `pulumi:"subnetIds"`
 	// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput `pulumi:"tags"`
@@ -1076,7 +1076,7 @@ func (o VpcEndpointSpecOutput) ServiceName() pulumi.StringOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) string { return v.ServiceName }).(pulumi.StringOutput)
 }
 
-// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+// The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
 func (o VpcEndpointSpecOutput) SubnetIds() pulumi.StringArrayOutput {
 	return o.ApplyT(func(v VpcEndpointSpec) []string { return v.SubnetIds }).(pulumi.StringArrayOutput)
 }

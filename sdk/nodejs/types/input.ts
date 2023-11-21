@@ -974,7 +974,7 @@ export namespace ec2 {
          */
         serviceName: string;
         /**
-         * The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+         * The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
          */
         subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
         /**
