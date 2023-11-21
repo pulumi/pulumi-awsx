@@ -921,7 +921,11 @@
                 "id": "eipalloc-0daf7e977791e5f44",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
-                    "__defaults": []
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-1",
+                        "__defaults": []
+                    }
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
@@ -957,7 +961,11 @@
                 "id": "eipalloc-00643ae3eaf38237c",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
-                    "__defaults": []
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-3",
+                        "__defaults": []
+                    }
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
@@ -1039,7 +1047,11 @@
                 "id": "eipalloc-03da8e4e5d716df5e",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
-                    "__defaults": []
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-with-service-endpoint-2",
+                        "__defaults": []
+                    }
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",

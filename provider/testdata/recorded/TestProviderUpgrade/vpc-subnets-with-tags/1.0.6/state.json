@@ -938,7 +938,11 @@
                 "id": "eipalloc-06a6839129d46c99f",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
-                    "__defaults": []
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-subnets-with-tags-2",
+                        "__defaults": []
+                    }
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
@@ -974,7 +978,11 @@
                 "id": "eipalloc-0961ad8944470b72a",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
-                    "__defaults": []
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-subnets-with-tags-2",
+                        "__defaults": []
+                    }
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
@@ -1157,7 +1165,11 @@
                 "id": "eipalloc-0d393a8351b36a846",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
-                    "__defaults": []
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-subnets-with-tags-3",
+                        "__defaults": []
+                    }
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",

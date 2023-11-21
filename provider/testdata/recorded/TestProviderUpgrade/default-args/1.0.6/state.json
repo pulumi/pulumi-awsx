@@ -860,7 +860,11 @@
                 "id": "eipalloc-0725f3e2ac45834c4",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
-                    "__defaults": []
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-1",
+                        "__defaults": []
+                    }
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
@@ -896,7 +900,11 @@
                 "id": "eipalloc-08f2e34dd4b53241d",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
-                    "__defaults": []
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-2",
+                        "__defaults": []
+                    }
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
@@ -932,7 +940,11 @@
                 "id": "eipalloc-0e51b86dcc325ccfb",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
-                    "__defaults": []
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-3",
+                        "__defaults": []
+                    }
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
