@@ -2,42 +2,42 @@
     "version": 3,
     "deployment": {
         "manifest": {
-            "time": "2023-10-23T12:44:04.68654-04:00",
-            "magic": "cdb46f20d3397474c4b7038ce63a3c40fb0da4b95458ef275b6ce689aec88d17",
-            "version": "v3.86.0"
+            "time": "2023-11-21T13:23:21.405326-05:00",
+            "magic": "1c7bee3f57c8d621757e12febf05da234085ddfd4ef5c94d61087118355865f9",
+            "version": "v3.94.2"
         },
         "secrets_providers": {
             "type": "passphrase",
             "state": {
-                "salt": "v1:xwIJJjgBgEQ=:v1:feveAlOTSeyRnqJE:cdEZei8H6UnVdiAljdUANM8ejqa5MQ=="
+                "salt": "v1:fbHVoPgCKh4=:v1:OdIecE5tv9niC8Ho:iDoiKd/92GRLM5cUy+EDCx3YbQlgyQ=="
             }
         },
         "resources": [
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:pulumi:Stack::nodejs-p-it-antons-mac-default-ar-c7f150ab",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:pulumi:Stack::nodejs-p-it-monicas-ma-default-ar-ab1b2a1f",
                 "custom": false,
                 "type": "pulumi:pulumi:Stack",
                 "outputs": {
                     "privateSubnetIds": [
-                        "subnet-0442a6c5ca4c8328f",
-                        "subnet-0861995ef3ca0eee5",
-                        "subnet-0757e1adc45aaf789"
+                        "subnet-04bf79e336781b960",
+                        "subnet-0b4263838e84fec48",
+                        "subnet-05154d47d6295d501"
                     ],
                     "publicSubnetIds": [
-                        "subnet-0d363572e9353dc14",
-                        "subnet-02a53e86418a13598",
-                        "subnet-01c6b76e5d4539993"
+                        "subnet-04d96b2afa2e06e6d",
+                        "subnet-0fda0f25eb7acd39b",
+                        "subnet-06782b1fbd20014f8"
                     ],
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
-                "created": "2023-10-23T16:41:49.239292Z",
-                "modified": "2023-10-23T16:41:49.239292Z",
+                "created": "2023-11-21T18:20:57.330678Z",
+                "modified": "2023-11-21T18:20:57.330678Z",
                 "sourcePosition": "project:///node_modules/@pulumi/runtime/stack.ts#36,23"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:awsx::default_1_0_6",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:awsx::default_1_0_6",
                 "custom": true,
-                "id": "958158e4-5ba6-407d-9c21-aa1830324f36",
+                "id": "a1d0caa8-a6c0-49c4-b6bc-a8637d187597",
                 "type": "pulumi:providers:awsx",
                 "inputs": {
                     "version": "1.0.6"
@@ -45,35 +45,37 @@
                 "outputs": {
                     "version": "1.0.6"
                 },
-                "created": "2023-10-23T16:41:49.897731Z",
-                "modified": "2023-10-23T16:41:49.897731Z"
+                "created": "2023-11-21T18:20:57.697347Z",
+                "modified": "2023-11-21T18:20:57.697347Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc::awsx-nodejs-default-args",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc::awsx-nodejs-default-args",
                 "custom": false,
                 "type": "awsx:ec2:Vpc",
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:pulumi:Stack::nodejs-p-it-antons-mac-default-ar-c7f150ab",
-                "created": "2023-10-23T16:41:49.926857Z",
-                "modified": "2023-10-23T16:41:49.926857Z"
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:pulumi:Stack::nodejs-p-it-monicas-ma-default-ar-ab1b2a1f",
+                "created": "2023-11-21T18:20:57.713512Z",
+                "modified": "2023-11-21T18:20:57.713512Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0",
                 "custom": true,
-                "id": "8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "id": "4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "type": "pulumi:providers:aws",
                 "inputs": {
+                    "region": "us-west-2",
                     "version": "5.35.0"
                 },
                 "outputs": {
+                    "region": "us-west-2",
                     "version": "5.35.0"
                 },
-                "created": "2023-10-23T16:41:50.022949Z",
-                "modified": "2023-10-23T16:41:50.022949Z"
+                "created": "2023-11-21T18:20:57.793795Z",
+                "modified": "2023-11-21T18:20:57.793795Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
                 "custom": true,
-                "id": "vpc-047b9cb167b0dbfdc",
+                "id": "vpc-04928cffb3cb1b7ad",
                 "type": "aws:ec2/vpc:Vpc",
                 "inputs": {
                     "__defaults": [
@@ -90,26 +92,26 @@
                 },
                 "outputs": {
                     "__meta": "{\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:vpc/vpc-047b9cb167b0dbfdc",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:vpc/vpc-04928cffb3cb1b7ad",
                     "assignGeneratedIpv6CidrBlock": false,
                     "cidrBlock": "10.0.0.0/16",
-                    "defaultNetworkAclId": "acl-0161525c3e81566cd",
-                    "defaultRouteTableId": "rtb-0009bd9bee961060b",
-                    "defaultSecurityGroupId": "sg-02948b0411ef82ea9",
+                    "defaultNetworkAclId": "acl-0cc1637cd9c05e271",
+                    "defaultRouteTableId": "rtb-0229443575b838406",
+                    "defaultSecurityGroupId": "sg-0287590dc7b2b68eb",
                     "dhcpOptionsId": "dopt-1649d26e",
                     "enableClassiclink": false,
                     "enableClassiclinkDnsSupport": false,
                     "enableDnsHostnames": false,
                     "enableDnsSupport": true,
                     "enableNetworkAddressUsageMetrics": false,
-                    "id": "vpc-047b9cb167b0dbfdc",
+                    "id": "vpc-04928cffb3cb1b7ad",
                     "instanceTenancy": "default",
                     "ipv6AssociationId": "",
                     "ipv6CidrBlock": "",
                     "ipv6CidrBlockNetworkBorderGroup": "",
                     "ipv6IpamPoolId": "",
                     "ipv6NetmaskLength": 0,
-                    "mainRouteTableId": "rtb-0009bd9bee961060b",
+                    "mainRouteTableId": "rtb-0229443575b838406",
                     "ownerId": "616138583583",
                     "tags": {
                         "Name": "awsx-nodejs-default-args"
@@ -118,94 +120,19 @@
                         "Name": "awsx-nodejs-default-args"
                     }
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc::awsx-nodejs-default-args",
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc::awsx-nodejs-default-args",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "cidrBlock": null,
                     "tags": null
                 },
-                "created": "2023-10-23T16:41:55.00895Z",
-                "modified": "2023-10-23T16:41:55.00895Z"
+                "created": "2023-11-21T18:21:01.907887Z",
+                "modified": "2023-11-21T18:21:01.907887Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args",
                 "custom": true,
-                "id": "subnet-0442a6c5ca4c8328f",
-                "type": "aws:ec2/subnet:Subnet",
-                "inputs": {
-                    "__defaults": [
-                        "assignIpv6AddressOnCreation",
-                        "enableDns64",
-                        "enableResourceNameDnsARecordOnLaunch",
-                        "enableResourceNameDnsAaaaRecordOnLaunch",
-                        "ipv6Native"
-                    ],
-                    "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-2a",
-                    "cidrBlock": "10.0.0.0/19",
-                    "enableDns64": false,
-                    "enableResourceNameDnsARecordOnLaunch": false,
-                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "ipv6Native": false,
-                    "mapPublicIpOnLaunch": false,
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-private-1",
-                        "SubnetType": "Private",
-                        "__defaults": []
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0442a6c5ca4c8328f",
-                    "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-2a",
-                    "availabilityZoneId": "usw2-az2",
-                    "cidrBlock": "10.0.0.0/19",
-                    "customerOwnedIpv4Pool": "",
-                    "enableDns64": false,
-                    "enableResourceNameDnsARecordOnLaunch": false,
-                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "id": "subnet-0442a6c5ca4c8328f",
-                    "ipv6CidrBlock": "",
-                    "ipv6CidrBlockAssociationId": "",
-                    "ipv6Native": false,
-                    "mapCustomerOwnedIpOnLaunch": false,
-                    "mapPublicIpOnLaunch": false,
-                    "outpostArn": "",
-                    "ownerId": "616138583583",
-                    "privateDnsHostnameTypeOnLaunch": "ip-name",
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-private-1",
-                        "SubnetType": "Private"
-                    },
-                    "tagsAll": {
-                        "Name": "awsx-nodejs-default-args-private-1",
-                        "SubnetType": "Private"
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "availabilityZone": null,
-                    "cidrBlock": null,
-                    "mapPublicIpOnLaunch": null,
-                    "tags": null,
-                    "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                    ]
-                },
-                "created": "2023-10-23T16:41:55.931638Z",
-                "modified": "2023-10-23T16:41:55.931638Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args",
-                "custom": true,
-                "id": "igw-02d21fc9daeb52c25",
+                "id": "igw-0e852c1bb54fe2e00",
                 "type": "aws:ec2/internetGateway:InternetGateway",
                 "inputs": {
                     "__defaults": [],
@@ -213,12 +140,12 @@
                         "Name": "awsx-nodejs-default-args",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":1200000000000,\"delete\":1200000000000,\"update\":1200000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:internet-gateway/igw-02d21fc9daeb52c25",
-                    "id": "igw-02d21fc9daeb52c25",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:internet-gateway/igw-0e852c1bb54fe2e00",
+                    "id": "igw-0e852c1bb54fe2e00",
                     "ownerId": "616138583583",
                     "tags": {
                         "Name": "awsx-nodejs-default-args"
@@ -226,26 +153,101 @@
                     "tagsAll": {
                         "Name": "awsx-nodejs-default-args"
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                     ]
                 },
-                "created": "2023-10-23T16:41:56.0333Z",
-                "modified": "2023-10-23T16:41:56.0333Z"
+                "created": "2023-11-21T18:21:03.003316Z",
+                "modified": "2023-11-21T18:21:03.003316Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1",
                 "custom": true,
-                "id": "subnet-0757e1adc45aaf789",
+                "id": "subnet-04bf79e336781b960",
+                "type": "aws:ec2/subnet:Subnet",
+                "inputs": {
+                    "__defaults": [
+                        "assignIpv6AddressOnCreation",
+                        "enableDns64",
+                        "enableResourceNameDnsARecordOnLaunch",
+                        "enableResourceNameDnsAaaaRecordOnLaunch",
+                        "ipv6Native"
+                    ],
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2a",
+                    "cidrBlock": "10.0.0.0/19",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "ipv6Native": false,
+                    "mapPublicIpOnLaunch": false,
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-private-1",
+                        "SubnetType": "Private",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-04bf79e336781b960",
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2a",
+                    "availabilityZoneId": "usw2-az2",
+                    "cidrBlock": "10.0.0.0/19",
+                    "customerOwnedIpv4Pool": "",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "id": "subnet-04bf79e336781b960",
+                    "ipv6CidrBlock": "",
+                    "ipv6CidrBlockAssociationId": "",
+                    "ipv6Native": false,
+                    "mapCustomerOwnedIpOnLaunch": false,
+                    "mapPublicIpOnLaunch": false,
+                    "outpostArn": "",
+                    "ownerId": "616138583583",
+                    "privateDnsHostnameTypeOnLaunch": "ip-name",
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-private-1",
+                        "SubnetType": "Private"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-nodejs-default-args-private-1",
+                        "SubnetType": "Private"
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "availabilityZone": null,
+                    "cidrBlock": null,
+                    "mapPublicIpOnLaunch": null,
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    ]
+                },
+                "created": "2023-11-21T18:21:03.019981Z",
+                "modified": "2023-11-21T18:21:03.019981Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3",
+                "custom": true,
+                "id": "subnet-05154d47d6295d501",
                 "type": "aws:ec2/subnet:Subnet",
                 "inputs": {
                     "__defaults": [
@@ -268,11 +270,11 @@
                         "SubnetType": "Private",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0757e1adc45aaf789",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-05154d47d6295d501",
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2c",
                     "availabilityZoneId": "usw2-az3",
@@ -281,7 +283,7 @@
                     "enableDns64": false,
                     "enableResourceNameDnsARecordOnLaunch": false,
                     "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "id": "subnet-0757e1adc45aaf789",
+                    "id": "subnet-05154d47d6295d501",
                     "ipv6CidrBlock": "",
                     "ipv6CidrBlockAssociationId": "",
                     "ipv6Native": false,
@@ -298,29 +300,29 @@
                         "Name": "awsx-nodejs-default-args-private-3",
                         "SubnetType": "Private"
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "availabilityZone": null,
                     "cidrBlock": null,
                     "mapPublicIpOnLaunch": null,
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                     ]
                 },
-                "created": "2023-10-23T16:41:56.043816Z",
-                "modified": "2023-10-23T16:41:56.043816Z"
+                "created": "2023-11-21T18:21:03.036525Z",
+                "modified": "2023-11-21T18:21:03.036525Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2",
                 "custom": true,
-                "id": "subnet-0861995ef3ca0eee5",
+                "id": "subnet-0b4263838e84fec48",
                 "type": "aws:ec2/subnet:Subnet",
                 "inputs": {
                     "__defaults": [
@@ -343,11 +345,11 @@
                         "SubnetType": "Private",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0861995ef3ca0eee5",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0b4263838e84fec48",
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2b",
                     "availabilityZoneId": "usw2-az1",
@@ -356,7 +358,7 @@
                     "enableDns64": false,
                     "enableResourceNameDnsARecordOnLaunch": false,
                     "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "id": "subnet-0861995ef3ca0eee5",
+                    "id": "subnet-0b4263838e84fec48",
                     "ipv6CidrBlock": "",
                     "ipv6CidrBlockAssociationId": "",
                     "ipv6Native": false,
@@ -373,29 +375,29 @@
                         "Name": "awsx-nodejs-default-args-private-2",
                         "SubnetType": "Private"
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "availabilityZone": null,
                     "cidrBlock": null,
                     "mapPublicIpOnLaunch": null,
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                     ]
                 },
-                "created": "2023-10-23T16:41:56.088206Z",
-                "modified": "2023-10-23T16:41:56.088206Z"
+                "created": "2023-11-21T18:21:03.037455Z",
+                "modified": "2023-11-21T18:21:03.037455Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
                 "custom": true,
-                "id": "rtb-050fcc813ce925eb1",
+                "id": "rtb-0284a36dd0ab91eec",
                 "type": "aws:ec2/routeTable:RouteTable",
                 "inputs": {
                     "__defaults": [],
@@ -404,12 +406,12 @@
                         "SubnetType": "Private",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-050fcc813ce925eb1",
-                    "id": "rtb-050fcc813ce925eb1",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0284a36dd0ab91eec",
+                    "id": "rtb-0284a36dd0ab91eec",
                     "ownerId": "616138583583",
                     "propagatingVgws": [],
                     "routes": [],
@@ -421,73 +423,27 @@
                         "Name": "awsx-nodejs-default-args-private-1",
                         "SubnetType": "Private"
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                     ]
                 },
-                "created": "2023-10-23T16:41:56.694037Z",
-                "modified": "2023-10-23T16:41:56.694037Z"
+                "created": "2023-11-21T18:21:03.796116Z",
+                "modified": "2023-11-21T18:21:03.796116Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
                 "custom": true,
-                "id": "rtb-0ff9dd95009e3ff3b",
-                "type": "aws:ec2/routeTable:RouteTable",
-                "inputs": {
-                    "__defaults": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-private-2",
-                        "SubnetType": "Private",
-                        "__defaults": []
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0ff9dd95009e3ff3b",
-                    "id": "rtb-0ff9dd95009e3ff3b",
-                    "ownerId": "616138583583",
-                    "propagatingVgws": [],
-                    "routes": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-private-2",
-                        "SubnetType": "Private"
-                    },
-                    "tagsAll": {
-                        "Name": "awsx-nodejs-default-args-private-2",
-                        "SubnetType": "Private"
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "tags": null,
-                    "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                    ]
-                },
-                "created": "2023-10-23T16:41:56.813138Z",
-                "modified": "2023-10-23T16:41:56.813138Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
-                "custom": true,
-                "id": "rtb-0d60f17aead69b7f6",
+                "id": "rtb-0deb079beefec7f33",
                 "type": "aws:ec2/routeTable:RouteTable",
                 "inputs": {
                     "__defaults": [],
@@ -496,12 +452,12 @@
                         "SubnetType": "Private",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0d60f17aead69b7f6",
-                    "id": "rtb-0d60f17aead69b7f6",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0deb079beefec7f33",
+                    "id": "rtb-0deb079beefec7f33",
                     "ownerId": "616138583583",
                     "propagatingVgws": [],
                     "routes": [],
@@ -513,126 +469,172 @@
                         "Name": "awsx-nodejs-default-args-private-3",
                         "SubnetType": "Private"
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                     ]
                 },
-                "created": "2023-10-23T16:41:56.848315Z",
-                "modified": "2023-10-23T16:41:56.848315Z"
+                "created": "2023-11-21T18:21:03.805208Z",
+                "modified": "2023-11-21T18:21:03.805208Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-private-1",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
                 "custom": true,
-                "id": "rtbassoc-09dc0b6ca4cdcb883",
+                "id": "rtb-0c0bbbba371b79759",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-private-2",
+                        "SubnetType": "Private",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0c0bbbba371b79759",
+                    "id": "rtb-0c0bbbba371b79759",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-private-2",
+                        "SubnetType": "Private"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-nodejs-default-args-private-2",
+                        "SubnetType": "Private"
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    ]
+                },
+                "created": "2023-11-21T18:21:03.843403Z",
+                "modified": "2023-11-21T18:21:03.843403Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-private-1",
+                "custom": true,
+                "id": "rtbassoc-067753e2b1578ce17",
                 "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
                 "inputs": {
                     "__defaults": [],
-                    "routeTableId": "rtb-050fcc813ce925eb1",
-                    "subnetId": "subnet-0442a6c5ca4c8328f"
+                    "routeTableId": "rtb-0284a36dd0ab91eec",
+                    "subnetId": "subnet-04bf79e336781b960"
                 },
                 "outputs": {
                     "gatewayId": "",
-                    "id": "rtbassoc-09dc0b6ca4cdcb883",
-                    "routeTableId": "rtb-050fcc813ce925eb1",
-                    "subnetId": "subnet-0442a6c5ca4c8328f"
+                    "id": "rtbassoc-067753e2b1578ce17",
+                    "routeTableId": "rtb-0284a36dd0ab91eec",
+                    "subnetId": "subnet-04bf79e336781b960"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1"
                     ],
                     "subnetId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-1"
                     ]
                 },
-                "created": "2023-10-23T16:41:57.28264Z",
-                "modified": "2023-10-23T16:41:57.28264Z"
+                "created": "2023-11-21T18:21:04.372124Z",
+                "modified": "2023-11-21T18:21:04.372124Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-private-2",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-private-3",
                 "custom": true,
-                "id": "rtbassoc-01f8047ed62266384",
+                "id": "rtbassoc-0913520437a35e654",
                 "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
                 "inputs": {
                     "__defaults": [],
-                    "routeTableId": "rtb-0ff9dd95009e3ff3b",
-                    "subnetId": "subnet-0861995ef3ca0eee5"
+                    "routeTableId": "rtb-0deb079beefec7f33",
+                    "subnetId": "subnet-05154d47d6295d501"
                 },
                 "outputs": {
                     "gatewayId": "",
-                    "id": "rtbassoc-01f8047ed62266384",
-                    "routeTableId": "rtb-0ff9dd95009e3ff3b",
-                    "subnetId": "subnet-0861995ef3ca0eee5"
+                    "id": "rtbassoc-0913520437a35e654",
+                    "routeTableId": "rtb-0deb079beefec7f33",
+                    "subnetId": "subnet-05154d47d6295d501"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3"
                     ],
                     "subnetId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3"
                     ]
                 },
-                "created": "2023-10-23T16:41:57.335761Z",
-                "modified": "2023-10-23T16:41:57.335761Z"
+                "created": "2023-11-21T18:21:04.38335Z",
+                "modified": "2023-11-21T18:21:04.38335Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-private-3",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-private-2",
                 "custom": true,
-                "id": "rtbassoc-07b495ce6cc3a0303",
+                "id": "rtbassoc-012279ec031807f7b",
                 "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
                 "inputs": {
                     "__defaults": [],
-                    "routeTableId": "rtb-0d60f17aead69b7f6",
-                    "subnetId": "subnet-0757e1adc45aaf789"
+                    "routeTableId": "rtb-0c0bbbba371b79759",
+                    "subnetId": "subnet-0b4263838e84fec48"
                 },
                 "outputs": {
                     "gatewayId": "",
-                    "id": "rtbassoc-07b495ce6cc3a0303",
-                    "routeTableId": "rtb-0d60f17aead69b7f6",
-                    "subnetId": "subnet-0757e1adc45aaf789"
+                    "id": "rtbassoc-012279ec031807f7b",
+                    "routeTableId": "rtb-0c0bbbba371b79759",
+                    "subnetId": "subnet-0b4263838e84fec48"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2"
                     ],
                     "subnetId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-3"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-private-2"
                     ]
                 },
-                "created": "2023-10-23T16:41:57.374107Z",
-                "modified": "2023-10-23T16:41:57.374107Z"
+                "created": "2023-11-21T18:21:04.526988Z",
+                "modified": "2023-11-21T18:21:04.526988Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
                 "custom": true,
-                "id": "subnet-02a53e86418a13598",
+                "id": "subnet-06782b1fbd20014f8",
                 "type": "aws:ec2/subnet:Subnet",
                 "inputs": {
                     "__defaults": [
@@ -643,32 +645,32 @@
                         "ipv6Native"
                     ],
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-2b",
-                    "cidrBlock": "10.0.96.0/20",
+                    "availabilityZone": "us-west-2c",
+                    "cidrBlock": "10.0.160.0/20",
                     "enableDns64": false,
                     "enableResourceNameDnsARecordOnLaunch": false,
                     "enableResourceNameDnsAaaaRecordOnLaunch": false,
                     "ipv6Native": false,
                     "mapPublicIpOnLaunch": true,
                     "tags": {
-                        "Name": "awsx-nodejs-default-args-public-2",
+                        "Name": "awsx-nodejs-default-args-public-3",
                         "SubnetType": "Public",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-02a53e86418a13598",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-06782b1fbd20014f8",
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-2b",
-                    "availabilityZoneId": "usw2-az1",
-                    "cidrBlock": "10.0.96.0/20",
+                    "availabilityZone": "us-west-2c",
+                    "availabilityZoneId": "usw2-az3",
+                    "cidrBlock": "10.0.160.0/20",
                     "customerOwnedIpv4Pool": "",
                     "enableDns64": false,
                     "enableResourceNameDnsARecordOnLaunch": false,
                     "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "id": "subnet-02a53e86418a13598",
+                    "id": "subnet-06782b1fbd20014f8",
                     "ipv6CidrBlock": "",
                     "ipv6CidrBlockAssociationId": "",
                     "ipv6Native": false,
@@ -678,36 +680,36 @@
                     "ownerId": "616138583583",
                     "privateDnsHostnameTypeOnLaunch": "ip-name",
                     "tags": {
-                        "Name": "awsx-nodejs-default-args-public-2",
+                        "Name": "awsx-nodejs-default-args-public-3",
                         "SubnetType": "Public"
                     },
                     "tagsAll": {
-                        "Name": "awsx-nodejs-default-args-public-2",
+                        "Name": "awsx-nodejs-default-args-public-3",
                         "SubnetType": "Public"
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "availabilityZone": null,
                     "cidrBlock": null,
                     "mapPublicIpOnLaunch": null,
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                     ]
                 },
-                "created": "2023-10-23T16:42:06.649807Z",
-                "modified": "2023-10-23T16:42:06.649807Z"
+                "created": "2023-11-21T18:21:13.222692Z",
+                "modified": "2023-11-21T18:21:13.222692Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
                 "custom": true,
-                "id": "subnet-0d363572e9353dc14",
+                "id": "subnet-04d96b2afa2e06e6d",
                 "type": "aws:ec2/subnet:Subnet",
                 "inputs": {
                     "__defaults": [
@@ -730,11 +732,11 @@
                         "SubnetType": "Public",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0d363572e9353dc14",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-04d96b2afa2e06e6d",
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2a",
                     "availabilityZoneId": "usw2-az2",
@@ -743,7 +745,7 @@
                     "enableDns64": false,
                     "enableResourceNameDnsARecordOnLaunch": false,
                     "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "id": "subnet-0d363572e9353dc14",
+                    "id": "subnet-04d96b2afa2e06e6d",
                     "ipv6CidrBlock": "",
                     "ipv6CidrBlockAssociationId": "",
                     "ipv6Native": false,
@@ -760,29 +762,29 @@
                         "Name": "awsx-nodejs-default-args-public-1",
                         "SubnetType": "Public"
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "availabilityZone": null,
                     "cidrBlock": null,
                     "mapPublicIpOnLaunch": null,
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                     ]
                 },
-                "created": "2023-10-23T16:42:06.650178Z",
-                "modified": "2023-10-23T16:42:06.650178Z"
+                "created": "2023-11-21T18:21:13.497644Z",
+                "modified": "2023-11-21T18:21:13.497644Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
                 "custom": true,
-                "id": "subnet-01c6b76e5d4539993",
+                "id": "subnet-0fda0f25eb7acd39b",
                 "type": "aws:ec2/subnet:Subnet",
                 "inputs": {
                     "__defaults": [
@@ -793,32 +795,32 @@
                         "ipv6Native"
                     ],
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-2c",
-                    "cidrBlock": "10.0.160.0/20",
+                    "availabilityZone": "us-west-2b",
+                    "cidrBlock": "10.0.96.0/20",
                     "enableDns64": false,
                     "enableResourceNameDnsARecordOnLaunch": false,
                     "enableResourceNameDnsAaaaRecordOnLaunch": false,
                     "ipv6Native": false,
                     "mapPublicIpOnLaunch": true,
                     "tags": {
-                        "Name": "awsx-nodejs-default-args-public-3",
+                        "Name": "awsx-nodejs-default-args-public-2",
                         "SubnetType": "Public",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-01c6b76e5d4539993",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0fda0f25eb7acd39b",
                     "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-2c",
-                    "availabilityZoneId": "usw2-az3",
-                    "cidrBlock": "10.0.160.0/20",
+                    "availabilityZone": "us-west-2b",
+                    "availabilityZoneId": "usw2-az1",
+                    "cidrBlock": "10.0.96.0/20",
                     "customerOwnedIpv4Pool": "",
                     "enableDns64": false,
                     "enableResourceNameDnsARecordOnLaunch": false,
                     "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "id": "subnet-01c6b76e5d4539993",
+                    "id": "subnet-0fda0f25eb7acd39b",
                     "ipv6CidrBlock": "",
                     "ipv6CidrBlockAssociationId": "",
                     "ipv6Native": false,
@@ -828,668 +830,555 @@
                     "ownerId": "616138583583",
                     "privateDnsHostnameTypeOnLaunch": "ip-name",
                     "tags": {
-                        "Name": "awsx-nodejs-default-args-public-3",
+                        "Name": "awsx-nodejs-default-args-public-2",
                         "SubnetType": "Public"
                     },
                     "tagsAll": {
-                        "Name": "awsx-nodejs-default-args-public-3",
+                        "Name": "awsx-nodejs-default-args-public-2",
                         "SubnetType": "Public"
                     },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "availabilityZone": null,
                     "cidrBlock": null,
                     "mapPublicIpOnLaunch": null,
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
                     ]
                 },
-                "created": "2023-10-23T16:42:06.650949Z",
-                "modified": "2023-10-23T16:42:06.650949Z"
+                "created": "2023-11-21T18:21:13.618581Z",
+                "modified": "2023-11-21T18:21:13.618581Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-1",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-3",
                 "custom": true,
-                "id": "eipalloc-0725f3e2ac45834c4",
+                "id": "eipalloc-07c12f53794a38f39",
                 "type": "aws:ec2/eip:Eip",
                 "inputs": {
+                    "__defaults": []
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
+                    "allocationId": "eipalloc-07c12f53794a38f39",
+                    "associationId": "",
+                    "carrierIp": "",
+                    "customerOwnedIp": "",
+                    "customerOwnedIpv4Pool": "",
+                    "domain": "vpc",
+                    "id": "eipalloc-07c12f53794a38f39",
+                    "instance": "",
+                    "networkBorderGroup": "us-west-2",
+                    "networkInterface": "",
+                    "privateIp": "",
+                    "publicDns": "ec2-54-203-203-31.us-west-2.compute.amazonaws.com",
+                    "publicIp": "54.203.203.31",
+                    "publicIpv4Pool": "amazon",
+                    "tags": {},
+                    "tagsAll": {},
+                    "vpc": true
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "created": "2023-11-21T18:21:13.99934Z",
+                "modified": "2023-11-21T18:21:13.99934Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
+                "custom": true,
+                "id": "rtb-0b8e2e8c644e54619",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
                     "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-public-3",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0b8e2e8c644e54619",
+                    "id": "rtb-0b8e2e8c644e54619",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-public-3",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-nodejs-default-args-public-3",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    ]
+                },
+                "created": "2023-11-21T18:21:14.039534Z",
+                "modified": "2023-11-21T18:21:14.039534Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-1",
+                "custom": true,
+                "id": "eipalloc-0dcaae597c962daa7",
+                "type": "aws:ec2/eip:Eip",
+                "inputs": {
+                    "__defaults": []
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
+                    "allocationId": "eipalloc-0dcaae597c962daa7",
+                    "associationId": "",
+                    "carrierIp": "",
+                    "customerOwnedIp": "",
+                    "customerOwnedIpv4Pool": "",
+                    "domain": "vpc",
+                    "id": "eipalloc-0dcaae597c962daa7",
+                    "instance": "",
+                    "networkBorderGroup": "us-west-2",
+                    "networkInterface": "",
+                    "privateIp": "",
+                    "publicDns": "ec2-54-200-242-211.us-west-2.compute.amazonaws.com",
+                    "publicIp": "54.200.242.211",
+                    "publicIpv4Pool": "amazon",
+                    "tags": {},
+                    "tagsAll": {},
+                    "vpc": true
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "created": "2023-11-21T18:21:14.190942Z",
+                "modified": "2023-11-21T18:21:14.190942Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-2",
+                "custom": true,
+                "id": "eipalloc-071fcc5179dc05165",
+                "type": "aws:ec2/eip:Eip",
+                "inputs": {
+                    "__defaults": []
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
+                    "allocationId": "eipalloc-071fcc5179dc05165",
+                    "associationId": "",
+                    "carrierIp": "",
+                    "customerOwnedIp": "",
+                    "customerOwnedIpv4Pool": "",
+                    "domain": "vpc",
+                    "id": "eipalloc-071fcc5179dc05165",
+                    "instance": "",
+                    "networkBorderGroup": "us-west-2",
+                    "networkInterface": "",
+                    "privateIp": "",
+                    "publicDns": "ec2-54-203-54-73.us-west-2.compute.amazonaws.com",
+                    "publicIp": "54.203.54.73",
+                    "publicIpv4Pool": "amazon",
+                    "tags": {},
+                    "tagsAll": {},
+                    "vpc": true
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "created": "2023-11-21T18:21:14.261965Z",
+                "modified": "2023-11-21T18:21:14.261965Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
+                "custom": true,
+                "id": "rtb-026d301182d01abe7",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-public-1",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-026d301182d01abe7",
+                    "id": "rtb-026d301182d01abe7",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-public-1",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-nodejs-default-args-public-1",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    ]
+                },
+                "created": "2023-11-21T18:21:14.299806Z",
+                "modified": "2023-11-21T18:21:14.299806Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
+                "custom": true,
+                "id": "rtb-069e9b4f7dc857f55",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-public-2",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-069e9b4f7dc857f55",
+                    "id": "rtb-069e9b4f7dc857f55",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-public-2",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-nodejs-default-args-public-2",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-04928cffb3cb1b7ad"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
+                    ]
+                },
+                "created": "2023-11-21T18:21:14.451519Z",
+                "modified": "2023-11-21T18:21:14.451519Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-public-3",
+                "custom": true,
+                "id": "rtbassoc-04317a100c269085a",
+                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
+                "inputs": {
+                    "__defaults": [],
+                    "routeTableId": "rtb-0b8e2e8c644e54619",
+                    "subnetId": "subnet-06782b1fbd20014f8"
+                },
+                "outputs": {
+                    "gatewayId": "",
+                    "id": "rtbassoc-04317a100c269085a",
+                    "routeTableId": "rtb-0b8e2e8c644e54619",
+                    "subnetId": "subnet-06782b1fbd20014f8"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3"
+                    ]
+                },
+                "created": "2023-11-21T18:21:14.745599Z",
+                "modified": "2023-11-21T18:21:14.745599Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-public-1",
+                "custom": true,
+                "id": "rtbassoc-0d1c74873a99e4f73",
+                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
+                "inputs": {
+                    "__defaults": [],
+                    "routeTableId": "rtb-026d301182d01abe7",
+                    "subnetId": "subnet-04d96b2afa2e06e6d"
+                },
+                "outputs": {
+                    "gatewayId": "",
+                    "id": "rtbassoc-0d1c74873a99e4f73",
+                    "routeTableId": "rtb-026d301182d01abe7",
+                    "subnetId": "subnet-04d96b2afa2e06e6d"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1"
+                    ]
+                },
+                "created": "2023-11-21T18:21:14.869192Z",
+                "modified": "2023-11-21T18:21:14.869192Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-public-3",
+                "custom": true,
+                "id": "r-rtb-0b8e2e8c644e546191080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": "igw-0e852c1bb54fe2e00",
+                    "routeTableId": "rtb-0b8e2e8c644e54619"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "igw-0e852c1bb54fe2e00",
+                    "id": "r-rtb-0b8e2e8c644e546191080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-0b8e2e8c644e54619",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "gatewayId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3"
+                    ]
+                },
+                "created": "2023-11-21T18:21:14.905321Z",
+                "modified": "2023-11-21T18:21:14.905321Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-public-1",
+                "custom": true,
+                "id": "r-rtb-026d301182d01abe71080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": "igw-0e852c1bb54fe2e00",
+                    "routeTableId": "rtb-026d301182d01abe7"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "igw-0e852c1bb54fe2e00",
+                    "id": "r-rtb-026d301182d01abe71080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-026d301182d01abe7",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "gatewayId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1"
+                    ]
+                },
+                "created": "2023-11-21T18:21:15.173688Z",
+                "modified": "2023-11-21T18:21:15.173688Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-public-2",
+                "custom": true,
+                "id": "r-rtb-069e9b4f7dc857f551080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": "igw-0e852c1bb54fe2e00",
+                    "routeTableId": "rtb-069e9b4f7dc857f55"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "igw-0e852c1bb54fe2e00",
+                    "id": "r-rtb-069e9b4f7dc857f551080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-069e9b4f7dc857f55",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "gatewayId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2"
+                    ]
+                },
+                "created": "2023-11-21T18:21:15.24537Z",
+                "modified": "2023-11-21T18:21:15.24537Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-public-2",
+                "custom": true,
+                "id": "rtbassoc-0bb250baa7ab31a46",
+                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
+                "inputs": {
+                    "__defaults": [],
+                    "routeTableId": "rtb-069e9b4f7dc857f55",
+                    "subnetId": "subnet-0fda0f25eb7acd39b"
+                },
+                "outputs": {
+                    "gatewayId": "",
+                    "id": "rtbassoc-0bb250baa7ab31a46",
+                    "routeTableId": "rtb-069e9b4f7dc857f55",
+                    "subnetId": "subnet-0fda0f25eb7acd39b"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2"
+                    ]
+                },
+                "created": "2023-11-21T18:21:28.453495Z",
+                "modified": "2023-11-21T18:21:28.453495Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-1",
+                "custom": true,
+                "id": "nat-09b75a18dedd58d22",
+                "type": "aws:ec2/natGateway:NatGateway",
+                "inputs": {
+                    "__defaults": [
+                        "connectivityType"
+                    ],
+                    "allocationId": "eipalloc-0dcaae597c962daa7",
+                    "connectivityType": "public",
+                    "subnetId": "subnet-04d96b2afa2e06e6d",
                     "tags": {
                         "Name": "awsx-nodejs-default-args-1",
                         "__defaults": []
                     }
                 },
                 "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
-                    "allocationId": "eipalloc-0725f3e2ac45834c4",
-                    "associationId": "",
-                    "carrierIp": "",
-                    "customerOwnedIp": "",
-                    "customerOwnedIpv4Pool": "",
-                    "domain": "vpc",
-                    "id": "eipalloc-0725f3e2ac45834c4",
-                    "instance": "",
-                    "networkBorderGroup": "us-west-2",
-                    "networkInterface": "",
-                    "privateIp": "",
-                    "publicDns": "ec2-54-214-167-50.us-west-2.compute.amazonaws.com",
-                    "publicIp": "54.214.167.50",
-                    "publicIpv4Pool": "amazon",
-                    "tags": {},
-                    "tagsAll": {},
-                    "vpc": true
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "created": "2023-10-23T16:42:07.378226Z",
-                "modified": "2023-10-23T16:42:07.378226Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-2",
-                "custom": true,
-                "id": "eipalloc-08f2e34dd4b53241d",
-                "type": "aws:ec2/eip:Eip",
-                "inputs": {
-                    "__defaults": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-2",
-                        "__defaults": []
-                    }
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
-                    "allocationId": "eipalloc-08f2e34dd4b53241d",
-                    "associationId": "",
-                    "carrierIp": "",
-                    "customerOwnedIp": "",
-                    "customerOwnedIpv4Pool": "",
-                    "domain": "vpc",
-                    "id": "eipalloc-08f2e34dd4b53241d",
-                    "instance": "",
-                    "networkBorderGroup": "us-west-2",
-                    "networkInterface": "",
-                    "privateIp": "",
-                    "publicDns": "ec2-54-190-233-196.us-west-2.compute.amazonaws.com",
-                    "publicIp": "54.190.233.196",
-                    "publicIpv4Pool": "amazon",
-                    "tags": {},
-                    "tagsAll": {},
-                    "vpc": true
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "created": "2023-10-23T16:42:07.399377Z",
-                "modified": "2023-10-23T16:42:07.399377Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-3",
-                "custom": true,
-                "id": "eipalloc-0e51b86dcc325ccfb",
-                "type": "aws:ec2/eip:Eip",
-                "inputs": {
-                    "__defaults": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-3",
-                        "__defaults": []
-                    }
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":180000000000,\"read\":900000000000,\"update\":300000000000}}",
-                    "allocationId": "eipalloc-0e51b86dcc325ccfb",
-                    "associationId": "",
-                    "carrierIp": "",
-                    "customerOwnedIp": "",
-                    "customerOwnedIpv4Pool": "",
-                    "domain": "vpc",
-                    "id": "eipalloc-0e51b86dcc325ccfb",
-                    "instance": "",
-                    "networkBorderGroup": "us-west-2",
-                    "networkInterface": "",
-                    "privateIp": "",
-                    "publicDns": "ec2-44-232-194-223.us-west-2.compute.amazonaws.com",
-                    "publicIp": "44.232.194.223",
-                    "publicIpv4Pool": "amazon",
-                    "tags": {},
-                    "tagsAll": {},
-                    "vpc": true
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "created": "2023-10-23T16:42:07.405923Z",
-                "modified": "2023-10-23T16:42:07.405923Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
-                "custom": true,
-                "id": "rtb-008627a4e1f292192",
-                "type": "aws:ec2/routeTable:RouteTable",
-                "inputs": {
-                    "__defaults": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-public-2",
-                        "SubnetType": "Public",
-                        "__defaults": []
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-008627a4e1f292192",
-                    "id": "rtb-008627a4e1f292192",
-                    "ownerId": "616138583583",
-                    "propagatingVgws": [],
-                    "routes": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-public-2",
-                        "SubnetType": "Public"
-                    },
-                    "tagsAll": {
-                        "Name": "awsx-nodejs-default-args-public-2",
-                        "SubnetType": "Public"
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "tags": null,
-                    "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                    ]
-                },
-                "created": "2023-10-23T16:42:07.423085Z",
-                "modified": "2023-10-23T16:42:07.423085Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
-                "custom": true,
-                "id": "rtb-0a22307ab7b16abc5",
-                "type": "aws:ec2/routeTable:RouteTable",
-                "inputs": {
-                    "__defaults": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-public-1",
-                        "SubnetType": "Public",
-                        "__defaults": []
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0a22307ab7b16abc5",
-                    "id": "rtb-0a22307ab7b16abc5",
-                    "ownerId": "616138583583",
-                    "propagatingVgws": [],
-                    "routes": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-public-1",
-                        "SubnetType": "Public"
-                    },
-                    "tagsAll": {
-                        "Name": "awsx-nodejs-default-args-public-1",
-                        "SubnetType": "Public"
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "tags": null,
-                    "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                    ]
-                },
-                "created": "2023-10-23T16:42:07.431728Z",
-                "modified": "2023-10-23T16:42:07.431728Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
-                "custom": true,
-                "id": "rtb-06a57c996477c46d9",
-                "type": "aws:ec2/routeTable:RouteTable",
-                "inputs": {
-                    "__defaults": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-public-3",
-                        "SubnetType": "Public",
-                        "__defaults": []
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-06a57c996477c46d9",
-                    "id": "rtb-06a57c996477c46d9",
-                    "ownerId": "616138583583",
-                    "propagatingVgws": [],
-                    "routes": [],
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-public-3",
-                        "SubnetType": "Public"
-                    },
-                    "tagsAll": {
-                        "Name": "awsx-nodejs-default-args-public-3",
-                        "SubnetType": "Public"
-                    },
-                    "vpcId": "vpc-047b9cb167b0dbfdc"
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "tags": null,
-                    "vpcId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::awsx-nodejs-default-args"
-                    ]
-                },
-                "created": "2023-10-23T16:42:07.449066Z",
-                "modified": "2023-10-23T16:42:07.449066Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-public-2",
-                "custom": true,
-                "id": "rtbassoc-0efc41c82d834c73c",
-                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
-                "inputs": {
-                    "__defaults": [],
-                    "routeTableId": "rtb-008627a4e1f292192",
-                    "subnetId": "subnet-02a53e86418a13598"
-                },
-                "outputs": {
-                    "gatewayId": "",
-                    "id": "rtbassoc-0efc41c82d834c73c",
-                    "routeTableId": "rtb-008627a4e1f292192",
-                    "subnetId": "subnet-02a53e86418a13598"
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2"
-                    ],
-                    "subnetId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2"
-                    ]
-                },
-                "created": "2023-10-23T16:42:08.058824Z",
-                "modified": "2023-10-23T16:42:08.058824Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-public-1",
-                "custom": true,
-                "id": "rtbassoc-078c854f9220b95cb",
-                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
-                "inputs": {
-                    "__defaults": [],
-                    "routeTableId": "rtb-0a22307ab7b16abc5",
-                    "subnetId": "subnet-0d363572e9353dc14"
-                },
-                "outputs": {
-                    "gatewayId": "",
-                    "id": "rtbassoc-078c854f9220b95cb",
-                    "routeTableId": "rtb-0a22307ab7b16abc5",
-                    "subnetId": "subnet-0d363572e9353dc14"
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1"
-                    ],
-                    "subnetId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1"
-                    ]
-                },
-                "created": "2023-10-23T16:42:08.067363Z",
-                "modified": "2023-10-23T16:42:08.067363Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::awsx-nodejs-default-args-public-3",
-                "custom": true,
-                "id": "rtbassoc-0998d5c79e21bc998",
-                "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
-                "inputs": {
-                    "__defaults": [],
-                    "routeTableId": "rtb-06a57c996477c46d9",
-                    "subnetId": "subnet-01c6b76e5d4539993"
-                },
-                "outputs": {
-                    "gatewayId": "",
-                    "id": "rtbassoc-0998d5c79e21bc998",
-                    "routeTableId": "rtb-06a57c996477c46d9",
-                    "subnetId": "subnet-01c6b76e5d4539993"
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3"
-                    ],
-                    "subnetId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3"
-                    ]
-                },
-                "created": "2023-10-23T16:42:08.150141Z",
-                "modified": "2023-10-23T16:42:08.150141Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-public-1",
-                "custom": true,
-                "id": "r-rtb-0a22307ab7b16abc51080289494",
-                "type": "aws:ec2/route:Route",
-                "inputs": {
-                    "__defaults": [],
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "gatewayId": "igw-02d21fc9daeb52c25",
-                    "routeTableId": "rtb-0a22307ab7b16abc5"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "carrierGatewayId": "",
-                    "coreNetworkArn": "",
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "",
-                    "destinationPrefixListId": "",
-                    "egressOnlyGatewayId": "",
-                    "gatewayId": "igw-02d21fc9daeb52c25",
-                    "id": "r-rtb-0a22307ab7b16abc51080289494",
-                    "instanceId": "",
-                    "instanceOwnerId": "",
-                    "localGatewayId": "",
-                    "natGatewayId": "",
-                    "networkInterfaceId": "",
-                    "origin": "CreateRoute",
-                    "routeTableId": "rtb-0a22307ab7b16abc5",
-                    "state": "active",
-                    "transitGatewayId": "",
-                    "vpcEndpointId": "",
-                    "vpcPeeringConnectionId": ""
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "destinationCidrBlock": null,
-                    "gatewayId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
-                    ],
-                    "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-1"
-                    ]
-                },
-                "created": "2023-10-23T16:42:08.266022Z",
-                "modified": "2023-10-23T16:42:08.266022Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-public-2",
-                "custom": true,
-                "id": "r-rtb-008627a4e1f2921921080289494",
-                "type": "aws:ec2/route:Route",
-                "inputs": {
-                    "__defaults": [],
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "gatewayId": "igw-02d21fc9daeb52c25",
-                    "routeTableId": "rtb-008627a4e1f292192"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "carrierGatewayId": "",
-                    "coreNetworkArn": "",
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "",
-                    "destinationPrefixListId": "",
-                    "egressOnlyGatewayId": "",
-                    "gatewayId": "igw-02d21fc9daeb52c25",
-                    "id": "r-rtb-008627a4e1f2921921080289494",
-                    "instanceId": "",
-                    "instanceOwnerId": "",
-                    "localGatewayId": "",
-                    "natGatewayId": "",
-                    "networkInterfaceId": "",
-                    "origin": "CreateRoute",
-                    "routeTableId": "rtb-008627a4e1f292192",
-                    "state": "active",
-                    "transitGatewayId": "",
-                    "vpcEndpointId": "",
-                    "vpcPeeringConnectionId": ""
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "destinationCidrBlock": null,
-                    "gatewayId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
-                    ],
-                    "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-2"
-                    ]
-                },
-                "created": "2023-10-23T16:42:08.275112Z",
-                "modified": "2023-10-23T16:42:08.275112Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-public-3",
-                "custom": true,
-                "id": "r-rtb-06a57c996477c46d91080289494",
-                "type": "aws:ec2/route:Route",
-                "inputs": {
-                    "__defaults": [],
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "gatewayId": "igw-02d21fc9daeb52c25",
-                    "routeTableId": "rtb-06a57c996477c46d9"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "carrierGatewayId": "",
-                    "coreNetworkArn": "",
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "",
-                    "destinationPrefixListId": "",
-                    "egressOnlyGatewayId": "",
-                    "gatewayId": "igw-02d21fc9daeb52c25",
-                    "id": "r-rtb-06a57c996477c46d91080289494",
-                    "instanceId": "",
-                    "instanceOwnerId": "",
-                    "localGatewayId": "",
-                    "natGatewayId": "",
-                    "networkInterfaceId": "",
-                    "origin": "CreateRoute",
-                    "routeTableId": "rtb-06a57c996477c46d9",
-                    "state": "active",
-                    "transitGatewayId": "",
-                    "vpcEndpointId": "",
-                    "vpcPeeringConnectionId": ""
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "destinationCidrBlock": null,
-                    "gatewayId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::awsx-nodejs-default-args"
-                    ],
-                    "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-public-3"
-                    ]
-                },
-                "created": "2023-10-23T16:42:08.461913Z",
-                "modified": "2023-10-23T16:42:08.461913Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-2",
-                "custom": true,
-                "id": "nat-0f7363624b229dfe1",
-                "type": "aws:ec2/natGateway:NatGateway",
-                "inputs": {
-                    "__defaults": [
-                        "connectivityType"
-                    ],
-                    "allocationId": "eipalloc-08f2e34dd4b53241d",
+                    "allocationId": "eipalloc-0dcaae597c962daa7",
                     "connectivityType": "public",
-                    "subnetId": "subnet-02a53e86418a13598",
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-2",
-                        "__defaults": []
-                    }
-                },
-                "outputs": {
-                    "allocationId": "eipalloc-08f2e34dd4b53241d",
-                    "connectivityType": "public",
-                    "id": "nat-0f7363624b229dfe1",
-                    "networkInterfaceId": "eni-0b99b56e69873891f",
-                    "privateIp": "10.0.108.236",
-                    "publicIp": "54.190.233.196",
-                    "subnetId": "subnet-02a53e86418a13598",
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-2"
-                    },
-                    "tagsAll": {
-                        "Name": "awsx-nodejs-default-args-2"
-                    }
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-2"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "allocationId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-2"
-                    ],
-                    "subnetId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2"
-                    ],
-                    "tags": null
-                },
-                "created": "2023-10-23T16:43:42.773421Z",
-                "modified": "2023-10-23T16:43:42.773421Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-private-2",
-                "custom": true,
-                "id": "r-rtb-0ff9dd95009e3ff3b1080289494",
-                "type": "aws:ec2/route:Route",
-                "inputs": {
-                    "__defaults": [],
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "natGatewayId": "nat-0f7363624b229dfe1",
-                    "routeTableId": "rtb-0ff9dd95009e3ff3b"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "carrierGatewayId": "",
-                    "coreNetworkArn": "",
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "",
-                    "destinationPrefixListId": "",
-                    "egressOnlyGatewayId": "",
-                    "gatewayId": "",
-                    "id": "r-rtb-0ff9dd95009e3ff3b1080289494",
-                    "instanceId": "",
-                    "instanceOwnerId": "",
-                    "localGatewayId": "",
-                    "natGatewayId": "nat-0f7363624b229dfe1",
-                    "networkInterfaceId": "",
-                    "origin": "CreateRoute",
-                    "routeTableId": "rtb-0ff9dd95009e3ff3b",
-                    "state": "active",
-                    "transitGatewayId": "",
-                    "vpcEndpointId": "",
-                    "vpcPeeringConnectionId": ""
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-2"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "destinationCidrBlock": null,
-                    "natGatewayId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-2"
-                    ],
-                    "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2"
-                    ]
-                },
-                "created": "2023-10-23T16:43:44.01103Z",
-                "modified": "2023-10-23T16:43:44.01103Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-1",
-                "custom": true,
-                "id": "nat-0456f527a0544b26f",
-                "type": "aws:ec2/natGateway:NatGateway",
-                "inputs": {
-                    "__defaults": [
-                        "connectivityType"
-                    ],
-                    "allocationId": "eipalloc-0725f3e2ac45834c4",
-                    "connectivityType": "public",
-                    "subnetId": "subnet-0d363572e9353dc14",
-                    "tags": {
-                        "Name": "awsx-nodejs-default-args-1",
-                        "__defaults": []
-                    }
-                },
-                "outputs": {
-                    "allocationId": "eipalloc-0725f3e2ac45834c4",
-                    "connectivityType": "public",
-                    "id": "nat-0456f527a0544b26f",
-                    "networkInterfaceId": "eni-004daff43852da67e",
-                    "privateIp": "10.0.39.72",
-                    "publicIp": "54.214.167.50",
-                    "subnetId": "subnet-0d363572e9353dc14",
+                    "id": "nat-09b75a18dedd58d22",
+                    "networkInterfaceId": "eni-0ac538495bbabc06c",
+                    "privateIp": "10.0.35.12",
+                    "publicIp": "54.200.242.211",
+                    "subnetId": "subnet-04d96b2afa2e06e6d",
                     "tags": {
                         "Name": "awsx-nodejs-default-args-1"
                     },
@@ -1497,49 +1386,201 @@
                         "Name": "awsx-nodejs-default-args-1"
                     }
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-1"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-1"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "allocationId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-1"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-1"
                     ],
                     "subnetId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-1"
                     ],
                     "tags": null
                 },
-                "created": "2023-10-23T16:44:03.037501Z",
-                "modified": "2023-10-23T16:44:03.037501Z"
+                "created": "2023-11-21T18:22:59.708198Z",
+                "modified": "2023-11-21T18:22:59.708198Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-3",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-2",
                 "custom": true,
-                "id": "nat-02708f01a93bb61a1",
+                "id": "nat-00a35957d656c80b0",
                 "type": "aws:ec2/natGateway:NatGateway",
                 "inputs": {
                     "__defaults": [
                         "connectivityType"
                     ],
-                    "allocationId": "eipalloc-0e51b86dcc325ccfb",
+                    "allocationId": "eipalloc-071fcc5179dc05165",
                     "connectivityType": "public",
-                    "subnetId": "subnet-01c6b76e5d4539993",
+                    "subnetId": "subnet-0fda0f25eb7acd39b",
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-2",
+                        "__defaults": []
+                    }
+                },
+                "outputs": {
+                    "allocationId": "eipalloc-071fcc5179dc05165",
+                    "connectivityType": "public",
+                    "id": "nat-00a35957d656c80b0",
+                    "networkInterfaceId": "eni-09b938ae037ff5ea0",
+                    "privateIp": "10.0.100.108",
+                    "publicIp": "54.203.54.73",
+                    "subnetId": "subnet-0fda0f25eb7acd39b",
+                    "tags": {
+                        "Name": "awsx-nodejs-default-args-2"
+                    },
+                    "tagsAll": {
+                        "Name": "awsx-nodejs-default-args-2"
+                    }
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-2"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "allocationId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-2"
+                    ],
+                    "subnetId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-2"
+                    ],
+                    "tags": null
+                },
+                "created": "2023-11-21T18:22:59.839024Z",
+                "modified": "2023-11-21T18:22:59.839024Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-private-1",
+                "custom": true,
+                "id": "r-rtb-0284a36dd0ab91eec1080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "natGatewayId": "nat-09b75a18dedd58d22",
+                    "routeTableId": "rtb-0284a36dd0ab91eec"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "",
+                    "id": "r-rtb-0284a36dd0ab91eec1080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "nat-09b75a18dedd58d22",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-0284a36dd0ab91eec",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-1"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "natGatewayId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-1"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1"
+                    ]
+                },
+                "created": "2023-11-21T18:23:00.97962Z",
+                "modified": "2023-11-21T18:23:00.97962Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-private-2",
+                "custom": true,
+                "id": "r-rtb-0c0bbbba371b797591080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "natGatewayId": "nat-00a35957d656c80b0",
+                    "routeTableId": "rtb-0c0bbbba371b79759"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "",
+                    "id": "r-rtb-0c0bbbba371b797591080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "nat-00a35957d656c80b0",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-0c0bbbba371b79759",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-2"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "natGatewayId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-2"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-2"
+                    ]
+                },
+                "created": "2023-11-21T18:23:01.001076Z",
+                "modified": "2023-11-21T18:23:01.001076Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-3",
+                "custom": true,
+                "id": "nat-0c069228ed10415ab",
+                "type": "aws:ec2/natGateway:NatGateway",
+                "inputs": {
+                    "__defaults": [
+                        "connectivityType"
+                    ],
+                    "allocationId": "eipalloc-07c12f53794a38f39",
+                    "connectivityType": "public",
+                    "subnetId": "subnet-06782b1fbd20014f8",
                     "tags": {
                         "Name": "awsx-nodejs-default-args-3",
                         "__defaults": []
                     }
                 },
                 "outputs": {
-                    "allocationId": "eipalloc-0e51b86dcc325ccfb",
+                    "allocationId": "eipalloc-07c12f53794a38f39",
                     "connectivityType": "public",
-                    "id": "nat-02708f01a93bb61a1",
-                    "networkInterfaceId": "eni-09abdff4821e7ceed",
-                    "privateIp": "10.0.166.141",
-                    "publicIp": "44.232.194.223",
-                    "subnetId": "subnet-01c6b76e5d4539993",
+                    "id": "nat-0c069228ed10415ab",
+                    "networkInterfaceId": "eni-06fefc2b287f71770",
+                    "privateIp": "10.0.175.156",
+                    "publicIp": "54.203.203.31",
+                    "subnetId": "subnet-06782b1fbd20014f8",
                     "tags": {
                         "Name": "awsx-nodejs-default-args-3"
                     },
@@ -1547,34 +1588,34 @@
                         "Name": "awsx-nodejs-default-args-3"
                     }
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-3"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-3"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "allocationId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-3"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/eip:Eip::awsx-nodejs-default-args-3"
                     ],
                     "subnetId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::awsx-nodejs-default-args-public-3"
                     ],
                     "tags": null
                 },
-                "created": "2023-10-23T16:44:03.092817Z",
-                "modified": "2023-10-23T16:44:03.092817Z"
+                "created": "2023-11-21T18:23:19.876613Z",
+                "modified": "2023-11-21T18:23:19.876613Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-private-1",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-private-3",
                 "custom": true,
-                "id": "r-rtb-050fcc813ce925eb11080289494",
+                "id": "r-rtb-0deb079beefec7f331080289494",
                 "type": "aws:ec2/route:Route",
                 "inputs": {
                     "__defaults": [],
                     "destinationCidrBlock": "0.0.0.0/0",
-                    "natGatewayId": "nat-0456f527a0544b26f",
-                    "routeTableId": "rtb-050fcc813ce925eb1"
+                    "natGatewayId": "nat-0c069228ed10415ab",
+                    "routeTableId": "rtb-0deb079beefec7f33"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
@@ -1585,95 +1626,44 @@
                     "destinationPrefixListId": "",
                     "egressOnlyGatewayId": "",
                     "gatewayId": "",
-                    "id": "r-rtb-050fcc813ce925eb11080289494",
+                    "id": "r-rtb-0deb079beefec7f331080289494",
                     "instanceId": "",
                     "instanceOwnerId": "",
                     "localGatewayId": "",
-                    "natGatewayId": "nat-0456f527a0544b26f",
+                    "natGatewayId": "nat-0c069228ed10415ab",
                     "networkInterfaceId": "",
                     "origin": "CreateRoute",
-                    "routeTableId": "rtb-050fcc813ce925eb1",
+                    "routeTableId": "rtb-0deb079beefec7f33",
                     "state": "active",
                     "transitGatewayId": "",
                     "vpcEndpointId": "",
                     "vpcPeeringConnectionId": ""
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
+                "parent": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-1"
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
+                    "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-3"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
+                "provider": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:aws::default_5_35_0::4a6be87b-e13a-4940-99d0-31dc0348e26a",
                 "propertyDependencies": {
                     "destinationCidrBlock": null,
                     "natGatewayId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-1"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-3"
                     ],
                     "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-1"
+                        "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3"
                     ]
                 },
-                "created": "2023-10-23T16:44:04.306993Z",
-                "modified": "2023-10-23T16:44:04.306993Z"
+                "created": "2023-11-21T18:23:21.107128Z",
+                "modified": "2023-11-21T18:23:21.107128Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::awsx-nodejs-default-args-private-3",
+                "urn": "urn:pulumi:p-it-monicas-ma-default-ar-ab1b2a1f::nodejs::pulumi:providers:pulumi::default",
                 "custom": true,
-                "id": "r-rtb-0d60f17aead69b7f61080289494",
-                "type": "aws:ec2/route:Route",
-                "inputs": {
-                    "__defaults": [],
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "natGatewayId": "nat-02708f01a93bb61a1",
-                    "routeTableId": "rtb-0d60f17aead69b7f6"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "carrierGatewayId": "",
-                    "coreNetworkArn": "",
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "",
-                    "destinationPrefixListId": "",
-                    "egressOnlyGatewayId": "",
-                    "gatewayId": "",
-                    "id": "r-rtb-0d60f17aead69b7f61080289494",
-                    "instanceId": "",
-                    "instanceOwnerId": "",
-                    "localGatewayId": "",
-                    "natGatewayId": "nat-02708f01a93bb61a1",
-                    "networkInterfaceId": "",
-                    "origin": "CreateRoute",
-                    "routeTableId": "rtb-0d60f17aead69b7f6",
-                    "state": "active",
-                    "transitGatewayId": "",
-                    "vpcEndpointId": "",
-                    "vpcPeeringConnectionId": ""
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3",
-                    "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-3"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:aws::default_5_35_0::8748a1c8-c7a3-407e-b4bb-952dfedd9f8f",
-                "propertyDependencies": {
-                    "destinationCidrBlock": null,
-                    "natGatewayId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/natGateway:NatGateway::awsx-nodejs-default-args-3"
-                    ],
-                    "routeTableId": [
-                        "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::awsx-nodejs-default-args-private-3"
-                    ]
-                },
-                "created": "2023-10-23T16:44:04.311678Z",
-                "modified": "2023-10-23T16:44:04.311678Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-default-ar-c7f150ab::nodejs::pulumi:providers:pulumi::default",
-                "custom": true,
-                "id": "013a3dc1-370f-44bb-8fb8-3c8a4a839b12",
+                "id": "f3acf7b3-1305-492e-bf9c-fbb4af9e5a34",
                 "type": "pulumi:providers:pulumi",
-                "created": "2023-10-23T16:44:04.677523Z",
-                "modified": "2023-10-23T16:44:04.677523Z"
+                "created": "2023-11-21T18:23:21.399613Z",
+                "modified": "2023-11-21T18:23:21.399613Z"
             }
         ]
     }

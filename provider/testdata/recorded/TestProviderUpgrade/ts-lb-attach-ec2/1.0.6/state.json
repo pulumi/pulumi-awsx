@@ -2,47 +2,32 @@
     "version": 3,
     "deployment": {
         "manifest": {
-            "time": "2023-11-01T19:46:47.887911Z",
-            "magic": "7f5ec831fbfcaaafb30fe1f9dd0eebc4a62372e9fda10d9bab6256b2deca869d",
-            "version": "v3.78.1"
+            "time": "2023-11-21T13:53:14.712731-05:00",
+            "magic": "1c7bee3f57c8d621757e12febf05da234085ddfd4ef5c94d61087118355865f9",
+            "version": "v3.94.2"
         },
         "secrets_providers": {
             "type": "passphrase",
             "state": {
-                "salt": "v1:+Xtt7iVeOWc=:v1:nWDpceiCGl1CBGXZ:M0cFyQx2to6f1PZPg3aMQImJTMAkZw=="
+                "salt": "v1:mBlMipOD3V8=:v1:cyQ3dlmnynpCOJsH:LR3hIk7Sx6bS1z+i34qvEvNrVU3ypQ=="
             }
         },
         "resources": [
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-daniels-ma-ts-lb-atta-37a9ba44",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-monicas-ma-ts-lb-atta-11333927",
                 "custom": false,
                 "type": "pulumi:pulumi:Stack",
                 "outputs": {
-                    "url": "lb-20db9e1-972659748.us-west-2.elb.amazonaws.com"
+                    "url": "lb-e3726fa-921749112.us-west-2.elb.amazonaws.com"
                 },
-                "created": "2023-11-01T19:44:03.759991Z",
-                "modified": "2023-11-01T19:44:03.759991Z"
+                "created": "2023-11-21T18:49:44.205724Z",
+                "modified": "2023-11-21T18:49:44.205724Z",
+                "sourcePosition": "project:///node_modules/@pulumi/runtime/stack.ts#36,23"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_42_0",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:awsx::default_1_0_6",
                 "custom": true,
-                "id": "763df9c8-f173-4c81-b2b1-5c5a2e69a53f",
-                "type": "pulumi:providers:aws",
-                "inputs": {
-                    "region": "us-west-2",
-                    "version": "5.42.0"
-                },
-                "outputs": {
-                    "region": "us-west-2",
-                    "version": "5.42.0"
-                },
-                "created": "2023-11-01T19:44:05.69473Z",
-                "modified": "2023-11-01T19:44:05.69473Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:awsx::default_1_0_6",
-                "custom": true,
-                "id": "129e6834-2f98-4b66-8686-75baa11d6b4b",
+                "id": "29b55413-3412-4196-980f-9a85fd567242",
                 "type": "pulumi:providers:awsx",
                 "inputs": {
                     "version": "1.0.6"
@@ -50,21 +35,37 @@
                 "outputs": {
                     "version": "1.0.6"
                 },
-                "created": "2023-11-01T19:44:05.870897Z",
-                "modified": "2023-11-01T19:44:05.870897Z"
+                "created": "2023-11-21T18:49:44.652571Z",
+                "modified": "2023-11-21T18:49:44.652571Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_42_0",
+                "custom": true,
+                "id": "f4f23a66-c281-4d43-8ba4-ae6bc6a8373b",
+                "type": "pulumi:providers:aws",
+                "inputs": {
+                    "region": "us-west-2",
+                    "version": "5.42.0"
+                },
+                "outputs": {
+                    "region": "us-west-2",
+                    "version": "5.42.0"
+                },
+                "created": "2023-11-21T18:49:45.291078Z",
+                "modified": "2023-11-21T18:49:45.291078Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc",
                 "custom": false,
                 "type": "awsx:ec2:Vpc",
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-daniels-ma-ts-lb-atta-37a9ba44",
-                "created": "2023-11-01T19:44:07.378741Z",
-                "modified": "2023-11-01T19:44:07.378741Z"
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-monicas-ma-ts-lb-atta-11333927",
+                "created": "2023-11-21T18:49:45.292898Z",
+                "modified": "2023-11-21T18:49:45.292898Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0",
                 "custom": true,
-                "id": "4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "id": "127cb215-2444-4517-97bd-c7dc119f34a3",
                 "type": "pulumi:providers:aws",
                 "inputs": {
                     "region": "us-west-2",
@@ -74,13 +75,13 @@
                     "region": "us-west-2",
                     "version": "5.35.0"
                 },
-                "created": "2023-11-01T19:44:07.477959Z",
-                "modified": "2023-11-01T19:44:07.477959Z"
+                "created": "2023-11-21T18:49:45.949293Z",
+                "modified": "2023-11-21T18:49:45.949293Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::aws:ec2/securityGroup:SecurityGroup::web-secgrp",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::aws:ec2/securityGroup:SecurityGroup::web-secgrp",
                 "custom": true,
-                "id": "sg-06d3de2ce05698a7f",
+                "id": "sg-0c2844875343af261",
                 "type": "aws:ec2/securityGroup:SecurityGroup",
                 "inputs": {
                     "__defaults": [
@@ -102,15 +103,15 @@
                             "toPort": 80
                         }
                     ],
-                    "name": "web-secgrp-9dc95c0",
+                    "name": "web-secgrp-9b25af4",
                     "revokeRulesOnDelete": false
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":900000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:security-group/sg-06d3de2ce05698a7f",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:security-group/sg-0c2844875343af261",
                     "description": "Managed by Pulumi",
                     "egress": [],
-                    "id": "sg-06d3de2ce05698a7f",
+                    "id": "sg-0c2844875343af261",
                     "ingress": [
                         {
                             "cidrBlocks": [
@@ -126,7 +127,7 @@
                             "toPort": 80
                         }
                     ],
-                    "name": "web-secgrp-9dc95c0",
+                    "name": "web-secgrp-9b25af4",
                     "namePrefix": "",
                     "ownerId": "616138583583",
                     "revokeRulesOnDelete": false,
@@ -134,19 +135,20 @@
                     "tagsAll": {},
                     "vpcId": "vpc-4b82e033"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-daniels-ma-ts-lb-atta-37a9ba44",
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_42_0::763df9c8-f173-4c81-b2b1-5c5a2e69a53f",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-monicas-ma-ts-lb-atta-11333927",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_42_0::f4f23a66-c281-4d43-8ba4-ae6bc6a8373b",
                 "propertyDependencies": {
                     "description": null,
                     "ingress": null
                 },
-                "created": "2023-11-01T19:44:11.006551Z",
-                "modified": "2023-11-01T19:44:11.006551Z"
+                "created": "2023-11-21T18:49:48.644595Z",
+                "modified": "2023-11-21T18:49:48.644595Z",
+                "sourcePosition": "project:///index.ts#18,15"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
                 "custom": true,
-                "id": "vpc-0dc9d2f00a1763639",
+                "id": "vpc-0ed9677a0315c1f83",
                 "type": "aws:ec2/vpc:Vpc",
                 "inputs": {
                     "__defaults": [
@@ -163,26 +165,26 @@
                 },
                 "outputs": {
                     "__meta": "{\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:vpc/vpc-0dc9d2f00a1763639",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:vpc/vpc-0ed9677a0315c1f83",
                     "assignGeneratedIpv6CidrBlock": false,
                     "cidrBlock": "10.0.0.0/16",
-                    "defaultNetworkAclId": "acl-030b690abf3aa488f",
-                    "defaultRouteTableId": "rtb-08c035a50114281bf",
-                    "defaultSecurityGroupId": "sg-0a90e0b0e82acd98c",
+                    "defaultNetworkAclId": "acl-0ed36927e02293787",
+                    "defaultRouteTableId": "rtb-0ccd1a1ede2be21e2",
+                    "defaultSecurityGroupId": "sg-0146082bfc290cc68",
                     "dhcpOptionsId": "dopt-1649d26e",
                     "enableClassiclink": false,
                     "enableClassiclinkDnsSupport": false,
                     "enableDnsHostnames": false,
                     "enableDnsSupport": true,
                     "enableNetworkAddressUsageMetrics": false,
-                    "id": "vpc-0dc9d2f00a1763639",
+                    "id": "vpc-0ed9677a0315c1f83",
                     "instanceTenancy": "default",
                     "ipv6AssociationId": "",
                     "ipv6CidrBlock": "",
                     "ipv6CidrBlockNetworkBorderGroup": "",
                     "ipv6IpamPoolId": "",
                     "ipv6NetmaskLength": 0,
-                    "mainRouteTableId": "rtb-08c035a50114281bf",
+                    "mainRouteTableId": "rtb-0ccd1a1ede2be21e2",
                     "ownerId": "616138583583",
                     "tags": {
                         "Name": "vpc"
@@ -191,19 +193,19 @@
                         "Name": "vpc"
                     }
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc",
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "cidrBlock": null,
                     "tags": null
                 },
-                "created": "2023-11-01T19:44:14.795739Z",
-                "modified": "2023-11-01T19:44:14.795739Z"
+                "created": "2023-11-21T18:49:49.95636Z",
+                "modified": "2023-11-21T18:49:49.95636Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc",
                 "custom": true,
-                "id": "igw-05fe03ed72d62627d",
+                "id": "igw-0875bd169eec8fc02",
                 "type": "aws:ec2/internetGateway:InternetGateway",
                 "inputs": {
                     "__defaults": [],
@@ -211,12 +213,12 @@
                         "Name": "vpc",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":1200000000000,\"delete\":1200000000000,\"update\":1200000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:internet-gateway/igw-05fe03ed72d62627d",
-                    "id": "igw-05fe03ed72d62627d",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:internet-gateway/igw-0875bd169eec8fc02",
+                    "id": "igw-0875bd169eec8fc02",
                     "ownerId": "616138583583",
                     "tags": {
                         "Name": "vpc"
@@ -224,101 +226,26 @@
                     "tagsAll": {
                         "Name": "vpc"
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                     ]
                 },
-                "created": "2023-11-01T19:44:16.216344Z",
-                "modified": "2023-11-01T19:44:16.216344Z"
+                "created": "2023-11-21T18:49:50.996821Z",
+                "modified": "2023-11-21T18:49:50.996821Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
                 "custom": true,
-                "id": "subnet-0ef1167274b61bc70",
-                "type": "aws:ec2/subnet:Subnet",
-                "inputs": {
-                    "__defaults": [
-                        "assignIpv6AddressOnCreation",
-                        "enableDns64",
-                        "enableResourceNameDnsARecordOnLaunch",
-                        "enableResourceNameDnsAaaaRecordOnLaunch",
-                        "ipv6Native"
-                    ],
-                    "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-2c",
-                    "cidrBlock": "10.0.128.0/20",
-                    "enableDns64": false,
-                    "enableResourceNameDnsARecordOnLaunch": false,
-                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "ipv6Native": false,
-                    "mapPublicIpOnLaunch": true,
-                    "tags": {
-                        "Name": "vpc-public-3",
-                        "SubnetType": "Public",
-                        "__defaults": []
-                    },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0ef1167274b61bc70",
-                    "assignIpv6AddressOnCreation": false,
-                    "availabilityZone": "us-west-2c",
-                    "availabilityZoneId": "usw2-az3",
-                    "cidrBlock": "10.0.128.0/20",
-                    "customerOwnedIpv4Pool": "",
-                    "enableDns64": false,
-                    "enableResourceNameDnsARecordOnLaunch": false,
-                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "id": "subnet-0ef1167274b61bc70",
-                    "ipv6CidrBlock": "",
-                    "ipv6CidrBlockAssociationId": "",
-                    "ipv6Native": false,
-                    "mapCustomerOwnedIpOnLaunch": false,
-                    "mapPublicIpOnLaunch": true,
-                    "outpostArn": "",
-                    "ownerId": "616138583583",
-                    "privateDnsHostnameTypeOnLaunch": "ip-name",
-                    "tags": {
-                        "Name": "vpc-public-3",
-                        "SubnetType": "Public"
-                    },
-                    "tagsAll": {
-                        "Name": "vpc-public-3",
-                        "SubnetType": "Public"
-                    },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
-                },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
-                "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
-                ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
-                "propertyDependencies": {
-                    "availabilityZone": null,
-                    "cidrBlock": null,
-                    "mapPublicIpOnLaunch": null,
-                    "tags": null,
-                    "vpcId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
-                    ]
-                },
-                "created": "2023-11-01T19:44:26.440112Z",
-                "modified": "2023-11-01T19:44:26.440112Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                "custom": true,
-                "id": "subnet-0c5a68337b1c8c314",
+                "id": "subnet-06b21cb6b828b9fed",
                 "type": "aws:ec2/subnet:Subnet",
                 "inputs": {
                     "__defaults": [
@@ -341,11 +268,11 @@
                         "SubnetType": "Public",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0c5a68337b1c8c314",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-06b21cb6b828b9fed",
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2b",
                     "availabilityZoneId": "usw2-az1",
@@ -354,7 +281,7 @@
                     "enableDns64": false,
                     "enableResourceNameDnsARecordOnLaunch": false,
                     "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "id": "subnet-0c5a68337b1c8c314",
+                    "id": "subnet-06b21cb6b828b9fed",
                     "ipv6CidrBlock": "",
                     "ipv6CidrBlockAssociationId": "",
                     "ipv6Native": false,
@@ -371,29 +298,29 @@
                         "Name": "vpc-public-2",
                         "SubnetType": "Public"
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "availabilityZone": null,
                     "cidrBlock": null,
                     "mapPublicIpOnLaunch": null,
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                     ]
                 },
-                "created": "2023-11-01T19:44:26.669539Z",
-                "modified": "2023-11-01T19:44:26.669539Z"
+                "created": "2023-11-21T18:50:01.271909Z",
+                "modified": "2023-11-21T18:50:01.271909Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
                 "custom": true,
-                "id": "subnet-0f0438d3ad611a010",
+                "id": "subnet-01d1a6453bf976d68",
                 "type": "aws:ec2/subnet:Subnet",
                 "inputs": {
                     "__defaults": [
@@ -416,11 +343,11 @@
                         "SubnetType": "Public",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0f0438d3ad611a010",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-01d1a6453bf976d68",
                     "assignIpv6AddressOnCreation": false,
                     "availabilityZone": "us-west-2a",
                     "availabilityZoneId": "usw2-az2",
@@ -429,7 +356,7 @@
                     "enableDns64": false,
                     "enableResourceNameDnsARecordOnLaunch": false,
                     "enableResourceNameDnsAaaaRecordOnLaunch": false,
-                    "id": "subnet-0f0438d3ad611a010",
+                    "id": "subnet-01d1a6453bf976d68",
                     "ipv6CidrBlock": "",
                     "ipv6CidrBlockAssociationId": "",
                     "ipv6Native": false,
@@ -446,29 +373,150 @@
                         "Name": "vpc-public-1",
                         "SubnetType": "Public"
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "availabilityZone": null,
                     "cidrBlock": null,
                     "mapPublicIpOnLaunch": null,
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                     ]
                 },
-                "created": "2023-11-01T19:44:26.726152Z",
-                "modified": "2023-11-01T19:44:26.726152Z"
+                "created": "2023-11-21T18:50:01.464991Z",
+                "modified": "2023-11-21T18:50:01.464991Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
                 "custom": true,
-                "id": "rtb-03eb5534dc7153c1a",
+                "id": "subnet-0032906d819e195af",
+                "type": "aws:ec2/subnet:Subnet",
+                "inputs": {
+                    "__defaults": [
+                        "assignIpv6AddressOnCreation",
+                        "enableDns64",
+                        "enableResourceNameDnsARecordOnLaunch",
+                        "enableResourceNameDnsAaaaRecordOnLaunch",
+                        "ipv6Native"
+                    ],
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2c",
+                    "cidrBlock": "10.0.128.0/20",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "ipv6Native": false,
+                    "mapPublicIpOnLaunch": true,
+                    "tags": {
+                        "Name": "vpc-public-3",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-0ed9677a0315c1f83"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000},\"schema_version\":\"1\"}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:subnet/subnet-0032906d819e195af",
+                    "assignIpv6AddressOnCreation": false,
+                    "availabilityZone": "us-west-2c",
+                    "availabilityZoneId": "usw2-az3",
+                    "cidrBlock": "10.0.128.0/20",
+                    "customerOwnedIpv4Pool": "",
+                    "enableDns64": false,
+                    "enableResourceNameDnsARecordOnLaunch": false,
+                    "enableResourceNameDnsAaaaRecordOnLaunch": false,
+                    "id": "subnet-0032906d819e195af",
+                    "ipv6CidrBlock": "",
+                    "ipv6CidrBlockAssociationId": "",
+                    "ipv6Native": false,
+                    "mapCustomerOwnedIpOnLaunch": false,
+                    "mapPublicIpOnLaunch": true,
+                    "outpostArn": "",
+                    "ownerId": "616138583583",
+                    "privateDnsHostnameTypeOnLaunch": "ip-name",
+                    "tags": {
+                        "Name": "vpc-public-3",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "vpc-public-3",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-0ed9677a0315c1f83"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
+                "propertyDependencies": {
+                    "availabilityZone": null,
+                    "cidrBlock": null,
+                    "mapPublicIpOnLaunch": null,
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                    ]
+                },
+                "created": "2023-11-21T18:50:01.468539Z",
+                "modified": "2023-11-21T18:50:01.468539Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
+                "custom": true,
+                "id": "rtb-02423d5b2943d3b62",
+                "type": "aws:ec2/routeTable:RouteTable",
+                "inputs": {
+                    "__defaults": [],
+                    "tags": {
+                        "Name": "vpc-public-2",
+                        "SubnetType": "Public",
+                        "__defaults": []
+                    },
+                    "vpcId": "vpc-0ed9677a0315c1f83"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-02423d5b2943d3b62",
+                    "id": "rtb-02423d5b2943d3b62",
+                    "ownerId": "616138583583",
+                    "propagatingVgws": [],
+                    "routes": [],
+                    "tags": {
+                        "Name": "vpc-public-2",
+                        "SubnetType": "Public"
+                    },
+                    "tagsAll": {
+                        "Name": "vpc-public-2",
+                        "SubnetType": "Public"
+                    },
+                    "vpcId": "vpc-0ed9677a0315c1f83"
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
+                "propertyDependencies": {
+                    "tags": null,
+                    "vpcId": [
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                    ]
+                },
+                "created": "2023-11-21T18:50:02.118302Z",
+                "modified": "2023-11-21T18:50:02.118302Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
+                "custom": true,
+                "id": "rtb-088173abccbad43b7",
                 "type": "aws:ec2/routeTable:RouteTable",
                 "inputs": {
                     "__defaults": [],
@@ -477,12 +525,12 @@
                         "SubnetType": "Public",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-03eb5534dc7153c1a",
-                    "id": "rtb-03eb5534dc7153c1a",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-088173abccbad43b7",
+                    "id": "rtb-088173abccbad43b7",
                     "ownerId": "616138583583",
                     "propagatingVgws": [],
                     "routes": [],
@@ -494,73 +542,27 @@
                         "Name": "vpc-public-3",
                         "SubnetType": "Public"
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                     ]
                 },
-                "created": "2023-11-01T19:44:27.465475Z",
-                "modified": "2023-11-01T19:44:27.465475Z"
+                "created": "2023-11-21T18:50:02.292548Z",
+                "modified": "2023-11-21T18:50:02.292548Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
                 "custom": true,
-                "id": "rtb-016d766f1379b6f49",
-                "type": "aws:ec2/routeTable:RouteTable",
-                "inputs": {
-                    "__defaults": [],
-                    "tags": {
-                        "Name": "vpc-public-2",
-                        "SubnetType": "Public",
-                        "__defaults": []
-                    },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-016d766f1379b6f49",
-                    "id": "rtb-016d766f1379b6f49",
-                    "ownerId": "616138583583",
-                    "propagatingVgws": [],
-                    "routes": [],
-                    "tags": {
-                        "Name": "vpc-public-2",
-                        "SubnetType": "Public"
-                    },
-                    "tagsAll": {
-                        "Name": "vpc-public-2",
-                        "SubnetType": "Public"
-                    },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
-                },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
-                ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
-                "propertyDependencies": {
-                    "tags": null,
-                    "vpcId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
-                    ]
-                },
-                "created": "2023-11-01T19:44:27.627715Z",
-                "modified": "2023-11-01T19:44:27.627715Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
-                "custom": true,
-                "id": "rtb-03f4bf64c5a7a4d2f",
+                "id": "rtb-0be62a9b5d3095b4c",
                 "type": "aws:ec2/routeTable:RouteTable",
                 "inputs": {
                     "__defaults": [],
@@ -569,12 +571,12 @@
                         "SubnetType": "Public",
                         "__defaults": []
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-03f4bf64c5a7a4d2f",
-                    "id": "rtb-03f4bf64c5a7a4d2f",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:route-table/rtb-0be62a9b5d3095b4c",
+                    "id": "rtb-0be62a9b5d3095b4c",
                     "ownerId": "616138583583",
                     "propagatingVgws": [],
                     "routes": [],
@@ -586,99 +588,99 @@
                         "Name": "vpc-public-1",
                         "SubnetType": "Public"
                     },
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "tags": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc"
                     ]
                 },
-                "created": "2023-11-01T19:44:27.790804Z",
-                "modified": "2023-11-01T19:44:27.790804Z"
+                "created": "2023-11-21T18:50:02.304222Z",
+                "modified": "2023-11-21T18:50:02.304222Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::vpc-public-3",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::vpc-public-2",
                 "custom": true,
-                "id": "rtbassoc-0aab314de518acaa6",
+                "id": "rtbassoc-082c61071f1bac220",
                 "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
                 "inputs": {
                     "__defaults": [],
-                    "routeTableId": "rtb-03eb5534dc7153c1a",
-                    "subnetId": "subnet-0ef1167274b61bc70"
+                    "routeTableId": "rtb-02423d5b2943d3b62",
+                    "subnetId": "subnet-06b21cb6b828b9fed"
                 },
                 "outputs": {
                     "gatewayId": "",
-                    "id": "rtbassoc-0aab314de518acaa6",
-                    "routeTableId": "rtb-03eb5534dc7153c1a",
-                    "subnetId": "subnet-0ef1167274b61bc70"
+                    "id": "rtbassoc-082c61071f1bac220",
+                    "routeTableId": "rtb-02423d5b2943d3b62",
+                    "subnetId": "subnet-06b21cb6b828b9fed"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "routeTableId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2"
                     ],
                     "subnetId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2"
                     ]
                 },
-                "created": "2023-11-01T19:44:28.316173Z",
-                "modified": "2023-11-01T19:44:28.316173Z"
+                "created": "2023-11-21T18:50:02.888025Z",
+                "modified": "2023-11-21T18:50:02.888025Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::vpc-public-2",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::vpc-public-1",
                 "custom": true,
-                "id": "rtbassoc-0a5e6c0d74b1d08d3",
+                "id": "rtbassoc-0ae1ac69286c7f6b8",
                 "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
                 "inputs": {
                     "__defaults": [],
-                    "routeTableId": "rtb-016d766f1379b6f49",
-                    "subnetId": "subnet-0c5a68337b1c8c314"
+                    "routeTableId": "rtb-0be62a9b5d3095b4c",
+                    "subnetId": "subnet-01d1a6453bf976d68"
                 },
                 "outputs": {
                     "gatewayId": "",
-                    "id": "rtbassoc-0a5e6c0d74b1d08d3",
-                    "routeTableId": "rtb-016d766f1379b6f49",
-                    "subnetId": "subnet-0c5a68337b1c8c314"
+                    "id": "rtbassoc-0ae1ac69286c7f6b8",
+                    "routeTableId": "rtb-0be62a9b5d3095b4c",
+                    "subnetId": "subnet-01d1a6453bf976d68"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "routeTableId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1"
                     ],
                     "subnetId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1"
                     ]
                 },
-                "created": "2023-11-01T19:44:28.420604Z",
-                "modified": "2023-11-01T19:44:28.420604Z"
+                "created": "2023-11-21T18:50:02.951038Z",
+                "modified": "2023-11-21T18:50:02.951038Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::vpc-public-3",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::vpc-public-2",
                 "custom": true,
-                "id": "r-rtb-03eb5534dc7153c1a1080289494",
+                "id": "r-rtb-02423d5b2943d3b621080289494",
                 "type": "aws:ec2/route:Route",
                 "inputs": {
                     "__defaults": [],
                     "destinationCidrBlock": "0.0.0.0/0",
-                    "gatewayId": "igw-05fe03ed72d62627d",
-                    "routeTableId": "rtb-03eb5534dc7153c1a"
+                    "gatewayId": "igw-0875bd169eec8fc02",
+                    "routeTableId": "rtb-02423d5b2943d3b62"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
@@ -688,200 +690,200 @@
                     "destinationIpv6CidrBlock": "",
                     "destinationPrefixListId": "",
                     "egressOnlyGatewayId": "",
-                    "gatewayId": "igw-05fe03ed72d62627d",
-                    "id": "r-rtb-03eb5534dc7153c1a1080289494",
+                    "gatewayId": "igw-0875bd169eec8fc02",
+                    "id": "r-rtb-02423d5b2943d3b621080289494",
                     "instanceId": "",
                     "instanceOwnerId": "",
                     "localGatewayId": "",
                     "natGatewayId": "",
                     "networkInterfaceId": "",
                     "origin": "CreateRoute",
-                    "routeTableId": "rtb-03eb5534dc7153c1a",
+                    "routeTableId": "rtb-02423d5b2943d3b62",
                     "state": "active",
                     "transitGatewayId": "",
                     "vpcEndpointId": "",
                     "vpcPeeringConnectionId": ""
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "destinationCidrBlock": null,
                     "gatewayId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
                     ],
                     "routeTableId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2"
                     ]
                 },
-                "created": "2023-11-01T19:44:28.52975Z",
-                "modified": "2023-11-01T19:44:28.52975Z"
+                "created": "2023-11-21T18:50:03.004399Z",
+                "modified": "2023-11-21T18:50:03.004399Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::vpc-public-1",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::vpc-public-3",
                 "custom": true,
-                "id": "rtbassoc-09fd4b151e873716a",
+                "id": "r-rtb-088173abccbad43b71080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": "igw-0875bd169eec8fc02",
+                    "routeTableId": "rtb-088173abccbad43b7"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "igw-0875bd169eec8fc02",
+                    "id": "r-rtb-088173abccbad43b71080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-088173abccbad43b7",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "gatewayId": [
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3"
+                    ]
+                },
+                "created": "2023-11-21T18:50:03.110594Z",
+                "modified": "2023-11-21T18:50:03.110594Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::vpc-public-1",
+                "custom": true,
+                "id": "r-rtb-0be62a9b5d3095b4c1080289494",
+                "type": "aws:ec2/route:Route",
+                "inputs": {
+                    "__defaults": [],
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "gatewayId": "igw-0875bd169eec8fc02",
+                    "routeTableId": "rtb-0be62a9b5d3095b4c"
+                },
+                "outputs": {
+                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
+                    "carrierGatewayId": "",
+                    "coreNetworkArn": "",
+                    "destinationCidrBlock": "0.0.0.0/0",
+                    "destinationIpv6CidrBlock": "",
+                    "destinationPrefixListId": "",
+                    "egressOnlyGatewayId": "",
+                    "gatewayId": "igw-0875bd169eec8fc02",
+                    "id": "r-rtb-0be62a9b5d3095b4c1080289494",
+                    "instanceId": "",
+                    "instanceOwnerId": "",
+                    "localGatewayId": "",
+                    "natGatewayId": "",
+                    "networkInterfaceId": "",
+                    "origin": "CreateRoute",
+                    "routeTableId": "rtb-0be62a9b5d3095b4c",
+                    "state": "active",
+                    "transitGatewayId": "",
+                    "vpcEndpointId": "",
+                    "vpcPeeringConnectionId": ""
+                },
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
+                "dependencies": [
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
+                ],
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
+                "propertyDependencies": {
+                    "destinationCidrBlock": null,
+                    "gatewayId": [
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
+                    ],
+                    "routeTableId": [
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1"
+                    ]
+                },
+                "created": "2023-11-21T18:50:03.18573Z",
+                "modified": "2023-11-21T18:50:03.18573Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/routeTableAssociation:RouteTableAssociation::vpc-public-3",
+                "custom": true,
+                "id": "rtbassoc-067df0cd99a6021ce",
                 "type": "aws:ec2/routeTableAssociation:RouteTableAssociation",
                 "inputs": {
                     "__defaults": [],
-                    "routeTableId": "rtb-03f4bf64c5a7a4d2f",
-                    "subnetId": "subnet-0f0438d3ad611a010"
+                    "routeTableId": "rtb-088173abccbad43b7",
+                    "subnetId": "subnet-0032906d819e195af"
                 },
                 "outputs": {
                     "gatewayId": "",
-                    "id": "rtbassoc-09fd4b151e873716a",
-                    "routeTableId": "rtb-03f4bf64c5a7a4d2f",
-                    "subnetId": "subnet-0f0438d3ad611a010"
+                    "id": "rtbassoc-067df0cd99a6021ce",
+                    "routeTableId": "rtb-088173abccbad43b7",
+                    "subnetId": "subnet-0032906d819e195af"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "routeTableId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-3"
                     ],
                     "subnetId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3"
                     ]
                 },
-                "created": "2023-11-01T19:44:28.535713Z",
-                "modified": "2023-11-01T19:44:28.535713Z"
+                "created": "2023-11-21T18:50:16.455855Z",
+                "modified": "2023-11-21T18:50:16.455855Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::vpc-public-2",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:pulumi::default",
                 "custom": true,
-                "id": "r-rtb-016d766f1379b6f491080289494",
-                "type": "aws:ec2/route:Route",
-                "inputs": {
-                    "__defaults": [],
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "gatewayId": "igw-05fe03ed72d62627d",
-                    "routeTableId": "rtb-016d766f1379b6f49"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "carrierGatewayId": "",
-                    "coreNetworkArn": "",
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "",
-                    "destinationPrefixListId": "",
-                    "egressOnlyGatewayId": "",
-                    "gatewayId": "igw-05fe03ed72d62627d",
-                    "id": "r-rtb-016d766f1379b6f491080289494",
-                    "instanceId": "",
-                    "instanceOwnerId": "",
-                    "localGatewayId": "",
-                    "natGatewayId": "",
-                    "networkInterfaceId": "",
-                    "origin": "CreateRoute",
-                    "routeTableId": "rtb-016d766f1379b6f49",
-                    "state": "active",
-                    "transitGatewayId": "",
-                    "vpcEndpointId": "",
-                    "vpcPeeringConnectionId": ""
-                },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
-                "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
-                ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
-                "propertyDependencies": {
-                    "destinationCidrBlock": null,
-                    "gatewayId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
-                    ],
-                    "routeTableId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-2"
-                    ]
-                },
-                "created": "2023-11-01T19:44:28.699546Z",
-                "modified": "2023-11-01T19:44:28.699546Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable$aws:ec2/route:Route::vpc-public-1",
-                "custom": true,
-                "id": "r-rtb-03f4bf64c5a7a4d2f1080289494",
-                "type": "aws:ec2/route:Route",
-                "inputs": {
-                    "__defaults": [],
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "gatewayId": "igw-05fe03ed72d62627d",
-                    "routeTableId": "rtb-03f4bf64c5a7a4d2f"
-                },
-                "outputs": {
-                    "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":300000000000,\"delete\":300000000000,\"update\":120000000000}}",
-                    "carrierGatewayId": "",
-                    "coreNetworkArn": "",
-                    "destinationCidrBlock": "0.0.0.0/0",
-                    "destinationIpv6CidrBlock": "",
-                    "destinationPrefixListId": "",
-                    "egressOnlyGatewayId": "",
-                    "gatewayId": "igw-05fe03ed72d62627d",
-                    "id": "r-rtb-03f4bf64c5a7a4d2f1080289494",
-                    "instanceId": "",
-                    "instanceOwnerId": "",
-                    "localGatewayId": "",
-                    "natGatewayId": "",
-                    "networkInterfaceId": "",
-                    "origin": "CreateRoute",
-                    "routeTableId": "rtb-03f4bf64c5a7a4d2f",
-                    "state": "active",
-                    "transitGatewayId": "",
-                    "vpcEndpointId": "",
-                    "vpcPeeringConnectionId": ""
-                },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
-                "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
-                ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
-                "propertyDependencies": {
-                    "destinationCidrBlock": null,
-                    "gatewayId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/internetGateway:InternetGateway::vpc"
-                    ],
-                    "routeTableId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet$aws:ec2/routeTable:RouteTable::vpc-public-1"
-                    ]
-                },
-                "created": "2023-11-01T19:44:28.936956Z",
-                "modified": "2023-11-01T19:44:28.936956Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:pulumi::default",
-                "custom": true,
-                "id": "d92114b5-0e0f-4956-b0bc-6b87df4ae16c",
+                "id": "dd39b796-71cd-4ce8-b1e6-92d62b77758b",
                 "type": "pulumi:providers:pulumi",
-                "created": "2023-11-01T19:44:29.077423Z",
-                "modified": "2023-11-01T19:44:29.077423Z"
+                "created": "2023-11-21T18:50:16.685223Z",
+                "modified": "2023-11-21T18:50:16.685223Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
                 "custom": false,
                 "type": "awsx:lb:ApplicationLoadBalancer",
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-daniels-ma-ts-lb-atta-37a9ba44",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-monicas-ma-ts-lb-atta-11333927",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
                 ],
-                "created": "2023-11-01T19:44:29.153278Z",
-                "modified": "2023-11-01T19:44:29.153278Z"
+                "created": "2023-11-21T18:50:16.784739Z",
+                "modified": "2023-11-21T18:50:16.784739Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
                 "custom": true,
-                "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-dfa31c0/ac83a899d27fa1ac",
+                "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-70c72ff/f39896077871a38e",
                 "type": "aws:lb/targetGroup:TargetGroup",
                 "inputs": {
                     "__defaults": [
@@ -893,17 +895,17 @@
                     ],
                     "connectionTermination": false,
                     "lambdaMultiValueHeadersEnabled": false,
-                    "name": "lb-dfa31c0",
+                    "name": "lb-70c72ff",
                     "port": 80,
                     "protocol": "HTTP",
                     "proxyProtocolV2": false,
                     "slowStart": 0,
                     "targetType": "ip",
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
                 "outputs": {
-                    "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-dfa31c0/ac83a899d27fa1ac",
-                    "arnSuffix": "targetgroup/lb-dfa31c0/ac83a899d27fa1ac",
+                    "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-70c72ff/f39896077871a38e",
+                    "arnSuffix": "targetgroup/lb-70c72ff/f39896077871a38e",
                     "connectionTermination": false,
                     "deregistrationDelay": 300,
                     "healthCheck": {
@@ -917,12 +919,12 @@
                         "timeout": 5,
                         "unhealthyThreshold": 2
                     },
-                    "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-dfa31c0/ac83a899d27fa1ac",
+                    "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-70c72ff/f39896077871a38e",
                     "ipAddressType": "ipv4",
                     "lambdaMultiValueHeadersEnabled": false,
                     "loadBalancingAlgorithmType": "round_robin",
                     "loadBalancingCrossZoneEnabled": "use_load_balancer_configuration",
-                    "name": "lb-dfa31c0",
+                    "name": "lb-70c72ff",
                     "port": 80,
                     "protocol": "HTTP",
                     "protocolVersion": "HTTP1",
@@ -940,36 +942,36 @@
                         null
                     ],
                     "targetType": "ip",
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "port": null,
                     "protocol": null,
                     "targetType": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
                     ]
                 },
-                "created": "2023-11-01T19:44:31.732009Z",
-                "modified": "2023-11-01T19:44:31.732009Z"
+                "created": "2023-11-21T18:50:18.824193Z",
+                "modified": "2023-11-21T18:50:18.824193Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:ec2/securityGroup:SecurityGroup::lb",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:ec2/securityGroup:SecurityGroup::lb",
                 "custom": true,
-                "id": "sg-03fcaf0755c534a84",
+                "id": "sg-0ca6fc57a527a35d5",
                 "type": "aws:ec2/securityGroup:SecurityGroup",
                 "inputs": {
                     "__defaults": [
@@ -1011,13 +1013,13 @@
                             "toPort": 0
                         }
                     ],
-                    "name": "lb-f2f0031",
+                    "name": "lb-f2ac2c4",
                     "revokeRulesOnDelete": false,
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":900000000000},\"schema_version\":\"1\"}",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:security-group/sg-03fcaf0755c534a84",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:security-group/sg-0ca6fc57a527a35d5",
                     "description": "Managed by Pulumi",
                     "egress": [
                         {
@@ -1036,7 +1038,7 @@
                             "toPort": 65535
                         }
                     ],
-                    "id": "sg-03fcaf0755c534a84",
+                    "id": "sg-0ca6fc57a527a35d5",
                     "ingress": [
                         {
                             "cidrBlocks": [
@@ -1054,42 +1056,42 @@
                             "toPort": 0
                         }
                     ],
-                    "name": "lb-f2f0031",
+                    "name": "lb-f2ac2c4",
                     "namePrefix": "",
                     "ownerId": "616138583583",
                     "revokeRulesOnDelete": false,
                     "tags": {},
                     "tagsAll": {},
-                    "vpcId": "vpc-0dc9d2f00a1763639"
+                    "vpcId": "vpc-0ed9677a0315c1f83"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "description": null,
                     "egress": null,
                     "ingress": null,
                     "vpcId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
                     ]
                 },
-                "created": "2023-11-01T19:44:32.464917Z",
-                "modified": "2023-11-01T19:44:32.464917Z"
+                "created": "2023-11-21T18:50:19.449831Z",
+                "modified": "2023-11-21T18:50:19.449831Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance",
                 "custom": true,
-                "id": "i-0960449d605d75f42",
+                "id": "i-001e2430846c01cf4",
                 "type": "aws:ec2/instance:Instance",
                 "inputs": {
                     "__defaults": [
@@ -1104,13 +1106,13 @@
                     "userData": "#!/bin/bash\necho \"Hello, World!\" > index.html\nnohup python -m SimpleHTTPServer 80 &",
                     "userDataReplaceOnChange": false,
                     "vpcSecurityGroupIds": [
-                        "sg-06d3de2ce05698a7f"
+                        "sg-0c2844875343af261"
                     ]
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"create\":600000000000,\"delete\":1200000000000,\"update\":600000000000},\"schema_version\":\"1\"}",
                     "ami": "ami-06ca1b888cb7f44a0",
-                    "arn": "arn:aws:ec2:us-west-2:616138583583:instance/i-0960449d605d75f42",
+                    "arn": "arn:aws:ec2:us-west-2:616138583583:instance/i-001e2430846c01cf4",
                     "associatePublicIpAddress": true,
                     "availabilityZone": "us-west-2b",
                     "capacityReservationSpecification": {
@@ -1139,7 +1141,7 @@
                     "hibernation": false,
                     "hostId": "",
                     "iamInstanceProfile": "",
-                    "id": "i-0960449d605d75f42",
+                    "id": "i-001e2430846c01cf4",
                     "instanceInitiatedShutdownBehavior": "stop",
                     "instanceState": "running",
                     "instanceType": "t2.micro",
@@ -1162,16 +1164,16 @@
                     "passwordData": "",
                     "placementGroup": "",
                     "placementPartitionNumber": 0,
-                    "primaryNetworkInterfaceId": "eni-0009e3ae278cf0d9a",
-                    "privateDns": "ip-172-31-18-135.us-west-2.compute.internal",
+                    "primaryNetworkInterfaceId": "eni-04a36fadbe932830c",
+                    "privateDns": "ip-172-31-27-101.us-west-2.compute.internal",
                     "privateDnsNameOptions": {
                         "enableResourceNameDnsARecord": false,
                         "enableResourceNameDnsAaaaRecord": false,
                         "hostnameType": "ip-name"
                     },
-                    "privateIp": "172.31.18.135",
-                    "publicDns": "ec2-34-218-230-47.us-west-2.compute.amazonaws.com",
-                    "publicIp": "34.218.230.47",
+                    "privateIp": "172.31.27.101",
+                    "publicDns": "ec2-54-202-138-225.us-west-2.compute.amazonaws.com",
+                    "publicIp": "54.202.138.225",
                     "rootBlockDevice": {
                         "deleteOnTermination": true,
                         "deviceName": "/dev/xvda",
@@ -1180,13 +1182,13 @@
                         "kmsKeyId": "",
                         "tags": {},
                         "throughput": 0,
-                        "volumeId": "vol-035d85968c84bd473",
+                        "volumeId": "vol-01931c59d6629ce94",
                         "volumeSize": 8,
                         "volumeType": "standard"
                     },
                     "secondaryPrivateIps": [],
                     "securityGroups": [
-                        "web-secgrp-9dc95c0"
+                        "web-secgrp-9b25af4"
                     ],
                     "sourceDestCheck": true,
                     "subnetId": "subnet-c7d926bf",
@@ -1196,29 +1198,30 @@
                     "userData": "6c9af18dedd883b14ac2969ec364e7113dd8533c",
                     "userDataReplaceOnChange": false,
                     "vpcSecurityGroupIds": [
-                        "sg-06d3de2ce05698a7f"
+                        "sg-0c2844875343af261"
                     ]
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-daniels-ma-ts-lb-atta-37a9ba44",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-monicas-ma-ts-lb-atta-11333927",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::aws:ec2/securityGroup:SecurityGroup::web-secgrp"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::aws:ec2/securityGroup:SecurityGroup::web-secgrp"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_42_0::763df9c8-f173-4c81-b2b1-5c5a2e69a53f",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_42_0::f4f23a66-c281-4d43-8ba4-ae6bc6a8373b",
                 "propertyDependencies": {
                     "ami": null,
                     "instanceType": null,
                     "userData": null,
                     "vpcSecurityGroupIds": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::aws:ec2/securityGroup:SecurityGroup::web-secgrp"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::aws:ec2/securityGroup:SecurityGroup::web-secgrp"
                     ]
                 },
-                "created": "2023-11-01T19:44:45.135978Z",
-                "modified": "2023-11-01T19:44:45.135978Z"
+                "created": "2023-11-21T18:50:31.938478Z",
+                "modified": "2023-11-21T18:50:31.938478Z",
+                "sourcePosition": "project:///index.ts#34,18"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/loadBalancer:LoadBalancer::lb",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/loadBalancer:LoadBalancer::lb",
                 "custom": true,
-                "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-20db9e1/95015105fdda1732",
+                "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-e3726fa/ef08191ad7e4016e",
                 "type": "aws:lb/loadBalancer:LoadBalancer",
                 "inputs": {
                     "__defaults": [
@@ -1245,15 +1248,15 @@
                     "enableXffClientPort": false,
                     "idleTimeout": 60,
                     "loadBalancerType": "application",
-                    "name": "lb-20db9e1",
+                    "name": "lb-e3726fa",
                     "preserveHostHeader": false,
                     "securityGroups": [
-                        "sg-03fcaf0755c534a84"
+                        "sg-0ca6fc57a527a35d5"
                     ],
                     "subnets": [
-                        "subnet-0f0438d3ad611a010",
-                        "subnet-0c5a68337b1c8c314",
-                        "subnet-0ef1167274b61bc70"
+                        "subnet-01d1a6453bf976d68",
+                        "subnet-06b21cb6b828b9fed",
+                        "subnet-0032906d819e195af"
                     ],
                     "xffHeaderProcessingMode": "append"
                 },
@@ -1264,11 +1267,11 @@
                         "enabled": false,
                         "prefix": ""
                     },
-                    "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-20db9e1/95015105fdda1732",
-                    "arnSuffix": "app/lb-20db9e1/95015105fdda1732",
+                    "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-e3726fa/ef08191ad7e4016e",
+                    "arnSuffix": "app/lb-e3726fa/ef08191ad7e4016e",
                     "customerOwnedIpv4Pool": "",
                     "desyncMitigationMode": "defensive",
-                    "dnsName": "lb-20db9e1-972659748.us-west-2.elb.amazonaws.com",
+                    "dnsName": "lb-e3726fa-921749112.us-west-2.elb.amazonaws.com",
                     "dropInvalidHeaderFields": false,
                     "enableCrossZoneLoadBalancing": true,
                     "enableDeletionProtection": false,
@@ -1276,15 +1279,15 @@
                     "enableTlsVersionAndCipherSuiteHeaders": false,
                     "enableWafFailOpen": false,
                     "enableXffClientPort": false,
-                    "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-20db9e1/95015105fdda1732",
+                    "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-e3726fa/ef08191ad7e4016e",
                     "idleTimeout": 60,
                     "internal": false,
                     "ipAddressType": "ipv4",
                     "loadBalancerType": "application",
-                    "name": "lb-20db9e1",
+                    "name": "lb-e3726fa",
                     "preserveHostHeader": false,
                     "securityGroups": [
-                        "sg-03fcaf0755c534a84"
+                        "sg-0ca6fc57a527a35d5"
                     ],
                     "subnetMappings": [
                         {
@@ -1292,81 +1295,81 @@
                             "ipv6Address": "",
                             "outpostId": "",
                             "privateIpv4Address": "",
-                            "subnetId": "subnet-0f0438d3ad611a010"
+                            "subnetId": "subnet-01d1a6453bf976d68"
                         },
                         {
                             "allocationId": "",
                             "ipv6Address": "",
                             "outpostId": "",
                             "privateIpv4Address": "",
-                            "subnetId": "subnet-0ef1167274b61bc70"
+                            "subnetId": "subnet-06b21cb6b828b9fed"
                         },
                         {
                             "allocationId": "",
                             "ipv6Address": "",
                             "outpostId": "",
                             "privateIpv4Address": "",
-                            "subnetId": "subnet-0c5a68337b1c8c314"
+                            "subnetId": "subnet-0032906d819e195af"
                         }
                     ],
                     "subnets": [
-                        "subnet-0ef1167274b61bc70",
-                        "subnet-0f0438d3ad611a010",
-                        "subnet-0c5a68337b1c8c314"
+                        "subnet-0032906d819e195af",
+                        "subnet-06b21cb6b828b9fed",
+                        "subnet-01d1a6453bf976d68"
                     ],
                     "tags": {},
                     "tagsAll": {},
-                    "vpcId": "vpc-0dc9d2f00a1763639",
+                    "vpcId": "vpc-0ed9677a0315c1f83",
                     "xffHeaderProcessingMode": "append",
                     "zoneId": "Z1H1FL5HABSF5"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:ec2/securityGroup:SecurityGroup::lb",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:ec2/securityGroup:SecurityGroup::lb",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "loadBalancerType": null,
                     "securityGroups": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:ec2/securityGroup:SecurityGroup::lb"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:ec2/securityGroup:SecurityGroup::lb"
                     ],
                     "subnets": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-1",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-2",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc$aws:ec2/subnet:Subnet::vpc-public-3",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc$aws:ec2/vpc:Vpc::vpc",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:ec2:Vpc::vpc"
                     ]
                 },
-                "created": "2023-11-01T19:46:46.495324Z",
-                "modified": "2023-11-01T19:46:46.495324Z"
+                "created": "2023-11-21T18:53:13.50562Z",
+                "modified": "2023-11-21T18:53:13.50562Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/listener:Listener::lb-0",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/listener:Listener::lb-0",
                 "custom": true,
-                "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/app/lb-20db9e1/95015105fdda1732/45a75d1e0f768227",
+                "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/app/lb-e3726fa/ef08191ad7e4016e/bf5eafd766e42cfb",
                 "type": "aws:lb/listener:Listener",
                 "inputs": {
                     "__defaults": [],
                     "defaultActions": [
                         {
                             "__defaults": [],
-                            "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-dfa31c0/ac83a899d27fa1ac",
+                            "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-70c72ff/f39896077871a38e",
                             "type": "forward"
                         }
                     ],
-                    "loadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-20db9e1/95015105fdda1732",
+                    "loadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-e3726fa/ef08191ad7e4016e",
                     "port": 80,
                     "protocol": "HTTP"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"read\":600000000000}}",
-                    "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/app/lb-20db9e1/95015105fdda1732/45a75d1e0f768227",
+                    "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/app/lb-e3726fa/ef08191ad7e4016e/bf5eafd766e42cfb",
                     "defaultActions": [
                         {
                             "authenticateCognito": null,
@@ -1375,88 +1378,90 @@
                             "forward": null,
                             "order": 1,
                             "redirect": null,
-                            "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-dfa31c0/ac83a899d27fa1ac",
+                            "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-70c72ff/f39896077871a38e",
                             "type": "forward"
                         }
                     ],
-                    "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/app/lb-20db9e1/95015105fdda1732/45a75d1e0f768227",
-                    "loadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-20db9e1/95015105fdda1732",
+                    "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/app/lb-e3726fa/ef08191ad7e4016e/bf5eafd766e42cfb",
+                    "loadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/app/lb-e3726fa/ef08191ad7e4016e",
                     "port": 80,
                     "protocol": "HTTP",
                     "sslPolicy": "",
                     "tags": {},
                     "tagsAll": {}
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/loadBalancer:LoadBalancer::lb"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/loadBalancer:LoadBalancer::lb"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "defaultActions": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb"
                     ],
                     "loadBalancerArn": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/loadBalancer:LoadBalancer::lb"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/loadBalancer:LoadBalancer::lb"
                     ],
                     "port": null,
                     "protocol": null
                 },
-                "created": "2023-11-01T19:46:47.178777Z",
-                "modified": "2023-11-01T19:46:47.178777Z"
+                "created": "2023-11-21T18:53:14.09918Z",
+                "modified": "2023-11-21T18:53:14.09918Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:TargetGroupAttachment::attachment",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:TargetGroupAttachment::attachment",
                 "custom": false,
                 "type": "awsx:lb:TargetGroupAttachment",
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-daniels-ma-ts-lb-atta-37a9ba44",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:pulumi:Stack::ts-lb-attach-ec2-p-it-monicas-ma-ts-lb-atta-11333927",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb"
                 ],
-                "created": "2023-11-01T19:46:47.375246Z",
-                "modified": "2023-11-01T19:46:47.375246Z"
+                "created": "2023-11-21T18:53:14.297458Z",
+                "modified": "2023-11-21T18:53:14.297458Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:TargetGroupAttachment$aws:lb/targetGroupAttachment:TargetGroupAttachment::attachment",
+                "urn": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:TargetGroupAttachment$aws:lb/targetGroupAttachment:TargetGroupAttachment::attachment",
                 "custom": true,
-                "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-dfa31c0/ac83a899d27fa1ac-20231101194647885300000001",
+                "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-70c72ff/f39896077871a38e-20231121185314709900000001",
                 "type": "aws:lb/targetGroupAttachment:TargetGroupAttachment",
                 "inputs": {
                     "__defaults": [],
                     "availabilityZone": "us-west-2b",
-                    "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-dfa31c0/ac83a899d27fa1ac",
-                    "targetId": "172.31.18.135"
+                    "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-70c72ff/f39896077871a38e",
+                    "targetId": "172.31.27.101"
                 },
                 "outputs": {
                     "availabilityZone": "us-west-2b",
-                    "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-dfa31c0/ac83a899d27fa1ac-20231101194647885300000001",
-                    "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-dfa31c0/ac83a899d27fa1ac",
-                    "targetId": "172.31.18.135"
+                    "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-70c72ff/f39896077871a38e-20231121185314709900000001",
+                    "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/lb-70c72ff/f39896077871a38e",
+                    "targetId": "172.31.27.101"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:TargetGroupAttachment::attachment",
+                "parent": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:TargetGroupAttachment::attachment",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
-                    "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb"
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
+                    "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::4ac3783c-ee5f-418d-86a2-e64b6d73e563",
+                "provider": "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::pulumi:providers:aws::default_5_35_0::127cb215-2444-4517-97bd-c7dc119f34a3",
                 "propertyDependencies": {
                     "availabilityZone": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance"
                     ],
                     "targetGroupArn": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb"
                     ],
                     "targetId": [
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
-                        "urn:pulumi:p-it-daniels-ma-ts-lb-atta-37a9ba44::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance"
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer$aws:lb/targetGroup:TargetGroup::lb",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::awsx:lb:ApplicationLoadBalancer::lb",
+                        "urn:pulumi:p-it-monicas-ma-ts-lb-atta-11333927::ts-lb-attach-ec2::aws:ec2/instance:Instance::instance"
                     ]
-                }
+                },
+                "created": "2023-11-21T18:53:14.712491Z",
+                "modified": "2023-11-21T18:53:14.712491Z"
             }
         ]
     }
