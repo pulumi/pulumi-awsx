@@ -8,6 +8,7 @@ import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.Integer;
 import java.lang.String;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,14 +24,29 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
     public static final SubnetSpecArgs Empty = new SubnetSpecArgs();
 
     /**
-     * The bitmask for the subnet&#39;s CIDR block.
+     * An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+     * 
+     */
+    @Import(name="cidrBlocks")
+    private @Nullable List<String> cidrBlocks;
+
+    /**
+     * @return An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+     * 
+     */
+    public Optional<List<String>> cidrBlocks() {
+        return Optional.ofNullable(this.cidrBlocks);
+    }
+
+    /**
+     * The netmask for the subnet&#39;s CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by availability zone.
      * 
      */
     @Import(name="cidrMask")
     private @Nullable Integer cidrMask;
 
     /**
-     * @return The bitmask for the subnet&#39;s CIDR block.
+     * @return The netmask for the subnet&#39;s CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by availability zone.
      * 
      */
     public Optional<Integer> cidrMask() {
@@ -50,6 +66,21 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
      */
     public Optional<String> name() {
         return Optional.ofNullable(this.name);
+    }
+
+    /**
+     * Optional size of the subnet&#39;s CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by availability zone.
+     * 
+     */
+    @Import(name="size")
+    private @Nullable Integer size;
+
+    /**
+     * @return Optional size of the subnet&#39;s CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by availability zone.
+     * 
+     */
+    public Optional<Integer> size() {
+        return Optional.ofNullable(this.size);
     }
 
     /**
@@ -85,8 +116,10 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
     private SubnetSpecArgs() {}
 
     private SubnetSpecArgs(SubnetSpecArgs $) {
+        this.cidrBlocks = $.cidrBlocks;
         this.cidrMask = $.cidrMask;
         this.name = $.name;
+        this.size = $.size;
         this.tags = $.tags;
         this.type = $.type;
     }
@@ -110,7 +143,28 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param cidrMask The bitmask for the subnet&#39;s CIDR block.
+         * @param cidrBlocks An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder cidrBlocks(@Nullable List<String> cidrBlocks) {
+            $.cidrBlocks = cidrBlocks;
+            return this;
+        }
+
+        /**
+         * @param cidrBlocks An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder cidrBlocks(String... cidrBlocks) {
+            return cidrBlocks(List.of(cidrBlocks));
+        }
+
+        /**
+         * @param cidrMask The netmask for the subnet&#39;s CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by availability zone.
          * 
          * @return builder
          * 
@@ -128,6 +182,17 @@ public final class SubnetSpecArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder name(@Nullable String name) {
             $.name = name;
+            return this;
+        }
+
+        /**
+         * @param size Optional size of the subnet&#39;s CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC&#39;s CIDR block after being divided evenly by availability zone.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder size(@Nullable Integer size) {
+            $.size = size;
             return this;
         }
 

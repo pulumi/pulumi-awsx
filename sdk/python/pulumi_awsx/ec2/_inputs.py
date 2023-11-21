@@ -60,21 +60,29 @@ class NatGatewayConfigurationArgs:
 class SubnetSpecArgs:
     def __init__(__self__, *,
                  type: 'SubnetType',
+                 cidr_blocks: Optional[Sequence[str]] = None,
                  cidr_mask: Optional[int] = None,
                  name: Optional[str] = None,
+                 size: Optional[int] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
         Configuration for a VPC subnet.
         :param 'SubnetType' type: The type of subnet.
-        :param int cidr_mask: The bitmask for the subnet's CIDR block.
+        :param Sequence[str] cidr_blocks: An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+        :param int cidr_mask: The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
         :param str name: The subnet's name. Will be templated upon creation.
+        :param int size: Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource.
         """
         pulumi.set(__self__, "type", type)
+        if cidr_blocks is not None:
+            pulumi.set(__self__, "cidr_blocks", cidr_blocks)
         if cidr_mask is not None:
             pulumi.set(__self__, "cidr_mask", cidr_mask)
         if name is not None:
             pulumi.set(__self__, "name", name)
+        if size is not None:
+            pulumi.set(__self__, "size", size)
         if tags is not None:
             pulumi.set(__self__, "tags", tags)
 
@@ -91,10 +99,22 @@ class SubnetSpecArgs:
         pulumi.set(self, "type", value)
 
     @property
+    @pulumi.getter(name="cidrBlocks")
+    def cidr_blocks(self) -> Optional[Sequence[str]]:
+        """
+        An optional list of CIDR blocks to assign to the subnet spec for each AZ. If specified, the count must match the number of AZs being used for the VPC, and must also be specified for all other subnet specs.
+        """
+        return pulumi.get(self, "cidr_blocks")
+
+    @cidr_blocks.setter
+    def cidr_blocks(self, value: Optional[Sequence[str]]):
+        pulumi.set(self, "cidr_blocks", value)
+
+    @property
     @pulumi.getter(name="cidrMask")
     def cidr_mask(self) -> Optional[int]:
         """
-        The bitmask for the subnet's CIDR block.
+        The netmask for the subnet's CIDR block. This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
         """
         return pulumi.get(self, "cidr_mask")
 
@@ -113,6 +133,18 @@ class SubnetSpecArgs:
     @name.setter
     def name(self, value: Optional[str]):
         pulumi.set(self, "name", value)
+
+    @property
+    @pulumi.getter
+    def size(self) -> Optional[int]:
+        """
+        Optional size of the subnet's CIDR block - the number of hosts. This value must be a power of 2 (e.g. 256, 512, 1024, etc.). This is optional, the default value is inferred from the `cidrMask`, `cidrBlocks` or based on an even distribution of available space from the VPC's CIDR block after being divided evenly by availability zone.
+        """
+        return pulumi.get(self, "size")
+
+    @size.setter
+    def size(self, value: Optional[int]):
+        pulumi.set(self, "size", value)
 
     @property
     @pulumi.getter
@@ -679,7 +711,7 @@ class VpcEndpointSpecArgs:
         :param pulumi.Input[Sequence[pulumi.Input[str]]] route_table_ids: One or more route table IDs. Applicable for endpoints of type `Gateway`.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] security_group_ids: The ID of one or more security groups to associate with the network interface. Applicable for endpoints of type `Interface`.
                If no security groups are specified, the VPC's [default security group](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html#DefaultSecurityGroup) is associated with the endpoint.
-        :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+        :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] vpc_endpoint_type: The VPC endpoint type, `Gateway`, `GatewayLoadBalancer`, or `Interface`. Defaults to `Gateway`.
         """
@@ -806,7 +838,7 @@ class VpcEndpointSpecArgs:
     @pulumi.getter(name="subnetIds")
     def subnet_ids(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
         """
-        The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`.
+        The ID of one or more subnets in which to create a network interface for the endpoint. Applicable for endpoints of type `GatewayLoadBalancer` and `Interface`. Interface type endpoints cannot function without being assigned to a subnet.
         """
         return pulumi.get(self, "subnet_ids")
 

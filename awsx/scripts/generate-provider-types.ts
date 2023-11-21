@@ -575,6 +575,6 @@ export function generateProviderTypes(args: { schema: string; out: string }) {
 }
 
 generateProviderTypes({
-  schema: "schema.json",
+  schema: "../schema.json",
   out: "schema-types.ts",
 });
