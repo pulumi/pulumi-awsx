@@ -69,6 +69,7 @@ func httpApi(awsSpec schema.PackageSpec) schema.ResourceSpec {
 		inputProperties[k] = renameAwsPropertyRefs(awsSpec, v)
 	}
 	return schema.ResourceSpec{
+		IsComponent: true,
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Description: "Creates an HTTP API with associated sub-resources.",
 			Type:        "awsx:apigatewayv2:httpApi",

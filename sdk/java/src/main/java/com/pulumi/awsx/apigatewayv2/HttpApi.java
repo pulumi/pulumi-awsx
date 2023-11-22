@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
  * 
  */
 @ResourceType(type="awsx:apigatewayv2:HttpApi")
-public class HttpApi extends com.pulumi.resources.CustomResource {
+public class HttpApi extends com.pulumi.resources.ComponentResource {
     /**
      * The underlying API resource.
      * 
@@ -161,30 +161,15 @@ public class HttpApi extends com.pulumi.resources.CustomResource {
      * @param args The arguments to use to populate this resource's properties.
      * @param options A bag of options that control this resource's behavior.
      */
-    public HttpApi(String name, HttpApiArgs args, @Nullable com.pulumi.resources.CustomResourceOptions options) {
-        super("awsx:apigatewayv2:HttpApi", name, args == null ? HttpApiArgs.Empty : args, makeResourceOptions(options, Codegen.empty()));
+    public HttpApi(String name, HttpApiArgs args, @Nullable com.pulumi.resources.ComponentResourceOptions options) {
+        super("awsx:apigatewayv2:HttpApi", name, args == null ? HttpApiArgs.Empty : args, makeResourceOptions(options, Codegen.empty()), true);
     }
 
-    private HttpApi(String name, Output<String> id, @Nullable com.pulumi.resources.CustomResourceOptions options) {
-        super("awsx:apigatewayv2:HttpApi", name, null, makeResourceOptions(options, id));
-    }
-
-    private static com.pulumi.resources.CustomResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.CustomResourceOptions options, @Nullable Output<String> id) {
-        var defaultOptions = com.pulumi.resources.CustomResourceOptions.builder()
+    private static com.pulumi.resources.ComponentResourceOptions makeResourceOptions(@Nullable com.pulumi.resources.ComponentResourceOptions options, @Nullable Output<String> id) {
+        var defaultOptions = com.pulumi.resources.ComponentResourceOptions.builder()
             .version(Utilities.getVersion())
             .build();
-        return com.pulumi.resources.CustomResourceOptions.merge(defaultOptions, options, id);
+        return com.pulumi.resources.ComponentResourceOptions.merge(defaultOptions, options, id);
     }
 
-    /**
-     * Get an existing Host resource's state with the given name, ID, and optional extra
-     * properties used to qualify the lookup.
-     *
-     * @param name The _unique_ name of the resulting resource.
-     * @param id The _unique_ provider ID of the resource to lookup.
-     * @param options Optional settings to control the behavior of the CustomResource.
-     */
-    public static HttpApi get(String name, Output<String> id, @Nullable com.pulumi.resources.CustomResourceOptions options) {
-        return new HttpApi(name, id, options);
-    }
 }

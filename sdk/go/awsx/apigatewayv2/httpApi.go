@@ -16,7 +16,7 @@ import (
 
 // Creates an HTTP API with associated sub-resources.
 type HttpApi struct {
-	pulumi.CustomResourceState
+	pulumi.ResourceState
 
 	// The underlying API resource.
 	Api apigatewayv2.ApiOutput `pulumi:"api"`
@@ -48,34 +48,11 @@ func NewHttpApi(ctx *pulumi.Context,
 	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource HttpApi
-	err := ctx.RegisterResource("awsx:apigatewayv2:HttpApi", name, args, &resource, opts...)
+	err := ctx.RegisterRemoteComponentResource("awsx:apigatewayv2:HttpApi", name, args, &resource, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &resource, nil
-}
-
-// GetHttpApi gets an existing HttpApi resource's state with the given name, ID, and optional
-// state properties that are used to uniquely qualify the lookup (nil if not required).
-func GetHttpApi(ctx *pulumi.Context,
-	name string, id pulumi.IDInput, state *HttpApiState, opts ...pulumi.ResourceOption) (*HttpApi, error) {
-	var resource HttpApi
-	err := ctx.ReadResource("awsx:apigatewayv2:HttpApi", name, id, state, &resource, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &resource, nil
-}
-
-// Input properties used for looking up and filtering HttpApi resources.
-type httpApiState struct {
-}
-
-type HttpApiState struct {
-}
-
-func (HttpApiState) ElementType() reflect.Type {
-	return reflect.TypeOf((*httpApiState)(nil)).Elem()
 }
 
 type httpApiArgs struct {

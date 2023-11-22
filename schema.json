@@ -2192,7 +2192,8 @@
             },
             "requiredInputs": [
                 "routes"
-            ]
+            ],
+            "isComponent": true
         },
         "awsx:cloudtrail:Trail": {
             "properties": {

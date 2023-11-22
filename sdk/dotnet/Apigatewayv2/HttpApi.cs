@@ -13,7 +13,7 @@ namespace Pulumi.Awsx.Apigatewayv2
     /// Creates an HTTP API with associated sub-resources.
     /// </summary>
     [AwsxResourceType("awsx:apigatewayv2:HttpApi")]
-    public partial class HttpApi : global::Pulumi.CustomResource
+    public partial class HttpApi : global::Pulumi.ComponentResource
     {
         /// <summary>
         /// The underlying API resource.
@@ -71,38 +71,21 @@ namespace Pulumi.Awsx.Apigatewayv2
         /// <param name="name">The unique name of the resource</param>
         /// <param name="args">The arguments used to populate this resource's properties</param>
         /// <param name="options">A bag of options that control this resource's behavior</param>
-        public HttpApi(string name, HttpApiArgs args, CustomResourceOptions? options = null)
-            : base("awsx:apigatewayv2:HttpApi", name, args ?? new HttpApiArgs(), MakeResourceOptions(options, ""))
+        public HttpApi(string name, HttpApiArgs args, ComponentResourceOptions? options = null)
+            : base("awsx:apigatewayv2:HttpApi", name, args ?? new HttpApiArgs(), MakeResourceOptions(options, ""), remote: true)
         {
         }
 
-        private HttpApi(string name, Input<string> id, CustomResourceOptions? options = null)
-            : base("awsx:apigatewayv2:HttpApi", name, null, MakeResourceOptions(options, id))
+        private static ComponentResourceOptions MakeResourceOptions(ComponentResourceOptions? options, Input<string>? id)
         {
-        }
-
-        private static CustomResourceOptions MakeResourceOptions(CustomResourceOptions? options, Input<string>? id)
-        {
-            var defaultOptions = new CustomResourceOptions
+            var defaultOptions = new ComponentResourceOptions
             {
                 Version = Utilities.Version,
             };
-            var merged = CustomResourceOptions.Merge(defaultOptions, options);
+            var merged = ComponentResourceOptions.Merge(defaultOptions, options);
             // Override the ID if one was specified for consistency with other language SDKs.
             merged.Id = id ?? merged.Id;
             return merged;
-        }
-        /// <summary>
-        /// Get an existing HttpApi resource's state with the given name, ID, and optional extra
-        /// properties used to qualify the lookup.
-        /// </summary>
-        ///
-        /// <param name="name">The unique name of the resulting resource.</param>
-        /// <param name="id">The unique provider ID of the resource to lookup.</param>
-        /// <param name="options">A bag of options that control this resource's behavior</param>
-        public static HttpApi Get(string name, Input<string> id, CustomResourceOptions? options = null)
-        {
-            return new HttpApi(name, id, options);
         }
     }
 

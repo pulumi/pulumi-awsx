@@ -54,6 +54,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
       if (lambdaInvokeArn !== undefined) {
         throw new Error(errOnlyOneArg());
       }
+      integrationType = "AWS_PROXY";
       lambdaInvokeArn = lambda.invokeArn;
     }
     if (lambdaInvokeArn !== undefined) {
@@ -117,7 +118,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
         if (integration === undefined) {
           throw new Error(`Could not find integration with key ${id}`);
         }
-        return `integrations/${integration.id}`;
+        return pulumi.interpolate`integrations/${integration.id}`;
       });
     }
     let authorizerId = routeInput.authorizerId;
