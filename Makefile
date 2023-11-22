@@ -34,7 +34,7 @@ all:: lint lint_classic provider build_sdks test_provider
 bin/${CODEGEN}: ${CODEGEN_SRC}
 	cd schemagen && go build -o $(WORKING_DIR)/bin/${CODEGEN} $(WORKING_DIR)/schemagen/cmd/$(CODEGEN)
 
-.make/schema: bin/${CODEGEN}
+.make/schema: bin/${CODEGEN} awsx/package.json
 	bin/${CODEGEN} schema $(WORKING_DIR)
 	@touch $@
 
