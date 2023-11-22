@@ -241,6 +241,24 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	}
 }
 
+func arrayOfLocalRefs(module, name string) schema.TypeSpec {
+	return schema.TypeSpec{
+		Type: "array",
+		Items: &schema.TypeSpec{
+			Ref: localRef(module, name),
+		},
+	}
+}
+
+func stringMapOfLocalRefs(module, name string) schema.TypeSpec {
+	return schema.TypeSpec{
+		Type: "object",
+		AdditionalProperties: &schema.TypeSpec{
+			Ref: localRef(module, name),
+		},
+	}
+}
+
 func arrayOfAwsType(packageSpec schema.PackageSpec, awsNamespace, resourceNameCamelCase string) schema.TypeSpec {
 	awsRefInput := fmt.Sprintf(
 		"#/resources/aws:%s%s%s:%s",

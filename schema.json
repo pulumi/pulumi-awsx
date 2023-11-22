@@ -66,6 +66,62 @@
     },
     "config": {},
     "types": {
+        "awsx:apigatewayv2:DomainConfiguration": {
+            "description": "Manages an Amazon API Gateway Version 2 domain name.\nMore information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).\n\n\u003e **Note:** This resource establishes ownership of and the TLS settings for\na particular domain name. An API stage can be associated with the domain name using the `aws.apigatewayv2.ApiMapping` resource.\n\n{{% examples %}}\n## Example Usage\n{{% example %}}\n### Basic\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst example = new aws.apigatewayv2.DomainName(\"example\", {\n    domainName: \"ws-api.example.com\",\n    domainNameConfiguration: {\n        certificateArn: aws_acm_certificate.example.arn,\n        endpointType: \"REGIONAL\",\n        securityPolicy: \"TLS_1_2\",\n    },\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample = aws.apigatewayv2.DomainName(\"example\",\n    domain_name=\"ws-api.example.com\",\n    domain_name_configuration=aws.apigatewayv2.DomainNameDomainNameConfigurationArgs(\n        certificate_arn=aws_acm_certificate[\"example\"][\"arn\"],\n        endpoint_type=\"REGIONAL\",\n        security_policy=\"TLS_1_2\",\n    ))\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var example = new Aws.ApiGatewayV2.DomainName(\"example\", new()\n    {\n        Domain = \"ws-api.example.com\",\n        DomainNameConfiguration = new Aws.ApiGatewayV2.Inputs.DomainNameDomainNameConfigurationArgs\n        {\n            CertificateArn = aws_acm_certificate.Example.Arn,\n            EndpointType = \"REGIONAL\",\n            SecurityPolicy = \"TLS_1_2\",\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\t_, err := apigatewayv2.NewDomainName(ctx, \"example\", \u0026apigatewayv2.DomainNameArgs{\n\t\t\tDomainName: pulumi.String(\"ws-api.example.com\"),\n\t\t\tDomainNameConfiguration: \u0026apigatewayv2.DomainNameDomainNameConfigurationArgs{\n\t\t\t\tCertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),\n\t\t\t\tEndpointType:   pulumi.String(\"REGIONAL\"),\n\t\t\t\tSecurityPolicy: pulumi.String(\"TLS_1_2\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.DomainName;\nimport com.pulumi.aws.apigatewayv2.DomainNameArgs;\nimport com.pulumi.aws.apigatewayv2.inputs.DomainNameDomainNameConfigurationArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var example = new DomainName(\"example\", DomainNameArgs.builder()        \n            .domainName(\"ws-api.example.com\")\n            .domainNameConfiguration(DomainNameDomainNameConfigurationArgs.builder()\n                .certificateArn(aws_acm_certificate.example().arn())\n                .endpointType(\"REGIONAL\")\n                .securityPolicy(\"TLS_1_2\")\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  example:\n    type: aws:apigatewayv2:DomainName\n    properties:\n      domainName: ws-api.example.com\n      domainNameConfiguration:\n        certificateArn: ${aws_acm_certificate.example.arn}\n        endpointType: REGIONAL\n        securityPolicy: TLS_1_2\n```\n{{% /example %}}\n{{% example %}}\n### Associated Route 53 Resource Record\n\n```typescript\nimport * as pulumi from \"@pulumi/pulumi\";\nimport * as aws from \"@pulumi/aws\";\n\nconst exampleDomainName = new aws.apigatewayv2.DomainName(\"exampleDomainName\", {\n    domainName: \"http-api.example.com\",\n    domainNameConfiguration: {\n        certificateArn: aws_acm_certificate.example.arn,\n        endpointType: \"REGIONAL\",\n        securityPolicy: \"TLS_1_2\",\n    },\n});\nconst exampleRecord = new aws.route53.Record(\"exampleRecord\", {\n    name: exampleDomainName.domainName,\n    type: \"A\",\n    zoneId: aws_route53_zone.example.zone_id,\n    aliases: [{\n        name: exampleDomainName.domainNameConfiguration.apply(domainNameConfiguration =\u003e domainNameConfiguration.targetDomainName),\n        zoneId: exampleDomainName.domainNameConfiguration.apply(domainNameConfiguration =\u003e domainNameConfiguration.hostedZoneId),\n        evaluateTargetHealth: false,\n    }],\n});\n```\n```python\nimport pulumi\nimport pulumi_aws as aws\n\nexample_domain_name = aws.apigatewayv2.DomainName(\"exampleDomainName\",\n    domain_name=\"http-api.example.com\",\n    domain_name_configuration=aws.apigatewayv2.DomainNameDomainNameConfigurationArgs(\n        certificate_arn=aws_acm_certificate[\"example\"][\"arn\"],\n        endpoint_type=\"REGIONAL\",\n        security_policy=\"TLS_1_2\",\n    ))\nexample_record = aws.route53.Record(\"exampleRecord\",\n    name=example_domain_name.domain_name,\n    type=\"A\",\n    zone_id=aws_route53_zone[\"example\"][\"zone_id\"],\n    aliases=[aws.route53.RecordAliasArgs(\n        name=example_domain_name.domain_name_configuration.target_domain_name,\n        zone_id=example_domain_name.domain_name_configuration.hosted_zone_id,\n        evaluate_target_health=False,\n    )])\n```\n```csharp\nusing System.Collections.Generic;\nusing System.Linq;\nusing Pulumi;\nusing Aws = Pulumi.Aws;\n\nreturn await Deployment.RunAsync(() =\u003e \n{\n    var exampleDomainName = new Aws.ApiGatewayV2.DomainName(\"exampleDomainName\", new()\n    {\n        Domain = \"http-api.example.com\",\n        DomainNameConfiguration = new Aws.ApiGatewayV2.Inputs.DomainNameDomainNameConfigurationArgs\n        {\n            CertificateArn = aws_acm_certificate.Example.Arn,\n            EndpointType = \"REGIONAL\",\n            SecurityPolicy = \"TLS_1_2\",\n        },\n    });\n\n    var exampleRecord = new Aws.Route53.Record(\"exampleRecord\", new()\n    {\n        Name = exampleDomainName.Domain,\n        Type = \"A\",\n        ZoneId = aws_route53_zone.Example.Zone_id,\n        Aliases = new[]\n        {\n            new Aws.Route53.Inputs.RecordAliasArgs\n            {\n                Name = exampleDomainName.DomainNameConfiguration.Apply(domainNameConfiguration =\u003e domainNameConfiguration.TargetDomainName),\n                ZoneId = exampleDomainName.DomainNameConfiguration.Apply(domainNameConfiguration =\u003e domainNameConfiguration.HostedZoneId),\n                EvaluateTargetHealth = false,\n            },\n        },\n    });\n\n});\n```\n```go\npackage main\n\nimport (\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2\"\n\t\"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/route53\"\n\t\"github.com/pulumi/pulumi/sdk/v3/go/pulumi\"\n)\n\nfunc main() {\n\tpulumi.Run(func(ctx *pulumi.Context) error {\n\t\texampleDomainName, err := apigatewayv2.NewDomainName(ctx, \"exampleDomainName\", \u0026apigatewayv2.DomainNameArgs{\n\t\t\tDomainName: pulumi.String(\"http-api.example.com\"),\n\t\t\tDomainNameConfiguration: \u0026apigatewayv2.DomainNameDomainNameConfigurationArgs{\n\t\t\t\tCertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),\n\t\t\t\tEndpointType:   pulumi.String(\"REGIONAL\"),\n\t\t\t\tSecurityPolicy: pulumi.String(\"TLS_1_2\"),\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\t_, err = route53.NewRecord(ctx, \"exampleRecord\", \u0026route53.RecordArgs{\n\t\t\tName:   exampleDomainName.DomainName,\n\t\t\tType:   pulumi.String(\"A\"),\n\t\t\tZoneId: pulumi.Any(aws_route53_zone.Example.Zone_id),\n\t\t\tAliases: route53.RecordAliasArray{\n\t\t\t\t\u0026route53.RecordAliasArgs{\n\t\t\t\t\tName: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {\n\t\t\t\t\t\treturn \u0026domainNameConfiguration.TargetDomainName, nil\n\t\t\t\t\t}).(pulumi.StringPtrOutput),\n\t\t\t\t\tZoneId: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {\n\t\t\t\t\t\treturn \u0026domainNameConfiguration.HostedZoneId, nil\n\t\t\t\t\t}).(pulumi.StringPtrOutput),\n\t\t\t\t\tEvaluateTargetHealth: pulumi.Bool(false),\n\t\t\t\t},\n\t\t\t},\n\t\t})\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\treturn nil\n\t})\n}\n```\n```java\npackage generated_program;\n\nimport com.pulumi.Context;\nimport com.pulumi.Pulumi;\nimport com.pulumi.core.Output;\nimport com.pulumi.aws.apigatewayv2.DomainName;\nimport com.pulumi.aws.apigatewayv2.DomainNameArgs;\nimport com.pulumi.aws.apigatewayv2.inputs.DomainNameDomainNameConfigurationArgs;\nimport com.pulumi.aws.route53.Record;\nimport com.pulumi.aws.route53.RecordArgs;\nimport com.pulumi.aws.route53.inputs.RecordAliasArgs;\nimport java.util.List;\nimport java.util.ArrayList;\nimport java.util.Map;\nimport java.io.File;\nimport java.nio.file.Files;\nimport java.nio.file.Paths;\n\npublic class App {\n    public static void main(String[] args) {\n        Pulumi.run(App::stack);\n    }\n\n    public static void stack(Context ctx) {\n        var exampleDomainName = new DomainName(\"exampleDomainName\", DomainNameArgs.builder()        \n            .domainName(\"http-api.example.com\")\n            .domainNameConfiguration(DomainNameDomainNameConfigurationArgs.builder()\n                .certificateArn(aws_acm_certificate.example().arn())\n                .endpointType(\"REGIONAL\")\n                .securityPolicy(\"TLS_1_2\")\n                .build())\n            .build());\n\n        var exampleRecord = new Record(\"exampleRecord\", RecordArgs.builder()        \n            .name(exampleDomainName.domainName())\n            .type(\"A\")\n            .zoneId(aws_route53_zone.example().zone_id())\n            .aliases(RecordAliasArgs.builder()\n                .name(exampleDomainName.domainNameConfiguration().applyValue(domainNameConfiguration -\u003e domainNameConfiguration.targetDomainName()))\n                .zoneId(exampleDomainName.domainNameConfiguration().applyValue(domainNameConfiguration -\u003e domainNameConfiguration.hostedZoneId()))\n                .evaluateTargetHealth(false)\n                .build())\n            .build());\n\n    }\n}\n```\n```yaml\nresources:\n  exampleDomainName:\n    type: aws:apigatewayv2:DomainName\n    properties:\n      domainName: http-api.example.com\n      domainNameConfiguration:\n        certificateArn: ${aws_acm_certificate.example.arn}\n        endpointType: REGIONAL\n        securityPolicy: TLS_1_2\n  exampleRecord:\n    type: aws:route53:Record\n    properties:\n      name: ${exampleDomainName.domainName}\n      type: A\n      zoneId: ${aws_route53_zone.example.zone_id}\n      aliases:\n        - name: ${exampleDomainName.domainNameConfiguration.targetDomainName}\n          zoneId: ${exampleDomainName.domainNameConfiguration.hostedZoneId}\n          evaluateTargetHealth: false\n```\n{{% /example %}}\n{{% /examples %}}\n\n## Import\n\nUsing `pulumi import`, import `aws_apigatewayv2_domain_name` using the domain name. For example:\n\n```sh\n $ pulumi import aws:apigatewayv2/domainName:DomainName example ws-api.example.com\n```\n ",
+            "properties": {
+                "domainNameConfiguration": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/DomainNameDomainNameConfiguration:DomainNameDomainNameConfiguration",
+                    "description": "Domain name configuration. See below.\n"
+                },
+                "mutualTlsAuthentication": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/DomainNameMutualTlsAuthentication:DomainNameMutualTlsAuthentication",
+                    "description": "Mutual TLS authentication configuration for the domain name.\n"
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                }
+            },
+            "type": "object"
+        },
+        "awsx:apigatewayv2:DomainMapping": {
+            "properties": {
+                "domainConfiguration": {
+                    "$ref": "#/types/awsx:apigatewayv2:DomainConfiguration",
+                    "description": "Configuration of the domain name to create. Cannot be specified together with `domainId`."
+                },
+                "domainId": {
+                    "type": "string",
+                    "description": "Identifier of an existing domain. Cannot be specified together with `domainConfiguration`."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:apigatewayv2:HttpAuthorizer": {
+            "type": "object"
+        },
+        "awsx:apigatewayv2:HttpIntegration": {
+            "type": "object"
+        },
+        "awsx:apigatewayv2:HttpRoute": {
+            "properties": {
+                "authorizer": {
+                    "type": "string",
+                    "description": "The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route."
+                },
+                "integration": {
+                    "type": "string",
+                    "description": "The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified."
+                }
+            },
+            "type": "object"
+        },
+        "awsx:apigatewayv2:HttpStage": {
+            "type": "object"
+        },
         "awsx:awsx:Bucket": {
             "description": "The set of arguments for constructing a Bucket resource.",
             "properties": {
@@ -1766,6 +1822,154 @@
     },
     "provider": {},
     "resources": {
+        "awsx:apigatewayv2:HttpApi": {
+            "description": "Creates an HTTP API with associated sub-resources.",
+            "properties": {
+                "api": {
+                    "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fapi:Api",
+                    "description": "The underlying API resource."
+                },
+                "apiMappings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fapiMapping:ApiMapping"
+                    },
+                    "description": "The API mappings for the HTTP API."
+                },
+                "authorizers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fauthorizer:Authorizer"
+                    },
+                    "description": "The authorizers for the HTTP API routes."
+                },
+                "deployment": {
+                    "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fdeployment:Deployment",
+                    "description": "The deployment for the HTTP API."
+                },
+                "domainNames": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fdomainName:DomainName"
+                    },
+                    "description": "The domain names for the HTTP API."
+                },
+                "integrations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fintegration:Integration"
+                    },
+                    "description": "The integrations for the HTTP API routes. This is a map from integration name to the integration arguments."
+                },
+                "routes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2froute:Route"
+                    },
+                    "description": "The routes for the HTTP API. This is a map from route key (for example `GET /pets`) to route arguments."
+                },
+                "stages": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "/aws/v6.9.0/schema.json#/resources/aws:apigatewayv2%2fstage:Stage"
+                    },
+                    "description": "The deployment stages for the HTTP API."
+                }
+            },
+            "type": "awsx:apigatewayv2:httpApi",
+            "required": [
+                "api",
+                "routes",
+                "integrations",
+                "authorizers",
+                "stages",
+                "deployment",
+                "domainNames"
+            ],
+            "inputProperties": {
+                "apiKeySelectionExpression": {
+                    "type": "string",
+                    "description": "An [API key selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-apikey-selection-expressions).\nValid values: `$context.authorizer.usageIdentifierKey`, `$request.header.x-api-key`. Defaults to `$request.header.x-api-key`.\nApplicable for WebSocket APIs.\n"
+                },
+                "authorizers": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:HttpAuthorizer"
+                    },
+                    "description": "The authorizers for the HTTP API routes."
+                },
+                "body": {
+                    "type": "string",
+                    "description": "An OpenAPI specification that defines the set of routes and integrations to create as part of the HTTP APIs. Supported only for HTTP APIs.\n"
+                },
+                "corsConfiguration": {
+                    "$ref": "/aws/v6.9.0/schema.json#/types/aws:apigatewayv2/ApiCorsConfiguration:ApiCorsConfiguration",
+                    "description": "Cross-origin resource sharing (CORS) [configuration](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html). Applicable for HTTP APIs.\n"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "Description of the API. Must be less than or equal to 1024 characters in length.\n"
+                },
+                "disableExecuteApiEndpoint": {
+                    "type": "boolean",
+                    "description": "Whether clients can invoke the API by using the default `execute-api` endpoint.\nBy default, clients can invoke the API with the default `{api_id}.execute-api.{region}.amazonaws.com endpoint`.\nTo require that clients use a custom domain name to invoke the API, disable the default endpoint.\n"
+                },
+                "domainMappings": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:DomainMapping"
+                    },
+                    "description": "The domain names for the HTTP API."
+                },
+                "failOnWarnings": {
+                    "type": "boolean",
+                    "description": "Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.\n"
+                },
+                "integrations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:HttpIntegration"
+                    },
+                    "description": "The integrations for the HTTP API routes."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Name of the API. Must be less than or equal to 128 characters in length.\n"
+                },
+                "routeSelectionExpression": {
+                    "type": "string",
+                    "description": "The [route selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-route-selection-expressions) for the API.\nDefaults to `$request.method $request.path`.\n"
+                },
+                "routes": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:HttpRoute"
+                    },
+                    "description": "The routes for the HTTP API."
+                },
+                "stages": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/types/awsx:apigatewayv2:HttpStage"
+                    },
+                    "description": "The deployment stages for the HTTP API."
+                },
+                "tags": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "description": "Map of tags to assign to the API. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.\n"
+                },
+                "version": {
+                    "type": "string",
+                    "description": "Version identifier for the API. Must be between 1 and 64 characters in length.\n"
+                }
+            },
+            "requiredInputs": [
+                "routes"
+            ]
+        },
         "awsx:cloudtrail:Trail": {
             "properties": {
                 "bucket": {

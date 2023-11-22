@@ -113,6 +113,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 		generateS3(awsSpec),
 		generateEc2(awsSpec),
 		generateEcr(awsSpec, dockerSpec),
+		generateApiGatewayV2(awsSpec),
 	)
 }
 
@@ -172,6 +173,10 @@ func renamePropertiesRefs(propertySpec map[string]schema.PropertySpec, old, new 
 		properties[k] = renamePropertyRefs(v, old, new)
 	}
 	return properties
+}
+
+func renameAwsPropertyRefs(spec schema.PackageSpec, propSpec schema.PropertySpec) schema.PropertySpec {
+	return renamePropertyRefs(propSpec, "#/types/aws:", packageRef(spec, "/types/aws:"))
 }
 
 func renamePropertyRefs(propSpec schema.PropertySpec, old, new string) schema.PropertySpec {
