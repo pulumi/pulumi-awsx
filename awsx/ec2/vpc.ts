@@ -267,7 +267,12 @@ export class Vpc extends schema.Vpc<VpcData> {
             if (createEip) {
               const eip = new aws.ec2.Eip(
                 `${name}-${i + 1}`,
-                {},
+                {
+                  tags: {
+                    ...args.tags,
+                    Name: `${name}-${i + 1}`,
+                  },
+                },
                 { parent: subnet, dependsOn: [subnet] },
               );
               eips.push(eip);
@@ -587,8 +592,7 @@ export function validateNoGaps(vpcCidr: string, subnetSpecs: SubnetSpec[]) {
   const lastBlockNetmask = new Netmask(current!.cidrBlock);
   if (lastBlockNetmask.last !== vpcNetmask.last) {
     gaps.push(
-      `${current!.subnetName} (ending ${lastBlockNetmask.last}) ends before VPC ends (at ${
-        vpcNetmask.last
+      `${current!.subnetName} (ending ${lastBlockNetmask.last}) ends before VPC ends (at ${vpcNetmask.last
       }})`,
     );
   }
