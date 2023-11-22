@@ -22,7 +22,7 @@ __all__ = [
 @pulumi.input_type
 class DomainConfigurationArgs:
     def __init__(__self__, *,
-                 domain_name_configuration: Optional[pulumi.Input['pulumi_aws.apigatewayv2.DomainNameDomainNameConfigurationArgs']] = None,
+                 domain_name_configuration: pulumi.Input['pulumi_aws.apigatewayv2.DomainNameDomainNameConfigurationArgs'],
                  mutual_tls_authentication: Optional[pulumi.Input['pulumi_aws.apigatewayv2.DomainNameMutualTlsAuthenticationArgs']] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
         """
@@ -367,8 +367,7 @@ class DomainConfigurationArgs:
         :param pulumi.Input['pulumi_aws.apigatewayv2.DomainNameMutualTlsAuthenticationArgs'] mutual_tls_authentication: Mutual TLS authentication configuration for the domain name.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         """
-        if domain_name_configuration is not None:
-            pulumi.set(__self__, "domain_name_configuration", domain_name_configuration)
+        pulumi.set(__self__, "domain_name_configuration", domain_name_configuration)
         if mutual_tls_authentication is not None:
             pulumi.set(__self__, "mutual_tls_authentication", mutual_tls_authentication)
         if tags is not None:
@@ -376,14 +375,14 @@ class DomainConfigurationArgs:
 
     @property
     @pulumi.getter(name="domainNameConfiguration")
-    def domain_name_configuration(self) -> Optional[pulumi.Input['pulumi_aws.apigatewayv2.DomainNameDomainNameConfigurationArgs']]:
+    def domain_name_configuration(self) -> pulumi.Input['pulumi_aws.apigatewayv2.DomainNameDomainNameConfigurationArgs']:
         """
         Domain name configuration. See below.
         """
         return pulumi.get(self, "domain_name_configuration")
 
     @domain_name_configuration.setter
-    def domain_name_configuration(self, value: Optional[pulumi.Input['pulumi_aws.apigatewayv2.DomainNameDomainNameConfigurationArgs']]):
+    def domain_name_configuration(self, value: pulumi.Input['pulumi_aws.apigatewayv2.DomainNameDomainNameConfigurationArgs']):
         pulumi.set(self, "domain_name_configuration", value)
 
     @property
@@ -414,27 +413,174 @@ class DomainConfigurationArgs:
 @pulumi.input_type
 class DomainMappingArgs:
     def __init__(__self__, *,
-                 domain_configuration: Optional[pulumi.Input['DomainConfigurationArgs']] = None,
+                 stage: pulumi.Input[str],
+                 api_mapping_key: Optional[pulumi.Input[str]] = None,
+                 domain_configuration: Optional['DomainConfigurationArgs'] = None,
                  domain_id: Optional[pulumi.Input[str]] = None):
         """
-        :param pulumi.Input['DomainConfigurationArgs'] domain_configuration: Configuration of the domain name to create. Cannot be specified together with `domainId`.
+        Manages an Amazon API Gateway Version 2 API mapping.
+        More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+
+        {{% examples %}}
+        ## Example Usage
+        {{% example %}}
+        ### Basic
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const example = new aws.apigatewayv2.ApiMapping("example", {
+            apiId: aws_apigatewayv2_api.example.id,
+            domainName: aws_apigatewayv2_domain_name.example.id,
+            stage: aws_apigatewayv2_stage.example.id,
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example = aws.apigatewayv2.ApiMapping("example",
+            api_id=aws_apigatewayv2_api["example"]["id"],
+            domain_name=aws_apigatewayv2_domain_name["example"]["id"],
+            stage=aws_apigatewayv2_stage["example"]["id"])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var example = new Aws.ApiGatewayV2.ApiMapping("example", new()
+            {
+                ApiId = aws_apigatewayv2_api.Example.Id,
+                DomainName = aws_apigatewayv2_domain_name.Example.Id,
+                Stage = aws_apigatewayv2_stage.Example.Id,
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := apigatewayv2.NewApiMapping(ctx, "example", &apigatewayv2.ApiMappingArgs{
+        			ApiId:      pulumi.Any(aws_apigatewayv2_api.Example.Id),
+        			DomainName: pulumi.Any(aws_apigatewayv2_domain_name.Example.Id),
+        			Stage:      pulumi.Any(aws_apigatewayv2_stage.Example.Id),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.ApiMapping;
+        import com.pulumi.aws.apigatewayv2.ApiMappingArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var example = new ApiMapping("example", ApiMappingArgs.builder()        
+                    .apiId(aws_apigatewayv2_api.example().id())
+                    .domainName(aws_apigatewayv2_domain_name.example().id())
+                    .stage(aws_apigatewayv2_stage.example().id())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          example:
+            type: aws:apigatewayv2:ApiMapping
+            properties:
+              apiId: ${aws_apigatewayv2_api.example.id}
+              domainName: ${aws_apigatewayv2_domain_name.example.id}
+              stage: ${aws_apigatewayv2_stage.example.id}
+        ```
+        {{% /example %}}
+        {{% /examples %}}
+
+        ## Import
+
+        Using `pulumi import`, import `aws_apigatewayv2_api_mapping` using the API mapping identifier and domain name. For example:
+
+        ```sh
+         $ pulumi import aws:apigatewayv2/apiMapping:ApiMapping example 1122334/ws-api.example.com
+        ```
+         
+        :param pulumi.Input[str] stage: API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+        :param pulumi.Input[str] api_mapping_key: The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+        :param 'DomainConfigurationArgs' domain_configuration: Configuration of the domain name to create. Cannot be specified together with `domainId`.
         :param pulumi.Input[str] domain_id: Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
         """
+        pulumi.set(__self__, "stage", stage)
+        if api_mapping_key is not None:
+            pulumi.set(__self__, "api_mapping_key", api_mapping_key)
         if domain_configuration is not None:
             pulumi.set(__self__, "domain_configuration", domain_configuration)
         if domain_id is not None:
             pulumi.set(__self__, "domain_id", domain_id)
 
     @property
+    @pulumi.getter
+    def stage(self) -> pulumi.Input[str]:
+        """
+        API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+        """
+        return pulumi.get(self, "stage")
+
+    @stage.setter
+    def stage(self, value: pulumi.Input[str]):
+        pulumi.set(self, "stage", value)
+
+    @property
+    @pulumi.getter(name="apiMappingKey")
+    def api_mapping_key(self) -> Optional[pulumi.Input[str]]:
+        """
+        The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+        """
+        return pulumi.get(self, "api_mapping_key")
+
+    @api_mapping_key.setter
+    def api_mapping_key(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "api_mapping_key", value)
+
+    @property
     @pulumi.getter(name="domainConfiguration")
-    def domain_configuration(self) -> Optional[pulumi.Input['DomainConfigurationArgs']]:
+    def domain_configuration(self) -> Optional['DomainConfigurationArgs']:
         """
         Configuration of the domain name to create. Cannot be specified together with `domainId`.
         """
         return pulumi.get(self, "domain_configuration")
 
     @domain_configuration.setter
-    def domain_configuration(self, value: Optional[pulumi.Input['DomainConfigurationArgs']]):
+    def domain_configuration(self, value: Optional['DomainConfigurationArgs']):
         pulumi.set(self, "domain_configuration", value)
 
     @property
@@ -452,29 +598,1763 @@ class DomainMappingArgs:
 
 @pulumi.input_type
 class HttpAuthorizerArgs:
-    def __init__(__self__):
-        pass
+    def __init__(__self__, *,
+                 authorizer_type: pulumi.Input[str],
+                 authorizer_credentials_arn: Optional[pulumi.Input[str]] = None,
+                 authorizer_payload_format_version: Optional[pulumi.Input[str]] = None,
+                 authorizer_result_ttl_in_seconds: Optional[pulumi.Input[int]] = None,
+                 authorizer_uri: Optional[pulumi.Input[str]] = None,
+                 enable_simple_responses: Optional[pulumi.Input[bool]] = None,
+                 identity_sources: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 jwt_configuration: Optional[pulumi.Input['pulumi_aws.apigatewayv2.AuthorizerJwtConfigurationArgs']] = None,
+                 name: Optional[pulumi.Input[str]] = None):
+        """
+        Manages an Amazon API Gateway Version 2 authorizer.
+        More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+
+        {{% examples %}}
+        ## Example Usage
+        {{% example %}}
+        ### Basic WebSocket API
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const example = new aws.apigatewayv2.Authorizer("example", {
+            apiId: aws_apigatewayv2_api.example.id,
+            authorizerType: "REQUEST",
+            authorizerUri: aws_lambda_function.example.invoke_arn,
+            identitySources: ["route.request.header.Auth"],
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example = aws.apigatewayv2.Authorizer("example",
+            api_id=aws_apigatewayv2_api["example"]["id"],
+            authorizer_type="REQUEST",
+            authorizer_uri=aws_lambda_function["example"]["invoke_arn"],
+            identity_sources=["route.request.header.Auth"])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var example = new Aws.ApiGatewayV2.Authorizer("example", new()
+            {
+                ApiId = aws_apigatewayv2_api.Example.Id,
+                AuthorizerType = "REQUEST",
+                AuthorizerUri = aws_lambda_function.Example.Invoke_arn,
+                IdentitySources = new[]
+                {
+                    "route.request.header.Auth",
+                },
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := apigatewayv2.NewAuthorizer(ctx, "example", &apigatewayv2.AuthorizerArgs{
+        			ApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),
+        			AuthorizerType: pulumi.String("REQUEST"),
+        			AuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),
+        			IdentitySources: pulumi.StringArray{
+        				pulumi.String("route.request.header.Auth"),
+        			},
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.Authorizer;
+        import com.pulumi.aws.apigatewayv2.AuthorizerArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var example = new Authorizer("example", AuthorizerArgs.builder()        
+                    .apiId(aws_apigatewayv2_api.example().id())
+                    .authorizerType("REQUEST")
+                    .authorizerUri(aws_lambda_function.example().invoke_arn())
+                    .identitySources("route.request.header.Auth")
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          example:
+            type: aws:apigatewayv2:Authorizer
+            properties:
+              apiId: ${aws_apigatewayv2_api.example.id}
+              authorizerType: REQUEST
+              authorizerUri: ${aws_lambda_function.example.invoke_arn}
+              identitySources:
+                - route.request.header.Auth
+        ```
+        {{% /example %}}
+        {{% example %}}
+        ### Basic HTTP API
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const example = new aws.apigatewayv2.Authorizer("example", {
+            apiId: aws_apigatewayv2_api.example.id,
+            authorizerType: "REQUEST",
+            authorizerUri: aws_lambda_function.example.invoke_arn,
+            identitySources: ["$request.header.Authorization"],
+            authorizerPayloadFormatVersion: "2.0",
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example = aws.apigatewayv2.Authorizer("example",
+            api_id=aws_apigatewayv2_api["example"]["id"],
+            authorizer_type="REQUEST",
+            authorizer_uri=aws_lambda_function["example"]["invoke_arn"],
+            identity_sources=["$request.header.Authorization"],
+            authorizer_payload_format_version="2.0")
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var example = new Aws.ApiGatewayV2.Authorizer("example", new()
+            {
+                ApiId = aws_apigatewayv2_api.Example.Id,
+                AuthorizerType = "REQUEST",
+                AuthorizerUri = aws_lambda_function.Example.Invoke_arn,
+                IdentitySources = new[]
+                {
+                    "$request.header.Authorization",
+                },
+                AuthorizerPayloadFormatVersion = "2.0",
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := apigatewayv2.NewAuthorizer(ctx, "example", &apigatewayv2.AuthorizerArgs{
+        			ApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),
+        			AuthorizerType: pulumi.String("REQUEST"),
+        			AuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),
+        			IdentitySources: pulumi.StringArray{
+        				pulumi.String("$request.header.Authorization"),
+        			},
+        			AuthorizerPayloadFormatVersion: pulumi.String("2.0"),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.Authorizer;
+        import com.pulumi.aws.apigatewayv2.AuthorizerArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var example = new Authorizer("example", AuthorizerArgs.builder()        
+                    .apiId(aws_apigatewayv2_api.example().id())
+                    .authorizerType("REQUEST")
+                    .authorizerUri(aws_lambda_function.example().invoke_arn())
+                    .identitySources("$request.header.Authorization")
+                    .authorizerPayloadFormatVersion("2.0")
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          example:
+            type: aws:apigatewayv2:Authorizer
+            properties:
+              apiId: ${aws_apigatewayv2_api.example.id}
+              authorizerType: REQUEST
+              authorizerUri: ${aws_lambda_function.example.invoke_arn}
+              identitySources:
+                - $request.header.Authorization
+              authorizerPayloadFormatVersion: '2.0'
+        ```
+        {{% /example %}}
+        {{% /examples %}}
+
+        ## Import
+
+        Using `pulumi import`, import `aws_apigatewayv2_authorizer` using the API identifier and authorizer identifier. For example:
+
+        ```sh
+         $ pulumi import aws:apigatewayv2/authorizer:Authorizer example aabbccddee/1122334
+        ```
+         
+        :param pulumi.Input[str] authorizer_type: Authorizer type. Valid values: `JWT`, `REQUEST`.
+               Specify `REQUEST` for a Lambda function using incoming request parameters.
+               For HTTP APIs, specify `JWT` to use JSON Web Tokens.
+        :param pulumi.Input[str] authorizer_credentials_arn: Required credentials as an IAM role for API Gateway to invoke the authorizer.
+               Supported only for `REQUEST` authorizers.
+        :param pulumi.Input[str] authorizer_payload_format_version: Format of the payload sent to an HTTP API Lambda authorizer. Required for HTTP API Lambda authorizers.
+               Valid values: `1.0`, `2.0`.
+        :param pulumi.Input[int] authorizer_result_ttl_in_seconds: Time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled.
+               If it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Defaults to `300`.
+               Supported only for HTTP API Lambda authorizers.
+        :param pulumi.Input[str] authorizer_uri: Authorizer's Uniform Resource Identifier (URI).
+               For `REQUEST` authorizers this must be a well-formed Lambda function URI, such as the `invoke_arn` attribute of the `aws.lambda.Function` resource.
+               Supported only for `REQUEST` authorizers. Must be between 1 and 2048 characters in length.
+        :param pulumi.Input[bool] enable_simple_responses: Whether a Lambda authorizer returns a response in a simple format. If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy.
+               Supported only for HTTP APIs.
+        :param pulumi.Input[Sequence[pulumi.Input[str]]] identity_sources: Identity sources for which authorization is requested.
+               For `REQUEST` authorizers the value is a list of one or more mapping expressions of the specified request parameters.
+               For `JWT` authorizers the single entry specifies where to extract the JSON Web Token (JWT) from inbound requests.
+        :param pulumi.Input['pulumi_aws.apigatewayv2.AuthorizerJwtConfigurationArgs'] jwt_configuration: Configuration of a JWT authorizer. Required for the `JWT` authorizer type.
+               Supported only for HTTP APIs.
+        :param pulumi.Input[str] name: Name of the authorizer. Must be between 1 and 128 characters in length.
+        """
+        pulumi.set(__self__, "authorizer_type", authorizer_type)
+        if authorizer_credentials_arn is not None:
+            pulumi.set(__self__, "authorizer_credentials_arn", authorizer_credentials_arn)
+        if authorizer_payload_format_version is not None:
+            pulumi.set(__self__, "authorizer_payload_format_version", authorizer_payload_format_version)
+        if authorizer_result_ttl_in_seconds is not None:
+            pulumi.set(__self__, "authorizer_result_ttl_in_seconds", authorizer_result_ttl_in_seconds)
+        if authorizer_uri is not None:
+            pulumi.set(__self__, "authorizer_uri", authorizer_uri)
+        if enable_simple_responses is not None:
+            pulumi.set(__self__, "enable_simple_responses", enable_simple_responses)
+        if identity_sources is not None:
+            pulumi.set(__self__, "identity_sources", identity_sources)
+        if jwt_configuration is not None:
+            pulumi.set(__self__, "jwt_configuration", jwt_configuration)
+        if name is not None:
+            pulumi.set(__self__, "name", name)
+
+    @property
+    @pulumi.getter(name="authorizerType")
+    def authorizer_type(self) -> pulumi.Input[str]:
+        """
+        Authorizer type. Valid values: `JWT`, `REQUEST`.
+        Specify `REQUEST` for a Lambda function using incoming request parameters.
+        For HTTP APIs, specify `JWT` to use JSON Web Tokens.
+        """
+        return pulumi.get(self, "authorizer_type")
+
+    @authorizer_type.setter
+    def authorizer_type(self, value: pulumi.Input[str]):
+        pulumi.set(self, "authorizer_type", value)
+
+    @property
+    @pulumi.getter(name="authorizerCredentialsArn")
+    def authorizer_credentials_arn(self) -> Optional[pulumi.Input[str]]:
+        """
+        Required credentials as an IAM role for API Gateway to invoke the authorizer.
+        Supported only for `REQUEST` authorizers.
+        """
+        return pulumi.get(self, "authorizer_credentials_arn")
+
+    @authorizer_credentials_arn.setter
+    def authorizer_credentials_arn(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "authorizer_credentials_arn", value)
+
+    @property
+    @pulumi.getter(name="authorizerPayloadFormatVersion")
+    def authorizer_payload_format_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        Format of the payload sent to an HTTP API Lambda authorizer. Required for HTTP API Lambda authorizers.
+        Valid values: `1.0`, `2.0`.
+        """
+        return pulumi.get(self, "authorizer_payload_format_version")
+
+    @authorizer_payload_format_version.setter
+    def authorizer_payload_format_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "authorizer_payload_format_version", value)
+
+    @property
+    @pulumi.getter(name="authorizerResultTtlInSeconds")
+    def authorizer_result_ttl_in_seconds(self) -> Optional[pulumi.Input[int]]:
+        """
+        Time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled.
+        If it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Defaults to `300`.
+        Supported only for HTTP API Lambda authorizers.
+        """
+        return pulumi.get(self, "authorizer_result_ttl_in_seconds")
+
+    @authorizer_result_ttl_in_seconds.setter
+    def authorizer_result_ttl_in_seconds(self, value: Optional[pulumi.Input[int]]):
+        pulumi.set(self, "authorizer_result_ttl_in_seconds", value)
+
+    @property
+    @pulumi.getter(name="authorizerUri")
+    def authorizer_uri(self) -> Optional[pulumi.Input[str]]:
+        """
+        Authorizer's Uniform Resource Identifier (URI).
+        For `REQUEST` authorizers this must be a well-formed Lambda function URI, such as the `invoke_arn` attribute of the `aws.lambda.Function` resource.
+        Supported only for `REQUEST` authorizers. Must be between 1 and 2048 characters in length.
+        """
+        return pulumi.get(self, "authorizer_uri")
+
+    @authorizer_uri.setter
+    def authorizer_uri(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "authorizer_uri", value)
+
+    @property
+    @pulumi.getter(name="enableSimpleResponses")
+    def enable_simple_responses(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Whether a Lambda authorizer returns a response in a simple format. If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy.
+        Supported only for HTTP APIs.
+        """
+        return pulumi.get(self, "enable_simple_responses")
+
+    @enable_simple_responses.setter
+    def enable_simple_responses(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "enable_simple_responses", value)
+
+    @property
+    @pulumi.getter(name="identitySources")
+    def identity_sources(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+        """
+        Identity sources for which authorization is requested.
+        For `REQUEST` authorizers the value is a list of one or more mapping expressions of the specified request parameters.
+        For `JWT` authorizers the single entry specifies where to extract the JSON Web Token (JWT) from inbound requests.
+        """
+        return pulumi.get(self, "identity_sources")
+
+    @identity_sources.setter
+    def identity_sources(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+        pulumi.set(self, "identity_sources", value)
+
+    @property
+    @pulumi.getter(name="jwtConfiguration")
+    def jwt_configuration(self) -> Optional[pulumi.Input['pulumi_aws.apigatewayv2.AuthorizerJwtConfigurationArgs']]:
+        """
+        Configuration of a JWT authorizer. Required for the `JWT` authorizer type.
+        Supported only for HTTP APIs.
+        """
+        return pulumi.get(self, "jwt_configuration")
+
+    @jwt_configuration.setter
+    def jwt_configuration(self, value: Optional[pulumi.Input['pulumi_aws.apigatewayv2.AuthorizerJwtConfigurationArgs']]):
+        pulumi.set(self, "jwt_configuration", value)
+
+    @property
+    @pulumi.getter
+    def name(self) -> Optional[pulumi.Input[str]]:
+        """
+        Name of the authorizer. Must be between 1 and 128 characters in length.
+        """
+        return pulumi.get(self, "name")
+
+    @name.setter
+    def name(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "name", value)
 
 
 @pulumi.input_type
 class HttpIntegrationArgs:
-    def __init__(__self__):
-        pass
+    def __init__(__self__, *,
+                 connection_id: Optional[pulumi.Input[str]] = None,
+                 connection_type: Optional[pulumi.Input[str]] = None,
+                 credentials_arn: Optional[pulumi.Input[str]] = None,
+                 description: Optional[pulumi.Input[str]] = None,
+                 integration_method: Optional[pulumi.Input[str]] = None,
+                 integration_subtype: Optional[pulumi.Input[str]] = None,
+                 integration_type: Optional[pulumi.Input[str]] = None,
+                 integration_uri: Optional[pulumi.Input[str]] = None,
+                 lambda_: Optional['pulumi_aws.lambda_.Function'] = None,
+                 lambda_invoke_arn: Optional[pulumi.Input[str]] = None,
+                 payload_format_version: Optional[pulumi.Input[str]] = None,
+                 request_parameters: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 response_parameters: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.apigatewayv2.IntegrationResponseParameterArgs']]]] = None,
+                 timeout_milliseconds: Optional[pulumi.Input[int]] = None,
+                 tls_config: Optional[pulumi.Input['pulumi_aws.apigatewayv2.IntegrationTlsConfigArgs']] = None):
+        """
+        Manages an Amazon API Gateway Version 2 integration.
+        More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+
+        {{% examples %}}
+        ## Example Usage
+        {{% example %}}
+        ### Basic
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const example = new aws.apigatewayv2.Integration("example", {
+            apiId: aws_apigatewayv2_api.example.id,
+            integrationType: "MOCK",
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example = aws.apigatewayv2.Integration("example",
+            api_id=aws_apigatewayv2_api["example"]["id"],
+            integration_type="MOCK")
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var example = new Aws.ApiGatewayV2.Integration("example", new()
+            {
+                ApiId = aws_apigatewayv2_api.Example.Id,
+                IntegrationType = "MOCK",
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+        			ApiId:           pulumi.Any(aws_apigatewayv2_api.Example.Id),
+        			IntegrationType: pulumi.String("MOCK"),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.Integration;
+        import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var example = new Integration("example", IntegrationArgs.builder()        
+                    .apiId(aws_apigatewayv2_api.example().id())
+                    .integrationType("MOCK")
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          example:
+            type: aws:apigatewayv2:Integration
+            properties:
+              apiId: ${aws_apigatewayv2_api.example.id}
+              integrationType: MOCK
+        ```
+        {{% /example %}}
+        {{% example %}}
+        ### Lambda Integration
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const exampleFunction = new aws.lambda.Function("exampleFunction", {
+            code: new pulumi.asset.FileArchive("example.zip"),
+            role: aws_iam_role.example.arn,
+            handler: "index.handler",
+            runtime: "nodejs16.x",
+        });
+        const exampleIntegration = new aws.apigatewayv2.Integration("exampleIntegration", {
+            apiId: aws_apigatewayv2_api.example.id,
+            integrationType: "AWS_PROXY",
+            connectionType: "INTERNET",
+            contentHandlingStrategy: "CONVERT_TO_TEXT",
+            description: "Lambda example",
+            integrationMethod: "POST",
+            integrationUri: exampleFunction.invokeArn,
+            passthroughBehavior: "WHEN_NO_MATCH",
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example_function = aws.lambda_.Function("exampleFunction",
+            code=pulumi.FileArchive("example.zip"),
+            role=aws_iam_role["example"]["arn"],
+            handler="index.handler",
+            runtime="nodejs16.x")
+        example_integration = aws.apigatewayv2.Integration("exampleIntegration",
+            api_id=aws_apigatewayv2_api["example"]["id"],
+            integration_type="AWS_PROXY",
+            connection_type="INTERNET",
+            content_handling_strategy="CONVERT_TO_TEXT",
+            description="Lambda example",
+            integration_method="POST",
+            integration_uri=example_function.invoke_arn,
+            passthrough_behavior="WHEN_NO_MATCH")
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var exampleFunction = new Aws.Lambda.Function("exampleFunction", new()
+            {
+                Code = new FileArchive("example.zip"),
+                Role = aws_iam_role.Example.Arn,
+                Handler = "index.handler",
+                Runtime = "nodejs16.x",
+            });
+
+            var exampleIntegration = new Aws.ApiGatewayV2.Integration("exampleIntegration", new()
+            {
+                ApiId = aws_apigatewayv2_api.Example.Id,
+                IntegrationType = "AWS_PROXY",
+                ConnectionType = "INTERNET",
+                ContentHandlingStrategy = "CONVERT_TO_TEXT",
+                Description = "Lambda example",
+                IntegrationMethod = "POST",
+                IntegrationUri = exampleFunction.InvokeArn,
+                PassthroughBehavior = "WHEN_NO_MATCH",
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lambda"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		exampleFunction, err := lambda.NewFunction(ctx, "exampleFunction", &lambda.FunctionArgs{
+        			Code:    pulumi.NewFileArchive("example.zip"),
+        			Role:    pulumi.Any(aws_iam_role.Example.Arn),
+        			Handler: pulumi.String("index.handler"),
+        			Runtime: pulumi.String("nodejs16.x"),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		_, err = apigatewayv2.NewIntegration(ctx, "exampleIntegration", &apigatewayv2.IntegrationArgs{
+        			ApiId:                   pulumi.Any(aws_apigatewayv2_api.Example.Id),
+        			IntegrationType:         pulumi.String("AWS_PROXY"),
+        			ConnectionType:          pulumi.String("INTERNET"),
+        			ContentHandlingStrategy: pulumi.String("CONVERT_TO_TEXT"),
+        			Description:             pulumi.String("Lambda example"),
+        			IntegrationMethod:       pulumi.String("POST"),
+        			IntegrationUri:          exampleFunction.InvokeArn,
+        			PassthroughBehavior:     pulumi.String("WHEN_NO_MATCH"),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.lambda.Function;
+        import com.pulumi.aws.lambda.FunctionArgs;
+        import com.pulumi.aws.apigatewayv2.Integration;
+        import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+        import com.pulumi.asset.FileArchive;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var exampleFunction = new Function("exampleFunction", FunctionArgs.builder()        
+                    .code(new FileArchive("example.zip"))
+                    .role(aws_iam_role.example().arn())
+                    .handler("index.handler")
+                    .runtime("nodejs16.x")
+                    .build());
+
+                var exampleIntegration = new Integration("exampleIntegration", IntegrationArgs.builder()        
+                    .apiId(aws_apigatewayv2_api.example().id())
+                    .integrationType("AWS_PROXY")
+                    .connectionType("INTERNET")
+                    .contentHandlingStrategy("CONVERT_TO_TEXT")
+                    .description("Lambda example")
+                    .integrationMethod("POST")
+                    .integrationUri(exampleFunction.invokeArn())
+                    .passthroughBehavior("WHEN_NO_MATCH")
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          exampleFunction:
+            type: aws:lambda:Function
+            properties:
+              code:
+                fn::FileArchive: example.zip
+              role: ${aws_iam_role.example.arn}
+              handler: index.handler
+              runtime: nodejs16.x
+          exampleIntegration:
+            type: aws:apigatewayv2:Integration
+            properties:
+              apiId: ${aws_apigatewayv2_api.example.id}
+              integrationType: AWS_PROXY
+              connectionType: INTERNET
+              contentHandlingStrategy: CONVERT_TO_TEXT
+              description: Lambda example
+              integrationMethod: POST
+              integrationUri: ${exampleFunction.invokeArn}
+              passthroughBehavior: WHEN_NO_MATCH
+        ```
+        {{% /example %}}
+        {{% example %}}
+        ### AWS Service Integration
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const example = new aws.apigatewayv2.Integration("example", {
+            apiId: aws_apigatewayv2_api.example.id,
+            credentialsArn: aws_iam_role.example.arn,
+            description: "SQS example",
+            integrationType: "AWS_PROXY",
+            integrationSubtype: "SQS-SendMessage",
+            requestParameters: {
+                QueueUrl: "$request.header.queueUrl",
+                MessageBody: "$request.body.message",
+            },
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example = aws.apigatewayv2.Integration("example",
+            api_id=aws_apigatewayv2_api["example"]["id"],
+            credentials_arn=aws_iam_role["example"]["arn"],
+            description="SQS example",
+            integration_type="AWS_PROXY",
+            integration_subtype="SQS-SendMessage",
+            request_parameters={
+                "QueueUrl": "$request.header.queueUrl",
+                "MessageBody": "$request.body.message",
+            })
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var example = new Aws.ApiGatewayV2.Integration("example", new()
+            {
+                ApiId = aws_apigatewayv2_api.Example.Id,
+                CredentialsArn = aws_iam_role.Example.Arn,
+                Description = "SQS example",
+                IntegrationType = "AWS_PROXY",
+                IntegrationSubtype = "SQS-SendMessage",
+                RequestParameters = 
+                {
+                    { "QueueUrl", "$request.header.queueUrl" },
+                    { "MessageBody", "$request.body.message" },
+                },
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+        			ApiId:              pulumi.Any(aws_apigatewayv2_api.Example.Id),
+        			CredentialsArn:     pulumi.Any(aws_iam_role.Example.Arn),
+        			Description:        pulumi.String("SQS example"),
+        			IntegrationType:    pulumi.String("AWS_PROXY"),
+        			IntegrationSubtype: pulumi.String("SQS-SendMessage"),
+        			RequestParameters: pulumi.StringMap{
+        				"QueueUrl":    pulumi.String("$request.header.queueUrl"),
+        				"MessageBody": pulumi.String("$request.body.message"),
+        			},
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.Integration;
+        import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var example = new Integration("example", IntegrationArgs.builder()        
+                    .apiId(aws_apigatewayv2_api.example().id())
+                    .credentialsArn(aws_iam_role.example().arn())
+                    .description("SQS example")
+                    .integrationType("AWS_PROXY")
+                    .integrationSubtype("SQS-SendMessage")
+                    .requestParameters(Map.ofEntries(
+                        Map.entry("QueueUrl", "$request.header.queueUrl"),
+                        Map.entry("MessageBody", "$request.body.message")
+                    ))
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          example:
+            type: aws:apigatewayv2:Integration
+            properties:
+              apiId: ${aws_apigatewayv2_api.example.id}
+              credentialsArn: ${aws_iam_role.example.arn}
+              description: SQS example
+              integrationType: AWS_PROXY
+              integrationSubtype: SQS-SendMessage
+              requestParameters:
+                QueueUrl: $request.header.queueUrl
+                MessageBody: $request.body.message
+        ```
+        {{% /example %}}
+        {{% example %}}
+        ### Private Integration
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const example = new aws.apigatewayv2.Integration("example", {
+            apiId: aws_apigatewayv2_api.example.id,
+            credentialsArn: aws_iam_role.example.arn,
+            description: "Example with a load balancer",
+            integrationType: "HTTP_PROXY",
+            integrationUri: aws_lb_listener.example.arn,
+            integrationMethod: "ANY",
+            connectionType: "VPC_LINK",
+            connectionId: aws_apigatewayv2_vpc_link.example.id,
+            tlsConfig: {
+                serverNameToVerify: "example.com",
+            },
+            requestParameters: {
+                "append:header.authforintegration": "$context.authorizer.authorizerResponse",
+                "overwrite:path": "staticValueForIntegration",
+            },
+            responseParameters: [
+                {
+                    statusCode: "403",
+                    mappings: {
+                        "append:header.auth": "$context.authorizer.authorizerResponse",
+                    },
+                },
+                {
+                    statusCode: "200",
+                    mappings: {
+                        "overwrite:statuscode": "204",
+                    },
+                },
+            ],
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example = aws.apigatewayv2.Integration("example",
+            api_id=aws_apigatewayv2_api["example"]["id"],
+            credentials_arn=aws_iam_role["example"]["arn"],
+            description="Example with a load balancer",
+            integration_type="HTTP_PROXY",
+            integration_uri=aws_lb_listener["example"]["arn"],
+            integration_method="ANY",
+            connection_type="VPC_LINK",
+            connection_id=aws_apigatewayv2_vpc_link["example"]["id"],
+            tls_config=aws.apigatewayv2.IntegrationTlsConfigArgs(
+                server_name_to_verify="example.com",
+            ),
+            request_parameters={
+                "append:header.authforintegration": "$context.authorizer.authorizerResponse",
+                "overwrite:path": "staticValueForIntegration",
+            },
+            response_parameters=[
+                aws.apigatewayv2.IntegrationResponseParameterArgs(
+                    status_code="403",
+                    mappings={
+                        "append:header.auth": "$context.authorizer.authorizerResponse",
+                    },
+                ),
+                aws.apigatewayv2.IntegrationResponseParameterArgs(
+                    status_code="200",
+                    mappings={
+                        "overwrite:statuscode": "204",
+                    },
+                ),
+            ])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var example = new Aws.ApiGatewayV2.Integration("example", new()
+            {
+                ApiId = aws_apigatewayv2_api.Example.Id,
+                CredentialsArn = aws_iam_role.Example.Arn,
+                Description = "Example with a load balancer",
+                IntegrationType = "HTTP_PROXY",
+                IntegrationUri = aws_lb_listener.Example.Arn,
+                IntegrationMethod = "ANY",
+                ConnectionType = "VPC_LINK",
+                ConnectionId = aws_apigatewayv2_vpc_link.Example.Id,
+                TlsConfig = new Aws.ApiGatewayV2.Inputs.IntegrationTlsConfigArgs
+                {
+                    ServerNameToVerify = "example.com",
+                },
+                RequestParameters = 
+                {
+                    { "append:header.authforintegration", "$context.authorizer.authorizerResponse" },
+                    { "overwrite:path", "staticValueForIntegration" },
+                },
+                ResponseParameters = new[]
+                {
+                    new Aws.ApiGatewayV2.Inputs.IntegrationResponseParameterArgs
+                    {
+                        StatusCode = "403",
+                        Mappings = 
+                        {
+                            { "append:header.auth", "$context.authorizer.authorizerResponse" },
+                        },
+                    },
+                    new Aws.ApiGatewayV2.Inputs.IntegrationResponseParameterArgs
+                    {
+                        StatusCode = "200",
+                        Mappings = 
+                        {
+                            { "overwrite:statuscode", "204" },
+                        },
+                    },
+                },
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+        			ApiId:             pulumi.Any(aws_apigatewayv2_api.Example.Id),
+        			CredentialsArn:    pulumi.Any(aws_iam_role.Example.Arn),
+        			Description:       pulumi.String("Example with a load balancer"),
+        			IntegrationType:   pulumi.String("HTTP_PROXY"),
+        			IntegrationUri:    pulumi.Any(aws_lb_listener.Example.Arn),
+        			IntegrationMethod: pulumi.String("ANY"),
+        			ConnectionType:    pulumi.String("VPC_LINK"),
+        			ConnectionId:      pulumi.Any(aws_apigatewayv2_vpc_link.Example.Id),
+        			TlsConfig: &apigatewayv2.IntegrationTlsConfigArgs{
+        				ServerNameToVerify: pulumi.String("example.com"),
+        			},
+        			RequestParameters: pulumi.StringMap{
+        				"append:header.authforintegration": pulumi.String("$context.authorizer.authorizerResponse"),
+        				"overwrite:path":                   pulumi.String("staticValueForIntegration"),
+        			},
+        			ResponseParameters: apigatewayv2.IntegrationResponseParameterArray{
+        				&apigatewayv2.IntegrationResponseParameterArgs{
+        					StatusCode: pulumi.String("403"),
+        					Mappings: pulumi.StringMap{
+        						"append:header.auth": pulumi.String("$context.authorizer.authorizerResponse"),
+        					},
+        				},
+        				&apigatewayv2.IntegrationResponseParameterArgs{
+        					StatusCode: pulumi.String("200"),
+        					Mappings: pulumi.StringMap{
+        						"overwrite:statuscode": pulumi.String("204"),
+        					},
+        				},
+        			},
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.Integration;
+        import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+        import com.pulumi.aws.apigatewayv2.inputs.IntegrationTlsConfigArgs;
+        import com.pulumi.aws.apigatewayv2.inputs.IntegrationResponseParameterArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var example = new Integration("example", IntegrationArgs.builder()        
+                    .apiId(aws_apigatewayv2_api.example().id())
+                    .credentialsArn(aws_iam_role.example().arn())
+                    .description("Example with a load balancer")
+                    .integrationType("HTTP_PROXY")
+                    .integrationUri(aws_lb_listener.example().arn())
+                    .integrationMethod("ANY")
+                    .connectionType("VPC_LINK")
+                    .connectionId(aws_apigatewayv2_vpc_link.example().id())
+                    .tlsConfig(IntegrationTlsConfigArgs.builder()
+                        .serverNameToVerify("example.com")
+                        .build())
+                    .requestParameters(Map.ofEntries(
+                        Map.entry("append:header.authforintegration", "$context.authorizer.authorizerResponse"),
+                        Map.entry("overwrite:path", "staticValueForIntegration")
+                    ))
+                    .responseParameters(            
+                        IntegrationResponseParameterArgs.builder()
+                            .statusCode(403)
+                            .mappings(Map.of("append:header.auth", "$context.authorizer.authorizerResponse"))
+                            .build(),
+                        IntegrationResponseParameterArgs.builder()
+                            .statusCode(200)
+                            .mappings(Map.of("overwrite:statuscode", "204"))
+                            .build())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          example:
+            type: aws:apigatewayv2:Integration
+            properties:
+              apiId: ${aws_apigatewayv2_api.example.id}
+              credentialsArn: ${aws_iam_role.example.arn}
+              description: Example with a load balancer
+              integrationType: HTTP_PROXY
+              integrationUri: ${aws_lb_listener.example.arn}
+              integrationMethod: ANY
+              connectionType: VPC_LINK
+              connectionId: ${aws_apigatewayv2_vpc_link.example.id}
+              tlsConfig:
+                serverNameToVerify: example.com
+              requestParameters:
+                append:header.authforintegration: $context.authorizer.authorizerResponse
+                overwrite:path: staticValueForIntegration
+              responseParameters:
+                - statusCode: 403
+                  mappings:
+                    append:header.auth: $context.authorizer.authorizerResponse
+                - statusCode: 200
+                  mappings:
+                    overwrite:statuscode: '204'
+        ```
+        {{% /example %}}
+        {{% /examples %}}
+
+        ## Import
+
+        Using `pulumi import`, import `aws_apigatewayv2_integration` using the API identifier and integration identifier. For example:
+
+        ```sh
+         $ pulumi import aws:apigatewayv2/integration:Integration example aabbccddee/1122334
+        ```
+         -> __Note:__ The API Gateway managed integration created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+
+
+        :param pulumi.Input[str] connection_id: ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+        :param pulumi.Input[str] connection_type: Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+        :param pulumi.Input[str] credentials_arn: Credentials required for the integration, if any.
+        :param pulumi.Input[str] description: Description of the integration.
+        :param pulumi.Input[str] integration_method: Integration's HTTP method. Must be specified if `integration_type` is not `MOCK`.
+        :param pulumi.Input[str] integration_subtype: AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+        :param pulumi.Input[str] integration_type: Integration type of an integration.
+               Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+        :param pulumi.Input[str] integration_uri: URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+               For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+                Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+        :param 'pulumi_aws.lambda_.Function' lambda_: A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+        :param pulumi.Input[str] lambda_invoke_arn: The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+        :param pulumi.Input[str] payload_format_version: The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] request_parameters: For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+               For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+               For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+               See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.apigatewayv2.IntegrationResponseParameterArgs']]] response_parameters: Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+        :param pulumi.Input[int] timeout_milliseconds: Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+               The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+               this provider will only perform drift detection of its value when present in a configuration.
+        :param pulumi.Input['pulumi_aws.apigatewayv2.IntegrationTlsConfigArgs'] tls_config: TLS configuration for a private integration. Supported only for HTTP APIs.
+        """
+        if connection_id is not None:
+            pulumi.set(__self__, "connection_id", connection_id)
+        if connection_type is not None:
+            pulumi.set(__self__, "connection_type", connection_type)
+        if credentials_arn is not None:
+            pulumi.set(__self__, "credentials_arn", credentials_arn)
+        if description is not None:
+            pulumi.set(__self__, "description", description)
+        if integration_method is not None:
+            pulumi.set(__self__, "integration_method", integration_method)
+        if integration_subtype is not None:
+            pulumi.set(__self__, "integration_subtype", integration_subtype)
+        if integration_type is not None:
+            pulumi.set(__self__, "integration_type", integration_type)
+        if integration_uri is not None:
+            pulumi.set(__self__, "integration_uri", integration_uri)
+        if lambda_ is not None:
+            pulumi.set(__self__, "lambda_", lambda_)
+        if lambda_invoke_arn is not None:
+            pulumi.set(__self__, "lambda_invoke_arn", lambda_invoke_arn)
+        if payload_format_version is not None:
+            pulumi.set(__self__, "payload_format_version", payload_format_version)
+        if request_parameters is not None:
+            pulumi.set(__self__, "request_parameters", request_parameters)
+        if response_parameters is not None:
+            pulumi.set(__self__, "response_parameters", response_parameters)
+        if timeout_milliseconds is not None:
+            pulumi.set(__self__, "timeout_milliseconds", timeout_milliseconds)
+        if tls_config is not None:
+            pulumi.set(__self__, "tls_config", tls_config)
+
+    @property
+    @pulumi.getter(name="connectionId")
+    def connection_id(self) -> Optional[pulumi.Input[str]]:
+        """
+        ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+        """
+        return pulumi.get(self, "connection_id")
+
+    @connection_id.setter
+    def connection_id(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "connection_id", value)
+
+    @property
+    @pulumi.getter(name="connectionType")
+    def connection_type(self) -> Optional[pulumi.Input[str]]:
+        """
+        Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+        """
+        return pulumi.get(self, "connection_type")
+
+    @connection_type.setter
+    def connection_type(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "connection_type", value)
+
+    @property
+    @pulumi.getter(name="credentialsArn")
+    def credentials_arn(self) -> Optional[pulumi.Input[str]]:
+        """
+        Credentials required for the integration, if any.
+        """
+        return pulumi.get(self, "credentials_arn")
+
+    @credentials_arn.setter
+    def credentials_arn(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "credentials_arn", value)
+
+    @property
+    @pulumi.getter
+    def description(self) -> Optional[pulumi.Input[str]]:
+        """
+        Description of the integration.
+        """
+        return pulumi.get(self, "description")
+
+    @description.setter
+    def description(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "description", value)
+
+    @property
+    @pulumi.getter(name="integrationMethod")
+    def integration_method(self) -> Optional[pulumi.Input[str]]:
+        """
+        Integration's HTTP method. Must be specified if `integration_type` is not `MOCK`.
+        """
+        return pulumi.get(self, "integration_method")
+
+    @integration_method.setter
+    def integration_method(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "integration_method", value)
+
+    @property
+    @pulumi.getter(name="integrationSubtype")
+    def integration_subtype(self) -> Optional[pulumi.Input[str]]:
+        """
+        AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+        """
+        return pulumi.get(self, "integration_subtype")
+
+    @integration_subtype.setter
+    def integration_subtype(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "integration_subtype", value)
+
+    @property
+    @pulumi.getter(name="integrationType")
+    def integration_type(self) -> Optional[pulumi.Input[str]]:
+        """
+        Integration type of an integration.
+        Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+        """
+        return pulumi.get(self, "integration_type")
+
+    @integration_type.setter
+    def integration_type(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "integration_type", value)
+
+    @property
+    @pulumi.getter(name="integrationUri")
+    def integration_uri(self) -> Optional[pulumi.Input[str]]:
+        """
+        URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+        For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+         Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+        """
+        return pulumi.get(self, "integration_uri")
+
+    @integration_uri.setter
+    def integration_uri(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "integration_uri", value)
+
+    @property
+    @pulumi.getter(name="lambda")
+    def lambda_(self) -> Optional['pulumi_aws.lambda_.Function']:
+        """
+        A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+        """
+        return pulumi.get(self, "lambda_")
+
+    @lambda_.setter
+    def lambda_(self, value: Optional['pulumi_aws.lambda_.Function']):
+        pulumi.set(self, "lambda_", value)
+
+    @property
+    @pulumi.getter(name="lambdaInvokeArn")
+    def lambda_invoke_arn(self) -> Optional[pulumi.Input[str]]:
+        """
+        The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+        """
+        return pulumi.get(self, "lambda_invoke_arn")
+
+    @lambda_invoke_arn.setter
+    def lambda_invoke_arn(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "lambda_invoke_arn", value)
+
+    @property
+    @pulumi.getter(name="payloadFormatVersion")
+    def payload_format_version(self) -> Optional[pulumi.Input[str]]:
+        """
+        The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+        """
+        return pulumi.get(self, "payload_format_version")
+
+    @payload_format_version.setter
+    def payload_format_version(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "payload_format_version", value)
+
+    @property
+    @pulumi.getter(name="requestParameters")
+    def request_parameters(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+        For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+        For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+        See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+        """
+        return pulumi.get(self, "request_parameters")
+
+    @request_parameters.setter
+    def request_parameters(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "request_parameters", value)
+
+    @property
+    @pulumi.getter(name="responseParameters")
+    def response_parameters(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.apigatewayv2.IntegrationResponseParameterArgs']]]]:
+        """
+        Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+        """
+        return pulumi.get(self, "response_parameters")
+
+    @response_parameters.setter
+    def response_parameters(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.apigatewayv2.IntegrationResponseParameterArgs']]]]):
+        pulumi.set(self, "response_parameters", value)
+
+    @property
+    @pulumi.getter(name="timeoutMilliseconds")
+    def timeout_milliseconds(self) -> Optional[pulumi.Input[int]]:
+        """
+        Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+        The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+        this provider will only perform drift detection of its value when present in a configuration.
+        """
+        return pulumi.get(self, "timeout_milliseconds")
+
+    @timeout_milliseconds.setter
+    def timeout_milliseconds(self, value: Optional[pulumi.Input[int]]):
+        pulumi.set(self, "timeout_milliseconds", value)
+
+    @property
+    @pulumi.getter(name="tlsConfig")
+    def tls_config(self) -> Optional[pulumi.Input['pulumi_aws.apigatewayv2.IntegrationTlsConfigArgs']]:
+        """
+        TLS configuration for a private integration. Supported only for HTTP APIs.
+        """
+        return pulumi.get(self, "tls_config")
+
+    @tls_config.setter
+    def tls_config(self, value: Optional[pulumi.Input['pulumi_aws.apigatewayv2.IntegrationTlsConfigArgs']]):
+        pulumi.set(self, "tls_config", value)
 
 
 @pulumi.input_type
 class HttpRouteArgs:
     def __init__(__self__, *,
+                 api_key_required: Optional[pulumi.Input[bool]] = None,
+                 authorization_scopes: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
+                 authorization_type: Optional[pulumi.Input[str]] = None,
                  authorizer: Optional[pulumi.Input[str]] = None,
-                 integration: Optional[pulumi.Input[str]] = None):
+                 authorizer_id: Optional[pulumi.Input[str]] = None,
+                 integration: Optional[pulumi.Input[str]] = None,
+                 operation_name: Optional[pulumi.Input[str]] = None,
+                 target: Optional[pulumi.Input[str]] = None):
         """
+        Manages an Amazon API Gateway Version 2 route.
+        More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) for [WebSocket](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-routes.html) and [HTTP](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html) APIs.
+
+        {{% examples %}}
+        ## Example Usage
+        {{% example %}}
+        ### Basic
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const exampleApi = new aws.apigatewayv2.Api("exampleApi", {
+            protocolType: "WEBSOCKET",
+            routeSelectionExpression: "$request.body.action",
+        });
+        const exampleRoute = new aws.apigatewayv2.Route("exampleRoute", {
+            apiId: exampleApi.id,
+            routeKey: "$default",
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example_api = aws.apigatewayv2.Api("exampleApi",
+            protocol_type="WEBSOCKET",
+            route_selection_expression="$request.body.action")
+        example_route = aws.apigatewayv2.Route("exampleRoute",
+            api_id=example_api.id,
+            route_key="$default")
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var exampleApi = new Aws.ApiGatewayV2.Api("exampleApi", new()
+            {
+                ProtocolType = "WEBSOCKET",
+                RouteSelectionExpression = "$request.body.action",
+            });
+
+            var exampleRoute = new Aws.ApiGatewayV2.Route("exampleRoute", new()
+            {
+                ApiId = exampleApi.Id,
+                RouteKey = "$default",
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		exampleApi, err := apigatewayv2.NewApi(ctx, "exampleApi", &apigatewayv2.ApiArgs{
+        			ProtocolType:             pulumi.String("WEBSOCKET"),
+        			RouteSelectionExpression: pulumi.String("$request.body.action"),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		_, err = apigatewayv2.NewRoute(ctx, "exampleRoute", &apigatewayv2.RouteArgs{
+        			ApiId:    exampleApi.ID(),
+        			RouteKey: pulumi.String("$default"),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.Api;
+        import com.pulumi.aws.apigatewayv2.ApiArgs;
+        import com.pulumi.aws.apigatewayv2.Route;
+        import com.pulumi.aws.apigatewayv2.RouteArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var exampleApi = new Api("exampleApi", ApiArgs.builder()        
+                    .protocolType("WEBSOCKET")
+                    .routeSelectionExpression("$request.body.action")
+                    .build());
+
+                var exampleRoute = new Route("exampleRoute", RouteArgs.builder()        
+                    .apiId(exampleApi.id())
+                    .routeKey("$default")
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          exampleApi:
+            type: aws:apigatewayv2:Api
+            properties:
+              protocolType: WEBSOCKET
+              routeSelectionExpression: $request.body.action
+          exampleRoute:
+            type: aws:apigatewayv2:Route
+            properties:
+              apiId: ${exampleApi.id}
+              routeKey: $default
+        ```
+        {{% /example %}}
+        {{% example %}}
+        ### HTTP Proxy Integration
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const exampleApi = new aws.apigatewayv2.Api("exampleApi", {protocolType: "HTTP"});
+        const exampleIntegration = new aws.apigatewayv2.Integration("exampleIntegration", {
+            apiId: exampleApi.id,
+            integrationType: "HTTP_PROXY",
+            integrationMethod: "ANY",
+            integrationUri: "https://example.com/{proxy}",
+        });
+        const exampleRoute = new aws.apigatewayv2.Route("exampleRoute", {
+            apiId: exampleApi.id,
+            routeKey: "ANY /example/{proxy+}",
+            target: pulumi.interpolate`integrations/${exampleIntegration.id}`,
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example_api = aws.apigatewayv2.Api("exampleApi", protocol_type="HTTP")
+        example_integration = aws.apigatewayv2.Integration("exampleIntegration",
+            api_id=example_api.id,
+            integration_type="HTTP_PROXY",
+            integration_method="ANY",
+            integration_uri="https://example.com/{proxy}")
+        example_route = aws.apigatewayv2.Route("exampleRoute",
+            api_id=example_api.id,
+            route_key="ANY /example/{proxy+}",
+            target=example_integration.id.apply(lambda id: f"integrations/{id}"))
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var exampleApi = new Aws.ApiGatewayV2.Api("exampleApi", new()
+            {
+                ProtocolType = "HTTP",
+            });
+
+            var exampleIntegration = new Aws.ApiGatewayV2.Integration("exampleIntegration", new()
+            {
+                ApiId = exampleApi.Id,
+                IntegrationType = "HTTP_PROXY",
+                IntegrationMethod = "ANY",
+                IntegrationUri = "https://example.com/{proxy}",
+            });
+
+            var exampleRoute = new Aws.ApiGatewayV2.Route("exampleRoute", new()
+            {
+                ApiId = exampleApi.Id,
+                RouteKey = "ANY /example/{proxy+}",
+                Target = exampleIntegration.Id.Apply(id => $"integrations/{id}"),
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"fmt"
+
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		exampleApi, err := apigatewayv2.NewApi(ctx, "exampleApi", &apigatewayv2.ApiArgs{
+        			ProtocolType: pulumi.String("HTTP"),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		exampleIntegration, err := apigatewayv2.NewIntegration(ctx, "exampleIntegration", &apigatewayv2.IntegrationArgs{
+        			ApiId:             exampleApi.ID(),
+        			IntegrationType:   pulumi.String("HTTP_PROXY"),
+        			IntegrationMethod: pulumi.String("ANY"),
+        			IntegrationUri:    pulumi.String("https://example.com/{proxy}"),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		_, err = apigatewayv2.NewRoute(ctx, "exampleRoute", &apigatewayv2.RouteArgs{
+        			ApiId:    exampleApi.ID(),
+        			RouteKey: pulumi.String("ANY /example/{proxy+}"),
+        			Target: exampleIntegration.ID().ApplyT(func(id string) (string, error) {
+        				return fmt.Sprintf("integrations/%v", id), nil
+        			}).(pulumi.StringOutput),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.Api;
+        import com.pulumi.aws.apigatewayv2.ApiArgs;
+        import com.pulumi.aws.apigatewayv2.Integration;
+        import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+        import com.pulumi.aws.apigatewayv2.Route;
+        import com.pulumi.aws.apigatewayv2.RouteArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var exampleApi = new Api("exampleApi", ApiArgs.builder()        
+                    .protocolType("HTTP")
+                    .build());
+
+                var exampleIntegration = new Integration("exampleIntegration", IntegrationArgs.builder()        
+                    .apiId(exampleApi.id())
+                    .integrationType("HTTP_PROXY")
+                    .integrationMethod("ANY")
+                    .integrationUri("https://example.com/{proxy}")
+                    .build());
+
+                var exampleRoute = new Route("exampleRoute", RouteArgs.builder()        
+                    .apiId(exampleApi.id())
+                    .routeKey("ANY /example/{proxy+}")
+                    .target(exampleIntegration.id().applyValue(id -> String.format("integrations/%s", id)))
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          exampleApi:
+            type: aws:apigatewayv2:Api
+            properties:
+              protocolType: HTTP
+          exampleIntegration:
+            type: aws:apigatewayv2:Integration
+            properties:
+              apiId: ${exampleApi.id}
+              integrationType: HTTP_PROXY
+              integrationMethod: ANY
+              integrationUri: https://example.com/{proxy}
+          exampleRoute:
+            type: aws:apigatewayv2:Route
+            properties:
+              apiId: ${exampleApi.id}
+              routeKey: ANY /example/{proxy+}
+              target: integrations/${exampleIntegration.id}
+        ```
+        {{% /example %}}
+        {{% /examples %}}
+
+        ## Import
+
+        Using `pulumi import`, import `aws_apigatewayv2_route` using the API identifier and route identifier. For example:
+
+        ```sh
+         $ pulumi import aws:apigatewayv2/route:Route example aabbccddee/1122334
+        ```
+         -> __Note:__ The API Gateway managed route created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+
+
+        :param pulumi.Input[bool] api_key_required: Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.
+        :param pulumi.Input[Sequence[pulumi.Input[str]]] authorization_scopes: Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+        :param pulumi.Input[str] authorization_type: Authorization type for the route.
+               For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+               For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+               Defaults to `NONE`.
         :param pulumi.Input[str] authorizer: The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+        :param pulumi.Input[str] authorizer_id: Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
         :param pulumi.Input[str] integration: The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
+        :param pulumi.Input[str] operation_name: Operation name for the route. Must be between 1 and 64 characters in length.
+        :param pulumi.Input[str] target: Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
         """
+        if api_key_required is not None:
+            pulumi.set(__self__, "api_key_required", api_key_required)
+        if authorization_scopes is not None:
+            pulumi.set(__self__, "authorization_scopes", authorization_scopes)
+        if authorization_type is not None:
+            pulumi.set(__self__, "authorization_type", authorization_type)
         if authorizer is not None:
             pulumi.set(__self__, "authorizer", authorizer)
+        if authorizer_id is not None:
+            pulumi.set(__self__, "authorizer_id", authorizer_id)
         if integration is not None:
             pulumi.set(__self__, "integration", integration)
+        if operation_name is not None:
+            pulumi.set(__self__, "operation_name", operation_name)
+        if target is not None:
+            pulumi.set(__self__, "target", target)
+
+    @property
+    @pulumi.getter(name="apiKeyRequired")
+    def api_key_required(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.
+        """
+        return pulumi.get(self, "api_key_required")
+
+    @api_key_required.setter
+    def api_key_required(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "api_key_required", value)
+
+    @property
+    @pulumi.getter(name="authorizationScopes")
+    def authorization_scopes(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+        """
+        Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+        """
+        return pulumi.get(self, "authorization_scopes")
+
+    @authorization_scopes.setter
+    def authorization_scopes(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+        pulumi.set(self, "authorization_scopes", value)
+
+    @property
+    @pulumi.getter(name="authorizationType")
+    def authorization_type(self) -> Optional[pulumi.Input[str]]:
+        """
+        Authorization type for the route.
+        For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+        For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+        Defaults to `NONE`.
+        """
+        return pulumi.get(self, "authorization_type")
+
+    @authorization_type.setter
+    def authorization_type(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "authorization_type", value)
 
     @property
     @pulumi.getter
@@ -489,6 +2369,18 @@ class HttpRouteArgs:
         pulumi.set(self, "authorizer", value)
 
     @property
+    @pulumi.getter(name="authorizerId")
+    def authorizer_id(self) -> Optional[pulumi.Input[str]]:
+        """
+        Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
+        """
+        return pulumi.get(self, "authorizer_id")
+
+    @authorizer_id.setter
+    def authorizer_id(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "authorizer_id", value)
+
+    @property
     @pulumi.getter
     def integration(self) -> Optional[pulumi.Input[str]]:
         """
@@ -500,10 +2392,306 @@ class HttpRouteArgs:
     def integration(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "integration", value)
 
+    @property
+    @pulumi.getter(name="operationName")
+    def operation_name(self) -> Optional[pulumi.Input[str]]:
+        """
+        Operation name for the route. Must be between 1 and 64 characters in length.
+        """
+        return pulumi.get(self, "operation_name")
+
+    @operation_name.setter
+    def operation_name(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "operation_name", value)
+
+    @property
+    @pulumi.getter
+    def target(self) -> Optional[pulumi.Input[str]]:
+        """
+        Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+        """
+        return pulumi.get(self, "target")
+
+    @target.setter
+    def target(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "target", value)
+
 
 @pulumi.input_type
 class HttpStageArgs:
-    def __init__(__self__):
-        pass
+    def __init__(__self__, *,
+                 access_log_settings: Optional[pulumi.Input['pulumi_aws.apigatewayv2.StageAccessLogSettingsArgs']] = None,
+                 auto_deploy: Optional[pulumi.Input[bool]] = None,
+                 client_certificate_id: Optional[pulumi.Input[str]] = None,
+                 default_route_settings: Optional[pulumi.Input['pulumi_aws.apigatewayv2.StageDefaultRouteSettingsArgs']] = None,
+                 deployment_id: Optional[pulumi.Input[str]] = None,
+                 description: Optional[pulumi.Input[str]] = None,
+                 name: Optional[pulumi.Input[str]] = None,
+                 route_settings: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.apigatewayv2.StageRouteSettingArgs']]]] = None,
+                 stage_variables: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
+                 tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None):
+        """
+        Manages an Amazon API Gateway Version 2 stage.
+        More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+
+        {{% examples %}}
+        ## Example Usage
+        {{% example %}}
+        ### Basic
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const example = new aws.apigatewayv2.Stage("example", {apiId: aws_apigatewayv2_api.example.id});
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example = aws.apigatewayv2.Stage("example", api_id=aws_apigatewayv2_api["example"]["id"])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var example = new Aws.ApiGatewayV2.Stage("example", new()
+            {
+                ApiId = aws_apigatewayv2_api.Example.Id,
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := apigatewayv2.NewStage(ctx, "example", &apigatewayv2.StageArgs{
+        			ApiId: pulumi.Any(aws_apigatewayv2_api.Example.Id),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.Stage;
+        import com.pulumi.aws.apigatewayv2.StageArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var example = new Stage("example", StageArgs.builder()        
+                    .apiId(aws_apigatewayv2_api.example().id())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          example:
+            type: aws:apigatewayv2:Stage
+            properties:
+              apiId: ${aws_apigatewayv2_api.example.id}
+        ```
+        {{% /example %}}
+        {{% /examples %}}
+
+        ## Import
+
+        Using `pulumi import`, import `aws_apigatewayv2_stage` using the API identifier and stage name. For example:
+
+        ```sh
+         $ pulumi import aws:apigatewayv2/stage:Stage example aabbccddee/example-stage
+        ```
+         -> __Note:__ The API Gateway managed stage created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+
+
+        :param pulumi.Input['pulumi_aws.apigatewayv2.StageAccessLogSettingsArgs'] access_log_settings: Settings for logging access in this stage.
+               Use the `aws.apigateway.Account` resource to configure [permissions for CloudWatch Logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#set-up-access-logging-permissions).
+        :param pulumi.Input[bool] auto_deploy: Whether updates to an API automatically trigger a new deployment. Defaults to `false`. Applicable for HTTP APIs.
+        :param pulumi.Input[str] client_certificate_id: Identifier of a client certificate for the stage. Use the `aws.apigateway.ClientCertificate` resource to configure a client certificate.
+               Supported only for WebSocket APIs.
+        :param pulumi.Input['pulumi_aws.apigatewayv2.StageDefaultRouteSettingsArgs'] default_route_settings: Default route settings for the stage.
+        :param pulumi.Input[str] deployment_id: Deployment identifier of the stage. Use the `aws.apigatewayv2.Deployment` resource to configure a deployment.
+        :param pulumi.Input[str] description: Description for the stage. Must be less than or equal to 1024 characters in length.
+        :param pulumi.Input[str] name: Name of the stage. Must be between 1 and 128 characters in length.
+               
+               The following arguments are optional:
+        :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.apigatewayv2.StageRouteSettingArgs']]] route_settings: Route settings for the stage.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] stage_variables: Map that defines the stage variables for the stage.
+        :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the stage. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        """
+        if access_log_settings is not None:
+            pulumi.set(__self__, "access_log_settings", access_log_settings)
+        if auto_deploy is not None:
+            pulumi.set(__self__, "auto_deploy", auto_deploy)
+        if client_certificate_id is not None:
+            pulumi.set(__self__, "client_certificate_id", client_certificate_id)
+        if default_route_settings is not None:
+            pulumi.set(__self__, "default_route_settings", default_route_settings)
+        if deployment_id is not None:
+            pulumi.set(__self__, "deployment_id", deployment_id)
+        if description is not None:
+            pulumi.set(__self__, "description", description)
+        if name is not None:
+            pulumi.set(__self__, "name", name)
+        if route_settings is not None:
+            pulumi.set(__self__, "route_settings", route_settings)
+        if stage_variables is not None:
+            pulumi.set(__self__, "stage_variables", stage_variables)
+        if tags is not None:
+            pulumi.set(__self__, "tags", tags)
+
+    @property
+    @pulumi.getter(name="accessLogSettings")
+    def access_log_settings(self) -> Optional[pulumi.Input['pulumi_aws.apigatewayv2.StageAccessLogSettingsArgs']]:
+        """
+        Settings for logging access in this stage.
+        Use the `aws.apigateway.Account` resource to configure [permissions for CloudWatch Logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#set-up-access-logging-permissions).
+        """
+        return pulumi.get(self, "access_log_settings")
+
+    @access_log_settings.setter
+    def access_log_settings(self, value: Optional[pulumi.Input['pulumi_aws.apigatewayv2.StageAccessLogSettingsArgs']]):
+        pulumi.set(self, "access_log_settings", value)
+
+    @property
+    @pulumi.getter(name="autoDeploy")
+    def auto_deploy(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Whether updates to an API automatically trigger a new deployment. Defaults to `false`. Applicable for HTTP APIs.
+        """
+        return pulumi.get(self, "auto_deploy")
+
+    @auto_deploy.setter
+    def auto_deploy(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "auto_deploy", value)
+
+    @property
+    @pulumi.getter(name="clientCertificateId")
+    def client_certificate_id(self) -> Optional[pulumi.Input[str]]:
+        """
+        Identifier of a client certificate for the stage. Use the `aws.apigateway.ClientCertificate` resource to configure a client certificate.
+        Supported only for WebSocket APIs.
+        """
+        return pulumi.get(self, "client_certificate_id")
+
+    @client_certificate_id.setter
+    def client_certificate_id(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "client_certificate_id", value)
+
+    @property
+    @pulumi.getter(name="defaultRouteSettings")
+    def default_route_settings(self) -> Optional[pulumi.Input['pulumi_aws.apigatewayv2.StageDefaultRouteSettingsArgs']]:
+        """
+        Default route settings for the stage.
+        """
+        return pulumi.get(self, "default_route_settings")
+
+    @default_route_settings.setter
+    def default_route_settings(self, value: Optional[pulumi.Input['pulumi_aws.apigatewayv2.StageDefaultRouteSettingsArgs']]):
+        pulumi.set(self, "default_route_settings", value)
+
+    @property
+    @pulumi.getter(name="deploymentId")
+    def deployment_id(self) -> Optional[pulumi.Input[str]]:
+        """
+        Deployment identifier of the stage. Use the `aws.apigatewayv2.Deployment` resource to configure a deployment.
+        """
+        return pulumi.get(self, "deployment_id")
+
+    @deployment_id.setter
+    def deployment_id(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "deployment_id", value)
+
+    @property
+    @pulumi.getter
+    def description(self) -> Optional[pulumi.Input[str]]:
+        """
+        Description for the stage. Must be less than or equal to 1024 characters in length.
+        """
+        return pulumi.get(self, "description")
+
+    @description.setter
+    def description(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "description", value)
+
+    @property
+    @pulumi.getter
+    def name(self) -> Optional[pulumi.Input[str]]:
+        """
+        Name of the stage. Must be between 1 and 128 characters in length.
+
+        The following arguments are optional:
+        """
+        return pulumi.get(self, "name")
+
+    @name.setter
+    def name(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "name", value)
+
+    @property
+    @pulumi.getter(name="routeSettings")
+    def route_settings(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.apigatewayv2.StageRouteSettingArgs']]]]:
+        """
+        Route settings for the stage.
+        """
+        return pulumi.get(self, "route_settings")
+
+    @route_settings.setter
+    def route_settings(self, value: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.apigatewayv2.StageRouteSettingArgs']]]]):
+        pulumi.set(self, "route_settings", value)
+
+    @property
+    @pulumi.getter(name="stageVariables")
+    def stage_variables(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        Map that defines the stage variables for the stage.
+        """
+        return pulumi.get(self, "stage_variables")
+
+    @stage_variables.setter
+    def stage_variables(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "stage_variables", value)
+
+    @property
+    @pulumi.getter
+    def tags(self) -> Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]:
+        """
+        Map of tags to assign to the stage. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        """
+        return pulumi.get(self, "tags")
+
+    @tags.setter
+    def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
+        pulumi.set(self, "tags", value)
 
 

@@ -124,15 +124,15 @@ public final class DomainConfigurationArgs extends com.pulumi.resources.Resource
      * Domain name configuration. See below.
      * 
      */
-    @Import(name="domainNameConfiguration")
-    private @Nullable Output<DomainNameDomainNameConfigurationArgs> domainNameConfiguration;
+    @Import(name="domainNameConfiguration", required=true)
+    private Output<DomainNameDomainNameConfigurationArgs> domainNameConfiguration;
 
     /**
      * @return Domain name configuration. See below.
      * 
      */
-    public Optional<Output<DomainNameDomainNameConfigurationArgs>> domainNameConfiguration() {
-        return Optional.ofNullable(this.domainNameConfiguration);
+    public Output<DomainNameDomainNameConfigurationArgs> domainNameConfiguration() {
+        return this.domainNameConfiguration;
     }
 
     /**
@@ -197,7 +197,7 @@ public final class DomainConfigurationArgs extends com.pulumi.resources.Resource
          * @return builder
          * 
          */
-        public Builder domainNameConfiguration(@Nullable Output<DomainNameDomainNameConfigurationArgs> domainNameConfiguration) {
+        public Builder domainNameConfiguration(Output<DomainNameDomainNameConfigurationArgs> domainNameConfiguration) {
             $.domainNameConfiguration = domainNameConfiguration;
             return this;
         }
@@ -255,6 +255,7 @@ public final class DomainConfigurationArgs extends com.pulumi.resources.Resource
         }
 
         public DomainConfigurationArgs build() {
+            $.domainNameConfiguration = Objects.requireNonNull($.domainNameConfiguration, "expected parameter 'domainNameConfiguration' to be non-null");
             return $;
         }
     }

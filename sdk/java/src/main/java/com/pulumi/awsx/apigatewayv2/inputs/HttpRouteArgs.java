@@ -5,15 +5,167 @@ package com.pulumi.awsx.apigatewayv2.inputs;
 
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
+import java.lang.Boolean;
 import java.lang.String;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
 
 
+/**
+ * Manages an Amazon API Gateway Version 2 route.
+ * More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) for [WebSocket](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-routes.html) and [HTTP](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html) APIs.
+ * 
+ * ## Example Usage
+ * ### Basic
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.apigatewayv2.Api;
+ * import com.pulumi.aws.apigatewayv2.ApiArgs;
+ * import com.pulumi.aws.apigatewayv2.Route;
+ * import com.pulumi.aws.apigatewayv2.RouteArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var exampleApi = new Api(&#34;exampleApi&#34;, ApiArgs.builder()        
+ *             .protocolType(&#34;WEBSOCKET&#34;)
+ *             .routeSelectionExpression(&#34;$request.body.action&#34;)
+ *             .build());
+ * 
+ *         var exampleRoute = new Route(&#34;exampleRoute&#34;, RouteArgs.builder()        
+ *             .apiId(exampleApi.id())
+ *             .routeKey(&#34;$default&#34;)
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * ### HTTP Proxy Integration
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.apigatewayv2.Api;
+ * import com.pulumi.aws.apigatewayv2.ApiArgs;
+ * import com.pulumi.aws.apigatewayv2.Integration;
+ * import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+ * import com.pulumi.aws.apigatewayv2.Route;
+ * import com.pulumi.aws.apigatewayv2.RouteArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var exampleApi = new Api(&#34;exampleApi&#34;, ApiArgs.builder()        
+ *             .protocolType(&#34;HTTP&#34;)
+ *             .build());
+ * 
+ *         var exampleIntegration = new Integration(&#34;exampleIntegration&#34;, IntegrationArgs.builder()        
+ *             .apiId(exampleApi.id())
+ *             .integrationType(&#34;HTTP_PROXY&#34;)
+ *             .integrationMethod(&#34;ANY&#34;)
+ *             .integrationUri(&#34;https://example.com/{proxy}&#34;)
+ *             .build());
+ * 
+ *         var exampleRoute = new Route(&#34;exampleRoute&#34;, RouteArgs.builder()        
+ *             .apiId(exampleApi.id())
+ *             .routeKey(&#34;ANY /example/{proxy+}&#34;)
+ *             .target(exampleIntegration.id().applyValue(id -&gt; String.format(&#34;integrations/%s&#34;, id)))
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * 
+ * ## Import
+ * 
+ * Using `pulumi import`, import `aws_apigatewayv2_route` using the API identifier and route identifier. For example:
+ * 
+ * ```sh
+ *  $ pulumi import aws:apigatewayv2/route:Route example aabbccddee/1122334
+ * ```
+ *  -&gt; __Note:__ The API Gateway managed route created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+ * 
+ */
 public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
 
     public static final HttpRouteArgs Empty = new HttpRouteArgs();
+
+    /**
+     * Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.
+     * 
+     */
+    @Import(name="apiKeyRequired")
+    private @Nullable Output<Boolean> apiKeyRequired;
+
+    /**
+     * @return Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.
+     * 
+     */
+    public Optional<Output<Boolean>> apiKeyRequired() {
+        return Optional.ofNullable(this.apiKeyRequired);
+    }
+
+    /**
+     * Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+     * 
+     */
+    @Import(name="authorizationScopes")
+    private @Nullable Output<List<String>> authorizationScopes;
+
+    /**
+     * @return Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+     * 
+     */
+    public Optional<Output<List<String>>> authorizationScopes() {
+        return Optional.ofNullable(this.authorizationScopes);
+    }
+
+    /**
+     * Authorization type for the route.
+     * For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+     * For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+     * Defaults to `NONE`.
+     * 
+     */
+    @Import(name="authorizationType")
+    private @Nullable Output<String> authorizationType;
+
+    /**
+     * @return Authorization type for the route.
+     * For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+     * For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+     * Defaults to `NONE`.
+     * 
+     */
+    public Optional<Output<String>> authorizationType() {
+        return Optional.ofNullable(this.authorizationType);
+    }
 
     /**
      * The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
@@ -31,6 +183,21 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
+     * 
+     */
+    @Import(name="authorizerId")
+    private @Nullable Output<String> authorizerId;
+
+    /**
+     * @return Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
+     * 
+     */
+    public Optional<Output<String>> authorizerId() {
+        return Optional.ofNullable(this.authorizerId);
+    }
+
+    /**
      * The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
      * 
      */
@@ -45,11 +212,47 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
         return Optional.ofNullable(this.integration);
     }
 
+    /**
+     * Operation name for the route. Must be between 1 and 64 characters in length.
+     * 
+     */
+    @Import(name="operationName")
+    private @Nullable Output<String> operationName;
+
+    /**
+     * @return Operation name for the route. Must be between 1 and 64 characters in length.
+     * 
+     */
+    public Optional<Output<String>> operationName() {
+        return Optional.ofNullable(this.operationName);
+    }
+
+    /**
+     * Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+     * 
+     */
+    @Import(name="target")
+    private @Nullable Output<String> target;
+
+    /**
+     * @return Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+     * 
+     */
+    public Optional<Output<String>> target() {
+        return Optional.ofNullable(this.target);
+    }
+
     private HttpRouteArgs() {}
 
     private HttpRouteArgs(HttpRouteArgs $) {
+        this.apiKeyRequired = $.apiKeyRequired;
+        this.authorizationScopes = $.authorizationScopes;
+        this.authorizationType = $.authorizationType;
         this.authorizer = $.authorizer;
+        this.authorizerId = $.authorizerId;
         this.integration = $.integration;
+        this.operationName = $.operationName;
+        this.target = $.target;
     }
 
     public static Builder builder() {
@@ -68,6 +271,85 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
 
         public Builder(HttpRouteArgs defaults) {
             $ = new HttpRouteArgs(Objects.requireNonNull(defaults));
+        }
+
+        /**
+         * @param apiKeyRequired Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder apiKeyRequired(@Nullable Output<Boolean> apiKeyRequired) {
+            $.apiKeyRequired = apiKeyRequired;
+            return this;
+        }
+
+        /**
+         * @param apiKeyRequired Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder apiKeyRequired(Boolean apiKeyRequired) {
+            return apiKeyRequired(Output.of(apiKeyRequired));
+        }
+
+        /**
+         * @param authorizationScopes Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authorizationScopes(@Nullable Output<List<String>> authorizationScopes) {
+            $.authorizationScopes = authorizationScopes;
+            return this;
+        }
+
+        /**
+         * @param authorizationScopes Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authorizationScopes(List<String> authorizationScopes) {
+            return authorizationScopes(Output.of(authorizationScopes));
+        }
+
+        /**
+         * @param authorizationScopes Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authorizationScopes(String... authorizationScopes) {
+            return authorizationScopes(List.of(authorizationScopes));
+        }
+
+        /**
+         * @param authorizationType Authorization type for the route.
+         * For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+         * For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+         * Defaults to `NONE`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authorizationType(@Nullable Output<String> authorizationType) {
+            $.authorizationType = authorizationType;
+            return this;
+        }
+
+        /**
+         * @param authorizationType Authorization type for the route.
+         * For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+         * For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+         * Defaults to `NONE`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authorizationType(String authorizationType) {
+            return authorizationType(Output.of(authorizationType));
         }
 
         /**
@@ -92,6 +374,27 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
+         * @param authorizerId Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authorizerId(@Nullable Output<String> authorizerId) {
+            $.authorizerId = authorizerId;
+            return this;
+        }
+
+        /**
+         * @param authorizerId Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authorizerId(String authorizerId) {
+            return authorizerId(Output.of(authorizerId));
+        }
+
+        /**
          * @param integration The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
          * 
          * @return builder
@@ -110,6 +413,48 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder integration(String integration) {
             return integration(Output.of(integration));
+        }
+
+        /**
+         * @param operationName Operation name for the route. Must be between 1 and 64 characters in length.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder operationName(@Nullable Output<String> operationName) {
+            $.operationName = operationName;
+            return this;
+        }
+
+        /**
+         * @param operationName Operation name for the route. Must be between 1 and 64 characters in length.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder operationName(String operationName) {
+            return operationName(Output.of(operationName));
+        }
+
+        /**
+         * @param target Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder target(@Nullable Output<String> target) {
+            $.target = target;
+            return this;
+        }
+
+        /**
+         * @param target Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder target(String target) {
+            return target(Output.of(target));
         }
 
         public HttpRouteArgs build() {

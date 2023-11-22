@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lambda"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
@@ -112,7 +113,7 @@ var _ = internal.GetEnvOrDefault
 // ```
 type DomainConfiguration struct {
 	// Domain name configuration. See below.
-	DomainNameConfiguration *apigatewayv2.DomainNameDomainNameConfiguration `pulumi:"domainNameConfiguration"`
+	DomainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration `pulumi:"domainNameConfiguration"`
 	// Mutual TLS authentication configuration for the domain name.
 	MutualTlsAuthentication *apigatewayv2.DomainNameMutualTlsAuthentication `pulumi:"mutualTlsAuthentication"`
 	// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -227,7 +228,7 @@ type DomainConfigurationInput interface {
 // ```
 type DomainConfigurationArgs struct {
 	// Domain name configuration. See below.
-	DomainNameConfiguration apigatewayv2.DomainNameDomainNameConfigurationPtrInput `pulumi:"domainNameConfiguration"`
+	DomainNameConfiguration apigatewayv2.DomainNameDomainNameConfigurationInput `pulumi:"domainNameConfiguration"`
 	// Mutual TLS authentication configuration for the domain name.
 	MutualTlsAuthentication apigatewayv2.DomainNameMutualTlsAuthenticationPtrInput `pulumi:"mutualTlsAuthentication"`
 	// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
@@ -425,10 +426,10 @@ func (o DomainConfigurationOutput) ToOutput(ctx context.Context) pulumix.Output[
 }
 
 // Domain name configuration. See below.
-func (o DomainConfigurationOutput) DomainNameConfiguration() apigatewayv2.DomainNameDomainNameConfigurationPtrOutput {
-	return o.ApplyT(func(v DomainConfiguration) *apigatewayv2.DomainNameDomainNameConfiguration {
+func (o DomainConfigurationOutput) DomainNameConfiguration() apigatewayv2.DomainNameDomainNameConfigurationOutput {
+	return o.ApplyT(func(v DomainConfiguration) apigatewayv2.DomainNameDomainNameConfiguration {
 		return v.DomainNameConfiguration
-	}).(apigatewayv2.DomainNameDomainNameConfigurationPtrOutput)
+	}).(apigatewayv2.DomainNameDomainNameConfigurationOutput)
 }
 
 // Mutual TLS authentication configuration for the domain name.
@@ -479,7 +480,7 @@ func (o DomainConfigurationPtrOutput) DomainNameConfiguration() apigatewayv2.Dom
 		if v == nil {
 			return nil
 		}
-		return v.DomainNameConfiguration
+		return &v.DomainNameConfiguration
 	}).(apigatewayv2.DomainNameDomainNameConfigurationPtrOutput)
 }
 
@@ -503,625 +504,556 @@ func (o DomainConfigurationPtrOutput) Tags() pulumi.StringMapOutput {
 	}).(pulumi.StringMapOutput)
 }
 
+// Manages an Amazon API Gateway Version 2 API mapping.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewApiMapping(ctx, "example", &apigatewayv2.ApiMappingArgs{
+//				ApiId:      pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				DomainName: pulumi.Any(aws_apigatewayv2_domain_name.Example.Id),
+//				Stage:      pulumi.Any(aws_apigatewayv2_stage.Example.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_api_mapping` using the API mapping identifier and domain name. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/apiMapping:ApiMapping example 1122334/ws-api.example.com
+//
+// ```
 type DomainMapping struct {
+	// The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+	ApiMappingKey *string `pulumi:"apiMappingKey"`
 	// Configuration of the domain name to create. Cannot be specified together with `domainId`.
 	DomainConfiguration *DomainConfiguration `pulumi:"domainConfiguration"`
 	// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
 	DomainId *string `pulumi:"domainId"`
+	// API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+	Stage string `pulumi:"stage"`
 }
 
-// DomainMappingInput is an input type that accepts DomainMappingArgs and DomainMappingOutput values.
-// You can construct a concrete instance of `DomainMappingInput` via:
+// Manages an Amazon API Gateway Version 2 authorizer.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
 //
-//	DomainMappingArgs{...}
-type DomainMappingInput interface {
-	pulumi.Input
-
-	ToDomainMappingOutput() DomainMappingOutput
-	ToDomainMappingOutputWithContext(context.Context) DomainMappingOutput
-}
-
-type DomainMappingArgs struct {
-	// Configuration of the domain name to create. Cannot be specified together with `domainId`.
-	DomainConfiguration DomainConfigurationPtrInput `pulumi:"domainConfiguration"`
-	// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
-	DomainId pulumi.StringPtrInput `pulumi:"domainId"`
-}
-
-func (DomainMappingArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*DomainMapping)(nil)).Elem()
-}
-
-func (i DomainMappingArgs) ToDomainMappingOutput() DomainMappingOutput {
-	return i.ToDomainMappingOutputWithContext(context.Background())
-}
-
-func (i DomainMappingArgs) ToDomainMappingOutputWithContext(ctx context.Context) DomainMappingOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(DomainMappingOutput)
-}
-
-func (i DomainMappingArgs) ToOutput(ctx context.Context) pulumix.Output[DomainMapping] {
-	return pulumix.Output[DomainMapping]{
-		OutputState: i.ToDomainMappingOutputWithContext(ctx).OutputState,
-	}
-}
-
-// DomainMappingMapInput is an input type that accepts DomainMappingMap and DomainMappingMapOutput values.
-// You can construct a concrete instance of `DomainMappingMapInput` via:
+// ## Example Usage
+// ### Basic WebSocket API
+// ```go
+// package main
 //
-//	DomainMappingMap{ "key": DomainMappingArgs{...} }
-type DomainMappingMapInput interface {
-	pulumi.Input
-
-	ToDomainMappingMapOutput() DomainMappingMapOutput
-	ToDomainMappingMapOutputWithContext(context.Context) DomainMappingMapOutput
-}
-
-type DomainMappingMap map[string]DomainMappingInput
-
-func (DomainMappingMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]DomainMapping)(nil)).Elem()
-}
-
-func (i DomainMappingMap) ToDomainMappingMapOutput() DomainMappingMapOutput {
-	return i.ToDomainMappingMapOutputWithContext(context.Background())
-}
-
-func (i DomainMappingMap) ToDomainMappingMapOutputWithContext(ctx context.Context) DomainMappingMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(DomainMappingMapOutput)
-}
-
-func (i DomainMappingMap) ToOutput(ctx context.Context) pulumix.Output[map[string]DomainMapping] {
-	return pulumix.Output[map[string]DomainMapping]{
-		OutputState: i.ToDomainMappingMapOutputWithContext(ctx).OutputState,
-	}
-}
-
-type DomainMappingOutput struct{ *pulumi.OutputState }
-
-func (DomainMappingOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*DomainMapping)(nil)).Elem()
-}
-
-func (o DomainMappingOutput) ToDomainMappingOutput() DomainMappingOutput {
-	return o
-}
-
-func (o DomainMappingOutput) ToDomainMappingOutputWithContext(ctx context.Context) DomainMappingOutput {
-	return o
-}
-
-func (o DomainMappingOutput) ToOutput(ctx context.Context) pulumix.Output[DomainMapping] {
-	return pulumix.Output[DomainMapping]{
-		OutputState: o.OutputState,
-	}
-}
-
-// Configuration of the domain name to create. Cannot be specified together with `domainId`.
-func (o DomainMappingOutput) DomainConfiguration() DomainConfigurationPtrOutput {
-	return o.ApplyT(func(v DomainMapping) *DomainConfiguration { return v.DomainConfiguration }).(DomainConfigurationPtrOutput)
-}
-
-// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
-func (o DomainMappingOutput) DomainId() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v DomainMapping) *string { return v.DomainId }).(pulumi.StringPtrOutput)
-}
-
-type DomainMappingMapOutput struct{ *pulumi.OutputState }
-
-func (DomainMappingMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]DomainMapping)(nil)).Elem()
-}
-
-func (o DomainMappingMapOutput) ToDomainMappingMapOutput() DomainMappingMapOutput {
-	return o
-}
-
-func (o DomainMappingMapOutput) ToDomainMappingMapOutputWithContext(ctx context.Context) DomainMappingMapOutput {
-	return o
-}
-
-func (o DomainMappingMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]DomainMapping] {
-	return pulumix.Output[map[string]DomainMapping]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o DomainMappingMapOutput) MapIndex(k pulumi.StringInput) DomainMappingOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) DomainMapping {
-		return vs[0].(map[string]DomainMapping)[vs[1].(string)]
-	}).(DomainMappingOutput)
-}
-
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewAuthorizer(ctx, "example", &apigatewayv2.AuthorizerArgs{
+//				ApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				AuthorizerType: pulumi.String("REQUEST"),
+//				AuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),
+//				IdentitySources: pulumi.StringArray{
+//					pulumi.String("route.request.header.Auth"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Basic HTTP API
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewAuthorizer(ctx, "example", &apigatewayv2.AuthorizerArgs{
+//				ApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				AuthorizerType: pulumi.String("REQUEST"),
+//				AuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),
+//				IdentitySources: pulumi.StringArray{
+//					pulumi.String("$request.header.Authorization"),
+//				},
+//				AuthorizerPayloadFormatVersion: pulumi.String("2.0"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_authorizer` using the API identifier and authorizer identifier. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/authorizer:Authorizer example aabbccddee/1122334
+//
+// ```
 type HttpAuthorizer struct {
+	// Required credentials as an IAM role for API Gateway to invoke the authorizer.
+	// Supported only for `REQUEST` authorizers.
+	AuthorizerCredentialsArn *string `pulumi:"authorizerCredentialsArn"`
+	// Format of the payload sent to an HTTP API Lambda authorizer. Required for HTTP API Lambda authorizers.
+	// Valid values: `1.0`, `2.0`.
+	AuthorizerPayloadFormatVersion *string `pulumi:"authorizerPayloadFormatVersion"`
+	// Time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled.
+	// If it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Defaults to `300`.
+	// Supported only for HTTP API Lambda authorizers.
+	AuthorizerResultTtlInSeconds *int `pulumi:"authorizerResultTtlInSeconds"`
+	// Authorizer type. Valid values: `JWT`, `REQUEST`.
+	// Specify `REQUEST` for a Lambda function using incoming request parameters.
+	// For HTTP APIs, specify `JWT` to use JSON Web Tokens.
+	AuthorizerType string `pulumi:"authorizerType"`
+	// Authorizer's Uniform Resource Identifier (URI).
+	// For `REQUEST` authorizers this must be a well-formed Lambda function URI, such as the `invoke_arn` attribute of the `aws.lambda.Function` resource.
+	// Supported only for `REQUEST` authorizers. Must be between 1 and 2048 characters in length.
+	AuthorizerUri *string `pulumi:"authorizerUri"`
+	// Whether a Lambda authorizer returns a response in a simple format. If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy.
+	// Supported only for HTTP APIs.
+	EnableSimpleResponses *bool `pulumi:"enableSimpleResponses"`
+	// Identity sources for which authorization is requested.
+	// For `REQUEST` authorizers the value is a list of one or more mapping expressions of the specified request parameters.
+	// For `JWT` authorizers the single entry specifies where to extract the JSON Web Token (JWT) from inbound requests.
+	IdentitySources []string `pulumi:"identitySources"`
+	// Configuration of a JWT authorizer. Required for the `JWT` authorizer type.
+	// Supported only for HTTP APIs.
+	JwtConfiguration *apigatewayv2.AuthorizerJwtConfiguration `pulumi:"jwtConfiguration"`
+	// Name of the authorizer. Must be between 1 and 128 characters in length.
+	Name *string `pulumi:"name"`
 }
 
-// HttpAuthorizerInput is an input type that accepts HttpAuthorizerArgs and HttpAuthorizerOutput values.
-// You can construct a concrete instance of `HttpAuthorizerInput` via:
+// Manages an Amazon API Gateway Version 2 integration.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
 //
-//	HttpAuthorizerArgs{...}
-type HttpAuthorizerInput interface {
-	pulumi.Input
-
-	ToHttpAuthorizerOutput() HttpAuthorizerOutput
-	ToHttpAuthorizerOutputWithContext(context.Context) HttpAuthorizerOutput
-}
-
-type HttpAuthorizerArgs struct {
-}
-
-func (HttpAuthorizerArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*HttpAuthorizer)(nil)).Elem()
-}
-
-func (i HttpAuthorizerArgs) ToHttpAuthorizerOutput() HttpAuthorizerOutput {
-	return i.ToHttpAuthorizerOutputWithContext(context.Background())
-}
-
-func (i HttpAuthorizerArgs) ToHttpAuthorizerOutputWithContext(ctx context.Context) HttpAuthorizerOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HttpAuthorizerOutput)
-}
-
-func (i HttpAuthorizerArgs) ToOutput(ctx context.Context) pulumix.Output[HttpAuthorizer] {
-	return pulumix.Output[HttpAuthorizer]{
-		OutputState: i.ToHttpAuthorizerOutputWithContext(ctx).OutputState,
-	}
-}
-
-// HttpAuthorizerMapInput is an input type that accepts HttpAuthorizerMap and HttpAuthorizerMapOutput values.
-// You can construct a concrete instance of `HttpAuthorizerMapInput` via:
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
 //
-//	HttpAuthorizerMap{ "key": HttpAuthorizerArgs{...} }
-type HttpAuthorizerMapInput interface {
-	pulumi.Input
-
-	ToHttpAuthorizerMapOutput() HttpAuthorizerMapOutput
-	ToHttpAuthorizerMapOutputWithContext(context.Context) HttpAuthorizerMapOutput
-}
-
-type HttpAuthorizerMap map[string]HttpAuthorizerInput
-
-func (HttpAuthorizerMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]HttpAuthorizer)(nil)).Elem()
-}
-
-func (i HttpAuthorizerMap) ToHttpAuthorizerMapOutput() HttpAuthorizerMapOutput {
-	return i.ToHttpAuthorizerMapOutputWithContext(context.Background())
-}
-
-func (i HttpAuthorizerMap) ToHttpAuthorizerMapOutputWithContext(ctx context.Context) HttpAuthorizerMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HttpAuthorizerMapOutput)
-}
-
-func (i HttpAuthorizerMap) ToOutput(ctx context.Context) pulumix.Output[map[string]HttpAuthorizer] {
-	return pulumix.Output[map[string]HttpAuthorizer]{
-		OutputState: i.ToHttpAuthorizerMapOutputWithContext(ctx).OutputState,
-	}
-}
-
-type HttpAuthorizerOutput struct{ *pulumi.OutputState }
-
-func (HttpAuthorizerOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*HttpAuthorizer)(nil)).Elem()
-}
-
-func (o HttpAuthorizerOutput) ToHttpAuthorizerOutput() HttpAuthorizerOutput {
-	return o
-}
-
-func (o HttpAuthorizerOutput) ToHttpAuthorizerOutputWithContext(ctx context.Context) HttpAuthorizerOutput {
-	return o
-}
-
-func (o HttpAuthorizerOutput) ToOutput(ctx context.Context) pulumix.Output[HttpAuthorizer] {
-	return pulumix.Output[HttpAuthorizer]{
-		OutputState: o.OutputState,
-	}
-}
-
-type HttpAuthorizerMapOutput struct{ *pulumi.OutputState }
-
-func (HttpAuthorizerMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]HttpAuthorizer)(nil)).Elem()
-}
-
-func (o HttpAuthorizerMapOutput) ToHttpAuthorizerMapOutput() HttpAuthorizerMapOutput {
-	return o
-}
-
-func (o HttpAuthorizerMapOutput) ToHttpAuthorizerMapOutputWithContext(ctx context.Context) HttpAuthorizerMapOutput {
-	return o
-}
-
-func (o HttpAuthorizerMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]HttpAuthorizer] {
-	return pulumix.Output[map[string]HttpAuthorizer]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o HttpAuthorizerMapOutput) MapIndex(k pulumi.StringInput) HttpAuthorizerOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) HttpAuthorizer {
-		return vs[0].(map[string]HttpAuthorizer)[vs[1].(string)]
-	}).(HttpAuthorizerOutput)
-}
-
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+//				ApiId:           pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				IntegrationType: pulumi.String("MOCK"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Lambda Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lambda"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleFunction, err := lambda.NewFunction(ctx, "exampleFunction", &lambda.FunctionArgs{
+//				Code:    pulumi.NewFileArchive("example.zip"),
+//				Role:    pulumi.Any(aws_iam_role.Example.Arn),
+//				Handler: pulumi.String("index.handler"),
+//				Runtime: pulumi.String("nodejs16.x"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = apigatewayv2.NewIntegration(ctx, "exampleIntegration", &apigatewayv2.IntegrationArgs{
+//				ApiId:                   pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				IntegrationType:         pulumi.String("AWS_PROXY"),
+//				ConnectionType:          pulumi.String("INTERNET"),
+//				ContentHandlingStrategy: pulumi.String("CONVERT_TO_TEXT"),
+//				Description:             pulumi.String("Lambda example"),
+//				IntegrationMethod:       pulumi.String("POST"),
+//				IntegrationUri:          exampleFunction.InvokeArn,
+//				PassthroughBehavior:     pulumi.String("WHEN_NO_MATCH"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### AWS Service Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+//				ApiId:              pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				CredentialsArn:     pulumi.Any(aws_iam_role.Example.Arn),
+//				Description:        pulumi.String("SQS example"),
+//				IntegrationType:    pulumi.String("AWS_PROXY"),
+//				IntegrationSubtype: pulumi.String("SQS-SendMessage"),
+//				RequestParameters: pulumi.StringMap{
+//					"QueueUrl":    pulumi.String("$request.header.queueUrl"),
+//					"MessageBody": pulumi.String("$request.body.message"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Private Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+//				ApiId:             pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				CredentialsArn:    pulumi.Any(aws_iam_role.Example.Arn),
+//				Description:       pulumi.String("Example with a load balancer"),
+//				IntegrationType:   pulumi.String("HTTP_PROXY"),
+//				IntegrationUri:    pulumi.Any(aws_lb_listener.Example.Arn),
+//				IntegrationMethod: pulumi.String("ANY"),
+//				ConnectionType:    pulumi.String("VPC_LINK"),
+//				ConnectionId:      pulumi.Any(aws_apigatewayv2_vpc_link.Example.Id),
+//				TlsConfig: &apigatewayv2.IntegrationTlsConfigArgs{
+//					ServerNameToVerify: pulumi.String("example.com"),
+//				},
+//				RequestParameters: pulumi.StringMap{
+//					"append:header.authforintegration": pulumi.String("$context.authorizer.authorizerResponse"),
+//					"overwrite:path":                   pulumi.String("staticValueForIntegration"),
+//				},
+//				ResponseParameters: apigatewayv2.IntegrationResponseParameterArray{
+//					&apigatewayv2.IntegrationResponseParameterArgs{
+//						StatusCode: pulumi.String("403"),
+//						Mappings: pulumi.StringMap{
+//							"append:header.auth": pulumi.String("$context.authorizer.authorizerResponse"),
+//						},
+//					},
+//					&apigatewayv2.IntegrationResponseParameterArgs{
+//						StatusCode: pulumi.String("200"),
+//						Mappings: pulumi.StringMap{
+//							"overwrite:statuscode": pulumi.String("204"),
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_integration` using the API identifier and integration identifier. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/integration:Integration example aabbccddee/1122334
+//
+// ```
+//
+//	-> __Note:__ The API Gateway managed integration created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
 type HttpIntegration struct {
+	// ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+	ConnectionId *string `pulumi:"connectionId"`
+	// Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+	ConnectionType *string `pulumi:"connectionType"`
+	// Credentials required for the integration, if any.
+	CredentialsArn *string `pulumi:"credentialsArn"`
+	// Description of the integration.
+	Description *string `pulumi:"description"`
+	// Integration's HTTP method. Must be specified if `integration_type` is not `MOCK`.
+	IntegrationMethod *string `pulumi:"integrationMethod"`
+	// AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+	IntegrationSubtype *string `pulumi:"integrationSubtype"`
+	// Integration type of an integration.
+	// Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+	IntegrationType *string `pulumi:"integrationType"`
+	// URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+	// For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+	//  Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+	IntegrationUri *string `pulumi:"integrationUri"`
+	// A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+	Lambda *lambda.Function `pulumi:"lambda"`
+	// The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+	LambdaInvokeArn *string `pulumi:"lambdaInvokeArn"`
+	// The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+	PayloadFormatVersion *string `pulumi:"payloadFormatVersion"`
+	// For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+	// For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+	// For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+	// See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+	RequestParameters map[string]string `pulumi:"requestParameters"`
+	// Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+	ResponseParameters []apigatewayv2.IntegrationResponseParameter `pulumi:"responseParameters"`
+	// Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+	// The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+	// this provider will only perform drift detection of its value when present in a configuration.
+	TimeoutMilliseconds *int `pulumi:"timeoutMilliseconds"`
+	// TLS configuration for a private integration. Supported only for HTTP APIs.
+	TlsConfig *apigatewayv2.IntegrationTlsConfig `pulumi:"tlsConfig"`
 }
 
-// HttpIntegrationInput is an input type that accepts HttpIntegrationArgs and HttpIntegrationOutput values.
-// You can construct a concrete instance of `HttpIntegrationInput` via:
+// Manages an Amazon API Gateway Version 2 route.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) for [WebSocket](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-routes.html) and [HTTP](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html) APIs.
 //
-//	HttpIntegrationArgs{...}
-type HttpIntegrationInput interface {
-	pulumi.Input
-
-	ToHttpIntegrationOutput() HttpIntegrationOutput
-	ToHttpIntegrationOutputWithContext(context.Context) HttpIntegrationOutput
-}
-
-type HttpIntegrationArgs struct {
-}
-
-func (HttpIntegrationArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*HttpIntegration)(nil)).Elem()
-}
-
-func (i HttpIntegrationArgs) ToHttpIntegrationOutput() HttpIntegrationOutput {
-	return i.ToHttpIntegrationOutputWithContext(context.Background())
-}
-
-func (i HttpIntegrationArgs) ToHttpIntegrationOutputWithContext(ctx context.Context) HttpIntegrationOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HttpIntegrationOutput)
-}
-
-func (i HttpIntegrationArgs) ToOutput(ctx context.Context) pulumix.Output[HttpIntegration] {
-	return pulumix.Output[HttpIntegration]{
-		OutputState: i.ToHttpIntegrationOutputWithContext(ctx).OutputState,
-	}
-}
-
-// HttpIntegrationMapInput is an input type that accepts HttpIntegrationMap and HttpIntegrationMapOutput values.
-// You can construct a concrete instance of `HttpIntegrationMapInput` via:
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
 //
-//	HttpIntegrationMap{ "key": HttpIntegrationArgs{...} }
-type HttpIntegrationMapInput interface {
-	pulumi.Input
-
-	ToHttpIntegrationMapOutput() HttpIntegrationMapOutput
-	ToHttpIntegrationMapOutputWithContext(context.Context) HttpIntegrationMapOutput
-}
-
-type HttpIntegrationMap map[string]HttpIntegrationInput
-
-func (HttpIntegrationMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]HttpIntegration)(nil)).Elem()
-}
-
-func (i HttpIntegrationMap) ToHttpIntegrationMapOutput() HttpIntegrationMapOutput {
-	return i.ToHttpIntegrationMapOutputWithContext(context.Background())
-}
-
-func (i HttpIntegrationMap) ToHttpIntegrationMapOutputWithContext(ctx context.Context) HttpIntegrationMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HttpIntegrationMapOutput)
-}
-
-func (i HttpIntegrationMap) ToOutput(ctx context.Context) pulumix.Output[map[string]HttpIntegration] {
-	return pulumix.Output[map[string]HttpIntegration]{
-		OutputState: i.ToHttpIntegrationMapOutputWithContext(ctx).OutputState,
-	}
-}
-
-type HttpIntegrationOutput struct{ *pulumi.OutputState }
-
-func (HttpIntegrationOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*HttpIntegration)(nil)).Elem()
-}
-
-func (o HttpIntegrationOutput) ToHttpIntegrationOutput() HttpIntegrationOutput {
-	return o
-}
-
-func (o HttpIntegrationOutput) ToHttpIntegrationOutputWithContext(ctx context.Context) HttpIntegrationOutput {
-	return o
-}
-
-func (o HttpIntegrationOutput) ToOutput(ctx context.Context) pulumix.Output[HttpIntegration] {
-	return pulumix.Output[HttpIntegration]{
-		OutputState: o.OutputState,
-	}
-}
-
-type HttpIntegrationMapOutput struct{ *pulumi.OutputState }
-
-func (HttpIntegrationMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]HttpIntegration)(nil)).Elem()
-}
-
-func (o HttpIntegrationMapOutput) ToHttpIntegrationMapOutput() HttpIntegrationMapOutput {
-	return o
-}
-
-func (o HttpIntegrationMapOutput) ToHttpIntegrationMapOutputWithContext(ctx context.Context) HttpIntegrationMapOutput {
-	return o
-}
-
-func (o HttpIntegrationMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]HttpIntegration] {
-	return pulumix.Output[map[string]HttpIntegration]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o HttpIntegrationMapOutput) MapIndex(k pulumi.StringInput) HttpIntegrationOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) HttpIntegration {
-		return vs[0].(map[string]HttpIntegration)[vs[1].(string)]
-	}).(HttpIntegrationOutput)
-}
-
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleApi, err := apigatewayv2.NewApi(ctx, "exampleApi", &apigatewayv2.ApiArgs{
+//				ProtocolType:             pulumi.String("WEBSOCKET"),
+//				RouteSelectionExpression: pulumi.String("$request.body.action"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = apigatewayv2.NewRoute(ctx, "exampleRoute", &apigatewayv2.RouteArgs{
+//				ApiId:    exampleApi.ID(),
+//				RouteKey: pulumi.String("$default"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### HTTP Proxy Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"fmt"
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleApi, err := apigatewayv2.NewApi(ctx, "exampleApi", &apigatewayv2.ApiArgs{
+//				ProtocolType: pulumi.String("HTTP"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			exampleIntegration, err := apigatewayv2.NewIntegration(ctx, "exampleIntegration", &apigatewayv2.IntegrationArgs{
+//				ApiId:             exampleApi.ID(),
+//				IntegrationType:   pulumi.String("HTTP_PROXY"),
+//				IntegrationMethod: pulumi.String("ANY"),
+//				IntegrationUri:    pulumi.String("https://example.com/{proxy}"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = apigatewayv2.NewRoute(ctx, "exampleRoute", &apigatewayv2.RouteArgs{
+//				ApiId:    exampleApi.ID(),
+//				RouteKey: pulumi.String("ANY /example/{proxy+}"),
+//				Target: exampleIntegration.ID().ApplyT(func(id string) (string, error) {
+//					return fmt.Sprintf("integrations/%v", id), nil
+//				}).(pulumi.StringOutput),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_route` using the API identifier and route identifier. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/route:Route example aabbccddee/1122334
+//
+// ```
+//
+//	-> __Note:__ The API Gateway managed route created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
 type HttpRoute struct {
+	// Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.
+	ApiKeyRequired *bool `pulumi:"apiKeyRequired"`
+	// Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+	AuthorizationScopes []string `pulumi:"authorizationScopes"`
+	// Authorization type for the route.
+	// For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+	// For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+	// Defaults to `NONE`.
+	AuthorizationType *string `pulumi:"authorizationType"`
 	// The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
 	Authorizer *string `pulumi:"authorizer"`
+	// Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
+	AuthorizerId *string `pulumi:"authorizerId"`
 	// The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
 	Integration *string `pulumi:"integration"`
+	// Operation name for the route. Must be between 1 and 64 characters in length.
+	OperationName *string `pulumi:"operationName"`
+	// Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+	Target *string `pulumi:"target"`
 }
 
-// HttpRouteInput is an input type that accepts HttpRouteArgs and HttpRouteOutput values.
-// You can construct a concrete instance of `HttpRouteInput` via:
+// Manages an Amazon API Gateway Version 2 stage.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
 //
-//	HttpRouteArgs{...}
-type HttpRouteInput interface {
-	pulumi.Input
-
-	ToHttpRouteOutput() HttpRouteOutput
-	ToHttpRouteOutputWithContext(context.Context) HttpRouteOutput
-}
-
-type HttpRouteArgs struct {
-	// The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
-	Authorizer pulumi.StringPtrInput `pulumi:"authorizer"`
-	// The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
-	Integration pulumi.StringPtrInput `pulumi:"integration"`
-}
-
-func (HttpRouteArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*HttpRoute)(nil)).Elem()
-}
-
-func (i HttpRouteArgs) ToHttpRouteOutput() HttpRouteOutput {
-	return i.ToHttpRouteOutputWithContext(context.Background())
-}
-
-func (i HttpRouteArgs) ToHttpRouteOutputWithContext(ctx context.Context) HttpRouteOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HttpRouteOutput)
-}
-
-func (i HttpRouteArgs) ToOutput(ctx context.Context) pulumix.Output[HttpRoute] {
-	return pulumix.Output[HttpRoute]{
-		OutputState: i.ToHttpRouteOutputWithContext(ctx).OutputState,
-	}
-}
-
-// HttpRouteMapInput is an input type that accepts HttpRouteMap and HttpRouteMapOutput values.
-// You can construct a concrete instance of `HttpRouteMapInput` via:
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
 //
-//	HttpRouteMap{ "key": HttpRouteArgs{...} }
-type HttpRouteMapInput interface {
-	pulumi.Input
-
-	ToHttpRouteMapOutput() HttpRouteMapOutput
-	ToHttpRouteMapOutputWithContext(context.Context) HttpRouteMapOutput
-}
-
-type HttpRouteMap map[string]HttpRouteInput
-
-func (HttpRouteMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]HttpRoute)(nil)).Elem()
-}
-
-func (i HttpRouteMap) ToHttpRouteMapOutput() HttpRouteMapOutput {
-	return i.ToHttpRouteMapOutputWithContext(context.Background())
-}
-
-func (i HttpRouteMap) ToHttpRouteMapOutputWithContext(ctx context.Context) HttpRouteMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HttpRouteMapOutput)
-}
-
-func (i HttpRouteMap) ToOutput(ctx context.Context) pulumix.Output[map[string]HttpRoute] {
-	return pulumix.Output[map[string]HttpRoute]{
-		OutputState: i.ToHttpRouteMapOutputWithContext(ctx).OutputState,
-	}
-}
-
-type HttpRouteOutput struct{ *pulumi.OutputState }
-
-func (HttpRouteOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*HttpRoute)(nil)).Elem()
-}
-
-func (o HttpRouteOutput) ToHttpRouteOutput() HttpRouteOutput {
-	return o
-}
-
-func (o HttpRouteOutput) ToHttpRouteOutputWithContext(ctx context.Context) HttpRouteOutput {
-	return o
-}
-
-func (o HttpRouteOutput) ToOutput(ctx context.Context) pulumix.Output[HttpRoute] {
-	return pulumix.Output[HttpRoute]{
-		OutputState: o.OutputState,
-	}
-}
-
-// The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
-func (o HttpRouteOutput) Authorizer() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v HttpRoute) *string { return v.Authorizer }).(pulumi.StringPtrOutput)
-}
-
-// The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
-func (o HttpRouteOutput) Integration() pulumi.StringPtrOutput {
-	return o.ApplyT(func(v HttpRoute) *string { return v.Integration }).(pulumi.StringPtrOutput)
-}
-
-type HttpRouteMapOutput struct{ *pulumi.OutputState }
-
-func (HttpRouteMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]HttpRoute)(nil)).Elem()
-}
-
-func (o HttpRouteMapOutput) ToHttpRouteMapOutput() HttpRouteMapOutput {
-	return o
-}
-
-func (o HttpRouteMapOutput) ToHttpRouteMapOutputWithContext(ctx context.Context) HttpRouteMapOutput {
-	return o
-}
-
-func (o HttpRouteMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]HttpRoute] {
-	return pulumix.Output[map[string]HttpRoute]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o HttpRouteMapOutput) MapIndex(k pulumi.StringInput) HttpRouteOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) HttpRoute {
-		return vs[0].(map[string]HttpRoute)[vs[1].(string)]
-	}).(HttpRouteOutput)
-}
-
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewStage(ctx, "example", &apigatewayv2.StageArgs{
+//				ApiId: pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_stage` using the API identifier and stage name. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/stage:Stage example aabbccddee/example-stage
+//
+// ```
+//
+//	-> __Note:__ The API Gateway managed stage created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
 type HttpStage struct {
-}
-
-// HttpStageInput is an input type that accepts HttpStageArgs and HttpStageOutput values.
-// You can construct a concrete instance of `HttpStageInput` via:
-//
-//	HttpStageArgs{...}
-type HttpStageInput interface {
-	pulumi.Input
-
-	ToHttpStageOutput() HttpStageOutput
-	ToHttpStageOutputWithContext(context.Context) HttpStageOutput
-}
-
-type HttpStageArgs struct {
-}
-
-func (HttpStageArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*HttpStage)(nil)).Elem()
-}
-
-func (i HttpStageArgs) ToHttpStageOutput() HttpStageOutput {
-	return i.ToHttpStageOutputWithContext(context.Background())
-}
-
-func (i HttpStageArgs) ToHttpStageOutputWithContext(ctx context.Context) HttpStageOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HttpStageOutput)
-}
-
-func (i HttpStageArgs) ToOutput(ctx context.Context) pulumix.Output[HttpStage] {
-	return pulumix.Output[HttpStage]{
-		OutputState: i.ToHttpStageOutputWithContext(ctx).OutputState,
-	}
-}
-
-// HttpStageMapInput is an input type that accepts HttpStageMap and HttpStageMapOutput values.
-// You can construct a concrete instance of `HttpStageMapInput` via:
-//
-//	HttpStageMap{ "key": HttpStageArgs{...} }
-type HttpStageMapInput interface {
-	pulumi.Input
-
-	ToHttpStageMapOutput() HttpStageMapOutput
-	ToHttpStageMapOutputWithContext(context.Context) HttpStageMapOutput
-}
-
-type HttpStageMap map[string]HttpStageInput
-
-func (HttpStageMap) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]HttpStage)(nil)).Elem()
-}
-
-func (i HttpStageMap) ToHttpStageMapOutput() HttpStageMapOutput {
-	return i.ToHttpStageMapOutputWithContext(context.Background())
-}
-
-func (i HttpStageMap) ToHttpStageMapOutputWithContext(ctx context.Context) HttpStageMapOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(HttpStageMapOutput)
-}
-
-func (i HttpStageMap) ToOutput(ctx context.Context) pulumix.Output[map[string]HttpStage] {
-	return pulumix.Output[map[string]HttpStage]{
-		OutputState: i.ToHttpStageMapOutputWithContext(ctx).OutputState,
-	}
-}
-
-type HttpStageOutput struct{ *pulumi.OutputState }
-
-func (HttpStageOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*HttpStage)(nil)).Elem()
-}
-
-func (o HttpStageOutput) ToHttpStageOutput() HttpStageOutput {
-	return o
-}
-
-func (o HttpStageOutput) ToHttpStageOutputWithContext(ctx context.Context) HttpStageOutput {
-	return o
-}
-
-func (o HttpStageOutput) ToOutput(ctx context.Context) pulumix.Output[HttpStage] {
-	return pulumix.Output[HttpStage]{
-		OutputState: o.OutputState,
-	}
-}
-
-type HttpStageMapOutput struct{ *pulumi.OutputState }
-
-func (HttpStageMapOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*map[string]HttpStage)(nil)).Elem()
-}
-
-func (o HttpStageMapOutput) ToHttpStageMapOutput() HttpStageMapOutput {
-	return o
-}
-
-func (o HttpStageMapOutput) ToHttpStageMapOutputWithContext(ctx context.Context) HttpStageMapOutput {
-	return o
-}
-
-func (o HttpStageMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]HttpStage] {
-	return pulumix.Output[map[string]HttpStage]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o HttpStageMapOutput) MapIndex(k pulumi.StringInput) HttpStageOutput {
-	return pulumi.All(o, k).ApplyT(func(vs []interface{}) HttpStage {
-		return vs[0].(map[string]HttpStage)[vs[1].(string)]
-	}).(HttpStageOutput)
+	// Settings for logging access in this stage.
+	// Use the `aws.apigateway.Account` resource to configure [permissions for CloudWatch Logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#set-up-access-logging-permissions).
+	AccessLogSettings *apigatewayv2.StageAccessLogSettings `pulumi:"accessLogSettings"`
+	// Whether updates to an API automatically trigger a new deployment. Defaults to `false`. Applicable for HTTP APIs.
+	AutoDeploy *bool `pulumi:"autoDeploy"`
+	// Identifier of a client certificate for the stage. Use the `aws.apigateway.ClientCertificate` resource to configure a client certificate.
+	// Supported only for WebSocket APIs.
+	ClientCertificateId *string `pulumi:"clientCertificateId"`
+	// Default route settings for the stage.
+	DefaultRouteSettings *apigatewayv2.StageDefaultRouteSettings `pulumi:"defaultRouteSettings"`
+	// Deployment identifier of the stage. Use the `aws.apigatewayv2.Deployment` resource to configure a deployment.
+	DeploymentId *string `pulumi:"deploymentId"`
+	// Description for the stage. Must be less than or equal to 1024 characters in length.
+	Description *string `pulumi:"description"`
+	// Name of the stage. Must be between 1 and 128 characters in length.
+	//
+	// The following arguments are optional:
+	Name *string `pulumi:"name"`
+	// Route settings for the stage.
+	RouteSettings []apigatewayv2.StageRouteSetting `pulumi:"routeSettings"`
+	// Map that defines the stage variables for the stage.
+	StageVariables map[string]string `pulumi:"stageVariables"`
+	// Map of tags to assign to the stage. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	Tags map[string]string `pulumi:"tags"`
 }
 
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationInput)(nil)).Elem(), DomainConfigurationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationPtrInput)(nil)).Elem(), DomainConfigurationArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*DomainMappingInput)(nil)).Elem(), DomainMappingArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*DomainMappingMapInput)(nil)).Elem(), DomainMappingMap{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HttpAuthorizerInput)(nil)).Elem(), HttpAuthorizerArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HttpAuthorizerMapInput)(nil)).Elem(), HttpAuthorizerMap{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationInput)(nil)).Elem(), HttpIntegrationArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationMapInput)(nil)).Elem(), HttpIntegrationMap{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HttpRouteInput)(nil)).Elem(), HttpRouteArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HttpRouteMapInput)(nil)).Elem(), HttpRouteMap{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HttpStageInput)(nil)).Elem(), HttpStageArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*HttpStageMapInput)(nil)).Elem(), HttpStageMap{})
 	pulumi.RegisterOutputType(DomainConfigurationOutput{})
 	pulumi.RegisterOutputType(DomainConfigurationPtrOutput{})
-	pulumi.RegisterOutputType(DomainMappingOutput{})
-	pulumi.RegisterOutputType(DomainMappingMapOutput{})
-	pulumi.RegisterOutputType(HttpAuthorizerOutput{})
-	pulumi.RegisterOutputType(HttpAuthorizerMapOutput{})
-	pulumi.RegisterOutputType(HttpIntegrationOutput{})
-	pulumi.RegisterOutputType(HttpIntegrationMapOutput{})
-	pulumi.RegisterOutputType(HttpRouteOutput{})
-	pulumi.RegisterOutputType(HttpRouteMapOutput{})
-	pulumi.RegisterOutputType(HttpStageOutput{})
-	pulumi.RegisterOutputType(HttpStageMapOutput{})
 }

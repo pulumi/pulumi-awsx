@@ -12,22 +12,83 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 
+/**
+ * Manages an Amazon API Gateway Version 2 API mapping.
+ * More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+ * 
+ * ## Example Usage
+ * ### Basic
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.apigatewayv2.ApiMapping;
+ * import com.pulumi.aws.apigatewayv2.ApiMappingArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var example = new ApiMapping(&#34;example&#34;, ApiMappingArgs.builder()        
+ *             .apiId(aws_apigatewayv2_api.example().id())
+ *             .domainName(aws_apigatewayv2_domain_name.example().id())
+ *             .stage(aws_apigatewayv2_stage.example().id())
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * 
+ * ## Import
+ * 
+ * Using `pulumi import`, import `aws_apigatewayv2_api_mapping` using the API mapping identifier and domain name. For example:
+ * 
+ * ```sh
+ *  $ pulumi import aws:apigatewayv2/apiMapping:ApiMapping example 1122334/ws-api.example.com
+ * ```
+ * 
+ */
 public final class DomainMappingArgs extends com.pulumi.resources.ResourceArgs {
 
     public static final DomainMappingArgs Empty = new DomainMappingArgs();
+
+    /**
+     * The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+     * 
+     */
+    @Import(name="apiMappingKey")
+    private @Nullable Output<String> apiMappingKey;
+
+    /**
+     * @return The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+     * 
+     */
+    public Optional<Output<String>> apiMappingKey() {
+        return Optional.ofNullable(this.apiMappingKey);
+    }
 
     /**
      * Configuration of the domain name to create. Cannot be specified together with `domainId`.
      * 
      */
     @Import(name="domainConfiguration")
-    private @Nullable Output<DomainConfigurationArgs> domainConfiguration;
+    private @Nullable DomainConfigurationArgs domainConfiguration;
 
     /**
      * @return Configuration of the domain name to create. Cannot be specified together with `domainId`.
      * 
      */
-    public Optional<Output<DomainConfigurationArgs>> domainConfiguration() {
+    public Optional<DomainConfigurationArgs> domainConfiguration() {
         return Optional.ofNullable(this.domainConfiguration);
     }
 
@@ -46,11 +107,28 @@ public final class DomainMappingArgs extends com.pulumi.resources.ResourceArgs {
         return Optional.ofNullable(this.domainId);
     }
 
+    /**
+     * API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+     * 
+     */
+    @Import(name="stage", required=true)
+    private Output<String> stage;
+
+    /**
+     * @return API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+     * 
+     */
+    public Output<String> stage() {
+        return this.stage;
+    }
+
     private DomainMappingArgs() {}
 
     private DomainMappingArgs(DomainMappingArgs $) {
+        this.apiMappingKey = $.apiMappingKey;
         this.domainConfiguration = $.domainConfiguration;
         this.domainId = $.domainId;
+        this.stage = $.stage;
     }
 
     public static Builder builder() {
@@ -72,14 +150,24 @@ public final class DomainMappingArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param domainConfiguration Configuration of the domain name to create. Cannot be specified together with `domainId`.
+         * @param apiMappingKey The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
          * 
          * @return builder
          * 
          */
-        public Builder domainConfiguration(@Nullable Output<DomainConfigurationArgs> domainConfiguration) {
-            $.domainConfiguration = domainConfiguration;
+        public Builder apiMappingKey(@Nullable Output<String> apiMappingKey) {
+            $.apiMappingKey = apiMappingKey;
             return this;
+        }
+
+        /**
+         * @param apiMappingKey The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+         * 
+         * @return builder
+         * 
+         */
+        public Builder apiMappingKey(String apiMappingKey) {
+            return apiMappingKey(Output.of(apiMappingKey));
         }
 
         /**
@@ -88,8 +176,9 @@ public final class DomainMappingArgs extends com.pulumi.resources.ResourceArgs {
          * @return builder
          * 
          */
-        public Builder domainConfiguration(DomainConfigurationArgs domainConfiguration) {
-            return domainConfiguration(Output.of(domainConfiguration));
+        public Builder domainConfiguration(@Nullable DomainConfigurationArgs domainConfiguration) {
+            $.domainConfiguration = domainConfiguration;
+            return this;
         }
 
         /**
@@ -113,7 +202,29 @@ public final class DomainMappingArgs extends com.pulumi.resources.ResourceArgs {
             return domainId(Output.of(domainId));
         }
 
+        /**
+         * @param stage API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder stage(Output<String> stage) {
+            $.stage = stage;
+            return this;
+        }
+
+        /**
+         * @param stage API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder stage(String stage) {
+            return stage(Output.of(stage));
+        }
+
         public DomainMappingArgs build() {
+            $.stage = Objects.requireNonNull($.stage, "expected parameter 'stage' to be non-null");
             return $;
         }
     }

@@ -3,15 +3,473 @@
 
 package com.pulumi.awsx.apigatewayv2.inputs;
 
+import com.pulumi.aws.apigatewayv2.inputs.IntegrationResponseParameterArgs;
+import com.pulumi.aws.apigatewayv2.inputs.IntegrationTlsConfigArgs;
+import com.pulumi.aws.lambda.Function;
+import com.pulumi.core.Output;
+import com.pulumi.core.annotations.Import;
+import java.lang.Integer;
+import java.lang.String;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import javax.annotation.Nullable;
 
 
-
+/**
+ * Manages an Amazon API Gateway Version 2 integration.
+ * More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+ * 
+ * ## Example Usage
+ * ### Basic
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.apigatewayv2.Integration;
+ * import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var example = new Integration(&#34;example&#34;, IntegrationArgs.builder()        
+ *             .apiId(aws_apigatewayv2_api.example().id())
+ *             .integrationType(&#34;MOCK&#34;)
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * ### Lambda Integration
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.lambda.Function;
+ * import com.pulumi.aws.lambda.FunctionArgs;
+ * import com.pulumi.aws.apigatewayv2.Integration;
+ * import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+ * import com.pulumi.asset.FileArchive;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var exampleFunction = new Function(&#34;exampleFunction&#34;, FunctionArgs.builder()        
+ *             .code(new FileArchive(&#34;example.zip&#34;))
+ *             .role(aws_iam_role.example().arn())
+ *             .handler(&#34;index.handler&#34;)
+ *             .runtime(&#34;nodejs16.x&#34;)
+ *             .build());
+ * 
+ *         var exampleIntegration = new Integration(&#34;exampleIntegration&#34;, IntegrationArgs.builder()        
+ *             .apiId(aws_apigatewayv2_api.example().id())
+ *             .integrationType(&#34;AWS_PROXY&#34;)
+ *             .connectionType(&#34;INTERNET&#34;)
+ *             .contentHandlingStrategy(&#34;CONVERT_TO_TEXT&#34;)
+ *             .description(&#34;Lambda example&#34;)
+ *             .integrationMethod(&#34;POST&#34;)
+ *             .integrationUri(exampleFunction.invokeArn())
+ *             .passthroughBehavior(&#34;WHEN_NO_MATCH&#34;)
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * ### AWS Service Integration
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.apigatewayv2.Integration;
+ * import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var example = new Integration(&#34;example&#34;, IntegrationArgs.builder()        
+ *             .apiId(aws_apigatewayv2_api.example().id())
+ *             .credentialsArn(aws_iam_role.example().arn())
+ *             .description(&#34;SQS example&#34;)
+ *             .integrationType(&#34;AWS_PROXY&#34;)
+ *             .integrationSubtype(&#34;SQS-SendMessage&#34;)
+ *             .requestParameters(Map.ofEntries(
+ *                 Map.entry(&#34;QueueUrl&#34;, &#34;$request.header.queueUrl&#34;),
+ *                 Map.entry(&#34;MessageBody&#34;, &#34;$request.body.message&#34;)
+ *             ))
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * ### Private Integration
+ * ```java
+ * package generated_program;
+ * 
+ * import com.pulumi.Context;
+ * import com.pulumi.Pulumi;
+ * import com.pulumi.core.Output;
+ * import com.pulumi.aws.apigatewayv2.Integration;
+ * import com.pulumi.aws.apigatewayv2.IntegrationArgs;
+ * import com.pulumi.aws.apigatewayv2.inputs.IntegrationTlsConfigArgs;
+ * import com.pulumi.aws.apigatewayv2.inputs.IntegrationResponseParameterArgs;
+ * import java.util.List;
+ * import java.util.ArrayList;
+ * import java.util.Map;
+ * import java.io.File;
+ * import java.nio.file.Files;
+ * import java.nio.file.Paths;
+ * 
+ * public class App {
+ *     public static void main(String[] args) {
+ *         Pulumi.run(App::stack);
+ *     }
+ * 
+ *     public static void stack(Context ctx) {
+ *         var example = new Integration(&#34;example&#34;, IntegrationArgs.builder()        
+ *             .apiId(aws_apigatewayv2_api.example().id())
+ *             .credentialsArn(aws_iam_role.example().arn())
+ *             .description(&#34;Example with a load balancer&#34;)
+ *             .integrationType(&#34;HTTP_PROXY&#34;)
+ *             .integrationUri(aws_lb_listener.example().arn())
+ *             .integrationMethod(&#34;ANY&#34;)
+ *             .connectionType(&#34;VPC_LINK&#34;)
+ *             .connectionId(aws_apigatewayv2_vpc_link.example().id())
+ *             .tlsConfig(IntegrationTlsConfigArgs.builder()
+ *                 .serverNameToVerify(&#34;example.com&#34;)
+ *                 .build())
+ *             .requestParameters(Map.ofEntries(
+ *                 Map.entry(&#34;append:header.authforintegration&#34;, &#34;$context.authorizer.authorizerResponse&#34;),
+ *                 Map.entry(&#34;overwrite:path&#34;, &#34;staticValueForIntegration&#34;)
+ *             ))
+ *             .responseParameters(            
+ *                 IntegrationResponseParameterArgs.builder()
+ *                     .statusCode(403)
+ *                     .mappings(Map.of(&#34;append:header.auth&#34;, &#34;$context.authorizer.authorizerResponse&#34;))
+ *                     .build(),
+ *                 IntegrationResponseParameterArgs.builder()
+ *                     .statusCode(200)
+ *                     .mappings(Map.of(&#34;overwrite:statuscode&#34;, &#34;204&#34;))
+ *                     .build())
+ *             .build());
+ * 
+ *     }
+ * }
+ * ```
+ * 
+ * ## Import
+ * 
+ * Using `pulumi import`, import `aws_apigatewayv2_integration` using the API identifier and integration identifier. For example:
+ * 
+ * ```sh
+ *  $ pulumi import aws:apigatewayv2/integration:Integration example aabbccddee/1122334
+ * ```
+ *  -&gt; __Note:__ The API Gateway managed integration created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+ * 
+ */
 public final class HttpIntegrationArgs extends com.pulumi.resources.ResourceArgs {
 
     public static final HttpIntegrationArgs Empty = new HttpIntegrationArgs();
 
+    /**
+     * ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+     * 
+     */
+    @Import(name="connectionId")
+    private @Nullable Output<String> connectionId;
+
+    /**
+     * @return ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+     * 
+     */
+    public Optional<Output<String>> connectionId() {
+        return Optional.ofNullable(this.connectionId);
+    }
+
+    /**
+     * Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+     * 
+     */
+    @Import(name="connectionType")
+    private @Nullable Output<String> connectionType;
+
+    /**
+     * @return Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+     * 
+     */
+    public Optional<Output<String>> connectionType() {
+        return Optional.ofNullable(this.connectionType);
+    }
+
+    /**
+     * Credentials required for the integration, if any.
+     * 
+     */
+    @Import(name="credentialsArn")
+    private @Nullable Output<String> credentialsArn;
+
+    /**
+     * @return Credentials required for the integration, if any.
+     * 
+     */
+    public Optional<Output<String>> credentialsArn() {
+        return Optional.ofNullable(this.credentialsArn);
+    }
+
+    /**
+     * Description of the integration.
+     * 
+     */
+    @Import(name="description")
+    private @Nullable Output<String> description;
+
+    /**
+     * @return Description of the integration.
+     * 
+     */
+    public Optional<Output<String>> description() {
+        return Optional.ofNullable(this.description);
+    }
+
+    /**
+     * Integration&#39;s HTTP method. Must be specified if `integration_type` is not `MOCK`.
+     * 
+     */
+    @Import(name="integrationMethod")
+    private @Nullable Output<String> integrationMethod;
+
+    /**
+     * @return Integration&#39;s HTTP method. Must be specified if `integration_type` is not `MOCK`.
+     * 
+     */
+    public Optional<Output<String>> integrationMethod() {
+        return Optional.ofNullable(this.integrationMethod);
+    }
+
+    /**
+     * AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+     * 
+     */
+    @Import(name="integrationSubtype")
+    private @Nullable Output<String> integrationSubtype;
+
+    /**
+     * @return AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+     * 
+     */
+    public Optional<Output<String>> integrationSubtype() {
+        return Optional.ofNullable(this.integrationSubtype);
+    }
+
+    /**
+     * Integration type of an integration.
+     * Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+     * 
+     */
+    @Import(name="integrationType")
+    private @Nullable Output<String> integrationType;
+
+    /**
+     * @return Integration type of an integration.
+     * Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+     * 
+     */
+    public Optional<Output<String>> integrationType() {
+        return Optional.ofNullable(this.integrationType);
+    }
+
+    /**
+     * URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+     * For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+     *  Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+     * 
+     */
+    @Import(name="integrationUri")
+    private @Nullable Output<String> integrationUri;
+
+    /**
+     * @return URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+     * For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+     *  Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+     * 
+     */
+    public Optional<Output<String>> integrationUri() {
+        return Optional.ofNullable(this.integrationUri);
+    }
+
+    /**
+     * A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+     * 
+     */
+    @Import(name="lambda")
+    private @Nullable Function lambda;
+
+    /**
+     * @return A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+     * 
+     */
+    public Optional<Function> lambda() {
+        return Optional.ofNullable(this.lambda);
+    }
+
+    /**
+     * The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+     * 
+     */
+    @Import(name="lambdaInvokeArn")
+    private @Nullable Output<String> lambdaInvokeArn;
+
+    /**
+     * @return The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+     * 
+     */
+    public Optional<Output<String>> lambdaInvokeArn() {
+        return Optional.ofNullable(this.lambdaInvokeArn);
+    }
+
+    /**
+     * The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+     * 
+     */
+    @Import(name="payloadFormatVersion")
+    private @Nullable Output<String> payloadFormatVersion;
+
+    /**
+     * @return The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+     * 
+     */
+    public Optional<Output<String>> payloadFormatVersion() {
+        return Optional.ofNullable(this.payloadFormatVersion);
+    }
+
+    /**
+     * For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+     * For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+     * For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+     * See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+     * 
+     */
+    @Import(name="requestParameters")
+    private @Nullable Output<Map<String,String>> requestParameters;
+
+    /**
+     * @return For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+     * For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+     * For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+     * See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+     * 
+     */
+    public Optional<Output<Map<String,String>>> requestParameters() {
+        return Optional.ofNullable(this.requestParameters);
+    }
+
+    /**
+     * Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+     * 
+     */
+    @Import(name="responseParameters")
+    private @Nullable Output<List<IntegrationResponseParameterArgs>> responseParameters;
+
+    /**
+     * @return Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+     * 
+     */
+    public Optional<Output<List<IntegrationResponseParameterArgs>>> responseParameters() {
+        return Optional.ofNullable(this.responseParameters);
+    }
+
+    /**
+     * Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+     * The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+     * this provider will only perform drift detection of its value when present in a configuration.
+     * 
+     */
+    @Import(name="timeoutMilliseconds")
+    private @Nullable Output<Integer> timeoutMilliseconds;
+
+    /**
+     * @return Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+     * The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+     * this provider will only perform drift detection of its value when present in a configuration.
+     * 
+     */
+    public Optional<Output<Integer>> timeoutMilliseconds() {
+        return Optional.ofNullable(this.timeoutMilliseconds);
+    }
+
+    /**
+     * TLS configuration for a private integration. Supported only for HTTP APIs.
+     * 
+     */
+    @Import(name="tlsConfig")
+    private @Nullable Output<IntegrationTlsConfigArgs> tlsConfig;
+
+    /**
+     * @return TLS configuration for a private integration. Supported only for HTTP APIs.
+     * 
+     */
+    public Optional<Output<IntegrationTlsConfigArgs>> tlsConfig() {
+        return Optional.ofNullable(this.tlsConfig);
+    }
+
+    private HttpIntegrationArgs() {}
+
+    private HttpIntegrationArgs(HttpIntegrationArgs $) {
+        this.connectionId = $.connectionId;
+        this.connectionType = $.connectionType;
+        this.credentialsArn = $.credentialsArn;
+        this.description = $.description;
+        this.integrationMethod = $.integrationMethod;
+        this.integrationSubtype = $.integrationSubtype;
+        this.integrationType = $.integrationType;
+        this.integrationUri = $.integrationUri;
+        this.lambda = $.lambda;
+        this.lambdaInvokeArn = $.lambdaInvokeArn;
+        this.payloadFormatVersion = $.payloadFormatVersion;
+        this.requestParameters = $.requestParameters;
+        this.responseParameters = $.responseParameters;
+        this.timeoutMilliseconds = $.timeoutMilliseconds;
+        this.tlsConfig = $.tlsConfig;
+    }
+
     public static Builder builder() {
         return new Builder();
+    }
+    public static Builder builder(HttpIntegrationArgs defaults) {
+        return new Builder(defaults);
     }
 
     public static final class Builder {
@@ -20,6 +478,342 @@ public final class HttpIntegrationArgs extends com.pulumi.resources.ResourceArgs
         public Builder() {
             $ = new HttpIntegrationArgs();
         }
+
+        public Builder(HttpIntegrationArgs defaults) {
+            $ = new HttpIntegrationArgs(Objects.requireNonNull(defaults));
+        }
+
+        /**
+         * @param connectionId ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder connectionId(@Nullable Output<String> connectionId) {
+            $.connectionId = connectionId;
+            return this;
+        }
+
+        /**
+         * @param connectionId ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder connectionId(String connectionId) {
+            return connectionId(Output.of(connectionId));
+        }
+
+        /**
+         * @param connectionType Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder connectionType(@Nullable Output<String> connectionType) {
+            $.connectionType = connectionType;
+            return this;
+        }
+
+        /**
+         * @param connectionType Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder connectionType(String connectionType) {
+            return connectionType(Output.of(connectionType));
+        }
+
+        /**
+         * @param credentialsArn Credentials required for the integration, if any.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder credentialsArn(@Nullable Output<String> credentialsArn) {
+            $.credentialsArn = credentialsArn;
+            return this;
+        }
+
+        /**
+         * @param credentialsArn Credentials required for the integration, if any.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder credentialsArn(String credentialsArn) {
+            return credentialsArn(Output.of(credentialsArn));
+        }
+
+        /**
+         * @param description Description of the integration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder description(@Nullable Output<String> description) {
+            $.description = description;
+            return this;
+        }
+
+        /**
+         * @param description Description of the integration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder description(String description) {
+            return description(Output.of(description));
+        }
+
+        /**
+         * @param integrationMethod Integration&#39;s HTTP method. Must be specified if `integration_type` is not `MOCK`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder integrationMethod(@Nullable Output<String> integrationMethod) {
+            $.integrationMethod = integrationMethod;
+            return this;
+        }
+
+        /**
+         * @param integrationMethod Integration&#39;s HTTP method. Must be specified if `integration_type` is not `MOCK`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder integrationMethod(String integrationMethod) {
+            return integrationMethod(Output.of(integrationMethod));
+        }
+
+        /**
+         * @param integrationSubtype AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder integrationSubtype(@Nullable Output<String> integrationSubtype) {
+            $.integrationSubtype = integrationSubtype;
+            return this;
+        }
+
+        /**
+         * @param integrationSubtype AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder integrationSubtype(String integrationSubtype) {
+            return integrationSubtype(Output.of(integrationSubtype));
+        }
+
+        /**
+         * @param integrationType Integration type of an integration.
+         * Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder integrationType(@Nullable Output<String> integrationType) {
+            $.integrationType = integrationType;
+            return this;
+        }
+
+        /**
+         * @param integrationType Integration type of an integration.
+         * Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder integrationType(String integrationType) {
+            return integrationType(Output.of(integrationType));
+        }
+
+        /**
+         * @param integrationUri URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+         * For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+         *  Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder integrationUri(@Nullable Output<String> integrationUri) {
+            $.integrationUri = integrationUri;
+            return this;
+        }
+
+        /**
+         * @param integrationUri URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+         * For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+         *  Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder integrationUri(String integrationUri) {
+            return integrationUri(Output.of(integrationUri));
+        }
+
+        /**
+         * @param lambda A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder lambda(@Nullable Function lambda) {
+            $.lambda = lambda;
+            return this;
+        }
+
+        /**
+         * @param lambdaInvokeArn The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder lambdaInvokeArn(@Nullable Output<String> lambdaInvokeArn) {
+            $.lambdaInvokeArn = lambdaInvokeArn;
+            return this;
+        }
+
+        /**
+         * @param lambdaInvokeArn The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder lambdaInvokeArn(String lambdaInvokeArn) {
+            return lambdaInvokeArn(Output.of(lambdaInvokeArn));
+        }
+
+        /**
+         * @param payloadFormatVersion The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder payloadFormatVersion(@Nullable Output<String> payloadFormatVersion) {
+            $.payloadFormatVersion = payloadFormatVersion;
+            return this;
+        }
+
+        /**
+         * @param payloadFormatVersion The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder payloadFormatVersion(String payloadFormatVersion) {
+            return payloadFormatVersion(Output.of(payloadFormatVersion));
+        }
+
+        /**
+         * @param requestParameters For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+         * For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+         * For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+         * See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder requestParameters(@Nullable Output<Map<String,String>> requestParameters) {
+            $.requestParameters = requestParameters;
+            return this;
+        }
+
+        /**
+         * @param requestParameters For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+         * For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+         * For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+         * See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder requestParameters(Map<String,String> requestParameters) {
+            return requestParameters(Output.of(requestParameters));
+        }
+
+        /**
+         * @param responseParameters Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder responseParameters(@Nullable Output<List<IntegrationResponseParameterArgs>> responseParameters) {
+            $.responseParameters = responseParameters;
+            return this;
+        }
+
+        /**
+         * @param responseParameters Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder responseParameters(List<IntegrationResponseParameterArgs> responseParameters) {
+            return responseParameters(Output.of(responseParameters));
+        }
+
+        /**
+         * @param responseParameters Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder responseParameters(IntegrationResponseParameterArgs... responseParameters) {
+            return responseParameters(List.of(responseParameters));
+        }
+
+        /**
+         * @param timeoutMilliseconds Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+         * The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+         * this provider will only perform drift detection of its value when present in a configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder timeoutMilliseconds(@Nullable Output<Integer> timeoutMilliseconds) {
+            $.timeoutMilliseconds = timeoutMilliseconds;
+            return this;
+        }
+
+        /**
+         * @param timeoutMilliseconds Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+         * The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+         * this provider will only perform drift detection of its value when present in a configuration.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder timeoutMilliseconds(Integer timeoutMilliseconds) {
+            return timeoutMilliseconds(Output.of(timeoutMilliseconds));
+        }
+
+        /**
+         * @param tlsConfig TLS configuration for a private integration. Supported only for HTTP APIs.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder tlsConfig(@Nullable Output<IntegrationTlsConfigArgs> tlsConfig) {
+            $.tlsConfig = tlsConfig;
+            return this;
+        }
+
+        /**
+         * @param tlsConfig TLS configuration for a private integration. Supported only for HTTP APIs.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder tlsConfig(IntegrationTlsConfigArgs tlsConfig) {
+            return tlsConfig(Output.of(tlsConfig));
+        }
+
         public HttpIntegrationArgs build() {
             return $;
         }

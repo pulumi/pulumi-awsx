@@ -117,14 +117,14 @@ namespace Pulumi.Awsx.Apigatewayv2
         public Input<string>? ApiKeySelectionExpression { get; set; }
 
         [Input("authorizers")]
-        private InputMap<Inputs.HttpAuthorizerArgs>? _authorizers;
+        private Dictionary<string, Inputs.HttpAuthorizerArgs>? _authorizers;
 
         /// <summary>
         /// The authorizers for the HTTP API routes.
         /// </summary>
-        public InputMap<Inputs.HttpAuthorizerArgs> Authorizers
+        public Dictionary<string, Inputs.HttpAuthorizerArgs> Authorizers
         {
-            get => _authorizers ?? (_authorizers = new InputMap<Inputs.HttpAuthorizerArgs>());
+            get => _authorizers ?? (_authorizers = new Dictionary<string, Inputs.HttpAuthorizerArgs>());
             set => _authorizers = value;
         }
 
@@ -155,14 +155,14 @@ namespace Pulumi.Awsx.Apigatewayv2
         public Input<bool>? DisableExecuteApiEndpoint { get; set; }
 
         [Input("domainMappings")]
-        private InputMap<Inputs.DomainMappingArgs>? _domainMappings;
+        private Dictionary<string, Inputs.DomainMappingArgs>? _domainMappings;
 
         /// <summary>
         /// The domain names for the HTTP API.
         /// </summary>
-        public InputMap<Inputs.DomainMappingArgs> DomainMappings
+        public Dictionary<string, Inputs.DomainMappingArgs> DomainMappings
         {
-            get => _domainMappings ?? (_domainMappings = new InputMap<Inputs.DomainMappingArgs>());
+            get => _domainMappings ?? (_domainMappings = new Dictionary<string, Inputs.DomainMappingArgs>());
             set => _domainMappings = value;
         }
 
@@ -173,14 +173,14 @@ namespace Pulumi.Awsx.Apigatewayv2
         public Input<bool>? FailOnWarnings { get; set; }
 
         [Input("integrations")]
-        private InputMap<Inputs.HttpIntegrationArgs>? _integrations;
+        private Dictionary<string, Inputs.HttpIntegrationArgs>? _integrations;
 
         /// <summary>
         /// The integrations for the HTTP API routes.
         /// </summary>
-        public InputMap<Inputs.HttpIntegrationArgs> Integrations
+        public Dictionary<string, Inputs.HttpIntegrationArgs> Integrations
         {
-            get => _integrations ?? (_integrations = new InputMap<Inputs.HttpIntegrationArgs>());
+            get => _integrations ?? (_integrations = new Dictionary<string, Inputs.HttpIntegrationArgs>());
             set => _integrations = value;
         }
 
@@ -198,26 +198,26 @@ namespace Pulumi.Awsx.Apigatewayv2
         public Input<string>? RouteSelectionExpression { get; set; }
 
         [Input("routes", required: true)]
-        private InputMap<Inputs.HttpRouteArgs>? _routes;
+        private Dictionary<string, Inputs.HttpRouteArgs>? _routes;
 
         /// <summary>
         /// The routes for the HTTP API.
         /// </summary>
-        public InputMap<Inputs.HttpRouteArgs> Routes
+        public Dictionary<string, Inputs.HttpRouteArgs> Routes
         {
-            get => _routes ?? (_routes = new InputMap<Inputs.HttpRouteArgs>());
+            get => _routes ?? (_routes = new Dictionary<string, Inputs.HttpRouteArgs>());
             set => _routes = value;
         }
 
         [Input("stages")]
-        private InputMap<Inputs.HttpStageArgs>? _stages;
+        private Dictionary<string, Inputs.HttpStageArgs>? _stages;
 
         /// <summary>
         /// The deployment stages for the HTTP API.
         /// </summary>
-        public InputMap<Inputs.HttpStageArgs> Stages
+        public Dictionary<string, Inputs.HttpStageArgs> Stages
         {
-            get => _stages ?? (_stages = new InputMap<Inputs.HttpStageArgs>());
+            get => _stages ?? (_stages = new Dictionary<string, Inputs.HttpStageArgs>());
             set => _stages = value;
         }
 

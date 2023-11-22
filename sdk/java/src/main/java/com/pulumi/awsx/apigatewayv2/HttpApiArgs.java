@@ -47,13 +47,13 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
      * 
      */
     @Import(name="authorizers")
-    private @Nullable Output<Map<String,HttpAuthorizerArgs>> authorizers;
+    private @Nullable Map<String,HttpAuthorizerArgs> authorizers;
 
     /**
      * @return The authorizers for the HTTP API routes.
      * 
      */
-    public Optional<Output<Map<String,HttpAuthorizerArgs>>> authorizers() {
+    public Optional<Map<String,HttpAuthorizerArgs>> authorizers() {
         return Optional.ofNullable(this.authorizers);
     }
 
@@ -126,13 +126,13 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
      * 
      */
     @Import(name="domainMappings")
-    private @Nullable Output<Map<String,DomainMappingArgs>> domainMappings;
+    private @Nullable Map<String,DomainMappingArgs> domainMappings;
 
     /**
      * @return The domain names for the HTTP API.
      * 
      */
-    public Optional<Output<Map<String,DomainMappingArgs>>> domainMappings() {
+    public Optional<Map<String,DomainMappingArgs>> domainMappings() {
         return Optional.ofNullable(this.domainMappings);
     }
 
@@ -156,13 +156,13 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
      * 
      */
     @Import(name="integrations")
-    private @Nullable Output<Map<String,HttpIntegrationArgs>> integrations;
+    private @Nullable Map<String,HttpIntegrationArgs> integrations;
 
     /**
      * @return The integrations for the HTTP API routes.
      * 
      */
-    public Optional<Output<Map<String,HttpIntegrationArgs>>> integrations() {
+    public Optional<Map<String,HttpIntegrationArgs>> integrations() {
         return Optional.ofNullable(this.integrations);
     }
 
@@ -203,13 +203,13 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
      * 
      */
     @Import(name="routes", required=true)
-    private Output<Map<String,HttpRouteArgs>> routes;
+    private Map<String,HttpRouteArgs> routes;
 
     /**
      * @return The routes for the HTTP API.
      * 
      */
-    public Output<Map<String,HttpRouteArgs>> routes() {
+    public Map<String,HttpRouteArgs> routes() {
         return this.routes;
     }
 
@@ -218,13 +218,13 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
      * 
      */
     @Import(name="stages")
-    private @Nullable Output<Map<String,HttpStageArgs>> stages;
+    private @Nullable Map<String,HttpStageArgs> stages;
 
     /**
      * @return The deployment stages for the HTTP API.
      * 
      */
-    public Optional<Output<Map<String,HttpStageArgs>>> stages() {
+    public Optional<Map<String,HttpStageArgs>> stages() {
         return Optional.ofNullable(this.stages);
     }
 
@@ -327,19 +327,9 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
          * @return builder
          * 
          */
-        public Builder authorizers(@Nullable Output<Map<String,HttpAuthorizerArgs>> authorizers) {
+        public Builder authorizers(@Nullable Map<String,HttpAuthorizerArgs> authorizers) {
             $.authorizers = authorizers;
             return this;
-        }
-
-        /**
-         * @param authorizers The authorizers for the HTTP API routes.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder authorizers(Map<String,HttpAuthorizerArgs> authorizers) {
-            return authorizers(Output.of(authorizers));
         }
 
         /**
@@ -436,19 +426,9 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
          * @return builder
          * 
          */
-        public Builder domainMappings(@Nullable Output<Map<String,DomainMappingArgs>> domainMappings) {
+        public Builder domainMappings(@Nullable Map<String,DomainMappingArgs> domainMappings) {
             $.domainMappings = domainMappings;
             return this;
-        }
-
-        /**
-         * @param domainMappings The domain names for the HTTP API.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder domainMappings(Map<String,DomainMappingArgs> domainMappings) {
-            return domainMappings(Output.of(domainMappings));
         }
 
         /**
@@ -478,19 +458,9 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
          * @return builder
          * 
          */
-        public Builder integrations(@Nullable Output<Map<String,HttpIntegrationArgs>> integrations) {
+        public Builder integrations(@Nullable Map<String,HttpIntegrationArgs> integrations) {
             $.integrations = integrations;
             return this;
-        }
-
-        /**
-         * @param integrations The integrations for the HTTP API routes.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder integrations(Map<String,HttpIntegrationArgs> integrations) {
-            return integrations(Output.of(integrations));
         }
 
         /**
@@ -543,40 +513,20 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
          * @return builder
          * 
          */
-        public Builder routes(Output<Map<String,HttpRouteArgs>> routes) {
+        public Builder routes(Map<String,HttpRouteArgs> routes) {
             $.routes = routes;
             return this;
         }
 
         /**
-         * @param routes The routes for the HTTP API.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder routes(Map<String,HttpRouteArgs> routes) {
-            return routes(Output.of(routes));
-        }
-
-        /**
          * @param stages The deployment stages for the HTTP API.
          * 
          * @return builder
          * 
          */
-        public Builder stages(@Nullable Output<Map<String,HttpStageArgs>> stages) {
+        public Builder stages(@Nullable Map<String,HttpStageArgs> stages) {
             $.stages = stages;
             return this;
-        }
-
-        /**
-         * @param stages The deployment stages for the HTTP API.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder stages(Map<String,HttpStageArgs> stages) {
-            return stages(Output.of(stages));
         }
 
         /**

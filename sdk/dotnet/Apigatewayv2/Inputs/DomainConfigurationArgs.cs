@@ -354,8 +354,8 @@ namespace Pulumi.Awsx.Apigatewayv2.Inputs
         /// <summary>
         /// Domain name configuration. See below.
         /// </summary>
-        [Input("domainNameConfiguration")]
-        public Input<Pulumi.Aws.ApiGatewayV2.Inputs.DomainNameDomainNameConfigurationArgs>? DomainNameConfiguration { get; set; }
+        [Input("domainNameConfiguration", required: true)]
+        public Input<Pulumi.Aws.ApiGatewayV2.Inputs.DomainNameDomainNameConfigurationArgs> DomainNameConfiguration { get; set; } = null!;
 
         /// <summary>
         /// Mutual TLS authentication configuration for the domain name.

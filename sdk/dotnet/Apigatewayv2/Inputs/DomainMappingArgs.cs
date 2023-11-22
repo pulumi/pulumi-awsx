@@ -10,19 +10,149 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Apigatewayv2.Inputs
 {
 
+    /// <summary>
+    /// Manages an Amazon API Gateway Version 2 API mapping.
+    /// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+    /// 
+    /// {{% examples %}}
+    /// ## Example Usage
+    /// {{% example %}}
+    /// ### Basic
+    /// 
+    /// ```typescript
+    /// import * as pulumi from "@pulumi/pulumi";
+    /// import * as aws from "@pulumi/aws";
+    /// 
+    /// const example = new aws.apigatewayv2.ApiMapping("example", {
+    ///     apiId: aws_apigatewayv2_api.example.id,
+    ///     domainName: aws_apigatewayv2_domain_name.example.id,
+    ///     stage: aws_apigatewayv2_stage.example.id,
+    /// });
+    /// ```
+    /// ```python
+    /// import pulumi
+    /// import pulumi_aws as aws
+    /// 
+    /// example = aws.apigatewayv2.ApiMapping("example",
+    ///     api_id=aws_apigatewayv2_api["example"]["id"],
+    ///     domain_name=aws_apigatewayv2_domain_name["example"]["id"],
+    ///     stage=aws_apigatewayv2_stage["example"]["id"])
+    /// ```
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var example = new Aws.ApiGatewayV2.ApiMapping("example", new()
+    ///     {
+    ///         ApiId = aws_apigatewayv2_api.Example.Id,
+    ///         DomainName = aws_apigatewayv2_domain_name.Example.Id,
+    ///         Stage = aws_apigatewayv2_stage.Example.Id,
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// ```go
+    /// package main
+    /// 
+    /// import (
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+    /// )
+    /// 
+    /// func main() {
+    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
+    /// 		_, err := apigatewayv2.NewApiMapping(ctx, "example", &amp;apigatewayv2.ApiMappingArgs{
+    /// 			ApiId:      pulumi.Any(aws_apigatewayv2_api.Example.Id),
+    /// 			DomainName: pulumi.Any(aws_apigatewayv2_domain_name.Example.Id),
+    /// 			Stage:      pulumi.Any(aws_apigatewayv2_stage.Example.Id),
+    /// 		})
+    /// 		if err != nil {
+    /// 			return err
+    /// 		}
+    /// 		return nil
+    /// 	})
+    /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.apigatewayv2.ApiMapping;
+    /// import com.pulumi.aws.apigatewayv2.ApiMappingArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var example = new ApiMapping("example", ApiMappingArgs.builder()        
+    ///             .apiId(aws_apigatewayv2_api.example().id())
+    ///             .domainName(aws_apigatewayv2_domain_name.example().id())
+    ///             .stage(aws_apigatewayv2_stage.example().id())
+    ///             .build());
+    /// 
+    ///     }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   example:
+    ///     type: aws:apigatewayv2:ApiMapping
+    ///     properties:
+    ///       apiId: ${aws_apigatewayv2_api.example.id}
+    ///       domainName: ${aws_apigatewayv2_domain_name.example.id}
+    ///       stage: ${aws_apigatewayv2_stage.example.id}
+    /// ```
+    /// {{% /example %}}
+    /// {{% /examples %}}
+    /// 
+    /// ## Import
+    /// 
+    /// Using `pulumi import`, import `aws_apigatewayv2_api_mapping` using the API mapping identifier and domain name. For example:
+    /// 
+    /// ```sh
+    ///  $ pulumi import aws:apigatewayv2/apiMapping:ApiMapping example 1122334/ws-api.example.com
+    /// ```
+    ///  
+    /// </summary>
     public sealed class DomainMappingArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+        /// </summary>
+        [Input("apiMappingKey")]
+        public Input<string>? ApiMappingKey { get; set; }
+
         /// <summary>
         /// Configuration of the domain name to create. Cannot be specified together with `domainId`.
         /// </summary>
         [Input("domainConfiguration")]
-        public Input<Inputs.DomainConfigurationArgs>? DomainConfiguration { get; set; }
+        public Inputs.DomainConfigurationArgs? DomainConfiguration { get; set; }
 
         /// <summary>
         /// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
         /// </summary>
         [Input("domainId")]
         public Input<string>? DomainId { get; set; }
+
+        /// <summary>
+        /// API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+        /// </summary>
+        [Input("stage", required: true)]
+        public Input<string> Stage { get; set; } = null!;
 
         public DomainMappingArgs()
         {

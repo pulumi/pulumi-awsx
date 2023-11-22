@@ -10,8 +10,193 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Apigatewayv2.Inputs
 {
 
+    /// <summary>
+    /// Manages an Amazon API Gateway Version 2 stage.
+    /// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+    /// 
+    /// {{% examples %}}
+    /// ## Example Usage
+    /// {{% example %}}
+    /// ### Basic
+    /// 
+    /// ```typescript
+    /// import * as pulumi from "@pulumi/pulumi";
+    /// import * as aws from "@pulumi/aws";
+    /// 
+    /// const example = new aws.apigatewayv2.Stage("example", {apiId: aws_apigatewayv2_api.example.id});
+    /// ```
+    /// ```python
+    /// import pulumi
+    /// import pulumi_aws as aws
+    /// 
+    /// example = aws.apigatewayv2.Stage("example", api_id=aws_apigatewayv2_api["example"]["id"])
+    /// ```
+    /// ```csharp
+    /// using System.Collections.Generic;
+    /// using System.Linq;
+    /// using Pulumi;
+    /// using Aws = Pulumi.Aws;
+    /// 
+    /// return await Deployment.RunAsync(() =&gt; 
+    /// {
+    ///     var example = new Aws.ApiGatewayV2.Stage("example", new()
+    ///     {
+    ///         ApiId = aws_apigatewayv2_api.Example.Id,
+    ///     });
+    /// 
+    /// });
+    /// ```
+    /// ```go
+    /// package main
+    /// 
+    /// import (
+    /// 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+    /// 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+    /// )
+    /// 
+    /// func main() {
+    /// 	pulumi.Run(func(ctx *pulumi.Context) error {
+    /// 		_, err := apigatewayv2.NewStage(ctx, "example", &amp;apigatewayv2.StageArgs{
+    /// 			ApiId: pulumi.Any(aws_apigatewayv2_api.Example.Id),
+    /// 		})
+    /// 		if err != nil {
+    /// 			return err
+    /// 		}
+    /// 		return nil
+    /// 	})
+    /// }
+    /// ```
+    /// ```java
+    /// package generated_program;
+    /// 
+    /// import com.pulumi.Context;
+    /// import com.pulumi.Pulumi;
+    /// import com.pulumi.core.Output;
+    /// import com.pulumi.aws.apigatewayv2.Stage;
+    /// import com.pulumi.aws.apigatewayv2.StageArgs;
+    /// import java.util.List;
+    /// import java.util.ArrayList;
+    /// import java.util.Map;
+    /// import java.io.File;
+    /// import java.nio.file.Files;
+    /// import java.nio.file.Paths;
+    /// 
+    /// public class App {
+    ///     public static void main(String[] args) {
+    ///         Pulumi.run(App::stack);
+    ///     }
+    /// 
+    ///     public static void stack(Context ctx) {
+    ///         var example = new Stage("example", StageArgs.builder()        
+    ///             .apiId(aws_apigatewayv2_api.example().id())
+    ///             .build());
+    /// 
+    ///     }
+    /// }
+    /// ```
+    /// ```yaml
+    /// resources:
+    ///   example:
+    ///     type: aws:apigatewayv2:Stage
+    ///     properties:
+    ///       apiId: ${aws_apigatewayv2_api.example.id}
+    /// ```
+    /// {{% /example %}}
+    /// {{% /examples %}}
+    /// 
+    /// ## Import
+    /// 
+    /// Using `pulumi import`, import `aws_apigatewayv2_stage` using the API identifier and stage name. For example:
+    /// 
+    /// ```sh
+    ///  $ pulumi import aws:apigatewayv2/stage:Stage example aabbccddee/example-stage
+    /// ```
+    ///  -&gt; __Note:__ The API Gateway managed stage created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+    /// </summary>
     public sealed class HttpStageArgs : global::Pulumi.ResourceArgs
     {
+        /// <summary>
+        /// Settings for logging access in this stage.
+        /// Use the `aws.apigateway.Account` resource to configure [permissions for CloudWatch Logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#set-up-access-logging-permissions).
+        /// </summary>
+        [Input("accessLogSettings")]
+        public Input<Pulumi.Aws.ApiGatewayV2.Inputs.StageAccessLogSettingsArgs>? AccessLogSettings { get; set; }
+
+        /// <summary>
+        /// Whether updates to an API automatically trigger a new deployment. Defaults to `false`. Applicable for HTTP APIs.
+        /// </summary>
+        [Input("autoDeploy")]
+        public Input<bool>? AutoDeploy { get; set; }
+
+        /// <summary>
+        /// Identifier of a client certificate for the stage. Use the `aws.apigateway.ClientCertificate` resource to configure a client certificate.
+        /// Supported only for WebSocket APIs.
+        /// </summary>
+        [Input("clientCertificateId")]
+        public Input<string>? ClientCertificateId { get; set; }
+
+        /// <summary>
+        /// Default route settings for the stage.
+        /// </summary>
+        [Input("defaultRouteSettings")]
+        public Input<Pulumi.Aws.ApiGatewayV2.Inputs.StageDefaultRouteSettingsArgs>? DefaultRouteSettings { get; set; }
+
+        /// <summary>
+        /// Deployment identifier of the stage. Use the `aws.apigatewayv2.Deployment` resource to configure a deployment.
+        /// </summary>
+        [Input("deploymentId")]
+        public Input<string>? DeploymentId { get; set; }
+
+        /// <summary>
+        /// Description for the stage. Must be less than or equal to 1024 characters in length.
+        /// </summary>
+        [Input("description")]
+        public Input<string>? Description { get; set; }
+
+        /// <summary>
+        /// Name of the stage. Must be between 1 and 128 characters in length.
+        /// 
+        /// The following arguments are optional:
+        /// </summary>
+        [Input("name")]
+        public Input<string>? Name { get; set; }
+
+        [Input("routeSettings")]
+        private InputList<Pulumi.Aws.ApiGatewayV2.Inputs.StageRouteSettingArgs>? _routeSettings;
+
+        /// <summary>
+        /// Route settings for the stage.
+        /// </summary>
+        public InputList<Pulumi.Aws.ApiGatewayV2.Inputs.StageRouteSettingArgs> RouteSettings
+        {
+            get => _routeSettings ?? (_routeSettings = new InputList<Pulumi.Aws.ApiGatewayV2.Inputs.StageRouteSettingArgs>());
+            set => _routeSettings = value;
+        }
+
+        [Input("stageVariables")]
+        private InputMap<string>? _stageVariables;
+
+        /// <summary>
+        /// Map that defines the stage variables for the stage.
+        /// </summary>
+        public InputMap<string> StageVariables
+        {
+            get => _stageVariables ?? (_stageVariables = new InputMap<string>());
+            set => _stageVariables = value;
+        }
+
+        [Input("tags")]
+        private InputMap<string>? _tags;
+
+        /// <summary>
+        /// Map of tags to assign to the stage. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// </summary>
+        public InputMap<string> Tags
+        {
+            get => _tags ?? (_tags = new InputMap<string>());
+            set => _tags = value;
+        }
+
         public HttpStageArgs()
         {
         }
