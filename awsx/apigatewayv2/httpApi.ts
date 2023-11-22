@@ -10,7 +10,11 @@ type Route = Omit<
   | "requestParameters"
   | "routeResponseSelectionExpression"
   | "modelSelectionExpression"
->;
+> & {
+  integration?: pulumi.Input<string>;
+  authorizer?: pulumi.Input<string>;
+  target: pulumi.Input<string>;
+};
 
 type HttpIntegration = Omit<
   aws.apigatewayv2.IntegrationArgs,
@@ -28,12 +32,21 @@ type LambdaIntegration = Omit<HttpIntegration, "integrationType" | "integrationU
 
 type Integration = HttpIntegration | LambdaIntegration;
 
+type Authorizer = Omit<aws.apigatewayv2.AuthorizerArgs, "apiId">;
+
 type Stage = Omit<aws.apigatewayv2.StageArgs, "apiId">;
+
+type DomainName = Omit<aws.apigatewayv2.ApiMappingArgs, "apiId" | "domainName"> & {
+  domainConfiguration?: Omit<aws.apigatewayv2.DomainNameArgs, "domainName">;
+  domainId?: pulumi.Input<string>;
+};
 
 interface HttpApiArgs {
   routes: Record<string, Route>;
-  integrations: Record<string, Integration>;
+  integrations?: Record<string, Integration>;
+  authorizers?: Record<string, Authorizer>;
   stages?: Record<string, Stage>;
+  domainNames?: Record<string, DomainName>;
 }
 
 export async function buildHttpApi(parent: pulumi.Resource, name: string, args: HttpApiArgs) {
@@ -46,13 +59,14 @@ export async function buildHttpApi(parent: pulumi.Resource, name: string, args: 
   );
 
   const functions: aws.lambda.Function[] = [];
-  const integrations: aws.apigatewayv2.Integration[] = [];
-  for (const [integrationKey, integrationInput] of Object.entries(args.integrations)) {
+  const integrationsMap = new Map<string, aws.apigatewayv2.Integration>();
+  for (const [integrationKey, integrationInput] of Object.entries(args.integrations ?? {})) {
     const integrationName = `${name}-${integrationKey}`;
     if ("lambda" in integrationInput) {
       const { lambda, ...integrationArgs } = integrationInput;
       functions.push(lambda);
-      integrations.push(
+      integrationsMap.set(
+        integrationKey,
         new aws.apigatewayv2.Integration(
           integrationName,
           {
@@ -65,7 +79,8 @@ export async function buildHttpApi(parent: pulumi.Resource, name: string, args: 
         ),
       );
     } else {
-      integrations.push(
+      integrationsMap.set(
+        integrationKey,
         new aws.apigatewayv2.Integration(
           integrationName,
           {
@@ -77,17 +92,58 @@ export async function buildHttpApi(parent: pulumi.Resource, name: string, args: 
       );
     }
   }
+  const integrations = Array.from(integrationsMap.values());
+
+  const authorizersMap = new Map<string, aws.apigatewayv2.Authorizer>();
+  for (const [authorizerKey, authorizerInput] of Object.entries(args.authorizers ?? {})) {
+    const authorizerName = authorizerKey.replace(/\W+/g, "-");
+    authorizersMap.set(
+      authorizerKey,
+      new aws.apigatewayv2.Authorizer(
+        `${name}-${authorizerName}`,
+        {
+          apiId: api.id,
+          ...authorizerInput,
+        },
+        { parent },
+      ),
+    );
+  }
+  const authorizers = Array.from(authorizersMap.values());
 
   const routes: aws.apigatewayv2.Route[] = [];
   for (const [routeKey, routeInput] of Object.entries(args.routes)) {
     const routeName = routeKey.replace(/\W+/g, "-");
+    const { integration, authorizer, ...routeArgs } = routeInput;
+    let target = routeInput.target;
+    if (integration !== undefined) {
+      target = pulumi.output(integration).apply((id) => {
+        const integration = integrationsMap.get(id);
+        if (integration === undefined) {
+          throw new Error(`Could not find integration with key ${id}`);
+        }
+        return `integrations/${integration.id}`;
+      });
+    }
+    let authorizerId = routeInput.authorizerId;
+    if (authorizer !== undefined) {
+      authorizerId = pulumi.output(authorizer).apply((id) => {
+        const authorizer = authorizersMap.get(id);
+        if (authorizer === undefined) {
+          throw new Error(`Could not find authorizer with key ${id}`);
+        }
+        return authorizer.id;
+      });
+    }
     routes.push(
       new aws.apigatewayv2.Route(
         `${name}-${routeName}`,
         {
           apiId: api.id,
           routeKey,
-          ...routeInput,
+          ...routeArgs,
+          target,
+          authorizerId,
         },
         {
           parent,
@@ -119,7 +175,40 @@ export async function buildHttpApi(parent: pulumi.Resource, name: string, args: 
     { parent, dependsOn: [...routes, ...stages] },
   );
 
-  return { api, routes, integrations, stages, deployment };
+  const domains: aws.apigatewayv2.DomainName[] = [];
+  for (const [domainKey, domainInput] of Object.entries(args.domainNames ?? {})) {
+    const { domainConfiguration, domainId, ...apiMappingArgs } = domainInput;
+    if (
+      (domainId === undefined && domainConfiguration === undefined) ||
+      (domainId !== undefined && domainConfiguration !== undefined)
+    ) {
+      throw new Error(
+        `Exactly one of domainId or domainConfiguration must be specified for domain ${domainKey}`,
+      );
+    }
+    let resolvedDomainId = domainId;
+    const domainResourceName = domainKey.replace(/\W+/g, "-");
+    if (domainConfiguration !== undefined) {
+      const domain = new aws.apigatewayv2.DomainName(
+        `${name}-${domainResourceName}`,
+        { ...domainConfiguration, domainName: domainKey },
+        { parent },
+      );
+      domains.push(domain);
+      resolvedDomainId = domain.id;
+    }
+    new aws.apigatewayv2.ApiMapping(
+      `${name}-${domainResourceName}`,
+      {
+        apiId: api.id,
+        domainName: resolvedDomainId!,
+        ...apiMappingArgs,
+      },
+      { parent, dependsOn: domains },
+    );
+  }
+
+  return { api, routes, integrations, authorizers, stages, deployment, domains };
 }
 
 function defaultStages(): Record<string, Stage> {
