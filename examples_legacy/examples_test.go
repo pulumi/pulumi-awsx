@@ -61,7 +61,6 @@ func getBaseOptions(t *testing.T) integration.ProgramTestOptions {
 		Quick:                true,
 		SkipRefresh:          true,
 		ExpectRefreshChanges: true,
-		ReportStats:          integration.NewS3Reporter("us-west-2", "eng.pulumi.com", "testreports"),
 	}
 
 	return baseJS
