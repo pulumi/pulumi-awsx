@@ -37,23 +37,23 @@ func httpApi(awsSpec schema.PackageSpec) schema.ResourceSpec {
 	inputProperties := map[string]schema.PropertySpec{
 		"routes": {
 			Description: "The routes for the HTTP API.",
-			TypeSpec:    stringMapOfLocalRefs("apigatewayv2", "HttpRoute"),
+			TypeSpec:    plainStringMapOfLocalRefs("apigatewayv2", "HttpRoute"),
 		},
 		"integrations": {
 			Description: "The integrations for the HTTP API routes.",
-			TypeSpec:    stringMapOfLocalRefs("apigatewayv2", "HttpIntegration"),
+			TypeSpec:    plainStringMapOfLocalRefs("apigatewayv2", "HttpIntegration"),
 		},
 		"authorizers": {
 			Description: "The authorizers for the HTTP API routes.",
-			TypeSpec:    stringMapOfLocalRefs("apigatewayv2", "HttpAuthorizer"),
+			TypeSpec:    plainStringMapOfLocalRefs("apigatewayv2", "HttpAuthorizer"),
 		},
 		"stages": {
 			Description: "The deployment stages for the HTTP API.",
-			TypeSpec:    stringMapOfLocalRefs("apigatewayv2", "HttpStage"),
+			TypeSpec:    plainStringMapOfLocalRefs("apigatewayv2", "HttpStage"),
 		},
 		"domainMappings": {
 			Description: "The domain names for the HTTP API.",
-			TypeSpec:    stringMapOfLocalRefs("apigatewayv2", "DomainMapping"),
+			TypeSpec:    plainStringMapOfLocalRefs("apigatewayv2", "DomainMapping"),
 		},
 	}
 	for k, v := range awsApiSpec.InputProperties {
@@ -114,8 +114,8 @@ func httpApi(awsSpec schema.PackageSpec) schema.ResourceSpec {
 }
 
 func httpRoute(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	original := awsSpec.Types["aws:apigatewayv2/route:Route"]
-	properties := renameAwsPropertiesRefs(awsSpec, original.Properties)
+	original := awsSpec.Resources["aws:apigatewayv2/route:Route"]
+	properties := renameAwsPropertiesRefs(awsSpec, original.InputProperties)
 	delete(properties, "apiId")
 	// Inferred from the map key
 	delete(properties, "routeKey")
@@ -146,8 +146,8 @@ func httpRoute(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 }
 
 func httpIntegration(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	original := awsSpec.Types["aws:apigatewayv2/integration:Integration"]
-	properties := renameAwsPropertiesRefs(awsSpec, original.Properties)
+	original := awsSpec.Resources["aws:apigatewayv2/integration:Integration"]
+	properties := renameAwsPropertiesRefs(awsSpec, original.InputProperties)
 	delete(properties, "apiId")
 	// WebSocket specific properties
 	delete(properties, "requestTemplates")
@@ -164,21 +164,22 @@ func httpIntegration(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 }
 
 func httpAuthorizer(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	original := awsSpec.Types["aws:apigatewayv2/authorizer:Authorizer"]
-	properties := renameAwsPropertiesRefs(awsSpec, original.Properties)
+	original := awsSpec.Resources["aws:apigatewayv2/authorizer:Authorizer"]
+	properties := renameAwsPropertiesRefs(awsSpec, original.InputProperties)
 	delete(properties, "apiId")
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",
 			Description: original.Description,
 			Properties:  properties,
+			Required:    []string{"authorizerType"},
 		},
 	}
 }
 
 func httpStage(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	original := awsSpec.Types["aws:apigatewayv2/stage:Stage"]
-	properties := renameAwsPropertiesRefs(awsSpec, original.Properties)
+	original := awsSpec.Resources["aws:apigatewayv2/stage:Stage"]
+	properties := renameAwsPropertiesRefs(awsSpec, original.InputProperties)
 	delete(properties, "apiId")
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
@@ -190,8 +191,8 @@ func httpStage(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 }
 
 func domainMapping(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
-	original := awsSpec.Types["aws:apigatewayv2/apiMapping:ApiMapping"]
-	properties := renameAwsPropertiesRefs(awsSpec, original.Properties)
+	original := awsSpec.Resources["aws:apigatewayv2/apiMapping:ApiMapping"]
+	properties := renameAwsPropertiesRefs(awsSpec, original.InputProperties)
 	delete(properties, "apiId")
 	delete(properties, "domainName")
 	properties["domainConfiguration"] = schema.PropertySpec{
@@ -225,5 +226,16 @@ func domainConfiguration(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 			Description: original.Description,
 			Properties:  properties,
 		},
+	}
+}
+
+func plainStringMapOfLocalRefs(module, name string) schema.TypeSpec {
+	return schema.TypeSpec{
+		Type: "object",
+		AdditionalProperties: &schema.TypeSpec{
+			Ref:   localRef(module, name),
+			Plain: true,
+		},
+		Plain: true,
 	}
 }

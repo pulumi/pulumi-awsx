@@ -33,12 +33,14 @@ type Route = Omit<
 type HttpIntegration = Omit<
   aws.apigatewayv2.IntegrationArgs,
   | "apiId"
+  | "integrationType"
   // Supported only for WebSocket APIs.
   | "requestTemplates"
   | "contentHandlingStrategy"
   | "passthroughBehavior"
   | "templateSelectionExpression"
->;
+> &
+  Partial<Pick<aws.apigatewayv2.IntegrationArgs, "integrationType">>;
 
 type LambdaIntegration = Omit<HttpIntegration, "integrationType" | "integrationUri"> & {
   lambda: aws.lambda.Function;
@@ -67,7 +69,7 @@ type HttpApiArgs = Omit<
 };
 
 export class HttpApi extends schema.HttpApi {
-  constructor(name: string, args: HttpApiArgs, opts?: pulumi.ComponentResourceOptions) {
+  constructor(name: string, args: schema.HttpApiArgs, opts?: pulumi.ComponentResourceOptions) {
     super(name, args, opts);
 
     const result = buildHttpApi(this, name, args);
@@ -114,6 +116,12 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: HttpAp
         ),
       );
     } else {
+      const { integrationType } = integrationInput;
+      if (integrationType === undefined) {
+        throw new Error(
+          `integrationType must be specified for custom integration ${integrationKey}`,
+        );
+      }
       integrationsMap.set(
         integrationKey,
         new aws.apigatewayv2.Integration(
@@ -121,6 +129,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: HttpAp
           {
             apiId: api.id,
             ...integrationInput,
+            integrationType,
           },
           { parent },
         ),
