@@ -214,7 +214,8 @@ func domainMapping(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	properties["domainConfiguration"] = schema.PropertySpec{
 		Description: "Configuration of the domain name to create. Cannot be specified together with `domainId`.",
 		TypeSpec: schema.TypeSpec{
-			Ref: localRef("apigatewayv2", "DomainConfiguration"),
+			Ref:   localRef("apigatewayv2", "DomainConfiguration"),
+			Plain: true,
 		},
 	}
 	properties["domainId"] = schema.PropertySpec{
@@ -228,6 +229,7 @@ func domainMapping(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 			Type:        "object",
 			Description: original.Description,
 			Properties:  properties,
+			Required:    []string{"stage"},
 		},
 	}
 }
@@ -241,6 +243,7 @@ func domainConfiguration(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 			Type:        "object",
 			Description: original.Description,
 			Properties:  properties,
+			Required:    []string{"domainNameConfiguration"},
 		},
 	}
 }

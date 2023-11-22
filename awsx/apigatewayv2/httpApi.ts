@@ -16,56 +16,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as schema from "../schema-types";
 
-type Route = Omit<
-  aws.apigatewayv2.RouteArgs,
-  | "apiId"
-  | "routeKey"
-  // Supported only for WebSocket APIs.
-  | "requestModels"
-  | "requestParameters"
-  | "routeResponseSelectionExpression"
-  | "modelSelectionExpression"
-> & {
-  integration?: pulumi.Input<string>;
-  authorizer?: pulumi.Input<string>;
-};
-
-type Integration = Omit<
-  aws.apigatewayv2.IntegrationArgs,
-  | "apiId"
-  // Make optional
-  | "integrationType"
-  // Supported only for WebSocket APIs.
-  | "requestTemplates"
-  | "contentHandlingStrategy"
-  | "passthroughBehavior"
-  | "templateSelectionExpression"
-> &
-  Partial<Pick<aws.apigatewayv2.IntegrationArgs, "integrationType">> & {
-    lambda?: aws.lambda.Function;
-    lambdaInvokeArn?: pulumi.Input<string>;
-  };
-
-type Authorizer = Omit<aws.apigatewayv2.AuthorizerArgs, "apiId">;
-
-type Stage = Omit<aws.apigatewayv2.StageArgs, "apiId">;
-
-type DomainName = Omit<aws.apigatewayv2.ApiMappingArgs, "apiId" | "domainName"> & {
-  domainConfiguration?: Omit<aws.apigatewayv2.DomainNameArgs, "domainName">;
-  domainId?: pulumi.Input<string>;
-};
-
-type HttpApiArgs = Omit<
-  aws.apigatewayv2.ApiArgs,
-  "protocolType" | "target" | "routeKey" | "credentialsArn"
-> & {
-  routes: Record<string, Route>;
-  integrations?: Record<string, Integration>;
-  authorizers?: Record<string, Authorizer>;
-  stages?: Record<string, Stage>;
-  domainNames?: Record<string, DomainName>;
-};
-
 export class HttpApi extends schema.HttpApi {
   constructor(name: string, args: schema.HttpApiArgs, opts?: pulumi.ComponentResourceOptions) {
     super(name, args, opts);
@@ -82,8 +32,8 @@ export class HttpApi extends schema.HttpApi {
   }
 }
 
-export function buildHttpApi(parent: pulumi.Resource, name: string, args: HttpApiArgs) {
-  const { routes, integrations, authorizers, stages, domainNames, ...apiArgs } = args;
+export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema.HttpApiArgs) {
+  const { routes, integrations, authorizers, stages, domainMappings, ...apiArgs } = args;
   const api = new aws.apigatewayv2.Api(
     name,
     {
@@ -222,22 +172,25 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: HttpAp
 
   const domainResources: aws.apigatewayv2.DomainName[] = [];
   const apiMappingResources: aws.apigatewayv2.ApiMapping[] = [];
-  for (const [domainKey, domainInput] of Object.entries(domainNames ?? {})) {
+  for (const [domainName, domainInput] of Object.entries(domainMappings ?? {})) {
     const { domainConfiguration, domainId, ...apiMappingArgs } = domainInput;
     if (
       (domainId === undefined && domainConfiguration === undefined) ||
       (domainId !== undefined && domainConfiguration !== undefined)
     ) {
       throw new Error(
-        `Exactly one of domainId or domainConfiguration must be specified for domain ${domainKey}`,
+        `Exactly one of domainId or domainConfiguration must be specified for domain ${domainName}`,
       );
     }
     let resolvedDomainId = domainId;
-    const domainResourceName = domainKey.replace(/\W+/g, "-");
+    const domainResourceName = domainName.replace(/\W+/g, "-");
     if (domainConfiguration !== undefined) {
       const domain = new aws.apigatewayv2.DomainName(
         `${name}-${domainResourceName}`,
-        { ...domainConfiguration, domainName: domainKey },
+        {
+          domainName: domainName,
+          ...domainConfiguration,
+        },
         { parent },
       );
       domainResources.push(domain);
@@ -268,7 +221,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: HttpAp
   };
 }
 
-function defaultStages(): Record<string, Stage> {
+function defaultStages(): Record<string, schema.HttpStageInputs> {
   return {
     default: { autoDeploy: true },
   };
