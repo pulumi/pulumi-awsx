@@ -192,7 +192,16 @@
                 },
                 "integrationUri": {
                     "type": "string",
-                    "description": "URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.\nFor an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.\n"
+                    "description": "URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.\nFor an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.\n Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified."
+                },
+                "lambda": {
+                    "$ref": "/aws/v6.9.0/schema.json#/resources/aws:lambda/function:Function",
+                    "plain": true,
+                    "description": "A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified."
+                },
+                "lambdaInvokeArn": {
+                    "type": "string",
+                    "description": "The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified."
                 },
                 "payloadFormatVersion": {
                     "type": "string",

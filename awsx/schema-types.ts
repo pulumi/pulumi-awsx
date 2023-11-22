@@ -441,6 +441,8 @@ export interface HttpIntegrationInputs {
     readonly integrationSubtype?: pulumi.Input<string>;
     readonly integrationType?: pulumi.Input<string>;
     readonly integrationUri?: pulumi.Input<string>;
+    readonly lambda?: aws.lambda.Function;
+    readonly lambdaInvokeArn?: pulumi.Input<string>;
     readonly payloadFormatVersion?: pulumi.Input<string>;
     readonly requestParameters?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly responseParameters?: pulumi.Input<pulumi.Input<aws.types.input.apigatewayv2.IntegrationResponseParameter>[]>;
@@ -456,6 +458,8 @@ export interface HttpIntegrationOutputs {
     readonly integrationSubtype?: pulumi.Output<string>;
     readonly integrationType?: pulumi.Output<string>;
     readonly integrationUri?: pulumi.Output<string>;
+    readonly lambda?: aws.lambda.Function;
+    readonly lambdaInvokeArn?: pulumi.Output<string>;
     readonly payloadFormatVersion?: pulumi.Output<string>;
     readonly requestParameters?: pulumi.Output<Record<string, string>>;
     readonly responseParameters?: pulumi.Output<aws.types.output.apigatewayv2.IntegrationResponseParameter[]>;

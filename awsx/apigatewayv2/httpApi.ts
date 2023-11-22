@@ -30,9 +30,10 @@ type Route = Omit<
   authorizer?: pulumi.Input<string>;
 };
 
-type HttpIntegration = Omit<
+type Integration = Omit<
   aws.apigatewayv2.IntegrationArgs,
   | "apiId"
+  // Make optional
   | "integrationType"
   // Supported only for WebSocket APIs.
   | "requestTemplates"
@@ -40,13 +41,10 @@ type HttpIntegration = Omit<
   | "passthroughBehavior"
   | "templateSelectionExpression"
 > &
-  Partial<Pick<aws.apigatewayv2.IntegrationArgs, "integrationType">>;
-
-type LambdaIntegration = Omit<HttpIntegration, "integrationType" | "integrationUri"> & {
-  lambda: aws.lambda.Function;
-};
-
-type Integration = HttpIntegration | LambdaIntegration;
+  Partial<Pick<aws.apigatewayv2.IntegrationArgs, "integrationType">> & {
+    lambda?: aws.lambda.Function;
+    lambdaInvokeArn?: pulumi.Input<string>;
+  };
 
 type Authorizer = Omit<aws.apigatewayv2.AuthorizerArgs, "apiId">;
 
@@ -95,46 +93,49 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: HttpAp
     { parent },
   );
 
-  const functions: aws.lambda.Function[] = [];
   const integrationsMap = new Map<string, aws.apigatewayv2.Integration>();
   for (const [integrationKey, integrationInput] of Object.entries(integrations ?? {})) {
-    const integrationName = `${name}-${integrationKey}`;
-    if ("lambda" in integrationInput) {
-      const { lambda, ...integrationArgs } = integrationInput;
-      functions.push(lambda);
-      integrationsMap.set(
-        integrationKey,
-        new aws.apigatewayv2.Integration(
-          integrationName,
-          {
-            apiId: api.id,
-            integrationType: "AWS_PROXY",
-            integrationUri: lambda.invokeArn,
-            ...integrationArgs,
-          },
-          { parent },
-        ),
-      );
-    } else {
-      const { integrationType } = integrationInput;
-      if (integrationType === undefined) {
+    function errOnlyOneArg() {
+      return `Exactly one of lambda, lambdaInvokeArn or integrationUri must be specified for integration ${integrationKey}`;
+    }
+    let { integrationType, integrationUri, lambda, lambdaInvokeArn, ...integrationArgs } =
+      integrationInput;
+    if (lambda !== undefined) {
+      if (lambdaInvokeArn !== undefined) {
+        throw new Error(errOnlyOneArg());
+      }
+      lambdaInvokeArn = lambda.invokeArn;
+    }
+    if (lambdaInvokeArn !== undefined) {
+      if (integrationUri !== undefined) {
+        throw new Error(errOnlyOneArg());
+      }
+      if (integrationType !== undefined && integrationType !== "AWS_PROXY") {
         throw new Error(
-          `integrationType must be specified for custom integration ${integrationKey}`,
+          `integrationType must be AWS_PROXY for lambda integration ${integrationKey}`,
         );
       }
-      integrationsMap.set(
-        integrationKey,
-        new aws.apigatewayv2.Integration(
-          integrationName,
-          {
-            apiId: api.id,
-            ...integrationInput,
-            integrationType,
-          },
-          { parent },
-        ),
-      );
+      integrationType = "AWS_PROXY";
+      integrationUri = lambdaInvokeArn;
     }
+    const integrationName = `${name}-${integrationKey}`;
+
+    if (integrationType === undefined) {
+      throw new Error(`integrationType must be specified for custom integration ${integrationKey}`);
+    }
+    integrationsMap.set(
+      integrationKey,
+      new aws.apigatewayv2.Integration(
+        integrationName,
+        {
+          apiId: api.id,
+          integrationType,
+          integrationUri,
+          ...integrationArgs,
+        },
+        { parent },
+      ),
+    );
   }
   const integrationResources = Array.from(integrationsMap.values());
 
