@@ -592,7 +592,8 @@ export function validateNoGaps(vpcCidr: string, subnetSpecs: SubnetSpec[]) {
   const lastBlockNetmask = new Netmask(current!.cidrBlock);
   if (lastBlockNetmask.last !== vpcNetmask.last) {
     gaps.push(
-      `${current!.subnetName} (ending ${lastBlockNetmask.last}) ends before VPC ends (at ${vpcNetmask.last
+      `${current!.subnetName} (ending ${lastBlockNetmask.last}) ends before VPC ends (at ${
+        vpcNetmask.last
       }})`,
     );
   }
