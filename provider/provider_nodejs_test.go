@@ -30,7 +30,6 @@ import (
 // from a baseline to the current version of the provider.
 func TestExamples(t *testing.T) {
 	examples := []string{
-
 		"cloudtrail/nodejs",
 		"vpc/nodejs/default-args",
 		"vpc/nodejs/specific-vpc-layout",
@@ -90,6 +89,8 @@ func test(dir string, opts ...providertest.Option) *providertest.ProviderTest {
 		providertest.WithExtraBaselineDependencies(map[string]string{
 			"aws": "5.42.0", // latest v5
 		}),
+		// TODO: make this stricter. https://github.com/pulumi/pulumi-awsx/issues/1166
+		providertest.WithDiffValidation(providertest.NoReplacements()),
 	)
 
 	return providertest.NewProviderTest(dir, opts...)
