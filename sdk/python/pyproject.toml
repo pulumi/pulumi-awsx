@@ -1,0 +1,22 @@
+[project]
+  name = "pulumi_awsx"
+  description = "Pulumi Amazon Web Services (AWS) AWSX Components."
+  dependencies = ["parver>=0.2.1", "pulumi>=3.76.1,<4.0.0", "pulumi-aws>=6.0.4,<7.0.0", "pulumi-docker>=4.4.3,<5.0.0", "semver>=2.8.1"]
+  keywords = ["pulumi", "aws", "awsx", "kind/component", "category/cloud"]
+  readme = "README.md"
+  requires-python = ">=3.7"
+  version = "0.0.0"
+  [project.license]
+    text = "Apache-2.0"
+  [project.urls]
+    Homepage = "https://pulumi.com"
+    Repository = "https://github.com/pulumi/pulumi-awsx"
+
+[build-system]
+  requires = ["setuptools>=61.0"]
+  build-backend = "setuptools.build_meta"
+
+[tool]
+  [tool.setuptools]
+    [tool.setuptools.package-data]
+      pulumi_awsx = ["py.typed", "pulumi-plugin.json"]
