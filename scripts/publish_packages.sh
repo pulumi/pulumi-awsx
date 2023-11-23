@@ -88,7 +88,7 @@ publish() {
     echo "Publishing Pip package to pypi as ${PYPI_PUBLISH_USERNAME}:"
     twine upload \
         -u "${PYPI_PUBLISH_USERNAME}" -p "${PYPI_PASSWORD}" \
-        "${ROOT}/sdk/python/bin/dist/*.tar.gz" \
+        "${ROOT}/sdk/python/bin/dist/*" \
         --skip-existing \
         --verbose
 
