@@ -1028,8 +1028,7 @@ class HttpIntegrationArgs:
                  integration_subtype: Optional[pulumi.Input[str]] = None,
                  integration_type: Optional[pulumi.Input[str]] = None,
                  integration_uri: Optional[pulumi.Input[str]] = None,
-                 lambda_: Optional['pulumi_aws.lambda_.Function'] = None,
-                 lambda_invoke_arn: Optional[pulumi.Input[str]] = None,
+                 lambda_arn: Optional[pulumi.Input[str]] = None,
                  payload_format_version: Optional[pulumi.Input[str]] = None,
                  request_parameters: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  response_parameters: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.apigatewayv2.IntegrationResponseParameterArgs']]]] = None,
@@ -1727,8 +1726,7 @@ class HttpIntegrationArgs:
         :param pulumi.Input[str] integration_uri: URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
                For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
                 Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
-        :param 'pulumi_aws.lambda_.Function' lambda_: A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
-        :param pulumi.Input[str] lambda_invoke_arn: The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+        :param pulumi.Input[str] lambda_arn: The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
         :param pulumi.Input[str] payload_format_version: The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] request_parameters: For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
                For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
@@ -1756,10 +1754,8 @@ class HttpIntegrationArgs:
             pulumi.set(__self__, "integration_type", integration_type)
         if integration_uri is not None:
             pulumi.set(__self__, "integration_uri", integration_uri)
-        if lambda_ is not None:
-            pulumi.set(__self__, "lambda_", lambda_)
-        if lambda_invoke_arn is not None:
-            pulumi.set(__self__, "lambda_invoke_arn", lambda_invoke_arn)
+        if lambda_arn is not None:
+            pulumi.set(__self__, "lambda_arn", lambda_arn)
         if payload_format_version is not None:
             pulumi.set(__self__, "payload_format_version", payload_format_version)
         if request_parameters is not None:
@@ -1871,28 +1867,16 @@ class HttpIntegrationArgs:
         pulumi.set(self, "integration_uri", value)
 
     @property
-    @pulumi.getter(name="lambda")
-    def lambda_(self) -> Optional['pulumi_aws.lambda_.Function']:
+    @pulumi.getter(name="lambdaArn")
+    def lambda_arn(self) -> Optional[pulumi.Input[str]]:
         """
-        A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+        The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
         """
-        return pulumi.get(self, "lambda_")
+        return pulumi.get(self, "lambda_arn")
 
-    @lambda_.setter
-    def lambda_(self, value: Optional['pulumi_aws.lambda_.Function']):
-        pulumi.set(self, "lambda_", value)
-
-    @property
-    @pulumi.getter(name="lambdaInvokeArn")
-    def lambda_invoke_arn(self) -> Optional[pulumi.Input[str]]:
-        """
-        The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
-        """
-        return pulumi.get(self, "lambda_invoke_arn")
-
-    @lambda_invoke_arn.setter
-    def lambda_invoke_arn(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "lambda_invoke_arn", value)
+    @lambda_arn.setter
+    def lambda_arn(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "lambda_arn", value)
 
     @property
     @pulumi.getter(name="payloadFormatVersion")

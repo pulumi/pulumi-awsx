@@ -744,16 +744,10 @@ namespace Pulumi.Awsx.Apigatewayv2.Inputs
         public Input<string>? IntegrationUri { get; set; }
 
         /// <summary>
-        /// A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+        /// The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
         /// </summary>
-        [Input("lambda")]
-        public Pulumi.Aws.Lambda.Function? Lambda { get; set; }
-
-        /// <summary>
-        /// The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
-        /// </summary>
-        [Input("lambdaInvokeArn")]
-        public Input<string>? LambdaInvokeArn { get; set; }
+        [Input("lambdaArn")]
+        public Input<string>? LambdaArn { get; set; }
 
         /// <summary>
         /// The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.

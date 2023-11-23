@@ -155,15 +155,8 @@ func httpIntegration(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	delete(properties, "contentHandlingStrategy")
 	delete(properties, "passthroughBehavior")
 	delete(properties, "templateSelectionExpression")
-	properties["lambda"] = schema.PropertySpec{
-		Description: "A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.",
-		TypeSpec: schema.TypeSpec{
-			Ref:   packageRef(awsSpec, "/resources/aws:lambda/function:Function"),
-			Plain: true,
-		},
-	}
-	properties["lambdaInvokeArn"] = schema.PropertySpec{
-		Description: "The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.",
+	properties["lambdaArn"] = schema.PropertySpec{
+		Description: "The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},

@@ -5,7 +5,6 @@ package com.pulumi.awsx.apigatewayv2.inputs;
 
 import com.pulumi.aws.apigatewayv2.inputs.IntegrationResponseParameterArgs;
 import com.pulumi.aws.apigatewayv2.inputs.IntegrationTlsConfigArgs;
-import com.pulumi.aws.lambda.Function;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.Integer;
@@ -331,33 +330,18 @@ public final class HttpIntegrationArgs extends com.pulumi.resources.ResourceArgs
     }
 
     /**
-     * A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+     * The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
      * 
      */
-    @Import(name="lambda")
-    private @Nullable Function lambda;
+    @Import(name="lambdaArn")
+    private @Nullable Output<String> lambdaArn;
 
     /**
-     * @return A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+     * @return The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
      * 
      */
-    public Optional<Function> lambda() {
-        return Optional.ofNullable(this.lambda);
-    }
-
-    /**
-     * The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
-     * 
-     */
-    @Import(name="lambdaInvokeArn")
-    private @Nullable Output<String> lambdaInvokeArn;
-
-    /**
-     * @return The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
-     * 
-     */
-    public Optional<Output<String>> lambdaInvokeArn() {
-        return Optional.ofNullable(this.lambdaInvokeArn);
+    public Optional<Output<String>> lambdaArn() {
+        return Optional.ofNullable(this.lambdaArn);
     }
 
     /**
@@ -456,8 +440,7 @@ public final class HttpIntegrationArgs extends com.pulumi.resources.ResourceArgs
         this.integrationSubtype = $.integrationSubtype;
         this.integrationType = $.integrationType;
         this.integrationUri = $.integrationUri;
-        this.lambda = $.lambda;
-        this.lambdaInvokeArn = $.lambdaInvokeArn;
+        this.lambdaArn = $.lambdaArn;
         this.payloadFormatVersion = $.payloadFormatVersion;
         this.requestParameters = $.requestParameters;
         this.responseParameters = $.responseParameters;
@@ -658,35 +641,24 @@ public final class HttpIntegrationArgs extends com.pulumi.resources.ResourceArgs
         }
 
         /**
-         * @param lambda A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+         * @param lambdaArn The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
          * 
          * @return builder
          * 
          */
-        public Builder lambda(@Nullable Function lambda) {
-            $.lambda = lambda;
+        public Builder lambdaArn(@Nullable Output<String> lambdaArn) {
+            $.lambdaArn = lambdaArn;
             return this;
         }
 
         /**
-         * @param lambdaInvokeArn The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+         * @param lambdaArn The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
          * 
          * @return builder
          * 
          */
-        public Builder lambdaInvokeArn(@Nullable Output<String> lambdaInvokeArn) {
-            $.lambdaInvokeArn = lambdaInvokeArn;
-            return this;
-        }
-
-        /**
-         * @param lambdaInvokeArn The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder lambdaInvokeArn(String lambdaInvokeArn) {
-            return lambdaInvokeArn(Output.of(lambdaInvokeArn));
+        public Builder lambdaArn(String lambdaArn) {
+            return lambdaArn(Output.of(lambdaArn));
         }
 
         /**

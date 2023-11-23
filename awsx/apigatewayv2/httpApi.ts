@@ -46,19 +46,11 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
   const integrationsMap = new Map<string, aws.apigatewayv2.Integration>();
   for (const [integrationKey, integrationInput] of Object.entries(integrations ?? {})) {
     function errOnlyOneArg() {
-      return `Exactly one of lambda, lambdaInvokeArn or integrationUri must be specified for integration ${integrationKey}`;
+      return `Only one of lambdaArn or integrationUri must be specified for integration ${integrationKey}`;
     }
     /* tslint:disable-next-line */
-    let { integrationType, integrationUri, lambda, lambdaInvokeArn, ...integrationArgs } =
-      integrationInput;
-    if (lambda !== undefined) {
-      if (lambdaInvokeArn !== undefined) {
-        throw new Error(errOnlyOneArg());
-      }
-      integrationType = "AWS_PROXY";
-      lambdaInvokeArn = lambda.invokeArn;
-    }
-    if (lambdaInvokeArn !== undefined) {
+    let { integrationType, integrationUri, lambdaArn, ...integrationArgs } = integrationInput;
+    if (lambdaArn !== undefined) {
       if (integrationUri !== undefined) {
         throw new Error(errOnlyOneArg());
       }
@@ -68,9 +60,20 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
         );
       }
       integrationType = "AWS_PROXY";
+      const region = aws.getRegionOutput({}, { parent }).name;
+      const lambdaInvokeArn = pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations`;
       integrationUri = lambdaInvokeArn;
+      new aws.lambda.Permission(
+        `${name}-${integrationKey}-lambda-permission`,
+        {
+          function: lambdaArn,
+          principal: "apigateway.amazonaws.com",
+          sourceArn: pulumi.interpolate`${api.executionArn}/*/*`,
+          action: "lambda:InvokeFunction",
+        },
+        { parent },
+      );
     }
-    const integrationName = `${name}-${integrationKey}`;
 
     if (integrationType === undefined) {
       throw new Error(`integrationType must be specified for custom integration ${integrationKey}`);
@@ -78,7 +81,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
     integrationsMap.set(
       integrationKey,
       new aws.apigatewayv2.Integration(
-        integrationName,
+        `${name}-${integrationKey}`,
         {
           apiId: api.id,
           integrationType,

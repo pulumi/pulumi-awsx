@@ -8,7 +8,6 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
-	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lambda"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
@@ -848,10 +847,8 @@ type HttpIntegration struct {
 	// For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
 	//  Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
 	IntegrationUri *string `pulumi:"integrationUri"`
-	// A lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
-	Lambda *lambda.Function `pulumi:"lambda"`
-	// The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration. Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
-	LambdaInvokeArn *string `pulumi:"lambdaInvokeArn"`
+	// The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
+	LambdaArn *string `pulumi:"lambdaArn"`
 	// The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
 	PayloadFormatVersion *string `pulumi:"payloadFormatVersion"`
 	// For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
