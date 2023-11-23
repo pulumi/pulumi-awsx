@@ -48,6 +48,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
     function errOnlyOneArg() {
       return `Exactly one of lambda, lambdaInvokeArn or integrationUri must be specified for integration ${integrationKey}`;
     }
+    /* tslint:disable-next-line */
     let { integrationType, integrationUri, lambda, lambdaInvokeArn, ...integrationArgs } =
       integrationInput;
     if (lambda !== undefined) {
