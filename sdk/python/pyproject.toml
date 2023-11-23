@@ -1,7 +1,7 @@
 [project]
   name = "pulumi_awsx"
   description = "Pulumi Amazon Web Services (AWS) AWSX Components."
-  dependencies = ["parver>=0.2.1", "pulumi>=3.76.1,<4.0.0", "pulumi-aws>=6.0.4,<7.0.0", "pulumi-docker>=4.4.3,<5.0.0", "semver>=2.8.1"]
+  dependencies = ["parver>=0.2.1", "pulumi>=3.91.1,<4.0.0", "pulumi-aws>=6.0.4,<7.0.0", "pulumi-docker>=4.5.0,<5.0.0", "semver>=2.8.1"]
   keywords = ["pulumi", "aws", "awsx", "kind/component", "category/cloud"]
   readme = "README.md"
   requires-python = ">=3.7"
