@@ -47,6 +47,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
   const integrationsMap = new Map<string, aws.apigatewayv2.Integration>();
   const integrationResources: aws.apigatewayv2.Integration[] = [];
   function addIntegration(integrationKey: string, integrationInput: schema.HttpIntegrationInputs) {
+    /* tslint:disable-next-line */
     let { integrationType, integrationUri, lambdaArn, ...integrationArgs } = integrationInput;
     if (lambdaArn !== undefined) {
       if (integrationUri !== undefined) {
@@ -63,6 +64,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
       const region = aws.getRegionOutput({}, { parent }).name;
       const lambdaInvokeArn = pulumi.interpolate`arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations`;
       integrationUri = lambdaInvokeArn;
+      /* tslint:disable-next-line */
       new aws.lambda.Permission(
         `${name}-${integrationKey}-lambda-permission`,
         {
@@ -92,7 +94,6 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
     integrationResources.push(integrationResource);
   }
   for (const [integrationKey, integrationInput] of Object.entries(integrations ?? {})) {
-    /* tslint:disable-next-line */
     addIntegration(integrationKey, integrationInput);
   }
 
