@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAccTrailTs(t *testing.T) {
@@ -131,6 +132,26 @@ func TestVpcDefaultArgs(t *testing.T) {
 			RunUpdateTest:    false,
 			Dir:              filepath.Join(getCwd(t), "vpc", "nodejs", "default-args"),
 			RetryFailedSteps: true, // Internet Gateway occasionally fails to delete on first attempt.
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
+func TestVpcEipTagsPropagated(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest:    false,
+			Dir:              filepath.Join(getCwd(t), "vpc", "nodejs", "export-eip-tags"),
+			RetryFailedSteps: true, // Internet Gateway occasionally fails to delete on first attempt.
+			Config:           map[string]string{"vpcAdditionalTag": "additionalTagVal"},
+			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
+				// Verify that the EIP has the tags we specified.
+				eipTags := stackInfo.Outputs["eipTags"]
+				assert.Equal(t, eipTags, map[string]interface{}{
+					"Name":          "awsx-nodejs-export-eip-tags-1", // auto-applied
+					"additionalTag": "additionalTagVal",
+				})
+			},
 		})
 
 	integration.ProgramTest(t, &test)
