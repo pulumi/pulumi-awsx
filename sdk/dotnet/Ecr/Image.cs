@@ -91,18 +91,6 @@ namespace Pulumi.Awsx.Ecr
         [Input("dockerfile")]
         public Input<string>? Dockerfile { get; set; }
 
-        [Input("extraOptions")]
-        private InputList<string>? _extraOptions;
-
-        /// <summary>
-        /// An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`.
-        /// </summary>
-        public InputList<string> ExtraOptions
-        {
-            get => _extraOptions ?? (_extraOptions = new InputList<string>());
-            set => _extraOptions = value;
-        }
-
         /// <summary>
         /// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         /// </summary>

@@ -94,21 +94,6 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `[&#39;--network&#39;, &#39;host&#39;]`.
-     * 
-     */
-    @Import(name="extraOptions")
-    private @Nullable Output<List<String>> extraOptions;
-
-    /**
-     * @return An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `[&#39;--network&#39;, &#39;host&#39;]`.
-     * 
-     */
-    public Optional<Output<List<String>>> extraOptions() {
-        return Optional.ofNullable(this.extraOptions);
-    }
-
-    /**
      * The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
      * 
      */
@@ -161,7 +146,6 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         this.cacheFrom = $.cacheFrom;
         this.context = $.context;
         this.dockerfile = $.dockerfile;
-        this.extraOptions = $.extraOptions;
         this.platform = $.platform;
         this.repositoryUrl = $.repositoryUrl;
         this.target = $.target;
@@ -288,37 +272,6 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder dockerfile(String dockerfile) {
             return dockerfile(Output.of(dockerfile));
-        }
-
-        /**
-         * @param extraOptions An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `[&#39;--network&#39;, &#39;host&#39;]`.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder extraOptions(@Nullable Output<List<String>> extraOptions) {
-            $.extraOptions = extraOptions;
-            return this;
-        }
-
-        /**
-         * @param extraOptions An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `[&#39;--network&#39;, &#39;host&#39;]`.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder extraOptions(List<String> extraOptions) {
-            return extraOptions(Output.of(extraOptions));
-        }
-
-        /**
-         * @param extraOptions An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `[&#39;--network&#39;, &#39;host&#39;]`.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder extraOptions(String... extraOptions) {
-            return extraOptions(List.of(extraOptions));
         }
 
         /**

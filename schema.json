@@ -799,13 +799,6 @@
                     "type": "string",
                     "description": "dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context."
                 },
-                "extraOptions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`."
-                },
                 "platform": {
                     "type": "string",
                     "description": "The architecture of the platform you want to build this image for, e.g. `linux/arm64`."
@@ -2153,13 +2146,6 @@
                 "dockerfile": {
                     "type": "string",
                     "description": "dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context."
-                },
-                "extraOptions": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "An optional catch-all list of arguments to provide extra CLI options to the docker build command.  For example `['--network', 'host']`."
                 },
                 "platform": {
                     "type": "string",
