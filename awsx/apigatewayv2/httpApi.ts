@@ -111,6 +111,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
     );
     authorizersMap.set(authorizerKey, authorizerResource);
     authorizerResources.push(authorizerResource);
+    return authorizerResource;
   }
   for (const [authorizerKey, authorizerInput] of Object.entries(authorizers ?? {})) {
     addAuthorizer(authorizerKey, authorizerInput);
@@ -141,6 +142,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
       target = pulumi.interpolate`integrations/${integrationsMap.get(integrationKey)!.id}`;
     }
     let authorizerId = routeInput.authorizerId;
+    let authorizationType = routeInput.authorizationType;
     if (countDefined([authorizer, authorizerName, authorizerId]) > 1) {
       throw new Error(
         `Exactly one of authorizer, authorizerName, or authorizerId must be specified for route ${routeKey}`,
@@ -148,17 +150,20 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
     }
     if (authorizer !== undefined) {
       const authorizerKey = `${routeName}-authorizer`;
-      addAuthorizer(authorizerKey, authorizer);
-      authorizerId = authorizersMap.get(authorizerKey)!.id;
+      const authorizerResource = addAuthorizer(authorizerKey, authorizer);
+      authorizerId = authorizerResource.id;
+      authorizationType = authorizerResource.authorizerType.apply(mapRouteAuthorizerType);
     }
     if (authorizerName !== undefined) {
-      authorizerId = pulumi.output(authorizerName).apply((id) => {
+      const authorizer = pulumi.output(authorizerName).apply((id) => {
         const authorizer = authorizersMap.get(id);
         if (authorizer === undefined) {
           throw new Error(`Could not find authorizer with name ${id}`);
         }
-        return authorizer.id;
+        return authorizer;
       });
+      authorizerId = authorizer.id;
+      authorizationType = authorizer.authorizerType.apply(mapRouteAuthorizerType);
     }
     routeResources.push(
       new aws.apigatewayv2.Route(
@@ -169,6 +174,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
           ...routeArgs,
           target,
           authorizerId,
+          authorizationType,
         },
         {
           parent,
@@ -255,4 +261,15 @@ function defaultStages(): Record<string, schema.HttpStageInputs> {
   return {
     default: { autoDeploy: true },
   };
+}
+
+function mapRouteAuthorizerType(authorizerType: string) {
+  switch (authorizerType) {
+    case "JWT":
+      return "JWT";
+    case "REQUEST":
+      return "CUSTOM";
+    default:
+      throw new Error(`Unknown authorizer type ${authorizerType}`);
+  }
 }
