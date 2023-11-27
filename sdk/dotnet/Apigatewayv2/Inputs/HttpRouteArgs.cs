@@ -368,10 +368,16 @@ namespace Pulumi.Awsx.Apigatewayv2.Inputs
         public Input<string>? AuthorizerId { get; set; }
 
         /// <summary>
-        /// The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
+        /// Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
         /// </summary>
         [Input("integration")]
-        public Input<string>? Integration { get; set; }
+        public Inputs.HttpIntegrationArgs? Integration { get; set; }
+
+        /// <summary>
+        /// The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with "integrations/".
+        /// </summary>
+        [Input("integrationName")]
+        public Input<string>? IntegrationName { get; set; }
 
         /// <summary>
         /// Operation name for the route. Must be between 1 and 64 characters in length.
@@ -381,6 +387,7 @@ namespace Pulumi.Awsx.Apigatewayv2.Inputs
 
         /// <summary>
         /// Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+        ///  Only one of `integration`, `integrationName` or `target` can be specified.
         /// </summary>
         [Input("target")]
         public Input<string>? Target { get; set; }

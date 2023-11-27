@@ -1889,15 +1889,20 @@ export namespace apigatewayv2 {
          */
         authorizerId?: pulumi.Input<string>;
         /**
-         * The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
+         * Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
          */
-        integration?: pulumi.Input<string>;
+        integration?: inputs.apigatewayv2.HttpIntegrationArgs;
+        /**
+         * The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with "integrations/".
+         */
+        integrationName?: pulumi.Input<string>;
         /**
          * Operation name for the route. Must be between 1 and 64 characters in length.
          */
         operationName?: pulumi.Input<string>;
         /**
          * Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+         *  Only one of `integration`, `integrationName` or `target` can be specified.
          */
         target?: pulumi.Input<string>;
     }

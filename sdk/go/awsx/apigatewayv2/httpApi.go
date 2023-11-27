@@ -76,7 +76,7 @@ type httpApiArgs struct {
 	DomainMappings map[string]DomainMapping `pulumi:"domainMappings"`
 	// Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.
 	FailOnWarnings *bool `pulumi:"failOnWarnings"`
-	// The integrations for the HTTP API routes.
+	// A map of integrations keyed by name for the HTTP API routes.
 	Integrations map[string]HttpIntegration `pulumi:"integrations"`
 	// Name of the API. Must be less than or equal to 128 characters in length.
 	Name *string `pulumi:"name"`
@@ -115,7 +115,7 @@ type HttpApiArgs struct {
 	DomainMappings map[string]DomainMappingArgs
 	// Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.
 	FailOnWarnings pulumi.BoolPtrInput
-	// The integrations for the HTTP API routes.
+	// A map of integrations keyed by name for the HTTP API routes.
 	Integrations map[string]HttpIntegrationArgs
 	// Name of the API. Must be less than or equal to 128 characters in length.
 	Name pulumi.StringPtrInput

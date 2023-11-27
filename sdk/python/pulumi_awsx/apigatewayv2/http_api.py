@@ -46,7 +46,7 @@ class HttpApiArgs:
                To require that clients use a custom domain name to invoke the API, disable the default endpoint.
         :param Mapping[str, 'DomainMappingArgs'] domain_mappings: The domain names for the HTTP API.
         :param pulumi.Input[bool] fail_on_warnings: Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.
-        :param Mapping[str, 'HttpIntegrationArgs'] integrations: The integrations for the HTTP API routes.
+        :param Mapping[str, 'HttpIntegrationArgs'] integrations: A map of integrations keyed by name for the HTTP API routes.
         :param pulumi.Input[str] name: Name of the API. Must be less than or equal to 128 characters in length.
         :param pulumi.Input[str] route_selection_expression: The [route selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-route-selection-expressions) for the API.
                Defaults to `$request.method $request.path`.
@@ -200,7 +200,7 @@ class HttpApiArgs:
     @pulumi.getter
     def integrations(self) -> Optional[Mapping[str, 'HttpIntegrationArgs']]:
         """
-        The integrations for the HTTP API routes.
+        A map of integrations keyed by name for the HTTP API routes.
         """
         return pulumi.get(self, "integrations")
 
@@ -308,7 +308,7 @@ class HttpApi(pulumi.ComponentResource):
                To require that clients use a custom domain name to invoke the API, disable the default endpoint.
         :param Mapping[str, pulumi.InputType['DomainMappingArgs']] domain_mappings: The domain names for the HTTP API.
         :param pulumi.Input[bool] fail_on_warnings: Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.
-        :param Mapping[str, pulumi.InputType['HttpIntegrationArgs']] integrations: The integrations for the HTTP API routes.
+        :param Mapping[str, pulumi.InputType['HttpIntegrationArgs']] integrations: A map of integrations keyed by name for the HTTP API routes.
         :param pulumi.Input[str] name: Name of the API. Must be less than or equal to 128 characters in length.
         :param pulumi.Input[str] route_selection_expression: The [route selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-route-selection-expressions) for the API.
                Defaults to `$request.method $request.path`.

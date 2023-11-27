@@ -159,7 +159,7 @@ namespace Pulumi.Awsx.Apigatewayv2
         private Dictionary<string, Inputs.HttpIntegrationArgs>? _integrations;
 
         /// <summary>
-        /// The integrations for the HTTP API routes.
+        /// A map of integrations keyed by name for the HTTP API routes.
         /// </summary>
         public Dictionary<string, Inputs.HttpIntegrationArgs> Integrations
         {

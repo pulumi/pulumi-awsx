@@ -1952,7 +1952,8 @@ class HttpRouteArgs:
                  authorization_type: Optional[pulumi.Input[str]] = None,
                  authorizer: Optional[pulumi.Input[str]] = None,
                  authorizer_id: Optional[pulumi.Input[str]] = None,
-                 integration: Optional[pulumi.Input[str]] = None,
+                 integration: Optional['HttpIntegrationArgs'] = None,
+                 integration_name: Optional[pulumi.Input[str]] = None,
                  operation_name: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None):
         """
@@ -2280,9 +2281,11 @@ class HttpRouteArgs:
                Defaults to `NONE`.
         :param pulumi.Input[str] authorizer: The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
         :param pulumi.Input[str] authorizer_id: Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
-        :param pulumi.Input[str] integration: The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
+        :param 'HttpIntegrationArgs' integration: Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
+        :param pulumi.Input[str] integration_name: The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with "integrations/".
         :param pulumi.Input[str] operation_name: Operation name for the route. Must be between 1 and 64 characters in length.
         :param pulumi.Input[str] target: Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+                Only one of `integration`, `integrationName` or `target` can be specified.
         """
         if api_key_required is not None:
             pulumi.set(__self__, "api_key_required", api_key_required)
@@ -2296,6 +2299,8 @@ class HttpRouteArgs:
             pulumi.set(__self__, "authorizer_id", authorizer_id)
         if integration is not None:
             pulumi.set(__self__, "integration", integration)
+        if integration_name is not None:
+            pulumi.set(__self__, "integration_name", integration_name)
         if operation_name is not None:
             pulumi.set(__self__, "operation_name", operation_name)
         if target is not None:
@@ -2366,15 +2371,27 @@ class HttpRouteArgs:
 
     @property
     @pulumi.getter
-    def integration(self) -> Optional[pulumi.Input[str]]:
+    def integration(self) -> Optional['HttpIntegrationArgs']:
         """
-        The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
+        Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
         """
         return pulumi.get(self, "integration")
 
     @integration.setter
-    def integration(self, value: Optional[pulumi.Input[str]]):
+    def integration(self, value: Optional['HttpIntegrationArgs']):
         pulumi.set(self, "integration", value)
+
+    @property
+    @pulumi.getter(name="integrationName")
+    def integration_name(self) -> Optional[pulumi.Input[str]]:
+        """
+        The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with "integrations/".
+        """
+        return pulumi.get(self, "integration_name")
+
+    @integration_name.setter
+    def integration_name(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "integration_name", value)
 
     @property
     @pulumi.getter(name="operationName")
@@ -2393,6 +2410,7 @@ class HttpRouteArgs:
     def target(self) -> Optional[pulumi.Input[str]]:
         """
         Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+         Only one of `integration`, `integrationName` or `target` can be specified.
         """
         return pulumi.get(self, "target")
 

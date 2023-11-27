@@ -44,15 +44,14 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
   );
 
   const integrationsMap = new Map<string, aws.apigatewayv2.Integration>();
-  for (const [integrationKey, integrationInput] of Object.entries(integrations ?? {})) {
-    function errOnlyOneArg() {
-      return `Only one of lambdaArn or integrationUri must be specified for integration ${integrationKey}`;
-    }
-    /* tslint:disable-next-line */
+  const integrationResources: aws.apigatewayv2.Integration[] = [];
+  function addIntegration(integrationKey: string, integrationInput: schema.HttpIntegrationInputs) {
     let { integrationType, integrationUri, lambdaArn, ...integrationArgs } = integrationInput;
     if (lambdaArn !== undefined) {
       if (integrationUri !== undefined) {
-        throw new Error(errOnlyOneArg());
+        throw new Error(
+          `Only one of lambdaArn or integrationUri must be specified for integration ${integrationKey}`,
+        );
       }
       if (integrationType !== undefined && integrationType !== "AWS_PROXY") {
         throw new Error(
@@ -78,21 +77,23 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
     if (integrationType === undefined) {
       throw new Error(`integrationType must be specified for custom integration ${integrationKey}`);
     }
-    integrationsMap.set(
-      integrationKey,
-      new aws.apigatewayv2.Integration(
-        `${name}-${integrationKey}`,
-        {
-          apiId: api.id,
-          integrationType,
-          integrationUri,
-          ...integrationArgs,
-        },
-        { parent },
-      ),
+    const integrationResource = new aws.apigatewayv2.Integration(
+      `${name}-${integrationKey}`,
+      {
+        apiId: api.id,
+        integrationType,
+        integrationUri,
+        ...integrationArgs,
+      },
+      { parent },
     );
+    integrationsMap.set(integrationKey, integrationResource);
+    integrationResources.push(integrationResource);
   }
-  const integrationResources = Array.from(integrationsMap.values());
+  for (const [integrationKey, integrationInput] of Object.entries(integrations ?? {})) {
+    /* tslint:disable-next-line */
+    addIntegration(integrationKey, integrationInput);
+  }
 
   const authorizersMap = new Map<string, aws.apigatewayv2.Authorizer>();
   for (const [authorizerKey, authorizerInput] of Object.entries(authorizers ?? {})) {
@@ -114,16 +115,21 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
   const routeResources: aws.apigatewayv2.Route[] = [];
   for (const [routeKey, routeInput] of Object.entries(routes)) {
     const routeName = routeKey.replace(/\W+/g, "-");
-    const { integration, authorizer, ...routeArgs } = routeInput;
+    const { integration, integrationName, authorizer, ...routeArgs } = routeInput;
     let target = routeInput.target;
-    if (integration !== undefined) {
-      target = pulumi.output(integration).apply((id) => {
+    if (integrationName !== undefined) {
+      target = pulumi.output(integrationName).apply((id) => {
         const integration = integrationsMap.get(id);
         if (integration === undefined) {
           throw new Error(`Could not find integration with key ${id}`);
         }
         return pulumi.interpolate`integrations/${integration.id}`;
       });
+    }
+    if (integration !== undefined) {
+      const integrationKey = `${routeName}-integration`;
+      addIntegration(integrationKey, integration);
+      target = pulumi.interpolate`integrations/${integrationsMap.get(integrationKey)!.id}`;
     }
     let authorizerId = routeInput.authorizerId;
     if (authorizer !== undefined) {
@@ -147,7 +153,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
         },
         {
           parent,
-          dependsOn: integrationResources,
+          dependsOn: [...integrationResources, ...authorizerResources],
         },
       ),
     );

@@ -3,6 +3,7 @@
 
 package com.pulumi.awsx.apigatewayv2.inputs;
 
+import com.pulumi.awsx.apigatewayv2.inputs.HttpIntegrationArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.Boolean;
@@ -198,18 +199,33 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
+     * Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
      * 
      */
     @Import(name="integration")
-    private @Nullable Output<String> integration;
+    private @Nullable HttpIntegrationArgs integration;
 
     /**
-     * @return The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
+     * @return Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
      * 
      */
-    public Optional<Output<String>> integration() {
+    public Optional<HttpIntegrationArgs> integration() {
         return Optional.ofNullable(this.integration);
+    }
+
+    /**
+     * The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with &#34;integrations/&#34;.
+     * 
+     */
+    @Import(name="integrationName")
+    private @Nullable Output<String> integrationName;
+
+    /**
+     * @return The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with &#34;integrations/&#34;.
+     * 
+     */
+    public Optional<Output<String>> integrationName() {
+        return Optional.ofNullable(this.integrationName);
     }
 
     /**
@@ -229,6 +245,7 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+     *  Only one of `integration`, `integrationName` or `target` can be specified.
      * 
      */
     @Import(name="target")
@@ -236,6 +253,7 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
 
     /**
      * @return Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+     *  Only one of `integration`, `integrationName` or `target` can be specified.
      * 
      */
     public Optional<Output<String>> target() {
@@ -251,6 +269,7 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
         this.authorizer = $.authorizer;
         this.authorizerId = $.authorizerId;
         this.integration = $.integration;
+        this.integrationName = $.integrationName;
         this.operationName = $.operationName;
         this.target = $.target;
     }
@@ -395,24 +414,35 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param integration The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
+         * @param integration Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
          * 
          * @return builder
          * 
          */
-        public Builder integration(@Nullable Output<String> integration) {
+        public Builder integration(@Nullable HttpIntegrationArgs integration) {
             $.integration = integration;
             return this;
         }
 
         /**
-         * @param integration The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
+         * @param integrationName The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with &#34;integrations/&#34;.
          * 
          * @return builder
          * 
          */
-        public Builder integration(String integration) {
-            return integration(Output.of(integration));
+        public Builder integrationName(@Nullable Output<String> integrationName) {
+            $.integrationName = integrationName;
+            return this;
+        }
+
+        /**
+         * @param integrationName The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with &#34;integrations/&#34;.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder integrationName(String integrationName) {
+            return integrationName(Output.of(integrationName));
         }
 
         /**
@@ -438,6 +468,7 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param target Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+         *  Only one of `integration`, `integrationName` or `target` can be specified.
          * 
          * @return builder
          * 
@@ -449,6 +480,7 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
 
         /**
          * @param target Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+         *  Only one of `integration`, `integrationName` or `target` can be specified.
          * 
          * @return builder
          * 

@@ -40,7 +40,7 @@ func httpApi(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			TypeSpec:    plainStringMapOfLocalRefs("apigatewayv2", "HttpRoute"),
 		},
 		"integrations": {
-			Description: "The integrations for the HTTP API routes.",
+			Description: "A map of integrations keyed by name for the HTTP API routes.",
 			TypeSpec:    plainStringMapOfLocalRefs("apigatewayv2", "HttpIntegration"),
 		},
 		"authorizers": {
@@ -126,7 +126,14 @@ func httpRoute(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	delete(properties, "routeResponseSelectionExpression")
 	delete(properties, "modelSelectionExpression")
 	properties["integration"] = schema.PropertySpec{
-		Description: "The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.",
+		Description: "Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.",
+		TypeSpec: schema.TypeSpec{
+			Ref:   localRef("apigatewayv2", "HttpIntegration"),
+			Plain: true,
+		},
+	}
+	properties["integrationName"] = schema.PropertySpec{
+		Description: "The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with \"integrations/\".",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
@@ -137,6 +144,9 @@ func httpRoute(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 			Type: "string",
 		},
 	}
+	target := properties["target"]
+	target.Description += " Only one of `integration`, `integrationName` or `target` can be specified."
+	properties["target"] = target
 	return schema.ComplexTypeSpec{
 		ObjectTypeSpec: schema.ObjectTypeSpec{
 			Type:        "object",

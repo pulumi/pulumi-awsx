@@ -470,7 +470,8 @@ export interface HttpRouteInputs {
     readonly authorizationType?: pulumi.Input<string>;
     readonly authorizer?: pulumi.Input<string>;
     readonly authorizerId?: pulumi.Input<string>;
-    readonly integration?: pulumi.Input<string>;
+    readonly integration?: HttpIntegrationInputs;
+    readonly integrationName?: pulumi.Input<string>;
     readonly operationName?: pulumi.Input<string>;
     readonly target?: pulumi.Input<string>;
 }
@@ -480,7 +481,8 @@ export interface HttpRouteOutputs {
     readonly authorizationType?: pulumi.Output<string>;
     readonly authorizer?: pulumi.Output<string>;
     readonly authorizerId?: pulumi.Output<string>;
-    readonly integration?: pulumi.Output<string>;
+    readonly integration?: HttpIntegrationOutputs;
+    readonly integrationName?: pulumi.Output<string>;
     readonly operationName?: pulumi.Output<string>;
     readonly target?: pulumi.Output<string>;
 }

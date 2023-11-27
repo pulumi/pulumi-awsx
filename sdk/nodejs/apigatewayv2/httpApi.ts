@@ -149,7 +149,7 @@ export interface HttpApiArgs {
      */
     failOnWarnings?: pulumi.Input<boolean>;
     /**
-     * The integrations for the HTTP API routes.
+     * A map of integrations keyed by name for the HTTP API routes.
      */
     integrations?: {[key: string]: inputs.apigatewayv2.HttpIntegrationArgs};
     /**

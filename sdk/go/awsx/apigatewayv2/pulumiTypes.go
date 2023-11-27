@@ -866,6 +866,743 @@ type HttpIntegration struct {
 	TlsConfig *apigatewayv2.IntegrationTlsConfig `pulumi:"tlsConfig"`
 }
 
+// HttpIntegrationInput is an input type that accepts HttpIntegrationArgs and HttpIntegrationOutput values.
+// You can construct a concrete instance of `HttpIntegrationInput` via:
+//
+//	HttpIntegrationArgs{...}
+type HttpIntegrationInput interface {
+	pulumi.Input
+
+	ToHttpIntegrationOutput() HttpIntegrationOutput
+	ToHttpIntegrationOutputWithContext(context.Context) HttpIntegrationOutput
+}
+
+// Manages an Amazon API Gateway Version 2 integration.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+//				ApiId:           pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				IntegrationType: pulumi.String("MOCK"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Lambda Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lambda"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleFunction, err := lambda.NewFunction(ctx, "exampleFunction", &lambda.FunctionArgs{
+//				Code:    pulumi.NewFileArchive("example.zip"),
+//				Role:    pulumi.Any(aws_iam_role.Example.Arn),
+//				Handler: pulumi.String("index.handler"),
+//				Runtime: pulumi.String("nodejs16.x"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = apigatewayv2.NewIntegration(ctx, "exampleIntegration", &apigatewayv2.IntegrationArgs{
+//				ApiId:                   pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				IntegrationType:         pulumi.String("AWS_PROXY"),
+//				ConnectionType:          pulumi.String("INTERNET"),
+//				ContentHandlingStrategy: pulumi.String("CONVERT_TO_TEXT"),
+//				Description:             pulumi.String("Lambda example"),
+//				IntegrationMethod:       pulumi.String("POST"),
+//				IntegrationUri:          exampleFunction.InvokeArn,
+//				PassthroughBehavior:     pulumi.String("WHEN_NO_MATCH"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### AWS Service Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+//				ApiId:              pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				CredentialsArn:     pulumi.Any(aws_iam_role.Example.Arn),
+//				Description:        pulumi.String("SQS example"),
+//				IntegrationType:    pulumi.String("AWS_PROXY"),
+//				IntegrationSubtype: pulumi.String("SQS-SendMessage"),
+//				RequestParameters: pulumi.StringMap{
+//					"QueueUrl":    pulumi.String("$request.header.queueUrl"),
+//					"MessageBody": pulumi.String("$request.body.message"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Private Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+//				ApiId:             pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				CredentialsArn:    pulumi.Any(aws_iam_role.Example.Arn),
+//				Description:       pulumi.String("Example with a load balancer"),
+//				IntegrationType:   pulumi.String("HTTP_PROXY"),
+//				IntegrationUri:    pulumi.Any(aws_lb_listener.Example.Arn),
+//				IntegrationMethod: pulumi.String("ANY"),
+//				ConnectionType:    pulumi.String("VPC_LINK"),
+//				ConnectionId:      pulumi.Any(aws_apigatewayv2_vpc_link.Example.Id),
+//				TlsConfig: &apigatewayv2.IntegrationTlsConfigArgs{
+//					ServerNameToVerify: pulumi.String("example.com"),
+//				},
+//				RequestParameters: pulumi.StringMap{
+//					"append:header.authforintegration": pulumi.String("$context.authorizer.authorizerResponse"),
+//					"overwrite:path":                   pulumi.String("staticValueForIntegration"),
+//				},
+//				ResponseParameters: apigatewayv2.IntegrationResponseParameterArray{
+//					&apigatewayv2.IntegrationResponseParameterArgs{
+//						StatusCode: pulumi.String("403"),
+//						Mappings: pulumi.StringMap{
+//							"append:header.auth": pulumi.String("$context.authorizer.authorizerResponse"),
+//						},
+//					},
+//					&apigatewayv2.IntegrationResponseParameterArgs{
+//						StatusCode: pulumi.String("200"),
+//						Mappings: pulumi.StringMap{
+//							"overwrite:statuscode": pulumi.String("204"),
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_integration` using the API identifier and integration identifier. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/integration:Integration example aabbccddee/1122334
+//
+// ```
+//
+//	-> __Note:__ The API Gateway managed integration created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+type HttpIntegrationArgs struct {
+	// ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+	ConnectionId pulumi.StringPtrInput `pulumi:"connectionId"`
+	// Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+	ConnectionType pulumi.StringPtrInput `pulumi:"connectionType"`
+	// Credentials required for the integration, if any.
+	CredentialsArn pulumi.StringPtrInput `pulumi:"credentialsArn"`
+	// Description of the integration.
+	Description pulumi.StringPtrInput `pulumi:"description"`
+	// Integration's HTTP method. Must be specified if `integration_type` is not `MOCK`.
+	IntegrationMethod pulumi.StringPtrInput `pulumi:"integrationMethod"`
+	// AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+	IntegrationSubtype pulumi.StringPtrInput `pulumi:"integrationSubtype"`
+	// Integration type of an integration.
+	// Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+	IntegrationType pulumi.StringPtrInput `pulumi:"integrationType"`
+	// URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+	// For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+	//  Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+	IntegrationUri pulumi.StringPtrInput `pulumi:"integrationUri"`
+	// The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
+	LambdaArn pulumi.StringPtrInput `pulumi:"lambdaArn"`
+	// The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+	PayloadFormatVersion pulumi.StringPtrInput `pulumi:"payloadFormatVersion"`
+	// For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+	// For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+	// For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+	// See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+	RequestParameters pulumi.StringMapInput `pulumi:"requestParameters"`
+	// Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+	ResponseParameters apigatewayv2.IntegrationResponseParameterArrayInput `pulumi:"responseParameters"`
+	// Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+	// The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+	// this provider will only perform drift detection of its value when present in a configuration.
+	TimeoutMilliseconds pulumi.IntPtrInput `pulumi:"timeoutMilliseconds"`
+	// TLS configuration for a private integration. Supported only for HTTP APIs.
+	TlsConfig apigatewayv2.IntegrationTlsConfigPtrInput `pulumi:"tlsConfig"`
+}
+
+func (HttpIntegrationArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*HttpIntegration)(nil)).Elem()
+}
+
+func (i HttpIntegrationArgs) ToHttpIntegrationOutput() HttpIntegrationOutput {
+	return i.ToHttpIntegrationOutputWithContext(context.Background())
+}
+
+func (i HttpIntegrationArgs) ToHttpIntegrationOutputWithContext(ctx context.Context) HttpIntegrationOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(HttpIntegrationOutput)
+}
+
+func (i HttpIntegrationArgs) ToOutput(ctx context.Context) pulumix.Output[HttpIntegration] {
+	return pulumix.Output[HttpIntegration]{
+		OutputState: i.ToHttpIntegrationOutputWithContext(ctx).OutputState,
+	}
+}
+
+func (i HttpIntegrationArgs) ToHttpIntegrationPtrOutput() HttpIntegrationPtrOutput {
+	return i.ToHttpIntegrationPtrOutputWithContext(context.Background())
+}
+
+func (i HttpIntegrationArgs) ToHttpIntegrationPtrOutputWithContext(ctx context.Context) HttpIntegrationPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(HttpIntegrationOutput).ToHttpIntegrationPtrOutputWithContext(ctx)
+}
+
+// HttpIntegrationPtrInput is an input type that accepts HttpIntegrationArgs, HttpIntegrationPtr and HttpIntegrationPtrOutput values.
+// You can construct a concrete instance of `HttpIntegrationPtrInput` via:
+//
+//	        HttpIntegrationArgs{...}
+//
+//	or:
+//
+//	        nil
+type HttpIntegrationPtrInput interface {
+	pulumi.Input
+
+	ToHttpIntegrationPtrOutput() HttpIntegrationPtrOutput
+	ToHttpIntegrationPtrOutputWithContext(context.Context) HttpIntegrationPtrOutput
+}
+
+type httpIntegrationPtrType HttpIntegrationArgs
+
+func HttpIntegrationPtr(v *HttpIntegrationArgs) HttpIntegrationPtrInput {
+	return (*httpIntegrationPtrType)(v)
+}
+
+func (*httpIntegrationPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**HttpIntegration)(nil)).Elem()
+}
+
+func (i *httpIntegrationPtrType) ToHttpIntegrationPtrOutput() HttpIntegrationPtrOutput {
+	return i.ToHttpIntegrationPtrOutputWithContext(context.Background())
+}
+
+func (i *httpIntegrationPtrType) ToHttpIntegrationPtrOutputWithContext(ctx context.Context) HttpIntegrationPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(HttpIntegrationPtrOutput)
+}
+
+func (i *httpIntegrationPtrType) ToOutput(ctx context.Context) pulumix.Output[*HttpIntegration] {
+	return pulumix.Output[*HttpIntegration]{
+		OutputState: i.ToHttpIntegrationPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
+// Manages an Amazon API Gateway Version 2 integration.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+//				ApiId:           pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				IntegrationType: pulumi.String("MOCK"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Lambda Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lambda"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleFunction, err := lambda.NewFunction(ctx, "exampleFunction", &lambda.FunctionArgs{
+//				Code:    pulumi.NewFileArchive("example.zip"),
+//				Role:    pulumi.Any(aws_iam_role.Example.Arn),
+//				Handler: pulumi.String("index.handler"),
+//				Runtime: pulumi.String("nodejs16.x"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = apigatewayv2.NewIntegration(ctx, "exampleIntegration", &apigatewayv2.IntegrationArgs{
+//				ApiId:                   pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				IntegrationType:         pulumi.String("AWS_PROXY"),
+//				ConnectionType:          pulumi.String("INTERNET"),
+//				ContentHandlingStrategy: pulumi.String("CONVERT_TO_TEXT"),
+//				Description:             pulumi.String("Lambda example"),
+//				IntegrationMethod:       pulumi.String("POST"),
+//				IntegrationUri:          exampleFunction.InvokeArn,
+//				PassthroughBehavior:     pulumi.String("WHEN_NO_MATCH"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### AWS Service Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+//				ApiId:              pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				CredentialsArn:     pulumi.Any(aws_iam_role.Example.Arn),
+//				Description:        pulumi.String("SQS example"),
+//				IntegrationType:    pulumi.String("AWS_PROXY"),
+//				IntegrationSubtype: pulumi.String("SQS-SendMessage"),
+//				RequestParameters: pulumi.StringMap{
+//					"QueueUrl":    pulumi.String("$request.header.queueUrl"),
+//					"MessageBody": pulumi.String("$request.body.message"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Private Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewIntegration(ctx, "example", &apigatewayv2.IntegrationArgs{
+//				ApiId:             pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				CredentialsArn:    pulumi.Any(aws_iam_role.Example.Arn),
+//				Description:       pulumi.String("Example with a load balancer"),
+//				IntegrationType:   pulumi.String("HTTP_PROXY"),
+//				IntegrationUri:    pulumi.Any(aws_lb_listener.Example.Arn),
+//				IntegrationMethod: pulumi.String("ANY"),
+//				ConnectionType:    pulumi.String("VPC_LINK"),
+//				ConnectionId:      pulumi.Any(aws_apigatewayv2_vpc_link.Example.Id),
+//				TlsConfig: &apigatewayv2.IntegrationTlsConfigArgs{
+//					ServerNameToVerify: pulumi.String("example.com"),
+//				},
+//				RequestParameters: pulumi.StringMap{
+//					"append:header.authforintegration": pulumi.String("$context.authorizer.authorizerResponse"),
+//					"overwrite:path":                   pulumi.String("staticValueForIntegration"),
+//				},
+//				ResponseParameters: apigatewayv2.IntegrationResponseParameterArray{
+//					&apigatewayv2.IntegrationResponseParameterArgs{
+//						StatusCode: pulumi.String("403"),
+//						Mappings: pulumi.StringMap{
+//							"append:header.auth": pulumi.String("$context.authorizer.authorizerResponse"),
+//						},
+//					},
+//					&apigatewayv2.IntegrationResponseParameterArgs{
+//						StatusCode: pulumi.String("200"),
+//						Mappings: pulumi.StringMap{
+//							"overwrite:statuscode": pulumi.String("204"),
+//						},
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_integration` using the API identifier and integration identifier. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/integration:Integration example aabbccddee/1122334
+//
+// ```
+//
+//	-> __Note:__ The API Gateway managed integration created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+type HttpIntegrationOutput struct{ *pulumi.OutputState }
+
+func (HttpIntegrationOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*HttpIntegration)(nil)).Elem()
+}
+
+func (o HttpIntegrationOutput) ToHttpIntegrationOutput() HttpIntegrationOutput {
+	return o
+}
+
+func (o HttpIntegrationOutput) ToHttpIntegrationOutputWithContext(ctx context.Context) HttpIntegrationOutput {
+	return o
+}
+
+func (o HttpIntegrationOutput) ToHttpIntegrationPtrOutput() HttpIntegrationPtrOutput {
+	return o.ToHttpIntegrationPtrOutputWithContext(context.Background())
+}
+
+func (o HttpIntegrationOutput) ToHttpIntegrationPtrOutputWithContext(ctx context.Context) HttpIntegrationPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v HttpIntegration) *HttpIntegration {
+		return &v
+	}).(HttpIntegrationPtrOutput)
+}
+
+func (o HttpIntegrationOutput) ToOutput(ctx context.Context) pulumix.Output[HttpIntegration] {
+	return pulumix.Output[HttpIntegration]{
+		OutputState: o.OutputState,
+	}
+}
+
+// ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+func (o HttpIntegrationOutput) ConnectionId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.ConnectionId }).(pulumi.StringPtrOutput)
+}
+
+// Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+func (o HttpIntegrationOutput) ConnectionType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.ConnectionType }).(pulumi.StringPtrOutput)
+}
+
+// Credentials required for the integration, if any.
+func (o HttpIntegrationOutput) CredentialsArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.CredentialsArn }).(pulumi.StringPtrOutput)
+}
+
+// Description of the integration.
+func (o HttpIntegrationOutput) Description() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.Description }).(pulumi.StringPtrOutput)
+}
+
+// Integration's HTTP method. Must be specified if `integration_type` is not `MOCK`.
+func (o HttpIntegrationOutput) IntegrationMethod() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.IntegrationMethod }).(pulumi.StringPtrOutput)
+}
+
+// AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+func (o HttpIntegrationOutput) IntegrationSubtype() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.IntegrationSubtype }).(pulumi.StringPtrOutput)
+}
+
+// Integration type of an integration.
+// Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+func (o HttpIntegrationOutput) IntegrationType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.IntegrationType }).(pulumi.StringPtrOutput)
+}
+
+// URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+// For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+//
+//	Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+func (o HttpIntegrationOutput) IntegrationUri() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.IntegrationUri }).(pulumi.StringPtrOutput)
+}
+
+// The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
+func (o HttpIntegrationOutput) LambdaArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.LambdaArn }).(pulumi.StringPtrOutput)
+}
+
+// The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+func (o HttpIntegrationOutput) PayloadFormatVersion() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *string { return v.PayloadFormatVersion }).(pulumi.StringPtrOutput)
+}
+
+// For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+// For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+// For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+// See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+func (o HttpIntegrationOutput) RequestParameters() pulumi.StringMapOutput {
+	return o.ApplyT(func(v HttpIntegration) map[string]string { return v.RequestParameters }).(pulumi.StringMapOutput)
+}
+
+// Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+func (o HttpIntegrationOutput) ResponseParameters() apigatewayv2.IntegrationResponseParameterArrayOutput {
+	return o.ApplyT(func(v HttpIntegration) []apigatewayv2.IntegrationResponseParameter { return v.ResponseParameters }).(apigatewayv2.IntegrationResponseParameterArrayOutput)
+}
+
+// Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+// The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+// this provider will only perform drift detection of its value when present in a configuration.
+func (o HttpIntegrationOutput) TimeoutMilliseconds() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *int { return v.TimeoutMilliseconds }).(pulumi.IntPtrOutput)
+}
+
+// TLS configuration for a private integration. Supported only for HTTP APIs.
+func (o HttpIntegrationOutput) TlsConfig() apigatewayv2.IntegrationTlsConfigPtrOutput {
+	return o.ApplyT(func(v HttpIntegration) *apigatewayv2.IntegrationTlsConfig { return v.TlsConfig }).(apigatewayv2.IntegrationTlsConfigPtrOutput)
+}
+
+type HttpIntegrationPtrOutput struct{ *pulumi.OutputState }
+
+func (HttpIntegrationPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**HttpIntegration)(nil)).Elem()
+}
+
+func (o HttpIntegrationPtrOutput) ToHttpIntegrationPtrOutput() HttpIntegrationPtrOutput {
+	return o
+}
+
+func (o HttpIntegrationPtrOutput) ToHttpIntegrationPtrOutputWithContext(ctx context.Context) HttpIntegrationPtrOutput {
+	return o
+}
+
+func (o HttpIntegrationPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*HttpIntegration] {
+	return pulumix.Output[*HttpIntegration]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o HttpIntegrationPtrOutput) Elem() HttpIntegrationOutput {
+	return o.ApplyT(func(v *HttpIntegration) HttpIntegration {
+		if v != nil {
+			return *v
+		}
+		var ret HttpIntegration
+		return ret
+	}).(HttpIntegrationOutput)
+}
+
+// ID of the VPC link for a private integration. Supported only for HTTP APIs. Must be between 1 and 1024 characters in length.
+func (o HttpIntegrationPtrOutput) ConnectionId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.ConnectionId
+	}).(pulumi.StringPtrOutput)
+}
+
+// Type of the network connection to the integration endpoint. Valid values: `INTERNET`, `VPC_LINK`. Default is `INTERNET`.
+func (o HttpIntegrationPtrOutput) ConnectionType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.ConnectionType
+	}).(pulumi.StringPtrOutput)
+}
+
+// Credentials required for the integration, if any.
+func (o HttpIntegrationPtrOutput) CredentialsArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.CredentialsArn
+	}).(pulumi.StringPtrOutput)
+}
+
+// Description of the integration.
+func (o HttpIntegrationPtrOutput) Description() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Description
+	}).(pulumi.StringPtrOutput)
+}
+
+// Integration's HTTP method. Must be specified if `integration_type` is not `MOCK`.
+func (o HttpIntegrationPtrOutput) IntegrationMethod() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.IntegrationMethod
+	}).(pulumi.StringPtrOutput)
+}
+
+// AWS service action to invoke. Supported only for HTTP APIs when `integration_type` is `AWS_PROXY`. See the [AWS service integration reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html) documentation for supported values. Must be between 1 and 128 characters in length.
+func (o HttpIntegrationPtrOutput) IntegrationSubtype() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.IntegrationSubtype
+	}).(pulumi.StringPtrOutput)
+}
+
+// Integration type of an integration.
+// Valid values: `AWS` (supported only for WebSocket APIs), `AWS_PROXY`, `HTTP` (supported only for WebSocket APIs), `HTTP_PROXY`, `MOCK` (supported only for WebSocket APIs). For an HTTP API private integration, use `HTTP_PROXY`.
+func (o HttpIntegrationPtrOutput) IntegrationType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.IntegrationType
+	}).(pulumi.StringPtrOutput)
+}
+
+// URI of the Lambda function for a Lambda proxy integration, when `integration_type` is `AWS_PROXY`.
+// For an `HTTP` integration, specify a fully-qualified URL. For an HTTP API private integration, specify the ARN of an Application Load Balancer listener, Network Load Balancer listener, or AWS Cloud Map service.
+//
+//	Exactly one of `lambda`, `lambdaInvokeArn` or `integrationUri` must be specified.
+func (o HttpIntegrationPtrOutput) IntegrationUri() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.IntegrationUri
+	}).(pulumi.StringPtrOutput)
+}
+
+// The ARN of a lambda function to invoke for the integration. This is used to automatically calculate the `integrationType` and `integrationUri` property of the integration and give permission for the API Gateway to execute the lambda. Exactly one of `lambdaArn` or `integrationUri` must be specified.
+func (o HttpIntegrationPtrOutput) LambdaArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.LambdaArn
+	}).(pulumi.StringPtrOutput)
+}
+
+// The [format of the payload](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html#http-api-develop-integrations-lambda.proxy-format) sent to an integration. Valid values: `1.0`, `2.0`. Default is `1.0`.
+func (o HttpIntegrationPtrOutput) PayloadFormatVersion() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *string {
+		if v == nil {
+			return nil
+		}
+		return v.PayloadFormatVersion
+	}).(pulumi.StringPtrOutput)
+}
+
+// For WebSocket APIs, a key-value map specifying request parameters that are passed from the method request to the backend.
+// For HTTP APIs with a specified `integration_subtype`, a key-value map specifying parameters that are passed to `AWS_PROXY` integrations.
+// For HTTP APIs without a specified `integration_subtype`, a key-value map specifying how to transform HTTP requests before sending them to the backend.
+// See the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html) for details.
+func (o HttpIntegrationPtrOutput) RequestParameters() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *HttpIntegration) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.RequestParameters
+	}).(pulumi.StringMapOutput)
+}
+
+// Mappings to transform the HTTP response from a backend integration before returning the response to clients. Supported only for HTTP APIs.
+func (o HttpIntegrationPtrOutput) ResponseParameters() apigatewayv2.IntegrationResponseParameterArrayOutput {
+	return o.ApplyT(func(v *HttpIntegration) []apigatewayv2.IntegrationResponseParameter {
+		if v == nil {
+			return nil
+		}
+		return v.ResponseParameters
+	}).(apigatewayv2.IntegrationResponseParameterArrayOutput)
+}
+
+// Custom timeout between 50 and 29,000 milliseconds for WebSocket APIs and between 50 and 30,000 milliseconds for HTTP APIs.
+// The default timeout is 29 seconds for WebSocket APIs and 30 seconds for HTTP APIs.
+// this provider will only perform drift detection of its value when present in a configuration.
+func (o HttpIntegrationPtrOutput) TimeoutMilliseconds() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *int {
+		if v == nil {
+			return nil
+		}
+		return v.TimeoutMilliseconds
+	}).(pulumi.IntPtrOutput)
+}
+
+// TLS configuration for a private integration. Supported only for HTTP APIs.
+func (o HttpIntegrationPtrOutput) TlsConfig() apigatewayv2.IntegrationTlsConfigPtrOutput {
+	return o.ApplyT(func(v *HttpIntegration) *apigatewayv2.IntegrationTlsConfig {
+		if v == nil {
+			return nil
+		}
+		return v.TlsConfig
+	}).(apigatewayv2.IntegrationTlsConfigPtrOutput)
+}
+
 // Manages an Amazon API Gateway Version 2 route.
 // More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) for [WebSocket](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-routes.html) and [HTTP](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html) APIs.
 //
@@ -973,11 +1710,14 @@ type HttpRoute struct {
 	Authorizer *string `pulumi:"authorizer"`
 	// Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
 	AuthorizerId *string `pulumi:"authorizerId"`
-	// The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified.
-	Integration *string `pulumi:"integration"`
+	// Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
+	Integration *HttpIntegration `pulumi:"integration"`
+	// The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with "integrations/".
+	IntegrationName *string `pulumi:"integrationName"`
 	// Operation name for the route. Must be between 1 and 64 characters in length.
 	OperationName *string `pulumi:"operationName"`
 	// Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+	//  Only one of `integration`, `integrationName` or `target` can be specified.
 	Target *string `pulumi:"target"`
 }
 
@@ -1051,6 +1791,10 @@ type HttpStage struct {
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationInput)(nil)).Elem(), DomainConfigurationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationPtrInput)(nil)).Elem(), DomainConfigurationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationInput)(nil)).Elem(), HttpIntegrationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationPtrInput)(nil)).Elem(), HttpIntegrationArgs{})
 	pulumi.RegisterOutputType(DomainConfigurationOutput{})
 	pulumi.RegisterOutputType(DomainConfigurationPtrOutput{})
+	pulumi.RegisterOutputType(HttpIntegrationOutput{})
+	pulumi.RegisterOutputType(HttpIntegrationPtrOutput{})
 }

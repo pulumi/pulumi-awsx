@@ -152,14 +152,14 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The integrations for the HTTP API routes.
+     * A map of integrations keyed by name for the HTTP API routes.
      * 
      */
     @Import(name="integrations")
     private @Nullable Map<String,HttpIntegrationArgs> integrations;
 
     /**
-     * @return The integrations for the HTTP API routes.
+     * @return A map of integrations keyed by name for the HTTP API routes.
      * 
      */
     public Optional<Map<String,HttpIntegrationArgs>> integrations() {
@@ -453,7 +453,7 @@ public final class HttpApiArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param integrations The integrations for the HTTP API routes.
+         * @param integrations A map of integrations keyed by name for the HTTP API routes.
          * 
          * @return builder
          * 

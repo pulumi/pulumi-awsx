@@ -261,8 +261,13 @@
                     "description": "Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.\n"
                 },
                 "integration": {
+                    "$ref": "#/types/awsx:apigatewayv2:HttpIntegration",
+                    "plain": true,
+                    "description": "Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified."
+                },
+                "integrationName": {
                     "type": "string",
-                    "description": "The key of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. One of `integration` or `target` must be specified."
+                    "description": "The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with \"integrations/\"."
                 },
                 "operationName": {
                     "type": "string",
@@ -270,7 +275,7 @@
                 },
                 "target": {
                     "type": "string",
-                    "description": "Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.\n"
+                    "description": "Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.\n Only one of `integration`, `integrationName` or `target` can be specified."
                 }
             },
             "type": "object"
@@ -2145,7 +2150,7 @@
                         "plain": true
                     },
                     "plain": true,
-                    "description": "The integrations for the HTTP API routes."
+                    "description": "A map of integrations keyed by name for the HTTP API routes."
                 },
                 "name": {
                     "type": "string",
