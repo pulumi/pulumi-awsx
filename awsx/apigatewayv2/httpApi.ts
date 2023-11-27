@@ -220,6 +220,7 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
       `${name}-${stageKey}`,
       {
         apiId: api.id,
+        name: stageKey,
         ...stageInput,
       },
       { parent },
