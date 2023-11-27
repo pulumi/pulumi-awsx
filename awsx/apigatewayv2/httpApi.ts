@@ -15,6 +15,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as schema from "../schema-types";
+import { countDefined } from "../utils";
 
 export class HttpApi extends schema.HttpApi {
   constructor(name: string, args: schema.HttpApiArgs, opts?: pulumi.ComponentResourceOptions) {
@@ -96,32 +97,39 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
   }
 
   const authorizersMap = new Map<string, aws.apigatewayv2.Authorizer>();
-  for (const [authorizerKey, authorizerInput] of Object.entries(authorizers ?? {})) {
+  const authorizerResources: aws.apigatewayv2.Authorizer[] = [];
+  function addAuthorizer(authorizerKey: string, authorizerInput: schema.HttpAuthorizerInputs) {
     const authorizerName = authorizerKey.replace(/\W+/g, "-");
-    authorizersMap.set(
-      authorizerKey,
-      new aws.apigatewayv2.Authorizer(
-        `${name}-${authorizerName}`,
-        {
-          apiId: api.id,
-          ...authorizerInput,
-        },
-        { parent },
-      ),
+    const authorizerResource = new aws.apigatewayv2.Authorizer(
+      `${name}-${authorizerName}`,
+      {
+        apiId: api.id,
+        ...authorizerInput,
+      },
+      { parent },
     );
+    authorizersMap.set(authorizerKey, authorizerResource);
+    authorizerResources.push(authorizerResource);
   }
-  const authorizerResources = Array.from(authorizersMap.values());
+  for (const [authorizerKey, authorizerInput] of Object.entries(authorizers ?? {})) {
+    addAuthorizer(authorizerKey, authorizerInput);
+  }
 
   const routeResources: aws.apigatewayv2.Route[] = [];
   for (const [routeKey, routeInput] of Object.entries(routes)) {
     const routeName = routeKey.replace(/\W+/g, "-");
-    const { integration, integrationName, authorizer, ...routeArgs } = routeInput;
+    const { integration, integrationName, authorizer, authorizerName, ...routeArgs } = routeInput;
     let target = routeInput.target;
+    if (countDefined([integration, integrationName, target]) > 1) {
+      throw new Error(
+        `Exactly one of integration, integrationName, or target must be specified for route ${routeKey}`,
+      );
+    }
     if (integrationName !== undefined) {
       target = pulumi.output(integrationName).apply((id) => {
         const integration = integrationsMap.get(id);
         if (integration === undefined) {
-          throw new Error(`Could not find integration with key ${id}`);
+          throw new Error(`Could not find integration with name ${id}`);
         }
         return pulumi.interpolate`integrations/${integration.id}`;
       });
@@ -132,11 +140,21 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
       target = pulumi.interpolate`integrations/${integrationsMap.get(integrationKey)!.id}`;
     }
     let authorizerId = routeInput.authorizerId;
+    if (countDefined([authorizer, authorizerName, authorizerId]) > 1) {
+      throw new Error(
+        `Exactly one of authorizer, authorizerName, or authorizerId must be specified for route ${routeKey}`,
+      );
+    }
     if (authorizer !== undefined) {
-      authorizerId = pulumi.output(authorizer).apply((id) => {
+      const authorizerKey = `${routeName}-authorizer`;
+      addAuthorizer(authorizerKey, authorizer);
+      authorizerId = authorizersMap.get(authorizerKey)!.id;
+    }
+    if (authorizerName !== undefined) {
+      authorizerId = pulumi.output(authorizerName).apply((id) => {
         const authorizer = authorizersMap.get(id);
         if (authorizer === undefined) {
-          throw new Error(`Could not find authorizer with key ${id}`);
+          throw new Error(`Could not find authorizer with name ${id}`);
         }
         return authorizer.id;
       });

@@ -356,16 +356,22 @@ namespace Pulumi.Awsx.Apigatewayv2.Inputs
         public Input<string>? AuthorizationType { get; set; }
 
         /// <summary>
-        /// The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+        /// Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
         /// </summary>
         [Input("authorizer")]
-        public Input<string>? Authorizer { get; set; }
+        public Inputs.HttpAuthorizerArgs? Authorizer { get; set; }
 
         /// <summary>
         /// Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
         /// </summary>
         [Input("authorizerId")]
         public Input<string>? AuthorizerId { get; set; }
+
+        /// <summary>
+        /// The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+        /// </summary>
+        [Input("authorizerName")]
+        public Input<string>? AuthorizerName { get; set; }
 
         /// <summary>
         /// Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.

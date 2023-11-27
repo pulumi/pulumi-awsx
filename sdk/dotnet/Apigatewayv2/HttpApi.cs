@@ -28,7 +28,7 @@ namespace Pulumi.Awsx.Apigatewayv2
         public Output<ImmutableArray<Pulumi.Aws.ApiGatewayV2.ApiMapping>> ApiMappings { get; private set; } = null!;
 
         /// <summary>
-        /// The authorizers for the HTTP API routes.
+        /// The authorizers for the HTTP API routes. This is a map from authorizer name to the authorizer arguments.
         /// </summary>
         [Output("authorizers")]
         public Output<ImmutableArray<Pulumi.Aws.ApiGatewayV2.Authorizer>> Authorizers { get; private set; } = null!;

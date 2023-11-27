@@ -56,14 +56,14 @@ public class HttpApi extends com.pulumi.resources.ComponentResource {
         return Codegen.optional(this.apiMappings);
     }
     /**
-     * The authorizers for the HTTP API routes.
+     * The authorizers for the HTTP API routes. This is a map from authorizer name to the authorizer arguments.
      * 
      */
     @Export(name="authorizers", refs={List.class,Authorizer.class}, tree="[0,1]")
     private Output<List<Authorizer>> authorizers;
 
     /**
-     * @return The authorizers for the HTTP API routes.
+     * @return The authorizers for the HTTP API routes. This is a map from authorizer name to the authorizer arguments.
      * 
      */
     public Output<List<Authorizer>> authorizers() {

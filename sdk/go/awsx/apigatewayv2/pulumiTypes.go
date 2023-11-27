@@ -660,6 +660,480 @@ type HttpAuthorizer struct {
 	Name *string `pulumi:"name"`
 }
 
+// HttpAuthorizerInput is an input type that accepts HttpAuthorizerArgs and HttpAuthorizerOutput values.
+// You can construct a concrete instance of `HttpAuthorizerInput` via:
+//
+//	HttpAuthorizerArgs{...}
+type HttpAuthorizerInput interface {
+	pulumi.Input
+
+	ToHttpAuthorizerOutput() HttpAuthorizerOutput
+	ToHttpAuthorizerOutputWithContext(context.Context) HttpAuthorizerOutput
+}
+
+// Manages an Amazon API Gateway Version 2 authorizer.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+//
+// ## Example Usage
+// ### Basic WebSocket API
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewAuthorizer(ctx, "example", &apigatewayv2.AuthorizerArgs{
+//				ApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				AuthorizerType: pulumi.String("REQUEST"),
+//				AuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),
+//				IdentitySources: pulumi.StringArray{
+//					pulumi.String("route.request.header.Auth"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Basic HTTP API
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewAuthorizer(ctx, "example", &apigatewayv2.AuthorizerArgs{
+//				ApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				AuthorizerType: pulumi.String("REQUEST"),
+//				AuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),
+//				IdentitySources: pulumi.StringArray{
+//					pulumi.String("$request.header.Authorization"),
+//				},
+//				AuthorizerPayloadFormatVersion: pulumi.String("2.0"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_authorizer` using the API identifier and authorizer identifier. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/authorizer:Authorizer example aabbccddee/1122334
+//
+// ```
+type HttpAuthorizerArgs struct {
+	// Required credentials as an IAM role for API Gateway to invoke the authorizer.
+	// Supported only for `REQUEST` authorizers.
+	AuthorizerCredentialsArn pulumi.StringPtrInput `pulumi:"authorizerCredentialsArn"`
+	// Format of the payload sent to an HTTP API Lambda authorizer. Required for HTTP API Lambda authorizers.
+	// Valid values: `1.0`, `2.0`.
+	AuthorizerPayloadFormatVersion pulumi.StringPtrInput `pulumi:"authorizerPayloadFormatVersion"`
+	// Time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled.
+	// If it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Defaults to `300`.
+	// Supported only for HTTP API Lambda authorizers.
+	AuthorizerResultTtlInSeconds pulumi.IntPtrInput `pulumi:"authorizerResultTtlInSeconds"`
+	// Authorizer type. Valid values: `JWT`, `REQUEST`.
+	// Specify `REQUEST` for a Lambda function using incoming request parameters.
+	// For HTTP APIs, specify `JWT` to use JSON Web Tokens.
+	AuthorizerType pulumi.StringInput `pulumi:"authorizerType"`
+	// Authorizer's Uniform Resource Identifier (URI).
+	// For `REQUEST` authorizers this must be a well-formed Lambda function URI, such as the `invoke_arn` attribute of the `aws.lambda.Function` resource.
+	// Supported only for `REQUEST` authorizers. Must be between 1 and 2048 characters in length.
+	AuthorizerUri pulumi.StringPtrInput `pulumi:"authorizerUri"`
+	// Whether a Lambda authorizer returns a response in a simple format. If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy.
+	// Supported only for HTTP APIs.
+	EnableSimpleResponses pulumi.BoolPtrInput `pulumi:"enableSimpleResponses"`
+	// Identity sources for which authorization is requested.
+	// For `REQUEST` authorizers the value is a list of one or more mapping expressions of the specified request parameters.
+	// For `JWT` authorizers the single entry specifies where to extract the JSON Web Token (JWT) from inbound requests.
+	IdentitySources pulumi.StringArrayInput `pulumi:"identitySources"`
+	// Configuration of a JWT authorizer. Required for the `JWT` authorizer type.
+	// Supported only for HTTP APIs.
+	JwtConfiguration apigatewayv2.AuthorizerJwtConfigurationPtrInput `pulumi:"jwtConfiguration"`
+	// Name of the authorizer. Must be between 1 and 128 characters in length.
+	Name pulumi.StringPtrInput `pulumi:"name"`
+}
+
+func (HttpAuthorizerArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*HttpAuthorizer)(nil)).Elem()
+}
+
+func (i HttpAuthorizerArgs) ToHttpAuthorizerOutput() HttpAuthorizerOutput {
+	return i.ToHttpAuthorizerOutputWithContext(context.Background())
+}
+
+func (i HttpAuthorizerArgs) ToHttpAuthorizerOutputWithContext(ctx context.Context) HttpAuthorizerOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(HttpAuthorizerOutput)
+}
+
+func (i HttpAuthorizerArgs) ToOutput(ctx context.Context) pulumix.Output[HttpAuthorizer] {
+	return pulumix.Output[HttpAuthorizer]{
+		OutputState: i.ToHttpAuthorizerOutputWithContext(ctx).OutputState,
+	}
+}
+
+func (i HttpAuthorizerArgs) ToHttpAuthorizerPtrOutput() HttpAuthorizerPtrOutput {
+	return i.ToHttpAuthorizerPtrOutputWithContext(context.Background())
+}
+
+func (i HttpAuthorizerArgs) ToHttpAuthorizerPtrOutputWithContext(ctx context.Context) HttpAuthorizerPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(HttpAuthorizerOutput).ToHttpAuthorizerPtrOutputWithContext(ctx)
+}
+
+// HttpAuthorizerPtrInput is an input type that accepts HttpAuthorizerArgs, HttpAuthorizerPtr and HttpAuthorizerPtrOutput values.
+// You can construct a concrete instance of `HttpAuthorizerPtrInput` via:
+//
+//	        HttpAuthorizerArgs{...}
+//
+//	or:
+//
+//	        nil
+type HttpAuthorizerPtrInput interface {
+	pulumi.Input
+
+	ToHttpAuthorizerPtrOutput() HttpAuthorizerPtrOutput
+	ToHttpAuthorizerPtrOutputWithContext(context.Context) HttpAuthorizerPtrOutput
+}
+
+type httpAuthorizerPtrType HttpAuthorizerArgs
+
+func HttpAuthorizerPtr(v *HttpAuthorizerArgs) HttpAuthorizerPtrInput {
+	return (*httpAuthorizerPtrType)(v)
+}
+
+func (*httpAuthorizerPtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**HttpAuthorizer)(nil)).Elem()
+}
+
+func (i *httpAuthorizerPtrType) ToHttpAuthorizerPtrOutput() HttpAuthorizerPtrOutput {
+	return i.ToHttpAuthorizerPtrOutputWithContext(context.Background())
+}
+
+func (i *httpAuthorizerPtrType) ToHttpAuthorizerPtrOutputWithContext(ctx context.Context) HttpAuthorizerPtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(HttpAuthorizerPtrOutput)
+}
+
+func (i *httpAuthorizerPtrType) ToOutput(ctx context.Context) pulumix.Output[*HttpAuthorizer] {
+	return pulumix.Output[*HttpAuthorizer]{
+		OutputState: i.ToHttpAuthorizerPtrOutputWithContext(ctx).OutputState,
+	}
+}
+
+// Manages an Amazon API Gateway Version 2 authorizer.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+//
+// ## Example Usage
+// ### Basic WebSocket API
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewAuthorizer(ctx, "example", &apigatewayv2.AuthorizerArgs{
+//				ApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				AuthorizerType: pulumi.String("REQUEST"),
+//				AuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),
+//				IdentitySources: pulumi.StringArray{
+//					pulumi.String("route.request.header.Auth"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Basic HTTP API
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewAuthorizer(ctx, "example", &apigatewayv2.AuthorizerArgs{
+//				ApiId:          pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				AuthorizerType: pulumi.String("REQUEST"),
+//				AuthorizerUri:  pulumi.Any(aws_lambda_function.Example.Invoke_arn),
+//				IdentitySources: pulumi.StringArray{
+//					pulumi.String("$request.header.Authorization"),
+//				},
+//				AuthorizerPayloadFormatVersion: pulumi.String("2.0"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_authorizer` using the API identifier and authorizer identifier. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/authorizer:Authorizer example aabbccddee/1122334
+//
+// ```
+type HttpAuthorizerOutput struct{ *pulumi.OutputState }
+
+func (HttpAuthorizerOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*HttpAuthorizer)(nil)).Elem()
+}
+
+func (o HttpAuthorizerOutput) ToHttpAuthorizerOutput() HttpAuthorizerOutput {
+	return o
+}
+
+func (o HttpAuthorizerOutput) ToHttpAuthorizerOutputWithContext(ctx context.Context) HttpAuthorizerOutput {
+	return o
+}
+
+func (o HttpAuthorizerOutput) ToHttpAuthorizerPtrOutput() HttpAuthorizerPtrOutput {
+	return o.ToHttpAuthorizerPtrOutputWithContext(context.Background())
+}
+
+func (o HttpAuthorizerOutput) ToHttpAuthorizerPtrOutputWithContext(ctx context.Context) HttpAuthorizerPtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v HttpAuthorizer) *HttpAuthorizer {
+		return &v
+	}).(HttpAuthorizerPtrOutput)
+}
+
+func (o HttpAuthorizerOutput) ToOutput(ctx context.Context) pulumix.Output[HttpAuthorizer] {
+	return pulumix.Output[HttpAuthorizer]{
+		OutputState: o.OutputState,
+	}
+}
+
+// Required credentials as an IAM role for API Gateway to invoke the authorizer.
+// Supported only for `REQUEST` authorizers.
+func (o HttpAuthorizerOutput) AuthorizerCredentialsArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpAuthorizer) *string { return v.AuthorizerCredentialsArn }).(pulumi.StringPtrOutput)
+}
+
+// Format of the payload sent to an HTTP API Lambda authorizer. Required for HTTP API Lambda authorizers.
+// Valid values: `1.0`, `2.0`.
+func (o HttpAuthorizerOutput) AuthorizerPayloadFormatVersion() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpAuthorizer) *string { return v.AuthorizerPayloadFormatVersion }).(pulumi.StringPtrOutput)
+}
+
+// Time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled.
+// If it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Defaults to `300`.
+// Supported only for HTTP API Lambda authorizers.
+func (o HttpAuthorizerOutput) AuthorizerResultTtlInSeconds() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v HttpAuthorizer) *int { return v.AuthorizerResultTtlInSeconds }).(pulumi.IntPtrOutput)
+}
+
+// Authorizer type. Valid values: `JWT`, `REQUEST`.
+// Specify `REQUEST` for a Lambda function using incoming request parameters.
+// For HTTP APIs, specify `JWT` to use JSON Web Tokens.
+func (o HttpAuthorizerOutput) AuthorizerType() pulumi.StringOutput {
+	return o.ApplyT(func(v HttpAuthorizer) string { return v.AuthorizerType }).(pulumi.StringOutput)
+}
+
+// Authorizer's Uniform Resource Identifier (URI).
+// For `REQUEST` authorizers this must be a well-formed Lambda function URI, such as the `invoke_arn` attribute of the `aws.lambda.Function` resource.
+// Supported only for `REQUEST` authorizers. Must be between 1 and 2048 characters in length.
+func (o HttpAuthorizerOutput) AuthorizerUri() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpAuthorizer) *string { return v.AuthorizerUri }).(pulumi.StringPtrOutput)
+}
+
+// Whether a Lambda authorizer returns a response in a simple format. If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy.
+// Supported only for HTTP APIs.
+func (o HttpAuthorizerOutput) EnableSimpleResponses() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v HttpAuthorizer) *bool { return v.EnableSimpleResponses }).(pulumi.BoolPtrOutput)
+}
+
+// Identity sources for which authorization is requested.
+// For `REQUEST` authorizers the value is a list of one or more mapping expressions of the specified request parameters.
+// For `JWT` authorizers the single entry specifies where to extract the JSON Web Token (JWT) from inbound requests.
+func (o HttpAuthorizerOutput) IdentitySources() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v HttpAuthorizer) []string { return v.IdentitySources }).(pulumi.StringArrayOutput)
+}
+
+// Configuration of a JWT authorizer. Required for the `JWT` authorizer type.
+// Supported only for HTTP APIs.
+func (o HttpAuthorizerOutput) JwtConfiguration() apigatewayv2.AuthorizerJwtConfigurationPtrOutput {
+	return o.ApplyT(func(v HttpAuthorizer) *apigatewayv2.AuthorizerJwtConfiguration { return v.JwtConfiguration }).(apigatewayv2.AuthorizerJwtConfigurationPtrOutput)
+}
+
+// Name of the authorizer. Must be between 1 and 128 characters in length.
+func (o HttpAuthorizerOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpAuthorizer) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+type HttpAuthorizerPtrOutput struct{ *pulumi.OutputState }
+
+func (HttpAuthorizerPtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**HttpAuthorizer)(nil)).Elem()
+}
+
+func (o HttpAuthorizerPtrOutput) ToHttpAuthorizerPtrOutput() HttpAuthorizerPtrOutput {
+	return o
+}
+
+func (o HttpAuthorizerPtrOutput) ToHttpAuthorizerPtrOutputWithContext(ctx context.Context) HttpAuthorizerPtrOutput {
+	return o
+}
+
+func (o HttpAuthorizerPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*HttpAuthorizer] {
+	return pulumix.Output[*HttpAuthorizer]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o HttpAuthorizerPtrOutput) Elem() HttpAuthorizerOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) HttpAuthorizer {
+		if v != nil {
+			return *v
+		}
+		var ret HttpAuthorizer
+		return ret
+	}).(HttpAuthorizerOutput)
+}
+
+// Required credentials as an IAM role for API Gateway to invoke the authorizer.
+// Supported only for `REQUEST` authorizers.
+func (o HttpAuthorizerPtrOutput) AuthorizerCredentialsArn() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) *string {
+		if v == nil {
+			return nil
+		}
+		return v.AuthorizerCredentialsArn
+	}).(pulumi.StringPtrOutput)
+}
+
+// Format of the payload sent to an HTTP API Lambda authorizer. Required for HTTP API Lambda authorizers.
+// Valid values: `1.0`, `2.0`.
+func (o HttpAuthorizerPtrOutput) AuthorizerPayloadFormatVersion() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) *string {
+		if v == nil {
+			return nil
+		}
+		return v.AuthorizerPayloadFormatVersion
+	}).(pulumi.StringPtrOutput)
+}
+
+// Time to live (TTL) for cached authorizer results, in seconds. If it equals 0, authorization caching is disabled.
+// If it is greater than 0, API Gateway caches authorizer responses. The maximum value is 3600, or 1 hour. Defaults to `300`.
+// Supported only for HTTP API Lambda authorizers.
+func (o HttpAuthorizerPtrOutput) AuthorizerResultTtlInSeconds() pulumi.IntPtrOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) *int {
+		if v == nil {
+			return nil
+		}
+		return v.AuthorizerResultTtlInSeconds
+	}).(pulumi.IntPtrOutput)
+}
+
+// Authorizer type. Valid values: `JWT`, `REQUEST`.
+// Specify `REQUEST` for a Lambda function using incoming request parameters.
+// For HTTP APIs, specify `JWT` to use JSON Web Tokens.
+func (o HttpAuthorizerPtrOutput) AuthorizerType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) *string {
+		if v == nil {
+			return nil
+		}
+		return &v.AuthorizerType
+	}).(pulumi.StringPtrOutput)
+}
+
+// Authorizer's Uniform Resource Identifier (URI).
+// For `REQUEST` authorizers this must be a well-formed Lambda function URI, such as the `invoke_arn` attribute of the `aws.lambda.Function` resource.
+// Supported only for `REQUEST` authorizers. Must be between 1 and 2048 characters in length.
+func (o HttpAuthorizerPtrOutput) AuthorizerUri() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) *string {
+		if v == nil {
+			return nil
+		}
+		return v.AuthorizerUri
+	}).(pulumi.StringPtrOutput)
+}
+
+// Whether a Lambda authorizer returns a response in a simple format. If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy.
+// Supported only for HTTP APIs.
+func (o HttpAuthorizerPtrOutput) EnableSimpleResponses() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.EnableSimpleResponses
+	}).(pulumi.BoolPtrOutput)
+}
+
+// Identity sources for which authorization is requested.
+// For `REQUEST` authorizers the value is a list of one or more mapping expressions of the specified request parameters.
+// For `JWT` authorizers the single entry specifies where to extract the JSON Web Token (JWT) from inbound requests.
+func (o HttpAuthorizerPtrOutput) IdentitySources() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) []string {
+		if v == nil {
+			return nil
+		}
+		return v.IdentitySources
+	}).(pulumi.StringArrayOutput)
+}
+
+// Configuration of a JWT authorizer. Required for the `JWT` authorizer type.
+// Supported only for HTTP APIs.
+func (o HttpAuthorizerPtrOutput) JwtConfiguration() apigatewayv2.AuthorizerJwtConfigurationPtrOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) *apigatewayv2.AuthorizerJwtConfiguration {
+		if v == nil {
+			return nil
+		}
+		return v.JwtConfiguration
+	}).(apigatewayv2.AuthorizerJwtConfigurationPtrOutput)
+}
+
+// Name of the authorizer. Must be between 1 and 128 characters in length.
+func (o HttpAuthorizerPtrOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v *HttpAuthorizer) *string {
+		if v == nil {
+			return nil
+		}
+		return v.Name
+	}).(pulumi.StringPtrOutput)
+}
+
 // Manages an Amazon API Gateway Version 2 integration.
 // More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
 //
@@ -1706,10 +2180,12 @@ type HttpRoute struct {
 	// For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
 	// Defaults to `NONE`.
 	AuthorizationType *string `pulumi:"authorizationType"`
-	// The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
-	Authorizer *string `pulumi:"authorizer"`
+	// Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
+	Authorizer *HttpAuthorizer `pulumi:"authorizer"`
 	// Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
 	AuthorizerId *string `pulumi:"authorizerId"`
+	// The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+	AuthorizerName *string `pulumi:"authorizerName"`
 	// Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
 	Integration *HttpIntegration `pulumi:"integration"`
 	// The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with "integrations/".
@@ -1791,10 +2267,14 @@ type HttpStage struct {
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationInput)(nil)).Elem(), DomainConfigurationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationPtrInput)(nil)).Elem(), DomainConfigurationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*HttpAuthorizerInput)(nil)).Elem(), HttpAuthorizerArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*HttpAuthorizerPtrInput)(nil)).Elem(), HttpAuthorizerArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationInput)(nil)).Elem(), HttpIntegrationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationPtrInput)(nil)).Elem(), HttpIntegrationArgs{})
 	pulumi.RegisterOutputType(DomainConfigurationOutput{})
 	pulumi.RegisterOutputType(DomainConfigurationPtrOutput{})
+	pulumi.RegisterOutputType(HttpAuthorizerOutput{})
+	pulumi.RegisterOutputType(HttpAuthorizerPtrOutput{})
 	pulumi.RegisterOutputType(HttpIntegrationOutput{})
 	pulumi.RegisterOutputType(HttpIntegrationPtrOutput{})
 }

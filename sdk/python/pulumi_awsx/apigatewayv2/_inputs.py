@@ -1950,8 +1950,9 @@ class HttpRouteArgs:
                  api_key_required: Optional[pulumi.Input[bool]] = None,
                  authorization_scopes: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  authorization_type: Optional[pulumi.Input[str]] = None,
-                 authorizer: Optional[pulumi.Input[str]] = None,
+                 authorizer: Optional['HttpAuthorizerArgs'] = None,
                  authorizer_id: Optional[pulumi.Input[str]] = None,
+                 authorizer_name: Optional[pulumi.Input[str]] = None,
                  integration: Optional['HttpIntegrationArgs'] = None,
                  integration_name: Optional[pulumi.Input[str]] = None,
                  operation_name: Optional[pulumi.Input[str]] = None,
@@ -2279,8 +2280,9 @@ class HttpRouteArgs:
                For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
                For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
                Defaults to `NONE`.
-        :param pulumi.Input[str] authorizer: The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+        :param 'HttpAuthorizerArgs' authorizer: Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
         :param pulumi.Input[str] authorizer_id: Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
+        :param pulumi.Input[str] authorizer_name: The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
         :param 'HttpIntegrationArgs' integration: Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
         :param pulumi.Input[str] integration_name: The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with "integrations/".
         :param pulumi.Input[str] operation_name: Operation name for the route. Must be between 1 and 64 characters in length.
@@ -2297,6 +2299,8 @@ class HttpRouteArgs:
             pulumi.set(__self__, "authorizer", authorizer)
         if authorizer_id is not None:
             pulumi.set(__self__, "authorizer_id", authorizer_id)
+        if authorizer_name is not None:
+            pulumi.set(__self__, "authorizer_name", authorizer_name)
         if integration is not None:
             pulumi.set(__self__, "integration", integration)
         if integration_name is not None:
@@ -2347,14 +2351,14 @@ class HttpRouteArgs:
 
     @property
     @pulumi.getter
-    def authorizer(self) -> Optional[pulumi.Input[str]]:
+    def authorizer(self) -> Optional['HttpAuthorizerArgs']:
         """
-        The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+        Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
         """
         return pulumi.get(self, "authorizer")
 
     @authorizer.setter
-    def authorizer(self, value: Optional[pulumi.Input[str]]):
+    def authorizer(self, value: Optional['HttpAuthorizerArgs']):
         pulumi.set(self, "authorizer", value)
 
     @property
@@ -2368,6 +2372,18 @@ class HttpRouteArgs:
     @authorizer_id.setter
     def authorizer_id(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "authorizer_id", value)
+
+    @property
+    @pulumi.getter(name="authorizerName")
+    def authorizer_name(self) -> Optional[pulumi.Input[str]]:
+        """
+        The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+        """
+        return pulumi.get(self, "authorizer_name")
+
+    @authorizer_name.setter
+    def authorizer_name(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "authorizer_name", value)
 
     @property
     @pulumi.getter

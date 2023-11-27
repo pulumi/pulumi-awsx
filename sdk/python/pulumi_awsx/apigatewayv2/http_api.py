@@ -415,7 +415,7 @@ class HttpApi(pulumi.ComponentResource):
     @pulumi.getter
     def authorizers(self) -> pulumi.Output[Sequence['pulumi_aws.apigatewayv2.Authorizer']]:
         """
-        The authorizers for the HTTP API routes.
+        The authorizers for the HTTP API routes. This is a map from authorizer name to the authorizer arguments.
         """
         return pulumi.get(self, "authorizers")
 

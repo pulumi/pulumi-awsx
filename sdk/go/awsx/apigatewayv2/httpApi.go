@@ -22,7 +22,7 @@ type HttpApi struct {
 	Api apigatewayv2.ApiOutput `pulumi:"api"`
 	// The API mappings for the HTTP API.
 	ApiMappings apigatewayv2.ApiMappingArrayOutput `pulumi:"apiMappings"`
-	// The authorizers for the HTTP API routes.
+	// The authorizers for the HTTP API routes. This is a map from authorizer name to the authorizer arguments.
 	Authorizers apigatewayv2.AuthorizerArrayOutput `pulumi:"authorizers"`
 	// The deployment for the HTTP API.
 	Deployment apigatewayv2.DeploymentOutput `pulumi:"deployment"`
@@ -253,7 +253,7 @@ func (o HttpApiOutput) ApiMappings() apigatewayv2.ApiMappingArrayOutput {
 	return o.ApplyT(func(v *HttpApi) apigatewayv2.ApiMappingArrayOutput { return v.ApiMappings }).(apigatewayv2.ApiMappingArrayOutput)
 }
 
-// The authorizers for the HTTP API routes.
+// The authorizers for the HTTP API routes. This is a map from authorizer name to the authorizer arguments.
 func (o HttpApiOutput) Authorizers() apigatewayv2.AuthorizerArrayOutput {
 	return o.ApplyT(func(v *HttpApi) apigatewayv2.AuthorizerArrayOutput { return v.Authorizers }).(apigatewayv2.AuthorizerArrayOutput)
 }

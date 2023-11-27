@@ -36,7 +36,7 @@ export class HttpApi extends pulumi.ComponentResource {
      */
     public /*out*/ readonly apiMappings!: pulumi.Output<pulumiAws.apigatewayv2.ApiMapping[] | undefined>;
     /**
-     * The authorizers for the HTTP API routes.
+     * The authorizers for the HTTP API routes. This is a map from authorizer name to the authorizer arguments.
      */
     public readonly authorizers!: pulumi.Output<pulumiAws.apigatewayv2.Authorizer[]>;
     /**

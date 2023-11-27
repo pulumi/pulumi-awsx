@@ -1881,13 +1881,17 @@ export namespace apigatewayv2 {
          */
         authorizationType?: pulumi.Input<string>;
         /**
-         * The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+         * Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
          */
-        authorizer?: pulumi.Input<string>;
+        authorizer?: inputs.apigatewayv2.HttpAuthorizerArgs;
         /**
          * Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
          */
         authorizerId?: pulumi.Input<string>;
+        /**
+         * The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+         */
+        authorizerName?: pulumi.Input<string>;
         /**
          * Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
          */

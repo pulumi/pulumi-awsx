@@ -87,7 +87,7 @@ func httpApi(awsSpec schema.PackageSpec) schema.ResourceSpec {
 					TypeSpec:    arrayOfAwsType(awsSpec, "apigatewayv2", "integration"),
 				},
 				"authorizers": {
-					Description: "The authorizers for the HTTP API routes.",
+					Description: "The authorizers for the HTTP API routes. This is a map from authorizer name to the authorizer arguments.",
 					TypeSpec:    arrayOfAwsType(awsSpec, "apigatewayv2", "authorizer"),
 				},
 				"stages": {
@@ -139,7 +139,14 @@ func httpRoute(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 		},
 	}
 	properties["authorizer"] = schema.PropertySpec{
-		Description: "The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.",
+		Description: "Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.",
+		TypeSpec: schema.TypeSpec{
+			Ref:   localRef("apigatewayv2", "HttpAuthorizer"),
+			Plain: true,
+		},
+	}
+	properties["authorizerName"] = schema.PropertySpec{
+		Description: "The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},

@@ -3,6 +3,7 @@
 
 package com.pulumi.awsx.apigatewayv2.inputs;
 
+import com.pulumi.awsx.apigatewayv2.inputs.HttpAuthorizerArgs;
 import com.pulumi.awsx.apigatewayv2.inputs.HttpIntegrationArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
@@ -169,17 +170,17 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+     * Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
      * 
      */
     @Import(name="authorizer")
-    private @Nullable Output<String> authorizer;
+    private @Nullable HttpAuthorizerArgs authorizer;
 
     /**
-     * @return The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+     * @return Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
      * 
      */
-    public Optional<Output<String>> authorizer() {
+    public Optional<HttpAuthorizerArgs> authorizer() {
         return Optional.ofNullable(this.authorizer);
     }
 
@@ -196,6 +197,21 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
      */
     public Optional<Output<String>> authorizerId() {
         return Optional.ofNullable(this.authorizerId);
+    }
+
+    /**
+     * The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+     * 
+     */
+    @Import(name="authorizerName")
+    private @Nullable Output<String> authorizerName;
+
+    /**
+     * @return The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+     * 
+     */
+    public Optional<Output<String>> authorizerName() {
+        return Optional.ofNullable(this.authorizerName);
     }
 
     /**
@@ -268,6 +284,7 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
         this.authorizationType = $.authorizationType;
         this.authorizer = $.authorizer;
         this.authorizerId = $.authorizerId;
+        this.authorizerName = $.authorizerName;
         this.integration = $.integration;
         this.integrationName = $.integrationName;
         this.operationName = $.operationName;
@@ -372,24 +389,14 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param authorizer The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+         * @param authorizer Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
          * 
          * @return builder
          * 
          */
-        public Builder authorizer(@Nullable Output<String> authorizer) {
+        public Builder authorizer(@Nullable HttpAuthorizerArgs authorizer) {
             $.authorizer = authorizer;
             return this;
-        }
-
-        /**
-         * @param authorizer The key of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder authorizer(String authorizer) {
-            return authorizer(Output.of(authorizer));
         }
 
         /**
@@ -411,6 +418,27 @@ public final class HttpRouteArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder authorizerId(String authorizerId) {
             return authorizerId(Output.of(authorizerId));
+        }
+
+        /**
+         * @param authorizerName The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authorizerName(@Nullable Output<String> authorizerName) {
+            $.authorizerName = authorizerName;
+            return this;
+        }
+
+        /**
+         * @param authorizerName The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder authorizerName(String authorizerName) {
+            return authorizerName(Output.of(authorizerName));
         }
 
         /**
