@@ -100,6 +100,9 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"usesIOClasses":                true,
 				"readme":                       "Pulumi Amazon Web Services (AWS) AWSX Components.",
 				"liftSingleValueMethodReturns": true,
+				"pyproject": map[string]bool{
+					"enabled": true,
+				},
 			}),
 		},
 	}
