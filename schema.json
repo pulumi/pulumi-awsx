@@ -2113,8 +2113,7 @@
                 "authorizers": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:apigatewayv2:HttpAuthorizer",
-                        "plain": true
+                        "$ref": "#/types/awsx:apigatewayv2:HttpAuthorizer"
                     },
                     "plain": true,
                     "description": "The authorizers for the HTTP API routes."
@@ -2138,8 +2137,7 @@
                 "domainMappings": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:apigatewayv2:DomainMapping",
-                        "plain": true
+                        "$ref": "#/types/awsx:apigatewayv2:DomainMapping"
                     },
                     "plain": true,
                     "description": "The domain names for the HTTP API."
@@ -2151,8 +2149,7 @@
                 "integrations": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:apigatewayv2:HttpIntegration",
-                        "plain": true
+                        "$ref": "#/types/awsx:apigatewayv2:HttpIntegration"
                     },
                     "plain": true,
                     "description": "A map of integrations keyed by name for the HTTP API routes."
@@ -2168,8 +2165,7 @@
                 "routes": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:apigatewayv2:HttpRoute",
-                        "plain": true
+                        "$ref": "#/types/awsx:apigatewayv2:HttpRoute"
                     },
                     "plain": true,
                     "description": "The routes for the HTTP API."
@@ -2177,8 +2173,7 @@
                 "stages": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/types/awsx:apigatewayv2:HttpStage",
-                        "plain": true
+                        "$ref": "#/types/awsx:apigatewayv2:HttpStage"
                     },
                     "plain": true,
                     "description": "The deployment stages for the HTTP API."

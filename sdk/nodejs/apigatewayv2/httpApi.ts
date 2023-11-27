@@ -121,7 +121,7 @@ export interface HttpApiArgs {
     /**
      * The authorizers for the HTTP API routes.
      */
-    authorizers?: {[key: string]: inputs.apigatewayv2.HttpAuthorizerArgs};
+    authorizers?: {[key: string]: pulumi.Input<inputs.apigatewayv2.HttpAuthorizerArgs>};
     /**
      * An OpenAPI specification that defines the set of routes and integrations to create as part of the HTTP APIs. Supported only for HTTP APIs.
      */
@@ -143,7 +143,7 @@ export interface HttpApiArgs {
     /**
      * The domain names for the HTTP API.
      */
-    domainMappings?: {[key: string]: inputs.apigatewayv2.DomainMappingArgs};
+    domainMappings?: {[key: string]: pulumi.Input<inputs.apigatewayv2.DomainMappingArgs>};
     /**
      * Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.
      */
@@ -151,7 +151,7 @@ export interface HttpApiArgs {
     /**
      * A map of integrations keyed by name for the HTTP API routes.
      */
-    integrations?: {[key: string]: inputs.apigatewayv2.HttpIntegrationArgs};
+    integrations?: {[key: string]: pulumi.Input<inputs.apigatewayv2.HttpIntegrationArgs>};
     /**
      * Name of the API. Must be less than or equal to 128 characters in length.
      */
@@ -164,11 +164,11 @@ export interface HttpApiArgs {
     /**
      * The routes for the HTTP API.
      */
-    routes: {[key: string]: inputs.apigatewayv2.HttpRouteArgs};
+    routes: {[key: string]: pulumi.Input<inputs.apigatewayv2.HttpRouteArgs>};
     /**
      * The deployment stages for the HTTP API.
      */
-    stages?: {[key: string]: inputs.apigatewayv2.HttpStageArgs};
+    stages?: {[key: string]: pulumi.Input<inputs.apigatewayv2.HttpStageArgs>};
     /**
      * Map of tags to assign to the API. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
      */

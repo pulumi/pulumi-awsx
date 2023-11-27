@@ -263,8 +263,7 @@ func plainStringMapOfLocalRefs(module, name string) schema.TypeSpec {
 	return schema.TypeSpec{
 		Type: "object",
 		AdditionalProperties: &schema.TypeSpec{
-			Ref:   localRef(module, name),
-			Plain: true,
+			Ref: localRef(module, name),
 		},
 		Plain: true,
 	}

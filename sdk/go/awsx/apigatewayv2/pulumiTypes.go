@@ -554,6 +554,166 @@ type DomainMapping struct {
 	Stage string `pulumi:"stage"`
 }
 
+// DomainMappingInput is an input type that accepts DomainMappingArgs and DomainMappingOutput values.
+// You can construct a concrete instance of `DomainMappingInput` via:
+//
+//	DomainMappingArgs{...}
+type DomainMappingInput interface {
+	pulumi.Input
+
+	ToDomainMappingOutput() DomainMappingOutput
+	ToDomainMappingOutputWithContext(context.Context) DomainMappingOutput
+}
+
+// Manages an Amazon API Gateway Version 2 API mapping.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewApiMapping(ctx, "example", &apigatewayv2.ApiMappingArgs{
+//				ApiId:      pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				DomainName: pulumi.Any(aws_apigatewayv2_domain_name.Example.Id),
+//				Stage:      pulumi.Any(aws_apigatewayv2_stage.Example.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_api_mapping` using the API mapping identifier and domain name. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/apiMapping:ApiMapping example 1122334/ws-api.example.com
+//
+// ```
+type DomainMappingArgs struct {
+	// The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+	ApiMappingKey pulumi.StringPtrInput `pulumi:"apiMappingKey"`
+	// Configuration of the domain name to create. Cannot be specified together with `domainId`.
+	DomainConfiguration *DomainConfigurationArgs `pulumi:"domainConfiguration"`
+	// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+	DomainId pulumi.StringPtrInput `pulumi:"domainId"`
+	// API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+	Stage pulumi.StringInput `pulumi:"stage"`
+}
+
+func (DomainMappingArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*DomainMapping)(nil)).Elem()
+}
+
+func (i DomainMappingArgs) ToDomainMappingOutput() DomainMappingOutput {
+	return i.ToDomainMappingOutputWithContext(context.Background())
+}
+
+func (i DomainMappingArgs) ToDomainMappingOutputWithContext(ctx context.Context) DomainMappingOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DomainMappingOutput)
+}
+
+func (i DomainMappingArgs) ToOutput(ctx context.Context) pulumix.Output[DomainMapping] {
+	return pulumix.Output[DomainMapping]{
+		OutputState: i.ToDomainMappingOutputWithContext(ctx).OutputState,
+	}
+}
+
+// Manages an Amazon API Gateway Version 2 API mapping.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewApiMapping(ctx, "example", &apigatewayv2.ApiMappingArgs{
+//				ApiId:      pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//				DomainName: pulumi.Any(aws_apigatewayv2_domain_name.Example.Id),
+//				Stage:      pulumi.Any(aws_apigatewayv2_stage.Example.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_api_mapping` using the API mapping identifier and domain name. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/apiMapping:ApiMapping example 1122334/ws-api.example.com
+//
+// ```
+type DomainMappingOutput struct{ *pulumi.OutputState }
+
+func (DomainMappingOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*DomainMapping)(nil)).Elem()
+}
+
+func (o DomainMappingOutput) ToDomainMappingOutput() DomainMappingOutput {
+	return o
+}
+
+func (o DomainMappingOutput) ToDomainMappingOutputWithContext(ctx context.Context) DomainMappingOutput {
+	return o
+}
+
+func (o DomainMappingOutput) ToOutput(ctx context.Context) pulumix.Output[DomainMapping] {
+	return pulumix.Output[DomainMapping]{
+		OutputState: o.OutputState,
+	}
+}
+
+// The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+func (o DomainMappingOutput) ApiMappingKey() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v DomainMapping) *string { return v.ApiMappingKey }).(pulumi.StringPtrOutput)
+}
+
+// Configuration of the domain name to create. Cannot be specified together with `domainId`.
+func (o DomainMappingOutput) DomainConfiguration() DomainConfigurationPtrOutput {
+	return o.ApplyT(func(v DomainMapping) *DomainConfiguration { return v.DomainConfiguration }).(DomainConfigurationPtrOutput)
+}
+
+// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+func (o DomainMappingOutput) DomainId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v DomainMapping) *string { return v.DomainId }).(pulumi.StringPtrOutput)
+}
+
+// API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+func (o DomainMappingOutput) Stage() pulumi.StringOutput {
+	return o.ApplyT(func(v DomainMapping) string { return v.Stage }).(pulumi.StringOutput)
+}
+
 // Manages an Amazon API Gateway Version 2 authorizer.
 // More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
 //
@@ -2197,6 +2357,323 @@ type HttpRoute struct {
 	Target *string `pulumi:"target"`
 }
 
+// HttpRouteInput is an input type that accepts HttpRouteArgs and HttpRouteOutput values.
+// You can construct a concrete instance of `HttpRouteInput` via:
+//
+//	HttpRouteArgs{...}
+type HttpRouteInput interface {
+	pulumi.Input
+
+	ToHttpRouteOutput() HttpRouteOutput
+	ToHttpRouteOutputWithContext(context.Context) HttpRouteOutput
+}
+
+// Manages an Amazon API Gateway Version 2 route.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) for [WebSocket](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-routes.html) and [HTTP](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html) APIs.
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleApi, err := apigatewayv2.NewApi(ctx, "exampleApi", &apigatewayv2.ApiArgs{
+//				ProtocolType:             pulumi.String("WEBSOCKET"),
+//				RouteSelectionExpression: pulumi.String("$request.body.action"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = apigatewayv2.NewRoute(ctx, "exampleRoute", &apigatewayv2.RouteArgs{
+//				ApiId:    exampleApi.ID(),
+//				RouteKey: pulumi.String("$default"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### HTTP Proxy Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"fmt"
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleApi, err := apigatewayv2.NewApi(ctx, "exampleApi", &apigatewayv2.ApiArgs{
+//				ProtocolType: pulumi.String("HTTP"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			exampleIntegration, err := apigatewayv2.NewIntegration(ctx, "exampleIntegration", &apigatewayv2.IntegrationArgs{
+//				ApiId:             exampleApi.ID(),
+//				IntegrationType:   pulumi.String("HTTP_PROXY"),
+//				IntegrationMethod: pulumi.String("ANY"),
+//				IntegrationUri:    pulumi.String("https://example.com/{proxy}"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = apigatewayv2.NewRoute(ctx, "exampleRoute", &apigatewayv2.RouteArgs{
+//				ApiId:    exampleApi.ID(),
+//				RouteKey: pulumi.String("ANY /example/{proxy+}"),
+//				Target: exampleIntegration.ID().ApplyT(func(id string) (string, error) {
+//					return fmt.Sprintf("integrations/%v", id), nil
+//				}).(pulumi.StringOutput),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_route` using the API identifier and route identifier. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/route:Route example aabbccddee/1122334
+//
+// ```
+//
+//	-> __Note:__ The API Gateway managed route created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+type HttpRouteArgs struct {
+	// Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.
+	ApiKeyRequired pulumi.BoolPtrInput `pulumi:"apiKeyRequired"`
+	// Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+	AuthorizationScopes pulumi.StringArrayInput `pulumi:"authorizationScopes"`
+	// Authorization type for the route.
+	// For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+	// For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+	// Defaults to `NONE`.
+	AuthorizationType pulumi.StringPtrInput `pulumi:"authorizationType"`
+	// Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
+	Authorizer *HttpAuthorizerArgs `pulumi:"authorizer"`
+	// Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
+	AuthorizerId pulumi.StringPtrInput `pulumi:"authorizerId"`
+	// The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+	AuthorizerName pulumi.StringPtrInput `pulumi:"authorizerName"`
+	// Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
+	Integration *HttpIntegrationArgs `pulumi:"integration"`
+	// The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with "integrations/".
+	IntegrationName pulumi.StringPtrInput `pulumi:"integrationName"`
+	// Operation name for the route. Must be between 1 and 64 characters in length.
+	OperationName pulumi.StringPtrInput `pulumi:"operationName"`
+	// Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+	//  Only one of `integration`, `integrationName` or `target` can be specified.
+	Target pulumi.StringPtrInput `pulumi:"target"`
+}
+
+func (HttpRouteArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*HttpRoute)(nil)).Elem()
+}
+
+func (i HttpRouteArgs) ToHttpRouteOutput() HttpRouteOutput {
+	return i.ToHttpRouteOutputWithContext(context.Background())
+}
+
+func (i HttpRouteArgs) ToHttpRouteOutputWithContext(ctx context.Context) HttpRouteOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(HttpRouteOutput)
+}
+
+func (i HttpRouteArgs) ToOutput(ctx context.Context) pulumix.Output[HttpRoute] {
+	return pulumix.Output[HttpRoute]{
+		OutputState: i.ToHttpRouteOutputWithContext(ctx).OutputState,
+	}
+}
+
+// Manages an Amazon API Gateway Version 2 route.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html) for [WebSocket](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-routes.html) and [HTTP](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html) APIs.
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleApi, err := apigatewayv2.NewApi(ctx, "exampleApi", &apigatewayv2.ApiArgs{
+//				ProtocolType:             pulumi.String("WEBSOCKET"),
+//				RouteSelectionExpression: pulumi.String("$request.body.action"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = apigatewayv2.NewRoute(ctx, "exampleRoute", &apigatewayv2.RouteArgs{
+//				ApiId:    exampleApi.ID(),
+//				RouteKey: pulumi.String("$default"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### HTTP Proxy Integration
+// ```go
+// package main
+//
+// import (
+//
+//	"fmt"
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleApi, err := apigatewayv2.NewApi(ctx, "exampleApi", &apigatewayv2.ApiArgs{
+//				ProtocolType: pulumi.String("HTTP"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			exampleIntegration, err := apigatewayv2.NewIntegration(ctx, "exampleIntegration", &apigatewayv2.IntegrationArgs{
+//				ApiId:             exampleApi.ID(),
+//				IntegrationType:   pulumi.String("HTTP_PROXY"),
+//				IntegrationMethod: pulumi.String("ANY"),
+//				IntegrationUri:    pulumi.String("https://example.com/{proxy}"),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = apigatewayv2.NewRoute(ctx, "exampleRoute", &apigatewayv2.RouteArgs{
+//				ApiId:    exampleApi.ID(),
+//				RouteKey: pulumi.String("ANY /example/{proxy+}"),
+//				Target: exampleIntegration.ID().ApplyT(func(id string) (string, error) {
+//					return fmt.Sprintf("integrations/%v", id), nil
+//				}).(pulumi.StringOutput),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_route` using the API identifier and route identifier. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/route:Route example aabbccddee/1122334
+//
+// ```
+//
+//	-> __Note:__ The API Gateway managed route created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+type HttpRouteOutput struct{ *pulumi.OutputState }
+
+func (HttpRouteOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*HttpRoute)(nil)).Elem()
+}
+
+func (o HttpRouteOutput) ToHttpRouteOutput() HttpRouteOutput {
+	return o
+}
+
+func (o HttpRouteOutput) ToHttpRouteOutputWithContext(ctx context.Context) HttpRouteOutput {
+	return o
+}
+
+func (o HttpRouteOutput) ToOutput(ctx context.Context) pulumix.Output[HttpRoute] {
+	return pulumix.Output[HttpRoute]{
+		OutputState: o.OutputState,
+	}
+}
+
+// Boolean whether an API key is required for the route. Defaults to `false`. Supported only for WebSocket APIs.
+func (o HttpRouteOutput) ApiKeyRequired() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v HttpRoute) *bool { return v.ApiKeyRequired }).(pulumi.BoolPtrOutput)
+}
+
+// Authorization scopes supported by this route. The scopes are used with a JWT authorizer to authorize the method invocation.
+func (o HttpRouteOutput) AuthorizationScopes() pulumi.StringArrayOutput {
+	return o.ApplyT(func(v HttpRoute) []string { return v.AuthorizationScopes }).(pulumi.StringArrayOutput)
+}
+
+// Authorization type for the route.
+// For WebSocket APIs, valid values are `NONE` for open access, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+// For HTTP APIs, valid values are `NONE` for open access, `JWT` for using JSON Web Tokens, `AWS_IAM` for using AWS IAM permissions, and `CUSTOM` for using a Lambda authorizer.
+// Defaults to `NONE`.
+func (o HttpRouteOutput) AuthorizationType() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpRoute) *string { return v.AuthorizationType }).(pulumi.StringPtrOutput)
+}
+
+// Details of the authorizer to be created for this route. Only one of `authorizer`, `authorizerName` or `target` can be specified.
+func (o HttpRouteOutput) Authorizer() HttpAuthorizerPtrOutput {
+	return o.ApplyT(func(v HttpRoute) *HttpAuthorizer { return v.Authorizer }).(HttpAuthorizerPtrOutput)
+}
+
+// Identifier of the `aws.apigatewayv2.Authorizer` resource to be associated with this route.
+func (o HttpRouteOutput) AuthorizerId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpRoute) *string { return v.AuthorizerId }).(pulumi.StringPtrOutput)
+}
+
+// The name of the target authorizer for the route specified in the `authorizers` property. This is used to automatically calculate the `authorizerId` property of the route.
+func (o HttpRouteOutput) AuthorizerName() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpRoute) *string { return v.AuthorizerName }).(pulumi.StringPtrOutput)
+}
+
+// Details of the integration to be created for this route. Only one of `integration`, `integrationName` or `target` can be specified.
+func (o HttpRouteOutput) Integration() HttpIntegrationPtrOutput {
+	return o.ApplyT(func(v HttpRoute) *HttpIntegration { return v.Integration }).(HttpIntegrationPtrOutput)
+}
+
+// The name of the target integration for the route specified in the `integrations` property. This is used to automatically calculate the `target` property of the route. Only one of `integration`, `integrationName` or `target` can be specified. This does not need to be prefixed with "integrations/".
+func (o HttpRouteOutput) IntegrationName() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpRoute) *string { return v.IntegrationName }).(pulumi.StringPtrOutput)
+}
+
+// Operation name for the route. Must be between 1 and 64 characters in length.
+func (o HttpRouteOutput) OperationName() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpRoute) *string { return v.OperationName }).(pulumi.StringPtrOutput)
+}
+
+// Target for the route, of the form `integrations/`*`IntegrationID`*, where *`IntegrationID`* is the identifier of an `aws.apigatewayv2.Integration` resource.
+//
+//	Only one of `integration`, `integrationName` or `target` can be specified.
+func (o HttpRouteOutput) Target() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpRoute) *string { return v.Target }).(pulumi.StringPtrOutput)
+}
+
 // Manages an Amazon API Gateway Version 2 stage.
 // More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
 //
@@ -2264,17 +2741,233 @@ type HttpStage struct {
 	Tags map[string]string `pulumi:"tags"`
 }
 
+// HttpStageInput is an input type that accepts HttpStageArgs and HttpStageOutput values.
+// You can construct a concrete instance of `HttpStageInput` via:
+//
+//	HttpStageArgs{...}
+type HttpStageInput interface {
+	pulumi.Input
+
+	ToHttpStageOutput() HttpStageOutput
+	ToHttpStageOutputWithContext(context.Context) HttpStageOutput
+}
+
+// Manages an Amazon API Gateway Version 2 stage.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewStage(ctx, "example", &apigatewayv2.StageArgs{
+//				ApiId: pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_stage` using the API identifier and stage name. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/stage:Stage example aabbccddee/example-stage
+//
+// ```
+//
+//	-> __Note:__ The API Gateway managed stage created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+type HttpStageArgs struct {
+	// Settings for logging access in this stage.
+	// Use the `aws.apigateway.Account` resource to configure [permissions for CloudWatch Logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#set-up-access-logging-permissions).
+	AccessLogSettings apigatewayv2.StageAccessLogSettingsPtrInput `pulumi:"accessLogSettings"`
+	// Whether updates to an API automatically trigger a new deployment. Defaults to `false`. Applicable for HTTP APIs.
+	AutoDeploy pulumi.BoolPtrInput `pulumi:"autoDeploy"`
+	// Identifier of a client certificate for the stage. Use the `aws.apigateway.ClientCertificate` resource to configure a client certificate.
+	// Supported only for WebSocket APIs.
+	ClientCertificateId pulumi.StringPtrInput `pulumi:"clientCertificateId"`
+	// Default route settings for the stage.
+	DefaultRouteSettings apigatewayv2.StageDefaultRouteSettingsPtrInput `pulumi:"defaultRouteSettings"`
+	// Deployment identifier of the stage. Use the `aws.apigatewayv2.Deployment` resource to configure a deployment.
+	DeploymentId pulumi.StringPtrInput `pulumi:"deploymentId"`
+	// Description for the stage. Must be less than or equal to 1024 characters in length.
+	Description pulumi.StringPtrInput `pulumi:"description"`
+	// Name of the stage. Must be between 1 and 128 characters in length.
+	//
+	// The following arguments are optional:
+	Name pulumi.StringPtrInput `pulumi:"name"`
+	// Route settings for the stage.
+	RouteSettings apigatewayv2.StageRouteSettingArrayInput `pulumi:"routeSettings"`
+	// Map that defines the stage variables for the stage.
+	StageVariables pulumi.StringMapInput `pulumi:"stageVariables"`
+	// Map of tags to assign to the stage. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	Tags pulumi.StringMapInput `pulumi:"tags"`
+}
+
+func (HttpStageArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*HttpStage)(nil)).Elem()
+}
+
+func (i HttpStageArgs) ToHttpStageOutput() HttpStageOutput {
+	return i.ToHttpStageOutputWithContext(context.Background())
+}
+
+func (i HttpStageArgs) ToHttpStageOutputWithContext(ctx context.Context) HttpStageOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(HttpStageOutput)
+}
+
+func (i HttpStageArgs) ToOutput(ctx context.Context) pulumix.Output[HttpStage] {
+	return pulumix.Output[HttpStage]{
+		OutputState: i.ToHttpStageOutputWithContext(ctx).OutputState,
+	}
+}
+
+// Manages an Amazon API Gateway Version 2 stage.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html).
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewStage(ctx, "example", &apigatewayv2.StageArgs{
+//				ApiId: pulumi.Any(aws_apigatewayv2_api.Example.Id),
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_stage` using the API identifier and stage name. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/stage:Stage example aabbccddee/example-stage
+//
+// ```
+//
+//	-> __Note:__ The API Gateway managed stage created as part of [_quick_create_](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-basic-concept.html#apigateway-definition-quick-create) cannot be imported.
+type HttpStageOutput struct{ *pulumi.OutputState }
+
+func (HttpStageOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*HttpStage)(nil)).Elem()
+}
+
+func (o HttpStageOutput) ToHttpStageOutput() HttpStageOutput {
+	return o
+}
+
+func (o HttpStageOutput) ToHttpStageOutputWithContext(ctx context.Context) HttpStageOutput {
+	return o
+}
+
+func (o HttpStageOutput) ToOutput(ctx context.Context) pulumix.Output[HttpStage] {
+	return pulumix.Output[HttpStage]{
+		OutputState: o.OutputState,
+	}
+}
+
+// Settings for logging access in this stage.
+// Use the `aws.apigateway.Account` resource to configure [permissions for CloudWatch Logging](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html#set-up-access-logging-permissions).
+func (o HttpStageOutput) AccessLogSettings() apigatewayv2.StageAccessLogSettingsPtrOutput {
+	return o.ApplyT(func(v HttpStage) *apigatewayv2.StageAccessLogSettings { return v.AccessLogSettings }).(apigatewayv2.StageAccessLogSettingsPtrOutput)
+}
+
+// Whether updates to an API automatically trigger a new deployment. Defaults to `false`. Applicable for HTTP APIs.
+func (o HttpStageOutput) AutoDeploy() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v HttpStage) *bool { return v.AutoDeploy }).(pulumi.BoolPtrOutput)
+}
+
+// Identifier of a client certificate for the stage. Use the `aws.apigateway.ClientCertificate` resource to configure a client certificate.
+// Supported only for WebSocket APIs.
+func (o HttpStageOutput) ClientCertificateId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpStage) *string { return v.ClientCertificateId }).(pulumi.StringPtrOutput)
+}
+
+// Default route settings for the stage.
+func (o HttpStageOutput) DefaultRouteSettings() apigatewayv2.StageDefaultRouteSettingsPtrOutput {
+	return o.ApplyT(func(v HttpStage) *apigatewayv2.StageDefaultRouteSettings { return v.DefaultRouteSettings }).(apigatewayv2.StageDefaultRouteSettingsPtrOutput)
+}
+
+// Deployment identifier of the stage. Use the `aws.apigatewayv2.Deployment` resource to configure a deployment.
+func (o HttpStageOutput) DeploymentId() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpStage) *string { return v.DeploymentId }).(pulumi.StringPtrOutput)
+}
+
+// Description for the stage. Must be less than or equal to 1024 characters in length.
+func (o HttpStageOutput) Description() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpStage) *string { return v.Description }).(pulumi.StringPtrOutput)
+}
+
+// Name of the stage. Must be between 1 and 128 characters in length.
+//
+// The following arguments are optional:
+func (o HttpStageOutput) Name() pulumi.StringPtrOutput {
+	return o.ApplyT(func(v HttpStage) *string { return v.Name }).(pulumi.StringPtrOutput)
+}
+
+// Route settings for the stage.
+func (o HttpStageOutput) RouteSettings() apigatewayv2.StageRouteSettingArrayOutput {
+	return o.ApplyT(func(v HttpStage) []apigatewayv2.StageRouteSetting { return v.RouteSettings }).(apigatewayv2.StageRouteSettingArrayOutput)
+}
+
+// Map that defines the stage variables for the stage.
+func (o HttpStageOutput) StageVariables() pulumi.StringMapOutput {
+	return o.ApplyT(func(v HttpStage) map[string]string { return v.StageVariables }).(pulumi.StringMapOutput)
+}
+
+// Map of tags to assign to the stage. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o HttpStageOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v HttpStage) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
 func init() {
 	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationInput)(nil)).Elem(), DomainConfigurationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationPtrInput)(nil)).Elem(), DomainConfigurationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DomainMappingInput)(nil)).Elem(), DomainMappingArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpAuthorizerInput)(nil)).Elem(), HttpAuthorizerArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpAuthorizerPtrInput)(nil)).Elem(), HttpAuthorizerArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationInput)(nil)).Elem(), HttpIntegrationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationPtrInput)(nil)).Elem(), HttpIntegrationArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*HttpRouteInput)(nil)).Elem(), HttpRouteArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*HttpStageInput)(nil)).Elem(), HttpStageArgs{})
 	pulumi.RegisterOutputType(DomainConfigurationOutput{})
 	pulumi.RegisterOutputType(DomainConfigurationPtrOutput{})
+	pulumi.RegisterOutputType(DomainMappingOutput{})
 	pulumi.RegisterOutputType(HttpAuthorizerOutput{})
 	pulumi.RegisterOutputType(HttpAuthorizerPtrOutput{})
 	pulumi.RegisterOutputType(HttpIntegrationOutput{})
 	pulumi.RegisterOutputType(HttpIntegrationPtrOutput{})
+	pulumi.RegisterOutputType(HttpRouteOutput{})
+	pulumi.RegisterOutputType(HttpStageOutput{})
 }

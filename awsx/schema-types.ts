@@ -40,18 +40,18 @@ export abstract class HttpApi<TData = any> extends (pulumi.ComponentResource)<TD
 }
 export interface HttpApiArgs {
     readonly apiKeySelectionExpression?: pulumi.Input<string>;
-    readonly authorizers?: Record<string, HttpAuthorizerInputs>;
+    readonly authorizers?: Record<string, pulumi.Input<HttpAuthorizerInputs>>;
     readonly body?: pulumi.Input<string>;
     readonly corsConfiguration?: pulumi.Input<aws.types.input.apigatewayv2.ApiCorsConfiguration>;
     readonly description?: pulumi.Input<string>;
     readonly disableExecuteApiEndpoint?: pulumi.Input<boolean>;
-    readonly domainMappings?: Record<string, DomainMappingInputs>;
+    readonly domainMappings?: Record<string, pulumi.Input<DomainMappingInputs>>;
     readonly failOnWarnings?: pulumi.Input<boolean>;
-    readonly integrations?: Record<string, HttpIntegrationInputs>;
+    readonly integrations?: Record<string, pulumi.Input<HttpIntegrationInputs>>;
     readonly name?: pulumi.Input<string>;
     readonly routeSelectionExpression?: pulumi.Input<string>;
-    readonly routes: Record<string, HttpRouteInputs>;
-    readonly stages?: Record<string, HttpStageInputs>;
+    readonly routes: Record<string, pulumi.Input<HttpRouteInputs>>;
+    readonly stages?: Record<string, pulumi.Input<HttpStageInputs>>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly version?: pulumi.Input<string>;
 }

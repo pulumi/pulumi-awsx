@@ -100,7 +100,7 @@ type HttpApiArgs struct {
 	// Applicable for WebSocket APIs.
 	ApiKeySelectionExpression pulumi.StringPtrInput
 	// The authorizers for the HTTP API routes.
-	Authorizers map[string]HttpAuthorizerArgs
+	Authorizers map[string]HttpAuthorizerInput
 	// An OpenAPI specification that defines the set of routes and integrations to create as part of the HTTP APIs. Supported only for HTTP APIs.
 	Body pulumi.StringPtrInput
 	// Cross-origin resource sharing (CORS) [configuration](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html). Applicable for HTTP APIs.
@@ -112,20 +112,20 @@ type HttpApiArgs struct {
 	// To require that clients use a custom domain name to invoke the API, disable the default endpoint.
 	DisableExecuteApiEndpoint pulumi.BoolPtrInput
 	// The domain names for the HTTP API.
-	DomainMappings map[string]DomainMappingArgs
+	DomainMappings map[string]DomainMappingInput
 	// Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.
 	FailOnWarnings pulumi.BoolPtrInput
 	// A map of integrations keyed by name for the HTTP API routes.
-	Integrations map[string]HttpIntegrationArgs
+	Integrations map[string]HttpIntegrationInput
 	// Name of the API. Must be less than or equal to 128 characters in length.
 	Name pulumi.StringPtrInput
 	// The [route selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-route-selection-expressions) for the API.
 	// Defaults to `$request.method $request.path`.
 	RouteSelectionExpression pulumi.StringPtrInput
 	// The routes for the HTTP API.
-	Routes map[string]HttpRouteArgs
+	Routes map[string]HttpRouteInput
 	// The deployment stages for the HTTP API.
-	Stages map[string]HttpStageArgs
+	Stages map[string]HttpStageInput
 	// Map of tags to assign to the API. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
 	Tags pulumi.StringMapInput
 	// Version identifier for the API. Must be between 1 and 64 characters in length.

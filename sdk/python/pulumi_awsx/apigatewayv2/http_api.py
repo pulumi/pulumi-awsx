@@ -16,41 +16,41 @@ __all__ = ['HttpApiArgs', 'HttpApi']
 @pulumi.input_type
 class HttpApiArgs:
     def __init__(__self__, *,
-                 routes: Mapping[str, 'HttpRouteArgs'],
+                 routes: Mapping[str, pulumi.Input['HttpRouteArgs']],
                  api_key_selection_expression: Optional[pulumi.Input[str]] = None,
-                 authorizers: Optional[Mapping[str, 'HttpAuthorizerArgs']] = None,
+                 authorizers: Optional[Mapping[str, pulumi.Input['HttpAuthorizerArgs']]] = None,
                  body: Optional[pulumi.Input[str]] = None,
                  cors_configuration: Optional[pulumi.Input['pulumi_aws.apigatewayv2.ApiCorsConfigurationArgs']] = None,
                  description: Optional[pulumi.Input[str]] = None,
                  disable_execute_api_endpoint: Optional[pulumi.Input[bool]] = None,
-                 domain_mappings: Optional[Mapping[str, 'DomainMappingArgs']] = None,
+                 domain_mappings: Optional[Mapping[str, pulumi.Input['DomainMappingArgs']]] = None,
                  fail_on_warnings: Optional[pulumi.Input[bool]] = None,
-                 integrations: Optional[Mapping[str, 'HttpIntegrationArgs']] = None,
+                 integrations: Optional[Mapping[str, pulumi.Input['HttpIntegrationArgs']]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  route_selection_expression: Optional[pulumi.Input[str]] = None,
-                 stages: Optional[Mapping[str, 'HttpStageArgs']] = None,
+                 stages: Optional[Mapping[str, pulumi.Input['HttpStageArgs']]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  version: Optional[pulumi.Input[str]] = None):
         """
         The set of arguments for constructing a HttpApi resource.
-        :param Mapping[str, 'HttpRouteArgs'] routes: The routes for the HTTP API.
+        :param Mapping[str, pulumi.Input['HttpRouteArgs']] routes: The routes for the HTTP API.
         :param pulumi.Input[str] api_key_selection_expression: An [API key selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-apikey-selection-expressions).
                Valid values: `$context.authorizer.usageIdentifierKey`, `$request.header.x-api-key`. Defaults to `$request.header.x-api-key`.
                Applicable for WebSocket APIs.
-        :param Mapping[str, 'HttpAuthorizerArgs'] authorizers: The authorizers for the HTTP API routes.
+        :param Mapping[str, pulumi.Input['HttpAuthorizerArgs']] authorizers: The authorizers for the HTTP API routes.
         :param pulumi.Input[str] body: An OpenAPI specification that defines the set of routes and integrations to create as part of the HTTP APIs. Supported only for HTTP APIs.
         :param pulumi.Input['pulumi_aws.apigatewayv2.ApiCorsConfigurationArgs'] cors_configuration: Cross-origin resource sharing (CORS) [configuration](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html). Applicable for HTTP APIs.
         :param pulumi.Input[str] description: Description of the API. Must be less than or equal to 1024 characters in length.
         :param pulumi.Input[bool] disable_execute_api_endpoint: Whether clients can invoke the API by using the default `execute-api` endpoint.
                By default, clients can invoke the API with the default `{api_id}.execute-api.{region}.amazonaws.com endpoint`.
                To require that clients use a custom domain name to invoke the API, disable the default endpoint.
-        :param Mapping[str, 'DomainMappingArgs'] domain_mappings: The domain names for the HTTP API.
+        :param Mapping[str, pulumi.Input['DomainMappingArgs']] domain_mappings: The domain names for the HTTP API.
         :param pulumi.Input[bool] fail_on_warnings: Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.
-        :param Mapping[str, 'HttpIntegrationArgs'] integrations: A map of integrations keyed by name for the HTTP API routes.
+        :param Mapping[str, pulumi.Input['HttpIntegrationArgs']] integrations: A map of integrations keyed by name for the HTTP API routes.
         :param pulumi.Input[str] name: Name of the API. Must be less than or equal to 128 characters in length.
         :param pulumi.Input[str] route_selection_expression: The [route selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-route-selection-expressions) for the API.
                Defaults to `$request.method $request.path`.
-        :param Mapping[str, 'HttpStageArgs'] stages: The deployment stages for the HTTP API.
+        :param Mapping[str, pulumi.Input['HttpStageArgs']] stages: The deployment stages for the HTTP API.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the API. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] version: Version identifier for the API. Must be between 1 and 64 characters in length.
         """
@@ -86,14 +86,14 @@ class HttpApiArgs:
 
     @property
     @pulumi.getter
-    def routes(self) -> Mapping[str, 'HttpRouteArgs']:
+    def routes(self) -> Mapping[str, pulumi.Input['HttpRouteArgs']]:
         """
         The routes for the HTTP API.
         """
         return pulumi.get(self, "routes")
 
     @routes.setter
-    def routes(self, value: Mapping[str, 'HttpRouteArgs']):
+    def routes(self, value: Mapping[str, pulumi.Input['HttpRouteArgs']]):
         pulumi.set(self, "routes", value)
 
     @property
@@ -112,14 +112,14 @@ class HttpApiArgs:
 
     @property
     @pulumi.getter
-    def authorizers(self) -> Optional[Mapping[str, 'HttpAuthorizerArgs']]:
+    def authorizers(self) -> Optional[Mapping[str, pulumi.Input['HttpAuthorizerArgs']]]:
         """
         The authorizers for the HTTP API routes.
         """
         return pulumi.get(self, "authorizers")
 
     @authorizers.setter
-    def authorizers(self, value: Optional[Mapping[str, 'HttpAuthorizerArgs']]):
+    def authorizers(self, value: Optional[Mapping[str, pulumi.Input['HttpAuthorizerArgs']]]):
         pulumi.set(self, "authorizers", value)
 
     @property
@@ -174,14 +174,14 @@ class HttpApiArgs:
 
     @property
     @pulumi.getter(name="domainMappings")
-    def domain_mappings(self) -> Optional[Mapping[str, 'DomainMappingArgs']]:
+    def domain_mappings(self) -> Optional[Mapping[str, pulumi.Input['DomainMappingArgs']]]:
         """
         The domain names for the HTTP API.
         """
         return pulumi.get(self, "domain_mappings")
 
     @domain_mappings.setter
-    def domain_mappings(self, value: Optional[Mapping[str, 'DomainMappingArgs']]):
+    def domain_mappings(self, value: Optional[Mapping[str, pulumi.Input['DomainMappingArgs']]]):
         pulumi.set(self, "domain_mappings", value)
 
     @property
@@ -198,14 +198,14 @@ class HttpApiArgs:
 
     @property
     @pulumi.getter
-    def integrations(self) -> Optional[Mapping[str, 'HttpIntegrationArgs']]:
+    def integrations(self) -> Optional[Mapping[str, pulumi.Input['HttpIntegrationArgs']]]:
         """
         A map of integrations keyed by name for the HTTP API routes.
         """
         return pulumi.get(self, "integrations")
 
     @integrations.setter
-    def integrations(self, value: Optional[Mapping[str, 'HttpIntegrationArgs']]):
+    def integrations(self, value: Optional[Mapping[str, pulumi.Input['HttpIntegrationArgs']]]):
         pulumi.set(self, "integrations", value)
 
     @property
@@ -235,14 +235,14 @@ class HttpApiArgs:
 
     @property
     @pulumi.getter
-    def stages(self) -> Optional[Mapping[str, 'HttpStageArgs']]:
+    def stages(self) -> Optional[Mapping[str, pulumi.Input['HttpStageArgs']]]:
         """
         The deployment stages for the HTTP API.
         """
         return pulumi.get(self, "stages")
 
     @stages.setter
-    def stages(self, value: Optional[Mapping[str, 'HttpStageArgs']]):
+    def stages(self, value: Optional[Mapping[str, pulumi.Input['HttpStageArgs']]]):
         pulumi.set(self, "stages", value)
 
     @property
@@ -276,18 +276,18 @@ class HttpApi(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  api_key_selection_expression: Optional[pulumi.Input[str]] = None,
-                 authorizers: Optional[Mapping[str, pulumi.InputType['HttpAuthorizerArgs']]] = None,
+                 authorizers: Optional[Mapping[str, pulumi.Input[pulumi.InputType['HttpAuthorizerArgs']]]] = None,
                  body: Optional[pulumi.Input[str]] = None,
                  cors_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.apigatewayv2.ApiCorsConfigurationArgs']]] = None,
                  description: Optional[pulumi.Input[str]] = None,
                  disable_execute_api_endpoint: Optional[pulumi.Input[bool]] = None,
-                 domain_mappings: Optional[Mapping[str, pulumi.InputType['DomainMappingArgs']]] = None,
+                 domain_mappings: Optional[Mapping[str, pulumi.Input[pulumi.InputType['DomainMappingArgs']]]] = None,
                  fail_on_warnings: Optional[pulumi.Input[bool]] = None,
-                 integrations: Optional[Mapping[str, pulumi.InputType['HttpIntegrationArgs']]] = None,
+                 integrations: Optional[Mapping[str, pulumi.Input[pulumi.InputType['HttpIntegrationArgs']]]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  route_selection_expression: Optional[pulumi.Input[str]] = None,
-                 routes: Optional[Mapping[str, pulumi.InputType['HttpRouteArgs']]] = None,
-                 stages: Optional[Mapping[str, pulumi.InputType['HttpStageArgs']]] = None,
+                 routes: Optional[Mapping[str, pulumi.Input[pulumi.InputType['HttpRouteArgs']]]] = None,
+                 stages: Optional[Mapping[str, pulumi.Input[pulumi.InputType['HttpStageArgs']]]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  version: Optional[pulumi.Input[str]] = None,
                  __props__=None):
@@ -299,21 +299,21 @@ class HttpApi(pulumi.ComponentResource):
         :param pulumi.Input[str] api_key_selection_expression: An [API key selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-apikey-selection-expressions).
                Valid values: `$context.authorizer.usageIdentifierKey`, `$request.header.x-api-key`. Defaults to `$request.header.x-api-key`.
                Applicable for WebSocket APIs.
-        :param Mapping[str, pulumi.InputType['HttpAuthorizerArgs']] authorizers: The authorizers for the HTTP API routes.
+        :param Mapping[str, pulumi.Input[pulumi.InputType['HttpAuthorizerArgs']]] authorizers: The authorizers for the HTTP API routes.
         :param pulumi.Input[str] body: An OpenAPI specification that defines the set of routes and integrations to create as part of the HTTP APIs. Supported only for HTTP APIs.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.apigatewayv2.ApiCorsConfigurationArgs']] cors_configuration: Cross-origin resource sharing (CORS) [configuration](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.html). Applicable for HTTP APIs.
         :param pulumi.Input[str] description: Description of the API. Must be less than or equal to 1024 characters in length.
         :param pulumi.Input[bool] disable_execute_api_endpoint: Whether clients can invoke the API by using the default `execute-api` endpoint.
                By default, clients can invoke the API with the default `{api_id}.execute-api.{region}.amazonaws.com endpoint`.
                To require that clients use a custom domain name to invoke the API, disable the default endpoint.
-        :param Mapping[str, pulumi.InputType['DomainMappingArgs']] domain_mappings: The domain names for the HTTP API.
+        :param Mapping[str, pulumi.Input[pulumi.InputType['DomainMappingArgs']]] domain_mappings: The domain names for the HTTP API.
         :param pulumi.Input[bool] fail_on_warnings: Whether warnings should return an error while API Gateway is creating or updating the resource using an OpenAPI specification. Defaults to `false`. Applicable for HTTP APIs.
-        :param Mapping[str, pulumi.InputType['HttpIntegrationArgs']] integrations: A map of integrations keyed by name for the HTTP API routes.
+        :param Mapping[str, pulumi.Input[pulumi.InputType['HttpIntegrationArgs']]] integrations: A map of integrations keyed by name for the HTTP API routes.
         :param pulumi.Input[str] name: Name of the API. Must be less than or equal to 128 characters in length.
         :param pulumi.Input[str] route_selection_expression: The [route selection expression](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html#apigateway-websocket-api-route-selection-expressions) for the API.
                Defaults to `$request.method $request.path`.
-        :param Mapping[str, pulumi.InputType['HttpRouteArgs']] routes: The routes for the HTTP API.
-        :param Mapping[str, pulumi.InputType['HttpStageArgs']] stages: The deployment stages for the HTTP API.
+        :param Mapping[str, pulumi.Input[pulumi.InputType['HttpRouteArgs']]] routes: The routes for the HTTP API.
+        :param Mapping[str, pulumi.Input[pulumi.InputType['HttpStageArgs']]] stages: The deployment stages for the HTTP API.
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Map of tags to assign to the API. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param pulumi.Input[str] version: Version identifier for the API. Must be between 1 and 64 characters in length.
         """
@@ -342,18 +342,18 @@ class HttpApi(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  api_key_selection_expression: Optional[pulumi.Input[str]] = None,
-                 authorizers: Optional[Mapping[str, pulumi.InputType['HttpAuthorizerArgs']]] = None,
+                 authorizers: Optional[Mapping[str, pulumi.Input[pulumi.InputType['HttpAuthorizerArgs']]]] = None,
                  body: Optional[pulumi.Input[str]] = None,
                  cors_configuration: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.apigatewayv2.ApiCorsConfigurationArgs']]] = None,
                  description: Optional[pulumi.Input[str]] = None,
                  disable_execute_api_endpoint: Optional[pulumi.Input[bool]] = None,
-                 domain_mappings: Optional[Mapping[str, pulumi.InputType['DomainMappingArgs']]] = None,
+                 domain_mappings: Optional[Mapping[str, pulumi.Input[pulumi.InputType['DomainMappingArgs']]]] = None,
                  fail_on_warnings: Optional[pulumi.Input[bool]] = None,
-                 integrations: Optional[Mapping[str, pulumi.InputType['HttpIntegrationArgs']]] = None,
+                 integrations: Optional[Mapping[str, pulumi.Input[pulumi.InputType['HttpIntegrationArgs']]]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  route_selection_expression: Optional[pulumi.Input[str]] = None,
-                 routes: Optional[Mapping[str, pulumi.InputType['HttpRouteArgs']]] = None,
-                 stages: Optional[Mapping[str, pulumi.InputType['HttpStageArgs']]] = None,
+                 routes: Optional[Mapping[str, pulumi.Input[pulumi.InputType['HttpRouteArgs']]]] = None,
+                 stages: Optional[Mapping[str, pulumi.Input[pulumi.InputType['HttpStageArgs']]]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  version: Optional[pulumi.Input[str]] = None,
                  __props__=None):
