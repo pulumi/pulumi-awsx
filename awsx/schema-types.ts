@@ -388,27 +388,27 @@ export interface TargetGroupAttachmentArgs {
     readonly targetGroup?: pulumi.Input<aws.lb.TargetGroup>;
     readonly targetGroupArn?: pulumi.Input<string>;
 }
-export interface DomainConfigurationInputs {
-    readonly domainNameConfiguration: pulumi.Input<aws.types.input.apigatewayv2.DomainNameDomainNameConfiguration>;
-    readonly mutualTlsAuthentication?: pulumi.Input<aws.types.input.apigatewayv2.DomainNameMutualTlsAuthentication>;
-    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
-}
-export interface DomainConfigurationOutputs {
-    readonly domainNameConfiguration: pulumi.Output<aws.types.output.apigatewayv2.DomainNameDomainNameConfiguration>;
-    readonly mutualTlsAuthentication?: pulumi.Output<aws.types.output.apigatewayv2.DomainNameMutualTlsAuthentication>;
-    readonly tags?: pulumi.Output<Record<string, string>>;
-}
 export interface DomainMappingInputs {
     readonly apiMappingKey?: pulumi.Input<string>;
-    readonly domainConfiguration?: DomainConfigurationInputs;
     readonly domainId?: pulumi.Input<string>;
+    readonly domainName?: DomainNameInputs;
     readonly stage: pulumi.Input<string>;
 }
 export interface DomainMappingOutputs {
     readonly apiMappingKey?: pulumi.Output<string>;
-    readonly domainConfiguration?: DomainConfigurationOutputs;
     readonly domainId?: pulumi.Output<string>;
+    readonly domainName?: DomainNameOutputs;
     readonly stage: pulumi.Output<string>;
+}
+export interface DomainNameInputs {
+    readonly domainNameConfiguration: pulumi.Input<aws.types.input.apigatewayv2.DomainNameDomainNameConfiguration>;
+    readonly mutualTlsAuthentication?: pulumi.Input<aws.types.input.apigatewayv2.DomainNameMutualTlsAuthentication>;
+    readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
+}
+export interface DomainNameOutputs {
+    readonly domainNameConfiguration: pulumi.Output<aws.types.output.apigatewayv2.DomainNameDomainNameConfiguration>;
+    readonly mutualTlsAuthentication?: pulumi.Output<aws.types.output.apigatewayv2.DomainNameMutualTlsAuthentication>;
+    readonly tags?: pulumi.Output<Record<string, string>>;
 }
 export interface HttpAuthorizerInputs {
     readonly authorizerCredentialsArn?: pulumi.Input<string>;

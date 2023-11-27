@@ -243,25 +243,25 @@ export function buildHttpApi(parent: pulumi.Resource, name: string, args: schema
     { parent, dependsOn: [...routeResources, ...stageResources] },
   );
 
-  function makeDomainMapping(domainName: string, domainMappingInput: schema.DomainMappingInputs) {
-    const { domainConfiguration, domainId, ...apiMappingArgs } = domainMappingInput;
+  function makeDomainMapping(domainKey: string, domainMappingInput: schema.DomainMappingInputs) {
+    const { domainName, domainId, ...apiMappingArgs } = domainMappingInput;
     if (
-      (domainId === undefined && domainConfiguration === undefined) ||
-      (domainId !== undefined && domainConfiguration !== undefined)
+      (domainId === undefined && domainName === undefined) ||
+      (domainId !== undefined && domainName !== undefined)
     ) {
       throw new Error(
-        `Exactly one of domainId or domainConfiguration must be specified for domain ${domainName}`,
+        `Exactly one of domainId or domainConfiguration must be specified for domain ${domainKey}`,
       );
     }
     let resolvedDomainId = domainId;
-    const domainResourceName = domainName.replace(/\W+/g, "-");
+    const domainResourceName = domainKey.replace(/\W+/g, "-");
     let domainResource: aws.apigatewayv2.DomainName | undefined;
-    if (domainConfiguration !== undefined) {
+    if (domainName !== undefined) {
       domainResource = new aws.apigatewayv2.DomainName(
         `${name}-${domainResourceName}`,
         {
-          domainName: domainName,
-          ...domainConfiguration,
+          domainName: domainKey,
+          ...domainName,
         },
         { parent },
       );

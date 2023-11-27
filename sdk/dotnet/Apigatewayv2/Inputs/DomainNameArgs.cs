@@ -349,7 +349,7 @@ namespace Pulumi.Awsx.Apigatewayv2.Inputs
     /// ```
     ///  
     /// </summary>
-    public sealed class DomainConfigurationArgs : global::Pulumi.ResourceArgs
+    public sealed class DomainNameArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
         /// Domain name configuration. See below.
@@ -375,9 +375,9 @@ namespace Pulumi.Awsx.Apigatewayv2.Inputs
             set => _tags = value;
         }
 
-        public DomainConfigurationArgs()
+        public DomainNameArgs()
         {
         }
-        public static new DomainConfigurationArgs Empty => new DomainConfigurationArgs();
+        public static new DomainNameArgs Empty => new DomainNameArgs();
     }
 }

@@ -11,8 +11,8 @@ from .. import _utilities
 import pulumi_aws
 
 __all__ = [
-    'DomainConfigurationArgs',
     'DomainMappingArgs',
+    'DomainNameArgs',
     'HttpAuthorizerArgs',
     'HttpIntegrationArgs',
     'HttpRouteArgs',
@@ -20,7 +20,193 @@ __all__ = [
 ]
 
 @pulumi.input_type
-class DomainConfigurationArgs:
+class DomainMappingArgs:
+    def __init__(__self__, *,
+                 stage: pulumi.Input[str],
+                 api_mapping_key: Optional[pulumi.Input[str]] = None,
+                 domain_id: Optional[pulumi.Input[str]] = None,
+                 domain_name: Optional['DomainNameArgs'] = None):
+        """
+        Manages an Amazon API Gateway Version 2 API mapping.
+        More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+
+        {{% examples %}}
+        ## Example Usage
+        {{% example %}}
+        ### Basic
+
+        ```typescript
+        import * as pulumi from "@pulumi/pulumi";
+        import * as aws from "@pulumi/aws";
+
+        const example = new aws.apigatewayv2.ApiMapping("example", {
+            apiId: aws_apigatewayv2_api.example.id,
+            domainName: aws_apigatewayv2_domain_name.example.id,
+            stage: aws_apigatewayv2_stage.example.id,
+        });
+        ```
+        ```python
+        import pulumi
+        import pulumi_aws as aws
+
+        example = aws.apigatewayv2.ApiMapping("example",
+            api_id=aws_apigatewayv2_api["example"]["id"],
+            domain_name=aws_apigatewayv2_domain_name["example"]["id"],
+            stage=aws_apigatewayv2_stage["example"]["id"])
+        ```
+        ```csharp
+        using System.Collections.Generic;
+        using System.Linq;
+        using Pulumi;
+        using Aws = Pulumi.Aws;
+
+        return await Deployment.RunAsync(() => 
+        {
+            var example = new Aws.ApiGatewayV2.ApiMapping("example", new()
+            {
+                ApiId = aws_apigatewayv2_api.Example.Id,
+                DomainName = aws_apigatewayv2_domain_name.Example.Id,
+                Stage = aws_apigatewayv2_stage.Example.Id,
+            });
+
+        });
+        ```
+        ```go
+        package main
+
+        import (
+        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+        )
+
+        func main() {
+        	pulumi.Run(func(ctx *pulumi.Context) error {
+        		_, err := apigatewayv2.NewApiMapping(ctx, "example", &apigatewayv2.ApiMappingArgs{
+        			ApiId:      pulumi.Any(aws_apigatewayv2_api.Example.Id),
+        			DomainName: pulumi.Any(aws_apigatewayv2_domain_name.Example.Id),
+        			Stage:      pulumi.Any(aws_apigatewayv2_stage.Example.Id),
+        		})
+        		if err != nil {
+        			return err
+        		}
+        		return nil
+        	})
+        }
+        ```
+        ```java
+        package generated_program;
+
+        import com.pulumi.Context;
+        import com.pulumi.Pulumi;
+        import com.pulumi.core.Output;
+        import com.pulumi.aws.apigatewayv2.ApiMapping;
+        import com.pulumi.aws.apigatewayv2.ApiMappingArgs;
+        import java.util.List;
+        import java.util.ArrayList;
+        import java.util.Map;
+        import java.io.File;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+
+        public class App {
+            public static void main(String[] args) {
+                Pulumi.run(App::stack);
+            }
+
+            public static void stack(Context ctx) {
+                var example = new ApiMapping("example", ApiMappingArgs.builder()        
+                    .apiId(aws_apigatewayv2_api.example().id())
+                    .domainName(aws_apigatewayv2_domain_name.example().id())
+                    .stage(aws_apigatewayv2_stage.example().id())
+                    .build());
+
+            }
+        }
+        ```
+        ```yaml
+        resources:
+          example:
+            type: aws:apigatewayv2:ApiMapping
+            properties:
+              apiId: ${aws_apigatewayv2_api.example.id}
+              domainName: ${aws_apigatewayv2_domain_name.example.id}
+              stage: ${aws_apigatewayv2_stage.example.id}
+        ```
+        {{% /example %}}
+        {{% /examples %}}
+
+        ## Import
+
+        Using `pulumi import`, import `aws_apigatewayv2_api_mapping` using the API mapping identifier and domain name. For example:
+
+        ```sh
+         $ pulumi import aws:apigatewayv2/apiMapping:ApiMapping example 1122334/ws-api.example.com
+        ```
+         
+        :param pulumi.Input[str] stage: API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+        :param pulumi.Input[str] api_mapping_key: The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+        :param pulumi.Input[str] domain_id: Identifier of an existing domain. Cannot be specified together with `DomainName`.
+        :param 'DomainNameArgs' domain_name: Configuration of the domain name to create. Cannot be specified together with `domainId`.
+        """
+        pulumi.set(__self__, "stage", stage)
+        if api_mapping_key is not None:
+            pulumi.set(__self__, "api_mapping_key", api_mapping_key)
+        if domain_id is not None:
+            pulumi.set(__self__, "domain_id", domain_id)
+        if domain_name is not None:
+            pulumi.set(__self__, "domain_name", domain_name)
+
+    @property
+    @pulumi.getter
+    def stage(self) -> pulumi.Input[str]:
+        """
+        API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
+        """
+        return pulumi.get(self, "stage")
+
+    @stage.setter
+    def stage(self, value: pulumi.Input[str]):
+        pulumi.set(self, "stage", value)
+
+    @property
+    @pulumi.getter(name="apiMappingKey")
+    def api_mapping_key(self) -> Optional[pulumi.Input[str]]:
+        """
+        The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
+        """
+        return pulumi.get(self, "api_mapping_key")
+
+    @api_mapping_key.setter
+    def api_mapping_key(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "api_mapping_key", value)
+
+    @property
+    @pulumi.getter(name="domainId")
+    def domain_id(self) -> Optional[pulumi.Input[str]]:
+        """
+        Identifier of an existing domain. Cannot be specified together with `DomainName`.
+        """
+        return pulumi.get(self, "domain_id")
+
+    @domain_id.setter
+    def domain_id(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "domain_id", value)
+
+    @property
+    @pulumi.getter(name="domainName")
+    def domain_name(self) -> Optional['DomainNameArgs']:
+        """
+        Configuration of the domain name to create. Cannot be specified together with `domainId`.
+        """
+        return pulumi.get(self, "domain_name")
+
+    @domain_name.setter
+    def domain_name(self, value: Optional['DomainNameArgs']):
+        pulumi.set(self, "domain_name", value)
+
+
+@pulumi.input_type
+class DomainNameArgs:
     def __init__(__self__, *,
                  domain_name_configuration: pulumi.Input['pulumi_aws.apigatewayv2.DomainNameDomainNameConfigurationArgs'],
                  mutual_tls_authentication: Optional[pulumi.Input['pulumi_aws.apigatewayv2.DomainNameMutualTlsAuthenticationArgs']] = None,
@@ -408,192 +594,6 @@ class DomainConfigurationArgs:
     @tags.setter
     def tags(self, value: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]]):
         pulumi.set(self, "tags", value)
-
-
-@pulumi.input_type
-class DomainMappingArgs:
-    def __init__(__self__, *,
-                 stage: pulumi.Input[str],
-                 api_mapping_key: Optional[pulumi.Input[str]] = None,
-                 domain_configuration: Optional['DomainConfigurationArgs'] = None,
-                 domain_id: Optional[pulumi.Input[str]] = None):
-        """
-        Manages an Amazon API Gateway Version 2 API mapping.
-        More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
-
-        {{% examples %}}
-        ## Example Usage
-        {{% example %}}
-        ### Basic
-
-        ```typescript
-        import * as pulumi from "@pulumi/pulumi";
-        import * as aws from "@pulumi/aws";
-
-        const example = new aws.apigatewayv2.ApiMapping("example", {
-            apiId: aws_apigatewayv2_api.example.id,
-            domainName: aws_apigatewayv2_domain_name.example.id,
-            stage: aws_apigatewayv2_stage.example.id,
-        });
-        ```
-        ```python
-        import pulumi
-        import pulumi_aws as aws
-
-        example = aws.apigatewayv2.ApiMapping("example",
-            api_id=aws_apigatewayv2_api["example"]["id"],
-            domain_name=aws_apigatewayv2_domain_name["example"]["id"],
-            stage=aws_apigatewayv2_stage["example"]["id"])
-        ```
-        ```csharp
-        using System.Collections.Generic;
-        using System.Linq;
-        using Pulumi;
-        using Aws = Pulumi.Aws;
-
-        return await Deployment.RunAsync(() => 
-        {
-            var example = new Aws.ApiGatewayV2.ApiMapping("example", new()
-            {
-                ApiId = aws_apigatewayv2_api.Example.Id,
-                DomainName = aws_apigatewayv2_domain_name.Example.Id,
-                Stage = aws_apigatewayv2_stage.Example.Id,
-            });
-
-        });
-        ```
-        ```go
-        package main
-
-        import (
-        	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
-        	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-        )
-
-        func main() {
-        	pulumi.Run(func(ctx *pulumi.Context) error {
-        		_, err := apigatewayv2.NewApiMapping(ctx, "example", &apigatewayv2.ApiMappingArgs{
-        			ApiId:      pulumi.Any(aws_apigatewayv2_api.Example.Id),
-        			DomainName: pulumi.Any(aws_apigatewayv2_domain_name.Example.Id),
-        			Stage:      pulumi.Any(aws_apigatewayv2_stage.Example.Id),
-        		})
-        		if err != nil {
-        			return err
-        		}
-        		return nil
-        	})
-        }
-        ```
-        ```java
-        package generated_program;
-
-        import com.pulumi.Context;
-        import com.pulumi.Pulumi;
-        import com.pulumi.core.Output;
-        import com.pulumi.aws.apigatewayv2.ApiMapping;
-        import com.pulumi.aws.apigatewayv2.ApiMappingArgs;
-        import java.util.List;
-        import java.util.ArrayList;
-        import java.util.Map;
-        import java.io.File;
-        import java.nio.file.Files;
-        import java.nio.file.Paths;
-
-        public class App {
-            public static void main(String[] args) {
-                Pulumi.run(App::stack);
-            }
-
-            public static void stack(Context ctx) {
-                var example = new ApiMapping("example", ApiMappingArgs.builder()        
-                    .apiId(aws_apigatewayv2_api.example().id())
-                    .domainName(aws_apigatewayv2_domain_name.example().id())
-                    .stage(aws_apigatewayv2_stage.example().id())
-                    .build());
-
-            }
-        }
-        ```
-        ```yaml
-        resources:
-          example:
-            type: aws:apigatewayv2:ApiMapping
-            properties:
-              apiId: ${aws_apigatewayv2_api.example.id}
-              domainName: ${aws_apigatewayv2_domain_name.example.id}
-              stage: ${aws_apigatewayv2_stage.example.id}
-        ```
-        {{% /example %}}
-        {{% /examples %}}
-
-        ## Import
-
-        Using `pulumi import`, import `aws_apigatewayv2_api_mapping` using the API mapping identifier and domain name. For example:
-
-        ```sh
-         $ pulumi import aws:apigatewayv2/apiMapping:ApiMapping example 1122334/ws-api.example.com
-        ```
-         
-        :param pulumi.Input[str] stage: API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
-        :param pulumi.Input[str] api_mapping_key: The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
-        :param 'DomainConfigurationArgs' domain_configuration: Configuration of the domain name to create. Cannot be specified together with `domainId`.
-        :param pulumi.Input[str] domain_id: Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
-        """
-        pulumi.set(__self__, "stage", stage)
-        if api_mapping_key is not None:
-            pulumi.set(__self__, "api_mapping_key", api_mapping_key)
-        if domain_configuration is not None:
-            pulumi.set(__self__, "domain_configuration", domain_configuration)
-        if domain_id is not None:
-            pulumi.set(__self__, "domain_id", domain_id)
-
-    @property
-    @pulumi.getter
-    def stage(self) -> pulumi.Input[str]:
-        """
-        API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
-        """
-        return pulumi.get(self, "stage")
-
-    @stage.setter
-    def stage(self, value: pulumi.Input[str]):
-        pulumi.set(self, "stage", value)
-
-    @property
-    @pulumi.getter(name="apiMappingKey")
-    def api_mapping_key(self) -> Optional[pulumi.Input[str]]:
-        """
-        The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
-        """
-        return pulumi.get(self, "api_mapping_key")
-
-    @api_mapping_key.setter
-    def api_mapping_key(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "api_mapping_key", value)
-
-    @property
-    @pulumi.getter(name="domainConfiguration")
-    def domain_configuration(self) -> Optional['DomainConfigurationArgs']:
-        """
-        Configuration of the domain name to create. Cannot be specified together with `domainId`.
-        """
-        return pulumi.get(self, "domain_configuration")
-
-    @domain_configuration.setter
-    def domain_configuration(self, value: Optional['DomainConfigurationArgs']):
-        pulumi.set(self, "domain_configuration", value)
-
-    @property
-    @pulumi.getter(name="domainId")
-    def domain_id(self) -> Optional[pulumi.Input[str]]:
-        """
-        Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
-        """
-        return pulumi.get(self, "domain_id")
-
-    @domain_id.setter
-    def domain_id(self, value: Optional[pulumi.Input[str]]):
-        pulumi.set(self, "domain_id", value)
 
 
 @pulumi.input_type

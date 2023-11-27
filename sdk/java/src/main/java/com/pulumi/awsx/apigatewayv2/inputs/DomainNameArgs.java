@@ -116,9 +116,9 @@ import javax.annotation.Nullable;
  * ```
  * 
  */
-public final class DomainConfigurationArgs extends com.pulumi.resources.ResourceArgs {
+public final class DomainNameArgs extends com.pulumi.resources.ResourceArgs {
 
-    public static final DomainConfigurationArgs Empty = new DomainConfigurationArgs();
+    public static final DomainNameArgs Empty = new DomainNameArgs();
 
     /**
      * Domain name configuration. See below.
@@ -165,9 +165,9 @@ public final class DomainConfigurationArgs extends com.pulumi.resources.Resource
         return Optional.ofNullable(this.tags);
     }
 
-    private DomainConfigurationArgs() {}
+    private DomainNameArgs() {}
 
-    private DomainConfigurationArgs(DomainConfigurationArgs $) {
+    private DomainNameArgs(DomainNameArgs $) {
         this.domainNameConfiguration = $.domainNameConfiguration;
         this.mutualTlsAuthentication = $.mutualTlsAuthentication;
         this.tags = $.tags;
@@ -176,19 +176,19 @@ public final class DomainConfigurationArgs extends com.pulumi.resources.Resource
     public static Builder builder() {
         return new Builder();
     }
-    public static Builder builder(DomainConfigurationArgs defaults) {
+    public static Builder builder(DomainNameArgs defaults) {
         return new Builder(defaults);
     }
 
     public static final class Builder {
-        private DomainConfigurationArgs $;
+        private DomainNameArgs $;
 
         public Builder() {
-            $ = new DomainConfigurationArgs();
+            $ = new DomainNameArgs();
         }
 
-        public Builder(DomainConfigurationArgs defaults) {
-            $ = new DomainConfigurationArgs(Objects.requireNonNull(defaults));
+        public Builder(DomainNameArgs defaults) {
+            $ = new DomainNameArgs(Objects.requireNonNull(defaults));
         }
 
         /**
@@ -254,7 +254,7 @@ public final class DomainConfigurationArgs extends com.pulumi.resources.Resource
             return tags(Output.of(tags));
         }
 
-        public DomainConfigurationArgs build() {
+        public DomainNameArgs build() {
             $.domainNameConfiguration = Objects.requireNonNull($.domainNameConfiguration, "expected parameter 'domainNameConfiguration' to be non-null");
             return $;
         }

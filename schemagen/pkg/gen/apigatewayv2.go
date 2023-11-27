@@ -22,12 +22,12 @@ func generateApiGatewayV2(awsSpec schema.PackageSpec) schema.PackageSpec {
 			"awsx:apigatewayv2:HttpApi": httpApi(awsSpec),
 		},
 		Types: map[string]schema.ComplexTypeSpec{
-			"awsx:apigatewayv2:HttpRoute":           httpRoute(awsSpec),
-			"awsx:apigatewayv2:HttpIntegration":     httpIntegration(awsSpec),
-			"awsx:apigatewayv2:HttpAuthorizer":      httpAuthorizer(awsSpec),
-			"awsx:apigatewayv2:HttpStage":           httpStage(awsSpec),
-			"awsx:apigatewayv2:DomainMapping":       domainMapping(awsSpec),
-			"awsx:apigatewayv2:DomainConfiguration": domainConfiguration(awsSpec),
+			"awsx:apigatewayv2:HttpRoute":       httpRoute(awsSpec),
+			"awsx:apigatewayv2:HttpIntegration": httpIntegration(awsSpec),
+			"awsx:apigatewayv2:HttpAuthorizer":  httpAuthorizer(awsSpec),
+			"awsx:apigatewayv2:HttpStage":       httpStage(awsSpec),
+			"awsx:apigatewayv2:DomainMapping":   domainMapping(awsSpec),
+			"awsx:apigatewayv2:DomainName":      domainName(awsSpec),
 		},
 	}
 }
@@ -221,16 +221,16 @@ func domainMapping(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	original := awsSpec.Resources["aws:apigatewayv2/apiMapping:ApiMapping"]
 	properties := renameAwsPropertiesRefs(awsSpec, original.InputProperties)
 	delete(properties, "apiId")
-	delete(properties, "domainName")
-	properties["domainConfiguration"] = schema.PropertySpec{
+	delete(properties, "domainName") // Inferred from the map key
+	properties["domainName"] = schema.PropertySpec{
 		Description: "Configuration of the domain name to create. Cannot be specified together with `domainId`.",
 		TypeSpec: schema.TypeSpec{
-			Ref:   localRef("apigatewayv2", "DomainConfiguration"),
+			Ref:   localRef("apigatewayv2", "DomainName"),
 			Plain: true,
 		},
 	}
 	properties["domainId"] = schema.PropertySpec{
-		Description: "Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.",
+		Description: "Identifier of an existing domain. Cannot be specified together with `DomainName`.",
 		TypeSpec: schema.TypeSpec{
 			Type: "string",
 		},
@@ -245,7 +245,7 @@ func domainMapping(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	}
 }
 
-func domainConfiguration(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
+func domainName(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 	original := awsSpec.Resources["aws:apigatewayv2/domainName:DomainName"]
 	properties := renameAwsPropertiesRefs(awsSpec, original.InputProperties)
 	delete(properties, "domainName")

@@ -15,494 +15,6 @@ import (
 
 var _ = internal.GetEnvOrDefault
 
-// Manages an Amazon API Gateway Version 2 domain name.
-// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
-//
-// > **Note:** This resource establishes ownership of and the TLS settings for
-// a particular domain name. An API stage can be associated with the domain name using the `aws.apigatewayv2.ApiMapping` resource.
-//
-// ## Example Usage
-// ### Basic
-// ```go
-// package main
-//
-// import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
-// )
-//
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := apigatewayv2.NewDomainName(ctx, "example", &apigatewayv2.DomainNameArgs{
-//				DomainName: pulumi.String("ws-api.example.com"),
-//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
-//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
-//					EndpointType:   pulumi.String("REGIONAL"),
-//					SecurityPolicy: pulumi.String("TLS_1_2"),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
-// ```
-// ### Associated Route 53 Resource Record
-// ```go
-// package main
-//
-// import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
-//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/route53"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
-// )
-//
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			exampleDomainName, err := apigatewayv2.NewDomainName(ctx, "exampleDomainName", &apigatewayv2.DomainNameArgs{
-//				DomainName: pulumi.String("http-api.example.com"),
-//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
-//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
-//					EndpointType:   pulumi.String("REGIONAL"),
-//					SecurityPolicy: pulumi.String("TLS_1_2"),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = route53.NewRecord(ctx, "exampleRecord", &route53.RecordArgs{
-//				Name:   exampleDomainName.DomainName,
-//				Type:   pulumi.String("A"),
-//				ZoneId: pulumi.Any(aws_route53_zone.Example.Zone_id),
-//				Aliases: route53.RecordAliasArray{
-//					&route53.RecordAliasArgs{
-//						Name: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
-//							return &domainNameConfiguration.TargetDomainName, nil
-//						}).(pulumi.StringPtrOutput),
-//						ZoneId: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
-//							return &domainNameConfiguration.HostedZoneId, nil
-//						}).(pulumi.StringPtrOutput),
-//						EvaluateTargetHealth: pulumi.Bool(false),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
-// ```
-//
-// ## Import
-//
-// Using `pulumi import`, import `aws_apigatewayv2_domain_name` using the domain name. For example:
-//
-// ```sh
-//
-//	$ pulumi import aws:apigatewayv2/domainName:DomainName example ws-api.example.com
-//
-// ```
-type DomainConfiguration struct {
-	// Domain name configuration. See below.
-	DomainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration `pulumi:"domainNameConfiguration"`
-	// Mutual TLS authentication configuration for the domain name.
-	MutualTlsAuthentication *apigatewayv2.DomainNameMutualTlsAuthentication `pulumi:"mutualTlsAuthentication"`
-	// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-	Tags map[string]string `pulumi:"tags"`
-}
-
-// DomainConfigurationInput is an input type that accepts DomainConfigurationArgs and DomainConfigurationOutput values.
-// You can construct a concrete instance of `DomainConfigurationInput` via:
-//
-//	DomainConfigurationArgs{...}
-type DomainConfigurationInput interface {
-	pulumi.Input
-
-	ToDomainConfigurationOutput() DomainConfigurationOutput
-	ToDomainConfigurationOutputWithContext(context.Context) DomainConfigurationOutput
-}
-
-// Manages an Amazon API Gateway Version 2 domain name.
-// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
-//
-// > **Note:** This resource establishes ownership of and the TLS settings for
-// a particular domain name. An API stage can be associated with the domain name using the `aws.apigatewayv2.ApiMapping` resource.
-//
-// ## Example Usage
-// ### Basic
-// ```go
-// package main
-//
-// import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
-// )
-//
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := apigatewayv2.NewDomainName(ctx, "example", &apigatewayv2.DomainNameArgs{
-//				DomainName: pulumi.String("ws-api.example.com"),
-//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
-//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
-//					EndpointType:   pulumi.String("REGIONAL"),
-//					SecurityPolicy: pulumi.String("TLS_1_2"),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
-// ```
-// ### Associated Route 53 Resource Record
-// ```go
-// package main
-//
-// import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
-//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/route53"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
-// )
-//
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			exampleDomainName, err := apigatewayv2.NewDomainName(ctx, "exampleDomainName", &apigatewayv2.DomainNameArgs{
-//				DomainName: pulumi.String("http-api.example.com"),
-//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
-//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
-//					EndpointType:   pulumi.String("REGIONAL"),
-//					SecurityPolicy: pulumi.String("TLS_1_2"),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = route53.NewRecord(ctx, "exampleRecord", &route53.RecordArgs{
-//				Name:   exampleDomainName.DomainName,
-//				Type:   pulumi.String("A"),
-//				ZoneId: pulumi.Any(aws_route53_zone.Example.Zone_id),
-//				Aliases: route53.RecordAliasArray{
-//					&route53.RecordAliasArgs{
-//						Name: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
-//							return &domainNameConfiguration.TargetDomainName, nil
-//						}).(pulumi.StringPtrOutput),
-//						ZoneId: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
-//							return &domainNameConfiguration.HostedZoneId, nil
-//						}).(pulumi.StringPtrOutput),
-//						EvaluateTargetHealth: pulumi.Bool(false),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
-// ```
-//
-// ## Import
-//
-// Using `pulumi import`, import `aws_apigatewayv2_domain_name` using the domain name. For example:
-//
-// ```sh
-//
-//	$ pulumi import aws:apigatewayv2/domainName:DomainName example ws-api.example.com
-//
-// ```
-type DomainConfigurationArgs struct {
-	// Domain name configuration. See below.
-	DomainNameConfiguration apigatewayv2.DomainNameDomainNameConfigurationInput `pulumi:"domainNameConfiguration"`
-	// Mutual TLS authentication configuration for the domain name.
-	MutualTlsAuthentication apigatewayv2.DomainNameMutualTlsAuthenticationPtrInput `pulumi:"mutualTlsAuthentication"`
-	// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-	Tags pulumi.StringMapInput `pulumi:"tags"`
-}
-
-func (DomainConfigurationArgs) ElementType() reflect.Type {
-	return reflect.TypeOf((*DomainConfiguration)(nil)).Elem()
-}
-
-func (i DomainConfigurationArgs) ToDomainConfigurationOutput() DomainConfigurationOutput {
-	return i.ToDomainConfigurationOutputWithContext(context.Background())
-}
-
-func (i DomainConfigurationArgs) ToDomainConfigurationOutputWithContext(ctx context.Context) DomainConfigurationOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(DomainConfigurationOutput)
-}
-
-func (i DomainConfigurationArgs) ToOutput(ctx context.Context) pulumix.Output[DomainConfiguration] {
-	return pulumix.Output[DomainConfiguration]{
-		OutputState: i.ToDomainConfigurationOutputWithContext(ctx).OutputState,
-	}
-}
-
-func (i DomainConfigurationArgs) ToDomainConfigurationPtrOutput() DomainConfigurationPtrOutput {
-	return i.ToDomainConfigurationPtrOutputWithContext(context.Background())
-}
-
-func (i DomainConfigurationArgs) ToDomainConfigurationPtrOutputWithContext(ctx context.Context) DomainConfigurationPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(DomainConfigurationOutput).ToDomainConfigurationPtrOutputWithContext(ctx)
-}
-
-// DomainConfigurationPtrInput is an input type that accepts DomainConfigurationArgs, DomainConfigurationPtr and DomainConfigurationPtrOutput values.
-// You can construct a concrete instance of `DomainConfigurationPtrInput` via:
-//
-//	        DomainConfigurationArgs{...}
-//
-//	or:
-//
-//	        nil
-type DomainConfigurationPtrInput interface {
-	pulumi.Input
-
-	ToDomainConfigurationPtrOutput() DomainConfigurationPtrOutput
-	ToDomainConfigurationPtrOutputWithContext(context.Context) DomainConfigurationPtrOutput
-}
-
-type domainConfigurationPtrType DomainConfigurationArgs
-
-func DomainConfigurationPtr(v *DomainConfigurationArgs) DomainConfigurationPtrInput {
-	return (*domainConfigurationPtrType)(v)
-}
-
-func (*domainConfigurationPtrType) ElementType() reflect.Type {
-	return reflect.TypeOf((**DomainConfiguration)(nil)).Elem()
-}
-
-func (i *domainConfigurationPtrType) ToDomainConfigurationPtrOutput() DomainConfigurationPtrOutput {
-	return i.ToDomainConfigurationPtrOutputWithContext(context.Background())
-}
-
-func (i *domainConfigurationPtrType) ToDomainConfigurationPtrOutputWithContext(ctx context.Context) DomainConfigurationPtrOutput {
-	return pulumi.ToOutputWithContext(ctx, i).(DomainConfigurationPtrOutput)
-}
-
-func (i *domainConfigurationPtrType) ToOutput(ctx context.Context) pulumix.Output[*DomainConfiguration] {
-	return pulumix.Output[*DomainConfiguration]{
-		OutputState: i.ToDomainConfigurationPtrOutputWithContext(ctx).OutputState,
-	}
-}
-
-// Manages an Amazon API Gateway Version 2 domain name.
-// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
-//
-// > **Note:** This resource establishes ownership of and the TLS settings for
-// a particular domain name. An API stage can be associated with the domain name using the `aws.apigatewayv2.ApiMapping` resource.
-//
-// ## Example Usage
-// ### Basic
-// ```go
-// package main
-//
-// import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
-// )
-//
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			_, err := apigatewayv2.NewDomainName(ctx, "example", &apigatewayv2.DomainNameArgs{
-//				DomainName: pulumi.String("ws-api.example.com"),
-//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
-//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
-//					EndpointType:   pulumi.String("REGIONAL"),
-//					SecurityPolicy: pulumi.String("TLS_1_2"),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
-// ```
-// ### Associated Route 53 Resource Record
-// ```go
-// package main
-//
-// import (
-//
-//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
-//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/route53"
-//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-//
-// )
-//
-//	func main() {
-//		pulumi.Run(func(ctx *pulumi.Context) error {
-//			exampleDomainName, err := apigatewayv2.NewDomainName(ctx, "exampleDomainName", &apigatewayv2.DomainNameArgs{
-//				DomainName: pulumi.String("http-api.example.com"),
-//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
-//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
-//					EndpointType:   pulumi.String("REGIONAL"),
-//					SecurityPolicy: pulumi.String("TLS_1_2"),
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			_, err = route53.NewRecord(ctx, "exampleRecord", &route53.RecordArgs{
-//				Name:   exampleDomainName.DomainName,
-//				Type:   pulumi.String("A"),
-//				ZoneId: pulumi.Any(aws_route53_zone.Example.Zone_id),
-//				Aliases: route53.RecordAliasArray{
-//					&route53.RecordAliasArgs{
-//						Name: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
-//							return &domainNameConfiguration.TargetDomainName, nil
-//						}).(pulumi.StringPtrOutput),
-//						ZoneId: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
-//							return &domainNameConfiguration.HostedZoneId, nil
-//						}).(pulumi.StringPtrOutput),
-//						EvaluateTargetHealth: pulumi.Bool(false),
-//					},
-//				},
-//			})
-//			if err != nil {
-//				return err
-//			}
-//			return nil
-//		})
-//	}
-//
-// ```
-//
-// ## Import
-//
-// Using `pulumi import`, import `aws_apigatewayv2_domain_name` using the domain name. For example:
-//
-// ```sh
-//
-//	$ pulumi import aws:apigatewayv2/domainName:DomainName example ws-api.example.com
-//
-// ```
-type DomainConfigurationOutput struct{ *pulumi.OutputState }
-
-func (DomainConfigurationOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((*DomainConfiguration)(nil)).Elem()
-}
-
-func (o DomainConfigurationOutput) ToDomainConfigurationOutput() DomainConfigurationOutput {
-	return o
-}
-
-func (o DomainConfigurationOutput) ToDomainConfigurationOutputWithContext(ctx context.Context) DomainConfigurationOutput {
-	return o
-}
-
-func (o DomainConfigurationOutput) ToDomainConfigurationPtrOutput() DomainConfigurationPtrOutput {
-	return o.ToDomainConfigurationPtrOutputWithContext(context.Background())
-}
-
-func (o DomainConfigurationOutput) ToDomainConfigurationPtrOutputWithContext(ctx context.Context) DomainConfigurationPtrOutput {
-	return o.ApplyTWithContext(ctx, func(_ context.Context, v DomainConfiguration) *DomainConfiguration {
-		return &v
-	}).(DomainConfigurationPtrOutput)
-}
-
-func (o DomainConfigurationOutput) ToOutput(ctx context.Context) pulumix.Output[DomainConfiguration] {
-	return pulumix.Output[DomainConfiguration]{
-		OutputState: o.OutputState,
-	}
-}
-
-// Domain name configuration. See below.
-func (o DomainConfigurationOutput) DomainNameConfiguration() apigatewayv2.DomainNameDomainNameConfigurationOutput {
-	return o.ApplyT(func(v DomainConfiguration) apigatewayv2.DomainNameDomainNameConfiguration {
-		return v.DomainNameConfiguration
-	}).(apigatewayv2.DomainNameDomainNameConfigurationOutput)
-}
-
-// Mutual TLS authentication configuration for the domain name.
-func (o DomainConfigurationOutput) MutualTlsAuthentication() apigatewayv2.DomainNameMutualTlsAuthenticationPtrOutput {
-	return o.ApplyT(func(v DomainConfiguration) *apigatewayv2.DomainNameMutualTlsAuthentication {
-		return v.MutualTlsAuthentication
-	}).(apigatewayv2.DomainNameMutualTlsAuthenticationPtrOutput)
-}
-
-// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-func (o DomainConfigurationOutput) Tags() pulumi.StringMapOutput {
-	return o.ApplyT(func(v DomainConfiguration) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
-}
-
-type DomainConfigurationPtrOutput struct{ *pulumi.OutputState }
-
-func (DomainConfigurationPtrOutput) ElementType() reflect.Type {
-	return reflect.TypeOf((**DomainConfiguration)(nil)).Elem()
-}
-
-func (o DomainConfigurationPtrOutput) ToDomainConfigurationPtrOutput() DomainConfigurationPtrOutput {
-	return o
-}
-
-func (o DomainConfigurationPtrOutput) ToDomainConfigurationPtrOutputWithContext(ctx context.Context) DomainConfigurationPtrOutput {
-	return o
-}
-
-func (o DomainConfigurationPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*DomainConfiguration] {
-	return pulumix.Output[*DomainConfiguration]{
-		OutputState: o.OutputState,
-	}
-}
-
-func (o DomainConfigurationPtrOutput) Elem() DomainConfigurationOutput {
-	return o.ApplyT(func(v *DomainConfiguration) DomainConfiguration {
-		if v != nil {
-			return *v
-		}
-		var ret DomainConfiguration
-		return ret
-	}).(DomainConfigurationOutput)
-}
-
-// Domain name configuration. See below.
-func (o DomainConfigurationPtrOutput) DomainNameConfiguration() apigatewayv2.DomainNameDomainNameConfigurationPtrOutput {
-	return o.ApplyT(func(v *DomainConfiguration) *apigatewayv2.DomainNameDomainNameConfiguration {
-		if v == nil {
-			return nil
-		}
-		return &v.DomainNameConfiguration
-	}).(apigatewayv2.DomainNameDomainNameConfigurationPtrOutput)
-}
-
-// Mutual TLS authentication configuration for the domain name.
-func (o DomainConfigurationPtrOutput) MutualTlsAuthentication() apigatewayv2.DomainNameMutualTlsAuthenticationPtrOutput {
-	return o.ApplyT(func(v *DomainConfiguration) *apigatewayv2.DomainNameMutualTlsAuthentication {
-		if v == nil {
-			return nil
-		}
-		return v.MutualTlsAuthentication
-	}).(apigatewayv2.DomainNameMutualTlsAuthenticationPtrOutput)
-}
-
-// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
-func (o DomainConfigurationPtrOutput) Tags() pulumi.StringMapOutput {
-	return o.ApplyT(func(v *DomainConfiguration) map[string]string {
-		if v == nil {
-			return nil
-		}
-		return v.Tags
-	}).(pulumi.StringMapOutput)
-}
-
 // Manages an Amazon API Gateway Version 2 API mapping.
 // More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
 //
@@ -546,10 +58,10 @@ func (o DomainConfigurationPtrOutput) Tags() pulumi.StringMapOutput {
 type DomainMapping struct {
 	// The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
 	ApiMappingKey *string `pulumi:"apiMappingKey"`
-	// Configuration of the domain name to create. Cannot be specified together with `domainId`.
-	DomainConfiguration *DomainConfiguration `pulumi:"domainConfiguration"`
-	// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+	// Identifier of an existing domain. Cannot be specified together with `DomainName`.
 	DomainId *string `pulumi:"domainId"`
+	// Configuration of the domain name to create. Cannot be specified together with `domainId`.
+	DomainName *DomainName `pulumi:"domainName"`
 	// API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
 	Stage string `pulumi:"stage"`
 }
@@ -608,10 +120,10 @@ type DomainMappingInput interface {
 type DomainMappingArgs struct {
 	// The API mapping key. Refer to [REST API](https://docs.aws.amazon.com/apigateway/latest/developerguide/rest-api-mappings.html), [HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mappings.html) or [WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-mappings.html).
 	ApiMappingKey pulumi.StringPtrInput `pulumi:"apiMappingKey"`
-	// Configuration of the domain name to create. Cannot be specified together with `domainId`.
-	DomainConfiguration *DomainConfigurationArgs `pulumi:"domainConfiguration"`
-	// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+	// Identifier of an existing domain. Cannot be specified together with `DomainName`.
 	DomainId pulumi.StringPtrInput `pulumi:"domainId"`
+	// Configuration of the domain name to create. Cannot be specified together with `domainId`.
+	DomainName *DomainNameArgs `pulumi:"domainName"`
 	// API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
 	Stage pulumi.StringInput `pulumi:"stage"`
 }
@@ -699,19 +211,503 @@ func (o DomainMappingOutput) ApiMappingKey() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v DomainMapping) *string { return v.ApiMappingKey }).(pulumi.StringPtrOutput)
 }
 
-// Configuration of the domain name to create. Cannot be specified together with `domainId`.
-func (o DomainMappingOutput) DomainConfiguration() DomainConfigurationPtrOutput {
-	return o.ApplyT(func(v DomainMapping) *DomainConfiguration { return v.DomainConfiguration }).(DomainConfigurationPtrOutput)
-}
-
-// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+// Identifier of an existing domain. Cannot be specified together with `DomainName`.
 func (o DomainMappingOutput) DomainId() pulumi.StringPtrOutput {
 	return o.ApplyT(func(v DomainMapping) *string { return v.DomainId }).(pulumi.StringPtrOutput)
+}
+
+// Configuration of the domain name to create. Cannot be specified together with `domainId`.
+func (o DomainMappingOutput) DomainName() DomainNamePtrOutput {
+	return o.ApplyT(func(v DomainMapping) *DomainName { return v.DomainName }).(DomainNamePtrOutput)
 }
 
 // API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
 func (o DomainMappingOutput) Stage() pulumi.StringOutput {
 	return o.ApplyT(func(v DomainMapping) string { return v.Stage }).(pulumi.StringOutput)
+}
+
+// Manages an Amazon API Gateway Version 2 domain name.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+//
+// > **Note:** This resource establishes ownership of and the TLS settings for
+// a particular domain name. An API stage can be associated with the domain name using the `aws.apigatewayv2.ApiMapping` resource.
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewDomainName(ctx, "example", &apigatewayv2.DomainNameArgs{
+//				DomainName: pulumi.String("ws-api.example.com"),
+//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
+//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
+//					EndpointType:   pulumi.String("REGIONAL"),
+//					SecurityPolicy: pulumi.String("TLS_1_2"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Associated Route 53 Resource Record
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/route53"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleDomainName, err := apigatewayv2.NewDomainName(ctx, "exampleDomainName", &apigatewayv2.DomainNameArgs{
+//				DomainName: pulumi.String("http-api.example.com"),
+//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
+//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
+//					EndpointType:   pulumi.String("REGIONAL"),
+//					SecurityPolicy: pulumi.String("TLS_1_2"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = route53.NewRecord(ctx, "exampleRecord", &route53.RecordArgs{
+//				Name:   exampleDomainName.DomainName,
+//				Type:   pulumi.String("A"),
+//				ZoneId: pulumi.Any(aws_route53_zone.Example.Zone_id),
+//				Aliases: route53.RecordAliasArray{
+//					&route53.RecordAliasArgs{
+//						Name: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
+//							return &domainNameConfiguration.TargetDomainName, nil
+//						}).(pulumi.StringPtrOutput),
+//						ZoneId: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
+//							return &domainNameConfiguration.HostedZoneId, nil
+//						}).(pulumi.StringPtrOutput),
+//						EvaluateTargetHealth: pulumi.Bool(false),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_domain_name` using the domain name. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/domainName:DomainName example ws-api.example.com
+//
+// ```
+type DomainName struct {
+	// Domain name configuration. See below.
+	DomainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration `pulumi:"domainNameConfiguration"`
+	// Mutual TLS authentication configuration for the domain name.
+	MutualTlsAuthentication *apigatewayv2.DomainNameMutualTlsAuthentication `pulumi:"mutualTlsAuthentication"`
+	// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	Tags map[string]string `pulumi:"tags"`
+}
+
+// DomainNameInput is an input type that accepts DomainNameArgs and DomainNameOutput values.
+// You can construct a concrete instance of `DomainNameInput` via:
+//
+//	DomainNameArgs{...}
+type DomainNameInput interface {
+	pulumi.Input
+
+	ToDomainNameOutput() DomainNameOutput
+	ToDomainNameOutputWithContext(context.Context) DomainNameOutput
+}
+
+// Manages an Amazon API Gateway Version 2 domain name.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+//
+// > **Note:** This resource establishes ownership of and the TLS settings for
+// a particular domain name. An API stage can be associated with the domain name using the `aws.apigatewayv2.ApiMapping` resource.
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewDomainName(ctx, "example", &apigatewayv2.DomainNameArgs{
+//				DomainName: pulumi.String("ws-api.example.com"),
+//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
+//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
+//					EndpointType:   pulumi.String("REGIONAL"),
+//					SecurityPolicy: pulumi.String("TLS_1_2"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Associated Route 53 Resource Record
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/route53"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleDomainName, err := apigatewayv2.NewDomainName(ctx, "exampleDomainName", &apigatewayv2.DomainNameArgs{
+//				DomainName: pulumi.String("http-api.example.com"),
+//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
+//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
+//					EndpointType:   pulumi.String("REGIONAL"),
+//					SecurityPolicy: pulumi.String("TLS_1_2"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = route53.NewRecord(ctx, "exampleRecord", &route53.RecordArgs{
+//				Name:   exampleDomainName.DomainName,
+//				Type:   pulumi.String("A"),
+//				ZoneId: pulumi.Any(aws_route53_zone.Example.Zone_id),
+//				Aliases: route53.RecordAliasArray{
+//					&route53.RecordAliasArgs{
+//						Name: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
+//							return &domainNameConfiguration.TargetDomainName, nil
+//						}).(pulumi.StringPtrOutput),
+//						ZoneId: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
+//							return &domainNameConfiguration.HostedZoneId, nil
+//						}).(pulumi.StringPtrOutput),
+//						EvaluateTargetHealth: pulumi.Bool(false),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_domain_name` using the domain name. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/domainName:DomainName example ws-api.example.com
+//
+// ```
+type DomainNameArgs struct {
+	// Domain name configuration. See below.
+	DomainNameConfiguration apigatewayv2.DomainNameDomainNameConfigurationInput `pulumi:"domainNameConfiguration"`
+	// Mutual TLS authentication configuration for the domain name.
+	MutualTlsAuthentication apigatewayv2.DomainNameMutualTlsAuthenticationPtrInput `pulumi:"mutualTlsAuthentication"`
+	// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+	Tags pulumi.StringMapInput `pulumi:"tags"`
+}
+
+func (DomainNameArgs) ElementType() reflect.Type {
+	return reflect.TypeOf((*DomainName)(nil)).Elem()
+}
+
+func (i DomainNameArgs) ToDomainNameOutput() DomainNameOutput {
+	return i.ToDomainNameOutputWithContext(context.Background())
+}
+
+func (i DomainNameArgs) ToDomainNameOutputWithContext(ctx context.Context) DomainNameOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DomainNameOutput)
+}
+
+func (i DomainNameArgs) ToOutput(ctx context.Context) pulumix.Output[DomainName] {
+	return pulumix.Output[DomainName]{
+		OutputState: i.ToDomainNameOutputWithContext(ctx).OutputState,
+	}
+}
+
+func (i DomainNameArgs) ToDomainNamePtrOutput() DomainNamePtrOutput {
+	return i.ToDomainNamePtrOutputWithContext(context.Background())
+}
+
+func (i DomainNameArgs) ToDomainNamePtrOutputWithContext(ctx context.Context) DomainNamePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DomainNameOutput).ToDomainNamePtrOutputWithContext(ctx)
+}
+
+// DomainNamePtrInput is an input type that accepts DomainNameArgs, DomainNamePtr and DomainNamePtrOutput values.
+// You can construct a concrete instance of `DomainNamePtrInput` via:
+//
+//	        DomainNameArgs{...}
+//
+//	or:
+//
+//	        nil
+type DomainNamePtrInput interface {
+	pulumi.Input
+
+	ToDomainNamePtrOutput() DomainNamePtrOutput
+	ToDomainNamePtrOutputWithContext(context.Context) DomainNamePtrOutput
+}
+
+type domainNamePtrType DomainNameArgs
+
+func DomainNamePtr(v *DomainNameArgs) DomainNamePtrInput {
+	return (*domainNamePtrType)(v)
+}
+
+func (*domainNamePtrType) ElementType() reflect.Type {
+	return reflect.TypeOf((**DomainName)(nil)).Elem()
+}
+
+func (i *domainNamePtrType) ToDomainNamePtrOutput() DomainNamePtrOutput {
+	return i.ToDomainNamePtrOutputWithContext(context.Background())
+}
+
+func (i *domainNamePtrType) ToDomainNamePtrOutputWithContext(ctx context.Context) DomainNamePtrOutput {
+	return pulumi.ToOutputWithContext(ctx, i).(DomainNamePtrOutput)
+}
+
+func (i *domainNamePtrType) ToOutput(ctx context.Context) pulumix.Output[*DomainName] {
+	return pulumix.Output[*DomainName]{
+		OutputState: i.ToDomainNamePtrOutputWithContext(ctx).OutputState,
+	}
+}
+
+// Manages an Amazon API Gateway Version 2 domain name.
+// More information can be found in the [Amazon API Gateway Developer Guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-custom-domains.html).
+//
+// > **Note:** This resource establishes ownership of and the TLS settings for
+// a particular domain name. An API stage can be associated with the domain name using the `aws.apigatewayv2.ApiMapping` resource.
+//
+// ## Example Usage
+// ### Basic
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			_, err := apigatewayv2.NewDomainName(ctx, "example", &apigatewayv2.DomainNameArgs{
+//				DomainName: pulumi.String("ws-api.example.com"),
+//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
+//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
+//					EndpointType:   pulumi.String("REGIONAL"),
+//					SecurityPolicy: pulumi.String("TLS_1_2"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+// ### Associated Route 53 Resource Record
+// ```go
+// package main
+//
+// import (
+//
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/apigatewayv2"
+//	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/route53"
+//	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+//
+// )
+//
+//	func main() {
+//		pulumi.Run(func(ctx *pulumi.Context) error {
+//			exampleDomainName, err := apigatewayv2.NewDomainName(ctx, "exampleDomainName", &apigatewayv2.DomainNameArgs{
+//				DomainName: pulumi.String("http-api.example.com"),
+//				DomainNameConfiguration: &apigatewayv2.DomainNameDomainNameConfigurationArgs{
+//					CertificateArn: pulumi.Any(aws_acm_certificate.Example.Arn),
+//					EndpointType:   pulumi.String("REGIONAL"),
+//					SecurityPolicy: pulumi.String("TLS_1_2"),
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			_, err = route53.NewRecord(ctx, "exampleRecord", &route53.RecordArgs{
+//				Name:   exampleDomainName.DomainName,
+//				Type:   pulumi.String("A"),
+//				ZoneId: pulumi.Any(aws_route53_zone.Example.Zone_id),
+//				Aliases: route53.RecordAliasArray{
+//					&route53.RecordAliasArgs{
+//						Name: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
+//							return &domainNameConfiguration.TargetDomainName, nil
+//						}).(pulumi.StringPtrOutput),
+//						ZoneId: exampleDomainName.DomainNameConfiguration.ApplyT(func(domainNameConfiguration apigatewayv2.DomainNameDomainNameConfiguration) (*string, error) {
+//							return &domainNameConfiguration.HostedZoneId, nil
+//						}).(pulumi.StringPtrOutput),
+//						EvaluateTargetHealth: pulumi.Bool(false),
+//					},
+//				},
+//			})
+//			if err != nil {
+//				return err
+//			}
+//			return nil
+//		})
+//	}
+//
+// ```
+//
+// ## Import
+//
+// Using `pulumi import`, import `aws_apigatewayv2_domain_name` using the domain name. For example:
+//
+// ```sh
+//
+//	$ pulumi import aws:apigatewayv2/domainName:DomainName example ws-api.example.com
+//
+// ```
+type DomainNameOutput struct{ *pulumi.OutputState }
+
+func (DomainNameOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((*DomainName)(nil)).Elem()
+}
+
+func (o DomainNameOutput) ToDomainNameOutput() DomainNameOutput {
+	return o
+}
+
+func (o DomainNameOutput) ToDomainNameOutputWithContext(ctx context.Context) DomainNameOutput {
+	return o
+}
+
+func (o DomainNameOutput) ToDomainNamePtrOutput() DomainNamePtrOutput {
+	return o.ToDomainNamePtrOutputWithContext(context.Background())
+}
+
+func (o DomainNameOutput) ToDomainNamePtrOutputWithContext(ctx context.Context) DomainNamePtrOutput {
+	return o.ApplyTWithContext(ctx, func(_ context.Context, v DomainName) *DomainName {
+		return &v
+	}).(DomainNamePtrOutput)
+}
+
+func (o DomainNameOutput) ToOutput(ctx context.Context) pulumix.Output[DomainName] {
+	return pulumix.Output[DomainName]{
+		OutputState: o.OutputState,
+	}
+}
+
+// Domain name configuration. See below.
+func (o DomainNameOutput) DomainNameConfiguration() apigatewayv2.DomainNameDomainNameConfigurationOutput {
+	return o.ApplyT(func(v DomainName) apigatewayv2.DomainNameDomainNameConfiguration { return v.DomainNameConfiguration }).(apigatewayv2.DomainNameDomainNameConfigurationOutput)
+}
+
+// Mutual TLS authentication configuration for the domain name.
+func (o DomainNameOutput) MutualTlsAuthentication() apigatewayv2.DomainNameMutualTlsAuthenticationPtrOutput {
+	return o.ApplyT(func(v DomainName) *apigatewayv2.DomainNameMutualTlsAuthentication { return v.MutualTlsAuthentication }).(apigatewayv2.DomainNameMutualTlsAuthenticationPtrOutput)
+}
+
+// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o DomainNameOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v DomainName) map[string]string { return v.Tags }).(pulumi.StringMapOutput)
+}
+
+type DomainNamePtrOutput struct{ *pulumi.OutputState }
+
+func (DomainNamePtrOutput) ElementType() reflect.Type {
+	return reflect.TypeOf((**DomainName)(nil)).Elem()
+}
+
+func (o DomainNamePtrOutput) ToDomainNamePtrOutput() DomainNamePtrOutput {
+	return o
+}
+
+func (o DomainNamePtrOutput) ToDomainNamePtrOutputWithContext(ctx context.Context) DomainNamePtrOutput {
+	return o
+}
+
+func (o DomainNamePtrOutput) ToOutput(ctx context.Context) pulumix.Output[*DomainName] {
+	return pulumix.Output[*DomainName]{
+		OutputState: o.OutputState,
+	}
+}
+
+func (o DomainNamePtrOutput) Elem() DomainNameOutput {
+	return o.ApplyT(func(v *DomainName) DomainName {
+		if v != nil {
+			return *v
+		}
+		var ret DomainName
+		return ret
+	}).(DomainNameOutput)
+}
+
+// Domain name configuration. See below.
+func (o DomainNamePtrOutput) DomainNameConfiguration() apigatewayv2.DomainNameDomainNameConfigurationPtrOutput {
+	return o.ApplyT(func(v *DomainName) *apigatewayv2.DomainNameDomainNameConfiguration {
+		if v == nil {
+			return nil
+		}
+		return &v.DomainNameConfiguration
+	}).(apigatewayv2.DomainNameDomainNameConfigurationPtrOutput)
+}
+
+// Mutual TLS authentication configuration for the domain name.
+func (o DomainNamePtrOutput) MutualTlsAuthentication() apigatewayv2.DomainNameMutualTlsAuthenticationPtrOutput {
+	return o.ApplyT(func(v *DomainName) *apigatewayv2.DomainNameMutualTlsAuthentication {
+		if v == nil {
+			return nil
+		}
+		return v.MutualTlsAuthentication
+	}).(apigatewayv2.DomainNameMutualTlsAuthenticationPtrOutput)
+}
+
+// Map of tags to assign to the domain name. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+func (o DomainNamePtrOutput) Tags() pulumi.StringMapOutput {
+	return o.ApplyT(func(v *DomainName) map[string]string {
+		if v == nil {
+			return nil
+		}
+		return v.Tags
+	}).(pulumi.StringMapOutput)
 }
 
 // Manages an Amazon API Gateway Version 2 authorizer.
@@ -2952,18 +2948,18 @@ func (o HttpStageOutput) Tags() pulumi.StringMapOutput {
 }
 
 func init() {
-	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationInput)(nil)).Elem(), DomainConfigurationArgs{})
-	pulumi.RegisterInputType(reflect.TypeOf((*DomainConfigurationPtrInput)(nil)).Elem(), DomainConfigurationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*DomainMappingInput)(nil)).Elem(), DomainMappingArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DomainNameInput)(nil)).Elem(), DomainNameArgs{})
+	pulumi.RegisterInputType(reflect.TypeOf((*DomainNamePtrInput)(nil)).Elem(), DomainNameArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpAuthorizerInput)(nil)).Elem(), HttpAuthorizerArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpAuthorizerPtrInput)(nil)).Elem(), HttpAuthorizerArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationInput)(nil)).Elem(), HttpIntegrationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpIntegrationPtrInput)(nil)).Elem(), HttpIntegrationArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpRouteInput)(nil)).Elem(), HttpRouteArgs{})
 	pulumi.RegisterInputType(reflect.TypeOf((*HttpStageInput)(nil)).Elem(), HttpStageArgs{})
-	pulumi.RegisterOutputType(DomainConfigurationOutput{})
-	pulumi.RegisterOutputType(DomainConfigurationPtrOutput{})
 	pulumi.RegisterOutputType(DomainMappingOutput{})
+	pulumi.RegisterOutputType(DomainNameOutput{})
+	pulumi.RegisterOutputType(DomainNamePtrOutput{})
 	pulumi.RegisterOutputType(HttpAuthorizerOutput{})
 	pulumi.RegisterOutputType(HttpAuthorizerPtrOutput{})
 	pulumi.RegisterOutputType(HttpIntegrationOutput{})

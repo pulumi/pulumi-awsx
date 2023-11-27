@@ -3,7 +3,7 @@
 
 package com.pulumi.awsx.apigatewayv2.inputs;
 
-import com.pulumi.awsx.apigatewayv2.inputs.DomainConfigurationArgs;
+import com.pulumi.awsx.apigatewayv2.inputs.DomainNameArgs;
 import com.pulumi.core.Output;
 import com.pulumi.core.annotations.Import;
 import java.lang.String;
@@ -78,33 +78,33 @@ public final class DomainMappingArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
-     * Configuration of the domain name to create. Cannot be specified together with `domainId`.
-     * 
-     */
-    @Import(name="domainConfiguration")
-    private @Nullable DomainConfigurationArgs domainConfiguration;
-
-    /**
-     * @return Configuration of the domain name to create. Cannot be specified together with `domainId`.
-     * 
-     */
-    public Optional<DomainConfigurationArgs> domainConfiguration() {
-        return Optional.ofNullable(this.domainConfiguration);
-    }
-
-    /**
-     * Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+     * Identifier of an existing domain. Cannot be specified together with `DomainName`.
      * 
      */
     @Import(name="domainId")
     private @Nullable Output<String> domainId;
 
     /**
-     * @return Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+     * @return Identifier of an existing domain. Cannot be specified together with `DomainName`.
      * 
      */
     public Optional<Output<String>> domainId() {
         return Optional.ofNullable(this.domainId);
+    }
+
+    /**
+     * Configuration of the domain name to create. Cannot be specified together with `domainId`.
+     * 
+     */
+    @Import(name="domainName")
+    private @Nullable DomainNameArgs domainName;
+
+    /**
+     * @return Configuration of the domain name to create. Cannot be specified together with `domainId`.
+     * 
+     */
+    public Optional<DomainNameArgs> domainName() {
+        return Optional.ofNullable(this.domainName);
     }
 
     /**
@@ -126,8 +126,8 @@ public final class DomainMappingArgs extends com.pulumi.resources.ResourceArgs {
 
     private DomainMappingArgs(DomainMappingArgs $) {
         this.apiMappingKey = $.apiMappingKey;
-        this.domainConfiguration = $.domainConfiguration;
         this.domainId = $.domainId;
+        this.domainName = $.domainName;
         this.stage = $.stage;
     }
 
@@ -171,18 +171,7 @@ public final class DomainMappingArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param domainConfiguration Configuration of the domain name to create. Cannot be specified together with `domainId`.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder domainConfiguration(@Nullable DomainConfigurationArgs domainConfiguration) {
-            $.domainConfiguration = domainConfiguration;
-            return this;
-        }
-
-        /**
-         * @param domainId Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+         * @param domainId Identifier of an existing domain. Cannot be specified together with `DomainName`.
          * 
          * @return builder
          * 
@@ -193,13 +182,24 @@ public final class DomainMappingArgs extends com.pulumi.resources.ResourceArgs {
         }
 
         /**
-         * @param domainId Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+         * @param domainId Identifier of an existing domain. Cannot be specified together with `DomainName`.
          * 
          * @return builder
          * 
          */
         public Builder domainId(String domainId) {
             return domainId(Output.of(domainId));
+        }
+
+        /**
+         * @param domainName Configuration of the domain name to create. Cannot be specified together with `domainId`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder domainName(@Nullable DomainNameArgs domainName) {
+            $.domainName = domainName;
+            return this;
         }
 
         /**

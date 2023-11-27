@@ -137,16 +137,16 @@ namespace Pulumi.Awsx.Apigatewayv2.Inputs
         public Input<string>? ApiMappingKey { get; set; }
 
         /// <summary>
-        /// Configuration of the domain name to create. Cannot be specified together with `domainId`.
-        /// </summary>
-        [Input("domainConfiguration")]
-        public Inputs.DomainConfigurationArgs? DomainConfiguration { get; set; }
-
-        /// <summary>
-        /// Identifier of an existing domain. Cannot be specified together with `domainConfiguration`.
+        /// Identifier of an existing domain. Cannot be specified together with `DomainName`.
         /// </summary>
         [Input("domainId")]
         public Input<string>? DomainId { get; set; }
+
+        /// <summary>
+        /// Configuration of the domain name to create. Cannot be specified together with `domainId`.
+        /// </summary>
+        [Input("domainName")]
+        public Inputs.DomainNameArgs? DomainName { get; set; }
 
         /// <summary>
         /// API stage. Use the `aws.apigatewayv2.Stage` resource to configure an API stage.
