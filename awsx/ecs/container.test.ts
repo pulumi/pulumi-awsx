@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 import * as pulumi from "@pulumi/pulumi";
+import * as aws from "@pulumi/aws";
 
 import { normalizeTaskDefinitionContainers, getMappingInputs } from "./containers";
 
@@ -32,6 +33,33 @@ describe("port mappings", () => {
       expect(inputs).toMatchObject({ containerPort: containerOut, hostPort: hostOut });
     },
   );
+
+  it("returns all valid arguments", () => {
+    const targetGroup = new aws.lb.TargetGroup("test-tg");
+
+    const inputs = getMappingInputs(
+      {
+        appProtocol: "grpc",
+        containerPort: 1,
+        containerPortRange: "1-65535",
+        hostPort: 2,
+        name: "test-mapping-1-2",
+        protocol: "tcp",
+        targetGroup,
+      },
+      undefined,
+    );
+
+    expect(inputs).toMatchObject({
+      appProtocol: "grpc",
+      containerPort: 1,
+      containerPortRange: "1-65535",
+      hostPort: 2,
+      name: "test-mapping-1-2",
+      protocol: "tcp",
+      targetGroup,
+    });
+  });
 });
 
 function promiseOf<T>(output: pulumi.Output<T>): Promise<T> {
