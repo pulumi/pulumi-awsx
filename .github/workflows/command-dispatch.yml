@@ -11,7 +11,7 @@ jobs:
       - name: Run Build
         uses: peter-evans/slash-command-dispatch@v3
         with:
-          token: ${{ secrets.EVENT_PAT }}
+          token: ${{ secrets.PULUMI_BOT_TOKEN }}
           reaction-token: ${{ secrets.GITHUB_TOKEN }}
           commands: run-acceptance-tests
           permission: write
