@@ -82,12 +82,9 @@ publish() {
     mv package.json.dev package.json
     popd
 
-    # Start Python Publish
-    PYPI_PUBLISH_USERNAME="pulumi"
-
-    echo "Publishing Pip package to pypi as ${PYPI_PUBLISH_USERNAME}:"
+    echo "Publishing Pip package to pypi as ${PYPI_USERNAME}:"
     twine upload \
-        -u "${PYPI_PUBLISH_USERNAME}" -p "${PYPI_PASSWORD}" \
+        -u "${PYPI_USERNAME}" -p "${PYPI_PASSWORD}" \
         "${ROOT}/sdk/python/bin/dist/*" \
         --skip-existing \
         --verbose
