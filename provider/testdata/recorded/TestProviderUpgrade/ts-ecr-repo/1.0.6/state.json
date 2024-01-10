@@ -2,28 +2,29 @@
     "version": 3,
     "deployment": {
         "manifest": {
-            "time": "2023-11-02T13:30:52.490182Z",
-            "magic": "7f5ec831fbfcaaafb30fe1f9dd0eebc4a62372e9fda10d9bab6256b2deca869d",
-            "version": "v3.78.1"
+            "time": "2024-01-10T13:23:34.103928-08:00",
+            "magic": "330e70f0a25468434e2825fd79ccc5080f6e0c748cdc6b9cf767aade4ca82c13",
+            "version": "3.99.1-dev.0"
         },
         "secrets_providers": {
             "type": "passphrase",
             "state": {
-                "salt": "v1:/BbiFlufvCg=:v1:h+tmBVLLh2AJkQO+:JNz4GPTA1cF632w/SVFAnbV1JQLPMA=="
+                "salt": "v1:Dula2pTgxwY=:v1:JQxqQV31/C5yXqzL:ZNhVGe8DEM2M+/xfoj/lJ5d3+e4CEg=="
             }
         },
         "resources": [
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::pulumi:pulumi:Stack::ecr-p-it-daniels-ma-ts-ecr-rep-9cfc8945",
+                "urn": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::pulumi:pulumi:Stack::ecr-p-it-bryces-wor-ts-ecr-rep-980e1d12",
                 "custom": false,
                 "type": "pulumi:pulumi:Stack",
-                "created": "2023-11-02T13:30:46.884198Z",
-                "modified": "2023-11-02T13:30:46.884198Z"
+                "created": "2024-01-10T21:23:32.291975Z",
+                "modified": "2024-01-10T21:23:32.291975Z",
+                "sourcePosition": "project:///node_modules/@pulumi/runtime/stack.ts#36,23"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::pulumi:providers:awsx::default_1_0_6",
+                "urn": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::pulumi:providers:awsx::default_1_0_6",
                 "custom": true,
-                "id": "8d3cd366-9331-4fcd-becc-6c390527004b",
+                "id": "583648e5-00c8-4b6f-b160-154c38494ad4",
                 "type": "pulumi:providers:awsx",
                 "inputs": {
                     "version": "1.0.6"
@@ -31,35 +32,35 @@
                 "outputs": {
                     "version": "1.0.6"
                 },
-                "created": "2023-11-02T13:30:47.157336Z",
-                "modified": "2023-11-02T13:30:47.157336Z"
+                "created": "2024-01-10T21:23:32.722602Z",
+                "modified": "2024-01-10T21:23:32.722602Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::awsx:ecr:Repository::repository",
+                "urn": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::awsx:ecr:Repository::repository",
                 "custom": false,
                 "type": "awsx:ecr:Repository",
                 "outputs": {
                     "lifecyclePolicy": {
                         "4dabf18193072939515e22adb298388d": "5cf8f73096256a8f31e491e813e4eb8e",
-                        "id": "repository-e7ed924",
+                        "id": "repository-661d1c8",
                         "packageVersion": "",
-                        "urn": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::awsx:ecr:Repository$aws:ecr/lifecyclePolicy:LifecyclePolicy::repository"
+                        "urn": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::awsx:ecr:Repository$aws:ecr/lifecyclePolicy:LifecyclePolicy::repository"
                     },
                     "repository": {
                         "4dabf18193072939515e22adb298388d": "5cf8f73096256a8f31e491e813e4eb8e",
-                        "id": "repository-e7ed924",
+                        "id": "repository-661d1c8",
                         "packageVersion": "",
-                        "urn": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository"
+                        "urn": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository"
                     }
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::pulumi:pulumi:Stack::ecr-p-it-daniels-ma-ts-ecr-rep-9cfc8945",
-                "created": "2023-11-02T13:30:47.178574Z",
-                "modified": "2023-11-02T13:30:47.178574Z"
+                "parent": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::pulumi:pulumi:Stack::ecr-p-it-bryces-wor-ts-ecr-rep-980e1d12",
+                "created": "2024-01-10T21:23:32.748366Z",
+                "modified": "2024-01-10T21:23:32.748366Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::pulumi:providers:aws::default_5_35_0",
+                "urn": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::pulumi:providers:aws::default_5_35_0",
                 "custom": true,
-                "id": "aebeccb4-734e-4b88-a2e9-0f8a03beb04d",
+                "id": "8e1de3eb-7320-4001-b971-f9054e81ce53",
                 "type": "pulumi:providers:aws",
                 "inputs": {
                     "region": "us-west-2",
@@ -69,13 +70,13 @@
                     "region": "us-west-2",
                     "version": "5.35.0"
                 },
-                "created": "2023-11-02T13:30:47.278416Z",
-                "modified": "2023-11-02T13:30:47.278416Z"
+                "created": "2024-01-10T21:23:32.886266Z",
+                "modified": "2024-01-10T21:23:32.886266Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository",
+                "urn": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository",
                 "custom": true,
-                "id": "repository-e7ed924",
+                "id": "repository-661d1c8",
                 "type": "aws:ecr/repository:Repository",
                 "inputs": {
                     "__defaults": [
@@ -84,11 +85,11 @@
                     ],
                     "forceDelete": true,
                     "imageTagMutability": "MUTABLE",
-                    "name": "repository-e7ed924"
+                    "name": "repository-661d1c8"
                 },
                 "outputs": {
                     "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":1200000000000}}",
-                    "arn": "arn:aws:ecr:us-west-2:616138583583:repository/repository-e7ed924",
+                    "arn": "arn:aws:ecr:us-west-2:894850187425:repository/repository-661d1c8",
                     "encryptionConfigurations": [
                         {
                             "encryptionType": "AES256",
@@ -96,60 +97,62 @@
                         }
                     ],
                     "forceDelete": true,
-                    "id": "repository-e7ed924",
+                    "id": "repository-661d1c8",
                     "imageScanningConfiguration": {
                         "scanOnPush": false
                     },
                     "imageTagMutability": "MUTABLE",
-                    "name": "repository-e7ed924",
-                    "registryId": "616138583583",
-                    "repositoryUrl": "616138583583.dkr.ecr.us-west-2.amazonaws.com/repository-e7ed924",
+                    "name": "repository-661d1c8",
+                    "registryId": "894850187425",
+                    "repositoryUrl": "894850187425.dkr.ecr.us-west-2.amazonaws.com/repository-661d1c8",
                     "tags": {},
                     "tagsAll": {}
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::awsx:ecr:Repository::repository",
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::pulumi:providers:aws::default_5_35_0::aebeccb4-734e-4b88-a2e9-0f8a03beb04d",
+                "parent": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::awsx:ecr:Repository::repository",
+                "provider": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::pulumi:providers:aws::default_5_35_0::8e1de3eb-7320-4001-b971-f9054e81ce53",
                 "propertyDependencies": {
                     "forceDelete": null
                 },
-                "created": "2023-11-02T13:30:52.017609Z",
-                "modified": "2023-11-02T13:30:52.017609Z"
+                "created": "2024-01-10T21:23:33.968127Z",
+                "modified": "2024-01-10T21:23:33.968127Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::awsx:ecr:Repository$aws:ecr/lifecyclePolicy:LifecyclePolicy::repository",
+                "urn": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::awsx:ecr:Repository$aws:ecr/lifecyclePolicy:LifecyclePolicy::repository",
                 "custom": true,
-                "id": "repository-e7ed924",
+                "id": "repository-661d1c8",
                 "type": "aws:ecr/lifecyclePolicy:LifecyclePolicy",
                 "inputs": {
                     "__defaults": [],
                     "policy": "{\"rules\":[{\"action\":{\"type\":\"expire\"},\"description\":\"remove untagged images\",\"rulePriority\":1,\"selection\":{\"countNumber\":1,\"countType\":\"imageCountMoreThan\",\"tagStatus\":\"untagged\"}}]}",
-                    "repository": "repository-e7ed924"
+                    "repository": "repository-661d1c8"
                 },
                 "outputs": {
-                    "id": "repository-e7ed924",
+                    "id": "repository-661d1c8",
                     "policy": "{\"rules\":[{\"action\":{\"type\":\"expire\"},\"description\":\"remove untagged images\",\"rulePriority\":1,\"selection\":{\"countNumber\":1,\"countType\":\"imageCountMoreThan\",\"tagStatus\":\"untagged\"}}]}",
-                    "registryId": "616138583583",
-                    "repository": "repository-e7ed924"
+                    "registryId": "894850187425",
+                    "repository": "repository-661d1c8"
                 },
-                "parent": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::awsx:ecr:Repository::repository",
+                "parent": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::awsx:ecr:Repository::repository",
                 "dependencies": [
-                    "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository"
+                    "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository"
                 ],
-                "provider": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::pulumi:providers:aws::default_5_35_0::aebeccb4-734e-4b88-a2e9-0f8a03beb04d",
+                "provider": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::pulumi:providers:aws::default_5_35_0::8e1de3eb-7320-4001-b971-f9054e81ce53",
                 "propertyDependencies": {
                     "policy": null,
                     "repository": [
-                        "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository"
+                        "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository"
                     ]
                 },
-                "created": "2023-11-02T13:30:52.424485Z",
-                "modified": "2023-11-02T13:30:52.424485Z"
+                "created": "2024-01-10T21:23:34.077244Z",
+                "modified": "2024-01-10T21:23:34.077244Z"
             },
             {
-                "urn": "urn:pulumi:p-it-daniels-ma-ts-ecr-rep-9cfc8945::ecr::pulumi:providers:pulumi::default",
+                "urn": "urn:pulumi:p-it-bryces-wor-ts-ecr-rep-980e1d12::ecr::pulumi:providers:pulumi::default",
                 "custom": true,
-                "id": "9374b556-3d1c-4f72-aa95-9168ff57d0ea",
-                "type": "pulumi:providers:pulumi"
+                "id": "7aef557f-a62d-4229-9b10-2028c17e2c09",
+                "type": "pulumi:providers:pulumi",
+                "created": "2024-01-10T21:23:34.103914Z",
+                "modified": "2024-01-10T21:23:34.103914Z"
             }
         ]
     }

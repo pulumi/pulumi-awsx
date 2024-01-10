@@ -2,29 +2,29 @@
     "version": 3,
     "deployment": {
         "manifest": {
-            "time": "2023-10-23T12:30:15.242905-04:00",
-            "magic": "cdb46f20d3397474c4b7038ce63a3c40fb0da4b95458ef275b6ce689aec88d17",
-            "version": "v3.86.0"
+            "time": "2024-01-10T12:55:04.296212-08:00",
+            "magic": "330e70f0a25468434e2825fd79ccc5080f6e0c748cdc6b9cf767aade4ca82c13",
+            "version": "3.99.1-dev.0"
         },
         "secrets_providers": {
             "type": "passphrase",
             "state": {
-                "salt": "v1:NPHr/hi5Hos=:v1:x1WD5GFFEiuQiXyx:wbE4uVyzBSE5iijwikL58hBAYbRntg=="
+                "salt": "v1:FNC3QHOmU6w=:v1:MULpTHNiIAbx96H8:82OsDUg1zumBr4hU9SrN6J6iCRSx3Q=="
             }
         },
         "resources": [
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:pulumi:Stack::nodejs-p-it-antons-mac-nodejs-b23cc3e0",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:pulumi:Stack::nodejs-p-it-bryces-wor-nodejs-25aa1a7c",
                 "custom": false,
                 "type": "pulumi:pulumi:Stack",
-                "created": "2023-10-23T16:29:57.586492Z",
-                "modified": "2023-10-23T16:29:57.586492Z",
+                "created": "2024-01-10T20:54:54.70562Z",
+                "modified": "2024-01-10T20:54:54.70562Z",
                 "sourcePosition": "project:///node_modules/@pulumi/runtime/stack.ts#36,23"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:awsx::default_1_0_6",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:awsx::default_1_0_6",
                 "custom": true,
-                "id": "9b671fdc-8c2e-4c50-93f2-c373633d4fcb",
+                "id": "e4d019fa-f011-469a-bca2-2966f46f6381",
                 "type": "pulumi:providers:awsx",
                 "inputs": {
                     "version": "1.0.6"
@@ -32,35 +32,37 @@
                 "outputs": {
                     "version": "1.0.6"
                 },
-                "created": "2023-10-23T16:29:58.283945Z",
-                "modified": "2023-10-23T16:29:58.283945Z"
+                "created": "2024-01-10T20:54:56.129645Z",
+                "modified": "2024-01-10T20:54:56.129645Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-trail",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-kms-bucket-trail",
                 "custom": false,
                 "type": "awsx:cloudtrail:Trail",
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:pulumi:Stack::nodejs-p-it-antons-mac-nodejs-b23cc3e0",
-                "created": "2023-10-23T16:29:58.340657Z",
-                "modified": "2023-10-23T16:29:58.340657Z"
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:pulumi:Stack::nodejs-p-it-bryces-wor-nodejs-25aa1a7c",
+                "created": "2024-01-10T20:54:56.165921Z",
+                "modified": "2024-01-10T20:54:56.165921Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0",
                 "custom": true,
-                "id": "acc1a944-5014-4b91-82e4-fdba63a664ba",
+                "id": "080a8f3e-a03e-4123-a0ca-19189b95ef70",
                 "type": "pulumi:providers:aws",
                 "inputs": {
+                    "region": "us-west-2",
                     "version": "5.35.0"
                 },
                 "outputs": {
+                    "region": "us-west-2",
                     "version": "5.35.0"
                 },
-                "created": "2023-10-23T16:29:58.468054Z",
-                "modified": "2023-10-23T16:29:58.468054Z"
+                "created": "2024-01-10T20:54:56.290792Z",
+                "modified": "2024-01-10T20:54:56.290792Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail",
                 "custom": true,
-                "id": "example-trail-63221a9",
+                "id": "example-kms-bucket-trail-a33f169",
                 "type": "aws:s3/bucket:Bucket",
                 "inputs": {
                     "__defaults": [
@@ -68,21 +70,191 @@
                         "bucket"
                     ],
                     "acl": "private",
-                    "bucket": "example-trail-63221a9",
+                    "bucket": "example-kms-bucket-trail-a33f169",
+                    "forceDestroy": true,
+                    "serverSideEncryptionConfiguration": {
+                        "__defaults": [],
+                        "rule": {
+                            "__defaults": [],
+                            "applyServerSideEncryptionByDefault": {
+                                "__defaults": [],
+                                "sseAlgorithm": "aws:kms"
+                            }
+                        }
+                    }
+                },
+                "outputs": {
+                    "accelerationStatus": "",
+                    "acl": "private",
+                    "arn": "arn:aws:s3:::example-kms-bucket-trail-a33f169",
+                    "bucket": "example-kms-bucket-trail-a33f169",
+                    "bucketDomainName": "example-kms-bucket-trail-a33f169.s3.amazonaws.com",
+                    "bucketRegionalDomainName": "example-kms-bucket-trail-a33f169.s3.us-west-2.amazonaws.com",
+                    "corsRules": [],
+                    "forceDestroy": true,
+                    "grants": [],
+                    "hostedZoneId": "Z3BJ6K6RIION7M",
+                    "id": "example-kms-bucket-trail-a33f169",
+                    "lifecycleRules": [],
+                    "loggings": [],
+                    "objectLockConfiguration": null,
+                    "region": "us-west-2",
+                    "replicationConfiguration": null,
+                    "requestPayer": "BucketOwner",
+                    "serverSideEncryptionConfiguration": {
+                        "rule": {
+                            "applyServerSideEncryptionByDefault": {
+                                "kmsMasterKeyId": "",
+                                "sseAlgorithm": "aws:kms"
+                            },
+                            "bucketKeyEnabled": false
+                        }
+                    },
+                    "tags": {},
+                    "tagsAll": {},
+                    "versioning": {
+                        "enabled": false,
+                        "mfaDelete": false
+                    },
+                    "website": null
+                },
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-kms-bucket-trail",
+                "provider": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0::080a8f3e-a03e-4123-a0ca-19189b95ef70",
+                "propertyDependencies": {
+                    "forceDestroy": null,
+                    "serverSideEncryptionConfiguration": null
+                },
+                "created": "2024-01-10T20:54:58.260772Z",
+                "modified": "2024-01-10T20:54:58.260772Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-kms-bucket-trail",
+                "custom": true,
+                "id": "example-kms-bucket-trail-a33f169",
+                "type": "aws:s3/bucketPolicy:BucketPolicy",
+                "inputs": {
+                    "__defaults": [],
+                    "bucket": "example-kms-bucket-trail-a33f169",
+                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-kms-bucket-trail-a33f169\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-kms-bucket-trail-a33f169/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
+                },
+                "outputs": {
+                    "bucket": "example-kms-bucket-trail-a33f169",
+                    "id": "example-kms-bucket-trail-a33f169",
+                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-kms-bucket-trail-a33f169\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-kms-bucket-trail-a33f169/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
+                },
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-kms-bucket-trail",
+                "dependencies": [
+                    "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
+                ],
+                "provider": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0::080a8f3e-a03e-4123-a0ca-19189b95ef70",
+                "propertyDependencies": {
+                    "bucket": [
+                        "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
+                    ],
+                    "policy": [
+                        "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
+                    ]
+                },
+                "created": "2024-01-10T20:54:58.574064Z",
+                "modified": "2024-01-10T20:54:58.574064Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:cloudtrail/trail:Trail::example-kms-bucket-trail",
+                "custom": true,
+                "id": "example-kms-bucket-trail-78f9f23",
+                "type": "aws:cloudtrail/trail:Trail",
+                "inputs": {
+                    "__defaults": [
+                        "enableLogFileValidation",
+                        "includeGlobalServiceEvents",
+                        "isMultiRegionTrail",
+                        "isOrganizationTrail",
+                        "name"
+                    ],
+                    "enableLogFileValidation": false,
+                    "enableLogging": true,
+                    "includeGlobalServiceEvents": true,
+                    "isMultiRegionTrail": false,
+                    "isOrganizationTrail": false,
+                    "name": "example-kms-bucket-trail-78f9f23",
+                    "s3BucketName": "example-kms-bucket-trail-a33f169"
+                },
+                "outputs": {
+                    "arn": "arn:aws:cloudtrail:us-west-2:894850187425:trail/example-kms-bucket-trail-78f9f23",
+                    "cloudWatchLogsGroupArn": "",
+                    "cloudWatchLogsRoleArn": "",
+                    "enableLogFileValidation": false,
+                    "enableLogging": true,
+                    "homeRegion": "us-west-2",
+                    "id": "example-kms-bucket-trail-78f9f23",
+                    "includeGlobalServiceEvents": true,
+                    "isMultiRegionTrail": false,
+                    "isOrganizationTrail": false,
+                    "kmsKeyId": "",
+                    "name": "example-kms-bucket-trail-78f9f23",
+                    "s3BucketName": "example-kms-bucket-trail-a33f169",
+                    "s3KeyPrefix": "",
+                    "snsTopicName": "",
+                    "tags": {},
+                    "tagsAll": {}
+                },
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-kms-bucket-trail",
+                "dependencies": [
+                    "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-kms-bucket-trail",
+                    "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
+                ],
+                "provider": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0::080a8f3e-a03e-4123-a0ca-19189b95ef70",
+                "propertyDependencies": {
+                    "enableLogging": null,
+                    "s3BucketName": [
+                        "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
+                    ]
+                },
+                "created": "2024-01-10T20:54:59.382259Z",
+                "modified": "2024-01-10T20:54:59.382259Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-trail",
+                "custom": false,
+                "type": "awsx:cloudtrail:Trail",
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:pulumi:Stack::nodejs-p-it-bryces-wor-nodejs-25aa1a7c",
+                "created": "2024-01-10T20:54:59.411085Z",
+                "modified": "2024-01-10T20:54:59.411085Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:pulumi::default",
+                "custom": true,
+                "id": "33b6ecd9-9868-44da-9dbe-c9fd615c6b8b",
+                "type": "pulumi:providers:pulumi",
+                "created": "2024-01-10T20:54:59.444868Z",
+                "modified": "2024-01-10T20:54:59.444868Z"
+            },
+            {
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail",
+                "custom": true,
+                "id": "example-trail-2d0ab1e",
+                "type": "aws:s3/bucket:Bucket",
+                "inputs": {
+                    "__defaults": [
+                        "acl",
+                        "bucket"
+                    ],
+                    "acl": "private",
+                    "bucket": "example-trail-2d0ab1e",
                     "forceDestroy": true
                 },
                 "outputs": {
                     "accelerationStatus": "",
                     "acl": "private",
-                    "arn": "arn:aws:s3:::example-trail-63221a9",
-                    "bucket": "example-trail-63221a9",
-                    "bucketDomainName": "example-trail-63221a9.s3.amazonaws.com",
-                    "bucketRegionalDomainName": "example-trail-63221a9.s3.us-west-2.amazonaws.com",
+                    "arn": "arn:aws:s3:::example-trail-2d0ab1e",
+                    "bucket": "example-trail-2d0ab1e",
+                    "bucketDomainName": "example-trail-2d0ab1e.s3.amazonaws.com",
+                    "bucketRegionalDomainName": "example-trail-2d0ab1e.s3.us-west-2.amazonaws.com",
                     "corsRules": [],
                     "forceDestroy": true,
                     "grants": [],
                     "hostedZoneId": "Z3BJ6K6RIION7M",
-                    "id": "example-trail-63221a9",
+                    "id": "example-trail-2d0ab1e",
                     "lifecycleRules": [],
                     "loggings": [],
                     "objectLockConfiguration": null,
@@ -106,49 +278,49 @@
                     },
                     "website": null
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-trail",
-                "provider": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0::acc1a944-5014-4b91-82e4-fdba63a664ba",
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-trail",
+                "provider": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0::080a8f3e-a03e-4123-a0ca-19189b95ef70",
                 "propertyDependencies": {
                     "forceDestroy": null
                 },
-                "created": "2023-10-23T16:30:04.695453Z",
-                "modified": "2023-10-23T16:30:04.695453Z"
+                "created": "2024-01-10T20:55:00.661364Z",
+                "modified": "2024-01-10T20:55:00.661364Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-trail",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-trail",
                 "custom": true,
-                "id": "example-trail-63221a9",
+                "id": "example-trail-2d0ab1e",
                 "type": "aws:s3/bucketPolicy:BucketPolicy",
                 "inputs": {
                     "__defaults": [],
-                    "bucket": "example-trail-63221a9",
-                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-trail-63221a9\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-trail-63221a9/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
+                    "bucket": "example-trail-2d0ab1e",
+                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-trail-2d0ab1e\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-trail-2d0ab1e/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
                 },
                 "outputs": {
-                    "bucket": "example-trail-63221a9",
-                    "id": "example-trail-63221a9",
-                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-trail-63221a9\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-trail-63221a9/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
+                    "bucket": "example-trail-2d0ab1e",
+                    "id": "example-trail-2d0ab1e",
+                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-trail-2d0ab1e\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-trail-2d0ab1e/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-trail",
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-trail",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
+                    "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0::acc1a944-5014-4b91-82e4-fdba63a664ba",
+                "provider": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0::080a8f3e-a03e-4123-a0ca-19189b95ef70",
                 "propertyDependencies": {
                     "bucket": [
-                        "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
+                        "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
                     ],
                     "policy": [
-                        "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
+                        "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
                     ]
                 },
-                "created": "2023-10-23T16:30:05.186344Z",
-                "modified": "2023-10-23T16:30:05.186344Z"
+                "created": "2024-01-10T20:55:00.945627Z",
+                "modified": "2024-01-10T20:55:00.945627Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:cloudtrail/trail:Trail::example-trail",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:cloudtrail/trail:Trail::example-trail",
                 "custom": true,
-                "id": "example-trail-e591ce3",
+                "id": "example-trail-b769d0f",
                 "type": "aws:cloudtrail/trail:Trail",
                 "inputs": {
                     "__defaults": [
@@ -163,63 +335,55 @@
                     "includeGlobalServiceEvents": true,
                     "isMultiRegionTrail": false,
                     "isOrganizationTrail": false,
-                    "name": "example-trail-e591ce3",
-                    "s3BucketName": "example-trail-63221a9"
+                    "name": "example-trail-b769d0f",
+                    "s3BucketName": "example-trail-2d0ab1e"
                 },
                 "outputs": {
-                    "arn": "arn:aws:cloudtrail:us-west-2:616138583583:trail/example-trail-e591ce3",
+                    "arn": "arn:aws:cloudtrail:us-west-2:894850187425:trail/example-trail-b769d0f",
                     "cloudWatchLogsGroupArn": "",
                     "cloudWatchLogsRoleArn": "",
                     "enableLogFileValidation": false,
                     "enableLogging": true,
                     "homeRegion": "us-west-2",
-                    "id": "example-trail-e591ce3",
+                    "id": "example-trail-b769d0f",
                     "includeGlobalServiceEvents": true,
                     "isMultiRegionTrail": false,
                     "isOrganizationTrail": false,
                     "kmsKeyId": "",
-                    "name": "example-trail-e591ce3",
-                    "s3BucketName": "example-trail-63221a9",
+                    "name": "example-trail-b769d0f",
+                    "s3BucketName": "example-trail-2d0ab1e",
                     "s3KeyPrefix": "",
                     "snsTopicName": "",
                     "tags": {},
                     "tagsAll": {}
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-trail",
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-trail",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-trail",
-                    "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
+                    "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-trail",
+                    "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0::acc1a944-5014-4b91-82e4-fdba63a664ba",
+                "provider": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0::080a8f3e-a03e-4123-a0ca-19189b95ef70",
                 "propertyDependencies": {
                     "enableLogging": null,
                     "s3BucketName": [
-                        "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
+                        "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-trail"
                     ]
                 },
-                "created": "2023-10-23T16:30:06.603099Z",
-                "modified": "2023-10-23T16:30:06.603099Z"
+                "created": "2024-01-10T20:55:01.649961Z",
+                "modified": "2024-01-10T20:55:01.649961Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-kms-bucket-trail",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-aes-bucket-trail",
                 "custom": false,
                 "type": "awsx:cloudtrail:Trail",
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:pulumi:Stack::nodejs-p-it-antons-mac-nodejs-b23cc3e0",
-                "created": "2023-10-23T16:30:06.647178Z",
-                "modified": "2023-10-23T16:30:06.647178Z"
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:pulumi:Stack::nodejs-p-it-bryces-wor-nodejs-25aa1a7c",
+                "created": "2024-01-10T20:55:01.678883Z",
+                "modified": "2024-01-10T20:55:01.678883Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:pulumi::default",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail",
                 "custom": true,
-                "id": "745dc7be-c677-469c-9a6b-64174140bb9a",
-                "type": "pulumi:providers:pulumi",
-                "created": "2023-10-23T16:30:06.694449Z",
-                "modified": "2023-10-23T16:30:06.694449Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail",
-                "custom": true,
-                "id": "example-kms-bucket-trail-dadd084",
+                "id": "example-aes-bucket-trail-e02079f",
                 "type": "aws:s3/bucket:Bucket",
                 "inputs": {
                     "__defaults": [
@@ -227,169 +391,7 @@
                         "bucket"
                     ],
                     "acl": "private",
-                    "bucket": "example-kms-bucket-trail-dadd084",
-                    "forceDestroy": true,
-                    "serverSideEncryptionConfiguration": {
-                        "__defaults": [],
-                        "rule": {
-                            "__defaults": [],
-                            "applyServerSideEncryptionByDefault": {
-                                "__defaults": [],
-                                "sseAlgorithm": "aws:kms"
-                            }
-                        }
-                    }
-                },
-                "outputs": {
-                    "accelerationStatus": "",
-                    "acl": "private",
-                    "arn": "arn:aws:s3:::example-kms-bucket-trail-dadd084",
-                    "bucket": "example-kms-bucket-trail-dadd084",
-                    "bucketDomainName": "example-kms-bucket-trail-dadd084.s3.amazonaws.com",
-                    "bucketRegionalDomainName": "example-kms-bucket-trail-dadd084.s3.us-west-2.amazonaws.com",
-                    "corsRules": [],
-                    "forceDestroy": true,
-                    "grants": [],
-                    "hostedZoneId": "Z3BJ6K6RIION7M",
-                    "id": "example-kms-bucket-trail-dadd084",
-                    "lifecycleRules": [],
-                    "loggings": [],
-                    "objectLockConfiguration": null,
-                    "region": "us-west-2",
-                    "replicationConfiguration": null,
-                    "requestPayer": "BucketOwner",
-                    "serverSideEncryptionConfiguration": {
-                        "rule": {
-                            "applyServerSideEncryptionByDefault": {
-                                "kmsMasterKeyId": "",
-                                "sseAlgorithm": "aws:kms"
-                            },
-                            "bucketKeyEnabled": false
-                        }
-                    },
-                    "tags": {},
-                    "tagsAll": {},
-                    "versioning": {
-                        "enabled": false,
-                        "mfaDelete": false
-                    },
-                    "website": null
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-kms-bucket-trail",
-                "provider": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0::acc1a944-5014-4b91-82e4-fdba63a664ba",
-                "propertyDependencies": {
-                    "forceDestroy": null,
-                    "serverSideEncryptionConfiguration": null
-                },
-                "created": "2023-10-23T16:30:09.693939Z",
-                "modified": "2023-10-23T16:30:09.693939Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-kms-bucket-trail",
-                "custom": true,
-                "id": "example-kms-bucket-trail-dadd084",
-                "type": "aws:s3/bucketPolicy:BucketPolicy",
-                "inputs": {
-                    "__defaults": [],
-                    "bucket": "example-kms-bucket-trail-dadd084",
-                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-kms-bucket-trail-dadd084\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-kms-bucket-trail-dadd084/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
-                },
-                "outputs": {
-                    "bucket": "example-kms-bucket-trail-dadd084",
-                    "id": "example-kms-bucket-trail-dadd084",
-                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-kms-bucket-trail-dadd084\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-kms-bucket-trail-dadd084/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-kms-bucket-trail",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0::acc1a944-5014-4b91-82e4-fdba63a664ba",
-                "propertyDependencies": {
-                    "bucket": [
-                        "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
-                    ],
-                    "policy": [
-                        "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
-                    ]
-                },
-                "created": "2023-10-23T16:30:10.027086Z",
-                "modified": "2023-10-23T16:30:10.027086Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:cloudtrail/trail:Trail::example-kms-bucket-trail",
-                "custom": true,
-                "id": "example-kms-bucket-trail-cc46e6e",
-                "type": "aws:cloudtrail/trail:Trail",
-                "inputs": {
-                    "__defaults": [
-                        "enableLogFileValidation",
-                        "includeGlobalServiceEvents",
-                        "isMultiRegionTrail",
-                        "isOrganizationTrail",
-                        "name"
-                    ],
-                    "enableLogFileValidation": false,
-                    "enableLogging": true,
-                    "includeGlobalServiceEvents": true,
-                    "isMultiRegionTrail": false,
-                    "isOrganizationTrail": false,
-                    "name": "example-kms-bucket-trail-cc46e6e",
-                    "s3BucketName": "example-kms-bucket-trail-dadd084"
-                },
-                "outputs": {
-                    "arn": "arn:aws:cloudtrail:us-west-2:616138583583:trail/example-kms-bucket-trail-cc46e6e",
-                    "cloudWatchLogsGroupArn": "",
-                    "cloudWatchLogsRoleArn": "",
-                    "enableLogFileValidation": false,
-                    "enableLogging": true,
-                    "homeRegion": "us-west-2",
-                    "id": "example-kms-bucket-trail-cc46e6e",
-                    "includeGlobalServiceEvents": true,
-                    "isMultiRegionTrail": false,
-                    "isOrganizationTrail": false,
-                    "kmsKeyId": "",
-                    "name": "example-kms-bucket-trail-cc46e6e",
-                    "s3BucketName": "example-kms-bucket-trail-dadd084",
-                    "s3KeyPrefix": "",
-                    "snsTopicName": "",
-                    "tags": {},
-                    "tagsAll": {}
-                },
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-kms-bucket-trail",
-                "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-kms-bucket-trail",
-                    "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
-                ],
-                "provider": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0::acc1a944-5014-4b91-82e4-fdba63a664ba",
-                "propertyDependencies": {
-                    "enableLogging": null,
-                    "s3BucketName": [
-                        "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-kms-bucket-trail"
-                    ]
-                },
-                "created": "2023-10-23T16:30:10.862823Z",
-                "modified": "2023-10-23T16:30:10.862823Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-aes-bucket-trail",
-                "custom": false,
-                "type": "awsx:cloudtrail:Trail",
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:pulumi:Stack::nodejs-p-it-antons-mac-nodejs-b23cc3e0",
-                "created": "2023-10-23T16:30:10.898021Z",
-                "modified": "2023-10-23T16:30:10.898021Z"
-            },
-            {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail",
-                "custom": true,
-                "id": "example-aes-bucket-trail-36821a5",
-                "type": "aws:s3/bucket:Bucket",
-                "inputs": {
-                    "__defaults": [
-                        "acl",
-                        "bucket"
-                    ],
-                    "acl": "private",
-                    "bucket": "example-aes-bucket-trail-36821a5",
+                    "bucket": "example-aes-bucket-trail-e02079f",
                     "forceDestroy": true,
                     "serverSideEncryptionConfiguration": {
                         "__defaults": [],
@@ -405,15 +407,15 @@
                 "outputs": {
                     "accelerationStatus": "",
                     "acl": "private",
-                    "arn": "arn:aws:s3:::example-aes-bucket-trail-36821a5",
-                    "bucket": "example-aes-bucket-trail-36821a5",
-                    "bucketDomainName": "example-aes-bucket-trail-36821a5.s3.amazonaws.com",
-                    "bucketRegionalDomainName": "example-aes-bucket-trail-36821a5.s3.us-west-2.amazonaws.com",
+                    "arn": "arn:aws:s3:::example-aes-bucket-trail-e02079f",
+                    "bucket": "example-aes-bucket-trail-e02079f",
+                    "bucketDomainName": "example-aes-bucket-trail-e02079f.s3.amazonaws.com",
+                    "bucketRegionalDomainName": "example-aes-bucket-trail-e02079f.s3.us-west-2.amazonaws.com",
                     "corsRules": [],
                     "forceDestroy": true,
                     "grants": [],
                     "hostedZoneId": "Z3BJ6K6RIION7M",
-                    "id": "example-aes-bucket-trail-36821a5",
+                    "id": "example-aes-bucket-trail-e02079f",
                     "lifecycleRules": [],
                     "loggings": [],
                     "objectLockConfiguration": null,
@@ -437,50 +439,50 @@
                     },
                     "website": null
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-aes-bucket-trail",
-                "provider": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0::acc1a944-5014-4b91-82e4-fdba63a664ba",
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-aes-bucket-trail",
+                "provider": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0::080a8f3e-a03e-4123-a0ca-19189b95ef70",
                 "propertyDependencies": {
                     "forceDestroy": null,
                     "serverSideEncryptionConfiguration": null
                 },
-                "created": "2023-10-23T16:30:13.954587Z",
-                "modified": "2023-10-23T16:30:13.954587Z"
+                "created": "2024-01-10T20:55:03.299267Z",
+                "modified": "2024-01-10T20:55:03.299267Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-aes-bucket-trail",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-aes-bucket-trail",
                 "custom": true,
-                "id": "example-aes-bucket-trail-36821a5",
+                "id": "example-aes-bucket-trail-e02079f",
                 "type": "aws:s3/bucketPolicy:BucketPolicy",
                 "inputs": {
                     "__defaults": [],
-                    "bucket": "example-aes-bucket-trail-36821a5",
-                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-aes-bucket-trail-36821a5\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-aes-bucket-trail-36821a5/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
+                    "bucket": "example-aes-bucket-trail-e02079f",
+                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-aes-bucket-trail-e02079f\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-aes-bucket-trail-e02079f/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
                 },
                 "outputs": {
-                    "bucket": "example-aes-bucket-trail-36821a5",
-                    "id": "example-aes-bucket-trail-36821a5",
-                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-aes-bucket-trail-36821a5\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-aes-bucket-trail-36821a5/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
+                    "bucket": "example-aes-bucket-trail-e02079f",
+                    "id": "example-aes-bucket-trail-e02079f",
+                    "policy": "{\"Statement\":[{\"Action\":[\"s3:GetBucketAcl\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-aes-bucket-trail-e02079f\"],\"Sid\":\"AWSCloudTrailAclCheck\"},{\"Action\":[\"s3:PutObject\"],\"Condition\":{\"StringEquals\":{\"s3:x-amz-acl\":\"bucket-owner-full-control\"}},\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"cloudtrail.amazonaws.com\"},\"Resource\":[\"arn:aws:s3:::example-aes-bucket-trail-e02079f/*\"],\"Sid\":\"AWSCloudTrailWrite\"}],\"Version\":\"2012-10-17\"}"
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-aes-bucket-trail",
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-aes-bucket-trail",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
+                    "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0::acc1a944-5014-4b91-82e4-fdba63a664ba",
+                "provider": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0::080a8f3e-a03e-4123-a0ca-19189b95ef70",
                 "propertyDependencies": {
                     "bucket": [
-                        "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
+                        "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
                     ],
                     "policy": [
-                        "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
+                        "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
                     ]
                 },
-                "created": "2023-10-23T16:30:14.402289Z",
-                "modified": "2023-10-23T16:30:14.402289Z"
+                "created": "2024-01-10T20:55:03.576867Z",
+                "modified": "2024-01-10T20:55:03.576867Z"
             },
             {
-                "urn": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:cloudtrail/trail:Trail::example-aes-bucket-trail",
+                "urn": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:cloudtrail/trail:Trail::example-aes-bucket-trail",
                 "custom": true,
-                "id": "example-aes-bucket-trail-8998f09",
+                "id": "example-aes-bucket-trail-1ae2b26",
                 "type": "aws:cloudtrail/trail:Trail",
                 "inputs": {
                     "__defaults": [
@@ -495,42 +497,42 @@
                     "includeGlobalServiceEvents": true,
                     "isMultiRegionTrail": false,
                     "isOrganizationTrail": false,
-                    "name": "example-aes-bucket-trail-8998f09",
-                    "s3BucketName": "example-aes-bucket-trail-36821a5"
+                    "name": "example-aes-bucket-trail-1ae2b26",
+                    "s3BucketName": "example-aes-bucket-trail-e02079f"
                 },
                 "outputs": {
-                    "arn": "arn:aws:cloudtrail:us-west-2:616138583583:trail/example-aes-bucket-trail-8998f09",
+                    "arn": "arn:aws:cloudtrail:us-west-2:894850187425:trail/example-aes-bucket-trail-1ae2b26",
                     "cloudWatchLogsGroupArn": "",
                     "cloudWatchLogsRoleArn": "",
                     "enableLogFileValidation": false,
                     "enableLogging": true,
                     "homeRegion": "us-west-2",
-                    "id": "example-aes-bucket-trail-8998f09",
+                    "id": "example-aes-bucket-trail-1ae2b26",
                     "includeGlobalServiceEvents": true,
                     "isMultiRegionTrail": false,
                     "isOrganizationTrail": false,
                     "kmsKeyId": "",
-                    "name": "example-aes-bucket-trail-8998f09",
-                    "s3BucketName": "example-aes-bucket-trail-36821a5",
+                    "name": "example-aes-bucket-trail-1ae2b26",
+                    "s3BucketName": "example-aes-bucket-trail-e02079f",
                     "s3KeyPrefix": "",
                     "snsTopicName": "",
                     "tags": {},
                     "tagsAll": {}
                 },
-                "parent": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail::example-aes-bucket-trail",
+                "parent": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail::example-aes-bucket-trail",
                 "dependencies": [
-                    "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-aes-bucket-trail",
-                    "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
+                    "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucketPolicy:BucketPolicy::example-aes-bucket-trail",
+                    "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
                 ],
-                "provider": "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::pulumi:providers:aws::default_5_35_0::acc1a944-5014-4b91-82e4-fdba63a664ba",
+                "provider": "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::pulumi:providers:aws::default_5_35_0::080a8f3e-a03e-4123-a0ca-19189b95ef70",
                 "propertyDependencies": {
                     "enableLogging": null,
                     "s3BucketName": [
-                        "urn:pulumi:p-it-antons-mac-nodejs-b23cc3e0::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
+                        "urn:pulumi:p-it-bryces-wor-nodejs-25aa1a7c::nodejs::awsx:cloudtrail:Trail$aws:s3/bucket:Bucket::example-aes-bucket-trail"
                     ]
                 },
-                "created": "2023-10-23T16:30:15.242878Z",
-                "modified": "2023-10-23T16:30:15.242878Z"
+                "created": "2024-01-10T20:55:04.296118Z",
+                "modified": "2024-01-10T20:55:04.296118Z"
             }
         ]
     }
