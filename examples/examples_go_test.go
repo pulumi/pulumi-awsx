@@ -17,9 +17,10 @@
 package examples
 
 import (
-	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 	"path/filepath"
 	"testing"
+
+	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
 )
 
 func TestAccTrail(t *testing.T) {
@@ -40,7 +41,7 @@ func getGoBaseOptions(t *testing.T) integration.ProgramTestOptions {
 			"aws:region": region,
 		},
 		Dependencies: []string{
-			"github.com/pulumi/pulumi-awsx/sdk",
+			"github.com/pulumi/pulumi-awsx/sdk/v2=../sdk",
 		},
 	})
 
