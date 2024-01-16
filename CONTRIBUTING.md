@@ -18,6 +18,18 @@ Please read about our [contribution guidelines here.](https://github.com/pulumi/
 Please refer to the [main Pulumi repo](https://github.com/pulumi/pulumi/)'s [CONTRIBUTING.md file](
 https://github.com/pulumi/pulumi/blob/master/CONTRIBUTING.md#developing) for details on how to get set up with Pulumi.
 
+You can quickly launch a shell environment with all the required dependencies using
+[devbox](https://www.jetpack.io/devbox/):
+```
+# Install devbox if needed
+$ which devbox || curl -fsSL https://get.jetpack.io/devbox | bash
+$ devbox shell
+```
+
+Alternatively, you can develop in a preconfigured container environment using 
+[an editor or service that supports the devcontainer standard](https://containers.dev/supporting#editors)
+such as [VS Code](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) or [Github Codespaces](https://codespaces.new/pulumi/pulumi-aws-native). Please note that building this project can be fairly memory intensive, if you are having trouble building in a container, please ensure you have at least 12GB of memory available for the container.
+
 ## Committing Generated Code
 
 You must generate and check in the SDKs on each pull request containing a code change, e.g. adding a new resource to `resources.go`.
