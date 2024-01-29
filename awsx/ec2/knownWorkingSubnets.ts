@@ -1323,4 +1323,22 @@ export const knownWorkingSubnets: {
     ],
     vpcCidr: "10.0.0.0/20",
   },
+  {
+    vpcCidr: "10.1.0.0/18",
+    subnetSpecs: [
+      {
+        type: "Private",
+      },
+      {
+        type: "Public",
+      },
+      {
+        type: "Isolated",
+      },
+      {
+        type: "Isolated",
+      },
+    ],
+    result: ["10.1.0.0/19", "10.1.32.0/20", "10.1.48.0/24", "10.1.49.0/24"],
+  },
 ];
