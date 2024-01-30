@@ -86,6 +86,44 @@ describe("default subnet layout", () => {
     );
   });
 
+  describe("default sizes private, public and isolated subnet", () => {
+    it("gives /19, /20 and /24 for /16 AZ", () => {
+      expect(getDefaultSubnetSizes(16)).toEqual([19, 20, 24]);
+    });
+    it("gives /19, /20 and /24 for /17 AZ", () => {
+      expect(getDefaultSubnetSizes(17)).toEqual([19, 20, 24]);
+    });
+    it("gives /19, /20 and /24 for /18 AZ", () => {
+      expect(getDefaultSubnetSizes(18)).toEqual([19, 20, 24]);
+    });
+    it("gives /20, /20 and /24 for /19 AZ", () => {
+      expect(getDefaultSubnetSizes(19)).toEqual([20, 20, 24]);
+    });
+    it("gives /21, /21 and /24 for /20 AZ", () => {
+      expect(getDefaultSubnetSizes(20)).toEqual([21, 21, 24]);
+    });
+    it("gives /22, /22 and /24 for /21 AZ", () => {
+      expect(getDefaultSubnetSizes(21)).toEqual([22, 22, 24]);
+    });
+    it("gives /23, /23 and /24 for /22 AZ", () => {
+      expect(getDefaultSubnetSizes(22)).toEqual([23, 23, 24]);
+    });
+    it("gives /24, /24 and /24 for /23 AZ", () => {
+      expect(getDefaultSubnetSizes(23)).toEqual([24, 24, 24]);
+    });
+
+    function getDefaultSubnetSizes(azSize: number) {
+      const vpcCidr = `10.0.0.0/${azSize}`;
+      const result = getSubnetSpecsLegacy(
+        "vpcName",
+        vpcCidr,
+        ["us-east-1a"],
+        [{ type: "Private" }, { type: "Public" }, { type: "Isolated" }],
+      );
+      return result.map((s) => getCidrMask(s.cidrBlock));
+    }
+  });
+
   it("should use default values if VPC is large", () => {
     fc.assert(
       fc.property(

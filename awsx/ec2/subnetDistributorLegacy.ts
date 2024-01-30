@@ -70,8 +70,9 @@ export function getSubnetSpecsLegacy(
 
   let subnetsOut: SubnetSpec[] = [];
 
-  // How many bits do we need if just dividing up evenly?
-  const newBitsPerSubnet = Math.log2(nextPow2(subnetInputs.length));
+  // How many bits do we need if just assuming a "normal" layout with at least a private and public subnet?
+  // Special case where there's only 1 subnet - with a small VPC, we'll let it use the whole space.
+  const newBitsPerSubnet = subnetInputs.length === 1 ? 0 : 1;
 
   for (let i = 0; i < azNames.length; i++) {
     const privateSubnetsOut: SubnetSpec[] = [];
