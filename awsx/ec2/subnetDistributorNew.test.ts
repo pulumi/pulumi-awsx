@@ -50,6 +50,30 @@ function subnetSpec() {
 }
 
 describe("default subnet layout", () => {
+  describe("when no layout specified", () => {
+    it.each([16, 17, 18, 19, 20, 21, 22, 23, 24])(
+      "/%i AZ creates single private & public with staggered sizes",
+      (azCidrMask) => {
+        expect(getDefaultSubnetSizes(azCidrMask)).toMatchObject([
+          {
+            type: "Private",
+            cidrMask: azCidrMask + 1,
+          },
+          {
+            type: "Public",
+            cidrMask: azCidrMask + 2,
+          },
+        ]);
+      },
+    );
+
+    function getDefaultSubnetSizes(azSize: number) {
+      const vpcCidr = `10.0.0.0/${azSize}`;
+      const result = getSubnetSpecs("vpcName", vpcCidr, ["us-east-1a"], undefined);
+      return result.map((s) => ({ type: s.type, cidrMask: getCidrMask(s.cidrBlock) }));
+    }
+  });
+
   it("should have smaller subnets than the vpc", () => {
     fc.assert(
       fc.property(
@@ -89,6 +113,36 @@ describe("default subnet layout", () => {
           expect(result[0].cidrBlock).toBe(vpcCidr);
         },
       ),
+    );
+  });
+
+  describe("default sizes for private, public and isolated subnet", () => {
+    it.each([16, 17, 18, 19, 20, 21, 22, 23, 24])(
+      "/%i AZ evenly distributes space",
+      (azCidrMask) => {
+        const vpcCidr = `10.0.0.0/${azCidrMask}`;
+        const result = getSubnetSpecs(
+          "vpcName",
+          vpcCidr,
+          ["us-east-1a"],
+          [{ type: "Private" }, { type: "Public" }, { type: "Isolated" }],
+        );
+        const masks = result.map((s) => ({ type: s.type, cidrMask: getCidrMask(s.cidrBlock) }));
+        expect(masks).toMatchObject([
+          {
+            type: "Private",
+            cidrMask: azCidrMask + 2,
+          },
+          {
+            type: "Public",
+            cidrMask: azCidrMask + 2,
+          },
+          {
+            type: "Isolated",
+            cidrMask: azCidrMask + 2,
+          },
+        ]);
+      },
     );
   });
 
