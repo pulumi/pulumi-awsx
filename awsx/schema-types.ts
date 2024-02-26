@@ -115,6 +115,7 @@ export interface ImageArgs {
     readonly platform?: pulumi.Input<string>;
     readonly repositoryUrl: pulumi.Input<string>;
     readonly target?: pulumi.Input<string>;
+    readonly imageTag?: pulumi.Input<string>;
 }
 export abstract class Repository<TData = any> extends (pulumi.ComponentResource)<TData> {
     public lifecyclePolicy?: aws.ecr.LifecyclePolicy | pulumi.Output<aws.ecr.LifecyclePolicy>;
