@@ -30,14 +30,14 @@ export function computeImageFromAsset(
   args: pulumi.Unwrap<schema.ImageArgs>,
   parent: pulumi.Resource,
 ) {
-  const { repositoryUrl, ...dockerInputs } = args ?? {};
+  const { repositoryUrl, imageTag, ...dockerInputs } = args ?? {};
 
   const url = new URL("https://" + repositoryUrl); // Add protocol to help it parse
   const registryId = url.hostname.split(".")[0];
 
   pulumi.log.debug(`Building container image at '${JSON.stringify(dockerInputs)}'`, parent);
 
-  const imageName = createUniqueImageName(dockerInputs);
+  const imageName = imageTag ? imageTag : createUniqueImageName(dockerInputs);
   // Note: the tag, if provided, is included in the image name.
   const canonicalImageName = `${repositoryUrl}:${imageName}`;
 
