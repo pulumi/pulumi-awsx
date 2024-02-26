@@ -274,6 +274,12 @@ func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.Prop
 				Type: "string",
 			},
 		},
+		"imageTag": {
+			Description: "Custom image tag for the resulting docker image. If omitted a random string will be used",
+			TypeSpec: schema.TypeSpec{
+				Type: "string",
+			},
+		},
 		"platform": {
 			Description: "The architecture of the platform you want to build this image for, e.g. `linux/arm64`.",
 			TypeSpec: schema.TypeSpec{

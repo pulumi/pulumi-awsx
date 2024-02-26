@@ -21,6 +21,7 @@ class ImageArgs:
                  cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  context: Optional[pulumi.Input[str]] = None,
                  dockerfile: Optional[pulumi.Input[str]] = None,
+                 image_tag: Optional[pulumi.Input[str]] = None,
                  platform: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None):
         """
@@ -31,6 +32,7 @@ class ImageArgs:
         :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_from: Images to consider as cache sources
         :param pulumi.Input[str] context: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
         :param pulumi.Input[str] dockerfile: dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
+        :param pulumi.Input[str] image_tag: Custom image tag for the resulting docker image. If omitted a random string will be used
         :param pulumi.Input[str] platform: The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         :param pulumi.Input[str] target: The target of the dockerfile to build
         """
@@ -45,6 +47,8 @@ class ImageArgs:
             pulumi.set(__self__, "context", context)
         if dockerfile is not None:
             pulumi.set(__self__, "dockerfile", dockerfile)
+        if image_tag is not None:
+            pulumi.set(__self__, "image_tag", image_tag)
         if platform is not None:
             pulumi.set(__self__, "platform", platform)
         if target is not None:
@@ -123,6 +127,18 @@ class ImageArgs:
         pulumi.set(self, "dockerfile", value)
 
     @property
+    @pulumi.getter(name="imageTag")
+    def image_tag(self) -> Optional[pulumi.Input[str]]:
+        """
+        Custom image tag for the resulting docker image. If omitted a random string will be used
+        """
+        return pulumi.get(self, "image_tag")
+
+    @image_tag.setter
+    def image_tag(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "image_tag", value)
+
+    @property
     @pulumi.getter
     def platform(self) -> Optional[pulumi.Input[str]]:
         """
@@ -157,6 +173,7 @@ class Image(pulumi.ComponentResource):
                  cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  context: Optional[pulumi.Input[str]] = None,
                  dockerfile: Optional[pulumi.Input[str]] = None,
+                 image_tag: Optional[pulumi.Input[str]] = None,
                  platform: Optional[pulumi.Input[str]] = None,
                  repository_url: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None,
@@ -171,6 +188,7 @@ class Image(pulumi.ComponentResource):
         :param pulumi.Input[Sequence[pulumi.Input[str]]] cache_from: Images to consider as cache sources
         :param pulumi.Input[str] context: Path to a directory to use for the Docker build context, usually the directory in which the Dockerfile resides (although dockerfile may be used to choose a custom location independent of this choice). If not specified, the context defaults to the current working directory; if a relative path is used, it is relative to the current working directory that Pulumi is evaluating.
         :param pulumi.Input[str] dockerfile: dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
+        :param pulumi.Input[str] image_tag: Custom image tag for the resulting docker image. If omitted a random string will be used
         :param pulumi.Input[str] platform: The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         :param pulumi.Input[str] repository_url: Url of the repository
         :param pulumi.Input[str] target: The target of the dockerfile to build
@@ -204,6 +222,7 @@ class Image(pulumi.ComponentResource):
                  cache_from: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  context: Optional[pulumi.Input[str]] = None,
                  dockerfile: Optional[pulumi.Input[str]] = None,
+                 image_tag: Optional[pulumi.Input[str]] = None,
                  platform: Optional[pulumi.Input[str]] = None,
                  repository_url: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None,
@@ -223,6 +242,7 @@ class Image(pulumi.ComponentResource):
             __props__.__dict__["cache_from"] = cache_from
             __props__.__dict__["context"] = context
             __props__.__dict__["dockerfile"] = dockerfile
+            __props__.__dict__["image_tag"] = image_tag
             __props__.__dict__["platform"] = platform
             if repository_url is None and not opts.urn:
                 raise TypeError("Missing required property 'repository_url'")
