@@ -92,6 +92,12 @@ namespace Pulumi.Awsx.Ecr
         public Input<string>? Dockerfile { get; set; }
 
         /// <summary>
+        /// Custom image tag for the resulting docker image. If omitted a random string will be used
+        /// </summary>
+        [Input("imageTag")]
+        public Input<string>? ImageTag { get; set; }
+
+        /// <summary>
         /// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
         /// </summary>
         [Input("platform")]

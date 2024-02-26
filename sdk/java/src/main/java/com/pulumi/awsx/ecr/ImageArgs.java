@@ -94,6 +94,21 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Custom image tag for the resulting docker image. If omitted a random string will be used
+     * 
+     */
+    @Import(name="imageTag")
+    private @Nullable Output<String> imageTag;
+
+    /**
+     * @return Custom image tag for the resulting docker image. If omitted a random string will be used
+     * 
+     */
+    public Optional<Output<String>> imageTag() {
+        return Optional.ofNullable(this.imageTag);
+    }
+
+    /**
      * The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
      * 
      */
@@ -146,6 +161,7 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         this.cacheFrom = $.cacheFrom;
         this.context = $.context;
         this.dockerfile = $.dockerfile;
+        this.imageTag = $.imageTag;
         this.platform = $.platform;
         this.repositoryUrl = $.repositoryUrl;
         this.target = $.target;
@@ -272,6 +288,27 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder dockerfile(String dockerfile) {
             return dockerfile(Output.of(dockerfile));
+        }
+
+        /**
+         * @param imageTag Custom image tag for the resulting docker image. If omitted a random string will be used
+         * 
+         * @return builder
+         * 
+         */
+        public Builder imageTag(@Nullable Output<String> imageTag) {
+            $.imageTag = imageTag;
+            return this;
+        }
+
+        /**
+         * @param imageTag Custom image tag for the resulting docker image. If omitted a random string will be used
+         * 
+         * @return builder
+         * 
+         */
+        public Builder imageTag(String imageTag) {
+            return imageTag(Output.of(imageTag));
         }
 
         /**
