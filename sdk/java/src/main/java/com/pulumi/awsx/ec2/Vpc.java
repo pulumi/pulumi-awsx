@@ -80,7 +80,7 @@ import javax.annotation.Nullable;
  * 
  * ### Legacy
  * 
- * The &#34;Legacy&#34; works similarly to the &#34;Auto&#34; strategy except that within each availability zone it allocates the private subnet first, followed by the private subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the &#34;Auto&#34; strategy. The output property `subnetLayout` shows the configuration required if specifying the &#34;Auto&#34; strategy to maintain the current layout.
+ * The &#34;Legacy&#34; works similarly to the &#34;Auto&#34; strategy except that within each availability zone it allocates the private subnet first, followed by the public subnets, and lastly the isolated subnets. The order of subnet specifications of the same type can be changed, but the ordering of private, public, isolated is not overridable. For more flexibility we recommend moving to the &#34;Auto&#34; strategy. The output property `subnetLayout` shows the configuration required if specifying the &#34;Auto&#34; strategy to maintain the current layout.
  * 
  */
 @ResourceType(type="awsx:ec2:Vpc")
