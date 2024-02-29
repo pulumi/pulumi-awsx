@@ -51,6 +51,8 @@ type imageArgs struct {
 	Context *string `pulumi:"context"`
 	// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
 	Dockerfile *string `pulumi:"dockerfile"`
+	// Custom image tag for the resulting docker image. If omitted a random string will be used
+	ImageTag *string `pulumi:"imageTag"`
 	// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
 	Platform *string `pulumi:"platform"`
 	// Url of the repository
@@ -71,6 +73,8 @@ type ImageArgs struct {
 	Context pulumi.StringPtrInput
 	// dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
 	Dockerfile pulumi.StringPtrInput
+	// Custom image tag for the resulting docker image. If omitted a random string will be used
+	ImageTag pulumi.StringPtrInput
 	// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
 	Platform pulumi.StringPtrInput
 	// Url of the repository
