@@ -23,6 +23,7 @@ class ImageArgs:
                  dockerfile: Optional[pulumi.Input[str]] = None,
                  image_tag: Optional[pulumi.Input[str]] = None,
                  platform: Optional[pulumi.Input[str]] = None,
+                 registry_id: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None):
         """
         The set of arguments for constructing a Image resource.
@@ -34,6 +35,7 @@ class ImageArgs:
         :param pulumi.Input[str] dockerfile: dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
         :param pulumi.Input[str] image_tag: Custom image tag for the resulting docker image. If omitted a random string will be used
         :param pulumi.Input[str] platform: The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
+        :param pulumi.Input[str] registry_id: ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
         :param pulumi.Input[str] target: The target of the dockerfile to build
         """
         pulumi.set(__self__, "repository_url", repository_url)
@@ -51,6 +53,8 @@ class ImageArgs:
             pulumi.set(__self__, "image_tag", image_tag)
         if platform is not None:
             pulumi.set(__self__, "platform", platform)
+        if registry_id is not None:
+            pulumi.set(__self__, "registry_id", registry_id)
         if target is not None:
             pulumi.set(__self__, "target", target)
 
@@ -151,6 +155,18 @@ class ImageArgs:
         pulumi.set(self, "platform", value)
 
     @property
+    @pulumi.getter(name="registryId")
+    def registry_id(self) -> Optional[pulumi.Input[str]]:
+        """
+        ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
+        """
+        return pulumi.get(self, "registry_id")
+
+    @registry_id.setter
+    def registry_id(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "registry_id", value)
+
+    @property
     @pulumi.getter
     def target(self) -> Optional[pulumi.Input[str]]:
         """
@@ -175,6 +191,7 @@ class Image(pulumi.ComponentResource):
                  dockerfile: Optional[pulumi.Input[str]] = None,
                  image_tag: Optional[pulumi.Input[str]] = None,
                  platform: Optional[pulumi.Input[str]] = None,
+                 registry_id: Optional[pulumi.Input[str]] = None,
                  repository_url: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None,
                  __props__=None):
@@ -190,6 +207,7 @@ class Image(pulumi.ComponentResource):
         :param pulumi.Input[str] dockerfile: dockerfile may be used to override the default Dockerfile name and/or location.  By default, it is assumed to be a file named Dockerfile in the root of the build context.
         :param pulumi.Input[str] image_tag: Custom image tag for the resulting docker image. If omitted a random string will be used
         :param pulumi.Input[str] platform: The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
+        :param pulumi.Input[str] registry_id: ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
         :param pulumi.Input[str] repository_url: Url of the repository
         :param pulumi.Input[str] target: The target of the dockerfile to build
         """
@@ -224,6 +242,7 @@ class Image(pulumi.ComponentResource):
                  dockerfile: Optional[pulumi.Input[str]] = None,
                  image_tag: Optional[pulumi.Input[str]] = None,
                  platform: Optional[pulumi.Input[str]] = None,
+                 registry_id: Optional[pulumi.Input[str]] = None,
                  repository_url: Optional[pulumi.Input[str]] = None,
                  target: Optional[pulumi.Input[str]] = None,
                  __props__=None):
@@ -244,6 +263,7 @@ class Image(pulumi.ComponentResource):
             __props__.__dict__["dockerfile"] = dockerfile
             __props__.__dict__["image_tag"] = image_tag
             __props__.__dict__["platform"] = platform
+            __props__.__dict__["registry_id"] = registry_id
             if repository_url is None and not opts.urn:
                 raise TypeError("Missing required property 'repository_url'")
             __props__.__dict__["repository_url"] = repository_url

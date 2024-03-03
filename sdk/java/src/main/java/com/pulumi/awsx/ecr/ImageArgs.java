@@ -124,6 +124,21 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
+     * 
+     */
+    @Import(name="registryId")
+    private @Nullable Output<String> registryId;
+
+    /**
+     * @return ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
+     * 
+     */
+    public Optional<Output<String>> registryId() {
+        return Optional.ofNullable(this.registryId);
+    }
+
+    /**
      * Url of the repository
      * 
      */
@@ -163,6 +178,7 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         this.dockerfile = $.dockerfile;
         this.imageTag = $.imageTag;
         this.platform = $.platform;
+        this.registryId = $.registryId;
         this.repositoryUrl = $.repositoryUrl;
         this.target = $.target;
     }
@@ -330,6 +346,27 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder platform(String platform) {
             return platform(Output.of(platform));
+        }
+
+        /**
+         * @param registryId ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
+         * 
+         * @return builder
+         * 
+         */
+        public Builder registryId(@Nullable Output<String> registryId) {
+            $.registryId = registryId;
+            return this;
+        }
+
+        /**
+         * @param registryId ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
+         * 
+         * @return builder
+         * 
+         */
+        public Builder registryId(String registryId) {
+            return registryId(Output.of(registryId));
         }
 
         /**
