@@ -104,6 +104,12 @@ namespace Pulumi.Awsx.Ecr
         public Input<string>? Platform { get; set; }
 
         /// <summary>
+        /// ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
+        /// </summary>
+        [Input("registryId")]
+        public Input<string>? RegistryId { get; set; }
+
+        /// <summary>
         /// Url of the repository
         /// </summary>
         [Input("repositoryUrl", required: true)]

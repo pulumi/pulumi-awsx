@@ -186,6 +186,12 @@ func ecrImage(awsSpec schema.PackageSpec, dockerSpec schema.PackageSpec) schema.
 			Type: "string",
 		},
 	}
+	inputs["registryId"] = schema.PropertySpec{
+		Description: "ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)",
+		TypeSpec: schema.TypeSpec{
+			Type: "string",
+		},
+	}
 	return schema.ResourceSpec{
 		IsComponent:     true,
 		InputProperties: inputs,

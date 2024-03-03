@@ -51,6 +51,7 @@ export class Image extends pulumi.ComponentResource {
             resourceInputs["dockerfile"] = args ? args.dockerfile : undefined;
             resourceInputs["imageTag"] = args ? args.imageTag : undefined;
             resourceInputs["platform"] = args ? args.platform : undefined;
+            resourceInputs["registryId"] = args ? args.registryId : undefined;
             resourceInputs["repositoryUrl"] = args ? args.repositoryUrl : undefined;
             resourceInputs["target"] = args ? args.target : undefined;
             resourceInputs["imageUri"] = undefined /*out*/;
@@ -94,6 +95,10 @@ export interface ImageArgs {
      * The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
      */
     platform?: pulumi.Input<string>;
+    /**
+     * ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
+     */
+    registryId?: pulumi.Input<string>;
     /**
      * Url of the repository
      */

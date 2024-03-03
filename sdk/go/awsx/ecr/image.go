@@ -55,6 +55,8 @@ type imageArgs struct {
 	ImageTag *string `pulumi:"imageTag"`
 	// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
 	Platform *string `pulumi:"platform"`
+	// ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
+	RegistryId *string `pulumi:"registryId"`
 	// Url of the repository
 	RepositoryUrl string `pulumi:"repositoryUrl"`
 	// The target of the dockerfile to build
@@ -77,6 +79,8 @@ type ImageArgs struct {
 	ImageTag pulumi.StringPtrInput
 	// The architecture of the platform you want to build this image for, e.g. `linux/arm64`.
 	Platform pulumi.StringPtrInput
+	// ID of the ECR registry in which to store the image.  If not provided, this will be inferred from the repository URL)
+	RegistryId pulumi.StringPtrInput
 	// Url of the repository
 	RepositoryUrl pulumi.StringInput
 	// The target of the dockerfile to build
