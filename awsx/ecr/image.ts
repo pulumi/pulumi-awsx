@@ -30,7 +30,7 @@ export function computeImageFromAsset(
   args: pulumi.Unwrap<schema.ImageArgs>,
   parent: pulumi.Resource,
 ) {
-  const { repositoryUrl, registryId : inputRegistryId, imageTag, ...dockerInputs } = args ?? {};
+  const { repositoryUrl, registryId: inputRegistryId, imageTag, ...dockerInputs } = args ?? {};
 
   const url = new URL("https://" + repositoryUrl); // Add protocol to help it parse
   const registryId = inputRegistryId ?? url.hostname.split(".")[0];
