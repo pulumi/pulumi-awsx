@@ -1,0 +1,3 @@
+name: ts-http-api
+runtime: nodejs
+description: API Gateway V2 HTTP Api with authorization

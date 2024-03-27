@@ -19,6 +19,7 @@ import { Repository } from "./ecr";
 import { Image } from "./ecr/image";
 import * as ecs from "./ecs";
 import * as lb from "./lb";
+import * as apigatewayv2 from "./apigatewayv2";
 import * as schemaTypes from "./schema-types";
 
 const resources: schemaTypes.ResourceConstructor = {
@@ -34,6 +35,7 @@ const resources: schemaTypes.ResourceConstructor = {
   "awsx:ec2:DefaultVpc": (...args) => new ec2.DefaultVpc(...args),
   "awsx:ecr:Repository": (...args) => new Repository(...args),
   "awsx:ecr:Image": (...args) => new Image(...args),
+  "awsx:apigatewayv2:HttpApi": (...args) => new apigatewayv2.HttpApi(...args),
 };
 
 export function construct(
