@@ -149,7 +149,34 @@ function buildTaskDefinitionArgs(
   if (mutableArgs.memory === undefined) {
     mutableArgs.memory = requiredMemoryAndCPU.memory;
   }
-  const containerString = containerDefinitions.apply((d) => JSON.stringify(d));
+
+  // containerDefinitions is of type TaskDefinitionContainerDefinitionInputs[],
+  // but this type does not match 1:1 with what the actual container definition
+  // JSON string expects. Specifically the portMappings field contains an extra
+  // `targetGroup` field which is a reference to the target group resource. We
+  // need to remove this field from the container definition JSON string,
+  // otherwise the diff will contain a lot of noise.
+  const containerString = containerDefinitions.apply((d) =>
+    JSON.stringify(
+      d.map((c) => {
+        return {
+          ...c,
+          portMappings: pulumi.output(c.portMappings).apply((mappings) => {
+            return mappings?.map((mappingInput) => {
+              return {
+                appProtocol: mappingInput.appProtocol,
+                containerPort: mappingInput.containerPort,
+                containerPortRange: mappingInput.containerPortRange,
+                hostPort: mappingInput.hostPort,
+                name: mappingInput.name,
+                protocol: mappingInput.protocol,
+              };
+            });
+          }),
+        };
+      }),
+    ),
+  );
   const defaultFamily = containerString.apply(
     (s) => name + "-" + utils.sha1hash(pulumi.getStack() + s),
   );
