@@ -112,6 +112,7 @@ export interface ImageArgs {
     readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
     readonly context?: pulumi.Input<string>;
     readonly dockerfile?: pulumi.Input<string>;
+    readonly imageName?: pulumi.Input<string>;
     readonly imageTag?: pulumi.Input<string>;
     readonly platform?: pulumi.Input<string>;
     readonly registryId?: pulumi.Input<string>;

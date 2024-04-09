@@ -37,7 +37,9 @@ export function computeImageFromAsset(
 
   pulumi.log.debug(`Building container image at '${JSON.stringify(dockerInputs)}'`, parent);
 
-  const imageName = imageTag ? imageTag : createUniqueImageName(dockerInputs);
+  const imageName = args.imageName ? args.imageName :
+    (imageTag ? imageTag : createUniqueImageName(dockerInputs));
+
   // Note: the tag, if provided, is included in the image name.
   const canonicalImageName = `${repositoryUrl}:${imageName}`;
 
