@@ -149,7 +149,6 @@ function buildTaskDefinitionArgs(
   if (mutableArgs.memory === undefined) {
     mutableArgs.memory = requiredMemoryAndCPU.memory;
   }
-
   const containerString = containerDefinitions.apply((d) => JSON.stringify(d));
   const defaultFamily = containerString.apply(
     (s) => name + "-" + utils.sha1hash(pulumi.getStack() + s),
