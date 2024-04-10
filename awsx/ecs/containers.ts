@@ -101,7 +101,9 @@ export function getMappingInputs(
   tgPort: number | undefined,
 ): schema.TaskDefinitionPortMappingInputs {
   return {
-    ...mappingInput,
+    name: mappingInput.name,
+    containerPortRange: mappingInput.containerPortRange,
+    appProtocol: mappingInput.appProtocol,
     containerPort: mappingInput.containerPort ?? mappingInput.hostPort ?? tgPort,
     hostPort: mappingInput.hostPort ?? tgPort ?? mappingInput.containerPort,
     protocol: mappingInput.protocol,

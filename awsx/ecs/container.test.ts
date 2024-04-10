@@ -57,7 +57,6 @@ describe("port mappings", () => {
       hostPort: 2,
       name: "test-mapping-1-2",
       protocol: "tcp",
-      targetGroup,
     });
   });
 });
