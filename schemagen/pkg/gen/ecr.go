@@ -280,6 +280,12 @@ func dockerBuildProperties(dockerSpec schema.PackageSpec) map[string]schema.Prop
 				Type: "string",
 			},
 		},
+		"imageName": {
+			Description: "Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used",
+			TypeSpec: schema.TypeSpec{
+				Type: "string",
+			},
+		},
 		"imageTag": {
 			Description: "Custom image tag for the resulting docker image. If omitted a random string will be used",
 			TypeSpec: schema.TypeSpec{
