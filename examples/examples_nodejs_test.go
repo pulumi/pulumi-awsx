@@ -55,6 +55,7 @@ func TestLbSimple(t *testing.T) {
 }
 
 func TestLbWithSubnets(t *testing.T) {
+	t.Skip("TODO[pulumi/pulumi-awsx#1246] flaky test but no way to increase custom timeout yet")
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
