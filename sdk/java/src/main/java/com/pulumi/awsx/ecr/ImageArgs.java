@@ -94,6 +94,21 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used
+     * 
+     */
+    @Import(name="imageName")
+    private @Nullable Output<String> imageName;
+
+    /**
+     * @return Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used
+     * 
+     */
+    public Optional<Output<String>> imageName() {
+        return Optional.ofNullable(this.imageName);
+    }
+
+    /**
      * Custom image tag for the resulting docker image. If omitted a random string will be used
      * 
      */
@@ -176,6 +191,7 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
         this.cacheFrom = $.cacheFrom;
         this.context = $.context;
         this.dockerfile = $.dockerfile;
+        this.imageName = $.imageName;
         this.imageTag = $.imageTag;
         this.platform = $.platform;
         this.registryId = $.registryId;
@@ -304,6 +320,27 @@ public final class ImageArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder dockerfile(String dockerfile) {
             return dockerfile(Output.of(dockerfile));
+        }
+
+        /**
+         * @param imageName Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used
+         * 
+         * @return builder
+         * 
+         */
+        public Builder imageName(@Nullable Output<String> imageName) {
+            $.imageName = imageName;
+            return this;
+        }
+
+        /**
+         * @param imageName Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used
+         * 
+         * @return builder
+         * 
+         */
+        public Builder imageName(String imageName) {
+            return imageName(Output.of(imageName));
         }
 
         /**

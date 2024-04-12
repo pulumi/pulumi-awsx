@@ -92,6 +92,12 @@ namespace Pulumi.Awsx.Ecr
         public Input<string>? Dockerfile { get; set; }
 
         /// <summary>
+        /// Custom name for the underlying Docker image resource. If omitted, the image tag assigned by the provider will be used
+        /// </summary>
+        [Input("imageName")]
+        public Input<string>? ImageName { get; set; }
+
+        /// <summary>
         /// Custom image tag for the resulting docker image. If omitted a random string will be used
         /// </summary>
         [Input("imageTag")]

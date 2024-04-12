@@ -641,6 +641,7 @@ export interface DockerBuildInputs {
     readonly cacheFrom?: pulumi.Input<pulumi.Input<string>[]>;
     readonly context?: pulumi.Input<string>;
     readonly dockerfile?: pulumi.Input<string>;
+    readonly imageName?: pulumi.Input<string>;
     readonly imageTag?: pulumi.Input<string>;
     readonly platform?: pulumi.Input<string>;
     readonly target?: pulumi.Input<string>;
@@ -651,6 +652,7 @@ export interface DockerBuildOutputs {
     readonly cacheFrom?: pulumi.Output<string[]>;
     readonly context?: pulumi.Output<string>;
     readonly dockerfile?: pulumi.Output<string>;
+    readonly imageName?: pulumi.Output<string>;
     readonly imageTag?: pulumi.Output<string>;
     readonly platform?: pulumi.Output<string>;
     readonly target?: pulumi.Output<string>;
