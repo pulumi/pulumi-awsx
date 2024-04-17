@@ -9,7 +9,6 @@ import (
 
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // [NOT YET IMPLEMENTED] Get the Default VPC for a region.
@@ -71,12 +70,6 @@ func (o GetDefaultVpcResultOutput) ToGetDefaultVpcResultOutput() GetDefaultVpcRe
 
 func (o GetDefaultVpcResultOutput) ToGetDefaultVpcResultOutputWithContext(ctx context.Context) GetDefaultVpcResultOutput {
 	return o
-}
-
-func (o GetDefaultVpcResultOutput) ToOutput(ctx context.Context) pulumix.Output[GetDefaultVpcResult] {
-	return pulumix.Output[GetDefaultVpcResult]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o GetDefaultVpcResultOutput) PrivateSubnetIds() pulumi.StringArrayOutput {

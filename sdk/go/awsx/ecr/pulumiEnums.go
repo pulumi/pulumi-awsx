@@ -8,7 +8,6 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // The version of the Docker builder
@@ -92,12 +91,6 @@ func (o LifecycleTagStatusOutput) ToLifecycleTagStatusPtrOutputWithContext(ctx c
 	}).(LifecycleTagStatusPtrOutput)
 }
 
-func (o LifecycleTagStatusOutput) ToOutput(ctx context.Context) pulumix.Output[LifecycleTagStatus] {
-	return pulumix.Output[LifecycleTagStatus]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o LifecycleTagStatusOutput) ToStringOutput() pulumi.StringOutput {
 	return o.ToStringOutputWithContext(context.Background())
 }
@@ -133,12 +126,6 @@ func (o LifecycleTagStatusPtrOutput) ToLifecycleTagStatusPtrOutputWithContext(ct
 	return o
 }
 
-func (o LifecycleTagStatusPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*LifecycleTagStatus] {
-	return pulumix.Output[*LifecycleTagStatus]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o LifecycleTagStatusPtrOutput) Elem() LifecycleTagStatusOutput {
 	return o.ApplyT(func(v *LifecycleTagStatus) LifecycleTagStatus {
 		if v != nil {
@@ -163,10 +150,12 @@ func (o LifecycleTagStatusPtrOutput) ToStringPtrOutputWithContext(ctx context.Co
 	}).(pulumi.StringPtrOutput)
 }
 
-// LifecycleTagStatusInput is an input type that accepts LifecycleTagStatusArgs and LifecycleTagStatusOutput values.
-// You can construct a concrete instance of `LifecycleTagStatusInput` via:
+// LifecycleTagStatusInput is an input type that accepts values of the LifecycleTagStatus enum
+// A concrete instance of `LifecycleTagStatusInput` can be one of the following:
 //
-//	LifecycleTagStatusArgs{...}
+//	LifecycleTagStatusAny
+//	LifecycleTagStatusUntagged
+//	LifecycleTagStatusTagged
 type LifecycleTagStatusInput interface {
 	pulumi.Input
 
@@ -199,12 +188,6 @@ func (in *lifecycleTagStatusPtr) ToLifecycleTagStatusPtrOutput() LifecycleTagSta
 
 func (in *lifecycleTagStatusPtr) ToLifecycleTagStatusPtrOutputWithContext(ctx context.Context) LifecycleTagStatusPtrOutput {
 	return pulumi.ToOutputWithContext(ctx, in).(LifecycleTagStatusPtrOutput)
-}
-
-func (in *lifecycleTagStatusPtr) ToOutput(ctx context.Context) pulumix.Output[*LifecycleTagStatus] {
-	return pulumix.Output[*LifecycleTagStatus]{
-		OutputState: in.ToLifecycleTagStatusPtrOutputWithContext(ctx).OutputState,
-	}
 }
 
 func init() {

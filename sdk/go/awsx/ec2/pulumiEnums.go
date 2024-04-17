@@ -8,7 +8,6 @@ import (
 	"reflect"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // A strategy for creating NAT Gateways for private subnets within a VPC.
@@ -83,12 +82,6 @@ func (o NatGatewayStrategyOutput) ToNatGatewayStrategyPtrOutputWithContext(ctx c
 	}).(NatGatewayStrategyPtrOutput)
 }
 
-func (o NatGatewayStrategyOutput) ToOutput(ctx context.Context) pulumix.Output[NatGatewayStrategy] {
-	return pulumix.Output[NatGatewayStrategy]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o NatGatewayStrategyOutput) ToStringOutput() pulumi.StringOutput {
 	return o.ToStringOutputWithContext(context.Background())
 }
@@ -124,12 +117,6 @@ func (o NatGatewayStrategyPtrOutput) ToNatGatewayStrategyPtrOutputWithContext(ct
 	return o
 }
 
-func (o NatGatewayStrategyPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*NatGatewayStrategy] {
-	return pulumix.Output[*NatGatewayStrategy]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o NatGatewayStrategyPtrOutput) Elem() NatGatewayStrategyOutput {
 	return o.ApplyT(func(v *NatGatewayStrategy) NatGatewayStrategy {
 		if v != nil {
@@ -154,10 +141,12 @@ func (o NatGatewayStrategyPtrOutput) ToStringPtrOutputWithContext(ctx context.Co
 	}).(pulumi.StringPtrOutput)
 }
 
-// NatGatewayStrategyInput is an input type that accepts NatGatewayStrategyArgs and NatGatewayStrategyOutput values.
-// You can construct a concrete instance of `NatGatewayStrategyInput` via:
+// NatGatewayStrategyInput is an input type that accepts values of the NatGatewayStrategy enum
+// A concrete instance of `NatGatewayStrategyInput` can be one of the following:
 //
-//	NatGatewayStrategyArgs{...}
+//	NatGatewayStrategyNone
+//	NatGatewayStrategySingle
+//	NatGatewayStrategyOnePerAz
 type NatGatewayStrategyInput interface {
 	pulumi.Input
 
@@ -190,12 +179,6 @@ func (in *natGatewayStrategyPtr) ToNatGatewayStrategyPtrOutput() NatGatewayStrat
 
 func (in *natGatewayStrategyPtr) ToNatGatewayStrategyPtrOutputWithContext(ctx context.Context) NatGatewayStrategyPtrOutput {
 	return pulumi.ToOutputWithContext(ctx, in).(NatGatewayStrategyPtrOutput)
-}
-
-func (in *natGatewayStrategyPtr) ToOutput(ctx context.Context) pulumix.Output[*NatGatewayStrategy] {
-	return pulumix.Output[*NatGatewayStrategy]{
-		OutputState: in.ToNatGatewayStrategyPtrOutputWithContext(ctx).OutputState,
-	}
 }
 
 // Strategy for calculating subnet ranges from the subnet specifications.
@@ -270,12 +253,6 @@ func (o SubnetAllocationStrategyOutput) ToSubnetAllocationStrategyPtrOutputWithC
 	}).(SubnetAllocationStrategyPtrOutput)
 }
 
-func (o SubnetAllocationStrategyOutput) ToOutput(ctx context.Context) pulumix.Output[SubnetAllocationStrategy] {
-	return pulumix.Output[SubnetAllocationStrategy]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o SubnetAllocationStrategyOutput) ToStringOutput() pulumi.StringOutput {
 	return o.ToStringOutputWithContext(context.Background())
 }
@@ -311,12 +288,6 @@ func (o SubnetAllocationStrategyPtrOutput) ToSubnetAllocationStrategyPtrOutputWi
 	return o
 }
 
-func (o SubnetAllocationStrategyPtrOutput) ToOutput(ctx context.Context) pulumix.Output[*SubnetAllocationStrategy] {
-	return pulumix.Output[*SubnetAllocationStrategy]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o SubnetAllocationStrategyPtrOutput) Elem() SubnetAllocationStrategyOutput {
 	return o.ApplyT(func(v *SubnetAllocationStrategy) SubnetAllocationStrategy {
 		if v != nil {
@@ -341,10 +312,12 @@ func (o SubnetAllocationStrategyPtrOutput) ToStringPtrOutputWithContext(ctx cont
 	}).(pulumi.StringPtrOutput)
 }
 
-// SubnetAllocationStrategyInput is an input type that accepts SubnetAllocationStrategyArgs and SubnetAllocationStrategyOutput values.
-// You can construct a concrete instance of `SubnetAllocationStrategyInput` via:
+// SubnetAllocationStrategyInput is an input type that accepts values of the SubnetAllocationStrategy enum
+// A concrete instance of `SubnetAllocationStrategyInput` can be one of the following:
 //
-//	SubnetAllocationStrategyArgs{...}
+//	SubnetAllocationStrategyLegacy
+//	SubnetAllocationStrategyAuto
+//	SubnetAllocationStrategyExact
 type SubnetAllocationStrategyInput interface {
 	pulumi.Input
 
@@ -377,12 +350,6 @@ func (in *subnetAllocationStrategyPtr) ToSubnetAllocationStrategyPtrOutput() Sub
 
 func (in *subnetAllocationStrategyPtr) ToSubnetAllocationStrategyPtrOutputWithContext(ctx context.Context) SubnetAllocationStrategyPtrOutput {
 	return pulumi.ToOutputWithContext(ctx, in).(SubnetAllocationStrategyPtrOutput)
-}
-
-func (in *subnetAllocationStrategyPtr) ToOutput(ctx context.Context) pulumix.Output[*SubnetAllocationStrategy] {
-	return pulumix.Output[*SubnetAllocationStrategy]{
-		OutputState: in.ToSubnetAllocationStrategyPtrOutputWithContext(ctx).OutputState,
-	}
 }
 
 // A type of subnet within a VPC.
@@ -459,12 +426,6 @@ func (o SubnetTypeOutput) ToSubnetTypePtrOutputWithContext(ctx context.Context) 
 	}).(SubnetTypePtrOutput)
 }
 
-func (o SubnetTypeOutput) ToOutput(ctx context.Context) pulumix.Output[SubnetType] {
-	return pulumix.Output[SubnetType]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o SubnetTypeOutput) ToStringOutput() pulumi.StringOutput {
 	return o.ToStringOutputWithContext(context.Background())
 }
@@ -500,12 +461,6 @@ func (o SubnetTypePtrOutput) ToSubnetTypePtrOutputWithContext(ctx context.Contex
 	return o
 }
 
-func (o SubnetTypePtrOutput) ToOutput(ctx context.Context) pulumix.Output[*SubnetType] {
-	return pulumix.Output[*SubnetType]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o SubnetTypePtrOutput) Elem() SubnetTypeOutput {
 	return o.ApplyT(func(v *SubnetType) SubnetType {
 		if v != nil {
@@ -530,10 +485,13 @@ func (o SubnetTypePtrOutput) ToStringPtrOutputWithContext(ctx context.Context) p
 	}).(pulumi.StringPtrOutput)
 }
 
-// SubnetTypeInput is an input type that accepts SubnetTypeArgs and SubnetTypeOutput values.
-// You can construct a concrete instance of `SubnetTypeInput` via:
+// SubnetTypeInput is an input type that accepts values of the SubnetType enum
+// A concrete instance of `SubnetTypeInput` can be one of the following:
 //
-//	SubnetTypeArgs{...}
+//	SubnetTypePublic
+//	SubnetTypePrivate
+//	SubnetTypeIsolated
+//	SubnetTypeUnused
 type SubnetTypeInput interface {
 	pulumi.Input
 
@@ -566,12 +524,6 @@ func (in *subnetTypePtr) ToSubnetTypePtrOutput() SubnetTypePtrOutput {
 
 func (in *subnetTypePtr) ToSubnetTypePtrOutputWithContext(ctx context.Context) SubnetTypePtrOutput {
 	return pulumi.ToOutputWithContext(ctx, in).(SubnetTypePtrOutput)
-}
-
-func (in *subnetTypePtr) ToOutput(ctx context.Context) pulumix.Output[*SubnetType] {
-	return pulumix.Output[*SubnetType]{
-		OutputState: in.ToSubnetTypePtrOutputWithContext(ctx).OutputState,
-	}
 }
 
 func init() {

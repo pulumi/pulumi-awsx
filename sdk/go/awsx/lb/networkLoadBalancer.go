@@ -11,7 +11,6 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // Provides a Network Load Balancer resource with listeners and default target group.
@@ -182,12 +181,6 @@ func (i *NetworkLoadBalancer) ToNetworkLoadBalancerOutputWithContext(ctx context
 	return pulumi.ToOutputWithContext(ctx, i).(NetworkLoadBalancerOutput)
 }
 
-func (i *NetworkLoadBalancer) ToOutput(ctx context.Context) pulumix.Output[*NetworkLoadBalancer] {
-	return pulumix.Output[*NetworkLoadBalancer]{
-		OutputState: i.ToNetworkLoadBalancerOutputWithContext(ctx).OutputState,
-	}
-}
-
 // NetworkLoadBalancerArrayInput is an input type that accepts NetworkLoadBalancerArray and NetworkLoadBalancerArrayOutput values.
 // You can construct a concrete instance of `NetworkLoadBalancerArrayInput` via:
 //
@@ -211,12 +204,6 @@ func (i NetworkLoadBalancerArray) ToNetworkLoadBalancerArrayOutput() NetworkLoad
 
 func (i NetworkLoadBalancerArray) ToNetworkLoadBalancerArrayOutputWithContext(ctx context.Context) NetworkLoadBalancerArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(NetworkLoadBalancerArrayOutput)
-}
-
-func (i NetworkLoadBalancerArray) ToOutput(ctx context.Context) pulumix.Output[[]*NetworkLoadBalancer] {
-	return pulumix.Output[[]*NetworkLoadBalancer]{
-		OutputState: i.ToNetworkLoadBalancerArrayOutputWithContext(ctx).OutputState,
-	}
 }
 
 // NetworkLoadBalancerMapInput is an input type that accepts NetworkLoadBalancerMap and NetworkLoadBalancerMapOutput values.
@@ -244,12 +231,6 @@ func (i NetworkLoadBalancerMap) ToNetworkLoadBalancerMapOutputWithContext(ctx co
 	return pulumi.ToOutputWithContext(ctx, i).(NetworkLoadBalancerMapOutput)
 }
 
-func (i NetworkLoadBalancerMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*NetworkLoadBalancer] {
-	return pulumix.Output[map[string]*NetworkLoadBalancer]{
-		OutputState: i.ToNetworkLoadBalancerMapOutputWithContext(ctx).OutputState,
-	}
-}
-
 type NetworkLoadBalancerOutput struct{ *pulumi.OutputState }
 
 func (NetworkLoadBalancerOutput) ElementType() reflect.Type {
@@ -262,12 +243,6 @@ func (o NetworkLoadBalancerOutput) ToNetworkLoadBalancerOutput() NetworkLoadBala
 
 func (o NetworkLoadBalancerOutput) ToNetworkLoadBalancerOutputWithContext(ctx context.Context) NetworkLoadBalancerOutput {
 	return o
-}
-
-func (o NetworkLoadBalancerOutput) ToOutput(ctx context.Context) pulumix.Output[*NetworkLoadBalancer] {
-	return pulumix.Output[*NetworkLoadBalancer]{
-		OutputState: o.OutputState,
-	}
 }
 
 // Default target group, if auto-created
@@ -304,12 +279,6 @@ func (o NetworkLoadBalancerArrayOutput) ToNetworkLoadBalancerArrayOutputWithCont
 	return o
 }
 
-func (o NetworkLoadBalancerArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*NetworkLoadBalancer] {
-	return pulumix.Output[[]*NetworkLoadBalancer]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o NetworkLoadBalancerArrayOutput) Index(i pulumi.IntInput) NetworkLoadBalancerOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *NetworkLoadBalancer {
 		return vs[0].([]*NetworkLoadBalancer)[vs[1].(int)]
@@ -328,12 +297,6 @@ func (o NetworkLoadBalancerMapOutput) ToNetworkLoadBalancerMapOutput() NetworkLo
 
 func (o NetworkLoadBalancerMapOutput) ToNetworkLoadBalancerMapOutputWithContext(ctx context.Context) NetworkLoadBalancerMapOutput {
 	return o
-}
-
-func (o NetworkLoadBalancerMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*NetworkLoadBalancer] {
-	return pulumix.Output[map[string]*NetworkLoadBalancer]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o NetworkLoadBalancerMapOutput) MapIndex(k pulumi.StringInput) NetworkLoadBalancerOutput {
