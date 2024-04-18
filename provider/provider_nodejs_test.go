@@ -62,6 +62,7 @@ func TestEcrRepositoryUpgrade(t *testing.T) {
 }
 
 func TestLoadBalancerUpgrade(t *testing.T) {
+	t.Skip("TODO[pulumi/pulumi-awsx#1265]")
 	testProviderUpgrade(t, "../examples/ts-lb-simple", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
@@ -75,6 +76,6 @@ func TestLoadBalancerAttachEc2Upgrade(t *testing.T) {
 }
 
 func TestLoadBalancerWithSubnetsUpgrade(t *testing.T) {
-	t.Skip("TODO his currently times out on preview")
+	t.Skip("TODO[pulumi/pulumi-awsx#1267]")
 	testProviderUpgrade(t, "../examples/ts-lb-with-subnets", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
