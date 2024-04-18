@@ -131,6 +131,11 @@ jobs:
     needs: build-provider
     runs-on: ubuntu-latest
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          swap-storage: false
       - name: Checkout Repo
         uses: actions/checkout@v4
       - name: Checkout Scripts Repo
