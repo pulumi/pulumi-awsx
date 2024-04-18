@@ -1,7 +1,7 @@
 //go:build !go && !yaml && !python && !java && !dotnet
 // +build !go,!yaml,!python,!java,!dotnet
 
-// Copyright 2016-2023, Pulumi Corporation.
+// Copyright 2016-2024, Pulumi Corporation.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,79 +18,75 @@
 package provider
 
 import (
-	"path/filepath"
 	"testing"
-
-	"github.com/pulumi/providertest"
 )
 
-// Quick tests to validate the provider behavior against the example programs.
-//
-// Of specific interest are upgrade tests that check for lack of replacements when upgrading stacks
-// from a baseline to the current version of the provider.
-func TestExamples(t *testing.T) {
-	examples := []string{
-		"cloudtrail/nodejs",
-		"vpc/nodejs/default-args",
-		"vpc/nodejs/specific-vpc-layout",
-		"vpc/nodejs/vpc-with-service-endpoint",
-		"vpc/nodejs/vpc-multiple-similar-subnet-types",
-		"vpc/nodejs/vpc-subnets-with-tags",
-
-		// TODO[pulumi/pulumi-awsx#1114] this passes locally on Mac OS and Pulumi 3.86.0 but is failing in CI.
-		// "ts-nlb-simple",
-		// "ts-lb-simple",
-
-		// TODO[pulumi/pulumi-awsx#1112] skipping recording a few programs that time out locally after 20min.
-		// "ts-lb-with-subnets",
-		// "ts-lb-attach-lambda",
-		// "ts-lb-attach-ec2",
-
-		// TODO[pulumi/providertest#21] ecs/nodejs clobbers cloudtrail/nodejs.
-		// "ecs/nodejs"
-
-		// Skipping because it does not work on pre-2.x versions, so upgrade tests cannot run.
-		// "vpc/nodejs/custom-provider", // enableClassiclink and enableClassiclinkDnsSupport removed from outputs
-		// "ts-vpc-getDefaultVpc",  // Property 'vpc' does not exist
-
-		// Still need to try recording these:
-		//
-		// "ts-lb-with-subnets",
-		// "ts-lb-attach-lambda",
-		"ts-lb-attach-ec2",
-		"ts-ecr-repo",
-		// "vpc/nodejs/custom-provider",
-		// "vpc/nodejs/specific-vpc-layout",
-		// "vpc/nodejs/vpc-with-service-endpoint",
-		// "vpc/nodejs/vpc-multiple-similar-subnet-types",
-		// "vpc/nodejs/vpc-subnets-with-tags",
-		// "ts-ecr-simple", // docker.Patch -> docker.Context
-	}
-
-	for _, ex := range examples {
-		dir := filepath.Join("..", "examples", ex)
-		t.Run(ex, test(dir).Run)
-	}
+func TestCloudTrailUpgrade(t *testing.T) {
+	t.Parallel()
+	testProviderUpgrade(t, "../examples/cloudtrail/nodejs", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
-func test(dir string, opts ...providertest.Option) *providertest.ProviderTest {
-	opts = append(opts,
-		providertest.WithProviderName("awsx"),
+func TestVpcWithDefaultArgsUpgrade(t *testing.T) {
+	t.Parallel()
+	// 16 replaces locally, is this because of region differences?
+	testProviderUpgrade(t, "../examples/vpc/nodejs/default-args", &testProviderUpgradeOptions{linkNodeSDK: true})
+}
 
-		providertest.WithSkippedUpgradeTestMode(
-			providertest.UpgradeTestMode_Quick,
-			"Quick mode is only supported for providers written in Go at the moment"),
+func TestVpcWithCustomProviderUpgrade(t *testing.T) {
+	t.Parallel()
+	// "vpc/nodejs/custom-provider", // enableClassiclink and enableClassiclinkDnsSupport removed from outputs
+	//t.Logf("Skipping because it does not work on pre-2.x versions, so upgrade tests cannot run")
+	testProviderUpgrade(t, "../examples/vpc/nodejs/custom-provider", &testProviderUpgradeOptions{linkNodeSDK: true})
+}
 
-		providertest.WithBaselineVersion("1.0.6"), // latest v1
+func TestVpcWithServiceEndpointUpgrade(t *testing.T) {
+	t.Parallel()
+	testProviderUpgrade(t, "../examples/vpc/nodejs/vpc-with-service-endpoint", &testProviderUpgradeOptions{
+		linkNodeSDK: true,
+	})
+}
 
-		// Ensure we use the same region for all tests - when recording and replaying.
-		providertest.WithConfig("aws:region", "us-west-2"),
+func TestVpcWithMultipleSimilarSubnetTypesUpgrade(t *testing.T) {
+	t.Parallel()
+	ex := "../examples/vpc/nodejs/vpc-multiple-similar-subnet-types"
+	testProviderUpgrade(t, ex, &testProviderUpgradeOptions{linkNodeSDK: true})
+}
 
-		providertest.WithExtraBaselineDependencies(map[string]string{
-			"aws": "5.42.0", // latest v5
-		}),
-		providertest.WithDiffValidation(providertest.NoReplacements()),
-	)
+func TestVpcSubnetsWithTagsUpgrade(t *testing.T) {
+	t.Parallel()
+	testProviderUpgrade(t, "../examples/vpc/nodejs/vpc-subnets-with-tags", &testProviderUpgradeOptions{
+		linkNodeSDK: true,
+	})
+}
 
-	return providertest.NewProviderTest(dir, opts...)
+func TestSpecificVpcLayoutUpgrade(t *testing.T) {
+	t.Parallel()
+	testProviderUpgrade(t, "../examples/vpc/nodejs/specific-vpc-layout", &testProviderUpgradeOptions{
+		linkNodeSDK: true,
+	})
+}
+
+func TestEcrRepositoryUpgrade(t *testing.T) {
+	t.Parallel()
+	testProviderUpgrade(t, "../examples/ts-ecr-repo", &testProviderUpgradeOptions{linkNodeSDK: true})
+}
+
+func TestLoadBalancerUpgrade(t *testing.T) {
+	t.Parallel()
+	testProviderUpgrade(t, "../examples/ts-lb-simple", &testProviderUpgradeOptions{linkNodeSDK: true})
+}
+
+func TestNetworkLoadBalancerUpgrade(t *testing.T) {
+	t.Parallel()
+	testProviderUpgrade(t, "../examples/ts-nlb-simple", &testProviderUpgradeOptions{linkNodeSDK: true})
+}
+
+func TestLoadBalancerAttachEc2Upgrade(t *testing.T) {
+	t.Parallel()
+	testProviderUpgrade(t, "../examples/ts-lb-attach-ec2", &testProviderUpgradeOptions{linkNodeSDK: true})
+}
+
+func TestLoadBalancerWithSubnetsUpgrade(t *testing.T) {
+	t.Parallel()
+	testProviderUpgrade(t, "../examples/ts-lb-with-subnets", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
