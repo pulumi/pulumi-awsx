@@ -10,7 +10,6 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecs"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // Create an ECS Service resource for Fargate with the given unique name, arguments, and options.
@@ -182,12 +181,6 @@ func (i *FargateService) ToFargateServiceOutputWithContext(ctx context.Context) 
 	return pulumi.ToOutputWithContext(ctx, i).(FargateServiceOutput)
 }
 
-func (i *FargateService) ToOutput(ctx context.Context) pulumix.Output[*FargateService] {
-	return pulumix.Output[*FargateService]{
-		OutputState: i.ToFargateServiceOutputWithContext(ctx).OutputState,
-	}
-}
-
 // FargateServiceArrayInput is an input type that accepts FargateServiceArray and FargateServiceArrayOutput values.
 // You can construct a concrete instance of `FargateServiceArrayInput` via:
 //
@@ -211,12 +204,6 @@ func (i FargateServiceArray) ToFargateServiceArrayOutput() FargateServiceArrayOu
 
 func (i FargateServiceArray) ToFargateServiceArrayOutputWithContext(ctx context.Context) FargateServiceArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(FargateServiceArrayOutput)
-}
-
-func (i FargateServiceArray) ToOutput(ctx context.Context) pulumix.Output[[]*FargateService] {
-	return pulumix.Output[[]*FargateService]{
-		OutputState: i.ToFargateServiceArrayOutputWithContext(ctx).OutputState,
-	}
 }
 
 // FargateServiceMapInput is an input type that accepts FargateServiceMap and FargateServiceMapOutput values.
@@ -244,12 +231,6 @@ func (i FargateServiceMap) ToFargateServiceMapOutputWithContext(ctx context.Cont
 	return pulumi.ToOutputWithContext(ctx, i).(FargateServiceMapOutput)
 }
 
-func (i FargateServiceMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*FargateService] {
-	return pulumix.Output[map[string]*FargateService]{
-		OutputState: i.ToFargateServiceMapOutputWithContext(ctx).OutputState,
-	}
-}
-
 type FargateServiceOutput struct{ *pulumi.OutputState }
 
 func (FargateServiceOutput) ElementType() reflect.Type {
@@ -262,12 +243,6 @@ func (o FargateServiceOutput) ToFargateServiceOutput() FargateServiceOutput {
 
 func (o FargateServiceOutput) ToFargateServiceOutputWithContext(ctx context.Context) FargateServiceOutput {
 	return o
-}
-
-func (o FargateServiceOutput) ToOutput(ctx context.Context) pulumix.Output[*FargateService] {
-	return pulumix.Output[*FargateService]{
-		OutputState: o.OutputState,
-	}
 }
 
 // Underlying ECS Service resource
@@ -294,12 +269,6 @@ func (o FargateServiceArrayOutput) ToFargateServiceArrayOutputWithContext(ctx co
 	return o
 }
 
-func (o FargateServiceArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*FargateService] {
-	return pulumix.Output[[]*FargateService]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o FargateServiceArrayOutput) Index(i pulumi.IntInput) FargateServiceOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *FargateService {
 		return vs[0].([]*FargateService)[vs[1].(int)]
@@ -318,12 +287,6 @@ func (o FargateServiceMapOutput) ToFargateServiceMapOutput() FargateServiceMapOu
 
 func (o FargateServiceMapOutput) ToFargateServiceMapOutputWithContext(ctx context.Context) FargateServiceMapOutput {
 	return o
-}
-
-func (o FargateServiceMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*FargateService] {
-	return pulumix.Output[map[string]*FargateService]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o FargateServiceMapOutput) MapIndex(k pulumi.StringInput) FargateServiceOutput {

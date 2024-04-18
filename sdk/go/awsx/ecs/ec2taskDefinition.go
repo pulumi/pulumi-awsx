@@ -13,7 +13,6 @@ import (
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // Create a TaskDefinition resource with the given unique name, arguments, and options.
@@ -174,12 +173,6 @@ func (i *EC2TaskDefinition) ToEC2TaskDefinitionOutputWithContext(ctx context.Con
 	return pulumi.ToOutputWithContext(ctx, i).(EC2TaskDefinitionOutput)
 }
 
-func (i *EC2TaskDefinition) ToOutput(ctx context.Context) pulumix.Output[*EC2TaskDefinition] {
-	return pulumix.Output[*EC2TaskDefinition]{
-		OutputState: i.ToEC2TaskDefinitionOutputWithContext(ctx).OutputState,
-	}
-}
-
 // EC2TaskDefinitionArrayInput is an input type that accepts EC2TaskDefinitionArray and EC2TaskDefinitionArrayOutput values.
 // You can construct a concrete instance of `EC2TaskDefinitionArrayInput` via:
 //
@@ -203,12 +196,6 @@ func (i EC2TaskDefinitionArray) ToEC2TaskDefinitionArrayOutput() EC2TaskDefiniti
 
 func (i EC2TaskDefinitionArray) ToEC2TaskDefinitionArrayOutputWithContext(ctx context.Context) EC2TaskDefinitionArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(EC2TaskDefinitionArrayOutput)
-}
-
-func (i EC2TaskDefinitionArray) ToOutput(ctx context.Context) pulumix.Output[[]*EC2TaskDefinition] {
-	return pulumix.Output[[]*EC2TaskDefinition]{
-		OutputState: i.ToEC2TaskDefinitionArrayOutputWithContext(ctx).OutputState,
-	}
 }
 
 // EC2TaskDefinitionMapInput is an input type that accepts EC2TaskDefinitionMap and EC2TaskDefinitionMapOutput values.
@@ -236,12 +223,6 @@ func (i EC2TaskDefinitionMap) ToEC2TaskDefinitionMapOutputWithContext(ctx contex
 	return pulumi.ToOutputWithContext(ctx, i).(EC2TaskDefinitionMapOutput)
 }
 
-func (i EC2TaskDefinitionMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*EC2TaskDefinition] {
-	return pulumix.Output[map[string]*EC2TaskDefinition]{
-		OutputState: i.ToEC2TaskDefinitionMapOutputWithContext(ctx).OutputState,
-	}
-}
-
 type EC2TaskDefinitionOutput struct{ *pulumi.OutputState }
 
 func (EC2TaskDefinitionOutput) ElementType() reflect.Type {
@@ -254,12 +235,6 @@ func (o EC2TaskDefinitionOutput) ToEC2TaskDefinitionOutput() EC2TaskDefinitionOu
 
 func (o EC2TaskDefinitionOutput) ToEC2TaskDefinitionOutputWithContext(ctx context.Context) EC2TaskDefinitionOutput {
 	return o
-}
-
-func (o EC2TaskDefinitionOutput) ToOutput(ctx context.Context) pulumix.Output[*EC2TaskDefinition] {
-	return pulumix.Output[*EC2TaskDefinition]{
-		OutputState: o.OutputState,
-	}
 }
 
 // Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -301,12 +276,6 @@ func (o EC2TaskDefinitionArrayOutput) ToEC2TaskDefinitionArrayOutputWithContext(
 	return o
 }
 
-func (o EC2TaskDefinitionArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*EC2TaskDefinition] {
-	return pulumix.Output[[]*EC2TaskDefinition]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o EC2TaskDefinitionArrayOutput) Index(i pulumi.IntInput) EC2TaskDefinitionOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *EC2TaskDefinition {
 		return vs[0].([]*EC2TaskDefinition)[vs[1].(int)]
@@ -325,12 +294,6 @@ func (o EC2TaskDefinitionMapOutput) ToEC2TaskDefinitionMapOutput() EC2TaskDefini
 
 func (o EC2TaskDefinitionMapOutput) ToEC2TaskDefinitionMapOutputWithContext(ctx context.Context) EC2TaskDefinitionMapOutput {
 	return o
-}
-
-func (o EC2TaskDefinitionMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*EC2TaskDefinition] {
-	return pulumix.Output[map[string]*EC2TaskDefinition]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o EC2TaskDefinitionMapOutput) MapIndex(k pulumi.StringInput) EC2TaskDefinitionOutput {

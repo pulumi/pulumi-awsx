@@ -10,7 +10,6 @@ import (
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ecs"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // Create an ECS Service resource for EC2 with the given unique name, arguments, and options.
@@ -182,12 +181,6 @@ func (i *EC2Service) ToEC2ServiceOutputWithContext(ctx context.Context) EC2Servi
 	return pulumi.ToOutputWithContext(ctx, i).(EC2ServiceOutput)
 }
 
-func (i *EC2Service) ToOutput(ctx context.Context) pulumix.Output[*EC2Service] {
-	return pulumix.Output[*EC2Service]{
-		OutputState: i.ToEC2ServiceOutputWithContext(ctx).OutputState,
-	}
-}
-
 // EC2ServiceArrayInput is an input type that accepts EC2ServiceArray and EC2ServiceArrayOutput values.
 // You can construct a concrete instance of `EC2ServiceArrayInput` via:
 //
@@ -211,12 +204,6 @@ func (i EC2ServiceArray) ToEC2ServiceArrayOutput() EC2ServiceArrayOutput {
 
 func (i EC2ServiceArray) ToEC2ServiceArrayOutputWithContext(ctx context.Context) EC2ServiceArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(EC2ServiceArrayOutput)
-}
-
-func (i EC2ServiceArray) ToOutput(ctx context.Context) pulumix.Output[[]*EC2Service] {
-	return pulumix.Output[[]*EC2Service]{
-		OutputState: i.ToEC2ServiceArrayOutputWithContext(ctx).OutputState,
-	}
 }
 
 // EC2ServiceMapInput is an input type that accepts EC2ServiceMap and EC2ServiceMapOutput values.
@@ -244,12 +231,6 @@ func (i EC2ServiceMap) ToEC2ServiceMapOutputWithContext(ctx context.Context) EC2
 	return pulumi.ToOutputWithContext(ctx, i).(EC2ServiceMapOutput)
 }
 
-func (i EC2ServiceMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*EC2Service] {
-	return pulumix.Output[map[string]*EC2Service]{
-		OutputState: i.ToEC2ServiceMapOutputWithContext(ctx).OutputState,
-	}
-}
-
 type EC2ServiceOutput struct{ *pulumi.OutputState }
 
 func (EC2ServiceOutput) ElementType() reflect.Type {
@@ -262,12 +243,6 @@ func (o EC2ServiceOutput) ToEC2ServiceOutput() EC2ServiceOutput {
 
 func (o EC2ServiceOutput) ToEC2ServiceOutputWithContext(ctx context.Context) EC2ServiceOutput {
 	return o
-}
-
-func (o EC2ServiceOutput) ToOutput(ctx context.Context) pulumix.Output[*EC2Service] {
-	return pulumix.Output[*EC2Service]{
-		OutputState: o.OutputState,
-	}
 }
 
 // Underlying ECS Service resource
@@ -294,12 +269,6 @@ func (o EC2ServiceArrayOutput) ToEC2ServiceArrayOutputWithContext(ctx context.Co
 	return o
 }
 
-func (o EC2ServiceArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*EC2Service] {
-	return pulumix.Output[[]*EC2Service]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o EC2ServiceArrayOutput) Index(i pulumi.IntInput) EC2ServiceOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *EC2Service {
 		return vs[0].([]*EC2Service)[vs[1].(int)]
@@ -318,12 +287,6 @@ func (o EC2ServiceMapOutput) ToEC2ServiceMapOutput() EC2ServiceMapOutput {
 
 func (o EC2ServiceMapOutput) ToEC2ServiceMapOutputWithContext(ctx context.Context) EC2ServiceMapOutput {
 	return o
-}
-
-func (o EC2ServiceMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*EC2Service] {
-	return pulumix.Output[map[string]*EC2Service]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o EC2ServiceMapOutput) MapIndex(k pulumi.StringInput) EC2ServiceOutput {

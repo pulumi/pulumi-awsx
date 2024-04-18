@@ -1,0 +1,156 @@
+{
+  "version": 3,
+  "deployment": {
+    "manifest": {
+      "time": "2023-11-02T13:30:52.490182Z",
+      "magic": "7f5ec831fbfcaaafb30fe1f9dd0eebc4a62372e9fda10d9bab6256b2deca869d",
+      "version": "v3.78.1"
+    },
+    "secrets_providers": {
+      "type": "passphrase",
+      "state": {
+        "salt": "v1:/BbiFlufvCg=:v1:h+tmBVLLh2AJkQO+:JNz4GPTA1cF632w/SVFAnbV1JQLPMA=="
+      }
+    },
+    "resources": [
+      {
+        "urn": "urn:pulumi:test::ecr::pulumi:pulumi:Stack::ecr-test",
+        "custom": false,
+        "type": "pulumi:pulumi:Stack",
+        "created": "2023-11-02T13:30:46.884198Z",
+        "modified": "2023-11-02T13:30:46.884198Z"
+      },
+      {
+        "urn": "urn:pulumi:test::ecr::pulumi:providers:awsx::default_1_0_6",
+        "custom": true,
+        "id": "8d3cd366-9331-4fcd-becc-6c390527004b",
+        "type": "pulumi:providers:awsx",
+        "inputs": {
+          "version": "1.0.6"
+        },
+        "outputs": {
+          "version": "1.0.6"
+        },
+        "created": "2023-11-02T13:30:47.157336Z",
+        "modified": "2023-11-02T13:30:47.157336Z"
+      },
+      {
+        "urn": "urn:pulumi:test::ecr::awsx:ecr:Repository::repository",
+        "custom": false,
+        "type": "awsx:ecr:Repository",
+        "outputs": {
+          "lifecyclePolicy": {
+            "4dabf18193072939515e22adb298388d": "5cf8f73096256a8f31e491e813e4eb8e",
+            "id": "repository-e7ed924",
+            "packageVersion": "",
+            "urn": "urn:pulumi:test::ecr::awsx:ecr:Repository$aws:ecr/lifecyclePolicy:LifecyclePolicy::repository"
+          },
+          "repository": {
+            "4dabf18193072939515e22adb298388d": "5cf8f73096256a8f31e491e813e4eb8e",
+            "id": "repository-e7ed924",
+            "packageVersion": "",
+            "urn": "urn:pulumi:test::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository"
+          }
+        },
+        "parent": "urn:pulumi:test::ecr::pulumi:pulumi:Stack::ecr-test",
+        "created": "2023-11-02T13:30:47.178574Z",
+        "modified": "2023-11-02T13:30:47.178574Z"
+      },
+      {
+        "urn": "urn:pulumi:test::ecr::pulumi:providers:aws::default_5_35_0",
+        "custom": true,
+        "id": "aebeccb4-734e-4b88-a2e9-0f8a03beb04d",
+        "type": "pulumi:providers:aws",
+        "inputs": {
+          "region": "us-west-2",
+          "version": "5.35.0"
+        },
+        "outputs": {
+          "region": "us-west-2",
+          "version": "5.35.0"
+        },
+        "created": "2023-11-02T13:30:47.278416Z",
+        "modified": "2023-11-02T13:30:47.278416Z"
+      },
+      {
+        "urn": "urn:pulumi:test::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository",
+        "custom": true,
+        "id": "repository-e7ed924",
+        "type": "aws:ecr/repository:Repository",
+        "inputs": {
+          "__defaults": [
+            "imageTagMutability",
+            "name"
+          ],
+          "forceDelete": true,
+          "imageTagMutability": "MUTABLE",
+          "name": "repository-e7ed924"
+        },
+        "outputs": {
+          "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"delete\":1200000000000}}",
+          "arn": "arn:aws:ecr:us-west-2:616138583583:repository/repository-e7ed924",
+          "encryptionConfigurations": [
+            {
+              "encryptionType": "AES256",
+              "kmsKey": ""
+            }
+          ],
+          "forceDelete": true,
+          "id": "repository-e7ed924",
+          "imageScanningConfiguration": {
+            "scanOnPush": false
+          },
+          "imageTagMutability": "MUTABLE",
+          "name": "repository-e7ed924",
+          "registryId": "616138583583",
+          "repositoryUrl": "616138583583.dkr.ecr.us-west-2.amazonaws.com/repository-e7ed924",
+          "tags": {},
+          "tagsAll": {}
+        },
+        "parent": "urn:pulumi:test::ecr::awsx:ecr:Repository::repository",
+        "provider": "urn:pulumi:test::ecr::pulumi:providers:aws::default_5_35_0::aebeccb4-734e-4b88-a2e9-0f8a03beb04d",
+        "propertyDependencies": {
+          "forceDelete": null
+        },
+        "created": "2023-11-02T13:30:52.017609Z",
+        "modified": "2023-11-02T13:30:52.017609Z"
+      },
+      {
+        "urn": "urn:pulumi:test::ecr::awsx:ecr:Repository$aws:ecr/lifecyclePolicy:LifecyclePolicy::repository",
+        "custom": true,
+        "id": "repository-e7ed924",
+        "type": "aws:ecr/lifecyclePolicy:LifecyclePolicy",
+        "inputs": {
+          "__defaults": [],
+          "policy": "{\"rules\":[{\"action\":{\"type\":\"expire\"},\"description\":\"remove untagged images\",\"rulePriority\":1,\"selection\":{\"countNumber\":1,\"countType\":\"imageCountMoreThan\",\"tagStatus\":\"untagged\"}}]}",
+          "repository": "repository-e7ed924"
+        },
+        "outputs": {
+          "id": "repository-e7ed924",
+          "policy": "{\"rules\":[{\"action\":{\"type\":\"expire\"},\"description\":\"remove untagged images\",\"rulePriority\":1,\"selection\":{\"countNumber\":1,\"countType\":\"imageCountMoreThan\",\"tagStatus\":\"untagged\"}}]}",
+          "registryId": "616138583583",
+          "repository": "repository-e7ed924"
+        },
+        "parent": "urn:pulumi:test::ecr::awsx:ecr:Repository::repository",
+        "dependencies": [
+          "urn:pulumi:test::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository"
+        ],
+        "provider": "urn:pulumi:test::ecr::pulumi:providers:aws::default_5_35_0::aebeccb4-734e-4b88-a2e9-0f8a03beb04d",
+        "propertyDependencies": {
+          "policy": null,
+          "repository": [
+            "urn:pulumi:test::ecr::awsx:ecr:Repository$aws:ecr/repository:Repository::repository"
+          ]
+        },
+        "created": "2023-11-02T13:30:52.424485Z",
+        "modified": "2023-11-02T13:30:52.424485Z"
+      },
+      {
+        "urn": "urn:pulumi:test::ecr::pulumi:providers:pulumi::default",
+        "custom": true,
+        "id": "9374b556-3d1c-4f72-aa95-9168ff57d0ea",
+        "type": "pulumi:providers:pulumi"
+      }
+    ]
+  }
+}

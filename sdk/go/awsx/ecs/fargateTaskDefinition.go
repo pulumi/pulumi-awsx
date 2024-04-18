@@ -13,7 +13,6 @@ import (
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumix"
 )
 
 // Create a TaskDefinition resource with the given unique name, arguments, and options.
@@ -170,12 +169,6 @@ func (i *FargateTaskDefinition) ToFargateTaskDefinitionOutputWithContext(ctx con
 	return pulumi.ToOutputWithContext(ctx, i).(FargateTaskDefinitionOutput)
 }
 
-func (i *FargateTaskDefinition) ToOutput(ctx context.Context) pulumix.Output[*FargateTaskDefinition] {
-	return pulumix.Output[*FargateTaskDefinition]{
-		OutputState: i.ToFargateTaskDefinitionOutputWithContext(ctx).OutputState,
-	}
-}
-
 // FargateTaskDefinitionArrayInput is an input type that accepts FargateTaskDefinitionArray and FargateTaskDefinitionArrayOutput values.
 // You can construct a concrete instance of `FargateTaskDefinitionArrayInput` via:
 //
@@ -199,12 +192,6 @@ func (i FargateTaskDefinitionArray) ToFargateTaskDefinitionArrayOutput() Fargate
 
 func (i FargateTaskDefinitionArray) ToFargateTaskDefinitionArrayOutputWithContext(ctx context.Context) FargateTaskDefinitionArrayOutput {
 	return pulumi.ToOutputWithContext(ctx, i).(FargateTaskDefinitionArrayOutput)
-}
-
-func (i FargateTaskDefinitionArray) ToOutput(ctx context.Context) pulumix.Output[[]*FargateTaskDefinition] {
-	return pulumix.Output[[]*FargateTaskDefinition]{
-		OutputState: i.ToFargateTaskDefinitionArrayOutputWithContext(ctx).OutputState,
-	}
 }
 
 // FargateTaskDefinitionMapInput is an input type that accepts FargateTaskDefinitionMap and FargateTaskDefinitionMapOutput values.
@@ -232,12 +219,6 @@ func (i FargateTaskDefinitionMap) ToFargateTaskDefinitionMapOutputWithContext(ct
 	return pulumi.ToOutputWithContext(ctx, i).(FargateTaskDefinitionMapOutput)
 }
 
-func (i FargateTaskDefinitionMap) ToOutput(ctx context.Context) pulumix.Output[map[string]*FargateTaskDefinition] {
-	return pulumix.Output[map[string]*FargateTaskDefinition]{
-		OutputState: i.ToFargateTaskDefinitionMapOutputWithContext(ctx).OutputState,
-	}
-}
-
 type FargateTaskDefinitionOutput struct{ *pulumi.OutputState }
 
 func (FargateTaskDefinitionOutput) ElementType() reflect.Type {
@@ -250,12 +231,6 @@ func (o FargateTaskDefinitionOutput) ToFargateTaskDefinitionOutput() FargateTask
 
 func (o FargateTaskDefinitionOutput) ToFargateTaskDefinitionOutputWithContext(ctx context.Context) FargateTaskDefinitionOutput {
 	return o
-}
-
-func (o FargateTaskDefinitionOutput) ToOutput(ctx context.Context) pulumix.Output[*FargateTaskDefinition] {
-	return pulumix.Output[*FargateTaskDefinition]{
-		OutputState: o.OutputState,
-	}
 }
 
 // Auto-created IAM task execution role that the Amazon ECS container agent and the Docker daemon can assume.
@@ -297,12 +272,6 @@ func (o FargateTaskDefinitionArrayOutput) ToFargateTaskDefinitionArrayOutputWith
 	return o
 }
 
-func (o FargateTaskDefinitionArrayOutput) ToOutput(ctx context.Context) pulumix.Output[[]*FargateTaskDefinition] {
-	return pulumix.Output[[]*FargateTaskDefinition]{
-		OutputState: o.OutputState,
-	}
-}
-
 func (o FargateTaskDefinitionArrayOutput) Index(i pulumi.IntInput) FargateTaskDefinitionOutput {
 	return pulumi.All(o, i).ApplyT(func(vs []interface{}) *FargateTaskDefinition {
 		return vs[0].([]*FargateTaskDefinition)[vs[1].(int)]
@@ -321,12 +290,6 @@ func (o FargateTaskDefinitionMapOutput) ToFargateTaskDefinitionMapOutput() Farga
 
 func (o FargateTaskDefinitionMapOutput) ToFargateTaskDefinitionMapOutputWithContext(ctx context.Context) FargateTaskDefinitionMapOutput {
 	return o
-}
-
-func (o FargateTaskDefinitionMapOutput) ToOutput(ctx context.Context) pulumix.Output[map[string]*FargateTaskDefinition] {
-	return pulumix.Output[map[string]*FargateTaskDefinition]{
-		OutputState: o.OutputState,
-	}
 }
 
 func (o FargateTaskDefinitionMapOutput) MapIndex(k pulumi.StringInput) FargateTaskDefinitionOutput {

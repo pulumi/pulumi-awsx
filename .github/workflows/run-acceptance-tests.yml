@@ -157,6 +157,11 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'repository_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          swap-storage: false
       - name: Checkout Repo
         uses: actions/checkout@v4
       - name: Checkout Scripts Repo

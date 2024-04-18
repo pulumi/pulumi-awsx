@@ -157,7 +157,8 @@ func genNodejs(pkg *schema.Package, outdir string) {
 		extraFiles[filepath.Join("classic", rel)] = content
 		return nil
 	})
-	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles)
+	localDependencies := map[string]string{}
+	files, err := nodegen.GeneratePackage(Tool, pkg, extraFiles, localDependencies)
 	if err != nil {
 		panic(err)
 	}
