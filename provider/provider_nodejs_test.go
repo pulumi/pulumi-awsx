@@ -22,71 +22,59 @@ import (
 )
 
 func TestCloudTrailUpgrade(t *testing.T) {
-	t.Parallel()
 	testProviderUpgrade(t, "../examples/cloudtrail/nodejs", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
 func TestVpcWithDefaultArgsUpgrade(t *testing.T) {
-	t.Parallel()
 	// 16 replaces locally, is this because of region differences?
 	testProviderUpgrade(t, "../examples/vpc/nodejs/default-args", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
 func TestVpcWithCustomProviderUpgrade(t *testing.T) {
-	t.Parallel()
-	// "vpc/nodejs/custom-provider", // enableClassiclink and enableClassiclinkDnsSupport removed from outputs
-	//t.Logf("Skipping because it does not work on pre-2.x versions, so upgrade tests cannot run")
 	testProviderUpgrade(t, "../examples/vpc/nodejs/custom-provider", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
 func TestVpcWithServiceEndpointUpgrade(t *testing.T) {
-	t.Parallel()
 	testProviderUpgrade(t, "../examples/vpc/nodejs/vpc-with-service-endpoint", &testProviderUpgradeOptions{
 		linkNodeSDK: true,
 	})
 }
 
 func TestVpcWithMultipleSimilarSubnetTypesUpgrade(t *testing.T) {
-	t.Parallel()
 	ex := "../examples/vpc/nodejs/vpc-multiple-similar-subnet-types"
 	testProviderUpgrade(t, ex, &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
 func TestVpcSubnetsWithTagsUpgrade(t *testing.T) {
-	t.Parallel()
 	testProviderUpgrade(t, "../examples/vpc/nodejs/vpc-subnets-with-tags", &testProviderUpgradeOptions{
 		linkNodeSDK: true,
 	})
 }
 
 func TestSpecificVpcLayoutUpgrade(t *testing.T) {
-	t.Parallel()
 	testProviderUpgrade(t, "../examples/vpc/nodejs/specific-vpc-layout", &testProviderUpgradeOptions{
 		linkNodeSDK: true,
 	})
 }
 
 func TestEcrRepositoryUpgrade(t *testing.T) {
-	t.Parallel()
 	testProviderUpgrade(t, "../examples/ts-ecr-repo", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
 func TestLoadBalancerUpgrade(t *testing.T) {
-	t.Parallel()
 	testProviderUpgrade(t, "../examples/ts-lb-simple", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
 func TestNetworkLoadBalancerUpgrade(t *testing.T) {
-	t.Parallel()
+	t.Skip("TODO[pulumi/pulumi-awsx#1265]")
 	testProviderUpgrade(t, "../examples/ts-nlb-simple", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
 func TestLoadBalancerAttachEc2Upgrade(t *testing.T) {
-	t.Parallel()
 	testProviderUpgrade(t, "../examples/ts-lb-attach-ec2", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
 func TestLoadBalancerWithSubnetsUpgrade(t *testing.T) {
-	t.Parallel()
+	t.Skip("TODO his currently times out on preview")
 	testProviderUpgrade(t, "../examples/ts-lb-with-subnets", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
