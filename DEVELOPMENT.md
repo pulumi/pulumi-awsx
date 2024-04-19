@@ -30,6 +30,7 @@ For building the SDKs:
 - `make dev` tests and build the provider and builds only the nodejs SDK
 - `make build` tests and build the provider and all SDKS
 - `make clean` removes all build artifacts ready for a clean build
+- `make install_sdks` installs all SDKs
 - `make test` runs all acceptance tests
 - `make test Test=TEST_NAME` runs a single test
 

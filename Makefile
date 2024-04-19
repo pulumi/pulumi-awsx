@@ -152,6 +152,8 @@ install_provider: bin/${PROVIDER}
 	rm -f ${GOBIN}/${PROVIDER}
 	cp bin/${PROVIDER} ${GOBIN}/${PROVIDER}
 
+install_sdks: install_nodejs_sdk install_python_sdk install_go_sdk install_dotnet_sdk
+
 install_nodejs_sdk: .make/build_nodejs
 	yarn link --cwd $(WORKING_DIR)/sdk/nodejs/bin
 
