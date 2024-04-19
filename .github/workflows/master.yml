@@ -44,9 +44,9 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 18.x
           registry-url: https://registry.npmjs.org
       - name: Install Yarn
         run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
@@ -86,7 +86,7 @@ jobs:
         with:
           go-version: ${{ env.GOVERSION }}
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{env.NODEVERSION}}
           registry-url: https://registry.npmjs.org

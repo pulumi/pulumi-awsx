@@ -59,7 +59,7 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org
@@ -111,7 +111,7 @@ jobs:
         with:
           go-version: ${{ env.GOVERSION }}
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: ${{env.NODEVERSION}}
           registry-url: https://registry.npmjs.org
