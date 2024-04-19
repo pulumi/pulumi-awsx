@@ -18,7 +18,11 @@ package examples
 
 import (
 	"github.com/pulumi/pulumi/pkg/v3/testing/integration"
+	"github.com/stretchr/testify/require"
+	"os"
+	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -43,6 +47,21 @@ func TestAccEcsDotnet(t *testing.T) {
 }
 
 func getDotnetBaseOptions(t *testing.T) integration.ProgramTestOptions {
+	if os.Getenv("PULUMI_LOCAL_NUGET") == "" {
+		localNugetDir, err := filepath.Abs("../nuget")
+		if err != nil {
+			t.Fatalf("Failed to get absolute path to nuget directory, ensure you run `make build_dotnet install_dotnet_sdk` first: %v", err)
+		}
+		os.Setenv("PULUMI_LOCAL_NUGET", localNugetDir)
+		sourceName := "pulumi-awsx"
+		output, err := exec.Command("dotnet", "nuget", "list", "source").CombinedOutput()
+		require.NoError(t, err, "failed to list nuget sources")
+		if !strings.Contains(string(output), sourceName) {
+			err := exec.Command("dotnet", "nuget", "add", "source", localNugetDir, "-n", sourceName).Run()
+			require.NoError(t, err, "failed to add nuget source")
+		}
+	}
+
 	region := getEnvRegion(t)
 	base := getBaseOptions(t)
 	dotnetBase := base.With(integration.ProgramTestOptions{

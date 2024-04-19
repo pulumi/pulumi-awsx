@@ -62,7 +62,3 @@ For running Typescript examples locally:
 1. `cd examples/YOUR_EXAMPLE`
 1. `yarn && yarn link @pulumi/awsx` - install dependencies, but use local version of
 1. `PATH=~/YOUR_DEV_FOLDER/pulumi-awsx/bin/:$PATH pulumi up`
-
-### Testing DotNet locally
-When running dotnet tests locally you need to set the environment variable `PULUMI_LOCAL_NUGET` to point to the directory containing the awsx nuget package.
-For example: `PULUMI_LOCAL_NUGET=../nuget make test`
