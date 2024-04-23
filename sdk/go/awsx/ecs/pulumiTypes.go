@@ -65,6 +65,8 @@ type EC2ServiceTaskDefinition struct {
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
 	TaskRole *awsx.DefaultRoleWithPolicy `pulumi:"taskRole"`
+	// Whether should track latest task definition or the one created with the resource. Default is `false`.
+	TrackLatest *bool `pulumi:"trackLatest"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
 	Volumes []ecs.TaskDefinitionVolume `pulumi:"volumes"`
 }
@@ -129,6 +131,8 @@ type EC2ServiceTaskDefinitionArgs struct {
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
 	TaskRole *awsx.DefaultRoleWithPolicyArgs `pulumi:"taskRole"`
+	// Whether should track latest task definition or the one created with the resource. Default is `false`.
+	TrackLatest pulumi.BoolPtrInput `pulumi:"trackLatest"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
 	Volumes ecs.TaskDefinitionVolumeArrayInput `pulumi:"volumes"`
 }
@@ -314,6 +318,11 @@ func (o EC2ServiceTaskDefinitionOutput) Tags() pulumi.StringMapOutput {
 // Will be created automatically if not defined.
 func (o EC2ServiceTaskDefinitionOutput) TaskRole() awsx.DefaultRoleWithPolicyPtrOutput {
 	return o.ApplyT(func(v EC2ServiceTaskDefinition) *awsx.DefaultRoleWithPolicy { return v.TaskRole }).(awsx.DefaultRoleWithPolicyPtrOutput)
+}
+
+// Whether should track latest task definition or the one created with the resource. Default is `false`.
+func (o EC2ServiceTaskDefinitionOutput) TrackLatest() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v EC2ServiceTaskDefinition) *bool { return v.TrackLatest }).(pulumi.BoolPtrOutput)
 }
 
 // Configuration block for volumes that containers in your task may use. Detailed below.
@@ -534,6 +543,16 @@ func (o EC2ServiceTaskDefinitionPtrOutput) TaskRole() awsx.DefaultRoleWithPolicy
 	}).(awsx.DefaultRoleWithPolicyPtrOutput)
 }
 
+// Whether should track latest task definition or the one created with the resource. Default is `false`.
+func (o EC2ServiceTaskDefinitionPtrOutput) TrackLatest() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *EC2ServiceTaskDefinition) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.TrackLatest
+	}).(pulumi.BoolPtrOutput)
+}
+
 // Configuration block for volumes that containers in your task may use. Detailed below.
 func (o EC2ServiceTaskDefinitionPtrOutput) Volumes() ecs.TaskDefinitionVolumeArrayOutput {
 	return o.ApplyT(func(v *EC2ServiceTaskDefinition) []ecs.TaskDefinitionVolume {
@@ -591,6 +610,8 @@ type FargateServiceTaskDefinition struct {
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
 	TaskRole *awsx.DefaultRoleWithPolicy `pulumi:"taskRole"`
+	// Whether should track latest task definition or the one created with the resource. Default is `false`.
+	TrackLatest *bool `pulumi:"trackLatest"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
 	Volumes []ecs.TaskDefinitionVolume `pulumi:"volumes"`
 }
@@ -653,6 +674,8 @@ type FargateServiceTaskDefinitionArgs struct {
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
 	TaskRole *awsx.DefaultRoleWithPolicyArgs `pulumi:"taskRole"`
+	// Whether should track latest task definition or the one created with the resource. Default is `false`.
+	TrackLatest pulumi.BoolPtrInput `pulumi:"trackLatest"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
 	Volumes ecs.TaskDefinitionVolumeArrayInput `pulumi:"volumes"`
 }
@@ -835,6 +858,11 @@ func (o FargateServiceTaskDefinitionOutput) Tags() pulumi.StringMapOutput {
 // Will be created automatically if not defined.
 func (o FargateServiceTaskDefinitionOutput) TaskRole() awsx.DefaultRoleWithPolicyPtrOutput {
 	return o.ApplyT(func(v FargateServiceTaskDefinition) *awsx.DefaultRoleWithPolicy { return v.TaskRole }).(awsx.DefaultRoleWithPolicyPtrOutput)
+}
+
+// Whether should track latest task definition or the one created with the resource. Default is `false`.
+func (o FargateServiceTaskDefinitionOutput) TrackLatest() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v FargateServiceTaskDefinition) *bool { return v.TrackLatest }).(pulumi.BoolPtrOutput)
 }
 
 // Configuration block for volumes that containers in your task may use. Detailed below.
@@ -1043,6 +1071,16 @@ func (o FargateServiceTaskDefinitionPtrOutput) TaskRole() awsx.DefaultRoleWithPo
 		}
 		return v.TaskRole
 	}).(awsx.DefaultRoleWithPolicyPtrOutput)
+}
+
+// Whether should track latest task definition or the one created with the resource. Default is `false`.
+func (o FargateServiceTaskDefinitionPtrOutput) TrackLatest() pulumi.BoolPtrOutput {
+	return o.ApplyT(func(v *FargateServiceTaskDefinition) *bool {
+		if v == nil {
+			return nil
+		}
+		return v.TrackLatest
+	}).(pulumi.BoolPtrOutput)
 }
 
 // Configuration block for volumes that containers in your task may use. Detailed below.

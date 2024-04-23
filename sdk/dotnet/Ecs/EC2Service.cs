@@ -242,7 +242,7 @@ namespace Pulumi.Awsx.Ecs
         private InputMap<string>? _triggers;
 
         /// <summary>
-        /// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+        /// Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
         /// </summary>
         public InputMap<string> Triggers
         {

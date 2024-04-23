@@ -68,13 +68,25 @@ namespace Pulumi.Awsx.Lb
     public sealed class NetworkLoadBalancerArgs : global::Pulumi.ResourceArgs
     {
         /// <summary>
-        /// An Access Logs block. Access Logs documented below.
+        /// Access Logs block. See below.
         /// </summary>
         [Input("accessLogs")]
         public Input<Pulumi.Aws.LB.Inputs.LoadBalancerAccessLogsArgs>? AccessLogs { get; set; }
 
         /// <summary>
-        /// The ID of the customer owned ipv4 pool to use for this load balancer.
+        /// Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.
+        /// </summary>
+        [Input("clientKeepAlive")]
+        public Input<int>? ClientKeepAlive { get; set; }
+
+        /// <summary>
+        /// Connection Logs block. See below. Only valid for Load Balancers of type `application`.
+        /// </summary>
+        [Input("connectionLogs")]
+        public Input<Pulumi.Aws.LB.Inputs.LoadBalancerConnectionLogsArgs>? ConnectionLogs { get; set; }
+
+        /// <summary>
+        /// ID of the customer owned ipv4 pool to use for this load balancer.
         /// </summary>
         [Input("customerOwnedIpv4Pool")]
         public Input<string>? CustomerOwnedIpv4Pool { get; set; }
@@ -92,19 +104,19 @@ namespace Pulumi.Awsx.Lb
         public Input<int>? DefaultTargetGroupPort { get; set; }
 
         /// <summary>
-        /// Determines how the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
+        /// How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
         /// </summary>
         [Input("desyncMitigationMode")]
         public Input<string>? DesyncMitigationMode { get; set; }
 
         /// <summary>
-        /// Indicates how traffic is distributed among the load balancer Availability Zones. Possible values are `any_availability_zone` (default), `availability_zone_affinity`, or `partial_availability_zone_affinity`. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for `network` type load balancers.
+        /// How traffic is distributed among the load balancer Availability Zones. Possible values are `any_availability_zone` (default), `availability_zone_affinity`, or `partial_availability_zone_affinity`. See   [Availability Zone DNS affinity](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity) for additional details. Only valid for `network` type load balancers.
         /// </summary>
         [Input("dnsRecordClientRoutingPolicy")]
         public Input<string>? DnsRecordClientRoutingPolicy { get; set; }
 
         /// <summary>
-        /// Indicates whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
+        /// Whether HTTP headers with header fields that are not valid are removed by the load balancer (true) or routed to targets (false). The default is false. Elastic Load Balancing requires that message header names contain only alphanumeric characters and hyphens. Only valid for Load Balancers of type `application`.
         /// </summary>
         [Input("dropInvalidHeaderFields")]
         public Input<bool>? DropInvalidHeaderFields { get; set; }
@@ -122,25 +134,31 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? EnableDeletionProtection { get; set; }
 
         /// <summary>
-        /// Indicates whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
+        /// Whether the two headers (`x-amzn-tls-version` and `x-amzn-tls-cipher-suite`), which contain information about the negotiated TLS version and cipher suite, are added to the client request before sending it to the target. Only valid for Load Balancers of type `application`. Defaults to `false`
         /// </summary>
         [Input("enableTlsVersionAndCipherSuiteHeaders")]
         public Input<bool>? EnableTlsVersionAndCipherSuiteHeaders { get; set; }
 
         /// <summary>
-        /// Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
+        /// Whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF. Defaults to `false`.
         /// </summary>
         [Input("enableWafFailOpen")]
         public Input<bool>? EnableWafFailOpen { get; set; }
 
         /// <summary>
-        /// Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
+        /// Whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer in `application` load balancers. Defaults to `false`.
         /// </summary>
         [Input("enableXffClientPort")]
         public Input<bool>? EnableXffClientPort { get; set; }
 
         /// <summary>
-        /// The time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
+        /// Whether inbound security group rules are enforced for traffic originating from a PrivateLink. Only valid for Load Balancers of type `network`. The possible values are `on` and `off`.
+        /// </summary>
+        [Input("enforceSecurityGroupInboundRulesOnPrivateLinkTraffic")]
+        public Input<string>? EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic { get; set; }
+
+        /// <summary>
+        /// Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type `application`. Default: 60.
         /// </summary>
         [Input("idleTimeout")]
         public Input<int>? IdleTimeout { get; set; }
@@ -152,7 +170,7 @@ namespace Pulumi.Awsx.Lb
         public Input<bool>? Internal { get; set; }
 
         /// <summary>
-        /// The type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
+        /// Type of IP addresses used by the subnets for your load balancer. The possible values are `ipv4` and `dualstack`.
         /// </summary>
         [Input("ipAddressType")]
         public Input<string>? IpAddressType { get; set; }
@@ -176,9 +194,7 @@ namespace Pulumi.Awsx.Lb
         }
 
         /// <summary>
-        /// The name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters,
-        /// must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified,
-        /// this provider will autogenerate a name beginning with `tf-lb`.
+        /// Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
         /// </summary>
         [Input("name")]
         public Input<string>? Name { get; set; }
@@ -190,7 +206,7 @@ namespace Pulumi.Awsx.Lb
         public Input<string>? NamePrefix { get; set; }
 
         /// <summary>
-        /// Indicates whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
+        /// Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
         /// </summary>
         [Input("preserveHostHeader")]
         public Input<bool>? PreserveHostHeader { get; set; }
@@ -199,9 +215,7 @@ namespace Pulumi.Awsx.Lb
         private InputList<string>? _subnetIds;
 
         /// <summary>
-        /// A list of subnet IDs to attach to the LB. Subnets
-        /// cannot be updated for Load Balancers of type `network`. Changing this value
-        /// for load balancers of type `network` will force a recreation of the resource.
+        /// List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
         /// </summary>
         public InputList<string> SubnetIds
         {
@@ -213,7 +227,7 @@ namespace Pulumi.Awsx.Lb
         private InputList<Pulumi.Aws.LB.Inputs.LoadBalancerSubnetMappingArgs>? _subnetMappings;
 
         /// <summary>
-        /// A subnet mapping block as documented below.
+        /// Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
         /// </summary>
         public InputList<Pulumi.Aws.LB.Inputs.LoadBalancerSubnetMappingArgs> SubnetMappings
         {
@@ -237,7 +251,7 @@ namespace Pulumi.Awsx.Lb
         private InputMap<string>? _tags;
 
         /// <summary>
-        /// A map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
+        /// Map of tags to assign to the resource. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         /// </summary>
         public InputMap<string> Tags
         {

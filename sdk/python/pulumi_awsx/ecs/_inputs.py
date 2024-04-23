@@ -58,6 +58,7 @@ class EC2ServiceTaskDefinitionArgs:
                  skip_destroy: Optional[pulumi.Input[bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  task_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
+                 track_latest: Optional[pulumi.Input[bool]] = None,
                  volumes: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] = None):
         """
         Create a TaskDefinition resource with the given unique name, arguments, and options.
@@ -90,6 +91,7 @@ class EC2ServiceTaskDefinitionArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param '_awsx.DefaultRoleWithPolicyArgs' task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
                Will be created automatically if not defined.
+        :param pulumi.Input[bool] track_latest: Whether should track latest task definition or the one created with the resource. Default is `false`.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.
         """
         if container is not None:
@@ -128,6 +130,8 @@ class EC2ServiceTaskDefinitionArgs:
             pulumi.set(__self__, "tags", tags)
         if task_role is not None:
             pulumi.set(__self__, "task_role", task_role)
+        if track_latest is not None:
+            pulumi.set(__self__, "track_latest", track_latest)
         if volumes is not None:
             pulumi.set(__self__, "volumes", volumes)
 
@@ -357,6 +361,18 @@ class EC2ServiceTaskDefinitionArgs:
         pulumi.set(self, "task_role", value)
 
     @property
+    @pulumi.getter(name="trackLatest")
+    def track_latest(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Whether should track latest task definition or the one created with the resource. Default is `false`.
+        """
+        return pulumi.get(self, "track_latest")
+
+    @track_latest.setter
+    def track_latest(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "track_latest", value)
+
+    @property
     @pulumi.getter
     def volumes(self) -> Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]]:
         """
@@ -389,6 +405,7 @@ class FargateServiceTaskDefinitionArgs:
                  skip_destroy: Optional[pulumi.Input[bool]] = None,
                  tags: Optional[pulumi.Input[Mapping[str, pulumi.Input[str]]]] = None,
                  task_role: Optional['_awsx.DefaultRoleWithPolicyArgs'] = None,
+                 track_latest: Optional[pulumi.Input[bool]] = None,
                  volumes: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]]] = None):
         """
         Create a TaskDefinition resource with the given unique name, arguments, and options.
@@ -420,6 +437,7 @@ class FargateServiceTaskDefinitionArgs:
         :param pulumi.Input[Mapping[str, pulumi.Input[str]]] tags: Key-value map of resource tags. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
         :param '_awsx.DefaultRoleWithPolicyArgs' task_role: IAM role that allows your Amazon ECS container task to make calls to other AWS services.
                Will be created automatically if not defined.
+        :param pulumi.Input[bool] track_latest: Whether should track latest task definition or the one created with the resource. Default is `false`.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ecs.TaskDefinitionVolumeArgs']]] volumes: Configuration block for volumes that containers in your task may use. Detailed below.
         """
         if container is not None:
@@ -456,6 +474,8 @@ class FargateServiceTaskDefinitionArgs:
             pulumi.set(__self__, "tags", tags)
         if task_role is not None:
             pulumi.set(__self__, "task_role", task_role)
+        if track_latest is not None:
+            pulumi.set(__self__, "track_latest", track_latest)
         if volumes is not None:
             pulumi.set(__self__, "volumes", volumes)
 
@@ -671,6 +691,18 @@ class FargateServiceTaskDefinitionArgs:
     @task_role.setter
     def task_role(self, value: Optional['_awsx.DefaultRoleWithPolicyArgs']):
         pulumi.set(self, "task_role", value)
+
+    @property
+    @pulumi.getter(name="trackLatest")
+    def track_latest(self) -> Optional[pulumi.Input[bool]]:
+        """
+        Whether should track latest task definition or the one created with the resource. Default is `false`.
+        """
+        return pulumi.get(self, "track_latest")
+
+    @track_latest.setter
+    def track_latest(self, value: Optional[pulumi.Input[bool]]):
+        pulumi.set(self, "track_latest", value)
 
     @property
     @pulumi.getter

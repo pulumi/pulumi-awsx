@@ -152,6 +152,12 @@ namespace Pulumi.Awsx.Ecs.Inputs
         [Input("taskRole")]
         public Pulumi.Awsx.Awsx.Inputs.DefaultRoleWithPolicyArgs? TaskRole { get; set; }
 
+        /// <summary>
+        /// Whether should track latest task definition or the one created with the resource. Default is `false`.
+        /// </summary>
+        [Input("trackLatest")]
+        public Input<bool>? TrackLatest { get; set; }
+
         [Input("volumes")]
         private InputList<Pulumi.Aws.Ecs.Inputs.TaskDefinitionVolumeArgs>? _volumes;
 

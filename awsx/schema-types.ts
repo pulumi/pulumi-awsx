@@ -201,6 +201,7 @@ export interface EC2TaskDefinitionArgs {
     readonly skipDestroy?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskRole?: DefaultRoleWithPolicyInputs;
+    readonly trackLatest?: pulumi.Input<boolean>;
     readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
 }
 export abstract class FargateService<TData = any> extends (pulumi.ComponentResource)<TData> {
@@ -267,6 +268,7 @@ export interface FargateTaskDefinitionArgs {
     readonly skipDestroy?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskRole?: DefaultRoleWithPolicyInputs;
+    readonly trackLatest?: pulumi.Input<boolean>;
     readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
 }
 export abstract class ApplicationLoadBalancer<TData = any> extends (pulumi.ComponentResource)<TData> {
@@ -281,6 +283,8 @@ export abstract class ApplicationLoadBalancer<TData = any> extends (pulumi.Compo
 }
 export interface ApplicationLoadBalancerArgs {
     readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
+    readonly clientKeepAlive?: pulumi.Input<number>;
+    readonly connectionLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerConnectionLogs>;
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
     readonly defaultSecurityGroup?: DefaultSecurityGroupInputs;
     readonly defaultTargetGroup?: TargetGroupInputs;
@@ -293,6 +297,7 @@ export interface ApplicationLoadBalancerArgs {
     readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
     readonly enableXffClientPort?: pulumi.Input<boolean>;
+    readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: pulumi.Input<string>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
     readonly ipAddressType?: pulumi.Input<string>;
@@ -319,6 +324,8 @@ export abstract class NetworkLoadBalancer<TData = any> extends (pulumi.Component
 }
 export interface NetworkLoadBalancerArgs {
     readonly accessLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerAccessLogs>;
+    readonly clientKeepAlive?: pulumi.Input<number>;
+    readonly connectionLogs?: pulumi.Input<aws.types.input.lb.LoadBalancerConnectionLogs>;
     readonly customerOwnedIpv4Pool?: pulumi.Input<string>;
     readonly defaultTargetGroup?: TargetGroupInputs;
     readonly defaultTargetGroupPort?: pulumi.Input<number>;
@@ -330,6 +337,7 @@ export interface NetworkLoadBalancerArgs {
     readonly enableTlsVersionAndCipherSuiteHeaders?: pulumi.Input<boolean>;
     readonly enableWafFailOpen?: pulumi.Input<boolean>;
     readonly enableXffClientPort?: pulumi.Input<boolean>;
+    readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: pulumi.Input<string>;
     readonly idleTimeout?: pulumi.Input<number>;
     readonly internal?: pulumi.Input<boolean>;
     readonly ipAddressType?: pulumi.Input<string>;
@@ -465,6 +473,7 @@ export interface ExistingLogGroupOutputs {
 }
 export interface LogGroupInputs {
     readonly kmsKeyId?: pulumi.Input<string>;
+    readonly logGroupClass?: pulumi.Input<string>;
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
     readonly retentionInDays?: pulumi.Input<number>;
@@ -473,6 +482,7 @@ export interface LogGroupInputs {
 }
 export interface LogGroupOutputs {
     readonly kmsKeyId?: pulumi.Output<string>;
+    readonly logGroupClass?: pulumi.Output<string>;
     readonly name?: pulumi.Output<string>;
     readonly namePrefix?: pulumi.Output<string>;
     readonly retentionInDays?: pulumi.Output<number>;
@@ -700,6 +710,7 @@ export interface EC2ServiceTaskDefinitionInputs {
     readonly skipDestroy?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskRole?: DefaultRoleWithPolicyInputs;
+    readonly trackLatest?: pulumi.Input<boolean>;
     readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
 }
 export interface EC2ServiceTaskDefinitionOutputs {
@@ -721,6 +732,7 @@ export interface EC2ServiceTaskDefinitionOutputs {
     readonly skipDestroy?: pulumi.Output<boolean>;
     readonly tags?: pulumi.Output<Record<string, string>>;
     readonly taskRole?: DefaultRoleWithPolicyOutputs;
+    readonly trackLatest?: pulumi.Output<boolean>;
     readonly volumes?: pulumi.Output<aws.types.output.ecs.TaskDefinitionVolume[]>;
 }
 export interface FargateServiceTaskDefinitionInputs {
@@ -741,6 +753,7 @@ export interface FargateServiceTaskDefinitionInputs {
     readonly skipDestroy?: pulumi.Input<boolean>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
     readonly taskRole?: DefaultRoleWithPolicyInputs;
+    readonly trackLatest?: pulumi.Input<boolean>;
     readonly volumes?: pulumi.Input<pulumi.Input<aws.types.input.ecs.TaskDefinitionVolume>[]>;
 }
 export interface FargateServiceTaskDefinitionOutputs {
@@ -761,6 +774,7 @@ export interface FargateServiceTaskDefinitionOutputs {
     readonly skipDestroy?: pulumi.Output<boolean>;
     readonly tags?: pulumi.Output<Record<string, string>>;
     readonly taskRole?: DefaultRoleWithPolicyOutputs;
+    readonly trackLatest?: pulumi.Output<boolean>;
     readonly volumes?: pulumi.Output<aws.types.output.ecs.TaskDefinitionVolume[]>;
 }
 export interface TaskDefinitionContainerDefinitionInputs {
@@ -1037,6 +1051,7 @@ export interface ListenerInputs {
     readonly alpnPolicy?: pulumi.Input<string>;
     readonly certificateArn?: pulumi.Input<string>;
     readonly defaultActions?: pulumi.Input<pulumi.Input<aws.types.input.lb.ListenerDefaultAction>[]>;
+    readonly mutualAuthentication?: pulumi.Input<aws.types.input.lb.ListenerMutualAuthentication>;
     readonly port?: pulumi.Input<number>;
     readonly protocol?: pulumi.Input<string>;
     readonly sslPolicy?: pulumi.Input<string>;
@@ -1046,6 +1061,7 @@ export interface ListenerOutputs {
     readonly alpnPolicy?: pulumi.Output<string>;
     readonly certificateArn?: pulumi.Output<string>;
     readonly defaultActions?: pulumi.Output<aws.types.output.lb.ListenerDefaultAction[]>;
+    readonly mutualAuthentication?: pulumi.Output<aws.types.output.lb.ListenerMutualAuthentication>;
     readonly port?: pulumi.Output<number>;
     readonly protocol?: pulumi.Output<string>;
     readonly sslPolicy?: pulumi.Output<string>;
@@ -1058,6 +1074,7 @@ export interface TargetGroupInputs {
     readonly ipAddressType?: pulumi.Input<string>;
     readonly lambdaMultiValueHeadersEnabled?: pulumi.Input<boolean>;
     readonly loadBalancingAlgorithmType?: pulumi.Input<string>;
+    readonly loadBalancingAnomalyMitigation?: pulumi.Input<string>;
     readonly loadBalancingCrossZoneEnabled?: pulumi.Input<string>;
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
@@ -1081,6 +1098,7 @@ export interface TargetGroupOutputs {
     readonly ipAddressType?: pulumi.Output<string>;
     readonly lambdaMultiValueHeadersEnabled?: pulumi.Output<boolean>;
     readonly loadBalancingAlgorithmType?: pulumi.Output<string>;
+    readonly loadBalancingAnomalyMitigation?: pulumi.Output<string>;
     readonly loadBalancingCrossZoneEnabled?: pulumi.Output<string>;
     readonly name?: pulumi.Output<string>;
     readonly namePrefix?: pulumi.Output<string>;

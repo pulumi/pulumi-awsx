@@ -646,6 +646,7 @@ class ExistingLogGroupArgs:
 class LogGroupArgs:
     def __init__(__self__, *,
                  kms_key_id: Optional[pulumi.Input[str]] = None,
+                 log_group_class: Optional[pulumi.Input[str]] = None,
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  retention_in_days: Optional[pulumi.Input[int]] = None,
@@ -656,6 +657,7 @@ class LogGroupArgs:
         :param pulumi.Input[str] kms_key_id: The ARN of the KMS Key to use when encrypting log data. Please note, after the AWS KMS CMK is disassociated from the log group,
                AWS CloudWatch Logs stops encrypting newly ingested data for the log group. All previously ingested data remains encrypted, and AWS CloudWatch Logs requires
                permissions for the CMK whenever the encrypted data is requested.
+        :param pulumi.Input[str] log_group_class: Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
         :param pulumi.Input[str] name: The name of the log group. If omitted, this provider will assign a random, unique name.
         :param pulumi.Input[str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
         :param pulumi.Input[int] retention_in_days: Specifies the number of days
@@ -666,6 +668,8 @@ class LogGroupArgs:
         """
         if kms_key_id is not None:
             pulumi.set(__self__, "kms_key_id", kms_key_id)
+        if log_group_class is not None:
+            pulumi.set(__self__, "log_group_class", log_group_class)
         if name is not None:
             pulumi.set(__self__, "name", name)
         if name_prefix is not None:
@@ -690,6 +694,18 @@ class LogGroupArgs:
     @kms_key_id.setter
     def kms_key_id(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "kms_key_id", value)
+
+    @property
+    @pulumi.getter(name="logGroupClass")
+    def log_group_class(self) -> Optional[pulumi.Input[str]]:
+        """
+        Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+        """
+        return pulumi.get(self, "log_group_class")
+
+    @log_group_class.setter
+    def log_group_class(self, value: Optional[pulumi.Input[str]]):
+        pulumi.set(self, "log_group_class", value)
 
     @property
     @pulumi.getter
