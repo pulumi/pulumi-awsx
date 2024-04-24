@@ -91,16 +91,18 @@ export function defaultRoleWithPolicies(
 
   const role = new aws.iam.Role(name, roleArgs, opts);
 
-  const policies = args.policyArns ?
-    pulumi.Output.create(args.policyArns).apply(unwrapped =>
-      unwrapped.map(policyArn =>
-        new aws.iam.RolePolicyAttachment(
-          `${name}-${utils.sha1hash(policyArn)}`,
-          { role: role.name, policyArn },
-          opts,
+  const policies = args.policyArns
+    ? pulumi.Output.create(args.policyArns).apply((unwrapped) =>
+        unwrapped.map(
+          (policyArn) =>
+            new aws.iam.RolePolicyAttachment(
+              `${name}-${utils.sha1hash(policyArn)}`,
+              { role: role.name, policyArn },
+              opts,
+            ),
         ),
-      ),
-    ) : undefined;
+      )
+    : undefined;
 
   return { role, policies, roleArn: role.arn };
 }
