@@ -75,9 +75,7 @@ func roleWithPolicyArgs(awsSpec schema.PackageSpec) schema.ComplexTypeSpec {
 			Type: "array",
 			Items: &schema.TypeSpec{
 				Type:  "string",
-				Plain: true,
 			},
-			Plain: true,
 		},
 	}
 
