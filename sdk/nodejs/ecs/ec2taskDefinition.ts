@@ -79,6 +79,7 @@ export class EC2TaskDefinition extends pulumi.ComponentResource {
             resourceInputs["skipDestroy"] = args ? args.skipDestroy : undefined;
             resourceInputs["tags"] = args ? args.tags : undefined;
             resourceInputs["taskRole"] = args ? args.taskRole : undefined;
+            resourceInputs["trackLatest"] = args ? args.trackLatest : undefined;
             resourceInputs["volumes"] = args ? args.volumes : undefined;
             resourceInputs["loadBalancers"] = undefined /*out*/;
             resourceInputs["taskDefinition"] = undefined /*out*/;
@@ -179,6 +180,10 @@ export interface EC2TaskDefinitionArgs {
      * Will be created automatically if not defined.
      */
     taskRole?: inputs.awsx.DefaultRoleWithPolicyArgs;
+    /**
+     * Whether should track latest task definition or the one created with the resource. Default is `false`.
+     */
+    trackLatest?: pulumi.Input<boolean>;
     /**
      * Configuration block for volumes that containers in your task may use. Detailed below.
      */

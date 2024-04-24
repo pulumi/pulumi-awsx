@@ -423,14 +423,14 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
     }
 
     /**
-     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
      * 
      */
     @Import(name="triggers")
     private @Nullable Output<Map<String,String>> triggers;
 
     /**
-     * @return Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+     * @return Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
      * 
      */
     public Optional<Output<Map<String,String>>> triggers() {
@@ -1048,7 +1048,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param triggers Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+         * @param triggers Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
          * 
          * @return builder
          * 
@@ -1059,7 +1059,7 @@ public final class FargateServiceArgs extends com.pulumi.resources.ResourceArgs 
         }
 
         /**
-         * @param triggers Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+         * @param triggers Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
          * 
          * @return builder
          * 

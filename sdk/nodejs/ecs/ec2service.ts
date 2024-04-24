@@ -196,7 +196,7 @@ export interface EC2ServiceArgs {
      */
     taskDefinitionArgs?: inputs.ecs.EC2ServiceTaskDefinitionArgs;
     /**
-     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `timestamp()`. See example above.
+     * Map of arbitrary keys and values that, when changed, will trigger an in-place update (redeployment). Useful with `plantimestamp()`. See example above.
      */
     triggers?: pulumi.Input<{[key: string]: pulumi.Input<string>}>;
 }

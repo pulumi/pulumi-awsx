@@ -184,17 +184,17 @@ class VpcEndpointSpecArgs:
         Do not use the same resource ID in both a VPC Endpoint resource and a VPC Endpoint Association resource.
         Doing so will cause a conflict of associations and will overwrite the association.
 
-        {{% examples %}}
         ## Example Usage
-        {{% example %}}
+
         ### Basic
 
+        <!--Start PulumiCodeChooser -->
         ```typescript
         import * as pulumi from "@pulumi/pulumi";
         import * as aws from "@pulumi/aws";
 
         const s3 = new aws.ec2.VpcEndpoint("s3", {
-            vpcId: aws_vpc.main.id,
+            vpcId: main.id,
             serviceName: "com.amazonaws.us-west-2.s3",
         });
         ```
@@ -203,7 +203,7 @@ class VpcEndpointSpecArgs:
         import pulumi_aws as aws
 
         s3 = aws.ec2.VpcEndpoint("s3",
-            vpc_id=aws_vpc["main"]["id"],
+            vpc_id=main["id"],
             service_name="com.amazonaws.us-west-2.s3")
         ```
         ```csharp
@@ -216,7 +216,7 @@ class VpcEndpointSpecArgs:
         {
             var s3 = new Aws.Ec2.VpcEndpoint("s3", new()
             {
-                VpcId = aws_vpc.Main.Id,
+                VpcId = main.Id,
                 ServiceName = "com.amazonaws.us-west-2.s3",
             });
 
@@ -233,7 +233,7 @@ class VpcEndpointSpecArgs:
         func main() {
         	pulumi.Run(func(ctx *pulumi.Context) error {
         		_, err := ec2.NewVpcEndpoint(ctx, "s3", &ec2.VpcEndpointArgs{
-        			VpcId:       pulumi.Any(aws_vpc.Main.Id),
+        			VpcId:       pulumi.Any(main.Id),
         			ServiceName: pulumi.String("com.amazonaws.us-west-2.s3"),
         		})
         		if err != nil {
@@ -265,7 +265,7 @@ class VpcEndpointSpecArgs:
 
             public static void stack(Context ctx) {
                 var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()        
-                    .vpcId(aws_vpc.main().id())
+                    .vpcId(main.id())
                     .serviceName("com.amazonaws.us-west-2.s3")
                     .build());
 
@@ -277,19 +277,20 @@ class VpcEndpointSpecArgs:
           s3:
             type: aws:ec2:VpcEndpoint
             properties:
-              vpcId: ${aws_vpc.main.id}
+              vpcId: ${main.id}
               serviceName: com.amazonaws.us-west-2.s3
         ```
-        {{% /example %}}
-        {{% example %}}
+        <!--End PulumiCodeChooser -->
+
         ### Basic w/ Tags
 
+        <!--Start PulumiCodeChooser -->
         ```typescript
         import * as pulumi from "@pulumi/pulumi";
         import * as aws from "@pulumi/aws";
 
         const s3 = new aws.ec2.VpcEndpoint("s3", {
-            vpcId: aws_vpc.main.id,
+            vpcId: main.id,
             serviceName: "com.amazonaws.us-west-2.s3",
             tags: {
                 Environment: "test",
@@ -301,7 +302,7 @@ class VpcEndpointSpecArgs:
         import pulumi_aws as aws
 
         s3 = aws.ec2.VpcEndpoint("s3",
-            vpc_id=aws_vpc["main"]["id"],
+            vpc_id=main["id"],
             service_name="com.amazonaws.us-west-2.s3",
             tags={
                 "Environment": "test",
@@ -317,7 +318,7 @@ class VpcEndpointSpecArgs:
         {
             var s3 = new Aws.Ec2.VpcEndpoint("s3", new()
             {
-                VpcId = aws_vpc.Main.Id,
+                VpcId = main.Id,
                 ServiceName = "com.amazonaws.us-west-2.s3",
                 Tags = 
                 {
@@ -338,7 +339,7 @@ class VpcEndpointSpecArgs:
         func main() {
         	pulumi.Run(func(ctx *pulumi.Context) error {
         		_, err := ec2.NewVpcEndpoint(ctx, "s3", &ec2.VpcEndpointArgs{
-        			VpcId:       pulumi.Any(aws_vpc.Main.Id),
+        			VpcId:       pulumi.Any(main.Id),
         			ServiceName: pulumi.String("com.amazonaws.us-west-2.s3"),
         			Tags: pulumi.StringMap{
         				"Environment": pulumi.String("test"),
@@ -373,7 +374,7 @@ class VpcEndpointSpecArgs:
 
             public static void stack(Context ctx) {
                 var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()        
-                    .vpcId(aws_vpc.main().id())
+                    .vpcId(main.id())
                     .serviceName("com.amazonaws.us-west-2.s3")
                     .tags(Map.of("Environment", "test"))
                     .build());
@@ -386,24 +387,25 @@ class VpcEndpointSpecArgs:
           s3:
             type: aws:ec2:VpcEndpoint
             properties:
-              vpcId: ${aws_vpc.main.id}
+              vpcId: ${main.id}
               serviceName: com.amazonaws.us-west-2.s3
               tags:
                 Environment: test
         ```
-        {{% /example %}}
-        {{% example %}}
+        <!--End PulumiCodeChooser -->
+
         ### Interface Endpoint Type
 
+        <!--Start PulumiCodeChooser -->
         ```typescript
         import * as pulumi from "@pulumi/pulumi";
         import * as aws from "@pulumi/aws";
 
         const ec2 = new aws.ec2.VpcEndpoint("ec2", {
-            vpcId: aws_vpc.main.id,
+            vpcId: main.id,
             serviceName: "com.amazonaws.us-west-2.ec2",
             vpcEndpointType: "Interface",
-            securityGroupIds: [aws_security_group.sg1.id],
+            securityGroupIds: [sg1.id],
             privateDnsEnabled: true,
         });
         ```
@@ -412,10 +414,10 @@ class VpcEndpointSpecArgs:
         import pulumi_aws as aws
 
         ec2 = aws.ec2.VpcEndpoint("ec2",
-            vpc_id=aws_vpc["main"]["id"],
+            vpc_id=main["id"],
             service_name="com.amazonaws.us-west-2.ec2",
             vpc_endpoint_type="Interface",
-            security_group_ids=[aws_security_group["sg1"]["id"]],
+            security_group_ids=[sg1["id"]],
             private_dns_enabled=True)
         ```
         ```csharp
@@ -428,12 +430,12 @@ class VpcEndpointSpecArgs:
         {
             var ec2 = new Aws.Ec2.VpcEndpoint("ec2", new()
             {
-                VpcId = aws_vpc.Main.Id,
+                VpcId = main.Id,
                 ServiceName = "com.amazonaws.us-west-2.ec2",
                 VpcEndpointType = "Interface",
                 SecurityGroupIds = new[]
                 {
-                    aws_security_group.Sg1.Id,
+                    sg1.Id,
                 },
                 PrivateDnsEnabled = true,
             });
@@ -451,11 +453,11 @@ class VpcEndpointSpecArgs:
         func main() {
         	pulumi.Run(func(ctx *pulumi.Context) error {
         		_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
-        			VpcId:           pulumi.Any(aws_vpc.Main.Id),
+        			VpcId:           pulumi.Any(main.Id),
         			ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
         			VpcEndpointType: pulumi.String("Interface"),
         			SecurityGroupIds: pulumi.StringArray{
-        				aws_security_group.Sg1.Id,
+        				sg1.Id,
         			},
         			PrivateDnsEnabled: pulumi.Bool(true),
         		})
@@ -488,10 +490,10 @@ class VpcEndpointSpecArgs:
 
             public static void stack(Context ctx) {
                 var ec2 = new VpcEndpoint("ec2", VpcEndpointArgs.builder()        
-                    .vpcId(aws_vpc.main().id())
+                    .vpcId(main.id())
                     .serviceName("com.amazonaws.us-west-2.ec2")
                     .vpcEndpointType("Interface")
-                    .securityGroupIds(aws_security_group.sg1().id())
+                    .securityGroupIds(sg1.id())
                     .privateDnsEnabled(true)
                     .build());
 
@@ -503,32 +505,33 @@ class VpcEndpointSpecArgs:
           ec2:
             type: aws:ec2:VpcEndpoint
             properties:
-              vpcId: ${aws_vpc.main.id}
+              vpcId: ${main.id}
               serviceName: com.amazonaws.us-west-2.ec2
               vpcEndpointType: Interface
               securityGroupIds:
-                - ${aws_security_group.sg1.id}
+                - ${sg1.id}
               privateDnsEnabled: true
         ```
-        {{% /example %}}
-        {{% example %}}
+        <!--End PulumiCodeChooser -->
+
         ### Gateway Load Balancer Endpoint Type
 
+        <!--Start PulumiCodeChooser -->
         ```typescript
         import * as pulumi from "@pulumi/pulumi";
         import * as aws from "@pulumi/aws";
 
         const current = aws.getCallerIdentity({});
-        const exampleVpcEndpointService = new aws.ec2.VpcEndpointService("exampleVpcEndpointService", {
+        const example = new aws.ec2.VpcEndpointService("example", {
             acceptanceRequired: false,
             allowedPrincipals: [current.then(current => current.arn)],
-            gatewayLoadBalancerArns: [aws_lb.example.arn],
+            gatewayLoadBalancerArns: [exampleAwsLb.arn],
         });
-        const exampleVpcEndpoint = new aws.ec2.VpcEndpoint("exampleVpcEndpoint", {
-            serviceName: exampleVpcEndpointService.serviceName,
-            subnetIds: [aws_subnet.example.id],
-            vpcEndpointType: exampleVpcEndpointService.serviceType,
-            vpcId: aws_vpc.example.id,
+        const exampleVpcEndpoint = new aws.ec2.VpcEndpoint("example", {
+            serviceName: example.serviceName,
+            subnetIds: [exampleAwsSubnet.id],
+            vpcEndpointType: example.serviceType,
+            vpcId: exampleAwsVpc.id,
         });
         ```
         ```python
@@ -536,15 +539,15 @@ class VpcEndpointSpecArgs:
         import pulumi_aws as aws
 
         current = aws.get_caller_identity()
-        example_vpc_endpoint_service = aws.ec2.VpcEndpointService("exampleVpcEndpointService",
+        example = aws.ec2.VpcEndpointService("example",
             acceptance_required=False,
             allowed_principals=[current.arn],
-            gateway_load_balancer_arns=[aws_lb["example"]["arn"]])
-        example_vpc_endpoint = aws.ec2.VpcEndpoint("exampleVpcEndpoint",
-            service_name=example_vpc_endpoint_service.service_name,
-            subnet_ids=[aws_subnet["example"]["id"]],
-            vpc_endpoint_type=example_vpc_endpoint_service.service_type,
-            vpc_id=aws_vpc["example"]["id"])
+            gateway_load_balancer_arns=[example_aws_lb["arn"]])
+        example_vpc_endpoint = aws.ec2.VpcEndpoint("example",
+            service_name=example.service_name,
+            subnet_ids=[example_aws_subnet["id"]],
+            vpc_endpoint_type=example.service_type,
+            vpc_id=example_aws_vpc["id"])
         ```
         ```csharp
         using System.Collections.Generic;
@@ -556,7 +559,7 @@ class VpcEndpointSpecArgs:
         {
             var current = Aws.GetCallerIdentity.Invoke();
 
-            var exampleVpcEndpointService = new Aws.Ec2.VpcEndpointService("exampleVpcEndpointService", new()
+            var example = new Aws.Ec2.VpcEndpointService("example", new()
             {
                 AcceptanceRequired = false,
                 AllowedPrincipals = new[]
@@ -565,19 +568,19 @@ class VpcEndpointSpecArgs:
                 },
                 GatewayLoadBalancerArns = new[]
                 {
-                    aws_lb.Example.Arn,
+                    exampleAwsLb.Arn,
                 },
             });
 
-            var exampleVpcEndpoint = new Aws.Ec2.VpcEndpoint("exampleVpcEndpoint", new()
+            var exampleVpcEndpoint = new Aws.Ec2.VpcEndpoint("example", new()
             {
-                ServiceName = exampleVpcEndpointService.ServiceName,
+                ServiceName = example.ServiceName,
                 SubnetIds = new[]
                 {
-                    aws_subnet.Example.Id,
+                    exampleAwsSubnet.Id,
                 },
-                VpcEndpointType = exampleVpcEndpointService.ServiceType,
-                VpcId = aws_vpc.Example.Id,
+                VpcEndpointType = example.ServiceType,
+                VpcId = exampleAwsVpc.Id,
             });
 
         });
@@ -597,25 +600,25 @@ class VpcEndpointSpecArgs:
         		if err != nil {
         			return err
         		}
-        		exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
+        		example, err := ec2.NewVpcEndpointService(ctx, "example", &ec2.VpcEndpointServiceArgs{
         			AcceptanceRequired: pulumi.Bool(false),
         			AllowedPrincipals: pulumi.StringArray{
-        				*pulumi.String(current.Arn),
+        				pulumi.String(current.Arn),
         			},
         			GatewayLoadBalancerArns: pulumi.StringArray{
-        				aws_lb.Example.Arn,
+        				exampleAwsLb.Arn,
         			},
         		})
         		if err != nil {
         			return err
         		}
-        		_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
-        			ServiceName: exampleVpcEndpointService.ServiceName,
+        		_, err = ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+        			ServiceName: example.ServiceName,
         			SubnetIds: pulumi.StringArray{
-        				aws_subnet.Example.Id,
+        				exampleAwsSubnet.Id,
         			},
-        			VpcEndpointType: exampleVpcEndpointService.ServiceType,
-        			VpcId:           pulumi.Any(aws_vpc.Example.Id),
+        			VpcEndpointType: example.ServiceType,
+        			VpcId:           pulumi.Any(exampleAwsVpc.Id),
         		})
         		if err != nil {
         			return err
@@ -651,17 +654,17 @@ class VpcEndpointSpecArgs:
             public static void stack(Context ctx) {
                 final var current = AwsFunctions.getCallerIdentity();
 
-                var exampleVpcEndpointService = new VpcEndpointService("exampleVpcEndpointService", VpcEndpointServiceArgs.builder()        
+                var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()        
                     .acceptanceRequired(false)
                     .allowedPrincipals(current.applyValue(getCallerIdentityResult -> getCallerIdentityResult.arn()))
-                    .gatewayLoadBalancerArns(aws_lb.example().arn())
+                    .gatewayLoadBalancerArns(exampleAwsLb.arn())
                     .build());
 
                 var exampleVpcEndpoint = new VpcEndpoint("exampleVpcEndpoint", VpcEndpointArgs.builder()        
-                    .serviceName(exampleVpcEndpointService.serviceName())
-                    .subnetIds(aws_subnet.example().id())
-                    .vpcEndpointType(exampleVpcEndpointService.serviceType())
-                    .vpcId(aws_vpc.example().id())
+                    .serviceName(example.serviceName())
+                    .subnetIds(exampleAwsSubnet.id())
+                    .vpcEndpointType(example.serviceType())
+                    .vpcId(exampleAwsVpc.id())
                     .build());
 
             }
@@ -669,39 +672,39 @@ class VpcEndpointSpecArgs:
         ```
         ```yaml
         resources:
-          exampleVpcEndpointService:
+          example:
             type: aws:ec2:VpcEndpointService
             properties:
               acceptanceRequired: false
               allowedPrincipals:
                 - ${current.arn}
               gatewayLoadBalancerArns:
-                - ${aws_lb.example.arn}
+                - ${exampleAwsLb.arn}
           exampleVpcEndpoint:
             type: aws:ec2:VpcEndpoint
+            name: example
             properties:
-              serviceName: ${exampleVpcEndpointService.serviceName}
+              serviceName: ${example.serviceName}
               subnetIds:
-                - ${aws_subnet.example.id}
-              vpcEndpointType: ${exampleVpcEndpointService.serviceType}
-              vpcId: ${aws_vpc.example.id}
+                - ${exampleAwsSubnet.id}
+              vpcEndpointType: ${example.serviceType}
+              vpcId: ${exampleAwsVpc.id}
         variables:
           current:
             fn::invoke:
               Function: aws:getCallerIdentity
               Arguments: {}
         ```
-        {{% /example %}}
-        {{% /examples %}}
+        <!--End PulumiCodeChooser -->
 
         ## Import
 
         Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 
         ```sh
-         $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
+        $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
         ```
-         
+
         :param str service_name: The service name. For AWS services the service name is usually in the form `com.amazonaws.<region>.<service>` (the SageMaker Notebook service is an exception to this rule, the service name is in the form `aws.sagemaker.<region>.notebook`).
         :param bool auto_accept: Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
         :param pulumi.Input['pulumi_aws.ec2.VpcEndpointDnsOptionsArgs'] dns_options: The DNS options for the endpoint. See dns_options below.

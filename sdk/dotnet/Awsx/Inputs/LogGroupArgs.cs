@@ -24,6 +24,12 @@ namespace Pulumi.Awsx.Awsx.Inputs
         public Input<string>? KmsKeyId { get; set; }
 
         /// <summary>
+        /// Specified the log class of the log group. Possible values are: `STANDARD` or `INFREQUENT_ACCESS`.
+        /// </summary>
+        [Input("logGroupClass")]
+        public Input<string>? LogGroupClass { get; set; }
+
+        /// <summary>
         /// The name of the log group. If omitted, this provider will assign a random, unique name.
         /// </summary>
         [Input("name")]

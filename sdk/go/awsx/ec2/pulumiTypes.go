@@ -403,7 +403,10 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 // Doing so will cause a conflict of associations and will overwrite the association.
 //
 // ## Example Usage
+//
 // ### Basic
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -417,7 +420,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "s3", &ec2.VpcEndpointArgs{
-//				VpcId:       pulumi.Any(aws_vpc.Main.Id),
+//				VpcId:       pulumi.Any(main.Id),
 //				ServiceName: pulumi.String("com.amazonaws.us-west-2.s3"),
 //			})
 //			if err != nil {
@@ -428,7 +431,11 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Basic w/ Tags
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -442,7 +449,7 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "s3", &ec2.VpcEndpointArgs{
-//				VpcId:       pulumi.Any(aws_vpc.Main.Id),
+//				VpcId:       pulumi.Any(main.Id),
 //				ServiceName: pulumi.String("com.amazonaws.us-west-2.s3"),
 //				Tags: pulumi.StringMap{
 //					"Environment": pulumi.String("test"),
@@ -456,7 +463,11 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Interface Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -470,11 +481,11 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
-//				VpcId:           pulumi.Any(aws_vpc.Main.Id),
+//				VpcId:           pulumi.Any(main.Id),
 //				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
 //				VpcEndpointType: pulumi.String("Interface"),
 //				SecurityGroupIds: pulumi.StringArray{
-//					aws_security_group.Sg1.Id,
+//					sg1.Id,
 //				},
 //				PrivateDnsEnabled: pulumi.Bool(true),
 //			})
@@ -486,7 +497,11 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Gateway Load Balancer Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -504,25 +519,25 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //			if err != nil {
 //				return err
 //			}
-//			exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
+//			example, err := ec2.NewVpcEndpointService(ctx, "example", &ec2.VpcEndpointServiceArgs{
 //				AcceptanceRequired: pulumi.Bool(false),
 //				AllowedPrincipals: pulumi.StringArray{
-//					*pulumi.String(current.Arn),
+//					pulumi.String(current.Arn),
 //				},
 //				GatewayLoadBalancerArns: pulumi.StringArray{
-//					aws_lb.Example.Arn,
+//					exampleAwsLb.Arn,
 //				},
 //			})
 //			if err != nil {
 //				return err
 //			}
-//			_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
-//				ServiceName: exampleVpcEndpointService.ServiceName,
+//			_, err = ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+//				ServiceName: example.ServiceName,
 //				SubnetIds: pulumi.StringArray{
-//					aws_subnet.Example.Id,
+//					exampleAwsSubnet.Id,
 //				},
-//				VpcEndpointType: exampleVpcEndpointService.ServiceType,
-//				VpcId:           pulumi.Any(aws_vpc.Example.Id),
+//				VpcEndpointType: example.ServiceType,
+//				VpcId:           pulumi.Any(exampleAwsVpc.Id),
 //			})
 //			if err != nil {
 //				return err
@@ -532,15 +547,14 @@ func (o SubnetSpecArrayOutput) Index(i pulumi.IntInput) SubnetSpecOutput {
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
 //
 // ## Import
 //
 // Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 //
 // ```sh
-//
-//	$ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
-//
+// $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
 // ```
 type VpcEndpointSpec struct {
 	// Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
@@ -590,7 +604,10 @@ type VpcEndpointSpecInput interface {
 // Doing so will cause a conflict of associations and will overwrite the association.
 //
 // ## Example Usage
+//
 // ### Basic
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -604,7 +621,7 @@ type VpcEndpointSpecInput interface {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "s3", &ec2.VpcEndpointArgs{
-//				VpcId:       pulumi.Any(aws_vpc.Main.Id),
+//				VpcId:       pulumi.Any(main.Id),
 //				ServiceName: pulumi.String("com.amazonaws.us-west-2.s3"),
 //			})
 //			if err != nil {
@@ -615,7 +632,11 @@ type VpcEndpointSpecInput interface {
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Basic w/ Tags
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -629,7 +650,7 @@ type VpcEndpointSpecInput interface {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "s3", &ec2.VpcEndpointArgs{
-//				VpcId:       pulumi.Any(aws_vpc.Main.Id),
+//				VpcId:       pulumi.Any(main.Id),
 //				ServiceName: pulumi.String("com.amazonaws.us-west-2.s3"),
 //				Tags: pulumi.StringMap{
 //					"Environment": pulumi.String("test"),
@@ -643,7 +664,11 @@ type VpcEndpointSpecInput interface {
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Interface Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -657,11 +682,11 @@ type VpcEndpointSpecInput interface {
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
-//				VpcId:           pulumi.Any(aws_vpc.Main.Id),
+//				VpcId:           pulumi.Any(main.Id),
 //				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
 //				VpcEndpointType: pulumi.String("Interface"),
 //				SecurityGroupIds: pulumi.StringArray{
-//					aws_security_group.Sg1.Id,
+//					sg1.Id,
 //				},
 //				PrivateDnsEnabled: pulumi.Bool(true),
 //			})
@@ -673,7 +698,11 @@ type VpcEndpointSpecInput interface {
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Gateway Load Balancer Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -691,25 +720,25 @@ type VpcEndpointSpecInput interface {
 //			if err != nil {
 //				return err
 //			}
-//			exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
+//			example, err := ec2.NewVpcEndpointService(ctx, "example", &ec2.VpcEndpointServiceArgs{
 //				AcceptanceRequired: pulumi.Bool(false),
 //				AllowedPrincipals: pulumi.StringArray{
-//					*pulumi.String(current.Arn),
+//					pulumi.String(current.Arn),
 //				},
 //				GatewayLoadBalancerArns: pulumi.StringArray{
-//					aws_lb.Example.Arn,
+//					exampleAwsLb.Arn,
 //				},
 //			})
 //			if err != nil {
 //				return err
 //			}
-//			_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
-//				ServiceName: exampleVpcEndpointService.ServiceName,
+//			_, err = ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+//				ServiceName: example.ServiceName,
 //				SubnetIds: pulumi.StringArray{
-//					aws_subnet.Example.Id,
+//					exampleAwsSubnet.Id,
 //				},
-//				VpcEndpointType: exampleVpcEndpointService.ServiceType,
-//				VpcId:           pulumi.Any(aws_vpc.Example.Id),
+//				VpcEndpointType: example.ServiceType,
+//				VpcId:           pulumi.Any(exampleAwsVpc.Id),
 //			})
 //			if err != nil {
 //				return err
@@ -719,15 +748,14 @@ type VpcEndpointSpecInput interface {
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
 //
 // ## Import
 //
 // Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 //
 // ```sh
-//
-//	$ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
-//
+// $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
 // ```
 type VpcEndpointSpecArgs struct {
 	// Accept the VPC endpoint (the VPC endpoint and service need to be in the same AWS account).
@@ -803,7 +831,10 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 // Doing so will cause a conflict of associations and will overwrite the association.
 //
 // ## Example Usage
+//
 // ### Basic
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -817,7 +848,7 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "s3", &ec2.VpcEndpointArgs{
-//				VpcId:       pulumi.Any(aws_vpc.Main.Id),
+//				VpcId:       pulumi.Any(main.Id),
 //				ServiceName: pulumi.String("com.amazonaws.us-west-2.s3"),
 //			})
 //			if err != nil {
@@ -828,7 +859,11 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Basic w/ Tags
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -842,7 +877,7 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "s3", &ec2.VpcEndpointArgs{
-//				VpcId:       pulumi.Any(aws_vpc.Main.Id),
+//				VpcId:       pulumi.Any(main.Id),
 //				ServiceName: pulumi.String("com.amazonaws.us-west-2.s3"),
 //				Tags: pulumi.StringMap{
 //					"Environment": pulumi.String("test"),
@@ -856,7 +891,11 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Interface Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -870,11 +909,11 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //	func main() {
 //		pulumi.Run(func(ctx *pulumi.Context) error {
 //			_, err := ec2.NewVpcEndpoint(ctx, "ec2", &ec2.VpcEndpointArgs{
-//				VpcId:           pulumi.Any(aws_vpc.Main.Id),
+//				VpcId:           pulumi.Any(main.Id),
 //				ServiceName:     pulumi.String("com.amazonaws.us-west-2.ec2"),
 //				VpcEndpointType: pulumi.String("Interface"),
 //				SecurityGroupIds: pulumi.StringArray{
-//					aws_security_group.Sg1.Id,
+//					sg1.Id,
 //				},
 //				PrivateDnsEnabled: pulumi.Bool(true),
 //			})
@@ -886,7 +925,11 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
+//
 // ### Gateway Load Balancer Endpoint Type
+//
+// <!--Start PulumiCodeChooser -->
 // ```go
 // package main
 //
@@ -904,25 +947,25 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //			if err != nil {
 //				return err
 //			}
-//			exampleVpcEndpointService, err := ec2.NewVpcEndpointService(ctx, "exampleVpcEndpointService", &ec2.VpcEndpointServiceArgs{
+//			example, err := ec2.NewVpcEndpointService(ctx, "example", &ec2.VpcEndpointServiceArgs{
 //				AcceptanceRequired: pulumi.Bool(false),
 //				AllowedPrincipals: pulumi.StringArray{
-//					*pulumi.String(current.Arn),
+//					pulumi.String(current.Arn),
 //				},
 //				GatewayLoadBalancerArns: pulumi.StringArray{
-//					aws_lb.Example.Arn,
+//					exampleAwsLb.Arn,
 //				},
 //			})
 //			if err != nil {
 //				return err
 //			}
-//			_, err = ec2.NewVpcEndpoint(ctx, "exampleVpcEndpoint", &ec2.VpcEndpointArgs{
-//				ServiceName: exampleVpcEndpointService.ServiceName,
+//			_, err = ec2.NewVpcEndpoint(ctx, "example", &ec2.VpcEndpointArgs{
+//				ServiceName: example.ServiceName,
 //				SubnetIds: pulumi.StringArray{
-//					aws_subnet.Example.Id,
+//					exampleAwsSubnet.Id,
 //				},
-//				VpcEndpointType: exampleVpcEndpointService.ServiceType,
-//				VpcId:           pulumi.Any(aws_vpc.Example.Id),
+//				VpcEndpointType: example.ServiceType,
+//				VpcId:           pulumi.Any(exampleAwsVpc.Id),
 //			})
 //			if err != nil {
 //				return err
@@ -932,15 +975,14 @@ func (i VpcEndpointSpecArray) ToVpcEndpointSpecArrayOutputWithContext(ctx contex
 //	}
 //
 // ```
+// <!--End PulumiCodeChooser -->
 //
 // ## Import
 //
 // Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
 //
 // ```sh
-//
-//	$ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
-//
+// $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
 // ```
 type VpcEndpointSpecOutput struct{ *pulumi.OutputState }
 

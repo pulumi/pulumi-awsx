@@ -1519,15 +1519,14 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@pulumi/aws@6.9.0":
-  version "6.9.0"
-  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.9.0.tgz#1f65cd5843d22aa477f97468b3d5b8d6311b538c"
-  integrity sha512-c0ivz01YEuZesfroFSQJdjXivyltdvXBW8hcOhGCwAycjmHpDnXI0HSXk9aIkwxVrUBAW0MQYEa+QRHb5W2V1Q==
+"@pulumi/aws@6.32.0":
+  version "6.32.0"
+  resolved "https://registry.yarnpkg.com/@pulumi/aws/-/aws-6.32.0.tgz#3afd3f938b44fc12de250c70fe773d8452c29d5a"
+  integrity sha512-kXoRn427RjSALvyEwMI5wZibNf8lRlp16vgPfI2n2OT7CLvtmqnI16IRPJ01gVf8I95sku1meKqXwXAQ+2O1Zw==
   dependencies:
     "@pulumi/pulumi" "^3.0.0"
     builtin-modules "3.0.0"
     mime "^2.0.0"
-    read-package-tree "^5.2.1"
     resolve "^1.7.1"
 
 "@pulumi/docker@4.5.1":
@@ -4389,7 +4388,7 @@ read-package-json@^2.0.0:
     normalize-package-data "^2.0.0"
     npm-normalize-package-bin "^1.0.0"
 
-read-package-tree@^5.2.1, read-package-tree@^5.3.1:
+read-package-tree@^5.3.1:
   version "5.3.1"
   resolved "https://registry.yarnpkg.com/read-package-tree/-/read-package-tree-5.3.1.tgz#a32cb64c7f31eb8a6f31ef06f9cedf74068fe636"
   integrity sha512-mLUDsD5JVtlZxjSlPPx1RETkNjjvQYuweKwNVt1Sn8kP5Jh44pvYuUHCp6xSVDZWbNxVxG5lyZJ921aJH61sTw==

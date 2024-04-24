@@ -15,17 +15,18 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// &gt; **Note:** `aws.alb.TargetGroup` is known as `aws.lb.TargetGroup`. The functionality is identical.
     /// 
-    /// {{% examples %}}
     /// ## Example Usage
-    /// {{% example %}}
+    /// 
     /// ### Instance Target Group
     /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
     /// ```typescript
     /// import * as pulumi from "@pulumi/pulumi";
     /// import * as aws from "@pulumi/aws";
     /// 
     /// const main = new aws.ec2.Vpc("main", {cidrBlock: "10.0.0.0/16"});
     /// const test = new aws.lb.TargetGroup("test", {
+    ///     name: "tf-example-lb-tg",
     ///     port: 80,
     ///     protocol: "HTTP",
     ///     vpcId: main.id,
@@ -37,6 +38,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// main = aws.ec2.Vpc("main", cidr_block="10.0.0.0/16")
     /// test = aws.lb.TargetGroup("test",
+    ///     name="tf-example-lb-tg",
     ///     port=80,
     ///     protocol="HTTP",
     ///     vpc_id=main.id)
@@ -56,6 +58,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///     var test = new Aws.LB.TargetGroup("test", new()
     ///     {
+    ///         Name = "tf-example-lb-tg",
     ///         Port = 80,
     ///         Protocol = "HTTP",
     ///         VpcId = main.Id,
@@ -81,6 +84,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 			return err
     /// 		}
     /// 		_, err = lb.NewTargetGroup(ctx, "test", &amp;lb.TargetGroupArgs{
+    /// 			Name:     pulumi.String("tf-example-lb-tg"),
     /// 			Port:     pulumi.Int(80),
     /// 			Protocol: pulumi.String("HTTP"),
     /// 			VpcId:    main.ID(),
@@ -120,6 +124,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///             .build());
     /// 
     ///         var test = new TargetGroup("test", TargetGroupArgs.builder()        
+    ///             .name("tf-example-lb-tg")
     ///             .port(80)
     ///             .protocol("HTTP")
     ///             .vpcId(main.id())
@@ -133,6 +138,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///   test:
     ///     type: aws:lb:TargetGroup
     ///     properties:
+    ///       name: tf-example-lb-tg
     ///       port: 80
     ///       protocol: HTTP
     ///       vpcId: ${main.id}
@@ -141,16 +147,18 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     properties:
     ///       cidrBlock: 10.0.0.0/16
     /// ```
-    /// {{% /example %}}
-    /// {{% example %}}
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
     /// ### IP Target Group
     /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
     /// ```typescript
     /// import * as pulumi from "@pulumi/pulumi";
     /// import * as aws from "@pulumi/aws";
     /// 
     /// const main = new aws.ec2.Vpc("main", {cidrBlock: "10.0.0.0/16"});
     /// const ip_example = new aws.lb.TargetGroup("ip-example", {
+    ///     name: "tf-example-lb-tg",
     ///     port: 80,
     ///     protocol: "HTTP",
     ///     targetType: "ip",
@@ -163,6 +171,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     /// main = aws.ec2.Vpc("main", cidr_block="10.0.0.0/16")
     /// ip_example = aws.lb.TargetGroup("ip-example",
+    ///     name="tf-example-lb-tg",
     ///     port=80,
     ///     protocol="HTTP",
     ///     target_type="ip",
@@ -183,6 +192,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///     var ip_example = new Aws.LB.TargetGroup("ip-example", new()
     ///     {
+    ///         Name = "tf-example-lb-tg",
     ///         Port = 80,
     ///         Protocol = "HTTP",
     ///         TargetType = "ip",
@@ -209,6 +219,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 			return err
     /// 		}
     /// 		_, err = lb.NewTargetGroup(ctx, "ip-example", &amp;lb.TargetGroupArgs{
+    /// 			Name:       pulumi.String("tf-example-lb-tg"),
     /// 			Port:       pulumi.Int(80),
     /// 			Protocol:   pulumi.String("HTTP"),
     /// 			TargetType: pulumi.String("ip"),
@@ -249,6 +260,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///             .build());
     /// 
     ///         var ip_example = new TargetGroup("ip-example", TargetGroupArgs.builder()        
+    ///             .name("tf-example-lb-tg")
     ///             .port(80)
     ///             .protocol("HTTP")
     ///             .targetType("ip")
@@ -263,6 +275,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///   ip-example:
     ///     type: aws:lb:TargetGroup
     ///     properties:
+    ///       name: tf-example-lb-tg
     ///       port: 80
     ///       protocol: HTTP
     ///       targetType: ip
@@ -272,21 +285,27 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     properties:
     ///       cidrBlock: 10.0.0.0/16
     /// ```
-    /// {{% /example %}}
-    /// {{% example %}}
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
     /// ### Lambda Target Group
     /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
     /// ```typescript
     /// import * as pulumi from "@pulumi/pulumi";
     /// import * as aws from "@pulumi/aws";
     /// 
-    /// const lambda_example = new aws.lb.TargetGroup("lambda-example", {targetType: "lambda"});
+    /// const lambda_example = new aws.lb.TargetGroup("lambda-example", {
+    ///     name: "tf-example-lb-tg",
+    ///     targetType: "lambda",
+    /// });
     /// ```
     /// ```python
     /// import pulumi
     /// import pulumi_aws as aws
     /// 
-    /// lambda_example = aws.lb.TargetGroup("lambda-example", target_type="lambda")
+    /// lambda_example = aws.lb.TargetGroup("lambda-example",
+    ///     name="tf-example-lb-tg",
+    ///     target_type="lambda")
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
@@ -298,6 +317,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// {
     ///     var lambda_example = new Aws.LB.TargetGroup("lambda-example", new()
     ///     {
+    ///         Name = "tf-example-lb-tg",
     ///         TargetType = "lambda",
     ///     });
     /// 
@@ -314,6 +334,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// func main() {
     /// 	pulumi.Run(func(ctx *pulumi.Context) error {
     /// 		_, err := lb.NewTargetGroup(ctx, "lambda-example", &amp;lb.TargetGroupArgs{
+    /// 			Name:       pulumi.String("tf-example-lb-tg"),
     /// 			TargetType: pulumi.String("lambda"),
     /// 		})
     /// 		if err != nil {
@@ -345,6 +366,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///     public static void stack(Context ctx) {
     ///         var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()        
+    ///             .name("tf-example-lb-tg")
     ///             .targetType("lambda")
     ///             .build());
     /// 
@@ -356,21 +378,24 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///   lambda-example:
     ///     type: aws:lb:TargetGroup
     ///     properties:
+    ///       name: tf-example-lb-tg
     ///       targetType: lambda
     /// ```
-    /// {{% /example %}}
-    /// {{% example %}}
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
     /// ### ALB Target Group
     /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
     /// ```typescript
     /// import * as pulumi from "@pulumi/pulumi";
     /// import * as aws from "@pulumi/aws";
     /// 
     /// const alb_example = new aws.lb.TargetGroup("alb-example", {
+    ///     name: "tf-example-lb-alb-tg",
     ///     targetType: "alb",
     ///     port: 80,
     ///     protocol: "TCP",
-    ///     vpcId: aws_vpc.main.id,
+    ///     vpcId: main.id,
     /// });
     /// ```
     /// ```python
@@ -378,10 +403,11 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// import pulumi_aws as aws
     /// 
     /// alb_example = aws.lb.TargetGroup("alb-example",
+    ///     name="tf-example-lb-alb-tg",
     ///     target_type="alb",
     ///     port=80,
     ///     protocol="TCP",
-    ///     vpc_id=aws_vpc["main"]["id"])
+    ///     vpc_id=main["id"])
     /// ```
     /// ```csharp
     /// using System.Collections.Generic;
@@ -393,10 +419,11 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// {
     ///     var alb_example = new Aws.LB.TargetGroup("alb-example", new()
     ///     {
+    ///         Name = "tf-example-lb-alb-tg",
     ///         TargetType = "alb",
     ///         Port = 80,
     ///         Protocol = "TCP",
-    ///         VpcId = aws_vpc.Main.Id,
+    ///         VpcId = main.Id,
     ///     });
     /// 
     /// });
@@ -412,10 +439,11 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// func main() {
     /// 	pulumi.Run(func(ctx *pulumi.Context) error {
     /// 		_, err := lb.NewTargetGroup(ctx, "alb-example", &amp;lb.TargetGroupArgs{
+    /// 			Name:       pulumi.String("tf-example-lb-alb-tg"),
     /// 			TargetType: pulumi.String("alb"),
     /// 			Port:       pulumi.Int(80),
     /// 			Protocol:   pulumi.String("TCP"),
-    /// 			VpcId:      pulumi.Any(aws_vpc.Main.Id),
+    /// 			VpcId:      pulumi.Any(main.Id),
     /// 		})
     /// 		if err != nil {
     /// 			return err
@@ -446,10 +474,11 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///     public static void stack(Context ctx) {
     ///         var alb_example = new TargetGroup("alb-example", TargetGroupArgs.builder()        
+    ///             .name("tf-example-lb-alb-tg")
     ///             .targetType("alb")
     ///             .port(80)
     ///             .protocol("TCP")
-    ///             .vpcId(aws_vpc.main().id())
+    ///             .vpcId(main.id())
     ///             .build());
     /// 
     ///     }
@@ -460,23 +489,26 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///   alb-example:
     ///     type: aws:lb:TargetGroup
     ///     properties:
+    ///       name: tf-example-lb-alb-tg
     ///       targetType: alb
     ///       port: 80
     ///       protocol: TCP
-    ///       vpcId: ${aws_vpc.main.id}
+    ///       vpcId: ${main.id}
     /// ```
-    /// {{% /example %}}
-    /// {{% example %}}
+    /// &lt;!--End PulumiCodeChooser --&gt;
+    /// 
     /// ### Target group with unhealthy connection termination disabled
     /// 
+    /// &lt;!--Start PulumiCodeChooser --&gt;
     /// ```typescript
     /// import * as pulumi from "@pulumi/pulumi";
     /// import * as aws from "@pulumi/aws";
     /// 
     /// const tcp_example = new aws.lb.TargetGroup("tcp-example", {
+    ///     name: "tf-example-lb-nlb-tg",
     ///     port: 25,
     ///     protocol: "TCP",
-    ///     vpcId: aws_vpc.main.id,
+    ///     vpcId: main.id,
     ///     targetHealthStates: [{
     ///         enableUnhealthyConnectionTermination: false,
     ///     }],
@@ -487,9 +519,10 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// import pulumi_aws as aws
     /// 
     /// tcp_example = aws.lb.TargetGroup("tcp-example",
+    ///     name="tf-example-lb-nlb-tg",
     ///     port=25,
     ///     protocol="TCP",
-    ///     vpc_id=aws_vpc["main"]["id"],
+    ///     vpc_id=main["id"],
     ///     target_health_states=[aws.lb.TargetGroupTargetHealthStateArgs(
     ///         enable_unhealthy_connection_termination=False,
     ///     )])
@@ -504,9 +537,10 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// {
     ///     var tcp_example = new Aws.LB.TargetGroup("tcp-example", new()
     ///     {
+    ///         Name = "tf-example-lb-nlb-tg",
     ///         Port = 25,
     ///         Protocol = "TCP",
-    ///         VpcId = aws_vpc.Main.Id,
+    ///         VpcId = main.Id,
     ///         TargetHealthStates = new[]
     ///         {
     ///             new Aws.LB.Inputs.TargetGroupTargetHealthStateArgs
@@ -529,9 +563,10 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// func main() {
     /// 	pulumi.Run(func(ctx *pulumi.Context) error {
     /// 		_, err := lb.NewTargetGroup(ctx, "tcp-example", &amp;lb.TargetGroupArgs{
+    /// 			Name:     pulumi.String("tf-example-lb-nlb-tg"),
     /// 			Port:     pulumi.Int(25),
     /// 			Protocol: pulumi.String("TCP"),
-    /// 			VpcId:    pulumi.Any(aws_vpc.Main.Id),
+    /// 			VpcId:    pulumi.Any(main.Id),
     /// 			TargetHealthStates: lb.TargetGroupTargetHealthStateArray{
     /// 				&amp;lb.TargetGroupTargetHealthStateArgs{
     /// 					EnableUnhealthyConnectionTermination: pulumi.Bool(false),
@@ -568,9 +603,10 @@ namespace Pulumi.Awsx.Lb.Inputs
     /// 
     ///     public static void stack(Context ctx) {
     ///         var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()        
+    ///             .name("tf-example-lb-nlb-tg")
     ///             .port(25)
     ///             .protocol("TCP")
-    ///             .vpcId(aws_vpc.main().id())
+    ///             .vpcId(main.id())
     ///             .targetHealthStates(TargetGroupTargetHealthStateArgs.builder()
     ///                 .enableUnhealthyConnectionTermination(false)
     ///                 .build())
@@ -584,23 +620,22 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///   tcp-example:
     ///     type: aws:lb:TargetGroup
     ///     properties:
+    ///       name: tf-example-lb-nlb-tg
     ///       port: 25
     ///       protocol: TCP
-    ///       vpcId: ${aws_vpc.main.id}
+    ///       vpcId: ${main.id}
     ///       targetHealthStates:
     ///         - enableUnhealthyConnectionTermination: false
     /// ```
-    /// {{% /example %}}
-    /// {{% /examples %}}
+    /// &lt;!--End PulumiCodeChooser --&gt;
     /// 
     /// ## Import
     /// 
     /// Using `pulumi import`, import Target Groups using their ARN. For example:
     /// 
     /// ```sh
-    ///  $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
+    /// $ pulumi import aws:lb/targetGroup:TargetGroup app_front_end arn:aws:elasticloadbalancing:us-west-2:187416307283:targetgroup/app-front-end/20cfe21448b66314
     /// ```
-    ///  
     /// </summary>
     public sealed class TargetGroupArgs : global::Pulumi.ResourceArgs
     {
@@ -635,10 +670,16 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<bool>? LambdaMultiValueHeadersEnabled { get; set; }
 
         /// <summary>
-        /// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin` or `least_outstanding_requests`. The default is `round_robin`.
+        /// Determines how the load balancer selects targets when routing requests. Only applicable for Application Load Balancer Target Groups. The value is `round_robin`, `least_outstanding_requests`, or `weighted_random`. The default is `round_robin`.
         /// </summary>
         [Input("loadBalancingAlgorithmType")]
         public Input<string>? LoadBalancingAlgorithmType { get; set; }
+
+        /// <summary>
+        /// Determines whether to enable target anomaly mitigation.  Target anomaly mitigation is only supported by the `weighted_random` load balancing algorithm type.  See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights) for more information.  The value is `"on"` or `"off"`. The default is `"off"`.
+        /// </summary>
+        [Input("loadBalancingAnomalyMitigation")]
+        public Input<string>? LoadBalancingAnomalyMitigation { get; set; }
 
         /// <summary>
         /// Indicates whether cross zone load balancing is enabled. The value is `"true"`, `"false"` or `"use_load_balancer_configuration"`. The default is `"use_load_balancer_configuration"`.
@@ -671,7 +712,10 @@ namespace Pulumi.Awsx.Lb.Inputs
         public Input<string>? PreserveClientIp { get; set; }
 
         /// <summary>
-        /// Protocol to use for routing traffic to the targets. Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`. Required when `target_type` is `instance`, `ip` or `alb`. Does not apply when `target_type` is `lambda`.
+        /// Protocol to use for routing traffic to the targets.
+        /// Should be one of `GENEVE`, `HTTP`, `HTTPS`, `TCP`, `TCP_UDP`, `TLS`, or `UDP`.
+        /// Required when `target_type` is `instance`, `ip`, or `alb`.
+        /// Does not apply when `target_type` is `lambda`.
         /// </summary>
         [Input("protocol")]
         public Input<string>? Protocol { get; set; }
@@ -737,7 +781,9 @@ namespace Pulumi.Awsx.Lb.Inputs
         }
 
         /// <summary>
-        /// Type of target that you must specify when registering targets with this target group. See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values. The default is `instance`.
+        /// Type of target that you must specify when registering targets with this target group.
+        /// See [doc](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_CreateTargetGroup.html) for supported values.
+        /// The default is `instance`.
         /// 
         /// Note that you can't specify targets for a target group using both instance IDs and IP addresses.
         /// 

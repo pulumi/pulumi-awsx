@@ -316,6 +316,21 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
     }
 
     /**
+     * Whether should track latest task definition or the one created with the resource. Default is `false`.
+     * 
+     */
+    @Import(name="trackLatest")
+    private @Nullable Output<Boolean> trackLatest;
+
+    /**
+     * @return Whether should track latest task definition or the one created with the resource. Default is `false`.
+     * 
+     */
+    public Optional<Output<Boolean>> trackLatest() {
+        return Optional.ofNullable(this.trackLatest);
+    }
+
+    /**
      * Configuration block for volumes that containers in your task may use. Detailed below.
      * 
      */
@@ -351,6 +366,7 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
         this.skipDestroy = $.skipDestroy;
         this.tags = $.tags;
         this.taskRole = $.taskRole;
+        this.trackLatest = $.trackLatest;
         this.volumes = $.volumes;
     }
 
@@ -728,6 +744,27 @@ public final class EC2TaskDefinitionArgs extends com.pulumi.resources.ResourceAr
         public Builder taskRole(@Nullable DefaultRoleWithPolicyArgs taskRole) {
             $.taskRole = taskRole;
             return this;
+        }
+
+        /**
+         * @param trackLatest Whether should track latest task definition or the one created with the resource. Default is `false`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder trackLatest(@Nullable Output<Boolean> trackLatest) {
+            $.trackLatest = trackLatest;
+            return this;
+        }
+
+        /**
+         * @param trackLatest Whether should track latest task definition or the one created with the resource. Default is `false`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder trackLatest(Boolean trackLatest) {
+            return trackLatest(Output.of(trackLatest));
         }
 
         /**

@@ -93,6 +93,8 @@ type fargateTaskDefinitionArgs struct {
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
 	TaskRole *awsx.DefaultRoleWithPolicy `pulumi:"taskRole"`
+	// Whether should track latest task definition or the one created with the resource. Default is `false`.
+	TrackLatest *bool `pulumi:"trackLatest"`
 	// Configuration block for volumes that containers in your task may use. Detailed below.
 	Volumes []ecs.TaskDefinitionVolume `pulumi:"volumes"`
 }
@@ -142,6 +144,8 @@ type FargateTaskDefinitionArgs struct {
 	// IAM role that allows your Amazon ECS container task to make calls to other AWS services.
 	// Will be created automatically if not defined.
 	TaskRole *awsx.DefaultRoleWithPolicyArgs
+	// Whether should track latest task definition or the one created with the resource. Default is `false`.
+	TrackLatest pulumi.BoolPtrInput
 	// Configuration block for volumes that containers in your task may use. Detailed below.
 	Volumes ecs.TaskDefinitionVolumeArrayInput
 }

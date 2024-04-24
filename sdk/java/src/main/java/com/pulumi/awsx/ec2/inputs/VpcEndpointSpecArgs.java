@@ -27,7 +27,10 @@ import javax.annotation.Nullable;
  * Doing so will cause a conflict of associations and will overwrite the association.
  * 
  * ## Example Usage
+ * 
  * ### Basic
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
  * ```java
  * package generated_program;
  * 
@@ -50,14 +53,18 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var s3 = new VpcEndpoint(&#34;s3&#34;, VpcEndpointArgs.builder()        
- *             .vpcId(aws_vpc.main().id())
+ *             .vpcId(main.id())
  *             .serviceName(&#34;com.amazonaws.us-west-2.s3&#34;)
  *             .build());
  * 
  *     }
  * }
  * ```
+ * &lt;!--End PulumiCodeChooser --&gt;
+ * 
  * ### Basic w/ Tags
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
  * ```java
  * package generated_program;
  * 
@@ -80,7 +87,7 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var s3 = new VpcEndpoint(&#34;s3&#34;, VpcEndpointArgs.builder()        
- *             .vpcId(aws_vpc.main().id())
+ *             .vpcId(main.id())
  *             .serviceName(&#34;com.amazonaws.us-west-2.s3&#34;)
  *             .tags(Map.of(&#34;Environment&#34;, &#34;test&#34;))
  *             .build());
@@ -88,7 +95,11 @@ import javax.annotation.Nullable;
  *     }
  * }
  * ```
+ * &lt;!--End PulumiCodeChooser --&gt;
+ * 
  * ### Interface Endpoint Type
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
  * ```java
  * package generated_program;
  * 
@@ -111,17 +122,21 @@ import javax.annotation.Nullable;
  * 
  *     public static void stack(Context ctx) {
  *         var ec2 = new VpcEndpoint(&#34;ec2&#34;, VpcEndpointArgs.builder()        
- *             .vpcId(aws_vpc.main().id())
+ *             .vpcId(main.id())
  *             .serviceName(&#34;com.amazonaws.us-west-2.ec2&#34;)
  *             .vpcEndpointType(&#34;Interface&#34;)
- *             .securityGroupIds(aws_security_group.sg1().id())
+ *             .securityGroupIds(sg1.id())
  *             .privateDnsEnabled(true)
  *             .build());
  * 
  *     }
  * }
  * ```
+ * &lt;!--End PulumiCodeChooser --&gt;
+ * 
  * ### Gateway Load Balancer Endpoint Type
+ * 
+ * &lt;!--Start PulumiCodeChooser --&gt;
  * ```java
  * package generated_program;
  * 
@@ -149,29 +164,30 @@ import javax.annotation.Nullable;
  *     public static void stack(Context ctx) {
  *         final var current = AwsFunctions.getCallerIdentity();
  * 
- *         var exampleVpcEndpointService = new VpcEndpointService(&#34;exampleVpcEndpointService&#34;, VpcEndpointServiceArgs.builder()        
+ *         var example = new VpcEndpointService(&#34;example&#34;, VpcEndpointServiceArgs.builder()        
  *             .acceptanceRequired(false)
  *             .allowedPrincipals(current.applyValue(getCallerIdentityResult -&gt; getCallerIdentityResult.arn()))
- *             .gatewayLoadBalancerArns(aws_lb.example().arn())
+ *             .gatewayLoadBalancerArns(exampleAwsLb.arn())
  *             .build());
  * 
  *         var exampleVpcEndpoint = new VpcEndpoint(&#34;exampleVpcEndpoint&#34;, VpcEndpointArgs.builder()        
- *             .serviceName(exampleVpcEndpointService.serviceName())
- *             .subnetIds(aws_subnet.example().id())
- *             .vpcEndpointType(exampleVpcEndpointService.serviceType())
- *             .vpcId(aws_vpc.example().id())
+ *             .serviceName(example.serviceName())
+ *             .subnetIds(exampleAwsSubnet.id())
+ *             .vpcEndpointType(example.serviceType())
+ *             .vpcId(exampleAwsVpc.id())
  *             .build());
  * 
  *     }
  * }
  * ```
+ * &lt;!--End PulumiCodeChooser --&gt;
  * 
  * ## Import
  * 
  * Using `pulumi import`, import VPC Endpoints using the VPC endpoint `id`. For example:
  * 
  * ```sh
- *  $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
+ * $ pulumi import aws:ec2/vpcEndpoint:VpcEndpoint endpoint1 vpce-3ecf2a57
  * ```
  * 
  */
