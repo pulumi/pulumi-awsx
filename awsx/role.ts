@@ -69,7 +69,7 @@ export function defaultRoleWithPolicies(
 ): {
   roleArn?: pulumi.Output<string>;
   role?: aws.iam.Role;
-  policies?: aws.iam.RolePolicyAttachment[];
+  policies?: pulumi.Output<aws.iam.RolePolicyAttachment[]>;
 } {
   if (inputs?.roleArn !== undefined && inputs?.args !== undefined) {
     throw new Error("Can't define role args if specified an existing role ARN");
@@ -90,13 +90,17 @@ export function defaultRoleWithPolicies(
   delete roleArgs.policyArns;
 
   const role = new aws.iam.Role(name, roleArgs, opts);
-  const policies = args.policyArns?.map(
-    (policyArn) =>
-      new aws.iam.RolePolicyAttachment(
-        `${name}-${utils.sha1hash(policyArn)}`,
-        { role: role.name, policyArn },
-        opts,
+
+  const policies = args.policyArns ?
+    pulumi.Output.create(args.policyArns).apply(unwrapped =>
+      unwrapped.map(policyArn =>
+        new aws.iam.RolePolicyAttachment(
+          `${name}-${utils.sha1hash(policyArn)}`,
+          { role: role.name, policyArn },
+          opts,
+        ),
       ),
-  );
+    ) : undefined;
+
   return { role, policies, roleArn: role.arn };
 }

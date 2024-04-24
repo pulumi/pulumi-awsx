@@ -525,7 +525,7 @@ export interface RoleWithPolicyInputs {
     readonly namePrefix?: pulumi.Input<string>;
     readonly path?: pulumi.Input<string>;
     readonly permissionsBoundary?: pulumi.Input<string>;
-    readonly policyArns?: string[];
+    readonly policyArns?: pulumi.Input<pulumi.Input<string>[]>;
     readonly tags?: pulumi.Input<Record<string, pulumi.Input<string>>>;
 }
 export interface RoleWithPolicyOutputs {
@@ -538,7 +538,7 @@ export interface RoleWithPolicyOutputs {
     readonly namePrefix?: pulumi.Output<string>;
     readonly path?: pulumi.Output<string>;
     readonly permissionsBoundary?: pulumi.Output<string>;
-    readonly policyArns?: string[];
+    readonly policyArns?: pulumi.Output<string[]>;
     readonly tags?: pulumi.Output<Record<string, string>>;
 }
 export interface SecurityGroupInputs {

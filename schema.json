@@ -438,10 +438,8 @@
                 "policyArns": {
                     "type": "array",
                     "items": {
-                        "type": "string",
-                        "plain": true
+                        "type": "string"
                     },
-                    "plain": true,
                     "description": "ARNs of the policies to attach to the created role."
                 },
                 "tags": {
