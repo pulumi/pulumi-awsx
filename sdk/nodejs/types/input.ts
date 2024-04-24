@@ -310,7 +310,7 @@ export namespace awsx {
         /**
          * ARNs of the policies to attach to the created role.
          */
-        policyArns?: string[];
+        policyArns?: pulumi.Input<pulumi.Input<string>[]>;
         /**
          * Key-value mapping of tags for the IAM role. If configured with a provider `default_tags` configuration block present, tags with matching keys will overwrite those defined at the provider-level.
          */
