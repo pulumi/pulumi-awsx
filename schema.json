@@ -2061,11 +2061,6 @@
                     "type": "boolean",
                     "description": "A boolean flag to enable/disable DNS support in the VPC. Defaults to true.\n"
                 },
-                "enableInternetGateway": {
-                    "type": "boolean",
-                    "plain": true,
-                    "description": "Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`."
-                },
                 "enableNetworkAddressUsageMetrics": {
                     "type": "boolean",
                     "description": "Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.\n"

@@ -205,12 +205,6 @@ namespace Pulumi.Awsx.Ec2
         public Input<bool>? EnableDnsSupport { get; set; }
 
         /// <summary>
-        /// Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
-        /// </summary>
-        [Input("enableInternetGateway")]
-        public bool? EnableInternetGateway { get; set; }
-
-        /// <summary>
         /// Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
         /// </summary>
         [Input("enableNetworkAddressUsageMetrics")]

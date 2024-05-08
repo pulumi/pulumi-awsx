@@ -85,7 +85,6 @@ export interface VpcArgs {
     readonly cidrBlock?: string;
     readonly enableDnsHostnames?: pulumi.Input<boolean>;
     readonly enableDnsSupport?: pulumi.Input<boolean>;
-    readonly enableInternetGateway?: boolean;
     readonly enableNetworkAddressUsageMetrics?: pulumi.Input<boolean>;
     readonly instanceTenancy?: pulumi.Input<string>;
     readonly ipv4IpamPoolId?: pulumi.Input<string>;
