@@ -39,6 +39,7 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
     const {
       subnetIds,
       subnets,
+      defaultSecurityGroup,
       defaultTargetGroup,
       defaultTargetGroupPort,
       listener,
@@ -82,6 +83,26 @@ export class NetworkLoadBalancer extends schema.NetworkLoadBalancer {
     lbArgs.enableHttp2 = false;
     // idleTimeout is not valid in NLB
     lbArgs.idleTimeout = 0;
+
+    if (!lbArgs.securityGroups && !defaultSecurityGroup?.skip) {
+      if (defaultSecurityGroup?.args && defaultSecurityGroup.securityGroupId) {
+        throw new Error(
+          "Only one of [defaultSecurityGroup] [args] or [securityGroupId] can be specified",
+        );
+      }
+      const securityGroupId = defaultSecurityGroup?.securityGroupId;
+      if (securityGroupId) {
+        lbArgs.securityGroups = [securityGroupId];
+      } else {
+        const securityGroup = new aws.ec2.SecurityGroup(
+          name,
+          defaultSecurityGroup?.args ?? { vpcId: this.vpcId },
+          { parent: this },
+        );
+        this.defaultSecurityGroup = securityGroup;
+        lbArgs.securityGroups = [securityGroup.id];
+      }
+    }
 
     this.loadBalancer = new aws.lb.LoadBalancer(name, lbArgs, {
       parent: this,
