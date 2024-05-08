@@ -191,6 +191,22 @@ func TestVpcMultipleSimilarSubnetSpecArgs(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestVpcWithoutIgw(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest:    false,
+			Dir:              filepath.Join(getCwd(t), "vpc", "nodejs", "vpc-without-igw"),
+			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
+				assert.NotContains(t, stackInfo.Outputs, "igw")
+				for _, res := range stackInfo.Deployment.Resources {
+					assert.NotEqual(t, "aws:ec2/internetGateway:InternetGateway", res.Type)
+				}
+			},
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
 	base := getBaseOptions(t)
 	nodeBase := base.With(integration.ProgramTestOptions{
