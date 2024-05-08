@@ -8,6 +8,7 @@ import pulumi
 import pulumi.runtime
 from typing import Any, Mapping, Optional, Sequence, Union, overload
 from .. import _utilities
+from .. import awsx as _awsx
 from ._inputs import *
 import pulumi_aws
 
@@ -20,6 +21,7 @@ class NetworkLoadBalancerArgs:
                  client_keep_alive: Optional[pulumi.Input[int]] = None,
                  connection_logs: Optional[pulumi.Input['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
+                 default_security_group: Optional['_awsx.DefaultSecurityGroupArgs'] = None,
                  default_target_group: Optional['TargetGroupArgs'] = None,
                  default_target_group_port: Optional[pulumi.Input[int]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
@@ -39,6 +41,7 @@ class NetworkLoadBalancerArgs:
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  preserve_host_header: Optional[pulumi.Input[bool]] = None,
+                 security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]] = None,
                  subnets: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]]] = None,
@@ -50,6 +53,7 @@ class NetworkLoadBalancerArgs:
         :param pulumi.Input[int] client_keep_alive: Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.
         :param pulumi.Input['pulumi_aws.lb.LoadBalancerConnectionLogsArgs'] connection_logs: Connection Logs block. See below. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[str] customer_owned_ipv4_pool: ID of the customer owned ipv4 pool to use for this load balancer.
+        :param '_awsx.DefaultSecurityGroupArgs' default_security_group: Options for creating a default security group if [securityGroups] not specified.
         :param 'TargetGroupArgs' default_target_group: Options creating a default target group.
         :param pulumi.Input[int] default_target_group_port: Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
         :param pulumi.Input[str] desync_mitigation_mode: How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
@@ -69,6 +73,7 @@ class NetworkLoadBalancerArgs:
         :param pulumi.Input[str] name: Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
         :param pulumi.Input[str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
         :param pulumi.Input[bool] preserve_host_header: Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
+        :param pulumi.Input[Sequence[pulumi.Input[str]]] security_groups: List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]] subnet_mappings: Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]] subnets: A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified
@@ -83,6 +88,8 @@ class NetworkLoadBalancerArgs:
             pulumi.set(__self__, "connection_logs", connection_logs)
         if customer_owned_ipv4_pool is not None:
             pulumi.set(__self__, "customer_owned_ipv4_pool", customer_owned_ipv4_pool)
+        if default_security_group is not None:
+            pulumi.set(__self__, "default_security_group", default_security_group)
         if default_target_group is not None:
             pulumi.set(__self__, "default_target_group", default_target_group)
         if default_target_group_port is not None:
@@ -121,6 +128,8 @@ class NetworkLoadBalancerArgs:
             pulumi.set(__self__, "name_prefix", name_prefix)
         if preserve_host_header is not None:
             pulumi.set(__self__, "preserve_host_header", preserve_host_header)
+        if security_groups is not None:
+            pulumi.set(__self__, "security_groups", security_groups)
         if subnet_ids is not None:
             pulumi.set(__self__, "subnet_ids", subnet_ids)
         if subnet_mappings is not None:
@@ -179,6 +188,18 @@ class NetworkLoadBalancerArgs:
     @customer_owned_ipv4_pool.setter
     def customer_owned_ipv4_pool(self, value: Optional[pulumi.Input[str]]):
         pulumi.set(self, "customer_owned_ipv4_pool", value)
+
+    @property
+    @pulumi.getter(name="defaultSecurityGroup")
+    def default_security_group(self) -> Optional['_awsx.DefaultSecurityGroupArgs']:
+        """
+        Options for creating a default security group if [securityGroups] not specified.
+        """
+        return pulumi.get(self, "default_security_group")
+
+    @default_security_group.setter
+    def default_security_group(self, value: Optional['_awsx.DefaultSecurityGroupArgs']):
+        pulumi.set(self, "default_security_group", value)
 
     @property
     @pulumi.getter(name="defaultTargetGroup")
@@ -409,6 +430,18 @@ class NetworkLoadBalancerArgs:
         pulumi.set(self, "preserve_host_header", value)
 
     @property
+    @pulumi.getter(name="securityGroups")
+    def security_groups(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
+        """
+        List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+        """
+        return pulumi.get(self, "security_groups")
+
+    @security_groups.setter
+    def security_groups(self, value: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]):
+        pulumi.set(self, "security_groups", value)
+
+    @property
     @pulumi.getter(name="subnetIds")
     def subnet_ids(self) -> Optional[pulumi.Input[Sequence[pulumi.Input[str]]]]:
         """
@@ -478,6 +511,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  client_keep_alive: Optional[pulumi.Input[int]] = None,
                  connection_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
+                 default_security_group: Optional[pulumi.InputType['_awsx.DefaultSecurityGroupArgs']] = None,
                  default_target_group: Optional[pulumi.InputType['TargetGroupArgs']] = None,
                  default_target_group_port: Optional[pulumi.Input[int]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
@@ -497,6 +531,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  preserve_host_header: Optional[pulumi.Input[bool]] = None,
+                 security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]]] = None,
                  subnets: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]]] = None,
@@ -504,7 +539,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  xff_header_processing_mode: Optional[pulumi.Input[str]] = None,
                  __props__=None):
         """
-        Provides a Network Load Balancer resource with listeners and default target group.
+        Provides a Network Load Balancer resource with listeners, default target group and default security group.
 
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -512,6 +547,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[int] client_keep_alive: Client keep alive value in seconds. The valid range is 60-604800 seconds. The default is 3600 seconds.
         :param pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']] connection_logs: Connection Logs block. See below. Only valid for Load Balancers of type `application`.
         :param pulumi.Input[str] customer_owned_ipv4_pool: ID of the customer owned ipv4 pool to use for this load balancer.
+        :param pulumi.InputType['_awsx.DefaultSecurityGroupArgs'] default_security_group: Options for creating a default security group if [securityGroups] not specified.
         :param pulumi.InputType['TargetGroupArgs'] default_target_group: Options creating a default target group.
         :param pulumi.Input[int] default_target_group_port: Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
         :param pulumi.Input[str] desync_mitigation_mode: How the load balancer handles requests that might pose a security risk to an application due to HTTP desync. Valid values are `monitor`, `defensive` (default), `strictest`.
@@ -531,6 +567,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
         :param pulumi.Input[str] name: Name of the LB. This name must be unique within your AWS account, can have a maximum of 32 characters, must contain only alphanumeric characters or hyphens, and must not begin or end with a hyphen. If not specified, this provider will autogenerate a name beginning with `tf-lb`.
         :param pulumi.Input[str] name_prefix: Creates a unique name beginning with the specified prefix. Conflicts with `name`.
         :param pulumi.Input[bool] preserve_host_header: Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
+        :param pulumi.Input[Sequence[pulumi.Input[str]]] security_groups: List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
         :param pulumi.Input[Sequence[pulumi.Input[str]]] subnet_ids: List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
         :param pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]] subnet_mappings: Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
         :param pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]] subnets: A list of subnets to attach to the LB. Only one of [subnets], [subnetIds] or [subnetMappings] can be specified
@@ -544,7 +581,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  args: Optional[NetworkLoadBalancerArgs] = None,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
-        Provides a Network Load Balancer resource with listeners and default target group.
+        Provides a Network Load Balancer resource with listeners, default target group and default security group.
 
         :param str resource_name: The name of the resource.
         :param NetworkLoadBalancerArgs args: The arguments to use to populate this resource's properties.
@@ -565,6 +602,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  client_keep_alive: Optional[pulumi.Input[int]] = None,
                  connection_logs: Optional[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerConnectionLogsArgs']]] = None,
                  customer_owned_ipv4_pool: Optional[pulumi.Input[str]] = None,
+                 default_security_group: Optional[pulumi.InputType['_awsx.DefaultSecurityGroupArgs']] = None,
                  default_target_group: Optional[pulumi.InputType['TargetGroupArgs']] = None,
                  default_target_group_port: Optional[pulumi.Input[int]] = None,
                  desync_mitigation_mode: Optional[pulumi.Input[str]] = None,
@@ -584,6 +622,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
                  name: Optional[pulumi.Input[str]] = None,
                  name_prefix: Optional[pulumi.Input[str]] = None,
                  preserve_host_header: Optional[pulumi.Input[bool]] = None,
+                 security_groups: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_ids: Optional[pulumi.Input[Sequence[pulumi.Input[str]]]] = None,
                  subnet_mappings: Optional[pulumi.Input[Sequence[pulumi.Input[pulumi.InputType['pulumi_aws.lb.LoadBalancerSubnetMappingArgs']]]]] = None,
                  subnets: Optional[pulumi.Input[Sequence[pulumi.Input['pulumi_aws.ec2.Subnet']]]] = None,
@@ -604,6 +643,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["client_keep_alive"] = client_keep_alive
             __props__.__dict__["connection_logs"] = connection_logs
             __props__.__dict__["customer_owned_ipv4_pool"] = customer_owned_ipv4_pool
+            __props__.__dict__["default_security_group"] = default_security_group
             __props__.__dict__["default_target_group"] = default_target_group
             __props__.__dict__["default_target_group_port"] = default_target_group_port
             __props__.__dict__["desync_mitigation_mode"] = desync_mitigation_mode
@@ -623,6 +663,7 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
             __props__.__dict__["name"] = name
             __props__.__dict__["name_prefix"] = name_prefix
             __props__.__dict__["preserve_host_header"] = preserve_host_header
+            __props__.__dict__["security_groups"] = security_groups
             __props__.__dict__["subnet_ids"] = subnet_ids
             __props__.__dict__["subnet_mappings"] = subnet_mappings
             __props__.__dict__["subnets"] = subnets
@@ -636,6 +677,14 @@ class NetworkLoadBalancer(pulumi.ComponentResource):
             __props__,
             opts,
             remote=True)
+
+    @property
+    @pulumi.getter(name="defaultSecurityGroup")
+    def default_security_group(self) -> pulumi.Output[Optional['pulumi_aws.ec2.SecurityGroup']]:
+        """
+        Default security group, if auto-created
+        """
+        return pulumi.get(self, "default_security_group")
 
     @property
     @pulumi.getter(name="defaultTargetGroup")

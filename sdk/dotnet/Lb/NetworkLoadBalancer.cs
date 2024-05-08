@@ -10,11 +10,17 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Lb
 {
     /// <summary>
-    /// Provides a Network Load Balancer resource with listeners and default target group.
+    /// Provides a Network Load Balancer resource with listeners, default target group and default security group.
     /// </summary>
     [AwsxResourceType("awsx:lb:NetworkLoadBalancer")]
     public partial class NetworkLoadBalancer : global::Pulumi.ComponentResource
     {
+        /// <summary>
+        /// Default security group, if auto-created
+        /// </summary>
+        [Output("defaultSecurityGroup")]
+        public Output<Pulumi.Aws.Ec2.SecurityGroup?> DefaultSecurityGroup { get; private set; } = null!;
+
         /// <summary>
         /// Default target group, if auto-created
         /// </summary>
@@ -90,6 +96,12 @@ namespace Pulumi.Awsx.Lb
         /// </summary>
         [Input("customerOwnedIpv4Pool")]
         public Input<string>? CustomerOwnedIpv4Pool { get; set; }
+
+        /// <summary>
+        /// Options for creating a default security group if [securityGroups] not specified.
+        /// </summary>
+        [Input("defaultSecurityGroup")]
+        public Pulumi.Awsx.Awsx.Inputs.DefaultSecurityGroupArgs? DefaultSecurityGroup { get; set; }
 
         /// <summary>
         /// Options creating a default target group.
@@ -210,6 +222,18 @@ namespace Pulumi.Awsx.Lb
         /// </summary>
         [Input("preserveHostHeader")]
         public Input<bool>? PreserveHostHeader { get; set; }
+
+        [Input("securityGroups")]
+        private InputList<string>? _securityGroups;
+
+        /// <summary>
+        /// List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+        /// </summary>
+        public InputList<string> SecurityGroups
+        {
+            get => _securityGroups ?? (_securityGroups = new InputList<string>());
+            set => _securityGroups = value;
+        }
 
         [Input("subnetIds")]
         private InputList<string>? _subnetIds;

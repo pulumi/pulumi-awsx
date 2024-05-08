@@ -9,14 +9,17 @@ import (
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
+	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-// Provides a Network Load Balancer resource with listeners and default target group.
+// Provides a Network Load Balancer resource with listeners, default target group and default security group.
 type NetworkLoadBalancer struct {
 	pulumi.ResourceState
 
+	// Default security group, if auto-created
+	DefaultSecurityGroup ec2.SecurityGroupOutput `pulumi:"defaultSecurityGroup"`
 	// Default target group, if auto-created
 	DefaultTargetGroup lb.TargetGroupOutput `pulumi:"defaultTargetGroup"`
 	// Listeners created as part of this load balancer
@@ -34,6 +37,9 @@ func NewNetworkLoadBalancer(ctx *pulumi.Context,
 		args = &NetworkLoadBalancerArgs{}
 	}
 
+	if args.DefaultSecurityGroup != nil {
+		args.DefaultSecurityGroup = args.DefaultSecurityGroup.Defaults()
+	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource NetworkLoadBalancer
 	err := ctx.RegisterRemoteComponentResource("awsx:lb:NetworkLoadBalancer", name, args, &resource, opts...)
@@ -52,6 +58,8 @@ type networkLoadBalancerArgs struct {
 	ConnectionLogs *lb.LoadBalancerConnectionLogs `pulumi:"connectionLogs"`
 	// ID of the customer owned ipv4 pool to use for this load balancer.
 	CustomerOwnedIpv4Pool *string `pulumi:"customerOwnedIpv4Pool"`
+	// Options for creating a default security group if [securityGroups] not specified.
+	DefaultSecurityGroup *awsx.DefaultSecurityGroup `pulumi:"defaultSecurityGroup"`
 	// Options creating a default target group.
 	DefaultTargetGroup *TargetGroup `pulumi:"defaultTargetGroup"`
 	// Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
@@ -90,6 +98,8 @@ type networkLoadBalancerArgs struct {
 	NamePrefix *string `pulumi:"namePrefix"`
 	// Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader *bool `pulumi:"preserveHostHeader"`
+	// List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+	SecurityGroups []string `pulumi:"securityGroups"`
 	// List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
 	SubnetIds []string `pulumi:"subnetIds"`
 	// Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
@@ -112,6 +122,8 @@ type NetworkLoadBalancerArgs struct {
 	ConnectionLogs lb.LoadBalancerConnectionLogsPtrInput
 	// ID of the customer owned ipv4 pool to use for this load balancer.
 	CustomerOwnedIpv4Pool pulumi.StringPtrInput
+	// Options for creating a default security group if [securityGroups] not specified.
+	DefaultSecurityGroup *awsx.DefaultSecurityGroupArgs
 	// Options creating a default target group.
 	DefaultTargetGroup *TargetGroupArgs
 	// Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
@@ -150,6 +162,8 @@ type NetworkLoadBalancerArgs struct {
 	NamePrefix pulumi.StringPtrInput
 	// Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader pulumi.BoolPtrInput
+	// List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+	SecurityGroups pulumi.StringArrayInput
 	// List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
 	SubnetIds pulumi.StringArrayInput
 	// Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
@@ -247,6 +261,11 @@ func (o NetworkLoadBalancerOutput) ToNetworkLoadBalancerOutput() NetworkLoadBala
 
 func (o NetworkLoadBalancerOutput) ToNetworkLoadBalancerOutputWithContext(ctx context.Context) NetworkLoadBalancerOutput {
 	return o
+}
+
+// Default security group, if auto-created
+func (o NetworkLoadBalancerOutput) DefaultSecurityGroup() ec2.SecurityGroupOutput {
+	return o.ApplyT(func(v *NetworkLoadBalancer) ec2.SecurityGroupOutput { return v.DefaultSecurityGroup }).(ec2.SecurityGroupOutput)
 }
 
 // Default target group, if auto-created

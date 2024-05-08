@@ -10,7 +10,7 @@ import * as utilities from "../utilities";
 import * as pulumiAws from "@pulumi/aws";
 
 /**
- * Provides a Network Load Balancer resource with listeners and default target group.
+ * Provides a Network Load Balancer resource with listeners, default target group and default security group.
  */
 export class NetworkLoadBalancer extends pulumi.ComponentResource {
     /** @internal */
@@ -27,6 +27,10 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
         return obj['__pulumiType'] === NetworkLoadBalancer.__pulumiType;
     }
 
+    /**
+     * Default security group, if auto-created
+     */
+    public readonly defaultSecurityGroup!: pulumi.Output<pulumiAws.ec2.SecurityGroup | undefined>;
     /**
      * Default target group, if auto-created
      */
@@ -59,6 +63,7 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["clientKeepAlive"] = args ? args.clientKeepAlive : undefined;
             resourceInputs["connectionLogs"] = args ? args.connectionLogs : undefined;
             resourceInputs["customerOwnedIpv4Pool"] = args ? args.customerOwnedIpv4Pool : undefined;
+            resourceInputs["defaultSecurityGroup"] = args ? (args.defaultSecurityGroup ? inputs.awsx.defaultSecurityGroupArgsProvideDefaults(args.defaultSecurityGroup) : undefined) : undefined;
             resourceInputs["defaultTargetGroup"] = args ? args.defaultTargetGroup : undefined;
             resourceInputs["defaultTargetGroupPort"] = args ? args.defaultTargetGroupPort : undefined;
             resourceInputs["desyncMitigationMode"] = args ? args.desyncMitigationMode : undefined;
@@ -78,6 +83,7 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["name"] = args ? args.name : undefined;
             resourceInputs["namePrefix"] = args ? args.namePrefix : undefined;
             resourceInputs["preserveHostHeader"] = args ? args.preserveHostHeader : undefined;
+            resourceInputs["securityGroups"] = args ? args.securityGroups : undefined;
             resourceInputs["subnetIds"] = args ? args.subnetIds : undefined;
             resourceInputs["subnetMappings"] = args ? args.subnetMappings : undefined;
             resourceInputs["subnets"] = args ? args.subnets : undefined;
@@ -86,6 +92,7 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["loadBalancer"] = undefined /*out*/;
             resourceInputs["vpcId"] = undefined /*out*/;
         } else {
+            resourceInputs["defaultSecurityGroup"] = undefined /*out*/;
             resourceInputs["defaultTargetGroup"] = undefined /*out*/;
             resourceInputs["listeners"] = undefined /*out*/;
             resourceInputs["loadBalancer"] = undefined /*out*/;
@@ -116,6 +123,10 @@ export interface NetworkLoadBalancerArgs {
      * ID of the customer owned ipv4 pool to use for this load balancer.
      */
     customerOwnedIpv4Pool?: pulumi.Input<string>;
+    /**
+     * Options for creating a default security group if [securityGroups] not specified.
+     */
+    defaultSecurityGroup?: inputs.awsx.DefaultSecurityGroupArgs;
     /**
      * Options creating a default target group.
      */
@@ -192,6 +203,10 @@ export interface NetworkLoadBalancerArgs {
      * Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
      */
     preserveHostHeader?: pulumi.Input<boolean>;
+    /**
+     * List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+     */
+    securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
     /**
      * List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
      */

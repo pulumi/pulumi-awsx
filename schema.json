@@ -3036,8 +3036,12 @@
             "isComponent": true
         },
         "awsx:lb:NetworkLoadBalancer": {
-            "description": "Provides a Network Load Balancer resource with listeners and default target group.",
+            "description": "Provides a Network Load Balancer resource with listeners, default target group and default security group.",
             "properties": {
+                "defaultSecurityGroup": {
+                    "$ref": "/aws/v6.32.0/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
+                    "description": "Default security group, if auto-created"
+                },
                 "defaultTargetGroup": {
                     "$ref": "/aws/v6.32.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Default target group, if auto-created"
@@ -3080,6 +3084,11 @@
                     "type": "string",
                     "description": "ID of the customer owned ipv4 pool to use for this load balancer.\n",
                     "willReplaceOnChanges": true
+                },
+                "defaultSecurityGroup": {
+                    "$ref": "#/types/awsx:awsx:DefaultSecurityGroup",
+                    "plain": true,
+                    "description": "Options for creating a default security group if [securityGroups] not specified."
                 },
                 "defaultTargetGroup": {
                     "$ref": "#/types/awsx:lb:TargetGroup",
@@ -3166,6 +3175,13 @@
                 "preserveHostHeader": {
                     "type": "boolean",
                     "description": "Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.\n"
+                },
+                "securityGroups": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.\n"
                 },
                 "subnetIds": {
                     "type": "array",
