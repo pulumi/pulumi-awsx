@@ -137,6 +137,13 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 			Description: "A list of VPC Endpoints specs to be deployed as part of the VPC",
 			TypeSpec:    plainArrayOfPlainComplexType("VpcEndpointSpec"),
 		},
+		"enableInternetGateway": {
+			Description: "Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.",
+			TypeSpec: schema.TypeSpec{
+				Type:  "boolean",
+				Plain: true,
+			},
+		},
 	}
 	for k, v := range awsVpcResource.InputProperties {
 		// We redefine some of the aws.Vpc properties above as plain types because they have default values in the
@@ -233,7 +240,7 @@ func vpcResource(awsSpec schema.PackageSpec) schema.ResourceSpec {
 				},
 			},
 			Required: []string{
-				"vpc", "subnets", "routeTables", "routeTableAssociations", "routes", "internetGateway", "natGateways",
+				"vpc", "subnets", "routeTables", "routeTableAssociations", "routes", "natGateways",
 				"eips", "subnetLayout", "publicSubnetIds", "privateSubnetIds", "isolatedSubnetIds", "vpcId", "vpcEndpoints",
 			},
 		},
