@@ -61,7 +61,7 @@ export interface DefaultVpcArgs {
 }
 export abstract class Vpc<TData = any> extends (pulumi.ComponentResource)<TData> {
     public eips!: aws.ec2.Eip[] | pulumi.Output<aws.ec2.Eip[]>;
-    public internetGateway!: aws.ec2.InternetGateway | pulumi.Output<aws.ec2.InternetGateway>;
+    public internetGateway?: aws.ec2.InternetGateway | pulumi.Output<aws.ec2.InternetGateway>;
     public isolatedSubnetIds!: string[] | pulumi.Output<string[]>;
     public natGateways!: aws.ec2.NatGateway[] | pulumi.Output<aws.ec2.NatGateway[]>;
     public privateSubnetIds!: string[] | pulumi.Output<string[]>;
@@ -85,6 +85,7 @@ export interface VpcArgs {
     readonly cidrBlock?: string;
     readonly enableDnsHostnames?: pulumi.Input<boolean>;
     readonly enableDnsSupport?: pulumi.Input<boolean>;
+    readonly enableInternetGateway?: boolean;
     readonly enableNetworkAddressUsageMetrics?: pulumi.Input<boolean>;
     readonly instanceTenancy?: pulumi.Input<string>;
     readonly ipv4IpamPoolId?: pulumi.Input<string>;

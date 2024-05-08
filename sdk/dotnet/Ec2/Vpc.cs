@@ -72,7 +72,7 @@ namespace Pulumi.Awsx.Ec2
         /// The Internet Gateway for the VPC.
         /// </summary>
         [Output("internetGateway")]
-        public Output<Pulumi.Aws.Ec2.InternetGateway> InternetGateway { get; private set; } = null!;
+        public Output<Pulumi.Aws.Ec2.InternetGateway?> InternetGateway { get; private set; } = null!;
 
         [Output("isolatedSubnetIds")]
         public Output<ImmutableArray<string>> IsolatedSubnetIds { get; private set; } = null!;
@@ -203,6 +203,12 @@ namespace Pulumi.Awsx.Ec2
         /// </summary>
         [Input("enableDnsSupport")]
         public Input<bool>? EnableDnsSupport { get; set; }
+
+        /// <summary>
+        /// Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
+        /// </summary>
+        [Input("enableInternetGateway")]
+        public bool? EnableInternetGateway { get; set; }
 
         /// <summary>
         /// Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.

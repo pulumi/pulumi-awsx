@@ -72,7 +72,7 @@ export class Vpc extends pulumi.ComponentResource {
     /**
      * The Internet Gateway for the VPC.
      */
-    public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway>;
+    public /*out*/ readonly internetGateway!: pulumi.Output<pulumiAws.ec2.InternetGateway | undefined>;
     public /*out*/ readonly isolatedSubnetIds!: pulumi.Output<string[]>;
     /**
      * The NAT Gateways for the VPC. If no NAT Gateways are specified, this will be an empty list.
@@ -127,6 +127,7 @@ export class Vpc extends pulumi.ComponentResource {
             resourceInputs["cidrBlock"] = args ? args.cidrBlock : undefined;
             resourceInputs["enableDnsHostnames"] = args ? args.enableDnsHostnames : undefined;
             resourceInputs["enableDnsSupport"] = args ? args.enableDnsSupport : undefined;
+            resourceInputs["enableInternetGateway"] = args ? args.enableInternetGateway : undefined;
             resourceInputs["enableNetworkAddressUsageMetrics"] = args ? args.enableNetworkAddressUsageMetrics : undefined;
             resourceInputs["instanceTenancy"] = args ? args.instanceTenancy : undefined;
             resourceInputs["ipv4IpamPoolId"] = args ? args.ipv4IpamPoolId : undefined;
@@ -203,6 +204,10 @@ export interface VpcArgs {
      * A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
      */
     enableDnsSupport?: pulumi.Input<boolean>;
+    /**
+     * Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
+     */
+    enableInternetGateway?: boolean;
     /**
      * Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
      */

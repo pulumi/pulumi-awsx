@@ -124,6 +124,8 @@ type vpcArgs struct {
 	EnableDnsHostnames *bool `pulumi:"enableDnsHostnames"`
 	// A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
 	EnableDnsSupport *bool `pulumi:"enableDnsSupport"`
+	// Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
+	EnableInternetGateway *bool `pulumi:"enableInternetGateway"`
 	// Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
 	EnableNetworkAddressUsageMetrics *bool `pulumi:"enableNetworkAddressUsageMetrics"`
 	// A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
@@ -168,6 +170,8 @@ type VpcArgs struct {
 	EnableDnsHostnames pulumi.BoolPtrInput
 	// A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
 	EnableDnsSupport pulumi.BoolPtrInput
+	// Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
+	EnableInternetGateway *bool
 	// Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
 	EnableNetworkAddressUsageMetrics pulumi.BoolPtrInput
 	// A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.

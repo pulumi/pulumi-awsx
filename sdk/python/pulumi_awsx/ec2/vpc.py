@@ -24,6 +24,7 @@ class VpcArgs:
                  cidr_block: Optional[str] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
                  enable_dns_support: Optional[pulumi.Input[bool]] = None,
+                 enable_internet_gateway: Optional[bool] = None,
                  enable_network_address_usage_metrics: Optional[pulumi.Input[bool]] = None,
                  instance_tenancy: Optional[pulumi.Input[str]] = None,
                  ipv4_ipam_pool_id: Optional[pulumi.Input[str]] = None,
@@ -46,6 +47,7 @@ class VpcArgs:
         :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         :param pulumi.Input[bool] enable_dns_hostnames: A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
         :param pulumi.Input[bool] enable_dns_support: A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+        :param bool enable_internet_gateway: Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
         :param pulumi.Input[bool] enable_network_address_usage_metrics: Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
         :param pulumi.Input[str] instance_tenancy: A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
         :param pulumi.Input[str] ipv4_ipam_pool_id: The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
@@ -73,6 +75,8 @@ class VpcArgs:
             pulumi.set(__self__, "enable_dns_hostnames", enable_dns_hostnames)
         if enable_dns_support is not None:
             pulumi.set(__self__, "enable_dns_support", enable_dns_support)
+        if enable_internet_gateway is not None:
+            pulumi.set(__self__, "enable_internet_gateway", enable_internet_gateway)
         if enable_network_address_usage_metrics is not None:
             pulumi.set(__self__, "enable_network_address_usage_metrics", enable_network_address_usage_metrics)
         if instance_tenancy is not None:
@@ -173,6 +177,18 @@ class VpcArgs:
     @enable_dns_support.setter
     def enable_dns_support(self, value: Optional[pulumi.Input[bool]]):
         pulumi.set(self, "enable_dns_support", value)
+
+    @property
+    @pulumi.getter(name="enableInternetGateway")
+    def enable_internet_gateway(self) -> Optional[bool]:
+        """
+        Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
+        """
+        return pulumi.get(self, "enable_internet_gateway")
+
+    @enable_internet_gateway.setter
+    def enable_internet_gateway(self, value: Optional[bool]):
+        pulumi.set(self, "enable_internet_gateway", value)
 
     @property
     @pulumi.getter(name="enableNetworkAddressUsageMetrics")
@@ -354,6 +370,7 @@ class Vpc(pulumi.ComponentResource):
                  cidr_block: Optional[str] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
                  enable_dns_support: Optional[pulumi.Input[bool]] = None,
+                 enable_internet_gateway: Optional[bool] = None,
                  enable_network_address_usage_metrics: Optional[pulumi.Input[bool]] = None,
                  instance_tenancy: Optional[pulumi.Input[str]] = None,
                  ipv4_ipam_pool_id: Optional[pulumi.Input[str]] = None,
@@ -418,6 +435,7 @@ class Vpc(pulumi.ComponentResource):
         :param str cidr_block: The CIDR block for the VPC. Optional. Defaults to 10.0.0.0/16.
         :param pulumi.Input[bool] enable_dns_hostnames: A boolean flag to enable/disable DNS hostnames in the VPC. Defaults false.
         :param pulumi.Input[bool] enable_dns_support: A boolean flag to enable/disable DNS support in the VPC. Defaults to true.
+        :param bool enable_internet_gateway: Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
         :param pulumi.Input[bool] enable_network_address_usage_metrics: Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
         :param pulumi.Input[str] instance_tenancy: A tenancy option for instances launched into the VPC. Default is `default`, which ensures that EC2 instances launched in this VPC use the EC2 instance tenancy attribute specified when the EC2 instance is launched. The only other option is `dedicated`, which ensures that EC2 instances launched in this VPC are run on dedicated tenancy instances regardless of the tenancy attribute specified at launch. This has a dedicated per region fee of $2 per hour, plus an hourly per instance usage fee.
         :param pulumi.Input[str] ipv4_ipam_pool_id: The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts. Using IPAM you can monitor IP address usage throughout your AWS Organization.
@@ -501,6 +519,7 @@ class Vpc(pulumi.ComponentResource):
                  cidr_block: Optional[str] = None,
                  enable_dns_hostnames: Optional[pulumi.Input[bool]] = None,
                  enable_dns_support: Optional[pulumi.Input[bool]] = None,
+                 enable_internet_gateway: Optional[bool] = None,
                  enable_network_address_usage_metrics: Optional[pulumi.Input[bool]] = None,
                  instance_tenancy: Optional[pulumi.Input[str]] = None,
                  ipv4_ipam_pool_id: Optional[pulumi.Input[str]] = None,
@@ -532,6 +551,7 @@ class Vpc(pulumi.ComponentResource):
             __props__.__dict__["cidr_block"] = cidr_block
             __props__.__dict__["enable_dns_hostnames"] = enable_dns_hostnames
             __props__.__dict__["enable_dns_support"] = enable_dns_support
+            __props__.__dict__["enable_internet_gateway"] = enable_internet_gateway
             __props__.__dict__["enable_network_address_usage_metrics"] = enable_network_address_usage_metrics
             __props__.__dict__["instance_tenancy"] = instance_tenancy
             __props__.__dict__["ipv4_ipam_pool_id"] = ipv4_ipam_pool_id
@@ -576,7 +596,7 @@ class Vpc(pulumi.ComponentResource):
 
     @property
     @pulumi.getter(name="internetGateway")
-    def internet_gateway(self) -> pulumi.Output['pulumi_aws.ec2.InternetGateway']:
+    def internet_gateway(self) -> pulumi.Output[Optional['pulumi_aws.ec2.InternetGateway']]:
         """
         The Internet Gateway for the VPC.
         """

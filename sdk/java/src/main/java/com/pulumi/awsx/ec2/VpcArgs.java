@@ -114,6 +114,21 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
     }
 
     /**
+     * Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
+     * 
+     */
+    @Import(name="enableInternetGateway")
+    private @Nullable Boolean enableInternetGateway;
+
+    /**
+     * @return Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
+     * 
+     */
+    public Optional<Boolean> enableInternetGateway() {
+        return Optional.ofNullable(this.enableInternetGateway);
+    }
+
+    /**
      * Indicates whether Network Address Usage metrics are enabled for your VPC. Defaults to false.
      * 
      */
@@ -332,6 +347,7 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
         this.cidrBlock = $.cidrBlock;
         this.enableDnsHostnames = $.enableDnsHostnames;
         this.enableDnsSupport = $.enableDnsSupport;
+        this.enableInternetGateway = $.enableInternetGateway;
         this.enableNetworkAddressUsageMetrics = $.enableNetworkAddressUsageMetrics;
         this.instanceTenancy = $.instanceTenancy;
         this.ipv4IpamPoolId = $.ipv4IpamPoolId;
@@ -470,6 +486,17 @@ public final class VpcArgs extends com.pulumi.resources.ResourceArgs {
          */
         public Builder enableDnsSupport(Boolean enableDnsSupport) {
             return enableDnsSupport(Output.of(enableDnsSupport));
+        }
+
+        /**
+         * @param enableInternetGateway Whether or not to associate an Internet Gateway with the specified VPC. Defaults to `true`.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder enableInternetGateway(@Nullable Boolean enableInternetGateway) {
+            $.enableInternetGateway = enableInternetGateway;
+            return this;
         }
 
         /**
