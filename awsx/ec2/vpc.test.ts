@@ -20,6 +20,7 @@ import {
   compareSubnetSpecs,
   findSubnetGap,
   OverlappingSubnet,
+  shouldCreateInternetGateway,
   shouldCreateNatGateway,
   validateEips,
   validateNatGatewayStrategy,
@@ -289,5 +290,31 @@ describe("finding subnet gaps", () => {
         },
       ),
     );
+  });
+});
+
+describe("shouldCreateInternetGateway", () => {
+  it("should return true if public subnets are specified", () => {
+    expect(shouldCreateInternetGateway([{ type: "Public" }])).toBeTruthy();
+  });
+
+  it("should return true if public subnets are specified", () => {
+    expect(shouldCreateInternetGateway([{ type: "Public" }])).toBeTruthy();
+  });
+
+  describe.each([
+    { subnets: ["Private", "Public", "Internal"], expectIgw: true },
+    { subnets: ["Internal", "Internal", "Internal"], expectIgw: false },
+    { subnets: ["Public", "Public", "Public"], expectIgw: true },
+    // default configuration has public subnets and thus needs an IGW
+    { subnets: undefined, expectIgw: true },
+  ])("should correctly determine whether an IGW needs to be created", (data) => {
+    const specs = data.subnets?.map((x) => {
+      return {
+        type: x as SubnetTypeInputs,
+      };
+    });
+
+    expect(shouldCreateInternetGateway(specs)).toBe(data.expectIgw);
   });
 });

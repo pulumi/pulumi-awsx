@@ -1,7 +1,6 @@
 import * as awsx from "@pulumi/awsx";
 
 const myVpc = new awsx.ec2.Vpc("awsx-nodejs-vpc-without-igw", {
-    enableInternetGateway: false,
     natGateways: {
         strategy: "None"
     },

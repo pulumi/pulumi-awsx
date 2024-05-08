@@ -51,8 +51,8 @@ export class Vpc extends schema.Vpc<VpcData> {
     this.routeTables = data.routeTables;
     this.routes = data.routes;
     this.routeTableAssociations = data.routeTableAssociations;
-    // TODO florian@: this is hacky because we cannot create conditional resources in the initialize function and cannot use async code in the constructor. Check if there's a better way
-    this.internetGateway = isInternetGatewayEnabled(args.enableInternetGateway)
+    // TODO florian@: this is a bit hacky because we cannot create conditional resources in the initialize function and cannot use async code in the constructor. Check if there's a better way
+    this.internetGateway = shouldCreateInternetGateway(args.subnetSpecs)
       ? data.igw?.apply((igw) => igw!)
       : undefined;
     this.natGateways = data.natGateways;
@@ -160,7 +160,7 @@ export class Vpc extends schema.Vpc<VpcData> {
     );
     const vpcId = vpc.id;
 
-    const igw = isInternetGatewayEnabled(args.enableInternetGateway)
+    const igw = shouldCreateInternetGateway(subnetSpecs)
       ? new aws.ec2.InternetGateway(
           `${name}`,
           {
@@ -610,6 +610,9 @@ export function validateNoGaps(vpcCidr: string, subnetSpecs: SubnetSpec[]) {
   );
 }
 
-export function isInternetGatewayEnabled(igwEnabled: boolean | undefined): boolean {
-  return igwEnabled ?? true;
+export function shouldCreateInternetGateway(
+  subnetSpecs: { type: schema.SubnetTypeInputs }[] | undefined,
+): boolean {
+  // defaults to creating an IGW if no subnetSpecs are provided because that uses the default subnet configuration which includes public subnets
+  return subnetSpecs?.some((subnet) => subnet.type === "Public") ?? true;
 }
