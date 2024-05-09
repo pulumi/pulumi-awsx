@@ -3,7 +3,6 @@
 
 package com.pulumi.awsx.lb;
 
-import com.pulumi.aws.ec2.SecurityGroup;
 import com.pulumi.aws.lb.Listener;
 import com.pulumi.aws.lb.LoadBalancer;
 import com.pulumi.aws.lb.TargetGroup;
@@ -19,25 +18,11 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 /**
- * Provides a Network Load Balancer resource with listeners, default target group and default security group.
+ * Provides a Network Load Balancer resource with listeners and default target group.
  * 
  */
 @ResourceType(type="awsx:lb:NetworkLoadBalancer")
 public class NetworkLoadBalancer extends com.pulumi.resources.ComponentResource {
-    /**
-     * Default security group, if auto-created
-     * 
-     */
-    @Export(name="defaultSecurityGroup", refs={SecurityGroup.class}, tree="[0]")
-    private Output</* @Nullable */ SecurityGroup> defaultSecurityGroup;
-
-    /**
-     * @return Default security group, if auto-created
-     * 
-     */
-    public Output<Optional<SecurityGroup>> defaultSecurityGroup() {
-        return Codegen.optional(this.defaultSecurityGroup);
-    }
     /**
      * Default target group, if auto-created
      * 

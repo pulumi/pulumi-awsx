@@ -10,17 +10,11 @@ using Pulumi.Serialization;
 namespace Pulumi.Awsx.Lb
 {
     /// <summary>
-    /// Provides a Network Load Balancer resource with listeners, default target group and default security group.
+    /// Provides a Network Load Balancer resource with listeners and default target group.
     /// </summary>
     [AwsxResourceType("awsx:lb:NetworkLoadBalancer")]
     public partial class NetworkLoadBalancer : global::Pulumi.ComponentResource
     {
-        /// <summary>
-        /// Default security group, if auto-created
-        /// </summary>
-        [Output("defaultSecurityGroup")]
-        public Output<Pulumi.Aws.Ec2.SecurityGroup?> DefaultSecurityGroup { get; private set; } = null!;
-
         /// <summary>
         /// Default target group, if auto-created
         /// </summary>
@@ -96,12 +90,6 @@ namespace Pulumi.Awsx.Lb
         /// </summary>
         [Input("customerOwnedIpv4Pool")]
         public Input<string>? CustomerOwnedIpv4Pool { get; set; }
-
-        /// <summary>
-        /// Options for creating a default security group if [securityGroups] not specified.
-        /// </summary>
-        [Input("defaultSecurityGroup")]
-        public Pulumi.Awsx.Awsx.Inputs.DefaultSecurityGroupArgs? DefaultSecurityGroup { get; set; }
 
         /// <summary>
         /// Options creating a default target group.

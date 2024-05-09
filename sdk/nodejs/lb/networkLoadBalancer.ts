@@ -10,7 +10,7 @@ import * as utilities from "../utilities";
 import * as pulumiAws from "@pulumi/aws";
 
 /**
- * Provides a Network Load Balancer resource with listeners, default target group and default security group.
+ * Provides a Network Load Balancer resource with listeners and default target group.
  */
 export class NetworkLoadBalancer extends pulumi.ComponentResource {
     /** @internal */
@@ -27,10 +27,6 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
         return obj['__pulumiType'] === NetworkLoadBalancer.__pulumiType;
     }
 
-    /**
-     * Default security group, if auto-created
-     */
-    public readonly defaultSecurityGroup!: pulumi.Output<pulumiAws.ec2.SecurityGroup | undefined>;
     /**
      * Default target group, if auto-created
      */
@@ -63,7 +59,6 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["clientKeepAlive"] = args ? args.clientKeepAlive : undefined;
             resourceInputs["connectionLogs"] = args ? args.connectionLogs : undefined;
             resourceInputs["customerOwnedIpv4Pool"] = args ? args.customerOwnedIpv4Pool : undefined;
-            resourceInputs["defaultSecurityGroup"] = args ? (args.defaultSecurityGroup ? inputs.awsx.defaultSecurityGroupArgsProvideDefaults(args.defaultSecurityGroup) : undefined) : undefined;
             resourceInputs["defaultTargetGroup"] = args ? args.defaultTargetGroup : undefined;
             resourceInputs["defaultTargetGroupPort"] = args ? args.defaultTargetGroupPort : undefined;
             resourceInputs["desyncMitigationMode"] = args ? args.desyncMitigationMode : undefined;
@@ -92,7 +87,6 @@ export class NetworkLoadBalancer extends pulumi.ComponentResource {
             resourceInputs["loadBalancer"] = undefined /*out*/;
             resourceInputs["vpcId"] = undefined /*out*/;
         } else {
-            resourceInputs["defaultSecurityGroup"] = undefined /*out*/;
             resourceInputs["defaultTargetGroup"] = undefined /*out*/;
             resourceInputs["listeners"] = undefined /*out*/;
             resourceInputs["loadBalancer"] = undefined /*out*/;
@@ -123,10 +117,6 @@ export interface NetworkLoadBalancerArgs {
      * ID of the customer owned ipv4 pool to use for this load balancer.
      */
     customerOwnedIpv4Pool?: pulumi.Input<string>;
-    /**
-     * Options for creating a default security group if [securityGroups] not specified.
-     */
-    defaultSecurityGroup?: inputs.awsx.DefaultSecurityGroupArgs;
     /**
      * Options creating a default target group.
      */

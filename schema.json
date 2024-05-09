@@ -3036,12 +3036,8 @@
             "isComponent": true
         },
         "awsx:lb:NetworkLoadBalancer": {
-            "description": "Provides a Network Load Balancer resource with listeners, default target group and default security group.",
+            "description": "Provides a Network Load Balancer resource with listeners and default target group.",
             "properties": {
-                "defaultSecurityGroup": {
-                    "$ref": "/aws/v6.32.0/schema.json#/resources/aws:ec2%2fsecurityGroup:SecurityGroup",
-                    "description": "Default security group, if auto-created"
-                },
                 "defaultTargetGroup": {
                     "$ref": "/aws/v6.32.0/schema.json#/resources/aws:lb%2ftargetGroup:TargetGroup",
                     "description": "Default target group, if auto-created"
@@ -3084,11 +3080,6 @@
                     "type": "string",
                     "description": "ID of the customer owned ipv4 pool to use for this load balancer.\n",
                     "willReplaceOnChanges": true
-                },
-                "defaultSecurityGroup": {
-                    "$ref": "#/types/awsx:awsx:DefaultSecurityGroup",
-                    "plain": true,
-                    "description": "Options for creating a default security group if [securityGroups] not specified."
                 },
                 "defaultTargetGroup": {
                     "$ref": "#/types/awsx:lb:TargetGroup",

@@ -7,7 +7,6 @@ import com.pulumi.aws.ec2.Subnet;
 import com.pulumi.aws.lb.inputs.LoadBalancerAccessLogsArgs;
 import com.pulumi.aws.lb.inputs.LoadBalancerConnectionLogsArgs;
 import com.pulumi.aws.lb.inputs.LoadBalancerSubnetMappingArgs;
-import com.pulumi.awsx.awsx.inputs.DefaultSecurityGroupArgs;
 import com.pulumi.awsx.lb.inputs.ListenerArgs;
 import com.pulumi.awsx.lb.inputs.TargetGroupArgs;
 import com.pulumi.core.Output;
@@ -84,21 +83,6 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
      */
     public Optional<Output<String>> customerOwnedIpv4Pool() {
         return Optional.ofNullable(this.customerOwnedIpv4Pool);
-    }
-
-    /**
-     * Options for creating a default security group if [securityGroups] not specified.
-     * 
-     */
-    @Import(name="defaultSecurityGroup")
-    private @Nullable DefaultSecurityGroupArgs defaultSecurityGroup;
-
-    /**
-     * @return Options for creating a default security group if [securityGroups] not specified.
-     * 
-     */
-    public Optional<DefaultSecurityGroupArgs> defaultSecurityGroup() {
-        return Optional.ofNullable(this.defaultSecurityGroup);
     }
 
     /**
@@ -483,7 +467,6 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         this.clientKeepAlive = $.clientKeepAlive;
         this.connectionLogs = $.connectionLogs;
         this.customerOwnedIpv4Pool = $.customerOwnedIpv4Pool;
-        this.defaultSecurityGroup = $.defaultSecurityGroup;
         this.defaultTargetGroup = $.defaultTargetGroup;
         this.defaultTargetGroupPort = $.defaultTargetGroupPort;
         this.desyncMitigationMode = $.desyncMitigationMode;
@@ -611,17 +594,6 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
          */
         public Builder customerOwnedIpv4Pool(String customerOwnedIpv4Pool) {
             return customerOwnedIpv4Pool(Output.of(customerOwnedIpv4Pool));
-        }
-
-        /**
-         * @param defaultSecurityGroup Options for creating a default security group if [securityGroups] not specified.
-         * 
-         * @return builder
-         * 
-         */
-        public Builder defaultSecurityGroup(@Nullable DefaultSecurityGroupArgs defaultSecurityGroup) {
-            $.defaultSecurityGroup = defaultSecurityGroup;
-            return this;
         }
 
         /**

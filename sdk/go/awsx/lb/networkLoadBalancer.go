@@ -9,17 +9,14 @@ import (
 
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/ec2"
 	"github.com/pulumi/pulumi-aws/sdk/v6/go/aws/lb"
-	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/awsx"
 	"github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx/internal"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
-// Provides a Network Load Balancer resource with listeners, default target group and default security group.
+// Provides a Network Load Balancer resource with listeners and default target group.
 type NetworkLoadBalancer struct {
 	pulumi.ResourceState
 
-	// Default security group, if auto-created
-	DefaultSecurityGroup ec2.SecurityGroupOutput `pulumi:"defaultSecurityGroup"`
 	// Default target group, if auto-created
 	DefaultTargetGroup lb.TargetGroupOutput `pulumi:"defaultTargetGroup"`
 	// Listeners created as part of this load balancer
@@ -37,9 +34,6 @@ func NewNetworkLoadBalancer(ctx *pulumi.Context,
 		args = &NetworkLoadBalancerArgs{}
 	}
 
-	if args.DefaultSecurityGroup != nil {
-		args.DefaultSecurityGroup = args.DefaultSecurityGroup.Defaults()
-	}
 	opts = internal.PkgResourceDefaultOpts(opts)
 	var resource NetworkLoadBalancer
 	err := ctx.RegisterRemoteComponentResource("awsx:lb:NetworkLoadBalancer", name, args, &resource, opts...)
@@ -58,8 +52,6 @@ type networkLoadBalancerArgs struct {
 	ConnectionLogs *lb.LoadBalancerConnectionLogs `pulumi:"connectionLogs"`
 	// ID of the customer owned ipv4 pool to use for this load balancer.
 	CustomerOwnedIpv4Pool *string `pulumi:"customerOwnedIpv4Pool"`
-	// Options for creating a default security group if [securityGroups] not specified.
-	DefaultSecurityGroup *awsx.DefaultSecurityGroup `pulumi:"defaultSecurityGroup"`
 	// Options creating a default target group.
 	DefaultTargetGroup *TargetGroup `pulumi:"defaultTargetGroup"`
 	// Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
@@ -122,8 +114,6 @@ type NetworkLoadBalancerArgs struct {
 	ConnectionLogs lb.LoadBalancerConnectionLogsPtrInput
 	// ID of the customer owned ipv4 pool to use for this load balancer.
 	CustomerOwnedIpv4Pool pulumi.StringPtrInput
-	// Options for creating a default security group if [securityGroups] not specified.
-	DefaultSecurityGroup *awsx.DefaultSecurityGroupArgs
 	// Options creating a default target group.
 	DefaultTargetGroup *TargetGroupArgs
 	// Port to use to connect with the target. Valid values are ports 1-65535. Defaults to 80.
@@ -261,11 +251,6 @@ func (o NetworkLoadBalancerOutput) ToNetworkLoadBalancerOutput() NetworkLoadBala
 
 func (o NetworkLoadBalancerOutput) ToNetworkLoadBalancerOutputWithContext(ctx context.Context) NetworkLoadBalancerOutput {
 	return o
-}
-
-// Default security group, if auto-created
-func (o NetworkLoadBalancerOutput) DefaultSecurityGroup() ec2.SecurityGroupOutput {
-	return o.ApplyT(func(v *NetworkLoadBalancer) ec2.SecurityGroupOutput { return v.DefaultSecurityGroup }).(ec2.SecurityGroupOutput)
 }
 
 // Default target group, if auto-created
