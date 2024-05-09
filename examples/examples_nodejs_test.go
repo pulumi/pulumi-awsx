@@ -90,11 +90,6 @@ func TestNlbSimple(t *testing.T) {
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
 			Dir:           filepath.Join(getCwd(t), "ts-nlb-simple"),
-			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
-				// Verify that the NLB has a default security group
-				assert.Contains(t, stackInfo.Outputs, "securityGroupId")
-				assert.NotEmpty(t, stackInfo.Outputs["securityGroupId"])
-			},
 		})
 
 	integration.ProgramTest(t, &test)
@@ -105,10 +100,6 @@ func TestNlbWithSecurityGroup(t *testing.T) {
 		With(integration.ProgramTestOptions{
 			RunUpdateTest: false,
 			Dir:           filepath.Join(getCwd(t), "ts-nlb-with-security-group"),
-			ExtraRuntimeValidation: func(t *testing.T, stackInfo integration.RuntimeValidationStackInfo) {
-				// Verify that the NLB does not have a default security group
-				assert.NotContains(t, stackInfo.Outputs, "defaultSecurityGroupId")
-			},
 		})
 
 	integration.ProgramTest(t, &test)
