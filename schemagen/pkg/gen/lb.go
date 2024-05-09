@@ -59,12 +59,16 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 			},
 		},
 	}
-	inputProperties["defaultSecurityGroup"] = schema.PropertySpec{
-		Description: "Options for creating a default security group if [securityGroups] not specified.",
-		TypeSpec: schema.TypeSpec{
-			Ref:   "#/types/awsx:awsx:DefaultSecurityGroup",
-			Plain: true,
-		},
+	if !isNetworkLoadBalancer {
+		// For NLBs security groups cannot be added if none are currently present, and cannot all be removed once added.
+		// Adding a default security group to NLBs would cause replacements during upgrades
+		inputProperties["defaultSecurityGroup"] = schema.PropertySpec{
+			Description: "Options for creating a default security group if [securityGroups] not specified.",
+			TypeSpec: schema.TypeSpec{
+				Ref:   "#/types/awsx:awsx:DefaultSecurityGroup",
+				Plain: true,
+			},
+		}
 	}
 	inputProperties["defaultTargetGroup"] = schema.PropertySpec{
 		Description: "Options creating a default target group.",
@@ -134,9 +138,14 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 		},
 	}
 
+	if isNetworkLoadBalancer {
+		// NLBs don't have a default Security Group
+		delete(outputs, "defaultSecurityGroup")
+	}
+
 	var description string
 	if isNetworkLoadBalancer {
-		description = "Provides a Network Load Balancer resource with listeners, default target group and default security group."
+		description = "Provides a Network Load Balancer resource with listeners and default target group."
 	} else {
 		description = "Provides an Application Load Balancer resource with listeners, default target group and default security group."
 	}
