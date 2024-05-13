@@ -156,6 +156,7 @@ export function getSubnetSpecsExplicit(
         type: subnetSpec.type,
         azName,
         subnetName: subnetName(vpcName, subnetSpec, azNum),
+        tags: subnetSpec.tags,
       });
     }
   }

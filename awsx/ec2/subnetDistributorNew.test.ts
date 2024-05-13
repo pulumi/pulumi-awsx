@@ -334,6 +334,62 @@ describe("validating exact layouts", () => {
   });
 });
 
+describe("subnet tags", () => {
+  it("should propagate subnet tags for regular subnet layout", () => {
+    const tags = { Name: "my-subnet" };
+    const result = getSubnetSpecs(
+      "vpcName",
+      "10.0.0.0/16",
+      ["us-east-1a", "us-east-1b"],
+      [
+        {
+          type: "Public",
+          tags: { Name: "my-public-subnet" },
+        },
+        {
+          type: "Private",
+          tags: { Name: "my-private-subnet" },
+        },
+      ],
+    );
+
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ tags: { Name: "my-public-subnet" } }),
+        expect.objectContaining({ tags: { Name: "my-private-subnet" } }),
+      ]),
+    );
+  });
+  it("should propagate subnet tags for explicit subnet layout", () => {
+    const tags = { Name: "my-subnet" };
+    const result = getSubnetSpecsExplicit(
+      "vpcName",
+      ["us-east-1a", "us-east-1b"],
+      [
+        {
+          type: "Public",
+          cidrBlocks: ["10.0.0.0/18", "10.0.64.0/19"],
+          tags: { Name: "my-public-subnet" },
+        },
+        {
+          type: "Private",
+          cidrBlocks: ["10.0.96.0/19", "10.0.128.0/20"],
+          tags: { Name: "my-private-subnet" },
+        },
+      ],
+    );
+
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ tags: { Name: "my-public-subnet" } }),
+        expect.objectContaining({ tags: { Name: "my-private-subnet" } }),
+        expect.objectContaining({ tags: { Name: "my-public-subnet" } }),
+        expect.objectContaining({ tags: { Name: "my-private-subnet" } }),
+      ]),
+    );
+  });
+});
+
 describe("explicit subnet layouts", () => {
   it("should produce specified subnets", () => {
     const result = getSubnetSpecsExplicit(
