@@ -62,12 +62,10 @@ func TestEcrRepositoryUpgrade(t *testing.T) {
 }
 
 func TestLoadBalancerUpgrade(t *testing.T) {
-	t.Skip("TODO[pulumi/pulumi-awsx#1265]")
 	testProviderUpgrade(t, "../examples/ts-lb-simple", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
 func TestNetworkLoadBalancerUpgrade(t *testing.T) {
-	t.Skip("TODO[pulumi/pulumi-awsx#1265]")
 	testProviderUpgrade(t, "../examples/ts-nlb-simple", &testProviderUpgradeOptions{linkNodeSDK: true})
 }
 
