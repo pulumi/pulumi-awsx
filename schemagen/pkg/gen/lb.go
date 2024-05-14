@@ -45,8 +45,6 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 	if isNetworkLoadBalancer {
 		// "enableHttp2" is only for ApplicationLoadBalancers
 		delete(inputProperties, "enableHttp2")
-		// NLBs don't allow security groups
-		delete(inputProperties, "securityGroups")
 	}
 	delete(inputProperties, "loadBalancerType")
 
@@ -62,7 +60,8 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 		},
 	}
 	if !isNetworkLoadBalancer {
-		// NLBs don't allow security groups
+		// For NLBs security groups cannot be added if none are currently present, and cannot all be removed once added.
+		// Adding a default security group to NLBs would cause replacements during upgrades
 		inputProperties["defaultSecurityGroup"] = schema.PropertySpec{
 			Description: "Options for creating a default security group if [securityGroups] not specified.",
 			TypeSpec: schema.TypeSpec{
@@ -140,7 +139,7 @@ func loadBalancer(awsSpec schema.PackageSpec, isNetworkLoadBalancer bool) schema
 	}
 
 	if isNetworkLoadBalancer {
-		// NLB don't have Security Groups
+		// NLBs don't have a default Security Group
 		delete(outputs, "defaultSecurityGroup")
 	}
 

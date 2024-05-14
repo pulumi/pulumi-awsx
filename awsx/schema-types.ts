@@ -346,6 +346,7 @@ export interface NetworkLoadBalancerArgs {
     readonly name?: pulumi.Input<string>;
     readonly namePrefix?: pulumi.Input<string>;
     readonly preserveHostHeader?: pulumi.Input<boolean>;
+    readonly securityGroups?: pulumi.Input<pulumi.Input<string>[]>;
     readonly subnetIds?: pulumi.Input<pulumi.Input<string>[]>;
     readonly subnetMappings?: pulumi.Input<pulumi.Input<aws.types.input.lb.LoadBalancerSubnetMapping>[]>;
     readonly subnets?: pulumi.Input<pulumi.Input<aws.ec2.Subnet>[]>;

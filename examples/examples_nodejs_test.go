@@ -95,6 +95,16 @@ func TestNlbSimple(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestNlbWithSecurityGroup(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ts-nlb-with-security-group"),
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func TestEcrSimple(t *testing.T) {
 	test := getNodeJSBaseOptions(t).
 		With(integration.ProgramTestOptions{

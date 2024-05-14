@@ -90,6 +90,8 @@ type networkLoadBalancerArgs struct {
 	NamePrefix *string `pulumi:"namePrefix"`
 	// Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader *bool `pulumi:"preserveHostHeader"`
+	// List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+	SecurityGroups []string `pulumi:"securityGroups"`
 	// List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
 	SubnetIds []string `pulumi:"subnetIds"`
 	// Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.
@@ -150,6 +152,8 @@ type NetworkLoadBalancerArgs struct {
 	NamePrefix pulumi.StringPtrInput
 	// Whether the Application Load Balancer should preserve the Host header in the HTTP request and send it to the target without any change. Defaults to `false`.
 	PreserveHostHeader pulumi.BoolPtrInput
+	// List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+	SecurityGroups pulumi.StringArrayInput
 	// List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
 	SubnetIds pulumi.StringArrayInput
 	// Subnet mapping block. See below. For Load Balancers of type `network` subnet mappings can only be added.

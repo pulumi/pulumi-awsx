@@ -211,6 +211,18 @@ namespace Pulumi.Awsx.Lb
         [Input("preserveHostHeader")]
         public Input<bool>? PreserveHostHeader { get; set; }
 
+        [Input("securityGroups")]
+        private InputList<string>? _securityGroups;
+
+        /// <summary>
+        /// List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+        /// </summary>
+        public InputList<string> SecurityGroups
+        {
+            get => _securityGroups ?? (_securityGroups = new InputList<string>());
+            set => _securityGroups = value;
+        }
+
         [Input("subnetIds")]
         private InputList<string>? _subnetIds;
 

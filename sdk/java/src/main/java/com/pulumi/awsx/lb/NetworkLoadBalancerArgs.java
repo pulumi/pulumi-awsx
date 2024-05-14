@@ -371,6 +371,21 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
     }
 
     /**
+     * List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+     * 
+     */
+    @Import(name="securityGroups")
+    private @Nullable Output<List<String>> securityGroups;
+
+    /**
+     * @return List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+     * 
+     */
+    public Optional<Output<List<String>>> securityGroups() {
+        return Optional.ofNullable(this.securityGroups);
+    }
+
+    /**
      * List of subnet IDs to attach to the LB. For Load Balancers of type `network` subnets can only be added (see [Availability Zones](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#availability-zones)), deleting a subnet for load balancers of type `network` will force a recreation of the resource.
      * 
      */
@@ -471,6 +486,7 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
         this.name = $.name;
         this.namePrefix = $.namePrefix;
         this.preserveHostHeader = $.preserveHostHeader;
+        this.securityGroups = $.securityGroups;
         this.subnetIds = $.subnetIds;
         this.subnetMappings = $.subnetMappings;
         this.subnets = $.subnets;
@@ -957,6 +973,37 @@ public final class NetworkLoadBalancerArgs extends com.pulumi.resources.Resource
          */
         public Builder preserveHostHeader(Boolean preserveHostHeader) {
             return preserveHostHeader(Output.of(preserveHostHeader));
+        }
+
+        /**
+         * @param securityGroups List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder securityGroups(@Nullable Output<List<String>> securityGroups) {
+            $.securityGroups = securityGroups;
+            return this;
+        }
+
+        /**
+         * @param securityGroups List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder securityGroups(List<String> securityGroups) {
+            return securityGroups(Output.of(securityGroups));
+        }
+
+        /**
+         * @param securityGroups List of security group IDs to assign to the LB. Only valid for Load Balancers of type `application` or `network`. For load balancers of type `network` security groups cannot be added if none are currently present, and cannot all be removed once added. If either of these conditions are met, this will force a recreation of the resource.
+         * 
+         * @return builder
+         * 
+         */
+        public Builder securityGroups(String... securityGroups) {
+            return securityGroups(List.of(securityGroups));
         }
 
         /**
