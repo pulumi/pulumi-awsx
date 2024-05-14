@@ -2,14 +2,14 @@
   "version": 3,
   "deployment": {
     "manifest": {
-      "time": "2024-05-13T20:38:33.588765+02:00",
+      "time": "2024-05-14T08:59:25.902584+02:00",
       "magic": "ee72c2e79e477dd009ff216c8c863367612aefa7be4afa54b05c168f2405640e",
       "version": "v3.113.1"
     },
     "secrets_providers": {
       "type": "passphrase",
       "state": {
-        "salt": "v1:TfyhmDN50SE=:v1:zZjZigTX8apUgN33:FFsFnsuPxjk0ZVEYxN9K7d049PE0FA=="
+        "salt": "v1:eKtozMWoFb8=:v1:XUUf4mPgNzz+6/jU:mR9d1iXmQXYzwUjMP1GQGbanaGk9mQ=="
       }
     },
     "resources": [
@@ -17,36 +17,36 @@
         "urn": "urn:pulumi:test::ts-nlb-simple::pulumi:pulumi:Stack::ts-nlb-simple-test",
         "custom": false,
         "type": "pulumi:pulumi:Stack",
-        "created": "2024-05-13T18:35:48.357724Z",
-        "modified": "2024-05-13T18:35:48.357724Z",
+        "created": "2024-05-14T06:56:39.646158Z",
+        "modified": "2024-05-14T06:56:39.646158Z",
         "sourcePosition": "project:///node_modules/@pulumi/runtime/stack.ts#36,23"
       },
       {
-        "urn": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:awsx::default_2_9_0",
+        "urn": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:awsx::default_1_0_6",
         "custom": true,
-        "id": "b716ced0-458a-44ff-8a45-46e1924ac998",
+        "id": "43f1c5ab-8fca-4726-847e-d0b0404cf938",
         "type": "pulumi:providers:awsx",
         "inputs": {
-          "version": "2.9.0"
+          "version": "1.0.6"
         },
         "outputs": {
-          "version": "2.9.0"
+          "version": "1.0.6"
         },
-        "created": "2024-05-13T18:35:50.636071Z",
-        "modified": "2024-05-13T18:35:50.636071Z"
+        "created": "2024-05-14T06:56:43.967135Z",
+        "modified": "2024-05-14T06:56:43.967135Z"
       },
       {
         "urn": "urn:pulumi:test::ts-nlb-simple::awsx:lb:NetworkLoadBalancer::nginx-lb",
         "custom": false,
         "type": "awsx:lb:NetworkLoadBalancer",
         "parent": "urn:pulumi:test::ts-nlb-simple::pulumi:pulumi:Stack::ts-nlb-simple-test",
-        "created": "2024-05-13T18:35:50.670054Z",
-        "modified": "2024-05-13T18:35:50.670054Z"
+        "created": "2024-05-14T06:56:44.009303Z",
+        "modified": "2024-05-14T06:56:44.009303Z"
       },
       {
         "urn": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:aws::default_5_35_0",
         "custom": true,
-        "id": "b859ec68-03cb-4816-8433-f96606e5a5ec",
+        "id": "3490daa8-96a2-4921-9447-1409c92fe6b7",
         "type": "pulumi:providers:aws",
         "inputs": {
           "version": "5.35.0"
@@ -54,13 +54,13 @@
         "outputs": {
           "version": "5.35.0"
         },
-        "created": "2024-05-13T18:35:51.17739Z",
-        "modified": "2024-05-13T18:35:51.17739Z"
+        "created": "2024-05-14T06:56:44.076033Z",
+        "modified": "2024-05-14T06:56:44.076033Z"
       },
       {
         "urn": "urn:pulumi:test::ts-nlb-simple::awsx:lb:NetworkLoadBalancer$aws:lb/targetGroup:TargetGroup::nginx-lb",
         "custom": true,
-        "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-3ed442b/107cf62379a9ecf1",
+        "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-bae673c/5797b1b8cabccada",
         "type": "aws:lb/targetGroup:TargetGroup",
         "inputs": {
           "__defaults": [
@@ -73,7 +73,7 @@
           ],
           "connectionTermination": false,
           "lambdaMultiValueHeadersEnabled": false,
-          "name": "nginx-lb-3ed442b",
+          "name": "nginx-lb-bae673c",
           "port": 80,
           "protocol": "TCP",
           "proxyProtocolV2": false,
@@ -82,8 +82,8 @@
           "vpcId": "vpc-4b82e033"
         },
         "outputs": {
-          "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-3ed442b/107cf62379a9ecf1",
-          "arnSuffix": "targetgroup/nginx-lb-3ed442b/107cf62379a9ecf1",
+          "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-bae673c/5797b1b8cabccada",
+          "arnSuffix": "targetgroup/nginx-lb-bae673c/5797b1b8cabccada",
           "connectionTermination": false,
           "deregistrationDelay": 300,
           "healthCheck": {
@@ -97,11 +97,11 @@
             "timeout": 10,
             "unhealthyThreshold": 2
           },
-          "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-3ed442b/107cf62379a9ecf1",
+          "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-bae673c/5797b1b8cabccada",
           "ipAddressType": "ipv4",
           "lambdaMultiValueHeadersEnabled": false,
           "loadBalancingCrossZoneEnabled": "use_load_balancer_configuration",
-          "name": "nginx-lb-3ed442b",
+          "name": "nginx-lb-bae673c",
           "port": 80,
           "preserveClientIp": "true",
           "protocol": "TCP",
@@ -122,19 +122,19 @@
           "vpcId": "vpc-4b82e033"
         },
         "parent": "urn:pulumi:test::ts-nlb-simple::awsx:lb:NetworkLoadBalancer::nginx-lb",
-        "provider": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:aws::default_5_35_0::b859ec68-03cb-4816-8433-f96606e5a5ec",
+        "provider": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:aws::default_5_35_0::3490daa8-96a2-4921-9447-1409c92fe6b7",
         "propertyDependencies": {
           "port": [],
           "protocol": [],
           "vpcId": []
         },
-        "created": "2024-05-13T18:36:00.901507Z",
-        "modified": "2024-05-13T18:36:00.901507Z"
+        "created": "2024-05-14T06:56:53.117051Z",
+        "modified": "2024-05-14T06:56:53.117051Z"
       },
       {
         "urn": "urn:pulumi:test::ts-nlb-simple::awsx:lb:NetworkLoadBalancer$aws:lb/loadBalancer:LoadBalancer::nginx-lb",
         "custom": true,
-        "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-9c7593b/045c648d6cc0c98e",
+        "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-d46509b/5528dce69e046533",
         "type": "aws:lb/loadBalancer:LoadBalancer",
         "inputs": {
           "__defaults": [
@@ -159,7 +159,7 @@
           "enableXffClientPort": false,
           "idleTimeout": 0,
           "loadBalancerType": "network",
-          "name": "nginx-lb-9c7593b",
+          "name": "nginx-lb-d46509b",
           "preserveHostHeader": false,
           "subnets": [
             "subnet-43f43a1e",
@@ -175,17 +175,17 @@
             "enabled": false,
             "prefix": ""
           },
-          "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-9c7593b/045c648d6cc0c98e",
-          "arnSuffix": "net/nginx-lb-9c7593b/045c648d6cc0c98e",
+          "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-d46509b/5528dce69e046533",
+          "arnSuffix": "net/nginx-lb-d46509b/5528dce69e046533",
           "customerOwnedIpv4Pool": "",
-          "dnsName": "nginx-lb-9c7593b-045c648d6cc0c98e.elb.us-west-2.amazonaws.com",
+          "dnsName": "nginx-lb-d46509b-5528dce69e046533.elb.us-west-2.amazonaws.com",
           "enableCrossZoneLoadBalancing": false,
           "enableDeletionProtection": false,
-          "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-9c7593b/045c648d6cc0c98e",
+          "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-d46509b/5528dce69e046533",
           "internal": false,
           "ipAddressType": "ipv4",
           "loadBalancerType": "network",
-          "name": "nginx-lb-9c7593b",
+          "name": "nginx-lb-d46509b",
           "securityGroups": [],
           "subnetMappings": [
             {
@@ -221,37 +221,37 @@
           "zoneId": "Z18D5FSROUN65G"
         },
         "parent": "urn:pulumi:test::ts-nlb-simple::awsx:lb:NetworkLoadBalancer::nginx-lb",
-        "provider": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:aws::default_5_35_0::b859ec68-03cb-4816-8433-f96606e5a5ec",
+        "provider": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:aws::default_5_35_0::3490daa8-96a2-4921-9447-1409c92fe6b7",
         "propertyDependencies": {
           "enableHttp2": [],
           "idleTimeout": [],
           "loadBalancerType": [],
           "subnets": []
         },
-        "created": "2024-05-13T18:38:32.694719Z",
-        "modified": "2024-05-13T18:38:32.694719Z"
+        "created": "2024-05-14T06:59:24.977148Z",
+        "modified": "2024-05-14T06:59:24.977148Z"
       },
       {
         "urn": "urn:pulumi:test::ts-nlb-simple::awsx:lb:NetworkLoadBalancer$aws:lb/listener:Listener::nginx-lb-0",
         "custom": true,
-        "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/net/nginx-lb-9c7593b/045c648d6cc0c98e/329a01d7543efd3e",
+        "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/net/nginx-lb-d46509b/5528dce69e046533/4aa39770aa11057a",
         "type": "aws:lb/listener:Listener",
         "inputs": {
           "__defaults": [],
           "defaultActions": [
             {
               "__defaults": [],
-              "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-3ed442b/107cf62379a9ecf1",
+              "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-bae673c/5797b1b8cabccada",
               "type": "forward"
             }
           ],
-          "loadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-9c7593b/045c648d6cc0c98e",
+          "loadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-d46509b/5528dce69e046533",
           "port": 80,
           "protocol": "TCP"
         },
         "outputs": {
           "__meta": "{\"e2bfb730-ecaa-11e6-8f88-34363bc7c4c0\":{\"read\":600000000000}}",
-          "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/net/nginx-lb-9c7593b/045c648d6cc0c98e/329a01d7543efd3e",
+          "arn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/net/nginx-lb-d46509b/5528dce69e046533/4aa39770aa11057a",
           "defaultActions": [
             {
               "authenticateCognito": null,
@@ -260,12 +260,12 @@
               "forward": null,
               "order": 1,
               "redirect": null,
-              "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-3ed442b/107cf62379a9ecf1",
+              "targetGroupArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:targetgroup/nginx-lb-bae673c/5797b1b8cabccada",
               "type": "forward"
             }
           ],
-          "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/net/nginx-lb-9c7593b/045c648d6cc0c98e/329a01d7543efd3e",
-          "loadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-9c7593b/045c648d6cc0c98e",
+          "id": "arn:aws:elasticloadbalancing:us-west-2:616138583583:listener/net/nginx-lb-d46509b/5528dce69e046533/4aa39770aa11057a",
+          "loadBalancerArn": "arn:aws:elasticloadbalancing:us-west-2:616138583583:loadbalancer/net/nginx-lb-d46509b/5528dce69e046533",
           "port": 80,
           "protocol": "TCP",
           "sslPolicy": "",
@@ -277,7 +277,7 @@
           "urn:pulumi:test::ts-nlb-simple::awsx:lb:NetworkLoadBalancer$aws:lb/loadBalancer:LoadBalancer::nginx-lb",
           "urn:pulumi:test::ts-nlb-simple::awsx:lb:NetworkLoadBalancer$aws:lb/targetGroup:TargetGroup::nginx-lb"
         ],
-        "provider": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:aws::default_5_35_0::b859ec68-03cb-4816-8433-f96606e5a5ec",
+        "provider": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:aws::default_5_35_0::3490daa8-96a2-4921-9447-1409c92fe6b7",
         "propertyDependencies": {
           "defaultActions": [
             "urn:pulumi:test::ts-nlb-simple::awsx:lb:NetworkLoadBalancer$aws:lb/targetGroup:TargetGroup::nginx-lb"
@@ -288,16 +288,16 @@
           "port": [],
           "protocol": []
         },
-        "created": "2024-05-13T18:38:33.466789Z",
-        "modified": "2024-05-13T18:38:33.466789Z"
+        "created": "2024-05-14T06:59:25.727116Z",
+        "modified": "2024-05-14T06:59:25.727116Z"
       },
       {
         "urn": "urn:pulumi:test::ts-nlb-simple::pulumi:providers:pulumi::default",
         "custom": true,
-        "id": "3a387e36-4ca7-454a-9ca9-8537be8180a4",
+        "id": "e319680f-4a0f-4bd9-a42a-a6f5c7a9b4f3",
         "type": "pulumi:providers:pulumi",
-        "created": "2024-05-13T18:38:33.561195Z",
-        "modified": "2024-05-13T18:38:33.561195Z"
+        "created": "2024-05-14T06:59:25.840076Z",
+        "modified": "2024-05-14T06:59:25.840076Z"
       }
     ]
   }
