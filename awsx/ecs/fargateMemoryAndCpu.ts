@@ -64,7 +64,7 @@ type FargateContainerMemoryAndCpu = {
 
 export function calculateFargateMemoryAndCPU(containers: FargateContainerMemoryAndCpu[]) {
   // First, determine how much VCPU/GB that the user is asking for in their containers.
-  let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory(containers);
+  const { requestedVCPU, requestedGB } = getRequestedVCPUandMemory(containers);
 
   // Ensure that the requested resources are within the bounds of what Fargate can support.
   // Task creation will fail if we allocate a smaller amount of CPU or memory than what the containers request
