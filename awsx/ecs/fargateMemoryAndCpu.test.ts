@@ -48,4 +48,63 @@ describe("max vcpu and memory", () => {
     expect(memCpu.cpu).toEqual("8192");
     expect(memCpu.memory).toEqual("21504");
   });
+
+  it("does not throw error if containers request exactly the maximum resources fargate allows", async () => {
+    expect(() => {
+      calculateFargateMemoryAndCPU([
+        {
+          cpu: (maxVCPU * 1024) / 2,
+          memory: (maxMemGB * 1024) / 2,
+        },
+        {
+          cpu: (maxVCPU * 1024) / 2,
+          memory: (maxMemGB * 1024) / 2,
+        },
+      ]);
+    }).not.toThrowError();
+  });
+  it("throws error if containers request more resources than fargate allows", async () => {
+    expect(() => {
+      calculateFargateMemoryAndCPU([
+        {
+          cpu: 16 * 1024,
+          memory: 120 * 1024,
+        },
+        {
+          cpu: 16 * 1024,
+          memory: 120 * 1024,
+        },
+      ]);
+    }).toThrowError(
+      `Requested resources exceed the maximum allowed for Fargate. Requested: 32 vCPU and 240GB. Max: ${maxVCPU} vCPU and ${maxMemGB}GB.`,
+    );
+  });
+  it("throws error if containers request more CPU than fargate allows", async () => {
+    expect(() => {
+      calculateFargateMemoryAndCPU([
+        {
+          cpu: (maxVCPU + 1) * 1024,
+          memory: maxMemGB * 1024,
+        },
+      ]);
+    }).toThrowError(
+      `Requested resources exceed the maximum allowed for Fargate. Requested: ${
+        maxVCPU + 1
+      } vCPU and ${maxMemGB}GB. Max: ${maxVCPU} vCPU and ${maxMemGB}GB.`,
+    );
+  });
+  it("throws error if containers requests more memory than fargate allows", async () => {
+    expect(() => {
+      calculateFargateMemoryAndCPU([
+        {
+          cpu: maxVCPU * 1024,
+          memory: (maxMemGB + 1) * 1024,
+        },
+      ]);
+    }).toThrowError(
+      `Requested resources exceed the maximum allowed for Fargate. Requested: ${maxVCPU} vCPU and ${
+        maxMemGB + 1
+      }GB. Max: ${maxVCPU} vCPU and ${maxMemGB}GB.`,
+    );
+  });
 });
