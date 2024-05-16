@@ -66,6 +66,14 @@ export function calculateFargateMemoryAndCPU(containers: FargateContainerMemoryA
   // First, determine how much VCPU/GB that the user is asking for in their containers.
   let { requestedVCPU, requestedGB } = getRequestedVCPUandMemory(containers);
 
+  // Ensure that the requested resources are within the bounds of what Fargate can support.
+  // Task creation will fail if we allocate a smaller amount of CPU or memory than what the containers request
+  if (requestedVCPU > maxVCPU || requestedGB > maxMemGB) {
+    throw new Error(
+      `Requested resources exceed the maximum allowed for Fargate. Requested: ${requestedVCPU} vCPU and ${requestedGB}GB. Max: ${maxVCPU} vCPU and ${maxMemGB}GB.`,
+    );
+  }
+
   // Don't exceed the max CPU that can be requested. No need to worry about a
   // min as we're finding the first config that provides *at least* this amount.
   requestedVCPU = Math.min(requestedVCPU, maxVCPU);
