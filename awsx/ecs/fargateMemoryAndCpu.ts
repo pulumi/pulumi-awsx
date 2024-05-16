@@ -74,14 +74,6 @@ export function calculateFargateMemoryAndCPU(containers: FargateContainerMemoryA
     );
   }
 
-  // Don't exceed the max CPU that can be requested. No need to worry about a
-  // min as we're finding the first config that provides *at least* this amount.
-  requestedVCPU = Math.min(requestedVCPU, maxVCPU);
-
-  // Don't exceed the max memory that can be requested. No need to worry about
-  // a min as we're finding the first config that provides *at least* this amount.
-  requestedGB = Math.min(requestedGB, maxMemGB);
-
   // Get all configs that can at least satisfy this pair of cpu/memory needs.
   const config = fargateConfigsByPriceAscending().find(
     (c) => c.vcpu >= requestedVCPU && c.memGB >= requestedGB,
