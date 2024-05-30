@@ -168,7 +168,7 @@ class ListenerArgs:
 
                 var frontEndTargetGroup = new TargetGroup("frontEndTargetGroup");
 
-                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
                     .port("443")
                     .protocol("HTTPS")
@@ -319,7 +319,7 @@ class ListenerArgs:
             }
 
             public static void stack(Context ctx) {
-                var frontEnd = new Listener("frontEnd", ListenerArgs.builder()        
+                var frontEnd = new Listener("frontEnd", ListenerArgs.builder()
                     .loadBalancerArn(frontEndAwsLb.arn())
                     .port("443")
                     .protocol("TLS")
@@ -485,7 +485,7 @@ class ListenerArgs:
             public static void stack(Context ctx) {
                 var frontEnd = new LoadBalancer("frontEnd");
 
-                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
                     .port("80")
                     .protocol("HTTP")
@@ -657,7 +657,7 @@ class ListenerArgs:
             public static void stack(Context ctx) {
                 var frontEnd = new LoadBalancer("frontEnd");
 
-                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
                     .port("80")
                     .protocol("HTTP")
@@ -895,7 +895,7 @@ class ListenerArgs:
 
                 var domain = new UserPoolDomain("domain");
 
-                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
                     .port("80")
                     .protocol("HTTP")
@@ -1127,7 +1127,7 @@ class ListenerArgs:
 
                 var frontEndTargetGroup = new TargetGroup("frontEndTargetGroup");
 
-                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+                var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
                     .loadBalancerArn(frontEnd.arn())
                     .port("80")
                     .protocol("HTTP")
@@ -1367,7 +1367,7 @@ class ListenerArgs:
             }
 
             public static void stack(Context ctx) {
-                var example = new LoadBalancer("example", LoadBalancerArgs.builder()        
+                var example = new LoadBalancer("example", LoadBalancerArgs.builder()
                     .loadBalancerType("gateway")
                     .name("example")
                     .subnetMappings(LoadBalancerSubnetMappingArgs.builder()
@@ -1375,7 +1375,7 @@ class ListenerArgs:
                         .build())
                     .build());
 
-                var exampleTargetGroup = new TargetGroup("exampleTargetGroup", TargetGroupArgs.builder()        
+                var exampleTargetGroup = new TargetGroup("exampleTargetGroup", TargetGroupArgs.builder()
                     .name("example")
                     .port(6081)
                     .protocol("GENEVE")
@@ -1386,7 +1386,7 @@ class ListenerArgs:
                         .build())
                     .build());
 
-                var exampleListener = new Listener("exampleListener", ListenerArgs.builder()        
+                var exampleListener = new Listener("exampleListener", ListenerArgs.builder()
                     .loadBalancerArn(example.id())
                     .defaultActions(ListenerDefaultActionArgs.builder()
                         .targetGroupArn(exampleTargetGroup.id())
@@ -1567,13 +1567,13 @@ class ListenerArgs:
             }
 
             public static void stack(Context ctx) {
-                var example = new LoadBalancer("example", LoadBalancerArgs.builder()        
+                var example = new LoadBalancer("example", LoadBalancerArgs.builder()
                     .loadBalancerType("application")
                     .build());
 
                 var exampleTargetGroup = new TargetGroup("exampleTargetGroup");
 
-                var exampleListener = new Listener("exampleListener", ListenerArgs.builder()        
+                var exampleListener = new Listener("exampleListener", ListenerArgs.builder()
                     .loadBalancerArn(example.id())
                     .defaultActions(ListenerDefaultActionArgs.builder()
                         .targetGroupArn(exampleTargetGroup.id())
@@ -1880,11 +1880,11 @@ class TargetGroupArgs:
             }
 
             public static void stack(Context ctx) {
-                var main = new Vpc("main", VpcArgs.builder()        
+                var main = new Vpc("main", VpcArgs.builder()
                     .cidrBlock("10.0.0.0/16")
                     .build());
 
-                var test = new TargetGroup("test", TargetGroupArgs.builder()        
+                var test = new TargetGroup("test", TargetGroupArgs.builder()
                     .name("tf-example-lb-tg")
                     .port(80)
                     .protocol("HTTP")
@@ -2016,11 +2016,11 @@ class TargetGroupArgs:
             }
 
             public static void stack(Context ctx) {
-                var main = new Vpc("main", VpcArgs.builder()        
+                var main = new Vpc("main", VpcArgs.builder()
                     .cidrBlock("10.0.0.0/16")
                     .build());
 
-                var ip_example = new TargetGroup("ip-example", TargetGroupArgs.builder()        
+                var ip_example = new TargetGroup("ip-example", TargetGroupArgs.builder()
                     .name("tf-example-lb-tg")
                     .port(80)
                     .protocol("HTTP")
@@ -2126,7 +2126,7 @@ class TargetGroupArgs:
             }
 
             public static void stack(Context ctx) {
-                var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()        
+                var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()
                     .name("tf-example-lb-tg")
                     .targetType("lambda")
                     .build());
@@ -2234,7 +2234,7 @@ class TargetGroupArgs:
             }
 
             public static void stack(Context ctx) {
-                var alb_example = new TargetGroup("alb-example", TargetGroupArgs.builder()        
+                var alb_example = new TargetGroup("alb-example", TargetGroupArgs.builder()
                     .name("tf-example-lb-alb-tg")
                     .targetType("alb")
                     .port(80)
@@ -2363,7 +2363,7 @@ class TargetGroupArgs:
             }
 
             public static void stack(Context ctx) {
-                var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()        
+                var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()
                     .name("tf-example-lb-nlb-tg")
                     .port(25)
                     .protocol("TCP")

@@ -504,7 +504,7 @@ export namespace ec2 {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()        
+     *         var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()
      *             .vpcId(main.id())
      *             .serviceName("com.amazonaws.us-west-2.s3")
      *             .build());
@@ -613,7 +613,7 @@ export namespace ec2 {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()        
+     *         var s3 = new VpcEndpoint("s3", VpcEndpointArgs.builder()
      *             .vpcId(main.id())
      *             .serviceName("com.amazonaws.us-west-2.s3")
      *             .tags(Map.of("Environment", "test"))
@@ -729,7 +729,7 @@ export namespace ec2 {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var ec2 = new VpcEndpoint("ec2", VpcEndpointArgs.builder()        
+     *         var ec2 = new VpcEndpoint("ec2", VpcEndpointArgs.builder()
      *             .vpcId(main.id())
      *             .serviceName("com.amazonaws.us-west-2.ec2")
      *             .vpcEndpointType("Interface")
@@ -894,13 +894,13 @@ export namespace ec2 {
      *     public static void stack(Context ctx) {
      *         final var current = AwsFunctions.getCallerIdentity();
      *
-     *         var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()        
+     *         var example = new VpcEndpointService("example", VpcEndpointServiceArgs.builder()
      *             .acceptanceRequired(false)
      *             .allowedPrincipals(current.applyValue(getCallerIdentityResult -> getCallerIdentityResult.arn()))
      *             .gatewayLoadBalancerArns(exampleAwsLb.arn())
      *             .build());
      *
-     *         var exampleVpcEndpoint = new VpcEndpoint("exampleVpcEndpoint", VpcEndpointArgs.builder()        
+     *         var exampleVpcEndpoint = new VpcEndpoint("exampleVpcEndpoint", VpcEndpointArgs.builder()
      *             .serviceName(example.serviceName())
      *             .subnetIds(exampleAwsSubnet.id())
      *             .vpcEndpointType(example.serviceType())
@@ -1564,7 +1564,7 @@ export namespace lb {
      *
      *         var frontEndTargetGroup = new TargetGroup("frontEndTargetGroup");
      *
-     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
      *             .port("443")
      *             .protocol("HTTPS")
@@ -1715,7 +1715,7 @@ export namespace lb {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var frontEnd = new Listener("frontEnd", ListenerArgs.builder()        
+     *         var frontEnd = new Listener("frontEnd", ListenerArgs.builder()
      *             .loadBalancerArn(frontEndAwsLb.arn())
      *             .port("443")
      *             .protocol("TLS")
@@ -1881,7 +1881,7 @@ export namespace lb {
      *     public static void stack(Context ctx) {
      *         var frontEnd = new LoadBalancer("frontEnd");
      *
-     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
      *             .port("80")
      *             .protocol("HTTP")
@@ -2053,7 +2053,7 @@ export namespace lb {
      *     public static void stack(Context ctx) {
      *         var frontEnd = new LoadBalancer("frontEnd");
      *
-     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
      *             .port("80")
      *             .protocol("HTTP")
@@ -2291,7 +2291,7 @@ export namespace lb {
      *
      *         var domain = new UserPoolDomain("domain");
      *
-     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
      *             .port("80")
      *             .protocol("HTTP")
@@ -2523,7 +2523,7 @@ export namespace lb {
      *
      *         var frontEndTargetGroup = new TargetGroup("frontEndTargetGroup");
      *
-     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()        
+     *         var frontEndListener = new Listener("frontEndListener", ListenerArgs.builder()
      *             .loadBalancerArn(frontEnd.arn())
      *             .port("80")
      *             .protocol("HTTP")
@@ -2763,7 +2763,7 @@ export namespace lb {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var example = new LoadBalancer("example", LoadBalancerArgs.builder()        
+     *         var example = new LoadBalancer("example", LoadBalancerArgs.builder()
      *             .loadBalancerType("gateway")
      *             .name("example")
      *             .subnetMappings(LoadBalancerSubnetMappingArgs.builder()
@@ -2771,7 +2771,7 @@ export namespace lb {
      *                 .build())
      *             .build());
      *
-     *         var exampleTargetGroup = new TargetGroup("exampleTargetGroup", TargetGroupArgs.builder()        
+     *         var exampleTargetGroup = new TargetGroup("exampleTargetGroup", TargetGroupArgs.builder()
      *             .name("example")
      *             .port(6081)
      *             .protocol("GENEVE")
@@ -2782,7 +2782,7 @@ export namespace lb {
      *                 .build())
      *             .build());
      *
-     *         var exampleListener = new Listener("exampleListener", ListenerArgs.builder()        
+     *         var exampleListener = new Listener("exampleListener", ListenerArgs.builder()
      *             .loadBalancerArn(example.id())
      *             .defaultActions(ListenerDefaultActionArgs.builder()
      *                 .targetGroupArn(exampleTargetGroup.id())
@@ -2963,13 +2963,13 @@ export namespace lb {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var example = new LoadBalancer("example", LoadBalancerArgs.builder()        
+     *         var example = new LoadBalancer("example", LoadBalancerArgs.builder()
      *             .loadBalancerType("application")
      *             .build());
      *
      *         var exampleTargetGroup = new TargetGroup("exampleTargetGroup");
      *
-     *         var exampleListener = new Listener("exampleListener", ListenerArgs.builder()        
+     *         var exampleListener = new Listener("exampleListener", ListenerArgs.builder()
      *             .loadBalancerArn(example.id())
      *             .defaultActions(ListenerDefaultActionArgs.builder()
      *                 .targetGroupArn(exampleTargetGroup.id())
@@ -3161,11 +3161,11 @@ export namespace lb {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var main = new Vpc("main", VpcArgs.builder()        
+     *         var main = new Vpc("main", VpcArgs.builder()
      *             .cidrBlock("10.0.0.0/16")
      *             .build());
      *
-     *         var test = new TargetGroup("test", TargetGroupArgs.builder()        
+     *         var test = new TargetGroup("test", TargetGroupArgs.builder()
      *             .name("tf-example-lb-tg")
      *             .port(80)
      *             .protocol("HTTP")
@@ -3297,11 +3297,11 @@ export namespace lb {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var main = new Vpc("main", VpcArgs.builder()        
+     *         var main = new Vpc("main", VpcArgs.builder()
      *             .cidrBlock("10.0.0.0/16")
      *             .build());
      *
-     *         var ip_example = new TargetGroup("ip-example", TargetGroupArgs.builder()        
+     *         var ip_example = new TargetGroup("ip-example", TargetGroupArgs.builder()
      *             .name("tf-example-lb-tg")
      *             .port(80)
      *             .protocol("HTTP")
@@ -3407,7 +3407,7 @@ export namespace lb {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()        
+     *         var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()
      *             .name("tf-example-lb-tg")
      *             .targetType("lambda")
      *             .build());
@@ -3515,7 +3515,7 @@ export namespace lb {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var alb_example = new TargetGroup("alb-example", TargetGroupArgs.builder()        
+     *         var alb_example = new TargetGroup("alb-example", TargetGroupArgs.builder()
      *             .name("tf-example-lb-alb-tg")
      *             .targetType("alb")
      *             .port(80)
@@ -3644,7 +3644,7 @@ export namespace lb {
      *     }
      *
      *     public static void stack(Context ctx) {
-     *         var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()        
+     *         var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()
      *             .name("tf-example-lb-nlb-tg")
      *             .port(25)
      *             .protocol("TCP")
