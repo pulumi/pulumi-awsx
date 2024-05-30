@@ -54,7 +54,7 @@ import javax.annotation.Nullable;
  * 
  *         var frontEndTargetGroup = new TargetGroup(&#34;frontEndTargetGroup&#34;);
  * 
- *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
+ *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
  *             .port(&#34;443&#34;)
  *             .protocol(&#34;HTTPS&#34;)
@@ -96,7 +96,7 @@ import javax.annotation.Nullable;
  *     }
  * 
  *     public static void stack(Context ctx) {
- *         var frontEnd = new Listener(&#34;frontEnd&#34;, ListenerArgs.builder()        
+ *         var frontEnd = new Listener(&#34;frontEnd&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEndAwsLb.arn())
  *             .port(&#34;443&#34;)
  *             .protocol(&#34;TLS&#34;)
@@ -142,7 +142,7 @@ import javax.annotation.Nullable;
  *     public static void stack(Context ctx) {
  *         var frontEnd = new LoadBalancer(&#34;frontEnd&#34;);
  * 
- *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
+ *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
  *             .port(&#34;80&#34;)
  *             .protocol(&#34;HTTP&#34;)
@@ -190,7 +190,7 @@ import javax.annotation.Nullable;
  *     public static void stack(Context ctx) {
  *         var frontEnd = new LoadBalancer(&#34;frontEnd&#34;);
  * 
- *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
+ *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
  *             .port(&#34;80&#34;)
  *             .protocol(&#34;HTTP&#34;)
@@ -250,7 +250,7 @@ import javax.annotation.Nullable;
  * 
  *         var domain = new UserPoolDomain(&#34;domain&#34;);
  * 
- *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
+ *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
  *             .port(&#34;80&#34;)
  *             .protocol(&#34;HTTP&#34;)
@@ -306,7 +306,7 @@ import javax.annotation.Nullable;
  * 
  *         var frontEndTargetGroup = new TargetGroup(&#34;frontEndTargetGroup&#34;);
  * 
- *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()        
+ *         var frontEndListener = new Listener(&#34;frontEndListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(frontEnd.arn())
  *             .port(&#34;80&#34;)
  *             .protocol(&#34;HTTP&#34;)
@@ -364,7 +364,7 @@ import javax.annotation.Nullable;
  *     }
  * 
  *     public static void stack(Context ctx) {
- *         var example = new LoadBalancer(&#34;example&#34;, LoadBalancerArgs.builder()        
+ *         var example = new LoadBalancer(&#34;example&#34;, LoadBalancerArgs.builder()
  *             .loadBalancerType(&#34;gateway&#34;)
  *             .name(&#34;example&#34;)
  *             .subnetMappings(LoadBalancerSubnetMappingArgs.builder()
@@ -372,7 +372,7 @@ import javax.annotation.Nullable;
  *                 .build())
  *             .build());
  * 
- *         var exampleTargetGroup = new TargetGroup(&#34;exampleTargetGroup&#34;, TargetGroupArgs.builder()        
+ *         var exampleTargetGroup = new TargetGroup(&#34;exampleTargetGroup&#34;, TargetGroupArgs.builder()
  *             .name(&#34;example&#34;)
  *             .port(6081)
  *             .protocol(&#34;GENEVE&#34;)
@@ -383,7 +383,7 @@ import javax.annotation.Nullable;
  *                 .build())
  *             .build());
  * 
- *         var exampleListener = new Listener(&#34;exampleListener&#34;, ListenerArgs.builder()        
+ *         var exampleListener = new Listener(&#34;exampleListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(example.id())
  *             .defaultActions(ListenerDefaultActionArgs.builder()
  *                 .targetGroupArn(exampleTargetGroup.id())
@@ -425,13 +425,13 @@ import javax.annotation.Nullable;
  *     }
  * 
  *     public static void stack(Context ctx) {
- *         var example = new LoadBalancer(&#34;example&#34;, LoadBalancerArgs.builder()        
+ *         var example = new LoadBalancer(&#34;example&#34;, LoadBalancerArgs.builder()
  *             .loadBalancerType(&#34;application&#34;)
  *             .build());
  * 
  *         var exampleTargetGroup = new TargetGroup(&#34;exampleTargetGroup&#34;);
  * 
- *         var exampleListener = new Listener(&#34;exampleListener&#34;, ListenerArgs.builder()        
+ *         var exampleListener = new Listener(&#34;exampleListener&#34;, ListenerArgs.builder()
  *             .loadBalancerArn(example.id())
  *             .defaultActions(ListenerDefaultActionArgs.builder()
  *                 .targetGroupArn(exampleTargetGroup.id())

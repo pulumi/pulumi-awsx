@@ -119,11 +119,11 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     }
     /// 
     ///     public static void stack(Context ctx) {
-    ///         var main = new Vpc("main", VpcArgs.builder()        
+    ///         var main = new Vpc("main", VpcArgs.builder()
     ///             .cidrBlock("10.0.0.0/16")
     ///             .build());
     /// 
-    ///         var test = new TargetGroup("test", TargetGroupArgs.builder()        
+    ///         var test = new TargetGroup("test", TargetGroupArgs.builder()
     ///             .name("tf-example-lb-tg")
     ///             .port(80)
     ///             .protocol("HTTP")
@@ -255,11 +255,11 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     }
     /// 
     ///     public static void stack(Context ctx) {
-    ///         var main = new Vpc("main", VpcArgs.builder()        
+    ///         var main = new Vpc("main", VpcArgs.builder()
     ///             .cidrBlock("10.0.0.0/16")
     ///             .build());
     /// 
-    ///         var ip_example = new TargetGroup("ip-example", TargetGroupArgs.builder()        
+    ///         var ip_example = new TargetGroup("ip-example", TargetGroupArgs.builder()
     ///             .name("tf-example-lb-tg")
     ///             .port(80)
     ///             .protocol("HTTP")
@@ -365,7 +365,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     }
     /// 
     ///     public static void stack(Context ctx) {
-    ///         var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()        
+    ///         var lambda_example = new TargetGroup("lambda-example", TargetGroupArgs.builder()
     ///             .name("tf-example-lb-tg")
     ///             .targetType("lambda")
     ///             .build());
@@ -473,7 +473,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     }
     /// 
     ///     public static void stack(Context ctx) {
-    ///         var alb_example = new TargetGroup("alb-example", TargetGroupArgs.builder()        
+    ///         var alb_example = new TargetGroup("alb-example", TargetGroupArgs.builder()
     ///             .name("tf-example-lb-alb-tg")
     ///             .targetType("alb")
     ///             .port(80)
@@ -602,7 +602,7 @@ namespace Pulumi.Awsx.Lb.Inputs
     ///     }
     /// 
     ///     public static void stack(Context ctx) {
-    ///         var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()        
+    ///         var tcp_example = new TargetGroup("tcp-example", TargetGroupArgs.builder()
     ///             .name("tf-example-lb-nlb-tg")
     ///             .port(25)
     ///             .protocol("TCP")
