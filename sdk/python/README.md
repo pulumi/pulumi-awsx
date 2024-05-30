@@ -14,7 +14,7 @@ To use this package, [install the Pulumi CLI](https://www.pulumi.com/docs/get-st
 
 The AWS Infrastructure package is intended to provide [component](https://www.pulumi.com/docs/intro/concepts/resources/components/) wrappers around many core AWS 'raw' resources to make them easier and more convenient to use.  In general, the `@pulumi/awsx` package mirrors the module structure of `@pulumi/aws` (i.e. `@pulumi/awsx/ecs` or `@pulumi/awsx/ec2`).  These [components](https://www.pulumi.com/docs/intro/concepts/resources/components/) are designed to take care of much of the redundancy and boilerplate necessary when using the raw AWS resources, while still striving to expose all underlying functionality if needed.
 
-The AWS Infrastructure package undergoes constant improvements and additions.  While we will strive to maintain backward compatability here, we will occasionally make breaks here as appropriate if it helps improve the overall quality of this package.
+The AWS Infrastructure package undergoes constant improvements and additions.  While we will strive to maintain backward compatibility here, we will occasionally make breaks here as appropriate if it helps improve the overall quality of this package.
 
 The AWS Infrastructure package exposes many high level abstractions.  Including:
 
@@ -76,6 +76,22 @@ dotnet add package Pulumi.Awsx
 ## Configuration
 
 The configuration options available for this provider mirror those of the [Pulumi AWS Classic Provider](https://github.com/pulumi/pulumi-aws#configuration)
+
+### Custom AWS Provider Versions
+
+Pulumi dependency resolution may result in `awsx.*` resources using a different version of the AWS Classic Provider than
+the rest of the program. The version used by default is fixed for each `@pulumi/awsx` release and can be found in
+[package.json](https://github.com/pulumi/pulumi-awsx/blob/master/awsx/package.json#L25). When this becomes problematic,
+for example a newer version of AWS Classic Provider is desired, it can be specified explicitly. For example, in Python:
+
+```python
+import pulumi
+import pulumi_aws as aws
+import pulumi_awsx as awsx
+
+awsp = aws.Provider("awsp", opts=pulumi.ResourceOptions(version="6.36.0"))
+lb = awsx.lb.ApplicationLoadBalancer("lb", opts=pulumi.ResourceOptions(providers={"aws": awsp}))
+```
 
 ## Migration from 0.x to 1.0
 
