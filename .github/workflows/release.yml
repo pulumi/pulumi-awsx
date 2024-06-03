@@ -24,10 +24,16 @@ env:
   NODEVERSION: "18.x"
   JAVAVERSION: "11"
 jobs:
+  version:
+    uses: ./.github/workflows/version.yml
+    secrets: inherit
   lint:
     name: lint
     runs-on: ubuntu-latest
     continue-on-error: true
+    needs: version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -63,6 +69,9 @@ jobs:
             sdk/python/pyproject.toml
   build-provider:
     runs-on: ubuntu-latest
+    needs: version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -131,8 +140,12 @@ jobs:
           fields: repo,commit,author,action
           status: ${{ job.status }}
   acceptance-test:
-    needs: build-provider
     runs-on: ubuntu-latest
+    needs:
+      - build-provider
+      - version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
@@ -208,8 +221,12 @@ jobs:
           - java
   publish:
     name: publish
-    needs: acceptance-test
     runs-on: ubuntu-latest
+    needs:
+      - acceptance-test
+      - version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -260,8 +277,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
   publish_sdk:
     name: publish_sdk
-    needs: publish
     runs-on: ubuntu-latest
+    needs:
+      - publish
+      - version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -321,8 +342,12 @@ jobs:
           gradle-version: 7.4.1
   tag_sdk:
     name: tag_sdk
-    needs: publish_sdk
     runs-on: ubuntu-latest
+    needs:
+      - publish_sdk
+      - version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -335,8 +360,12 @@ jobs:
           sdk/v$(pulumictl get version --language generic)
   create_docs_build:
     name: Create docs build
-    needs: tag_sdk
     runs-on: ubuntu-latest
+    needs:
+      - tag_sdk
+      - version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.10.0
