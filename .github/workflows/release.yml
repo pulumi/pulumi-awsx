@@ -37,8 +37,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
@@ -84,8 +82,6 @@ jobs:
           role-duration-seconds: 3600
           role-session-name: ${{ env.PROVIDER }}@githubActions
           role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install Go
         uses: actions/setup-go@v4
         with:
@@ -154,8 +150,6 @@ jobs:
           swap-storage: false
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
@@ -230,8 +224,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -286,8 +278,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
