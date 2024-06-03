@@ -95,7 +95,6 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 		yarn install --no-progress && \
 		yarn run tsc --version && \
 		yarn run tsc && \
-		sed -e 's/\$${VERSION}/$(VERSION_GENERIC)/g' < package.json > bin/package.json && \
 		cp ../../README.md ../../LICENSE bin/
 	@touch $@
 
@@ -110,15 +109,12 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 bin/pulumi-java-gen::
 	$(shell pulumictl download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java)
 
-.make/build_python: PYPI_VERSION := $(shell pulumictl get version --language python)
 .make/build_python: bin/${CODEGEN} .make/schema README.md
 	rm -rf sdk/python
 	bin/${CODEGEN} python sdk/python schema.json $(VERSION_GENERIC)
 	cd sdk/python/ && \
 		cp ../../README.md . && \
 		rm -rf ./bin/ ../python.bin/ && cp -R . ../python.bin && mv ../python.bin ./bin && \
-		sed -i.bak -e 's/^  version = .*/  version = "$(PYPI_VERSION)"/g' ./bin/pyproject.toml && \
-		rm ./bin/pyproject.toml.bak && \
 		python3 -m venv venv && \
 		./venv/bin/python -m pip install build && \
 		cd ./bin && \
@@ -134,13 +130,11 @@ bin/pulumi-java-gen::
 		go test -v ./... -check.vv
 	@touch $@
 
-.make/build_dotnet: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 .make/build_dotnet: bin/${CODEGEN} .make/schema
 	rm -rf sdk/dotnet
 	bin/${CODEGEN} dotnet sdk/dotnet schema.json $(VERSION_GENERIC)
 	cd sdk/dotnet/ && \
-		echo "${DOTNET_VERSION}" >version.txt && \
-		dotnet build /p:Version=${DOTNET_VERSION}
+		dotnet build
 	@touch $@
 
 # Phony targets
