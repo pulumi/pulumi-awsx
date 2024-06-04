@@ -10,8 +10,8 @@ on:
 
 permissions:
   pull-requests: write
-env:
-  GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
+# env:
+#   GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
 jobs:
   weekly-pulumi-update:
     runs-on: ubuntu-latest
@@ -49,7 +49,7 @@ jobs:
         if ! git diff-files --quiet; then
           echo changes=1 >> "$GITHUB_OUTPUT"
         fi
-    - name: Bridge Pulumi Upgrade
+    - name: Commit changes
       if: steps.gomod.outputs.changes != 0
       run: |
         make build && make lint
