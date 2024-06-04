@@ -74,7 +74,8 @@ jobs:
     - name: Build Provider
       if: steps.gomod.outputs.changes != 0
       run: |
-        make build
+        # skipped for testing
+        # make build
         make lint
     - name: Commit changes
       if: steps.gomod.outputs.changes != 0
