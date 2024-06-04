@@ -86,7 +86,9 @@ jobs:
 
         git push origin update-pulumi/$PULUMI_VERSION-${{ github.run_id }}-${{ github.run_number }}
     - name: pull-request
-      if: steps.gomod.outputs.changes != 0        
+      if: steps.gomod.outputs.changes != 0
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         gh pr create --title "Update pulumi/pulumi version to $PULUMI_VERSION" --body "Upgrading pulumi/pkg and pulumi/sdk to version $PULUMI_VERSION."
         # Disable auto-merge for testing
