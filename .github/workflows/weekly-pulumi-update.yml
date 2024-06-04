@@ -88,9 +88,7 @@ jobs:
     - name: pull-request
       if: steps.gomod.outputs.changes != 0        
       run: |
-        gh_pr_up() {
-          gh pr create $* || gh pr edit $*
-        }
-        
-        gh_pr_up --title "Update pulumi/pulumi version to $PULUMI_VERSION" --body "Upgrading pulumi/pkg and pulumi/sdk to version $PULUMI_VERSION."
+        gh pr create --title "Update pulumi/pulumi version to $PULUMI_VERSION" --body "Upgrading pulumi/pkg and pulumi/sdk to version $PULUMI_VERSION."
+        # Disable auto-merge for testing
+        # gh pr merge --auto
     name: weekly-pulumi-update
