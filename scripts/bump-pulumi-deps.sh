@@ -17,8 +17,7 @@ function upgrade_deps() {
             fi
 
             echo "Upgrading $dep to $DEPENDENCY_VERSION in $module"
-            go mod edit -droprequire="$dep"
-            go mod edit -require="$dep@$DEPENDENCY_VERSION"
+            go get "$dep@$DEPENDENCY_VERSION"
 
             made_changes=true
     done
