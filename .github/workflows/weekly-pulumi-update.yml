@@ -1,19 +1,14 @@
 name: weekly-pulumi-update
-# on:
-#   schedule:
-#   - cron: 35 12 * * 4
-#   workflow_dispatch: {}
 on:
-  pull_request:
-    branches:
-      - master
+  schedule:
+  - cron: 0 11 * * 1
+  workflow_dispatch: {}
 
 permissions:
   pull-requests: write
   contents: write
 env:
   GOVERSION: "1.21.x"
-#   GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
 jobs:
   weekly-pulumi-update:
     runs-on: ubuntu-latest
@@ -38,7 +33,7 @@ jobs:
 
         git checkout -b update-pulumi/$PULUMI_VERSION-${{ github.run_id }}-${{ github.run_number }}
 
-        echo "Update Pulumi dependencies to $PULUMI_VERSION"
+        echo "Updating Pulumi dependencies to $PULUMI_VERSION"
         ./scripts/bump-pulumi-deps.sh --version "$PULUMI_VERSION"
 
         git update-index -q --refresh
@@ -74,8 +69,7 @@ jobs:
     - name: Build Provider
       if: steps.gomod.outputs.changes != 0
       run: |
-        # skipped for testing
-        # make build
+        make build
         make lint
     - name: Commit changes
       if: steps.gomod.outputs.changes != 0
