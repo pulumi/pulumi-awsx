@@ -85,6 +85,5 @@ jobs:
         GH_TOKEN: ${{ github.token }}
       run: |
         gh pr create --title "Update pulumi/pulumi version to $PULUMI_VERSION" --body "Upgrading pulumi/pkg and pulumi/sdk to version $PULUMI_VERSION."
-        # Disable auto-merge for testing
-        # gh pr merge --auto
+        gh pr merge --auto
     name: weekly-pulumi-update
