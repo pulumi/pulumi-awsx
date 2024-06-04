@@ -1,0 +1,98 @@
+name: weekly-pulumi-update
+# on:
+#   schedule:
+#   - cron: 35 12 * * 4
+#   workflow_dispatch: {}
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  pull-requests: write
+  contents: write
+env:
+  GOVERSION: "1.21.x"
+#   GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
+jobs:
+  weekly-pulumi-update:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: Install Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GOVERSION }}
+    - name: Update Pulumi/Pulumi
+      id: gomod
+      run: |
+        git config --local user.email 'bot@pulumi.com'
+        git config --local user.name 'pulumi-bot'
+
+        PULUMI_VERSION=$(./scripts/get-latest-pulumi-version.sh)
+        echo "Latest Pulumi version is $PULUMI_VERSION"
+        echo "PULUMI_VERSION=$PULUMI_VERSION" >> "$GITHUB_ENV"
+
+        git checkout -b update-pulumi/$PULUMI_VERSION-${{ github.run_id }}-${{ github.run_number }}
+
+        echo "Update Pulumi dependencies to $PULUMI_VERSION"
+        ./scripts/bump-pulumi-deps.sh --version "$PULUMI_VERSION"
+
+        git update-index -q --refresh
+
+        if ! git diff-files --quiet; then
+          echo changes=1 >> "$GITHUB_OUTPUT"
+        fi
+    - name: Unshallow clone for tags
+      if: steps.gomod.outputs.changes != 0
+      run: git fetch --prune --unshallow --tags
+    - name: Setup Node
+      if: steps.gomod.outputs.changes != 0
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{env.NODEVERSION}}
+        registry-url: https://registry.npmjs.org
+    - name: Install Yarn
+      if: steps.gomod.outputs.changes != 0
+      run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
+    - name: Update PATH for Yarn
+      if: steps.gomod.outputs.changes != 0
+      run: |
+        echo "$HOME/.yarn/bin" >> $GITHUB_PATH
+        echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
+    - name: Install pulumictl
+      if: steps.gomod.outputs.changes != 0
+      uses: jaxxstorm/action-install-gh-release@v1.10.0
+      with:
+        repo: pulumi/pulumictl
+    - name: Install Pulumi CLI
+      if: steps.gomod.outputs.changes != 0
+      uses: pulumi/action-install-pulumi-cli@v2
+    - name: Build Provider
+      if: steps.gomod.outputs.changes != 0
+      run: |
+        # skipped for testing
+        # make build
+        make lint
+    - name: Commit changes
+      if: steps.gomod.outputs.changes != 0
+      run: |
+        git add .
+
+        git commit -m "Update pulumi/pulumi version to $PULUMI_VERSION"
+
+        git push origin update-pulumi/$PULUMI_VERSION-${{ github.run_id }}-${{ github.run_number }}
+    - name: pull-request
+      if: steps.gomod.outputs.changes != 0        
+      uses: peter-evans/create-pull-request@v6
+      with:
+          author: Pulumi Bot <bot@pulumi.com>
+          body: "Upgrading pulumi/pkg and pulumi/sdk to version ${{ steps.gomod.outputs.pulumi_version }}."
+          branch: "update-pulumi/${{ steps.gomod.outputs.pulumi_version }}-${{ github.run_number }}"
+          committer: Pulumi Bot <bot@pulumi.com>
+          commit-message: "Update pulumi/pulumi version to ${{ steps.gomod.outputs.pulumi_version }}"
+          title: "Update pulumi/pulumi version to ${{ steps.gomod.outputs.pulumi_version }}"
+    name: weekly-pulumi-update
