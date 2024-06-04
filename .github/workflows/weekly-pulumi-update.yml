@@ -3,8 +3,10 @@ name: weekly-pulumi-update
 #   schedule:
 #   - cron: 35 12 * * 4
 #   workflow_dispatch: {}
-"on":
-  pull_request_target:
+on:
+  pull_request:
+    branches:
+      - master
 
 permissions:
   pull-requests: write
@@ -60,5 +62,6 @@ jobs:
       run: |
         gh_pr_up() { gh pr create $* || gh pr edit $* }
         gh_pr_up --title "Update pulumi/pulumi version to $PULUMI_VERSION"
-        gh pr merge --auto
+        Disable auto-merge for testing
+        # gh pr merge --auto
     name: weekly-pulumi-update
