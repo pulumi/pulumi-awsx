@@ -8,8 +8,9 @@ on:
     branches:
       - master
 
-# permissions:
-#   pull-requests: write
+permissions:
+  pull-requests: write
+  contents: write
 env:
   GOVERSION: "1.21.x"
 #   GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
@@ -74,8 +75,6 @@ jobs:
         make lint
     - name: Commit changes
       if: steps.gomod.outputs.changes != 0
-      permissions:
-        contents: write
       run: |
         git add .
 
@@ -83,9 +82,7 @@ jobs:
 
         git push origin update-pulumi/$PULUMI_VERSION-${{ github.run_id }}-${{ github.run_number }}
     - name: pull-request
-      if: steps.gomod.outputs.changes != 0
-      permissions:
-        pull-requests: write
+      if: steps.gomod.outputs.changes != 0        
       run: |
         gh_pr_up() { gh pr create $* || gh pr edit $* }
         gh_pr_up --title "Update pulumi/pulumi version to $PULUMI_VERSION"
