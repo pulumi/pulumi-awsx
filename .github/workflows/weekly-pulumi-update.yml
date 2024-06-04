@@ -8,27 +8,23 @@ on:
     branches:
       - master
 
-permissions:
-  pull-requests: write
-# env:
+# permissions:
+#   pull-requests: write
+env:
+  GOVERSION: "1.21.x"
 #   GITHUB_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
 jobs:
   weekly-pulumi-update:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
-      matrix:
-        goversion:
-        - 1.21.x
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
     - name: Install Go
-      uses: actions/setup-go@v5
+      uses: actions/setup-go@v4
       with:
-        go-version: ${{matrix.goversion}}
-        cache-dependency-path: |
-            **/go.sum
+        go-version: ${{ env.GOVERSION }}
     - name: Update Pulumi/Pulumi
       id: gomod
       run: |
@@ -49,16 +45,47 @@ jobs:
         if ! git diff-files --quiet; then
           echo changes=1 >> "$GITHUB_OUTPUT"
         fi
-    - name: Commit changes
+    - name: Setup Node
+      if: steps.gomod.outputs.changes != 0
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{env.NODEVERSION}}
+        registry-url: https://registry.npmjs.org
+    - name: Install Yarn
+      if: steps.gomod.outputs.changes != 0
+      run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
+    - name: Update PATH for Yarn
       if: steps.gomod.outputs.changes != 0
       run: |
-        make build && make lint
+        echo "$HOME/.yarn/bin" >> $GITHUB_PATH
+        echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
+    - name: Install pulumictl
+      if: steps.gomod.outputs.changes != 0
+      uses: jaxxstorm/action-install-gh-release@v1.10.0
+      with:
+        repo: pulumi/pulumictl
+    - name: Install Pulumi CLI
+      if: steps.gomod.outputs.changes != 0
+      uses: pulumi/action-install-pulumi-cli@v2
+    - name: Build Provider
+      if: steps.gomod.outputs.changes != 0
+      run: |
+        make build
+        make lint
+    - name: Commit changes
+      if: steps.gomod.outputs.changes != 0
+      permissions:
+        contents: write
+      run: |
         git add .
 
         git commit -m "Update pulumi/pulumi version to $PULUMI_VERSION"
 
         git push origin update-pulumi/$PULUMI_VERSION-${{ github.run_id }}-${{ github.run_number }}
     - name: pull-request
+      if: steps.gomod.outputs.changes != 0
+      permissions:
+        pull-requests: write
       run: |
         gh_pr_up() { gh pr create $* || gh pr edit $* }
         gh_pr_up --title "Update pulumi/pulumi version to $PULUMI_VERSION"
