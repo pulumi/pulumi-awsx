@@ -87,12 +87,7 @@ jobs:
         git push origin update-pulumi/$PULUMI_VERSION-${{ github.run_id }}-${{ github.run_number }}
     - name: pull-request
       if: steps.gomod.outputs.changes != 0        
-      uses: peter-evans/create-pull-request@v6
-      with:
-          author: Pulumi Bot <bot@pulumi.com>
-          body: "Upgrading pulumi/pkg and pulumi/sdk to version ${{ steps.gomod.outputs.pulumi_version }}."
-          branch: "update-pulumi/${{ steps.gomod.outputs.pulumi_version }}-${{ github.run_number }}"
-          committer: Pulumi Bot <bot@pulumi.com>
-          commit-message: "Update pulumi/pulumi version to ${{ steps.gomod.outputs.pulumi_version }}"
-          title: "Update pulumi/pulumi version to ${{ steps.gomod.outputs.pulumi_version }}"
+      run: |
+        gh_pr_up() { gh pr create $* || gh pr edit $* }
+        gh_pr_up --title "Update pulumi/pulumi version to $PULUMI_VERSION"
     name: weekly-pulumi-update
