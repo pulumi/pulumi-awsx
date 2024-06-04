@@ -31,7 +31,7 @@ jobs:
             **/go.sum
     - name: Update Pulumi/Pulumi
       id: gomod
-      run: >-
+      run: |
         git config --local user.email 'bot@pulumi.com'
         git config --local user.name 'pulumi-bot'
 
@@ -51,7 +51,7 @@ jobs:
         fi
     - name: Bridge Pulumi Upgrade
       if: steps.gomod.outputs.changes != 0
-      run: >-
+      run: |
         make build && make lint
         git add .
 
