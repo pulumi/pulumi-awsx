@@ -1,6 +1,7 @@
 name: weekly-pulumi-update
 on:
   schedule:
+  # Every Monday at 11AM UTC
   - cron: 0 11 * * 1
   workflow_dispatch: {}
 
