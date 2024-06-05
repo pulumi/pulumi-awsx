@@ -8,28 +8,12 @@ MODULE_EXCLUDES=("github.com/pulumi/pulumi-awsx/examples-legacy")
 
 function upgrade_deps() {
     local module=$1
-    local made_changes=false
 
     for dep in "${PULUMI_DEPS[@]}"; do
-            if ! go mod why -m "$dep" | grep -q "$module"; then
-                echo "Skipping $dep in $module because it doesn't have a direct dependency on it."
-                continue
-            fi
-
-            echo "Upgrading $dep to $DEPENDENCY_VERSION in $module"
-            go get "$dep@$DEPENDENCY_VERSION"
-
-            made_changes=true
+        go get "$dep@$DEPENDENCY_VERSION"
     done
 
-    if [ "$made_changes" == false ]; then
-        echo "No changes made to $module"
-        return
-    fi
-
-    echo "Tidying up $module"
     go mod tidy
-    printf "\n"
 }
 
 # Parse command line arguments
@@ -71,9 +55,10 @@ for dir in $MODULE_DIRS; do
     if [[ " ${MODULE_EXCLUDES[@]} " =~ " $module " ]]; then
         echo "Module is excluded: $module"
     else
-        echo "Processing module: $module"
+        echo "Upgrading Pulumi dependencies to $DEPENDENCY_VERSION in $module"
         upgrade_deps "$module"
     fi
+    printf "\n"
 
     popd > /dev/null
 done
