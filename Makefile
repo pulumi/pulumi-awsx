@@ -95,7 +95,7 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 		yarn install --no-progress && \
 		yarn run tsc --version && \
 		yarn run tsc && \
-		cp ../../README.md ../../LICENSE bin/
+		cp package.json ../../README.md ../../LICENSE bin/
 	@touch $@
 
 .make/build_java: PACKAGE_VERSION := $(VERSION_GENERIC)
