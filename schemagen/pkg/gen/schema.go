@@ -61,12 +61,14 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 					"Pulumi.Docker": "4.*",
 				},
 				"liftSingleValueMethodReturns": true,
+				"respectSchemaVersion":         true,
 			}),
 			"go": rawMessage(map[string]interface{}{
 				"generateResourceContainerTypes": true,
 				"importBasePath":                 "github.com/pulumi/pulumi-awsx/sdk/v2/go/awsx",
 				"liftSingleValueMethodReturns":   true,
 				"internalDependencies":           []string{"github.com/pulumi/pulumi-docker/sdk/v4/go/docker"},
+				"respectSchemaVersion":           true,
 			}),
 			"java": rawMessage(map[string]interface{}{
 				"dependencies": map[string]string{
@@ -90,6 +92,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 					"@types/mime": "^2.0.0",
 					"typescript":  "^4.6.2",
 				},
+				"respectSchemaVersion": true,
 			}),
 			"python": rawMessage(map[string]interface{}{
 				"requires": map[string]string{
@@ -103,6 +106,7 @@ func GenerateSchema(packageDir string) schema.PackageSpec {
 				"pyproject": map[string]bool{
 					"enabled": true,
 				},
+				"respectSchemaVersion": true,
 			}),
 		},
 	}

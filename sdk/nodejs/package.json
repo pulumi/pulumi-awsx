@@ -1,6 +1,6 @@
 {
     "name": "@pulumi/awsx",
-    "version": "${VERSION}",
+    "version": "2.0.0-alpha.0+dev",
     "keywords": [
         "pulumi",
         "aws",
@@ -31,6 +31,7 @@
     },
     "pulumi": {
         "resource": true,
-        "name": "awsx"
+        "name": "awsx",
+        "version": "2.0.0-alpha.0+dev"
     }
 }

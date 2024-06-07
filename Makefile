@@ -1,14 +1,13 @@
 MAKEFLAGS 		:= --jobs=$(shell nproc) --warn-undefined-variables
 PROJECT_NAME 	:= Pulumi Infrastructure Components for AWS
 
-VERSION         := $(shell pulumictl get version)
 TESTPARALLELISM := 10
 
 PACK            := awsx
 PROVIDER        := pulumi-resource-${PACK}
 CODEGEN         := pulumi-gen-${PACK}
-GZIP_PREFIX		:= pulumi-resource-${PACK}-v${VERSION}
-BIN				:= ${PROVIDER}
+GZIP_PREFIX     := pulumi-resource-${PACK}-v${VERSION_GENERIC}
+BIN             := ${PROVIDER}
 
 JAVA_GEN 		 := pulumi-java-gen
 JAVA_GEN_VERSION := v0.9.7
@@ -25,6 +24,12 @@ LanguageTags 	?= "all"
 LOCAL_PLAT		?= ""
 
 PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
+
+# Override during CI using `make [TARGET] PROVIDER_VERSION=""` or by setting a PROVIDER_VERSION environment variable
+# Local & branch builds will just used this fixed default version unless specified
+PROVIDER_VERSION ?= 2.0.0-alpha.0+dev
+# Use this normalised version everywhere rather than the raw input to ensure consistency.
+VERSION_GENERIC = $(shell pulumictl convert-version --language generic --version "$(PROVIDER_VERSION)")
 
 # Pre-requisites: ensure these folders exist
 _ := $(shell mkdir -p .make bin dist)
@@ -50,7 +55,7 @@ bin/${CODEGEN}: ${CODEGEN_SRC}
 	@cd awsx && \
 		yarn tsc && \
 		cp package.json ../schema.json ./bin/ && \
-		sed -i.bak -e "s/\$${VERSION}/$(VERSION)/g" ./bin/package.json
+		sed -i.bak -e "s/\$${VERSION}/$(VERSION_GENERIC)/g" ./bin/package.json
 	@touch $@
 
 # Re-use the local platform if provided (e.g. `make provider LOCAL_PLAT=linux-amd64`)
@@ -83,19 +88,17 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 	@# $< is the last dependency (the binary path from above)
 	tar --gzip -cf $@ README.md LICENSE -C $$(dirname $<) .
 
-.make/build_nodejs: VERSION := $(shell pulumictl get version --language javascript)
 .make/build_nodejs: bin/${CODEGEN} .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/nodejs
-	bin/${CODEGEN} nodejs sdk/nodejs schema.json $(VERSION)
+	bin/${CODEGEN} nodejs sdk/nodejs schema.json $(VERSION_GENERIC)
 	cd sdk/nodejs && \
 		yarn install --no-progress && \
 		yarn run tsc --version && \
 		yarn run tsc && \
-		sed -e 's/\$${VERSION}/$(VERSION)/g' < package.json > bin/package.json && \
-		cp ../../README.md ../../LICENSE bin/
+		cp package.json ../../README.md ../../LICENSE bin/
 	@touch $@
 
-.make/build_java: VERSION := $(shell pulumictl get version --language javascript)
+.make/build_java: PACKAGE_VERSION := $(VERSION_GENERIC)
 .make/build_java: bin/pulumi-java-gen .make/schema ${AWSX_CLASSIC_SRC}
 	rm -rf sdk/java
 	$(WORKING_DIR)/bin/$(JAVA_GEN) generate --schema schema.json --out sdk/java --build gradle-nexus
@@ -106,38 +109,32 @@ dist/${GZIP_PREFIX}-%.tar.gz::
 bin/pulumi-java-gen::
 	$(shell pulumictl download-binary -n pulumi-language-java -v $(JAVA_GEN_VERSION) -r pulumi/pulumi-java)
 
-.make/build_python: PYPI_VERSION := $(shell pulumictl get version --language python)
 .make/build_python: bin/${CODEGEN} .make/schema README.md
 	rm -rf sdk/python
-	bin/${CODEGEN} python sdk/python schema.json $(VERSION)
+	bin/${CODEGEN} python sdk/python schema.json $(VERSION_GENERIC)
 	cd sdk/python/ && \
 		cp ../../README.md . && \
 		rm -rf ./bin/ ../python.bin/ && cp -R . ../python.bin && mv ../python.bin ./bin && \
-		sed -i.bak -e 's/^  version = .*/  version = "$(PYPI_VERSION)"/g' ./bin/pyproject.toml && \
-		rm ./bin/pyproject.toml.bak && \
 		python3 -m venv venv && \
 		./venv/bin/python -m pip install build && \
 		cd ./bin && \
 		../venv/bin/python -m build .
 
-.make/build_go: VERSION := $(shell pulumictl get version --language generic)
 .make/build_go: AWS_VERSION := $(shell node -e 'console.log(require("./awsx/package.json").dependencies["@pulumi/aws"])')
 .make/build_go: bin/${CODEGEN} .make/schema
 	rm -rf sdk/go
-	bin/${CODEGEN} go sdk/go schema.json $(VERSION)
+	bin/${CODEGEN} go sdk/go schema.json $(VERSION_GENERIC)
 	cd sdk && \
 		go get github.com/pulumi/pulumi-aws/sdk/v6@v$(AWS_VERSION) && \
 		go mod tidy && \
 		go test -v ./... -check.vv
 	@touch $@
 
-.make/build_dotnet: DOTNET_VERSION := $(shell pulumictl get version --language dotnet)
 .make/build_dotnet: bin/${CODEGEN} .make/schema
 	rm -rf sdk/dotnet
-	bin/${CODEGEN} dotnet sdk/dotnet schema.json $(VERSION)
+	bin/${CODEGEN} dotnet sdk/dotnet schema.json $(VERSION_GENERIC)
 	cd sdk/dotnet/ && \
-		echo "${DOTNET_VERSION}" >version.txt && \
-		dotnet build /p:Version=${DOTNET_VERSION}
+		dotnet build
 	@touch $@
 
 # Phony targets

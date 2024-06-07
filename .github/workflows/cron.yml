@@ -25,20 +25,19 @@ env:
   NODEVERSION: "18.x"
   JAVAVERSION: "11"
 jobs:
+  version:
+    uses: ./.github/workflows/version.yml
+    secrets: inherit
   lint:
     name: lint
     runs-on: ubuntu-latest
     continue-on-error: true
+    needs: version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v4
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
@@ -59,17 +58,22 @@ jobs:
       - name: Lint classic AWSX Code
         run: make lint_classic
       - name: Check worktree clean
-        run: ./ci-scripts/ci/check-worktree-is-clean
+        uses: pulumi/git-status-check-action@v1
+        with:
+          allowed-changes: |
+            sdk/**/pulumi-plugin.json
+            sdk/dotnet/Pulumi.*.csproj
+            sdk/go/**/pulumiUtilities.go
+            sdk/nodejs/package.json
+            sdk/python/pyproject.toml
   build-provider:
     runs-on: ubuntu-latest
+    needs: version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v4
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
@@ -79,8 +83,6 @@ jobs:
           role-duration-seconds: 3600
           role-session-name: ${{ env.PROVIDER }}@githubActions
           role-to-assume: ${{ secrets.AWS_CI_ROLE_ARN }}
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install Go
         uses: actions/setup-go@v4
         with:
@@ -107,7 +109,14 @@ jobs:
       - name: Test provider
         run: make test_provider
       - name: Check worktree clean
-        run: ./ci-scripts/ci/check-worktree-is-clean
+        uses: pulumi/git-status-check-action@v1
+        with:
+          allowed-changes: |
+            sdk/**/pulumi-plugin.json
+            sdk/dotnet/Pulumi.*.csproj
+            sdk/go/**/pulumiUtilities.go
+            sdk/nodejs/package.json
+            sdk/python/pyproject.toml
       - name: Upload bin
         uses: actions/upload-artifact@v3
         with:
@@ -128,8 +137,12 @@ jobs:
           fields: repo,commit,author,action
           status: ${{ job.status }}
   acceptance-test:
-    needs: build-provider
     runs-on: ubuntu-latest
+    needs:
+      - build-provider
+      - version
+    env:
+      PROVIDER_VERSION: ${{ needs.version.outputs.version }}
     steps:
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@v1.3.1
@@ -138,13 +151,6 @@ jobs:
           swap-storage: false
       - name: Checkout Repo
         uses: actions/checkout@v4
-      - name: Checkout Scripts Repo
-        uses: actions/checkout@v4
-        with:
-          path: ci-scripts
-          repository: pulumi/scripts
-      - name: Unshallow clone for tags
-        run: git fetch --prune --unshallow --tags
       - name: Install pulumictl
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
@@ -167,7 +173,14 @@ jobs:
       - name: Build SDK
         run: make build_${{ matrix.language }}
       - name: Check worktree clean
-        run: ./ci-scripts/ci/check-worktree-is-clean
+        uses: pulumi/git-status-check-action@v1
+        with:
+          allowed-changes: |
+            sdk/**/pulumi-plugin.json
+            sdk/dotnet/Pulumi.*.csproj
+            sdk/go/**/pulumiUtilities.go
+            sdk/nodejs/package.json
+            sdk/python/pyproject.toml
       - name: Compress SDK folder
         run: tar -zcf sdk/${{ matrix.language }}.tar.gz -C sdk/${{ matrix.language }}
           .
