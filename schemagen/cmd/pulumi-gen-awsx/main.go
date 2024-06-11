@@ -105,7 +105,7 @@ func readSchema(schemaPath string, version string) *schema.Package {
 }
 
 func genDotNet(pkg *schema.Package, outdir string) {
-	files, err := dotnetgen.GeneratePackage(Tool, pkg, map[string][]byte{})
+	files, err := dotnetgen.GeneratePackage(Tool, pkg, map[string][]byte{}, nil)
 	if err != nil {
 		panic(err)
 	}
