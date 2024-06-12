@@ -190,9 +190,7 @@ istanbul_tests::
 test_nodejs:: PATH := $(WORKING_DIR)/bin:$(PATH)
 test_nodejs:: bin/${PROVIDER} install_nodejs_sdk bin/gotestfmt
 	@export PATH
-	# Temporarily skipping upgrade tests due to broken release. This should be reverted after the next release passes
-	# See: https://github.com/pulumi/pulumi-awsx/issues/1308
-	# cd provider && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
+	cd provider && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 	cd examples && go test -tags=nodejs -v -json -count=1 -cover -timeout 3h -parallel ${TESTPARALLELISM} . 2>&1 | tee /tmp/gotest.log | gotestfmt
 
 test_python:: PATH := $(WORKING_DIR)/bin:$(PATH)
