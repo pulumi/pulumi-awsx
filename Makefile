@@ -6,7 +6,6 @@ TESTPARALLELISM := 10
 PACK            := awsx
 PROVIDER        := pulumi-resource-${PACK}
 CODEGEN         := pulumi-gen-${PACK}
-GZIP_PREFIX     := pulumi-resource-${PACK}-v${VERSION_GENERIC}
 BIN             := ${PROVIDER}
 
 JAVA_GEN 		 := pulumi-java-gen
@@ -30,6 +29,8 @@ PKG_ARGS 		:= --no-bytecode --public-packages "*" --public
 PROVIDER_VERSION ?= 2.0.0-alpha.0+dev
 # Use this normalised version everywhere rather than the raw input to ensure consistency.
 VERSION_GENERIC = $(shell pulumictl convert-version --language generic --version "$(PROVIDER_VERSION)")
+
+GZIP_PREFIX     := pulumi-resource-${PACK}-v${VERSION_GENERIC}
 
 # Pre-requisites: ensure these folders exist
 _ := $(shell mkdir -p .make bin dist)
