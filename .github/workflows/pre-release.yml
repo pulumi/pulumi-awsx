@@ -323,11 +323,10 @@ jobs:
           path: ${{ github.workspace}}/sdk/
       - name: Uncompress java SDK
         run: tar -zxf ${{github.workspace}}/sdk/java.tar.gz -C ${{github.workspace}}/sdk/java
-      - name: Set PACKAGE_VERSION to Env
-        run: echo "PACKAGE_VERSION=$(pulumictl get version --language generic)" >>
-          $GITHUB_ENV
       - name: Publish Java SDK
         uses: gradle/gradle-build-action@a8f75513eafdebd8141bd1cd4e30fcd194af8dfa
+        env:
+          PACKAGE_VERSION: ${{ env.PROVIDER_VERSION }}
         with:
           arguments: publishToSonatype closeAndReleaseSonatypeStagingRepository
           build-root-directory: ./sdk/java
@@ -348,8 +347,8 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Add SDK version tag
-        run: git tag sdk/v$(pulumictl get version --language generic) && git push origin
-          sdk/v$(pulumictl get version --language generic)
+        run: git tag "sdk/v$PROVIDER_VERSION" && git push origin
+          "sdk/v$PROVIDER_VERSION"
 name: prerelease
 on:
   push:
