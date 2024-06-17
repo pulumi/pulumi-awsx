@@ -9,7 +9,7 @@
     <PackageProjectUrl>https://pulumi.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pulumi/pulumi-awsx</RepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
-    <Version>2.0.0-alpha.0+dev</Version>
+    <Version>2.13.0-alpha.1718204255+5673b22</Version>
 
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>

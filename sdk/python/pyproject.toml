@@ -5,7 +5,7 @@
   keywords = ["pulumi", "aws", "awsx", "kind/component", "category/cloud"]
   readme = "README.md"
   requires-python = ">=3.8"
-  version = "2.0.0a0+dev"
+  version = "2.13.0a1718204255+5673b22"
   [project.license]
     text = "Apache-2.0"
   [project.urls]
