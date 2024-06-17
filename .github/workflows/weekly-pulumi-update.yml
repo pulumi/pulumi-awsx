@@ -1,8 +1,7 @@
 name: weekly-pulumi-update
 on:
-  pull_request:
-    branches:
-      - master
+  repository_dispatch:
+    types: [run-pulumi-update-command]
   schedule:
   # Every Monday at 11AM UTC
   - cron: 0 11 * * 1
@@ -91,6 +90,10 @@ jobs:
         GH_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
       run: |
         gh pr create --title "Update pulumi/pulumi version to $PULUMI_VERSION" --body "Upgrading pulumi/pkg and pulumi/sdk to version $PULUMI_VERSION."
-        # Disable for testing
-        # gh pr merge --auto
+    - name: Enable auto-merge
+      if: steps.gomod.outputs.changes != 0 && github.event_name == 'schedule'
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        gh pr merge --squash --auto "1"
     name: weekly-pulumi-update

@@ -13,7 +13,9 @@ jobs:
         with:
           token: ${{ secrets.PULUMI_BOT_TOKEN }}
           reaction-token: ${{ secrets.GITHUB_TOKEN }}
-          commands: run-acceptance-tests
+          commands: |
+            run-acceptance-tests
+            run-pulumi-update
           permission: write
           issue-type: pull-request
           repository: pulumi/pulumi-awsx
