@@ -87,7 +87,7 @@ jobs:
     - name: pull-request
       if: steps.gomod.outputs.changes != 0
       env:
-        GH_TOKEN: ${{ github.token }}
+        GH_TOKEN: ${{ secrets.PULUMI_BOT_TOKEN }}
       run: |
         gh pr create --title "Update pulumi/pulumi version to $PULUMI_VERSION" --body "Upgrading pulumi/pkg and pulumi/sdk to version $PULUMI_VERSION."
     - name: Enable auto-merge
