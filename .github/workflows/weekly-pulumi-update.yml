@@ -74,6 +74,13 @@ jobs:
     - name: Build Provider
       if: steps.gomod.outputs.changes != 0
       run: |
+        # Strips the v from the version to get the correct npm version
+        yarn upgrade @pulumi/pulumi@${PULUMI_VERSION#v}
+        yarn run dedupe-deps
+
+        # Ensure that we don't have any duplicate dependencies
+        yarn run check-duplicate-deps
+
         make build
         make lint
     - name: Commit changes
