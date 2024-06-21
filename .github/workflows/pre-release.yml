@@ -346,9 +346,28 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: pulumi/pulumictl
-      - name: Add SDK version tag
-        run: git tag "sdk/v$PROVIDER_VERSION" && git push origin
-          "sdk/v$PROVIDER_VERSION"
+      - name: Download Go SDK
+        uses: actions/download-artifact@v4
+        with:
+          name: go-sdk.tar.gz
+          path: $${{ github.workspace }}/sdk/
+      - name: Uncompress Go SDK
+        run: tar -zxf ${{ github.workspace }}/sdk/go.tar.gz -C
+          ${{ github.workspace }}/sdk/go
+        shell: bash
+      - uses: pulumi/publish-go-sdk-action@v1
+        with:
+          repository: ${{ github.repository }}
+          base-ref: ${{ github.sha }}
+          source: sdk
+          path: sdk
+          version: ${{ needs.version.outputs.version }}
+          additive: false
+          # Avoid including other language SDKs & artifacts in the commit
+          files: |
+            go.*
+            go/**
+            !*.tar.gz
 name: prerelease
 on:
   push:
