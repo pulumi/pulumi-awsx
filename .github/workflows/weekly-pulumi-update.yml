@@ -46,9 +46,11 @@ jobs:
         ./scripts/bump-pulumi-deps.sh --version "$PULUMI_VERSION"
 
         echo "Updating node @pulumi/pulumi to $PULUMI_VERSION"
+        pushd awsx
         # Strips the v from the version to get the correct npm version
         yarn upgrade @pulumi/pulumi@${PULUMI_VERSION#v}
         yarn run dedupe-deps
+        popd
 
         # Ensure that we don't have any duplicate dependencies
         yarn run check-duplicate-deps
