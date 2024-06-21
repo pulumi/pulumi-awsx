@@ -50,10 +50,11 @@ jobs:
         # Strips the v from the version to get the correct npm version
         yarn upgrade @pulumi/pulumi@${PULUMI_VERSION#v}
         yarn run dedupe-deps
+
+        echo "Ensure that we don't have any duplicate dependencies"
+        yarn run check-duplicate-deps
         popd
 
-        # Ensure that we don't have any duplicate dependencies
-        yarn run check-duplicate-deps
 
         git update-index -q --refresh
 
