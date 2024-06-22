@@ -345,10 +345,10 @@ jobs:
         with:
           repo: pulumi/pulumictl
       - name: Download Go SDK
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: go-sdk.tar.gz
-          path: $${{ github.workspace }}/sdk/
+          path: ${{ github.workspace }}/sdk/
       - name: Uncompress Go SDK
         run: tar -zxf ${{ github.workspace }}/sdk/go.tar.gz -C
           ${{ github.workspace }}/sdk/go
