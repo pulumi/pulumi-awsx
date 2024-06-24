@@ -24,6 +24,12 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: ${{ env.GOVERSION }}
+    - name: Install Yarn
+      run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
+    - name: Update PATH for Yarn
+      run: |
+        echo "$HOME/.yarn/bin" >> $GITHUB_PATH
+        echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
     - name: Update Pulumi/Pulumi
       id: gomod
       run: |
@@ -38,6 +44,17 @@ jobs:
 
         echo "Updating Pulumi dependencies to $PULUMI_VERSION"
         ./scripts/bump-pulumi-deps.sh --version "$PULUMI_VERSION"
+
+        echo "Updating node @pulumi/pulumi to $PULUMI_VERSION"
+        pushd awsx
+        # Strips the v from the version to get the correct npm version
+        yarn upgrade @pulumi/pulumi@${PULUMI_VERSION#v}
+        yarn run dedupe-deps
+
+        echo "Ensure that we don't have any duplicate dependencies"
+        yarn run check-duplicate-deps
+        popd
+
 
         git update-index -q --refresh
 
@@ -55,14 +72,6 @@ jobs:
       with:
         node-version: ${{env.NODEVERSION}}
         registry-url: https://registry.npmjs.org
-    - name: Install Yarn
-      if: steps.gomod.outputs.changes != 0
-      run: curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
-    - name: Update PATH for Yarn
-      if: steps.gomod.outputs.changes != 0
-      run: |
-        echo "$HOME/.yarn/bin" >> $GITHUB_PATH
-        echo "$HOME/.config/yarn/global/node_modules/.bin" >> $GITHUB_PATH
     - name: Install pulumictl
       if: steps.gomod.outputs.changes != 0
       uses: jaxxstorm/action-install-gh-release@v1.10.0
