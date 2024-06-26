@@ -61,11 +61,6 @@ jobs:
         if ! git diff-files --quiet; then
           echo changes=1 >> "$GITHUB_OUTPUT"
         fi
-    - name: Calculate build version
-      if: steps.gomod.outputs.changes != 0
-      uses: pulumi/provider-version-action@v1
-      with:
-        set-env: PROVIDER_VERSION
     - name: Setup Node
       if: steps.gomod.outputs.changes != 0
       uses: actions/setup-node@v4
