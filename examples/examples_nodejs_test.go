@@ -201,6 +201,22 @@ func TestVpcMultipleSimilarSubnetSpecArgs(t *testing.T) {
 	integration.ProgramTest(t, &test)
 }
 
+func TestAccEcsParallel(t *testing.T) {
+	test := getNodeJSBaseOptions(t).
+		With(integration.ProgramTestOptions{
+			RunUpdateTest: false,
+			Dir:           filepath.Join(getCwd(t), "ecs-parallel"),
+			EditDirs: []integration.EditDir{
+				{
+					Dir: filepath.Join(getCwd(t), "ecs-parallel", "step2"),
+					Additive: true,
+				},
+			},
+		})
+
+	integration.ProgramTest(t, &test)
+}
+
 func getNodeJSBaseOptions(t *testing.T) integration.ProgramTestOptions {
 	base := getBaseOptions(t)
 	nodeBase := base.With(integration.ProgramTestOptions{
