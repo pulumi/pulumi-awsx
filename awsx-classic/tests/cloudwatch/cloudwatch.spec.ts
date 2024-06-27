@@ -22,7 +22,7 @@ import { Metric } from "../../cloudwatch/metric";
 import { Widget } from "../../cloudwatch/widget";
 import { AlarmAnnotation, HorizontalAnnotation, VerticalAnnotation } from "../../cloudwatch/widgets_annotations";
 import { ColumnWidget, RowWidget } from "../../cloudwatch/widgets_flow";
-import { LineGraphMetricWidget, SingleNumberMetricWidget, StackedAreaGraphMetricWidget } from "../../cloudwatch/widgets_graph";
+import { GaugeMetricWidget, LineGraphMetricWidget, SingleNumberMetricWidget, StackedAreaGraphMetricWidget } from "../../cloudwatch/widgets_graph";
 import { ExpressionWidgetMetric, TextWidget } from "../../cloudwatch/widgets_simple";
 
 async function bodyJson(...widgets: Widget[]) {
@@ -995,6 +995,364 @@ describe("dashboard", () => {
     ]
 }`);
             });
+        });
+
+        describe("gauge number", () => {
+            if (semver.gte(process.version, "10.0.0")) {
+                it("empty metrics", async () => {
+                    await assert.rejects(async () => {
+                        const json = await bodyJson(new GaugeMetricWidget({
+                            yAxis: {
+                                left: {
+                                    min: 0,
+                                    max: 100,
+                                }
+                            },
+                        }));
+                    });
+                });
+
+                it("invalid period", async () => {
+                    await assert.rejects(async () => {
+                        const json = await bodyJson(new GaugeMetricWidget({
+                            yAxis: {
+                                left: {
+                                    min: 0,
+                                    max: 100,
+                                }
+                            },
+                            metrics: [new Metric({ namespace: "AWS/EC2", name: "NetworkIn", period: 5 })],
+                        }));
+                    });
+                });
+            }
+
+            it("single metric", async () => {
+                const json = await bodyJson(new GaugeMetricWidget({
+                    yAxis: {
+                        left: {
+                            min: 0,
+                            max: 100,
+                        }
+                    },
+                    metrics: [new Metric({
+                        namespace: "AWS/Lambda",
+                        name: "Invocations",
+                    })],
+                }));
+                assert.equal(json, `{
+    "widgets": [
+        {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [
+                        "AWS/Lambda",
+                        "Invocations",
+                        {
+                            "stat": "Average",
+                            "period": 300,
+                            "visible": true,
+                            "yAxis": "left"
+                        }
+                    ]
+                ],
+                "period": 300,
+                "region": "us-east-2",
+                "view": "gauge",
+                "stacked": false,
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 100
+                    }
+                }
+            }
+        }
+    ]
+}`);
+            });
+
+            it("stat", async () => {
+                const json = await bodyJson(new GaugeMetricWidget({
+                    yAxis: {
+                        left: {
+                            min: 0,
+                            max: 100,
+                        }
+                    },
+                    metrics: [new Metric({
+                        namespace: "AWS/Lambda",
+                        name: "Invocations",
+                        statistic: "SampleCount",
+                    })],
+                }));
+                assert.equal(json, `{
+    "widgets": [
+        {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [
+                        "AWS/Lambda",
+                        "Invocations",
+                        {
+                            "stat": "SampleCount",
+                            "period": 300,
+                            "visible": true,
+                            "yAxis": "left"
+                        }
+                    ]
+                ],
+                "period": 300,
+                "region": "us-east-2",
+                "view": "gauge",
+                "stacked": false,
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 100
+                    }
+                }
+            }
+        }
+    ]
+}`);
+            });
+
+            it("extended stat", async () => {
+                const json = await bodyJson(new GaugeMetricWidget({
+                    yAxis: {
+                        left: {
+                            min: 0,
+                            max: 100,
+                        }
+                    },
+                    metrics: [new Metric({
+                        namespace: "AWS/Lambda",
+                        name: "Invocations",
+                        extendedStatistic: 99,
+                    })],
+                }));
+                assert.equal(json, `{
+    "widgets": [
+        {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [
+                        "AWS/Lambda",
+                        "Invocations",
+                        {
+                            "stat": "p99",
+                            "period": 300,
+                            "visible": true,
+                            "yAxis": "left"
+                        }
+                    ]
+                ],
+                "period": 300,
+                "region": "us-east-2",
+                "view": "gauge",
+                "stacked": false,
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 100
+                    }
+                }
+            }
+        }
+    ]
+}`);
+            });
+
+            it("multiple metrics", async () => {
+                const json = await bodyJson(new GaugeMetricWidget({
+                    yAxis: {
+                        left: {
+                            min: 0,
+                            max: 100,
+                        }
+                    },
+                    metrics: [
+                        new Metric({ namespace: "AWS/Lambda", name: "Invocations", yAxis: "right" }),
+                        new Metric({ namespace: "AWS/EC2", name: "NetworkIn", period: 60 }),
+                    ],
+                }));
+                assert.equal(json, `{
+    "widgets": [
+        {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [
+                        "AWS/Lambda",
+                        "Invocations",
+                        {
+                            "stat": "Average",
+                            "period": 300,
+                            "visible": true,
+                            "yAxis": "right"
+                        }
+                    ],
+                    [
+                        "AWS/EC2",
+                        "NetworkIn",
+                        {
+                            "stat": "Average",
+                            "period": 60,
+                            "visible": true,
+                            "yAxis": "left"
+                        }
+                    ]
+                ],
+                "period": 300,
+                "region": "us-east-2",
+                "view": "gauge",
+                "stacked": false,
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 100
+                    }
+                }
+            }
+        }
+    ]
+}`);
+            });
+
+            it("with dimension", async () => {
+                const json = await bodyJson(new GaugeMetricWidget({
+                    yAxis: {
+                        left: {
+                            min: 0,
+                            max: 100,
+                        }
+                    },
+                    metrics: [new Metric({
+                        namespace: "AWS/Lambda",
+                        name: "Invocations",
+                        dimensions: {
+                            FunctionName: "MyFunc",
+                            Hello: "world",
+                        },
+                    })],
+                }));
+                assert.equal(json, `{
+    "widgets": [
+        {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [
+                        "AWS/Lambda",
+                        "Invocations",
+                        "FunctionName",
+                        "MyFunc",
+                        "Hello",
+                        "world",
+                        {
+                            "stat": "Average",
+                            "period": 300,
+                            "visible": true,
+                            "yAxis": "left"
+                        }
+                    ]
+                ],
+                "period": 300,
+                "region": "us-east-2",
+                "view": "gauge",
+                "stacked": false,
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 100
+                    }
+                }
+            }
+        }
+    ]
+}`);
+            });
+
+            it("alarm annotation", async () => {
+                const json = await bodyJson(new GaugeMetricWidget({
+                    yAxis: {
+                        left: {
+                            min: 0,
+                            max: 100,
+                        }
+                    },
+                    metrics: [new Metric({
+                        namespace: "AWS/Lambda",
+                        name: "Invocations",
+                    })],
+                    annotations: [new AlarmAnnotation("some_arn")],
+                }));
+                assert.equal(json, `{
+    "widgets": [
+        {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 6,
+            "type": "metric",
+            "properties": {
+                "metrics": [
+                    [
+                        "AWS/Lambda",
+                        "Invocations",
+                        {
+                            "stat": "Average",
+                            "period": 300,
+                            "visible": true,
+                            "yAxis": "left"
+                        }
+                    ]
+                ],
+                "annotations": {
+                    "alarms": [
+                        "some_arn"
+                    ]
+                },
+                "period": 300,
+                "region": "us-east-2",
+                "view": "gauge",
+                "stacked": false,
+                "yAxis": {
+                    "left": {
+                        "min": 0,
+                        "max": 100
+                    }
+                }
+            }
+        }
+    ]
+}`);
+            });
+        });
         });
     });
 
